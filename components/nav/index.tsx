@@ -1,18 +1,42 @@
-import Link from 'next/link'
-import Container from '@/components/container'
-import ButtonLink from '@/components/button-link'
+import { useAtom } from "jotai";
+import { clerkAtom, pageAtom, menuDisplayAtom } from "../../pages/api/atoms";
+import { useClerkImage } from "@/lib/swr-hooks";
 
-export default function Nav({ title = 'Entries' }) {
+import Hamburger from "@/components/icon/hamburger";
+
+export default function Nav() {
+  const [clerk] = useAtom(clerkAtom);
+  const [menuDisplay, setMenuDisplay] = useAtom(menuDisplayAtom);
+  const [page] = useAtom(pageAtom);
+  const { image } = useClerkImage(clerk?.image_id);
+
+  var arrayBufferView = new Uint8Array(image?.data);
+  var blob = new Blob([arrayBufferView], { type: "image/png" });
+
   return (
-    <Container className="py-4">
-      <nav>
-        <div className="flex justify-between items-center">
-          <Link href="/">
-            <a className="font-bold text-3xl">{title}</a>
-          </Link>
-          <ButtonLink href="/new">New Entry</ButtonLink>
+    <nav className="py-2 bg-black text-white h-nav">
+      <div className="flex justify-between items-center">
+        <div className="flex items-center">
+          <img
+            className="bg-white rounded-full mx-2"
+            src={`${image ? URL.createObjectURL(blob) : "/clerk/guest.png"}`}
+            alt={clerk?.name}
+            height={50}
+            width={50}
+          />
+          <div>
+            <div className="sm:hidden">{`${clerk?.name?.toUpperCase()} @ R.O.S.S.`}</div>
+            <div className="hidden sm:block">{`${clerk?.name?.toUpperCase()} @ RIDE ON SUPER SOUND`}</div>
+            <div>{page?.toUpperCase()}</div>
+          </div>
         </div>
-      </nav>
-    </Container>
-  )
+        <button
+          className="px-4 sm:hidden"
+          onClick={() => setMenuDisplay(!menuDisplay)}
+        >
+          <Hamburger />
+        </button>
+      </div>
+    </nav>
+  );
 }

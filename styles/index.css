@@ -7,12 +7,78 @@
 /* Stop purging. */
 
 /* Write your own custom component styles here */
-.btn-blue {
-  @apply bg-blue-500 text-white font-bold py-2 px-4 rounded;
-}
 
 /* Start purging... */
 @tailwind utilities;
 /* Stop purging. */
 
+@import url("https://fonts.googleapis.com/css2?family=Varela+Round&display=swap");
+
+@font-face {
+  font-family: "OpenDyslexic";
+  font-style: normal;
+  src: local("OpenDyslexic"),
+    url("/font/OpenDyslexic-Regular.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "OpenDyslexic";
+  font-weight: 900;
+  font-style: normal;
+  src: local("OpenDyslexic"),
+    url("/font/OpenDyslexic-Bold.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "OpenDyslexic";
+  font-weight: 900;
+  font-style: italic;
+  src: local("OpenDyslexic"),
+    url("/font/OpenDyslexic-BoldItalic.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "OpenDyslexic";
+  font-style: italic;
+  src: local("OpenDyslexic"),
+    url("/font/OpenDyslexic-Italic.otf") format("opentype");
+}
+
 /* Your own custom utilities */
+.loading-screen {
+  @apply flex h-screen w-screen;
+}
+
+.loading-icon {
+  margin: auto;
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+.loading-icon:after {
+  content: " ";
+  display: block;
+  border-radius: 50%;
+  width: 0;
+  height: 0;
+  margin: 8px;
+  box-sizing: border-box;
+  border: 32px solid #000;
+  border-color: #000 transparent #000 transparent;
+  animation: loading-icon 1.2s infinite;
+}
+
+@keyframes loading-icon {
+  0% {
+    transform: rotate(0);
+    animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+  }
+  50% {
+    transform: rotate(900deg);
+    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+  100% {
+    transform: rotate(1800deg);
+  }
+}

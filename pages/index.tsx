@@ -1,38 +1,29 @@
-import Skeleton from 'react-loading-skeleton'
-
-import Nav from '@/components/nav'
-import Container from '@/components/container'
-import Entries from '@/components/entries'
-
-import { useEntries } from '@/lib/swr-hooks'
+import { useAccount } from "@/lib/swr-hooks";
+import { useSession } from "next-auth/client";
+import LandingPage from "./landing-page";
+import SignIn from "./api/auth/signin";
 
 export default function IndexPage() {
-  const { entries, isLoading } = useEntries()
-
-  if (isLoading) {
-    return (
-      <div>
-        <Nav />
-        <Container>
-          <Skeleton width={180} height={24} />
-          <Skeleton height={48} />
-          <div className="my-4" />
-          <Skeleton width={180} height={24} />
-          <Skeleton height={48} />
-          <div className="my-4" />
-          <Skeleton width={180} height={24} />
-          <Skeleton height={48} />
-        </Container>
-      </div>
-    )
-  }
+  const [session, sessionLoading] = useSession();
+  const { account } = useAccount(session?.user?.email);
 
   return (
-    <div>
-      <Nav />
-      <Container>
-        <Entries entries={entries} />
-      </Container>
-    </div>
-  )
+    <>
+      {sessionLoading || (session && !account) ? (
+        <div className="loading-screen">
+          <div className="loading-icon" />
+        </div>
+      ) : session ? (
+        account?.is_authenticated ? (
+          <LandingPage />
+        ) : (
+          <SignIn account={account} />
+        )
+      ) : (
+        <>
+          <SignIn account={account} />
+        </>
+      )}
+    </>
+  );
 }

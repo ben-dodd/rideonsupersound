@@ -1,19 +1,50 @@
-import useSWR from 'swr'
+import useSWR from "swr";
 
 function fetcher(url: string) {
-  return window.fetch(url).then((res) => res.json())
+  return window.fetch(url).then((res) => {
+    console.log(res);
+    return res.json();
+  });
 }
 
-export function useEntries() {
-  const { data, error } = useSWR(`/api/get-entries`, fetcher)
-
+export function useAccount(email: string) {
+  const { data, error } = useSWR(`/api/get-account?email=${email}`, fetcher);
   return {
-    entries: data,
+    account: data && data[0],
     isLoading: !error && !data,
     isError: error,
-  }
+  };
 }
 
-export function useEntry(id: string) {
-  return useSWR(`/api/get-entry?id=${id}`, fetcher)
+export function useAccountClerks(account_id: number) {
+  const { data, error } = useSWR(
+    `/api/get-account-clerks?account_id=${account_id}`,
+    fetcher
+  );
+  return {
+    clerks: data,
+    isLoading: !error && !data,
+    isError: error,
+  };
+}
+
+export function useClerkImage(clerk_image_id: number) {
+  const { data, error } = useSWR(
+    `/api/get-clerk-image?clerk_image_id=${clerk_image_id}`,
+    fetcher
+  );
+  return {
+    image: data && data[0]?.image,
+    isLoading: !error && !data,
+    isError: error,
+  };
+}
+
+export function useInventory() {
+  const { data, error } = useSWR(`/api/get-inventory`, fetcher);
+  return {
+    inventory: data,
+    isLoading: !error && !data,
+    isError: error,
+  };
 }
