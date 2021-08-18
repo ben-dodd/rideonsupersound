@@ -5,6 +5,7 @@ import {
   clerkAtom,
   menuDisplayAtom,
 } from "../../pages/api/atoms";
+import { CartItem } from "../../types";
 
 // Change to lazy loading
 import ContactsIcon from "@material-ui/icons/LocalLibrary";
@@ -13,20 +14,29 @@ import ImportExportIcon from "@material-ui/icons/ImportExport";
 import InventoryIcon from "@material-ui/icons/Category";
 // import LaybyIcon from "@material-ui/icons/ShoppingBasket";
 import LogoutIcon from "@material-ui/icons/ExitToApp";
-import OrdersIcon from "@material-ui/icons/Flight";
+// import OrdersIcon from "@material-ui/icons/Flight";
 import SalesIcon from "@material-ui/icons/MonetizationOn";
 import SellIcon from "@material-ui/icons/LocalAtm";
-import SettingsIcon from "@material-ui/icons/Settings";
+// import SettingsIcon from "@material-ui/icons/Settings";
 import LogsIcon from "@material-ui/icons/GridOn";
-import StaffIcon from "@material-ui/icons/ChildCare";
+// import StaffIcon from "@material-ui/icons/ChildCare";
 // import AnalyticsIcon from "@material-ui/icons/PieChart";
 // import StocktakeIcon from "@material-ui/icons/Storage";
 // import TasksIcon from "@material-ui/icons/PlaylistAddCheck";
 import VendorsIcon from "@material-ui/icons/Store";
-import SuppliersIcon from "@material-ui/icons/LocalShipping";
+// import SuppliersIcon from "@material-ui/icons/LocalShipping";
 import PaymentsIcon from "@material-ui/icons/Receipt";
 import GiftCardsIcon from "@material-ui/icons/Redeem";
 // import LampRepairIcon from "@material-ui/icons/EmojiObjects";
+type MenuType = {
+  type: string;
+  page: string;
+  text: string;
+  badge: any;
+  class: string;
+  icon: any;
+  onClick: any;
+};
 
 export default function Menu() {
   const [cart] = useAtom(cartAtom);
@@ -34,7 +44,8 @@ export default function Menu() {
   const [menuDisplay, setMenuDisplay] = useAtom(menuDisplayAtom);
   const [, setClerk] = useAtom(clerkAtom);
   const cartItems = Object.values(cart?.items || {}).reduce(
-    (accumulator, item) => accumulator + (item?.cart_quantity || 1),
+    (accumulator: number, item: CartItem) =>
+      accumulator + (item?.cart_quantity || 1),
     0
   );
   const menu = [
@@ -170,7 +181,7 @@ export default function Menu() {
     >
       {menu.map((list, i) => (
         <ul key={i}>
-          {list.map((item, i) =>
+          {list.map((item: MenuType, i: number) =>
             item?.type === "divider" ? (
               <hr key={i} />
             ) : (

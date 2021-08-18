@@ -22,6 +22,11 @@ export interface CartObject {
   date_sale_opened: string;
 }
 
+export interface CartItem {
+  id: number;
+  cart_quantity: number;
+}
+
 export interface InventoryObject {
   id: number;
   vendor_id: number;

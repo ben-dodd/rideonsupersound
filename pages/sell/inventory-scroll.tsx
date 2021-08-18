@@ -12,7 +12,7 @@ export default function InventoryScroll() {
   const { inventory, isLoading } = useInventory();
 
   return (
-    <div className="h-inventory overflow-scroll">
+    <div className="h-inventory overflow-scroll px-2">
       {isLoading ? (
         <div className="w-full flex h-full">
           <div className="loading-icon" />
@@ -28,9 +28,11 @@ export default function InventoryScroll() {
               if (b?.quantity < 1) return -1;
               return 0;
             })
-            .filter((item) => filterInventory({ item, search }))
+            .filter((item: InventoryObject) =>
+              filterInventory({ item, search })
+            )
             .slice(0, 50)
-            .map((item) => (
+            .map((item: InventoryObject) => (
               <SellItem item={item} key={item?.id} />
             ))}
         </>
@@ -62,7 +64,7 @@ function filterInventory({ item, search }) {
       ${item?.googleBooksItem?.volumeInfo?.subtitle || ""}
       ${item?.googleBooksItem?.volumeInfo?.categories?.join(" ") || ""}
     `;
-    terms.forEach((term) => {
+    terms.forEach((term: string) => {
       if (!itemMatch.toLowerCase().includes(term.toLowerCase())) res = false;
     });
   }
