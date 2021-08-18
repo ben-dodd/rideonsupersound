@@ -1,9 +1,10 @@
 import "../styles/index.css";
-import { Provider } from "next-auth/client";
+import { Provider as NextAuthProvider } from "next-auth/client";
+import { Provider as JotaiProvider } from "jotai";
 
 function MyApp({ Component, pageProps }) {
   return (
-    <Provider
+    <NextAuthProvider
       // Provider options are not required but can be useful in situations where
       // you have a short session maxAge time. Shown here with default values.
       options={{
@@ -23,8 +24,10 @@ function MyApp({ Component, pageProps }) {
       }}
       session={pageProps.session}
     >
-      <Component {...pageProps} />
-    </Provider>
+      <JotaiProvider>
+        <Component {...pageProps} />
+      </JotaiProvider>
+    </NextAuthProvider>
   );
 }
 

@@ -1,4 +1,5 @@
 import { useAtom } from "jotai";
+// import { useUpdateAtom } from "jotai/utils";
 import { clerkAtom } from "../../pages/api/atoms";
 import { useClerkImage } from "@/lib/swr-hooks";
 
@@ -6,6 +7,7 @@ import Skeleton from "react-loading-skeleton";
 
 function Clerk({ clerk }) {
   const [, setClerk] = useAtom(clerkAtom);
+  // const setClerk = useUpdateAtom(clerkAtom);
 
   const { image, isLoading } = useClerkImage(clerk?.image_id);
 

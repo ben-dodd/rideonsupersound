@@ -28,7 +28,7 @@ export default function LandingPage() {
         <div className="loading-screen">
           <div className="loading-icon" />
         </div>
-      ) : clerk ? (
+      ) : clerk?.id ? (
         <MainPage />
       ) : (
         <SplashPage clerks={clerks} />
