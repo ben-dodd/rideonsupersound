@@ -17,7 +17,7 @@ export default function InventoryScroll() {
         <div className="w-full flex h-full">
           <div className="loading-icon" />
         </div>
-      ) : inventory ? (
+      ) : search ? (
         <>
           {search && "gift card".includes(search) && <GiftCardItem />}
           {search && "misc item".includes(search) && <MiscItem />}
@@ -37,7 +37,7 @@ export default function InventoryScroll() {
             ))}
         </>
       ) : (
-        <div />
+        <div className="text-sm">Use the search bar to find an item...</div>
       )}
     </div>
   );

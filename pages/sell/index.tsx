@@ -13,7 +13,7 @@ export default function SellScreen() {
   const [showCart, setShowCart] = useAtom(showCartAtom);
 
   return (
-    <div className="flex relative">
+    <div className="flex relative overflow-x-hidden">
       <SellModal />
       <div
         className={`bg-blue-200 ${

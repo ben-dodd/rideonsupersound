@@ -9,5 +9,5 @@ export const menuDisplayAtom = atom<boolean>(false);
 export const showCartAtom = atom<boolean>(false);
 
 // modals
-export const sellModalAtom = atom(null);
+export const sellModalAtom = atom({});
 export const sellSearchBarAtom = atom<string>("");
