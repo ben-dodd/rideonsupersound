@@ -1,11 +1,6 @@
 import { useAtom } from "jotai";
-import {
-  pageAtom,
-  cartAtom,
-  clerkAtom,
-  menuDisplayAtom,
-} from "../../pages/api/atoms";
-import { CartItem } from "../../types";
+import { pageAtom, cartAtom, clerkAtom, menuDisplayAtom } from "@/lib/atoms";
+import { CartItem } from "@/lib/types";
 
 // Change to lazy loading
 import ContactsIcon from "@material-ui/icons/LocalLibrary";
