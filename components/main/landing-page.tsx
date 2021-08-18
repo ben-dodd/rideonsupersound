@@ -14,7 +14,7 @@ export default function LandingPage() {
   const { account } = useAccount(session?.user?.email);
 
   // Get clerk details
-  const { clerks, isLoading } = account && useAccountClerks(account?.id);
+  const { clerks, isLoading } = useAccountClerks(account?.id);
   const [clerk, setClerk] = useAtom(clerkAtom);
 
   useEffect(() => {

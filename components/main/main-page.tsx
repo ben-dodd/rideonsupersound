@@ -5,7 +5,7 @@ import { clerkAtom, menuDisplayAtom, pageAtom } from "@/lib/atoms";
 
 import Nav from "@/components/nav";
 import Menu from "@/components/menu";
-import SellScreen from "./sell";
+import SellScreen from "@/components/sell";
 import SignOutButton from "@/components/button/sign-out-button";
 
 export default function MainPage() {
