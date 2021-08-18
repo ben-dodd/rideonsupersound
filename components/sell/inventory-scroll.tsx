@@ -4,8 +4,8 @@ import MiscItem from "@/components/inventory/misc-item";
 
 import { useInventory } from "@/lib/swr-hooks";
 import { useAtom } from "jotai";
-import { sellSearchBarAtom } from "../api/atoms";
-import { InventoryObject } from "../../types";
+import { sellSearchBarAtom } from "@/lib/atoms";
+import { InventoryObject } from "@/lib/types";
 
 export default function InventoryScroll() {
   const [search] = useAtom(sellSearchBarAtom);

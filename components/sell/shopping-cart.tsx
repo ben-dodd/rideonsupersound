@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAtom } from "jotai";
-import { sellModalAtom, showCartAtom } from "../../api/atoms";
+import { sellModalAtom, showCartAtom } from "@/lib/atoms";
 
 export default function ShoppingCart() {
   const [showCart, setShowCart] = useAtom(showCartAtom);

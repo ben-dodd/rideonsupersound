@@ -1,6 +1,6 @@
 import { useAtom } from "jotai";
 // import { useUpdateAtom } from "jotai/utils";
-import { clerkAtom } from "../../pages/api/atoms";
+import { clerkAtom } from "@/lib/atoms";
 import { useClerkImage } from "@/lib/swr-hooks";
 
 import Skeleton from "react-loading-skeleton";

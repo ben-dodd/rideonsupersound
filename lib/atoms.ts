@@ -1,6 +1,6 @@
 import { atom } from "jotai";
 
-import { ClerkObject, CartObject } from "../../types";
+import { ClerkObject, CartObject } from "@/lib/types";
 
 export const clerkAtom = atom<ClerkObject | null>({ id: null });
 export const cartAtom = atom<CartObject | null>(null);

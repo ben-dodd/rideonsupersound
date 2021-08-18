@@ -1,7 +1,7 @@
 import AddIcon from "@material-ui/icons/Add";
 import InfoIcon from "@material-ui/icons/Info";
 
-import { InventoryObject } from "../../types";
+import { InventoryObject } from "@/lib/types";
 
 type SellItemProps = {
   item: InventoryObject;

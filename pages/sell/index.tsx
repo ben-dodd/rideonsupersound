@@ -1,10 +1,10 @@
 import { useAtom } from "jotai";
-import { showCartAtom } from "../api/atoms";
+import { showCartAtom } from "@/lib/atoms";
 
-import SellModal from "./modal";
-import SearchBar from "./sell-search-bar";
-import InventoryScroll from "./inventory-scroll";
-import ShoppingCart from "./shopping-cart";
+import SellModal from "@/components/modal/sell";
+import SearchBar from "@/components/sell/sell-search-bar";
+import InventoryScroll from "@/components/sell/inventory-scroll";
+import ShoppingCart from "@/components/sell/shopping-cart";
 
 import ChevronLeft from "@material-ui/icons/ChevronLeft";
 import ChevronRight from "@material-ui/icons/ChevronRight";

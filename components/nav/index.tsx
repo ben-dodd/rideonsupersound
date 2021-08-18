@@ -1,5 +1,5 @@
 import { useAtom } from "jotai";
-import { clerkAtom, pageAtom, menuDisplayAtom } from "../../pages/api/atoms";
+import { clerkAtom, pageAtom, menuDisplayAtom } from "@/lib/atoms";
 import { useClerkImage } from "@/lib/swr-hooks";
 
 import Hamburger from "@/components/icon/hamburger";

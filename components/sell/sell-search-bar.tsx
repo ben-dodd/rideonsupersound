@@ -1,6 +1,6 @@
 import SearchIcon from "@material-ui/icons/Search";
 import { useAtom } from "jotai";
-import { sellSearchBarAtom } from "../api/atoms";
+import { sellSearchBarAtom } from "@/lib/atoms";
 
 export default function SellSearchBar() {
   const [search, setSearch] = useAtom(sellSearchBarAtom);

@@ -3,7 +3,7 @@ import { signOut } from "next-auth/client";
 import { useAccount, useAccountClerks } from "@/lib/swr-hooks";
 import { useSession } from "next-auth/client";
 import { useAtom } from "jotai";
-import { clerkAtom } from "./api/atoms";
+import { clerkAtom } from "@/lib/atoms";
 
 import MainPage from "./main-page";
 import SplashPage from "./splash-page";

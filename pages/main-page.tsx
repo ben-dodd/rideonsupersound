@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/client";
 import { useAccount } from "@/lib/swr-hooks";
 import { useAtom } from "jotai";
-import { clerkAtom, menuDisplayAtom, pageAtom } from "./api/atoms";
+import { clerkAtom, menuDisplayAtom, pageAtom } from "@/lib/atoms";
 
 import Nav from "@/components/nav";
 import Menu from "@/components/menu";
