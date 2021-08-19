@@ -8,7 +8,7 @@ export default function GiftCardItem() {
         <div className="font-bold">GIFT CARD</div>
         <div className="text-xs">Click to create new gift card</div>
       </div>
-      <div className="self-center px-2 w-1/5">
+      <div className="self-center px-2 w-1/5 hidden sm:inline">
         <button className="icon-button-large" onClick={null}>
           <AddIcon style={{ fontSize: "40px" }} />
         </button>

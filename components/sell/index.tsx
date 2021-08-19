@@ -18,18 +18,14 @@ export default function SellScreen() {
   return (
     <div className="flex relative overflow-x-hidden" {...handlers}>
       <SellModal />
-      <div
-        className={`bg-blue-200 ${
-          !showCart ? "w-full" : "w-0"
-        } sm:w-2/3 transition-width duration-300 overflow-x-hidden whitespace-nowrap`}
-      >
+      <div className={`bg-blue-200 w-full sm:w-2/3`}>
         <SearchBar />
         <InventoryScroll />
       </div>
       <div
-        className={`bg-yellow-200 w-0 sm:w-1/3 ${
-          showCart && "w-full"
-        } transition-width duration-300 overflow-x-hidden whitespace-nowrap`}
+        className={`absolute top-0 transition-offset duration-300 ${
+          showCart ? "left-0" : "left-full"
+        } h-full w-full bg-yellow-200 sm:w-1/3 sm:transition-none sm:static sm:h-menu`}
       >
         <ShoppingCart />
       </div>

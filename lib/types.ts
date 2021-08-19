@@ -34,6 +34,7 @@ export interface CartItem {
 
 export interface InventoryObject {
   id: number;
+  sku?: string;
   vendor_id: number;
   vendor_name?: string;
   artist?: string;
@@ -63,4 +64,8 @@ export interface InventoryObject {
   vendor_cut?: number;
   total_sell?: number;
   quantity?: number;
+  section?: string;
+  tags?: string[];
+  googleBooksItem?: any;
+  discogsItem?: any;
 }
