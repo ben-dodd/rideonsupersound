@@ -21,7 +21,7 @@ export interface Modal {
 
 export interface CartObject {
   uid: number;
-  items?: any;
+  items: any;
   notes?: string;
   contact_id?: number;
   date_sale_opened?: string;
@@ -33,6 +33,13 @@ export interface CartItem {
   vendor_discount?: number;
   store_discount?: number;
   notes?: string;
+  is_gift_card?: boolean;
+  gift_card_code?: string;
+  gift_card_amount?: number;
+  gift_card_notes?: string;
+  is_misc_item?: boolean;
+  misc_item_description?: string;
+  misc_item_amount?: number;
 }
 
 export interface InventoryObject {

@@ -87,7 +87,7 @@ module.exports = {
         inventory: `calc(100vh - 8rem)`,
       },
       width: { icons: "3rem" },
-      transitionProperty: { width: "width" },
+      transitionProperty: { width: "width", height: "height" },
       // fontFamily: { sans: ["Varela Round", "sans-serif"] },
     },
   },

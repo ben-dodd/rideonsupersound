@@ -2,7 +2,6 @@ import useSWR from "swr";
 
 function fetcher(url: string) {
   return window.fetch(url).then((res) => {
-    console.log(res);
     return res.json();
   });
 }
