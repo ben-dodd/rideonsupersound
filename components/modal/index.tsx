@@ -4,7 +4,6 @@ export default function Modal({
   disableBackdropClick = false,
   children,
 }) {
-  console.log(open);
   return (
     <div
       className={`${
