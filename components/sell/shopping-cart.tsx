@@ -1,8 +1,7 @@
 import { useAtom } from "jotai";
-import { sellModalAtom, showCartAtom } from "@/lib/atoms";
+import { sellModalAtom } from "@/lib/atoms";
 
 export default function ShoppingCart() {
-  const [showCart, setShowCart] = useAtom(showCartAtom);
   const [, setSellModal] = useAtom(sellModalAtom);
 
   return (
