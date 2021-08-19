@@ -23,6 +23,7 @@ export default function SellItem({ id, cartItem }: ShoppingCartItemProps) {
     setItem(inventory.filter((i) => i.id === parseInt(id))[0]);
   }, [inventory]);
   const [expanded, setExpanded] = useState(false);
+  console.log(cart);
 
   return (
     <>
@@ -57,21 +58,78 @@ export default function SellItem({ id, cartItem }: ShoppingCartItemProps) {
       </div>
       <div
         className={`bg-white overflow-y-hidden transition-height duration-200 ${
-          expanded ? "h-10" : "h-0"
+          expanded ? "h-32" : "h-0"
         }`}
       >
-        <div>
-          <label>QTY</label>
-          <input
-            type="number"
-            value={cartItem?.cart_quantity}
-            onChange={(e) =>
-              setCart({
-                ...cart,
-                [id]: { cart_quantity: e.target.value, ...cart[id] },
-              })
-            }
-          />
+        <div className="flex justify-between">
+          <div className="flex flex-col relative pt-2 m-2 w-1/4">
+            <label className="text-xs absolute top-0 left-2 bg-white text-gray-500 font-extralight">
+              QTY
+            </label>
+            <input
+              className="appearance-none border border-gray-300 rounded px-2 hover:bg-gray-100"
+              min={1}
+              type="number"
+              value={cartItem?.cart_quantity}
+              onChange={(e) =>
+                setCart({
+                  ...cart,
+                  items: {
+                    ...cart?.items,
+                    [id]: { ...cart?.items[id], cart_quantity: e.target.value },
+                  },
+                })
+              }
+            />
+          </div>
+          <div className="flex flex-col relative pt-2 m-2 w-1/4">
+            <label className="text-xs absolute top-0 left-2 bg-white text-gray-500 font-extralight">
+              VEND
+            </label>
+            <input
+              className="appearance-none border border-gray-300 rounded px-2 hover:bg-gray-100"
+              min={1}
+              max={100}
+              type="number"
+              value={cartItem?.vendor_discount}
+              onChange={(e) =>
+                setCart({
+                  ...cart,
+                  items: {
+                    ...cart?.items,
+                    [id]: {
+                      ...cart?.items[id],
+                      vendor_discount: e.target.value,
+                    },
+                  },
+                })
+              }
+            />
+          </div>
+          <div className="flex flex-col relative pt-2 m-2 w-1/4">
+            <label className="text-xs absolute top-0 left-2 bg-white text-gray-500 font-extralight">
+              STORE
+            </label>
+            <input
+              className="appearance-none border border-gray-300 rounded px-2 hover:bg-gray-100"
+              min={0}
+              max={100}
+              type="number"
+              value={cartItem?.store_discount}
+              onChange={(e) =>
+                setCart({
+                  ...cart,
+                  items: {
+                    ...cart?.items,
+                    [id]: {
+                      ...cart?.items[id],
+                      store_discount: e.target.value,
+                    },
+                  },
+                })
+              }
+            />
+          </div>
         </div>
       </div>
     </>
