@@ -1,4 +1,25 @@
-import { InventoryObject } from "@/lib/types";
+import { InventoryObject, CartItem } from "@/lib/types";
+
+export function getItemSku(item: InventoryObject) {
+  return `${("000" + item?.vendor_id || "").slice(-3)}/${(
+    "00000" + item?.id || ""
+  ).slice(-5)}`;
+}
+
+export function getItemTitle(item: InventoryObject) {
+  // Add special cases e.g. for comics
+  // Might be better as a span component
+  return `${item?.title} - ${item?.artist}`;
+}
+
+export function getCartItemSummary(item: InventoryObject, cartItem: CartItem) {
+  // 1 x V10% x R50% x $27.00
+  return `${cartItem?.cart_quantity}${
+    cartItem?.vendor_discount ? ` x V${cartItem?.vendor_discount}%` : ""
+  }${cartItem?.store_discount ? ` x S${cartItem?.store_discount}%` : ""} x $${(
+    item?.total_sell / 100
+  ).toFixed(2)}`;
+}
 
 export function filterInventory({ inventory, search }) {
   return inventory

@@ -25,11 +25,14 @@ export interface CartObject {
   notes?: string;
   contact_id?: number;
   date_sale_opened?: string;
+  sale_opened_by?: string;
 }
 
 export interface CartItem {
-  id: number;
-  cart_quantity: number;
+  cart_quantity?: number;
+  vendor_discount?: number;
+  store_discount?: number;
+  notes?: string;
 }
 
 export interface InventoryObject {

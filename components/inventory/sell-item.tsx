@@ -1,30 +1,30 @@
 import { useAtom } from "jotai";
+import { v4 as uuid } from "uuid";
 
 import AddIcon from "@material-ui/icons/Add";
 import InfoIcon from "@material-ui/icons/Info";
 
-import { InventoryObject } from "@/lib/types";
-import { cartAtom } from "@/lib/atoms";
+import { InventoryObject, CartObject } from "@/lib/types";
+import { cartAtom, showCartAtom, clerkAtom } from "@/lib/atoms";
+import { getItemSku } from "@/lib/data-functions";
 
 type SellItemProps = {
   item: InventoryObject;
 };
 
 export default function SellItem({ item }: SellItemProps) {
-  const [, setCart] = useAtom(cartAtom);
-  // const cart = useSelector((state) => state.local.cart);
-  // const savedSales = useSelector((state) => state.local.savedSales);
-  // const vendors = useSelector((state) => state.local.vendors);
-  // const currentStaff = useSelector((state) => state.local.currentStaff);
+  const [cart, setCart] = useAtom(cartAtom);
+  const [, setShowCart] = useAtom(showCartAtom);
+  const [clerk] = useAtom(clerkAtom);
   return (
     <div
       className="flex w-full mb-2 bg-blue-100 relative"
-      onClick={() => addItemToCart(item, setCart)}
+      onClick={() => addItemToCart(item, cart, setCart, clerk?.id, setShowCart)}
       onDoubleClick={() => openInventoryModal(item)}
     >
-      <div className="absolute w-32 h-8 bg-opacity-50 bg-black text-white flex justify-center items-center">{`${(
-        "000" + item?.vendor_id || ""
-      ).slice(-3)}/${("00000" + item?.id || "").slice(-5)}`}</div>
+      <div className="absolute w-32 h-8 bg-opacity-50 bg-black text-white flex justify-center items-center">
+        {getItemSku(item)}
+      </div>
       <img
         className="w-32 h-32"
         src={item?.image_url || "/img/default.png"}
@@ -93,6 +93,27 @@ export default function SellItem({ item }: SellItemProps) {
   );
 }
 
-function addItemToCart(item: InventoryObject, setCart: any) {}
+function addItemToCart(
+  item: InventoryObject,
+  cart: CartObject,
+  setCart: any,
+  clerkId: number,
+  setShowCart: any
+) {
+  const uid = cart?.uid || uuid();
+  // !cart?.date_sale_opened && getWeather();
+  setCart({
+    uid,
+    date_sale_opened: cart?.date_sale_opened || new Date(),
+    sale_opened_by: cart?.sale_opened_by || clerkId,
+    items: {
+      ...cart?.items,
+      [item?.id]: {
+        cart_quantity: (cart?.items[item?.id]?.cart_quantity || 0) + 1,
+      },
+    },
+  });
+  setShowCart(true);
+}
 
 function openInventoryModal(item: InventoryObject) {}
