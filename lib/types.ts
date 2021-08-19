@@ -20,7 +20,7 @@ export interface Modal {
 }
 
 export interface CartObject {
-  uid: number;
+  uid: number | null;
   items: any;
   notes?: string;
   contact_id?: number;
