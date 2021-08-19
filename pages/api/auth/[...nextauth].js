@@ -106,12 +106,13 @@ export default NextAuth({
   // when an action is performed.
   // https://next-auth.js.org/configuration/callbacks
   callbacks: {
-    // async signIn(user, account, profile) { return true },
-    async redirect(url, baseUrl) {
-      console.log(baseUrl);
-      console.log(url);
-      return baseUrl;
+    async signIn(user, account, profile) {
+      if (!user.id) {
+        throw new Error("User not found.");
+      }
+      return true;
     },
+    // async redirect(url, baseUrl) { return baseUrl },
     // async session(session, user) { return session },
     // async jwt(token, user, account, profile, isNewUser) { return token }
   },
