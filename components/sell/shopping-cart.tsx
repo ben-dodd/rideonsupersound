@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useAtom } from "jotai";
 import { sellModalAtom, showCartAtom } from "@/lib/atoms";
 
@@ -9,7 +8,7 @@ export default function ShoppingCart() {
   return (
     <>
       <div>
-        <button onClick={() => setSellModal("Hello there")}>
+        <button onClick={() => setSellModal({ open: true })}>
           Hello there!
         </button>
       </div>
