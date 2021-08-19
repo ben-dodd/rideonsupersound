@@ -12,6 +12,7 @@ export default function SellScreen() {
   const handlers = useSwipeable({
     onSwipedRight: () => (showCart ? setShowCart(false) : null),
     onSwipedLeft: () => (!showCart ? setShowCart(true) : null),
+    preventDefaultTouchmoveEvent: true,
   });
 
   return (
