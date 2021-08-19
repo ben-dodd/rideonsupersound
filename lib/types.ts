@@ -14,6 +14,11 @@ export interface ClerkObject {
   is_deleted?: number;
 }
 
+export interface Modal {
+  open: boolean;
+  onClose?: Function;
+}
+
 export interface CartObject {
   uid: number;
   items?: any;
