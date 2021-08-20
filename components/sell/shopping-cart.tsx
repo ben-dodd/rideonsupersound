@@ -2,7 +2,12 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 import { useInventory } from "@/lib/swr-hooks";
 import { getTotalPrice, getTotalStoreCut } from "@/lib/data-functions";
-import { sellModalAtom, cartAtom, showCartAtom } from "@/lib/atoms";
+import {
+  sellModalAtom,
+  cartAtom,
+  showCartAtom,
+  showHoldAtom,
+} from "@/lib/atoms";
 import ShoppingCartActions from "@/components/sell/shopping-cart-actions";
 import ShoppingCartItem from "@/components/inventory/shopping-cart-item";
 import PayIcon from "@material-ui/icons/ShoppingCart";
@@ -11,6 +16,7 @@ import HoldIcon from "@material-ui/icons/PanTool";
 export default function ShoppingCart() {
   const [, setSellModal] = useAtom(sellModalAtom);
   const [, setShowCart] = useAtom(showCartAtom);
+  const [, setShowHold] = useAtom(showHoldAtom);
   const [cart, setCart] = useAtom(cartAtom);
   const { inventory } = useInventory();
   const totalPrice = getTotalPrice(cart, inventory);
@@ -45,6 +51,7 @@ export default function ShoppingCart() {
           <button
             className="fab-button__secondary w-1/3"
             disabled={disableButtons}
+            onClick={() => setShowHold(true)}
           >
             <HoldIcon className="mr-2" />
             HOLD

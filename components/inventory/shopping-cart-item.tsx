@@ -46,7 +46,7 @@ export default function ShoppingCartItem({
   return (
     <>
       <div
-        className="flex w-full bg-black text-white relative pt-2"
+        className="flex w-full bg-black text-white relative pt"
         onClick={() => setExpanded((e) => !e)}
       >
         <img
