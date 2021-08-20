@@ -1,4 +1,4 @@
-import { InventoryObject, CartItem } from "@/lib/types";
+import { InventoryObject, CartObject, CartItem } from "@/lib/types";
 
 export function getItemSku(item: InventoryObject) {
   return `${("000" + item?.vendor_id || "").slice(-3)}/${(
@@ -72,4 +72,47 @@ export function getItemPrice(item: InventoryObject, cartItem: CartItem) {
     ((item?.total_sell - item?.vendor_cut) * storeDiscountFactor) / 100;
   let vendorCut = (item?.vendor_cut * vendorDiscountFactor) / 100;
   return (storeCut + vendorCut) * cartItem?.cart_quantity;
+}
+
+export function getItemStoreCut(item: InventoryObject, cartItem: CartItem) {
+  let storeDiscountFactor = 100;
+  if (cartItem?.store_discount)
+    storeDiscountFactor = 100 - cartItem?.store_discount;
+  return (
+    (((item?.total_sell - item?.vendor_cut) * storeDiscountFactor) / 100) *
+    cartItem?.cart_quantity
+  );
+}
+
+export function getTotalPrice(cart: CartObject, inventory: InventoryObject[]) {
+  let price = 0;
+  Object.entries(cart?.items || {}).forEach(
+    ([id, cartItem]: [string, CartItem]) => {
+      console.log(id);
+      if (cartItem?.is_gift_card) price += cartItem?.gift_card_amount;
+      else if (cartItem?.is_misc_item) price += cartItem?.misc_item_amount;
+      else {
+        let item: InventoryObject = inventory.filter(
+          (i: InventoryObject) => i?.id === parseInt(id)
+        )[0];
+        price += getItemPrice(item, cartItem);
+      }
+    }
+  );
+  return price ? parseFloat(price.toFixed(2)) : null;
+}
+
+export function getTotalStoreCut(
+  cart: CartObject,
+  inventory: InventoryObject[]
+) {
+  return Object.entries(cart?.items || {})
+    .filter(
+      ([, cartItem]: [string, CartItem]) =>
+        !cartItem?.is_gift_card && !cartItem?.is_misc_item
+    )
+    .reduce((acc, [id, cartItem]: [string, CartItem]) => {
+      let item = inventory[id];
+      return acc + getItemStoreCut(item, cartItem);
+    }, 0);
 }

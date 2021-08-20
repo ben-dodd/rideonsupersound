@@ -1,29 +1,77 @@
 import { useState } from "react";
 import { useAtom } from "jotai";
+import { useInventory } from "@/lib/swr-hooks";
+import { getTotalPrice, getTotalStoreCut } from "@/lib/data-functions";
 import { sellModalAtom, cartAtom, showCartAtom } from "@/lib/atoms";
 import ShoppingCartItem from "@/components/inventory/shopping-cart-item";
+import PayIcon from "@material-ui/icons/ShoppingCart";
+import HoldIcon from "@material-ui/icons/PanTool";
 
 export default function ShoppingCart() {
   const [, setSellModal] = useAtom(sellModalAtom);
   const [, setShowCart] = useAtom(showCartAtom);
   const [cart, setCart] = useAtom(cartAtom);
+  const { inventory } = useInventory();
+  const totalPrice = getTotalPrice(cart, inventory);
+  const storeCut = getTotalStoreCut(cart, inventory);
+  const disableButtons = !(cart.items && Object.keys(cart.items).length > 0);
   const [refresh, setRefresh] = useState(0);
 
   return (
-    <div className="p-2">
-      <div className="text-xl">Shopping Cart</div>
-      {Object.keys(cart?.items || {}).length > 0 ? (
-        Object.entries(cart.items).map(([id, cartItem]) => (
-          <ShoppingCartItem
-            key={id}
-            id={id}
-            cartItem={cartItem}
-            deleteCartItem={deleteCartItem}
-          />
-        ))
-      ) : (
-        <div>no items...</div>
-      )}
+    <div className="flex flex-col h-menu px-2 bg-black text-white">
+      <div className="text-xl my-2">Shopping Cart</div>
+      <div className="flex-grow overflow-x-hidden overflow-y-scroll">
+        {Object.keys(cart?.items || {}).length > 0 ? (
+          Object.entries(cart.items).map(([id, cartItem]) => (
+            <ShoppingCartItem
+              key={id}
+              id={id}
+              cartItem={cartItem}
+              deleteCartItem={deleteCartItem}
+            />
+          ))
+        ) : (
+          <div>No items in cart...</div>
+        )}
+      </div>
+      <div>
+        <div className="flex justify-between">
+          <button
+            className="fab-button__secondary w-1/3"
+            disabled={disableButtons}
+          >
+            <HoldIcon className="mr-2" />
+            HOLD
+          </button>
+          <div>
+            <div className="flex justify-end mt-2">
+              <div className="self-center">STORE CUT</div>
+              <div
+                className={`self-center text-right ml-7 ${
+                  storeCut < 0 ? "text-red-500" : "text-white"
+                }`}
+              >
+                {storeCut < 0 && "-"}$
+                {Object.keys(cart?.items || {}).length > 0
+                  ? Math.abs(storeCut / 100).toFixed(2)
+                  : "0.00"}
+              </div>
+            </div>
+            <div className="flex justify-end mt-1">
+              <div className="self-center">TOTAL</div>
+              <div className="self-center text-right ml-4">
+                ${((totalPrice || 0) / 100).toFixed(2)}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <button className="fab-button w-full my-4" disabled={disableButtons}>
+            <PayIcon className="mr-2" />
+            MAKE THEM PAY
+          </button>
+        </div>
+      </div>
     </div>
   );
 

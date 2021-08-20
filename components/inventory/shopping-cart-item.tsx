@@ -4,7 +4,7 @@ import { useInventory } from "@/lib/swr-hooks";
 
 import TextField from "@/components/inputs/text-field";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { InventoryObject, CartObject, CartItem } from "@/lib/types";
+import { InventoryObject, CartItem } from "@/lib/types";
 import { cartAtom } from "@/lib/atoms";
 import {
   getItemSku,
@@ -28,7 +28,7 @@ export default function ShoppingCartItem({
   const [cart, setCart] = useAtom(cartAtom);
   const [item, setItem] = useState(null);
   useEffect(() => {
-    setItem(inventory.filter((i) => i.id === parseInt(id))[0]);
+    setItem(inventory.filter((i: InventoryObject) => i.id === parseInt(id))[0]);
   }, [inventory]);
   const [expanded, setExpanded] = useState(false);
 
@@ -74,7 +74,7 @@ export default function ShoppingCartItem({
         </div>
       </div>
       <div
-        className={`bg-white px-2 overflow-y-hidden transition-height duration-200 ${
+        className={`text-black bg-white px-2 overflow-y-hidden transition-height duration-200 ${
           expanded ? "h-64" : "h-0"
         }`}
       >

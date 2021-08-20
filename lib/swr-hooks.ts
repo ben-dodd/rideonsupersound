@@ -47,3 +47,12 @@ export function useInventory() {
     isError: error,
   };
 }
+
+export function useGiftCards() {
+  const { data, error } = useSWR(`/api/get-gift-cards`, fetcher);
+  return {
+    giftCards: data,
+    isLoading: !error && !data,
+    isError: error,
+  };
+}
