@@ -22,7 +22,7 @@ export interface Modal {
 export interface CartObject {
   uid: number | null;
   items: any;
-  notes?: string;
+  note?: string;
   contact_id?: number;
   date_sale_opened?: string;
   sale_opened_by?: string;
@@ -32,7 +32,7 @@ export interface CartItem {
   cart_quantity?: number;
   vendor_discount?: number;
   store_discount?: number;
-  notes?: string;
+  note?: string;
   is_gift_card?: boolean;
   gift_card_code?: string;
   gift_card_amount?: number;

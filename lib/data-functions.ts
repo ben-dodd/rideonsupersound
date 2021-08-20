@@ -60,3 +60,16 @@ export function filterInventory({ inventory, search }) {
     })
     .slice(0, 50);
 }
+
+export function getItemPrice(item: InventoryObject, cartItem: CartItem) {
+  let vendorDiscountFactor = 100,
+    storeDiscountFactor = 100;
+  if (cartItem?.vendor_discount)
+    vendorDiscountFactor = 100 - cartItem?.vendor_discount;
+  if (cartItem.store_discount)
+    storeDiscountFactor = 100 - cartItem?.store_discount;
+  let storeCut =
+    ((item?.total_sell - item?.vendor_cut) * storeDiscountFactor) / 100;
+  let vendorCut = (item?.vendor_cut * vendorDiscountFactor) / 100;
+  return (storeCut + vendorCut) * cartItem?.cart_quantity;
+}
