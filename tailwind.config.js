@@ -79,7 +79,8 @@ module.exports = {
           light: "#ffdeff",
         },
       },
-      fontFamily: { sans: ["OpenDyslexic", "sans-serif"] },
+      // fontFamily: { sans: ["OpenDyslexic", "sans-serif"] },
+      fontFamily: { sans: ["Varela Round", "sans-serif"] },
       height: {
         nav: "4rem",
         menu: `calc(100vh - 4rem)`,
