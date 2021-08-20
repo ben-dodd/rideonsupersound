@@ -109,7 +109,8 @@ function addItemToCart(
     items: {
       ...cart?.items,
       [item?.id]: {
-        cart_quantity: (cart?.items[item?.id]?.cart_quantity || 0) + 1,
+        cart_quantity:
+          (parseInt(cart?.items[item?.id]?.cart_quantity) || 0) + 1,
       },
     },
   });

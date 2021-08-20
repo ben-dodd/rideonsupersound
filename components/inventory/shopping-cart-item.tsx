@@ -33,6 +33,7 @@ export default function ShoppingCartItem({
   const [expanded, setExpanded] = useState(false);
 
   function onChangeCart(e: any, property: string) {
+    console.log(e);
     setCart({
       ...cart,
       items: {
@@ -45,7 +46,7 @@ export default function ShoppingCartItem({
   return (
     <>
       <div
-        className="flex w-full bg-black border-b border-white text-white relative"
+        className="flex w-full bg-black text-white relative pt-2"
         onClick={() => setExpanded((e) => !e)}
       >
         <img

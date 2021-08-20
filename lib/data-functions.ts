@@ -9,16 +9,18 @@ export function getItemSku(item: InventoryObject) {
 export function getItemTitle(item: InventoryObject) {
   // Add special cases e.g. for comics
   // Might be better as a span component
-  return `${item?.title} - ${item?.artist}`;
+  return `${item?.title || ""}${item?.title && item?.artist ? " - " : ""}${
+    item?.artist || ""
+  }`;
 }
 
 export function getCartItemSummary(item: InventoryObject, cartItem: CartItem) {
   // 1 x V10% x R50% x $27.00
   return `${cartItem?.cart_quantity}${
-    cartItem?.vendor_discount ? ` x V${cartItem?.vendor_discount}%` : ""
-  }${cartItem?.store_discount ? ` x S${cartItem?.store_discount}%` : ""} x $${(
-    item?.total_sell / 100
-  ).toFixed(2)}`;
+    cartItem?.vendor_discount > 0 ? ` x V${cartItem?.vendor_discount}%` : ""
+  }${
+    cartItem?.store_discount > 0 ? ` x S${cartItem?.store_discount}%` : ""
+  } x $${(item?.total_sell / 100).toFixed(2)}`;
 }
 
 export function filterInventory({ inventory, search }) {
@@ -64,9 +66,9 @@ export function filterInventory({ inventory, search }) {
 export function getItemPrice(item: InventoryObject, cartItem: CartItem) {
   let vendorDiscountFactor = 100,
     storeDiscountFactor = 100;
-  if (cartItem?.vendor_discount)
+  if (cartItem?.vendor_discount > 0)
     vendorDiscountFactor = 100 - cartItem?.vendor_discount;
-  if (cartItem.store_discount)
+  if (cartItem.store_discount > 0)
     storeDiscountFactor = 100 - cartItem?.store_discount;
   let storeCut =
     ((item?.total_sell - item?.vendor_cut) * storeDiscountFactor) / 100;
@@ -76,7 +78,7 @@ export function getItemPrice(item: InventoryObject, cartItem: CartItem) {
 
 export function getItemStoreCut(item: InventoryObject, cartItem: CartItem) {
   let storeDiscountFactor = 100;
-  if (cartItem?.store_discount)
+  if (cartItem?.store_discount > 0)
     storeDiscountFactor = 100 - cartItem?.store_discount;
   return (
     (((item?.total_sell - item?.vendor_cut) * storeDiscountFactor) / 100) *

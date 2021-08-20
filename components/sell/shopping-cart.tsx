@@ -3,6 +3,7 @@ import { useAtom } from "jotai";
 import { useInventory } from "@/lib/swr-hooks";
 import { getTotalPrice, getTotalStoreCut } from "@/lib/data-functions";
 import { sellModalAtom, cartAtom, showCartAtom } from "@/lib/atoms";
+import ShoppingCartActions from "@/components/sell/shopping-cart-actions";
 import ShoppingCartItem from "@/components/inventory/shopping-cart-item";
 import PayIcon from "@material-ui/icons/ShoppingCart";
 import HoldIcon from "@material-ui/icons/PanTool";
@@ -19,7 +20,12 @@ export default function ShoppingCart() {
 
   return (
     <div className="flex flex-col h-menu px-2 bg-black text-white">
-      <div className="text-xl my-2">Shopping Cart</div>
+      <div className="flex justify-between mb-2 relative">
+        <div className="text-lg my-2 tracking-wide self-center">
+          Shopping Cart
+        </div>
+        <ShoppingCartActions />
+      </div>
       <div className="flex-grow overflow-x-hidden overflow-y-scroll">
         {Object.keys(cart?.items || {}).length > 0 ? (
           Object.entries(cart.items).map(([id, cartItem]) => (
@@ -34,7 +40,7 @@ export default function ShoppingCart() {
           <div>No items in cart...</div>
         )}
       </div>
-      <div>
+      <div className="pt-2">
         <div className="flex justify-between">
           <button
             className="fab-button__secondary w-1/3"
