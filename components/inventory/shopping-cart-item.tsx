@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 import { useInventory } from "@/lib/swr-hooks";
 
+import TextField from "@/components/inputs/text-field";
 import { CartItem } from "@/lib/types";
 import { cartAtom } from "@/lib/atoms";
 import {
@@ -23,7 +24,16 @@ export default function SellItem({ id, cartItem }: ShoppingCartItemProps) {
     setItem(inventory.filter((i) => i.id === parseInt(id))[0]);
   }, [inventory]);
   const [expanded, setExpanded] = useState(false);
-  console.log(cart);
+
+  function onChangeCart(e: any, property: string) {
+    setCart({
+      ...cart,
+      items: {
+        ...cart?.items,
+        [id]: { ...cart?.items[id], [property]: e.target.value },
+      },
+    });
+  }
 
   return (
     <>
@@ -61,73 +71,35 @@ export default function SellItem({ id, cartItem }: ShoppingCartItemProps) {
           expanded ? "h-32" : "h-0"
         }`}
       >
-        <div className="flex justify-between">
-          <div className="flex flex-col relative pt-2 m-2 w-1/4">
-            <label className="text-xs absolute top-0 left-2 bg-white text-gray-500 font-extralight">
-              QTY
-            </label>
-            <input
-              className="appearance-none border border-gray-300 rounded px-2 hover:bg-gray-100"
+        <div>
+          <div className="flex justify-between">
+            <TextField
+              className="mx-2"
+              inputLabel="QTY"
+              selectOnFocus
               min={1}
-              type="number"
-              value={cartItem?.cart_quantity}
-              onChange={(e) =>
-                setCart({
-                  ...cart,
-                  items: {
-                    ...cart?.items,
-                    [id]: { ...cart?.items[id], cart_quantity: e.target.value },
-                  },
-                })
-              }
+              inputType="number"
+              valueNum={cartItem?.cart_quantity}
+              onChange={(e: any) => onChangeCart(e, "cart_quantity")}
             />
-          </div>
-          <div className="flex flex-col relative pt-2 m-2 w-1/4">
-            <label className="text-xs absolute top-0 left-2 bg-white text-gray-500 font-extralight">
-              VEND
-            </label>
-            <input
-              className="appearance-none border border-gray-300 rounded px-2 hover:bg-gray-100"
-              min={1}
+            <TextField
+              inputLabel="VEND. DISC."
+              selectOnFocus
               max={100}
-              type="number"
-              value={cartItem?.vendor_discount}
-              onChange={(e) =>
-                setCart({
-                  ...cart,
-                  items: {
-                    ...cart?.items,
-                    [id]: {
-                      ...cart?.items[id],
-                      vendor_discount: e.target.value,
-                    },
-                  },
-                })
-              }
+              inputType="number"
+              endAdornment="%"
+              valueNum={cartItem?.vendor_discount}
+              onChange={(e: any) => onChangeCart(e, "vendor_discount")}
             />
-          </div>
-          <div className="flex flex-col relative pt-2 m-2 w-1/4">
-            <label className="text-xs absolute top-0 left-2 bg-white text-gray-500 font-extralight">
-              STORE
-            </label>
-            <input
-              className="appearance-none border border-gray-300 rounded px-2 hover:bg-gray-100"
-              min={0}
+            <TextField
+              className="mx-2"
+              inputLabel="STORE DISC."
+              selectOnFocus
               max={100}
-              type="number"
-              value={cartItem?.store_discount}
-              onChange={(e) =>
-                setCart({
-                  ...cart,
-                  items: {
-                    ...cart?.items,
-                    [id]: {
-                      ...cart?.items[id],
-                      store_discount: e.target.value,
-                    },
-                  },
-                })
-              }
+              inputType="number"
+              endAdornment="%"
+              valueNum={cartItem?.store_discount}
+              onChange={(e: any) => onChangeCart(e, "store_discount")}
             />
           </div>
         </div>
