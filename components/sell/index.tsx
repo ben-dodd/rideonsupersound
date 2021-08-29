@@ -1,5 +1,5 @@
 import { useAtom } from "jotai";
-import { showCartAtom, showHoldAtom } from "@/lib/atoms";
+import { showCartAtom, showHoldAtom, showCreateContactAtom } from "@/lib/atoms";
 import { useSwipeable } from "react-swipeable";
 
 import SellModal from "@/components/modal/sell";
@@ -7,12 +7,17 @@ import SearchBar from "@/components/sell/sell-search-bar";
 import InventoryScroll from "@/components/sell/inventory-scroll";
 import ShoppingCart from "@/components/sell/shopping-cart";
 import HoldScreen from "@/components/sell/hold-screen";
+import CreateContactScreen from "@/components/sell/create-contact-screen";
 
 export default function SellScreen() {
   const [showCart, setShowCart] = useAtom(showCartAtom);
-  const [showHold] = useAtom(showHoldAtom);
+  const [showHold, setShowHold] = useAtom(showHoldAtom);
+  const [showCreateContact, setShowCreateContact] = useAtom(
+    showCreateContactAtom
+  );
   const handlers = useSwipeable({
-    onSwipedRight: () => (showCart ? setShowCart(false) : null),
+    onSwipedRight: () =>
+      showHold ? setShowHold(false) : showCart ? setShowCart(false) : null,
     onSwipedLeft: () => (!showCart ? setShowCart(true) : null),
     preventDefaultTouchmoveEvent: true,
   });
@@ -37,6 +42,13 @@ export default function SellScreen() {
         } h-full w-full bg-yellow-200 sm:w-1/3 sm:transition-none sm:static sm:h-menu`}
       >
         <HoldScreen />
+      </div>
+      <div
+        className={`absolute top-0 transition-offset duration-300 ${
+          showHold ? "left-0" : "left-full"
+        } h-full w-full bg-yellow-200 sm:w-1/3 sm:transition-none sm:static sm:h-menu`}
+      >
+        <CreateContactScreen />
       </div>
     </div>
   );

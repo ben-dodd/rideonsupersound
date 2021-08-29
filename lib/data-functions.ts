@@ -23,6 +23,25 @@ export function getCartItemSummary(item: InventoryObject, cartItem: CartItem) {
   } x $${(item?.total_sell / 100).toFixed(2)}`;
 }
 
+export function writeCartItemPriceBreakdown(
+  item: InventoryObject,
+  cartItem: CartItem
+) {
+  return cartItem?.is_gift_card
+    ? cartItem?.gift_card_code
+    : cartItem?.is_misc_item
+    ? cartItem?.misc_item_description
+    : getCartItemSummary(item, cartItem);
+}
+
+export function writeCartItemPriceTotal(item: any, cartItem: any) {
+  return cartItem?.is_gift_card
+    ? `$${(cartItem?.gift_card_amount / 100).toFixed(2)}`
+    : cartItem?.is_misc_item
+    ? `$${(cartItem?.misc_item_amount / 100).toFixed(2)}`
+    : `$${(getItemPrice(item, cartItem) / 100).toFixed(2)}`;
+}
+
 export function filterInventory({ inventory, search }) {
   return inventory
     ?.sort((a: InventoryObject, b: InventoryObject) => {

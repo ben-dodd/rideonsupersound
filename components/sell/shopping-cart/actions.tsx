@@ -4,15 +4,15 @@ import { useState } from "react";
 import DiscardSaleIcon from "@material-ui/icons/Close";
 import RetrieveSaleIcon from "@material-ui/icons/FolderOpen";
 import SaveSaleIcon from "@material-ui/icons/Save";
-import DeleteSaleIcon from "@material-ui/icons/Delete";
+// import DeleteSaleIcon from "@material-ui/icons/Delete";
 
 export default function ShoppingCartActions() {
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [, setAnchorEl] = useState(null);
   return (
     <div>
       <button
         className={"icon-button-small-white relative"}
-        onClick={(e) => setAnchorEl((e) => !e)}
+        onClick={() => setAnchorEl((e: boolean) => !e)}
       >
         <RetrieveSaleIcon />
       </button>

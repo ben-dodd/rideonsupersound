@@ -7,7 +7,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        black: "#280A0A",
+        // black: "#280A0A",
         primary: {
           dark: "#10B981",
           DEFAULT: "#34D399",
@@ -80,7 +80,8 @@ module.exports = {
         },
       },
       // fontFamily: { sans: ["OpenDyslexic", "sans-serif"] },
-      fontFamily: { sans: ["Varela Round", "sans-serif"] },
+      // fontFamily: { sans: ["Varela Round", "sans-serif"] },
+      fontFamily: { sans: ["Atkinson Hyperlegible", "sans-serif"] },
       height: {
         nav: "4rem",
         menu: `calc(100vh - 4rem)`,

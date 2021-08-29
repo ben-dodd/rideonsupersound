@@ -8,11 +8,11 @@ import { InventoryObject, CartObject } from "@/lib/types";
 import { cartAtom, showCartAtom, clerkAtom } from "@/lib/atoms";
 import { getItemSku } from "@/lib/data-functions";
 
-type SellItemProps = {
+type ListItemProps = {
   item: InventoryObject;
 };
 
-export default function SellItem({ item }: SellItemProps) {
+export default function ListItem({ item }: ListItemProps) {
   const [cart, setCart] = useAtom(cartAtom);
   const [, setShowCart] = useAtom(showCartAtom);
   const [clerk] = useAtom(clerkAtom);

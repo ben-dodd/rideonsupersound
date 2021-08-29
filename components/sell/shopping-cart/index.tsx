@@ -2,19 +2,14 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 import { useInventory } from "@/lib/swr-hooks";
 import { getTotalPrice, getTotalStoreCut } from "@/lib/data-functions";
-import {
-  sellModalAtom,
-  cartAtom,
-  showCartAtom,
-  showHoldAtom,
-} from "@/lib/atoms";
-import ShoppingCartActions from "@/components/sell/shopping-cart-actions";
-import ShoppingCartItem from "@/components/inventory/shopping-cart-item";
+import { cartAtom, showCartAtom, showHoldAtom } from "@/lib/atoms";
+import Actions from "./actions";
+import ListItem from "./list-item";
 import PayIcon from "@material-ui/icons/ShoppingCart";
 import HoldIcon from "@material-ui/icons/PanTool";
 
 export default function ShoppingCart() {
-  const [, setSellModal] = useAtom(sellModalAtom);
+  // const [, setSellModal] = useAtom(sellModalAtom);
   const [, setShowCart] = useAtom(showCartAtom);
   const [, setShowHold] = useAtom(showHoldAtom);
   const [cart, setCart] = useAtom(cartAtom);
@@ -30,12 +25,12 @@ export default function ShoppingCart() {
         <div className="text-lg my-2 tracking-wide self-center">
           Shopping Cart
         </div>
-        <ShoppingCartActions />
+        <Actions />
       </div>
       <div className="flex-grow overflow-x-hidden overflow-y-scroll">
         {Object.keys(cart?.items || {}).length > 0 ? (
           Object.entries(cart.items).map(([id, cartItem]) => (
-            <ShoppingCartItem
+            <ListItem
               key={id}
               id={id}
               cartItem={cartItem}

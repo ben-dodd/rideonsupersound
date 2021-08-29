@@ -56,3 +56,12 @@ export function useGiftCards() {
     isError: error,
   };
 }
+
+export function useContacts() {
+  const { data, error } = useSWR(`/api/get-contacts`, fetcher);
+  return {
+    contacts: data,
+    isLoading: !error && !data,
+    isError: error,
+  };
+}

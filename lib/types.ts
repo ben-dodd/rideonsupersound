@@ -14,6 +14,15 @@ export interface ClerkObject {
   is_deleted?: number;
 }
 
+export interface ContactObject {
+  id: number;
+  name?: string;
+  email?: string;
+  phone?: string;
+  postal_address?: string;
+  note?: string;
+}
+
 export interface Modal {
   open: boolean;
   onClose?: Function;

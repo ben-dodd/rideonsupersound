@@ -10,20 +10,21 @@ import {
   getItemSku,
   getItemTitle,
   getCartItemSummary,
-  getItemPrice,
+  writeCartItemPriceTotal,
+  writeCartItemPriceBreakdown,
 } from "@/lib/data-functions";
 
-type ShoppingCartItemProps = {
+type SellListItemProps = {
   id: string;
   cartItem: CartItem;
-  deleteCartItem: Function;
+  deleteCartItem?: Function;
 };
 
-export default function ShoppingCartItem({
+export default function SellListItem({
   id,
   cartItem,
   deleteCartItem,
-}: ShoppingCartItemProps) {
+}: SellListItemProps) {
   const { inventory } = useInventory();
   const [cart, setCart] = useAtom(cartAtom);
   const [item, setItem] = useState(null);
@@ -33,7 +34,6 @@ export default function ShoppingCartItem({
   const [expanded, setExpanded] = useState(false);
 
   function onChangeCart(e: any, property: string) {
-    console.log(e);
     setCart({
       ...cart,
       items: {
@@ -143,23 +143,4 @@ export default function ShoppingCartItem({
       </div>
     </>
   );
-}
-
-function writeCartItemPriceBreakdown(
-  item: InventoryObject,
-  cartItem: CartItem
-) {
-  return cartItem?.is_gift_card
-    ? cartItem?.gift_card_code
-    : cartItem?.is_misc_item
-    ? cartItem?.misc_item_description
-    : getCartItemSummary(item, cartItem);
-}
-
-function writeCartItemPriceTotal(item: any, cartItem: any) {
-  return cartItem?.is_gift_card
-    ? `$${(cartItem?.gift_card_amount / 100).toFixed(2)}`
-    : cartItem?.is_misc_item
-    ? `$${(cartItem?.misc_item_amount / 100).toFixed(2)}`
-    : `$${(getItemPrice(item, cartItem) / 100).toFixed(2)}`;
 }

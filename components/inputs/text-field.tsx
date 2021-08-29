@@ -13,6 +13,8 @@ interface TextFieldProps {
   autoFocus?: boolean;
   selectOnFocus?: boolean;
   error?: boolean;
+  fieldRequired?: boolean;
+  errorText?: string;
   max?: number;
   min?: number;
   className?: string;
@@ -38,6 +40,8 @@ export default function TextField({
   autoFocus = false,
   selectOnFocus = false,
   error = false,
+  errorText,
+  fieldRequired = false,
   max,
   min = 0,
   className,
@@ -48,7 +52,6 @@ export default function TextField({
   inputClass,
 }: TextFieldProps) {
   let isError = error || (valueNum && (valueNum > max || valueNum < min));
-
   return (
     <div
       className={className || ""}
@@ -64,10 +67,10 @@ export default function TextField({
         </div>
       )}
       <div
-        className={`mb-1 flex transition-all items-center rounded-md ${
-          isError
-            ? "ring-4 ring-red-500 bg-red-100 hover:bg-red-200"
-            : "ring-1 ring-black bg-gray-100 hover:bg-gray-200"
+        className={`mb-1 flex transition-all items-center rounded-sm ${
+          isError || (fieldRequired && !value && !valueNum)
+            ? "ring-2 ring-red-500 bg-red-100 hover:bg-red-200"
+            : "ring-1 ring-gray-400 bg-gray-100 hover:bg-gray-200"
         } ${divClass || ""} ${displayOnly && "bg-white hover:bg-white"}`}
         key={`${id || inputLabel || ""}--div`}
       >
@@ -111,6 +114,12 @@ export default function TextField({
           </div>
         )}
       </div>
+      {(isError && errorText) ||
+        (fieldRequired && !value && !valueNum && (
+          <div className="px-1 text-xs text-red-500 mt-2 mb-2">
+            {fieldRequired ? "Field is required" : errorText}
+          </div>
+        ))}
     </div>
   );
 }

@@ -1,6 +1,6 @@
-import SellItem from "@/components/inventory/sell-item";
-import GiftCardItem from "@/components/inventory/gift-card-item";
-import MiscItem from "@/components/inventory/misc-item";
+import ListItem from "./list-item";
+import GiftCardItem from "./gift-card-item";
+import MiscItem from "./misc-item";
 
 import { useInventory } from "@/lib/swr-hooks";
 import { useAtom } from "jotai";
@@ -24,7 +24,7 @@ export default function InventoryScroll() {
           {"misc item".includes(search) && <MiscItem />}
           {filterInventory({ inventory, search }).map(
             (item: InventoryObject) => (
-              <SellItem item={item} key={item?.id} />
+              <ListItem item={item} key={item?.id} />
             )
           )}
         </>
