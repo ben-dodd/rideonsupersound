@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { useAtom } from "jotai";
-import { cartAtom, showCreateContactAtom } from "@/lib/atoms";
+import {
+  cartAtom,
+  clerkAtom,
+  showCartAtom,
+  showHoldAtom,
+  showCreateContactAtom,
+} from "@/lib/atoms";
+import { CartItem } from "@/lib/types";
 import TextField from "@/components/inputs/text-field";
 import CreateableSelect from "@/components/inputs/createable-select";
 import ListItem from "./list-item";
@@ -9,19 +16,62 @@ import { useContacts } from "@/lib/swr-hooks";
 export default function HoldScreen() {
   const [cart, setCart] = useAtom(cartAtom);
   const [, setCreateContactScreen] = useAtom(showCreateContactAtom);
+  const [, setShowCart] = useAtom(showCartAtom);
+  const [, setShowHold] = useAtom(showHoldAtom);
+  const [clerk] = useAtom(clerkAtom);
   const { contacts, isLoading } = useContacts();
   const [holdPeriod, setHoldPeriod] = useState(30);
+  const [note, setNote] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  const onClickConfirmHold = () => {
-    // let holdMap = {
-    //   contact_id: cart?.contact_id || null,
-    //   note: cart?.note || null
-    // }
-    //
-  };
-
-  console.table(cart);
-  console.log(contacts);
+  async function onClickConfirmHold() {
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/create-hold", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contact_id: cart?.contact_id,
+          hold_period: holdPeriod,
+          started_by: clerk?.id,
+          note: cart?.note,
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw Error(json.message);
+      Object.entries(cart?.items || {}).forEach(async ([id, cartItem]) => {
+        try {
+          console.log(cartItem);
+          const res2 = await fetch("/api/create-hold-item", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              hold_id: json?.insertId,
+              item_id: id,
+              quantity: cartItem?.quantity,
+              vendor_discount: cartItem?.vendor_discount,
+              store_discount: cartItem?.store_discount,
+            }),
+          });
+          const json2 = await res.json();
+          if (!res2.ok) throw Error(json2.message);
+        } catch (e2) {
+          throw Error(e2.message);
+        }
+      });
+      setSubmitting(false);
+      setCart({ ...cart, contact_id: json?.insertId });
+      setCart(null);
+      setShowCart(false);
+      setShowHold(false);
+    } catch (e) {
+      throw Error(e.message);
+    }
+  }
 
   return (
     <div className="flex flex-col justify-between h-menu px-2 bg-blue-200 text-black">
@@ -44,7 +94,10 @@ export default function HoldScreen() {
           inputLabel="Select contact"
           fieldRequired
           value={cart?.contact_id}
-          label={(contacts && contacts[cart?.contact_id]?.name) || ""}
+          label={
+            (contacts || []).filter((c) => c?.id === cart?.contact_id)[0]
+              ?.name || ""
+          }
           onChange={(contactObject: any) =>
             setCart({
               ...cart,
@@ -73,6 +126,13 @@ export default function HoldScreen() {
           inputType="number"
           valueNum={holdPeriod}
           onChange={(e: any) => setHoldPeriod(e.target.value)}
+        />
+        <TextField
+          inputLabel="Note"
+          multiline
+          rows={3}
+          value={note}
+          onChange={(e: any) => setNote(e.target.value)}
         />
       </div>
       <div>

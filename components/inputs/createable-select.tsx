@@ -73,7 +73,7 @@ export default function CreateableSelect({
           }}
           onChange={onChange}
           onCreateOption={(inputValue: string) => {
-            setLoading(true);
+            // setLoading(true);
             onCreateOption(inputValue);
           }}
           options={options}

@@ -17,7 +17,13 @@ export default function SellScreen() {
   );
   const handlers = useSwipeable({
     onSwipedRight: () =>
-      showHold ? setShowHold(false) : showCart ? setShowCart(false) : null,
+      showCreateContact
+        ? setShowCreateContact({ id: 0 })
+        : showHold
+        ? setShowHold(false)
+        : showCart
+        ? setShowCart(false)
+        : null,
     onSwipedLeft: () => (!showCart ? setShowCart(true) : null),
     preventDefaultTouchmoveEvent: true,
   });
@@ -45,7 +51,7 @@ export default function SellScreen() {
       </div>
       <div
         className={`absolute top-0 transition-offset duration-300 ${
-          showHold ? "left-0" : "left-full"
+          showCreateContact?.id ? "left-0" : "left-full"
         } h-full w-full bg-yellow-200 sm:w-1/3 sm:transition-none sm:static sm:h-menu`}
       >
         <CreateContactScreen />

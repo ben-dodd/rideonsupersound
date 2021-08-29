@@ -114,12 +114,17 @@ export default function TextField({
           </div>
         )}
       </div>
-      {(isError && errorText) ||
-        (fieldRequired && !value && !valueNum && (
-          <div className="px-1 text-xs text-red-500 mt-2 mb-2">
-            {fieldRequired ? "Field is required" : errorText}
-          </div>
-        ))}
+      {((isError && errorText) || (fieldRequired && !value && !valueNum)) && (
+        <div className="px-1 text-xs text-red-500 mt-2 mb-2">
+          {errorText
+            ? fieldRequired && !value && !valueNum
+              ? "Field is required"
+              : errorText
+            : fieldRequired
+            ? "Field is required"
+            : ""}
+        </div>
+      )}
     </div>
   );
 }

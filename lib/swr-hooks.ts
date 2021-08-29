@@ -58,7 +58,9 @@ export function useGiftCards() {
 }
 
 export function useContacts() {
-  const { data, error } = useSWR(`/api/get-contacts`, fetcher);
+  const { data, error } = useSWR(`/api/get-contacts`, fetcher, {
+    refreshInterval: 5000,
+  });
   return {
     contacts: data,
     isLoading: !error && !data,
