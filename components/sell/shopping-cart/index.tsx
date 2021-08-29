@@ -16,7 +16,7 @@ export default function ShoppingCart() {
   const { inventory } = useInventory();
   const totalPrice = getTotalPrice(cart, inventory);
   const storeCut = getTotalStoreCut(cart, inventory);
-  const disableButtons = !(cart.items && Object.keys(cart.items).length > 0);
+  const disableButtons = !(cart?.items && Object.keys(cart?.items).length > 0);
   const [refresh, setRefresh] = useState(0);
 
   return (

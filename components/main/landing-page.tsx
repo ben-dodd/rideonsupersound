@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { signOut } from "next-auth/client";
-import { useAccount, useAccountClerks } from "@/lib/swr-hooks";
+import { useAccount, useInventory, useAccountClerks } from "@/lib/swr-hooks";
 import { useSession } from "next-auth/client";
 import { useAtom } from "jotai";
 import { clerkAtom } from "@/lib/atoms";
@@ -12,6 +12,7 @@ export default function LandingPage() {
   // Get google auth details
   const [session] = useSession();
   const { account } = useAccount(session?.user?.email);
+  useInventory();
 
   // Get clerk details
   const { clerks, isLoading } = useAccountClerks(account?.id);

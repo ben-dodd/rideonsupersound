@@ -5,6 +5,7 @@ import {
   clerkAtom,
   showCartAtom,
   showHoldAtom,
+  sellSearchBarAtom,
   showCreateContactAtom,
 } from "@/lib/atoms";
 import { CartItem } from "@/lib/types";
@@ -18,6 +19,7 @@ export default function HoldScreen() {
   const [, setCreateContactScreen] = useAtom(showCreateContactAtom);
   const [, setShowCart] = useAtom(showCartAtom);
   const [, setShowHold] = useAtom(showHoldAtom);
+  const [, setSearch] = useAtom(sellSearchBarAtom);
   const [clerk] = useAtom(clerkAtom);
   const { contacts, isLoading } = useContacts();
   const [holdPeriod, setHoldPeriod] = useState(30);
@@ -57,7 +59,7 @@ export default function HoldScreen() {
                 store_discount: cartItem?.store_discount,
               }),
             });
-            const json2 = await res.json();
+            const json2 = await res2.json();
             if (!res2.ok) throw Error(json2.message);
           } catch (e2) {
             throw Error(e2.message);
@@ -66,6 +68,7 @@ export default function HoldScreen() {
       );
       setSubmitting(false);
       setCart({ ...cart, contact_id: json?.insertId });
+      setSearch(null);
       setCart(null);
       setShowCart(false);
       setShowHold(false);
@@ -99,12 +102,12 @@ export default function HoldScreen() {
             (contacts || []).filter((c) => c?.id === cart?.contact_id)[0]
               ?.name || ""
           }
-          onChange={(contactObject: any) =>
+          onChange={(contactObject: any) => {
             setCart({
               ...cart,
-              contact_id: contactObject?.value,
-            })
-          }
+              contact_id: parseInt(contactObject?.value),
+            });
+          }}
           onCreateOption={(inputValue: string) =>
             setCreateContactScreen({
               id: 1,
@@ -113,7 +116,7 @@ export default function HoldScreen() {
           }
           options={Object.entries(contacts || {}).map(
             ([id, val]: [string, any]) => ({
-              value: id,
+              value: val?.id,
               label: val?.name || "",
             })
           )}
