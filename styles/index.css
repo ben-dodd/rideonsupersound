@@ -95,3 +95,7 @@
 .icon-button-small-white {
   @apply p-4 text-white hover:text-red-100;
 }
+
+.square-button {
+  @apply text-xl shadow-md py-8 cursor-pointer bg-tertiary-dark text-white w-full hover:shadow-lg hover:bg-tertiary disabled:pointer-events-none disabled:bg-gray-300 disabled:shadow-none;
+}

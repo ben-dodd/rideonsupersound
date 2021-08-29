@@ -38,7 +38,7 @@ export interface CartObject {
 }
 
 export interface CartItem {
-  cart_quantity?: number;
+  quantity?: number;
   vendor_discount?: number;
   store_discount?: number;
   note?: string;

@@ -2,7 +2,12 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 import { useInventory } from "@/lib/swr-hooks";
 import { getTotalPrice, getTotalStoreCut } from "@/lib/data-functions";
-import { cartAtom, showCartAtom, showHoldAtom } from "@/lib/atoms";
+import {
+  cartAtom,
+  showCartAtom,
+  showSaleScreenAtom,
+  showHoldAtom,
+} from "@/lib/atoms";
 import Actions from "./actions";
 import ListItem from "./list-item";
 import PayIcon from "@material-ui/icons/ShoppingCart";
@@ -12,6 +17,7 @@ export default function ShoppingCart() {
   // const [, setSellModal] = useAtom(sellModalAtom);
   const [, setShowCart] = useAtom(showCartAtom);
   const [, setShowHold] = useAtom(showHoldAtom);
+  const [, setShowSaleScreen] = useAtom(showSaleScreenAtom);
   const [cart, setCart] = useAtom(cartAtom);
   const { inventory } = useInventory();
   const totalPrice = getTotalPrice(cart, inventory);
@@ -74,7 +80,11 @@ export default function ShoppingCart() {
           </div>
         </div>
         <div>
-          <button className="fab-button w-full my-4" disabled={disableButtons}>
+          <button
+            className="fab-button w-full my-4"
+            disabled={disableButtons}
+            onClick={() => setShowSaleScreen(true)}
+          >
             <PayIcon className="mr-2" />
             MAKE THEM PAY
           </button>

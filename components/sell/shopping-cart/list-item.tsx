@@ -88,8 +88,8 @@ export default function SellListItem({
                 selectOnFocus
                 min={1}
                 inputType="number"
-                valueNum={cartItem?.cart_quantity}
-                onChange={(e: any) => onChangeCart(e, "cart_quantity")}
+                valueNum={cartItem?.quantity}
+                onChange={(e: any) => onChangeCart(e, "quantity")}
               />
               <TextField
                 className="mx-2 w-1/3"

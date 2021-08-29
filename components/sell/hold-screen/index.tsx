@@ -8,7 +8,7 @@ import {
   sellSearchBarAtom,
   showCreateContactAtom,
 } from "@/lib/atoms";
-import { CartItem, ContactObject } from "@/lib/types";
+import { CartItem, ContactObject, CartObject } from "@/lib/types";
 import TextField from "@/components/inputs/text-field";
 import CreateableSelect from "@/components/inputs/createable-select";
 import ListItem from "./list-item";
@@ -28,6 +28,7 @@ export default function HoldScreen() {
 
   async function onClickConfirmHold() {
     setSubmitting(true);
+    // Create hold
     try {
       const res = await fetch("/api/create-hold", {
         method: "POST",
@@ -44,6 +45,7 @@ export default function HoldScreen() {
       const json = await res.json();
       if (!res.ok) throw Error(json.message);
       Object.entries<CartItem>(cart?.items || {}).forEach(
+        // Create hold item for each item using the returned hold id
         async ([id, cartItem]) => {
           try {
             const res2 = await fetch("/api/create-hold-item", {
@@ -54,7 +56,7 @@ export default function HoldScreen() {
               body: JSON.stringify({
                 hold_id: json?.insertId,
                 item_id: id,
-                quantity: cartItem?.cart_quantity,
+                quantity: cartItem?.quantity,
                 vendor_discount: cartItem?.vendor_discount,
                 store_discount: cartItem?.store_discount,
               }),
@@ -66,6 +68,7 @@ export default function HoldScreen() {
           }
         }
       );
+      // Reset vars and return to inventory scroll
       setSubmitting(false);
       setCart({ ...cart, contact_id: json?.insertId });
       setSearch(null);
@@ -75,6 +78,10 @@ export default function HoldScreen() {
     } catch (e) {
       throw Error(e.message);
     }
+  }
+
+  function onClickCancelHold() {
+    setShowHold(false);
   }
 
   return (
@@ -132,12 +139,17 @@ export default function HoldScreen() {
         <TextField
           inputLabel="Note"
           multiline
-          rows={3}
           value={note}
           onChange={(e: any) => setNote(e.target.value)}
         />
       </div>
       <div>
+        <button
+          className="fab-button__secondary w-full my-4"
+          onClick={onClickCancelHold}
+        >
+          CANCEL
+        </button>
         <button
           className="fab-button w-full my-4"
           disabled={

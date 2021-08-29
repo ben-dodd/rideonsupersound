@@ -16,7 +16,7 @@ export function getItemTitle(item: InventoryObject) {
 
 export function getCartItemSummary(item: InventoryObject, cartItem: CartItem) {
   // 1 x V10% x R50% x $27.00
-  return `${cartItem?.cart_quantity}${
+  return `${cartItem?.quantity}${
     cartItem?.vendor_discount > 0 ? ` x V${cartItem?.vendor_discount}%` : ""
   }${
     cartItem?.store_discount > 0 ? ` x S${cartItem?.store_discount}%` : ""
@@ -92,7 +92,7 @@ export function getItemPrice(item: InventoryObject, cartItem: CartItem) {
   let storeCut =
     ((item?.total_sell - item?.vendor_cut) * storeDiscountFactor) / 100;
   let vendorCut = (item?.vendor_cut * vendorDiscountFactor) / 100;
-  return (storeCut + vendorCut) * cartItem?.cart_quantity;
+  return (storeCut + vendorCut) * cartItem?.quantity;
 }
 
 export function getItemStoreCut(item: InventoryObject, cartItem: CartItem) {
@@ -101,7 +101,7 @@ export function getItemStoreCut(item: InventoryObject, cartItem: CartItem) {
     storeDiscountFactor = 100 - cartItem?.store_discount;
   return (
     (((item?.total_sell - item?.vendor_cut) * storeDiscountFactor) / 100) *
-    cartItem?.cart_quantity
+    cartItem?.quantity
   );
 }
 
@@ -136,4 +136,15 @@ export function getTotalStoreCut(
       let item = inventory[id];
       return acc + getItemStoreCut(item, cartItem);
     }, 0);
+}
+
+export function getRemainingBalance(cart: CartObject, totalPrice: number) {
+  return totalPrice;
+  // const transactions = cart?.transactions || {};
+  // const totalTransactions = Object.values(transactions)
+  //   .filter((transaction) => !transaction.deleted)
+  //   .reduce((acc, transaction) => acc + get(transaction, "amount", 0), 0);
+  // console.log(totalPrice);
+  // console.log(totalTransactions);
+  // return totalPrice - totalTransactions;
 }

@@ -19,8 +19,6 @@ export default function CreateContactScreen() {
       setNameConflict(contacts.map((c) => c?.name).includes(contact?.name));
   }, [contacts, contact?.name]);
 
-  console.log(contact);
-
   async function onClickCreateContact() {
     setSubmitting(true);
     try {

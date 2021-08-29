@@ -1,23 +1,31 @@
 import { useAtom } from "jotai";
-import { showCartAtom, showHoldAtom, showCreateContactAtom } from "@/lib/atoms";
+import {
+  showCartAtom,
+  showSaleScreenAtom,
+  showHoldAtom,
+  showCreateContactAtom,
+} from "@/lib/atoms";
 import { useSwipeable } from "react-swipeable";
 
-import SellModal from "@/components/modal/sell";
-import SearchBar from "@/components/sell/sell-search-bar";
-import InventoryScroll from "@/components/sell/inventory-scroll";
-import ShoppingCart from "@/components/sell/shopping-cart";
-import HoldScreen from "@/components/sell/hold-screen";
-import CreateContactScreen from "@/components/sell/create-contact-screen";
+import SearchBar from "./sell-search-bar";
+import InventoryScroll from "./inventory-scroll";
+import ShoppingCart from "./shopping-cart";
+import HoldScreen from "./hold-screen";
+import CreateContactScreen from "./create-contact-screen";
+import SaleScreen from "./sale-screen";
 
 export default function SellScreen() {
   const [showCart, setShowCart] = useAtom(showCartAtom);
+  const [showSaleScreen, setShowSaleScreen] = useAtom(showSaleScreenAtom);
   const [showHold, setShowHold] = useAtom(showHoldAtom);
   const [showCreateContact, setShowCreateContact] = useAtom(
     showCreateContactAtom
   );
   const handlers = useSwipeable({
     onSwipedRight: () =>
-      showCreateContact
+      showSaleScreen
+        ? setShowSaleScreen(false)
+        : showCreateContact?.id
         ? setShowCreateContact({ id: 0 })
         : showHold
         ? setShowHold(false)
@@ -30,7 +38,6 @@ export default function SellScreen() {
 
   return (
     <div className="flex relative overflow-x-hidden" {...handlers}>
-      <SellModal />
       <div className={`bg-blue-200 w-full sm:w-2/3`}>
         <SearchBar />
         <InventoryScroll />
@@ -55,6 +62,13 @@ export default function SellScreen() {
         } h-full w-full bg-yellow-200 sm:w-1/3 sm:transition-none sm:static sm:h-menu`}
       >
         <CreateContactScreen />
+      </div>
+      <div
+        className={`absolute top-0 transition-offset duration-300 ${
+          showSaleScreen ? "left-0" : "left-full"
+        } h-full w-full bg-yellow-200 sm:w-1/3 sm:transition-none sm:static sm:h-menu`}
+      >
+        <SaleScreen />
       </div>
     </div>
   );

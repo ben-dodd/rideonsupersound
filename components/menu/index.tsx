@@ -40,7 +40,7 @@ export default function Menu() {
   const [, setClerk] = useAtom(clerkAtom);
   const cartItems = Object.values(cart?.items || {}).reduce(
     (accumulator: number, item: CartItem) =>
-      accumulator + (item?.cart_quantity || 1),
+      accumulator + (item?.quantity || 1),
     0
   );
   const menu = [
