@@ -41,28 +41,29 @@ export default function HoldScreen() {
       });
       const json = await res.json();
       if (!res.ok) throw Error(json.message);
-      Object.entries(cart?.items || {}).forEach(async ([id, cartItem]) => {
-        try {
-          console.log(cartItem);
-          const res2 = await fetch("/api/create-hold-item", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              hold_id: json?.insertId,
-              item_id: id,
-              quantity: cartItem?.quantity,
-              vendor_discount: cartItem?.vendor_discount,
-              store_discount: cartItem?.store_discount,
-            }),
-          });
-          const json2 = await res.json();
-          if (!res2.ok) throw Error(json2.message);
-        } catch (e2) {
-          throw Error(e2.message);
+      Object.entries<CartItem>(cart?.items || {}).forEach(
+        async ([id, cartItem]) => {
+          try {
+            const res2 = await fetch("/api/create-hold-item", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                hold_id: json?.insertId,
+                item_id: id,
+                quantity: cartItem?.cart_quantity,
+                vendor_discount: cartItem?.vendor_discount,
+                store_discount: cartItem?.store_discount,
+              }),
+            });
+            const json2 = await res.json();
+            if (!res2.ok) throw Error(json2.message);
+          } catch (e2) {
+            throw Error(e2.message);
+          }
         }
-      });
+      );
       setSubmitting(false);
       setCart({ ...cart, contact_id: json?.insertId });
       setCart(null);
@@ -145,7 +146,7 @@ export default function HoldScreen() {
           }
           onClick={onClickConfirmHold}
         >
-          CONFIRM HOLD
+          {submitting ? "HOLDING..." : "CONFIRM HOLD"}
         </button>
       </div>
     </div>
