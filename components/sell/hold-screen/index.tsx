@@ -8,7 +8,7 @@ import {
   sellSearchBarAtom,
   showCreateContactAtom,
 } from "@/lib/atoms";
-import { CartItem } from "@/lib/types";
+import { CartItem, ContactObject } from "@/lib/types";
 import TextField from "@/components/inputs/text-field";
 import CreateableSelect from "@/components/inputs/createable-select";
 import ListItem from "./list-item";
@@ -21,7 +21,7 @@ export default function HoldScreen() {
   const [, setShowHold] = useAtom(showHoldAtom);
   const [, setSearch] = useAtom(sellSearchBarAtom);
   const [clerk] = useAtom(clerkAtom);
-  const { contacts, isLoading } = useContacts();
+  const { contacts } = useContacts();
   const [holdPeriod, setHoldPeriod] = useState(30);
   const [note, setNote] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -114,12 +114,10 @@ export default function HoldScreen() {
               name: inputValue,
             })
           }
-          options={Object.entries(contacts || {}).map(
-            ([id, val]: [string, any]) => ({
-              value: val?.id,
-              label: val?.name || "",
-            })
-          )}
+          options={contacts?.map((val: ContactObject) => ({
+            value: val?.id,
+            label: val?.name || "",
+          }))}
         />
         <TextField
           inputLabel="Hold for how many days?"
