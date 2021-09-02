@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useAtom } from "jotai";
 import { useInventory } from "@/lib/swr-hooks";
-import { cartAtom } from "@/lib/atoms";
+import { cartAtom, paymentDialogAtom } from "@/lib/atoms";
 import {
   getTotalPrice,
   getTotalStoreCut,
@@ -10,6 +10,7 @@ import {
 
 export default function Pay() {
   const [cart, setCart] = useAtom(cartAtom);
+  const [, openPaymentDialog] = useAtom(paymentDialogAtom);
   const { inventory } = useInventory();
   const storeCut = useMemo(() => getTotalStoreCut(cart, inventory), [
     cart,
@@ -25,9 +26,9 @@ export default function Pay() {
   );
   return (
     <div>
-      <div className="flex justify-between border-b border-gray-500 mb-2">
-        <div className="text-xl">Pay</div>
-        <div className="text-red-500 font-bold text-xl">
+      <div className="flex justify-between mb-2 mt-8">
+        <div className="text-2xl text-blue-600 font-bold">PAY</div>
+        <div className="text-2xl text-red-500 font-bold text-xl">
           ${((totalPrice || 0) / 100).toFixed(2)}
         </div>
       </div>
@@ -36,7 +37,7 @@ export default function Pay() {
           className="square-button"
           disabled={remainingBalance === 0}
           onClick={
-            () => null
+            () => openPaymentDialog("cash")
             // dispatch(openDialog("cash", { remainingBalance, activeCart }))
           }
         >

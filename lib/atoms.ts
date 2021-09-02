@@ -14,3 +14,4 @@ export const showSaleScreenAtom = atom<boolean>(false);
 // modals
 export const sellModalAtom = atom<Modal>({ open: false });
 export const sellSearchBarAtom = atom<string>("");
+export const paymentDialogAtom = atom<string>("");

@@ -97,5 +97,5 @@
 }
 
 .square-button {
-  @apply text-xl shadow-md py-8 cursor-pointer bg-tertiary-dark text-white w-full hover:shadow-lg hover:bg-tertiary disabled:pointer-events-none disabled:bg-gray-300 disabled:shadow-none;
+  @apply text-xl shadow-md py-8 cursor-pointer bg-tertiary-dark text-white w-full hover:shadow-lg hover:bg-tertiary active:bg-tertiary-light disabled:pointer-events-none disabled:bg-gray-300 disabled:shadow-none;
 }
