@@ -8,7 +8,7 @@ import {
   sellSearchBarAtom,
   showCreateContactAtom,
 } from "@/lib/atoms";
-import { CartItem, ContactObject, CartObject } from "@/lib/types";
+import { SaleObject, ContactObject, SaleItemObject } from "@/lib/types";
 import TextField from "@/components/inputs/text-field";
 import CreateableSelect from "@/components/inputs/createable-select";
 import ListItem from "./list-item";
@@ -23,61 +23,46 @@ export default function HoldScreen() {
   const [clerk] = useAtom(clerkAtom);
   const { contacts } = useContacts();
   const [holdPeriod, setHoldPeriod] = useState(30);
-  const [note, setNote] = useState(null);
+  const [note, setNote] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   async function onClickConfirmHold() {
     setSubmitting(true);
     // Create hold
-    try {
-      const res = await fetch("/api/create-hold", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          contact_id: cart?.contact_id,
-          hold_period: holdPeriod,
-          started_by: clerk?.id,
-          note: cart?.note,
-        }),
-      });
-      const json = await res.json();
-      if (!res.ok) throw Error(json.message);
-      Object.entries<CartItem>(cart?.items || {}).forEach(
-        // Create hold item for each item using the returned hold id
-        async ([id, cartItem]) => {
-          try {
-            const res2 = await fetch("/api/create-hold-item", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                hold_id: json?.insertId,
-                item_id: id,
-                quantity: cartItem?.quantity,
-                vendor_discount: cartItem?.vendor_discount,
-                store_discount: cartItem?.store_discount,
-              }),
-            });
-            const json2 = await res2.json();
-            if (!res2.ok) throw Error(json2.message);
-          } catch (e2) {
-            throw Error(e2.message);
-          }
+
+    cart?.items.forEach(
+      // Create hold for each item
+      async (cartItem) => {
+        try {
+          const res = await fetch("/api/create-hold", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              contact_id: cart?.contact_id,
+              item_id: cartItem?.item_id,
+              quantity: cartItem?.quantity,
+              vendor_discount: cartItem?.vendor_discount,
+              store_discount: cartItem?.store_discount,
+              hold_period: holdPeriod,
+              started_by: clerk?.id,
+              note: note,
+            }),
+          });
+          const json = await res.json();
+          if (!res.ok) throw Error(json.message);
+        } catch (e) {
+          throw Error(e.message);
         }
-      );
-      // Reset vars and return to inventory scroll
-      setSubmitting(false);
-      setCart({ ...cart, contact_id: json?.insertId });
-      setSearch(null);
-      setCart(null);
-      setShowCart(false);
-      setShowHold(false);
-    } catch (e) {
-      throw Error(e.message);
-    }
+      }
+    );
+    // Reset vars and return to inventory scroll
+    setSubmitting(false);
+    setSearch(null);
+    setCart(null);
+    setShowCart(false);
+    setShowHold(false);
   }
 
   function onClickCancelHold() {
@@ -93,10 +78,8 @@ export default function HoldScreen() {
           </div>
         </div>
         <div className="flex-grow overflow-x-hidden overflow-y-scroll">
-          {Object.keys(cart?.items || {}).length > 0 ? (
-            Object.entries(cart.items).map(([id, cartItem]) => (
-              <ListItem id={id} cartItem={cartItem} />
-            ))
+          {(cart?.items || []).length > 0 ? (
+            cart.items.map((cartItem) => <ListItem cartItem={cartItem} />)
           ) : (
             <div>No items</div>
           )}

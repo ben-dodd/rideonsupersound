@@ -6,7 +6,7 @@ export default function Card() {
   const [paymentDialog] = useAtom(paymentDialogAtom);
   return (
     <Modal open={paymentDialog === "card"}>
-      <div>CASH</div>
+      <div className="h-1/2">CASH</div>
     </Modal>
   );
 }

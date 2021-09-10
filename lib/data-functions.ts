@@ -1,4 +1,4 @@
-import { InventoryObject, CartObject, CartItem } from "@/lib/types";
+import { InventoryObject, SaleObject, SaleItemObject } from "@/lib/types";
 
 export function getItemSku(item: InventoryObject) {
   return `${("000" + item?.vendor_id || "").slice(-3)}/${(
@@ -14,31 +14,37 @@ export function getItemTitle(item: InventoryObject) {
   }`;
 }
 
-export function getCartItemSummary(item: InventoryObject, cartItem: CartItem) {
+export function getCartItemSummary(
+  item: InventoryObject,
+  cartItem: SaleItemObject
+) {
   // 1 x V10% x R50% x $27.00
-  return `${cartItem?.quantity}${
-    cartItem?.vendor_discount > 0 ? ` x V${cartItem?.vendor_discount}%` : ""
-  }${
-    cartItem?.store_discount > 0 ? ` x S${cartItem?.store_discount}%` : ""
-  } x $${(item?.total_sell / 100).toFixed(2)}`;
+  return item?.is_gift_card
+    ? item?.gift_card_code
+    : item?.is_misc_item
+    ? item?.misc_item_description
+    : `${cartItem?.quantity}${
+        cartItem?.vendor_discount > 0 ? ` x V${cartItem?.vendor_discount}%` : ""
+      }${
+        cartItem?.store_discount > 0 ? ` x S${cartItem?.store_discount}%` : ""
+      } x $${(item?.total_sell / 100).toFixed(2)}`;
 }
 
 export function writeCartItemPriceBreakdown(
   item: InventoryObject,
-  cartItem: CartItem
+  cartItem: SaleItemObject
 ) {
-  return cartItem?.is_gift_card
-    ? cartItem?.gift_card_code
-    : cartItem?.is_misc_item
-    ? cartItem?.misc_item_description
-    : getCartItemSummary(item, cartItem);
+  return getCartItemSummary(item, cartItem);
 }
 
-export function writeCartItemPriceTotal(item: any, cartItem: any) {
-  return cartItem?.is_gift_card
-    ? `$${(cartItem?.gift_card_amount / 100).toFixed(2)}`
-    : cartItem?.is_misc_item
-    ? `$${(cartItem?.misc_item_amount / 100).toFixed(2)}`
+export function writeCartItemPriceTotal(
+  item: InventoryObject,
+  cartItem: SaleItemObject
+) {
+  return item?.is_gift_card
+    ? `$${(item?.gift_card_amount / 100).toFixed(2)}`
+    : item?.is_misc_item
+    ? `$${(item?.misc_item_amount / 100).toFixed(2)}`
     : `$${(getItemPrice(item, cartItem) / 100).toFixed(2)}`;
 }
 
@@ -82,7 +88,7 @@ export function filterInventory({ inventory, search }) {
     .slice(0, 50);
 }
 
-export function getItemPrice(item: InventoryObject, cartItem: CartItem) {
+export function getItemPrice(item: InventoryObject, cartItem: SaleItemObject) {
   let vendorDiscountFactor = 100,
     storeDiscountFactor = 100;
   if (cartItem?.vendor_discount > 0)
@@ -95,7 +101,11 @@ export function getItemPrice(item: InventoryObject, cartItem: CartItem) {
   return (storeCut + vendorCut) * cartItem?.quantity;
 }
 
-export function getItemStoreCut(item: InventoryObject, cartItem: CartItem) {
+export function getItemStoreCut(
+  item: InventoryObject,
+  cartItem: SaleItemObject
+) {
+  if (item?.is_gift_card || item?.is_misc_item) return 0;
   let storeDiscountFactor = 100;
   if (cartItem?.store_discount > 0)
     storeDiscountFactor = 100 - cartItem?.store_discount;
@@ -105,40 +115,31 @@ export function getItemStoreCut(item: InventoryObject, cartItem: CartItem) {
   );
 }
 
-export function getTotalPrice(cart: CartObject, inventory: InventoryObject[]) {
+export function getTotalPrice(cart: SaleObject, inventory: InventoryObject[]) {
   let price = 0;
-  Object.entries(cart?.items || {}).forEach(
-    ([id, cartItem]: [string, CartItem]) => {
-      console.log(id);
-      if (cartItem?.is_gift_card) price += cartItem?.gift_card_amount;
-      else if (cartItem?.is_misc_item) price += cartItem?.misc_item_amount;
-      else {
-        let item: InventoryObject = inventory.filter(
-          (i: InventoryObject) => i?.id === parseInt(id)
-        )[0];
-        price += getItemPrice(item, cartItem);
-      }
-    }
-  );
+  (cart?.items || []).forEach((cartItem: SaleItemObject) => {
+    // Misc Items and Gift Cards in inventory
+    let item: InventoryObject = inventory.filter(
+      (i: InventoryObject) => i?.id === cartItem?.item_id
+    )[0];
+    price += getItemPrice(item, cartItem);
+  });
   return price ? parseFloat(price.toFixed(2)) : null;
 }
 
 export function getTotalStoreCut(
-  cart: CartObject,
+  cart: SaleObject,
   inventory: InventoryObject[]
 ) {
-  return Object.entries(cart?.items || {})
-    .filter(
-      ([, cartItem]: [string, CartItem]) =>
-        !cartItem?.is_gift_card && !cartItem?.is_misc_item
-    )
-    .reduce((acc, [id, cartItem]: [string, CartItem]) => {
-      let item = inventory[id];
-      return acc + getItemStoreCut(item, cartItem);
-    }, 0);
+  return (cart?.items || []).reduce((acc, cartItem: SaleItemObject) => {
+    let item: InventoryObject = inventory.filter(
+      (i: InventoryObject) => i?.id === cartItem?.item_id
+    )[0];
+    return acc + getItemStoreCut(item, cartItem);
+  }, 0);
 }
 
-export function getRemainingBalance(cart: CartObject, totalPrice: number) {
+export function getRemainingBalance(cart: SaleObject, totalPrice: number) {
   return totalPrice;
   // const transactions = cart?.transactions || {};
   // const totalTransactions = Object.values(transactions)
@@ -147,4 +148,18 @@ export function getRemainingBalance(cart: CartObject, totalPrice: number) {
   // console.log(totalPrice);
   // console.log(totalTransactions);
   // return totalPrice - totalTransactions;
+}
+
+export function getGeolocation() {
+  let geolocation = null;
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition((position) => {
+      // console.log(position);
+      geolocation = {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+      };
+    });
+  }
+  return geolocation;
 }

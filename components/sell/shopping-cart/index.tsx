@@ -7,6 +7,7 @@ import {
   showCartAtom,
   showSaleScreenAtom,
   showHoldAtom,
+  clerkAtom,
 } from "@/lib/atoms";
 import Actions from "./actions";
 import ListItem from "./list-item";
@@ -18,11 +19,14 @@ export default function ShoppingCart() {
   const [, setShowCart] = useAtom(showCartAtom);
   const [, setShowHold] = useAtom(showHoldAtom);
   const [, setShowSaleScreen] = useAtom(showSaleScreenAtom);
+  const [clerk] = useAtom(clerkAtom);
   const [cart, setCart] = useAtom(cartAtom);
   const { inventory } = useInventory();
   const totalPrice = getTotalPrice(cart, inventory);
   const storeCut = getTotalStoreCut(cart, inventory);
-  const disableButtons = !(cart?.items && Object.keys(cart?.items).length > 0);
+  const [loading, setLoading] = useState(false);
+  const disableButtons =
+    loading || !(cart?.items && Object.keys(cart?.items).length > 0);
   const [refresh, setRefresh] = useState(0);
 
   return (
@@ -34,11 +38,11 @@ export default function ShoppingCart() {
         <Actions />
       </div>
       <div className="flex-grow overflow-x-hidden overflow-y-scroll">
-        {Object.keys(cart?.items || {}).length > 0 ? (
-          Object.entries(cart.items).map(([id, cartItem]) => (
+        {(cart?.items || []).length > 0 ? (
+          cart.items.map((cartItem, id) => (
             <ListItem
               key={id}
-              id={id}
+              index={id}
               cartItem={cartItem}
               deleteCartItem={deleteCartItem}
             />
@@ -66,7 +70,7 @@ export default function ShoppingCart() {
                 }`}
               >
                 {storeCut < 0 && "-"}$
-                {Object.keys(cart?.items || {}).length > 0
+                {(cart?.items || []).length > 0
                   ? Math.abs(storeCut / 100).toFixed(2)
                   : "0.00"}
               </div>
@@ -83,7 +87,7 @@ export default function ShoppingCart() {
           <button
             className="fab-button w-full my-4"
             disabled={disableButtons}
-            onClick={() => setShowSaleScreen(true)}
+            onClick={() => loadSale()}
           >
             <PayIcon className="mr-2" />
             MAKE THEM PAY
@@ -93,39 +97,113 @@ export default function ShoppingCart() {
     </div>
   );
 
-  function deleteCartItem(itemId: string) {
-    let newCart = cart;
-    delete newCart.items[itemId];
+  async function loadSale() {
+    setLoading(true);
+    // Create new sale in DB or update sale if sale has 'id' property
+    if (!cart?.id) {
+      try {
+        let newCart = cart;
+        const res = await fetch("/api/create-sale", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            contact_id: cart?.contact_id || null,
+            state: "in_progress",
+            sale_opened_by: clerk?.id,
+            weather: JSON.stringify(cart?.weather) || "",
+            geo_latitude: cart?.geo_latitude || null,
+            geo_longitude: cart?.geo_longitude || null,
+            note: cart?.note || null,
+          }),
+        });
+        const json = await res.json();
+        if (!res.ok) throw Error(json.message);
+        console.log(json);
+        newCart = { ...newCart, id: json?.insertId };
+
+        let newItems = [];
+        cart?.items.forEach(async (item) => {
+          let newItem = item;
+          try {
+            const res2 = await fetch("/api/create-sale-item", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                id: item?.id || null,
+                sale_id: json?.insertId,
+                item_id: item?.item_id,
+                quantity: item?.quantity,
+                vendor_discount: item?.vendor_discount || null,
+                store_discount: item?.store_discount || null,
+                note: item?.note || null,
+              }),
+            });
+            const json2 = await res2.json();
+            if (!res2.ok) throw Error(json2.message);
+            newItem = { ...newItem, id: json?.insertId };
+            newItems.push(newItem);
+          } catch (e) {
+            throw Error(e.message);
+          }
+        });
+        setCart({ ...newCart, items: newItems });
+      } catch (e) {
+        throw Error(e.message);
+      }
+    } else {
+    }
+    setShowSaleScreen(true);
+    setLoading(false);
+  }
+
+  async function deleteCartItem(itemId: string) {
+    let newItems = cart?.items.filter((i) => i?.item_id !== parseInt(itemId));
+    if (cart?.id) {
+      // Cart has been saved to the database, delete sale_item
+      try {
+        const res = await fetch("/api/delete-sale-item", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            sale_id: cart?.id,
+            item_id: parseInt(itemId),
+          }),
+        });
+        const json = await res.json();
+        if (!res.ok) throw Error(json.message);
+      } catch (e) {
+        throw Error(e.message);
+      }
+    }
     // if (newCart.id) {
     // Cart is a saved sale, delete from db
-    if (Object.keys(newCart?.items || {}).length < 1) {
+    if ((cart?.items || []).length < 1) {
       // No items left, delete cart
       setShowCart(false);
-      // updateData({
-      //   dispatch,
-      //   collection: "sales",
-      //   doc: newCart.uid,
-      //   update: {
-      //     ...newCart,
-      //     status: "deleted",
-      //     deleted: true,
-      //     lastModified: new Date(),
-      //   },
-      //   onDataUpdated: () => dispatch(clearCart()),
-      // });
-    } else {
-      // updateData({
-      //   dispatch,
-      //   collection: "sales",
-      //   doc: newCart.uid,
-      //   update: {
-      //     ...newCart,
-      //     lastModified: new Date(),
-      //   },
-      // });
+      // TODO Any transactions need to be refunded.
+      try {
+        const res = await fetch("/api/delete-sale", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            sale_id: cart?.id,
+          }),
+        });
+        const json = await res.json();
+        if (!res.ok) throw Error(json.message);
+      } catch (e) {
+        throw Error(e.message);
+      }
     }
-    // }
-    setCart(newCart);
+    setCart({ ...cart, items: newItems });
     setRefresh(refresh + 1);
   }
 }

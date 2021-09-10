@@ -4,7 +4,7 @@ import { useInventory } from "@/lib/swr-hooks";
 
 import TextField from "@/components/inputs/text-field";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { InventoryObject, CartItem } from "@/lib/types";
+import { InventoryObject, SaleItemObject } from "@/lib/types";
 import { cartAtom } from "@/lib/atoms";
 import {
   getItemSku,
@@ -15,32 +15,33 @@ import {
 } from "@/lib/data-functions";
 
 type SellListItemProps = {
-  id: string;
-  cartItem: CartItem;
+  index: number;
+  cartItem: SaleItemObject;
   deleteCartItem?: Function;
 };
 
 export default function SellListItem({
-  id,
+  index,
   cartItem,
   deleteCartItem,
 }: SellListItemProps) {
   const { inventory } = useInventory();
   const [cart, setCart] = useAtom(cartAtom);
   const [item, setItem] = useState(null);
+  console.log(cartItem);
   useEffect(() => {
-    setItem(inventory.filter((i: InventoryObject) => i.id === parseInt(id))[0]);
+    setItem(
+      inventory.filter((i: InventoryObject) => i.id === cartItem?.item_id)[0]
+    );
   }, [inventory]);
+  console.log(item);
   const [expanded, setExpanded] = useState(false);
 
   function onChangeCart(e: any, property: string) {
-    setCart({
-      ...cart,
-      items: {
-        ...cart?.items,
-        [id]: { ...cart?.items[id], [property]: e.target.value },
-      },
-    });
+    let newCart = cart;
+    if (newCart?.items && newCart?.items[index])
+      newCart.items[index][property] = e.target.value;
+    setCart(newCart);
   }
 
   return (
@@ -52,7 +53,7 @@ export default function SellListItem({
         <img
           className="w-20 h-20"
           src={
-            cartItem?.is_gift_card
+            item?.is_gift_card
               ? "/img/giftCard.png"
               : item?.image_url || "/img/default.png"
           }
@@ -63,10 +64,10 @@ export default function SellListItem({
         </div>
         <div className="flex flex-col w-full p-2 justify-between">
           <div className="text-xs pl-1">
-            {cartItem?.is_gift_card
-              ? id
-              : cartItem?.is_misc_item
-              ? cartItem?.misc_item_description
+            {item?.is_gift_card
+              ? item?.gift_card_code
+              : item?.is_misc_item
+              ? item?.misc_item_description
               : getItemTitle(item)}
           </div>
           <div className="text-red-500 self-end">
@@ -132,7 +133,7 @@ export default function SellListItem({
               <div className="w-50 text-right">
                 <button
                   className="py-2 text-tertiary hover:text-tertiary-dark"
-                  onClick={() => deleteCartItem(id)}
+                  onClick={() => deleteCartItem(cartItem?.item_id)}
                 >
                   <DeleteIcon />
                 </button>

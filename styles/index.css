@@ -99,3 +99,19 @@
 .square-button {
   @apply text-xl shadow-md py-8 cursor-pointer bg-tertiary-dark text-white w-full hover:shadow-lg hover:bg-tertiary active:bg-tertiary-light disabled:pointer-events-none disabled:bg-gray-300 disabled:shadow-none;
 }
+
+.dialog-action__button {
+  @apply w-full mt-2 border rounded-xl ring-4 py-4 cursor-pointer bg-white disabled:pointer-events-none disabled:bg-gray-300 disabled:text-gray-400 disabled:ring-gray-400;
+}
+
+.dialog-action__ok-button {
+  @apply dialog-action__button text-primary ring-primary hover:text-primary-dark hover:ring-primary-dark;
+}
+
+.dialog-action__second-button {
+  @apply dialog-action__button text-secondary ring-secondary hover:text-secondary-dark hover:ring-secondary-dark;
+}
+
+.dialog-action__cancel-button {
+  @apply dialog-action__button text-tertiary ring-tertiary hover:text-tertiary-dark hover:ring-tertiary-dark;
+}

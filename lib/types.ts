@@ -28,27 +28,48 @@ export interface Modal {
   onClose?: Function;
 }
 
-export interface CartObject {
-  uid: number | null;
-  items: any;
-  note?: string;
+export interface SaleObject {
+  id?: number;
   contact_id?: number;
-  date_sale_opened?: string;
-  sale_opened_by?: string;
+  state?: string;
+  items?: SaleItemObject[];
+  transactions?: SaleTransactionObject[];
+  date_sale_opened?: Date;
+  sale_opened_by?: number;
+  date_sale_closed?: Date;
+  sale_closed_by?: number;
+  cash_note?: string;
+  note?: string;
+  weather?: any;
+  geo_latitude?: number;
+  geo_longitude?: number;
+  is_deleted?: boolean;
 }
 
-export interface CartItem {
+export interface SaleItemObject {
+  id?: number;
+  sale_id?: number;
+  item_id?: number;
   quantity?: number;
   vendor_discount?: number;
   store_discount?: number;
   note?: string;
-  is_gift_card?: boolean;
-  gift_card_code?: string;
-  gift_card_amount?: number;
-  gift_card_notes?: string;
-  is_misc_item?: boolean;
-  misc_item_description?: string;
-  misc_item_amount?: number;
+  is_deleted?: boolean;
+}
+
+export interface SaleTransactionObject {
+  id?: number;
+  sale_id: number;
+  clerk_id: number;
+  payment_method: string;
+  amount: number;
+  cash_received?: number;
+  change_given?: number;
+  payment_id?: number;
+  gift_card_id?: number;
+  card_taken?: boolean;
+  date?: Date;
+  is_deleted?: boolean;
 }
 
 export interface InventoryObject {
@@ -85,6 +106,13 @@ export interface InventoryObject {
   quantity?: number;
   section?: string;
   tags?: string[];
+  is_gift_card?: boolean;
+  gift_card_code?: string;
+  gift_card_amount?: number;
+  gift_card_note?: string;
+  is_misc_item?: boolean;
+  misc_item_description?: string;
+  misc_item_amount?: number;
   googleBooksItem?: any;
   discogsItem?: any;
 }

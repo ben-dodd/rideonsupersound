@@ -1,12 +1,13 @@
+import { useEffect } from "react";
 import { useAtom } from "jotai";
-import { v4 as uuid } from "uuid";
 
 import AddIcon from "@material-ui/icons/Add";
 import InfoIcon from "@material-ui/icons/Info";
 
-import { InventoryObject, CartObject } from "@/lib/types";
+import { InventoryObject, SaleObject } from "@/lib/types";
 import { cartAtom, showCartAtom, clerkAtom } from "@/lib/atoms";
-import { getItemSku } from "@/lib/data-functions";
+import { useWeather } from "@/lib/swr-hooks";
+import { getItemSku, getGeolocation } from "@/lib/data-functions";
 
 type ListItemProps = {
   item: InventoryObject;
@@ -16,10 +17,22 @@ export default function ListItem({ item }: ListItemProps) {
   const [cart, setCart] = useAtom(cartAtom);
   const [, setShowCart] = useAtom(showCartAtom);
   const [clerk] = useAtom(clerkAtom);
+  const geolocation = getGeolocation();
+  const { weather } = useWeather();
   return (
     <div
       className="flex w-full mb-2 bg-blue-100 relative"
-      onClick={() => addItemToCart(item, cart, setCart, clerk?.id, setShowCart)}
+      onClick={() =>
+        addItemToCart(
+          item,
+          cart,
+          setCart,
+          clerk?.id,
+          setShowCart,
+          weather,
+          geolocation
+        )
+      }
       onDoubleClick={() => openInventoryModal(item)}
     >
       <div className="absolute w-32 h-8 bg-opacity-50 bg-black text-white flex justify-center items-center">
@@ -95,23 +108,34 @@ export default function ListItem({ item }: ListItemProps) {
 
 function addItemToCart(
   item: InventoryObject,
-  cart: CartObject,
+  cart: SaleObject,
   setCart: any,
   clerkId: number,
-  setShowCart: any
+  setShowCart: any,
+  weather: any,
+  geolocation: any
 ) {
-  const uid = cart?.uid || uuid();
-  // !cart?.date_sale_opened && getWeather();
+  let newItems = cart?.items || [];
+  let index = newItems.findIndex((cartItem) => cartItem.item_id === item?.id);
+  if (index < 0)
+    newItems.push({
+      item_id: item?.id,
+      quantity: 1,
+    });
+  else newItems[index].quantity += 1;
   setCart({
-    uid,
     date_sale_opened: cart?.date_sale_opened || new Date(),
     sale_opened_by: cart?.sale_opened_by || clerkId,
-    items: {
-      ...cart?.items,
-      [item?.id]: {
-        quantity: (parseInt(cart?.items[item?.id]?.quantity) || 0) + 1,
-      },
-    },
+    items: newItems,
+    // items: {
+    //   ...cart?.items,
+    //   [item?.id]: {
+    //     quantity: (parseInt(cart?.items[item?.id]?.quantity) || 0) + 1,
+    //   },
+    // },
+    weather: cart?.weather || weather,
+    geo_latitude: cart?.geo_latitude || geolocation?.latitude,
+    geo_longitude: cart?.geo_longitude || geolocation?.longitude,
   });
   setShowCart(true);
 }
