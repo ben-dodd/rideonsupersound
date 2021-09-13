@@ -1,6 +1,6 @@
 import { useAtom } from "jotai";
 import { pageAtom, cartAtom, clerkAtom, menuDisplayAtom } from "@/lib/atoms";
-import { SaleObject } from "@/lib/types";
+import { SaleItemObject } from "@/lib/types";
 
 // Change to lazy loading
 import ContactsIcon from "@material-ui/icons/LocalLibrary";
@@ -38,8 +38,8 @@ export default function Menu() {
   const [page, setPage] = useAtom(pageAtom);
   const [menuDisplay, setMenuDisplay] = useAtom(menuDisplayAtom);
   const [, setClerk] = useAtom(clerkAtom);
-  const cartItems = Object.values(cart?.items || {}).reduce(
-    (accumulator: number, item: SaleObject) =>
+  const cartItems = (cart?.items || []).reduce(
+    (accumulator: number, item: SaleItemObject) =>
       accumulator + (item?.quantity || 1),
     0
   );
