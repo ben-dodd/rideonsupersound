@@ -8,7 +8,7 @@ import {
   sellSearchBarAtom,
   showCreateContactAtom,
 } from "@/lib/atoms";
-import { SaleObject, ContactObject, SaleItemObject } from "@/lib/types";
+import { ContactObject } from "@/lib/types";
 import TextField from "@/components/inputs/text-field";
 import CreateableSelect from "@/components/inputs/createable-select";
 import ListItem from "./list-item";
@@ -89,8 +89,9 @@ export default function HoldScreen() {
           fieldRequired
           value={cart?.contact_id}
           label={
-            (contacts || []).filter((c) => c?.id === cart?.contact_id)[0]
-              ?.name || ""
+            (contacts || []).filter(
+              (c: ContactObject) => c?.id === cart?.contact_id
+            )[0]?.name || ""
           }
           onChange={(contactObject: any) => {
             setCart({

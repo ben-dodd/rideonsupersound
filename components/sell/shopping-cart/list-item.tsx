@@ -28,13 +28,11 @@ export default function SellListItem({
   const { inventory } = useInventory();
   const [cart, setCart] = useAtom(cartAtom);
   const [item, setItem] = useState(null);
-  console.log(cartItem);
   useEffect(() => {
     setItem(
       inventory.filter((i: InventoryObject) => i.id === cartItem?.item_id)[0]
     );
   }, [inventory]);
-  console.log(item);
   const [expanded, setExpanded] = useState(false);
 
   function onChangeCart(e: any, property: string) {

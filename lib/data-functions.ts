@@ -1,4 +1,9 @@
-import { InventoryObject, SaleObject, SaleItemObject } from "@/lib/types";
+import {
+  InventoryObject,
+  SaleObject,
+  SaleItemObject,
+  TransactionObject,
+} from "@/lib/types";
 
 export function getItemSku(item: InventoryObject) {
   return `${("000" + item?.vendor_id || "").slice(-3)}/${(
@@ -116,15 +121,13 @@ export function getItemStoreCut(
 }
 
 export function getTotalPrice(cart: SaleObject, inventory: InventoryObject[]) {
-  let price = 0;
-  (cart?.items || []).forEach((cartItem: SaleItemObject) => {
+  return (cart?.items || []).reduce((acc, cartItem) => {
     // Misc Items and Gift Cards in inventory
     let item: InventoryObject = inventory.filter(
       (i: InventoryObject) => i?.id === cartItem?.item_id
     )[0];
-    price += getItemPrice(item, cartItem);
-  });
-  return price ? parseFloat(price.toFixed(2)) : null;
+    return (acc += getItemPrice(item, cartItem));
+  }, 0);
 }
 
 export function getTotalStoreCut(
@@ -139,15 +142,19 @@ export function getTotalStoreCut(
   }, 0);
 }
 
-export function getRemainingBalance(cart: SaleObject, totalPrice: number) {
-  return totalPrice;
-  // const transactions = cart?.transactions || {};
-  // const totalTransactions = Object.values(transactions)
-  //   .filter((transaction) => !transaction.deleted)
-  //   .reduce((acc, transaction) => acc + get(transaction, "amount", 0), 0);
-  // console.log(totalPrice);
-  // console.log(totalTransactions);
-  // return totalPrice - totalTransactions;
+export function getRemainingBalance(
+  totalPrice: number,
+  transactions: TransactionObject[]
+) {
+  if (!totalPrice || !transactions) return null;
+  console.log(transactions);
+  // return totalPrice;
+  const totalTransactions = transactions
+    .filter((transaction) => !transaction.is_deleted)
+    .reduce((acc, transaction) => acc + transaction?.total_amount, 0);
+  console.log(totalPrice);
+  console.log(totalTransactions);
+  return totalPrice - totalTransactions;
 }
 
 export function getGeolocation() {

@@ -116,3 +116,17 @@ export interface InventoryObject {
   googleBooksItem?: any;
   discogsItem?: any;
 }
+
+export interface TransactionObject {
+  id?: number;
+  sale_id: number;
+  clerk_id?: number;
+  payment_method?: string;
+  total_amount?: number;
+  cash_received?: number;
+  change_given?: number;
+  vendor_payment_id?: number;
+  gift_card_id?: number;
+  card_taken?: boolean;
+  is_deleted?: boolean;
+}

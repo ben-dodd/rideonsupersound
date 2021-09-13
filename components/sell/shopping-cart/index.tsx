@@ -120,7 +120,6 @@ export default function ShoppingCart() {
         });
         const json = await res.json();
         if (!res.ok) throw Error(json.message);
-        console.log(json);
         newCart = { ...newCart, id: json?.insertId };
 
         let newItems = [];
@@ -133,7 +132,6 @@ export default function ShoppingCart() {
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
-                id: item?.id || null,
                 sale_id: json?.insertId,
                 item_id: item?.item_id,
                 quantity: item?.quantity,
@@ -144,20 +142,23 @@ export default function ShoppingCart() {
             });
             const json2 = await res2.json();
             if (!res2.ok) throw Error(json2.message);
-            newItem = { ...newItem, id: json?.insertId };
+            newItem = { ...newItem, id: json2?.insertId };
             newItems.push(newItem);
           } catch (e) {
             throw Error(e.message);
           }
         });
+        // console.log(cart);
+        // console.log({ ...newCart, items: newItems });
         setCart({ ...newCart, items: newItems });
+        // console.log(cart);
+        setShowSaleScreen(true);
+        setLoading(false);
       } catch (e) {
         throw Error(e.message);
       }
     } else {
     }
-    setShowSaleScreen(true);
-    setLoading(false);
   }
 
   async function deleteCartItem(itemId: string) {

@@ -5,11 +5,11 @@ const handler: NextApiHandler = async (req, res) => {
   const {
     sale_id,
     clerk_id,
-    type,
+    payment_method,
     total_amount,
     cash_received,
     change_given,
-    payment_id,
+    vendor_payment_id,
     gift_card_id,
     card_taken,
   } = req.body;
@@ -17,17 +17,27 @@ const handler: NextApiHandler = async (req, res) => {
   try {
     const results = await query(
       `
-      INSERT INTO transaction (sale_id, clerk_id, type, total_amount, cash_received, change_given, payment_id, gift_card_id, card_taken)
+      INSERT INTO transaction (
+        sale_id,
+        clerk_id,
+        payment_method,
+        total_amount,
+        cash_received,
+        change_given,
+        vendor_payment_id,
+        gift_card_id,
+        card_taken
+      )
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
       [
         sale_id,
         clerk_id,
-        type,
+        payment_method,
         total_amount,
         cash_received,
         change_given,
-        payment_id,
+        vendor_payment_id,
         gift_card_id,
         card_taken,
       ]

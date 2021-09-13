@@ -49,6 +49,18 @@ export function useInventory() {
   };
 }
 
+export function useTransactions(sale_id: number) {
+  const { data, error } = useSWR(
+    `/api/get-transactions?sale_id=${sale_id}`,
+    fetcher
+  );
+  return {
+    transactions: data,
+    isLoading: !error && !data,
+    isError: error,
+  };
+}
+
 export function useGiftCards() {
   const { data, error } = useSWR(`/api/get-gift-cards`, fetcher);
   return {

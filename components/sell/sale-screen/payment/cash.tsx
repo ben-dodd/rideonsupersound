@@ -1,23 +1,25 @@
 import { useState, useMemo } from "react";
 import Modal from "@/components/modal";
 import { useAtom } from "jotai";
-import { paymentDialogAtom, cartAtom } from "@/lib/atoms";
+import { paymentDialogAtom, cartAtom, clerkAtom } from "@/lib/atoms";
 import TextField from "@/components/inputs/text-field";
-import { useInventory } from "@/lib/swr-hooks";
+import { useInventory, useTransactions } from "@/lib/swr-hooks";
 import { TransactionObject } from "@/lib/types";
 import { getTotalPrice, getRemainingBalance } from "@/lib/data-functions";
 
 export default function Cash() {
+  const [clerk] = useAtom(clerkAtom);
   const [paymentDialog, setPaymentDialog] = useAtom(paymentDialogAtom);
   const [cart] = useAtom(cartAtom);
   const { inventory } = useInventory();
+  const { transactions } = useTransactions(cart?.id);
   const totalPrice = useMemo(() => getTotalPrice(cart, inventory), [
     cart,
     inventory,
   ]);
   const remainingBalance = useMemo(
-    () => getRemainingBalance(cart, totalPrice) / 100,
-    [cart, totalPrice]
+    () => getRemainingBalance(totalPrice, transactions) / 100,
+    [totalPrice, transactions]
   );
   const [cashReceived, setCashReceived] = useState(`${remainingBalance}`);
   const [submitting, setSubmitting] = useState(false);
@@ -65,11 +67,11 @@ export default function Cash() {
           }
           onClick={async () => {
             let transaction: TransactionObject = {
-              sale_id: 1,
-              clerk_id: 1,
+              sale_id: cart?.id,
+              clerk_id: clerk?.id,
               payment_method: "cash",
               cash_received: parseFloat(cashReceived) * 100,
-              amount:
+              total_amount:
                 parseFloat(cashReceived) >= remainingBalance
                   ? remainingBalance * 100
                   : parseFloat(cashReceived) * 100,

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useAtom } from "jotai";
-import { useInventory } from "@/lib/swr-hooks";
-import { cartAtom, paymentDialogAtom } from "@/lib/atoms";
+import { useInventory, useTransactions } from "@/lib/swr-hooks";
+import { cartAtom, paymentDialogAtom, showSaleScreenAtom } from "@/lib/atoms";
 import {
   getTotalPrice,
   // getTotalStoreCut,
@@ -11,7 +11,9 @@ import {
 export default function Pay() {
   const [cart] = useAtom(cartAtom);
   const [, openPaymentDialog] = useAtom(paymentDialogAtom);
+  const [showSaleScreen] = useAtom(showSaleScreenAtom);
   const { inventory } = useInventory();
+  const { transactions } = useTransactions(cart?.id);
   // const storeCut = useMemo(() => getTotalStoreCut(cart, inventory), [
   //   cart,
   //   inventory,
@@ -19,10 +21,11 @@ export default function Pay() {
   const totalPrice = useMemo(() => getTotalPrice(cart, inventory), [
     cart,
     inventory,
+    showSaleScreen,
   ]);
   const remainingBalance = useMemo(
-    () => getRemainingBalance(cart, totalPrice) / 100,
-    [cart, totalPrice]
+    () => getRemainingBalance(totalPrice, transactions) / 100,
+    [totalPrice, transactions]
   );
   return (
     <div>

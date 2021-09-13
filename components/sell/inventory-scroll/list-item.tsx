@@ -127,12 +127,6 @@ function addItemToCart(
     date_sale_opened: cart?.date_sale_opened || new Date(),
     sale_opened_by: cart?.sale_opened_by || clerkId,
     items: newItems,
-    // items: {
-    //   ...cart?.items,
-    //   [item?.id]: {
-    //     quantity: (parseInt(cart?.items[item?.id]?.quantity) || 0) + 1,
-    //   },
-    // },
     weather: cart?.weather || weather,
     geo_latitude: cart?.geo_latitude || geolocation?.latitude,
     geo_longitude: cart?.geo_longitude || geolocation?.longitude,
