@@ -54,8 +54,10 @@ export function writeCartItemPriceTotal(
 }
 
 export function filterInventory({ inventory, search }) {
+  if (!inventory) return [];
   return inventory
     ?.sort((a: InventoryObject, b: InventoryObject) => {
+      if (!a?.quantity || !b?.quantity) return 0;
       if (a?.quantity === b?.quantity) return 0;
       if (a?.quantity < 1) return 1;
       if (b?.quantity < 1) return -1;
