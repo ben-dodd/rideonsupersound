@@ -17,7 +17,7 @@ const handler: NextApiHandler = async (req, res) => {
   try {
     const results = await query(
       `
-      INSERT INTO transaction (
+      INSERT INTO sale_transaction (
         sale_id,
         clerk_id,
         payment_method,
