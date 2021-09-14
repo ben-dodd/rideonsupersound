@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { signOut } from "next-auth/client";
 import { useAccount, useInventory, useAccountClerks } from "@/lib/swr-hooks";
 import { useSession } from "next-auth/client";
 import { useAtom } from "jotai";
@@ -17,6 +16,7 @@ export default function LandingPage() {
   // Get clerk details
   const { clerks, isLoading } = useAccountClerks(account?.id);
   const [clerk, setClerk] = useAtom(clerkAtom);
+  console.log(clerks);
 
   useEffect(() => {
     // If google account only connected to one clerk, automatically set clerk

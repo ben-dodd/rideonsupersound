@@ -70,20 +70,18 @@ export default function HoldScreen() {
   }
 
   return (
-    <div className="flex flex-col justify-between h-menu px-2 bg-blue-200 text-black">
+    <div className="flex flex-col h-menu px-2 bg-blue-200 text-black">
+      <div className="flex justify-between mb-2 relative">
+        <div className="text-lg my-2 tracking-wide self-center">Hold Items</div>
+      </div>
+      <div className="flex-grow overflow-x-hidden overflow-y-scroll">
+        {(cart?.items || []).length > 0 ? (
+          cart.items.map((cartItem) => <ListItem cartItem={cartItem} />)
+        ) : (
+          <div>No items</div>
+        )}
+      </div>
       <div>
-        <div className="flex justify-between mb-2 relative">
-          <div className="text-lg my-2 tracking-wide self-center">
-            Hold Items
-          </div>
-        </div>
-        <div className="flex-grow overflow-x-hidden overflow-y-scroll">
-          {(cart?.items || []).length > 0 ? (
-            cart.items.map((cartItem) => <ListItem cartItem={cartItem} />)
-          ) : (
-            <div>No items</div>
-          )}
-        </div>
         <CreateableSelect
           inputLabel="Select contact"
           fieldRequired
@@ -127,15 +125,15 @@ export default function HoldScreen() {
           onChange={(e: any) => setNote(e.target.value)}
         />
       </div>
-      <div>
+      <div className="flex">
         <button
-          className="fab-button__secondary w-full my-4"
+          className="fab-button__secondary w-full my-4 mr-2"
           onClick={onClickCancelHold}
         >
           CANCEL
         </button>
         <button
-          className="fab-button w-full my-4"
+          className="fab-button w-full my-4 ml-2"
           disabled={
             !cart?.contact_id ||
             Object.keys(cart?.items || {}).length === 0 ||

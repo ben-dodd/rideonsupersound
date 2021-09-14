@@ -39,7 +39,7 @@ const handler: NextApiHandler = async (req, res) => {
         change_given,
         vendor_payment_id,
         gift_card_id,
-        card_taken,
+        card_taken || 0,
       ]
     );
     return res.json(results);

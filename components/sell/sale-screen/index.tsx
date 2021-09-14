@@ -10,7 +10,7 @@ import Gift from "./payment/gift";
 export default function SaleScreen() {
   const [paymentDialog] = useAtom(paymentDialogAtom);
   return (
-    <div className="flex flex-col justify-between h-menu px-2 bg-white text-black">
+    <div className="flex flex-col sm:flex-row justify-between h-menu px-2 bg-white text-black">
       {paymentDialog === "acct" && <Acct />}
       {paymentDialog === "card" && <Card />}
       {paymentDialog === "cash" && <Cash />}

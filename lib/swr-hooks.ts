@@ -22,7 +22,7 @@ export function useAccountClerks(account_id: number) {
     fetcher
   );
   return {
-    clerks: data,
+    clerks: data || [],
     isLoading: !error && !data,
     isError: error,
   };

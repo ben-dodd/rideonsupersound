@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useAtom } from "jotai";
 
 import AddIcon from "@material-ui/icons/Add";
@@ -67,9 +66,9 @@ export default function ListItem({ item }: ListItemProps) {
           )}`}</div>
         </div>
       </div>
-      <div className="self-center pl-2">
+      <div className="self-center pl-2 hidden sm:inline">
         <button
-          className="icon-button-large hidden sm:inline"
+          className="icon-button-large"
           onClick={
             () => null
             // addLog(

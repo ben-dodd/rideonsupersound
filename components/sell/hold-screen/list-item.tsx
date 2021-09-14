@@ -21,7 +21,7 @@ export default function SellListItem({ cartItem }: HoldListItemProps) {
   }, [inventory]);
 
   return (
-    <div className="flex w-full bg-blue-100 text-black relative pt">
+    <div className="flex w-full bg-blue-100 text-black relative pt mb-2">
       <img
         className="w-20 h-20"
         src={

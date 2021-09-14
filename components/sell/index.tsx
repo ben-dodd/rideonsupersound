@@ -45,28 +45,28 @@ export default function SellScreen() {
       <div
         className={`absolute top-0 transition-offset duration-300 ${
           showCart ? "left-0" : "left-full"
-        } h-full w-full bg-yellow-200 sm:w-1/3 sm:transition-none sm:static sm:h-menu`}
+        } sm:left-2/3 h-full w-full bg-yellow-200 sm:w-1/3 sm:h-menu`}
       >
         <ShoppingCart />
       </div>
       <div
         className={`absolute top-0 transition-offset duration-300 ${
-          showHold ? "left-0" : "left-full"
-        } h-full w-full bg-yellow-200 sm:w-1/3 sm:transition-none sm:static sm:h-menu`}
+          showHold ? "left-0 sm:left-2/3" : "left-full"
+        } h-full w-full bg-yellow-200 sm:w-1/3 sm:h-menu`}
       >
         <HoldScreen />
       </div>
       <div
         className={`absolute top-0 transition-offset duration-300 ${
-          showCreateContact?.id ? "left-0" : "left-full"
-        } h-full w-full bg-yellow-200 sm:w-1/3 sm:transition-none sm:static sm:h-menu`}
+          showCreateContact?.id ? "left-0 sm:left-2/3" : "left-full"
+        } h-full w-full bg-yellow-200 sm:w-1/3 sm:h-menu`}
       >
         <CreateContactScreen />
       </div>
       <div
         className={`absolute top-0 transition-offset duration-300 ${
           showSaleScreen ? "left-0" : "left-full"
-        } h-full w-full bg-yellow-200 sm:w-1/3 sm:transition-none sm:static sm:h-menu`}
+        } h-full w-full bg-yellow-200 sm:h-menu`}
       >
         <SaleScreen />
       </div>

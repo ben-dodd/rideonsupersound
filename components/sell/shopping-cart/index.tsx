@@ -51,7 +51,7 @@ export default function ShoppingCart() {
           <div>No items in cart...</div>
         )}
       </div>
-      <div className="pt-2">
+      <div className="pt-4">
         <div className="flex justify-between">
           <button
             className="fab-button__secondary w-1/3"
@@ -98,7 +98,8 @@ export default function ShoppingCart() {
   );
 
   async function loadSale() {
-    setLoading(true);
+    // setLoading(true);
+    setShowSaleScreen(true);
     // Create new sale in DB or update sale if sale has 'id' property
     if (!cart?.id) {
       try {
@@ -144,16 +145,15 @@ export default function ShoppingCart() {
             if (!res2.ok) throw Error(json2.message);
             newItem = { ...newItem, id: json2?.insertId };
             newItems.push(newItem);
+            setCart({ ...newCart, items: newItems });
           } catch (e) {
             throw Error(e.message);
           }
         });
         // console.log(cart);
         // console.log({ ...newCart, items: newItems });
-        setCart({ ...newCart, items: newItems });
         // console.log(cart);
-        setShowSaleScreen(true);
-        setLoading(false);
+        // setLoading(false);
       } catch (e) {
         throw Error(e.message);
       }

@@ -38,7 +38,7 @@ export default function CreateableSelect({
   divClass,
   labelClass,
 }: TextFieldProps) {
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading] = useState(false);
   return (
     <div
       className={className || ""}

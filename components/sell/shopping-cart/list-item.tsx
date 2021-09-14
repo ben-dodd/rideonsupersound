@@ -45,7 +45,7 @@ export default function SellListItem({
   return (
     <>
       <div
-        className="flex w-full bg-black text-white relative pt"
+        className="flex w-full bg-black text-white relative pt mb-2"
         onClick={() => setExpanded((e) => !e)}
       >
         <img
