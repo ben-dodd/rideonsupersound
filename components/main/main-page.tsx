@@ -1,20 +1,12 @@
-import { useSession } from "next-auth/client";
-import { useAccount } from "@/lib/swr-hooks";
 import { useAtom } from "jotai";
-import { clerkAtom, menuDisplayAtom, pageAtom } from "@/lib/atoms";
+import { pageAtom } from "@/lib/atoms";
 
 import Nav from "@/components/nav";
 import Menu from "@/components/menu";
 import SellScreen from "@/components/sell";
-import SignOutButton from "@/components/button/sign-out-button";
 
 export default function MainPage() {
   // Get google auth details
-  const [session] = useSession();
-  const { account } = useAccount(session?.user?.email);
-
-  const [clerk] = useAtom(clerkAtom);
-  const [menuDisplay] = useAtom(menuDisplayAtom);
   const [page] = useAtom(pageAtom);
 
   return (

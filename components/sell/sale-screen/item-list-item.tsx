@@ -12,7 +12,7 @@ type SellListItemProps = {
   cartItem: SaleItemObject;
 };
 
-export default function SellListItem({ cartItem }: SellListItemProps) {
+export default function ItemListItem({ cartItem }: SellListItemProps) {
   const { inventory } = useInventory();
   const [item, setItem] = useState(null);
   useEffect(() => {
@@ -22,13 +22,14 @@ export default function SellListItem({ cartItem }: SellListItemProps) {
   }, [inventory]);
 
   return (
-    <div className="flex w-full bg-blue-100 text-black relative pt">
+    <div className="flex w-full relative pt mb-2">
       <img
         className="w-20 h-20"
         src={
           item?.is_gift_card
-            ? "/img/giftCard.png"
-            : item?.image_url || "/img/default.png"
+            ? `${process.env.NEXT_PUBLIC_RESOURCE_URL}img/giftCard.png`
+            : item?.image_url ||
+              `${process.env.NEXT_PUBLIC_RESOURCE_URL}img/default.png`
         }
         alt={item?.title || "Inventory image"}
       />
@@ -36,7 +37,13 @@ export default function SellListItem({ cartItem }: SellListItemProps) {
         {getItemSku(item)}
       </div>
       <div className="flex flex-col w-full p-2 justify-between">
-        <div className="text-xs pl-1">{getItemTitle(item)}</div>
+        <div className="text-sm pl-1">
+          {item?.is_gift_card
+            ? item?.gift_card_code
+            : item?.is_misc_item
+            ? item?.misc_item_description
+            : getItemTitle(item)}
+        </div>
         <div className="text-red-500 self-end">
           {getCartItemSummary(item, cartItem)}
         </div>

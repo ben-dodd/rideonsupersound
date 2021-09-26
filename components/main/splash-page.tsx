@@ -5,16 +5,18 @@ import { ClerkObject } from "@/lib/types";
 
 export default function SplashPage({ clerks }) {
   return (
-    <div className="flex flex-col max-w-screen-md sm:w-full sm:h-full mx-auto bg-blue-100">
-      <div className="p-8 text-center text-xl font-bold text-black">
-        CHOOSE YOUR STORE CLERK
+    <div className="bg-blue-100 h-screen">
+      <div className="flex flex-col max-w-screen-md sm:w-full sm:h-full mx-auto">
+        <div className="p-8 text-center text-xl font-bold text-black">
+          CHOOSE YOUR STORE CLERK
+        </div>
+        <div className="grid md:grid-cols-3 gap-8 place-items-center align-center mb-8">
+          {clerks?.map((c: ClerkObject) => (
+            <Clerk key={c?.id} clerk={c} />
+          ))}
+        </div>
+        <SignOutButton />
       </div>
-      <div className="grid md:grid-cols-3 gap-8 place-items-center align-center mb-8">
-        {clerks?.map((c: ClerkObject) => (
-          <Clerk key={c?.id} clerk={c} />
-        ))}
-      </div>
-      <SignOutButton />
     </div>
   );
 }

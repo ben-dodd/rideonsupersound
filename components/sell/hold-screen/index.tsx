@@ -9,6 +9,7 @@ import {
   showCreateContactAtom,
 } from "@/lib/atoms";
 import { ContactObject } from "@/lib/types";
+import { saveHoldToDatabase } from "@/lib/db-functions";
 import TextField from "@/components/inputs/text-field";
 import CreateableSelect from "@/components/inputs/createable-select";
 import ListItem from "./list-item";
@@ -33,28 +34,7 @@ export default function HoldScreen() {
     cart?.items.forEach(
       // Create hold for each item
       async (cartItem) => {
-        try {
-          const res = await fetch("/api/create-hold", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              contact_id: cart?.contact_id,
-              item_id: cartItem?.item_id,
-              quantity: cartItem?.quantity,
-              vendor_discount: cartItem?.vendor_discount,
-              store_discount: cartItem?.store_discount,
-              hold_period: holdPeriod,
-              started_by: clerk?.id,
-              note: note,
-            }),
-          });
-          const json = await res.json();
-          if (!res.ok) throw Error(json.message);
-        } catch (e) {
-          throw Error(e.message);
-        }
+        saveHoldToDatabase(cart, cartItem, holdPeriod, note, clerk);
       }
     );
     // Reset vars and return to inventory scroll

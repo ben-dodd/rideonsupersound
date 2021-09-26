@@ -3,7 +3,11 @@ import AddIcon from "@material-ui/icons/Add";
 export default function MiscItem() {
   return (
     <div className="flex w-full mb-2 bg-blue-100">
-      <img className="w-32 h-32" src={"/img/default.png"} alt={"Misc. Item"} />
+      <img
+        className="w-32 h-32"
+        src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/default.png`}
+        alt={"Misc. Item"}
+      />
       <div className="ml-2">
         <div className="font-bold">MISC ITEM</div>
         <div className="text-xs">

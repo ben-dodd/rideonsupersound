@@ -3,6 +3,11 @@ import { useAtom } from "jotai";
 import { useInventory } from "@/lib/swr-hooks";
 import { getTotalPrice, getTotalStoreCut } from "@/lib/data-functions";
 import {
+  saveSaleToDatabase,
+  deleteSaleFromDatabase,
+  deleteSaleItemFromDatabase,
+} from "@/lib/db-functions";
+import {
   cartAtom,
   showCartAtom,
   showSaleScreenAtom,
@@ -24,7 +29,7 @@ export default function ShoppingCart() {
   const { inventory } = useInventory();
   const totalPrice = getTotalPrice(cart, inventory);
   const storeCut = getTotalStoreCut(cart, inventory);
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const disableButtons =
     loading || !(cart?.items && Object.keys(cart?.items).length > 0);
   const [refresh, setRefresh] = useState(0);
@@ -99,110 +104,31 @@ export default function ShoppingCart() {
 
   async function loadSale() {
     // setLoading(true);
-    setShowSaleScreen(true);
     // Create new sale in DB or update sale if sale has 'id' property
-    if (!cart?.id) {
-      try {
-        let newCart = cart;
-        const res = await fetch("/api/create-sale", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            contact_id: cart?.contact_id || null,
-            state: "in_progress",
-            sale_opened_by: clerk?.id,
-            weather: JSON.stringify(cart?.weather) || "",
-            geo_latitude: cart?.geo_latitude || null,
-            geo_longitude: cart?.geo_longitude || null,
-            note: cart?.note || null,
-          }),
-        });
-        const json = await res.json();
-        if (!res.ok) throw Error(json.message);
-        newCart = { ...newCart, id: json?.insertId };
-
-        let newItems = [];
-        cart?.items.forEach(async (item) => {
-          let newItem = item;
-          try {
-            const res2 = await fetch("/api/create-sale-item", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                sale_id: json?.insertId,
-                item_id: item?.item_id,
-                quantity: item?.quantity,
-                vendor_discount: item?.vendor_discount || null,
-                store_discount: item?.store_discount || null,
-                note: item?.note || null,
-              }),
-            });
-            const json2 = await res2.json();
-            if (!res2.ok) throw Error(json2.message);
-            newItem = { ...newItem, id: json2?.insertId };
-            newItems.push(newItem);
-            setCart({ ...newCart, items: newItems });
-          } catch (e) {
-            throw Error(e.message);
-          }
-        });
-        // console.log(cart);
-        // console.log({ ...newCart, items: newItems });
-        // console.log(cart);
-        // setLoading(false);
-      } catch (e) {
-        throw Error(e.message);
-      }
-    } else {
+    try {
+      await saveSaleToDatabase(cart, clerk, "in_progress", setCart);
+      setShowSaleScreen(true);
+      // console.log(cart);
+      // console.log({ ...newCart, items: newItems });
+      // console.log(cart);
+      // setLoading(false);
+    } catch (e) {
+      throw Error(e.message);
     }
   }
 
   async function deleteCartItem(itemId: string) {
     let newItems = cart?.items.filter((i) => i?.item_id !== parseInt(itemId));
-    if (cart?.id) {
+    if (cart?.id)
       // Cart has been saved to the database, delete sale_item
-      try {
-        const res = await fetch("/api/delete-sale-item", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            sale_id: cart?.id,
-            item_id: parseInt(itemId),
-          }),
-        });
-        const json = await res.json();
-        if (!res.ok) throw Error(json.message);
-      } catch (e) {
-        throw Error(e.message);
-      }
-    }
+      deleteSaleItemFromDatabase(cart?.id, parseInt(itemId));
     // if (newCart.id) {
     // Cart is a saved sale, delete from db
     if ((cart?.items || []).length < 1) {
       // No items left, delete cart
       setShowCart(false);
       // TODO Any transactions need to be refunded.
-      try {
-        const res = await fetch("/api/delete-sale", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            sale_id: cart?.id,
-          }),
-        });
-        const json = await res.json();
-        if (!res.ok) throw Error(json.message);
-      } catch (e) {
-        throw Error(e.message);
-      }
+      deleteSaleFromDatabase(cart?.id);
     }
     setCart({ ...cart, items: newItems });
     setRefresh(refresh + 1);

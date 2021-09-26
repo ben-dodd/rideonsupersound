@@ -172,7 +172,7 @@ export default function Menu() {
     <div
       className={`w-0 overflow-y-auto flex flex-col h-menu justify-between bg-white z-50 flex-shrink-0 whitespace-pre relative ${
         menuDisplay && "w-full "
-      }sm:w-full sm:w-icons sm:border-r sm:shadow-lg lg:w-1/5 transition-width duration-200 `}
+      }sm:w-full sm:w-icons sm:border-r sm:shadow-lg lg:w-1/6 transition-width duration-200 `}
     >
       {menu.map((list, i) => (
         <ul key={i}>
@@ -201,7 +201,7 @@ export default function Menu() {
                   {item?.badge ? (
                     <div className="relative">
                       {item?.icon}
-                      <div className="justify-center items-center absolute -top-1 -right-2 h-5 w-5 bg-green-400 text-white text-xs rounded-full">
+                      <div className="flex justify-center items-center absolute -top-1 -right-2 h-5 w-5 bg-green-400 text-white text-xs rounded-full">
                         {item?.badge}
                       </div>
                     </div>

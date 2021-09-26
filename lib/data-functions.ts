@@ -3,6 +3,8 @@ import {
   SaleObject,
   SaleItemObject,
   TransactionObject,
+  VendorSaleItemObject,
+  VendorPayment,
 } from "@/lib/types";
 
 export function getItemSku(item: InventoryObject) {
@@ -159,6 +161,27 @@ export function getRemainingBalance(
   return totalPrice - totalTransactions;
 }
 
+export function getTotalOwing(
+  totalPayments: VendorPayment[],
+  totalSales: VendorSaleItemObject[]
+) {
+  console.log(totalPayments);
+  console.log(totalSales);
+  const totalPaid = totalPayments.reduce(
+    (acc: number, payment: VendorPayment) => acc + payment?.amount,
+    0
+  );
+
+  const totalSell: any = totalSales.reduce(
+    (acc: number, sale: VendorSaleItemObject) =>
+      acc +
+      (sale?.quantity * sale?.vendor_cut * (100 - sale?.vendor_discount || 0)) /
+        100,
+    0
+  );
+  return totalSell - totalPaid;
+}
+
 export function getGeolocation() {
   let geolocation = null;
   if (navigator.geolocation) {
@@ -171,4 +194,38 @@ export function getGeolocation() {
     });
   }
   return geolocation;
+}
+
+export function convertDegToCardinal(deg: number) {
+  const cardinalDirections = {
+    N: [348.75, 360],
+    NN: [0, 11.25],
+    NNE: [11.25, 33.75],
+    NE: [33.75, 56.25],
+    ENE: [56.25, 78.75],
+    E: [78.75, 101.25],
+    ESE: [101.25, 123.75],
+    SE: [123.75, 146.25],
+    SSE: [146.25, 168.75],
+    S: [168.75, 191.25],
+    SSW: [191.25, 213.75],
+    SW: [213.75, 236.25],
+    WSW: [236.25, 258.75],
+    W: [258.75, 281.25],
+    WNW: [281.25, 303.75],
+    NW: [303.75, 326.25],
+    NNW: [326.25, 348.75],
+  };
+
+  let cardinal = null;
+
+  Object.entries(cardinalDirections).forEach(([k, v]) => {
+    if (deg >= v[0] && deg < v[1]) cardinal = k;
+    if (cardinal == "NN") cardinal = "N";
+  });
+  return cardinal;
+}
+
+export function convertMPStoKPH(mps: number) {
+  return mps * 3.6;
 }

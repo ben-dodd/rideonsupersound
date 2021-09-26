@@ -52,8 +52,9 @@ export default function SellListItem({
           className="w-20 h-20"
           src={
             item?.is_gift_card
-              ? "/img/giftCard.png"
-              : item?.image_url || "/img/default.png"
+              ? `${process.env.NEXT_PUBLIC_RESOURCE_URL}img/giftCard.png`
+              : item?.image_url ||
+                `${process.env.NEXT_PUBLIC_RESOURCE_URL}img/default.png`
           }
           alt={item?.title || "Inventory image"}
         />
@@ -61,7 +62,7 @@ export default function SellListItem({
           {getItemSku(item)}
         </div>
         <div className="flex flex-col w-full p-2 justify-between">
-          <div className="text-xs pl-1">
+          <div className="text-sm pl-1">
             {item?.is_gift_card
               ? item?.gift_card_code
               : item?.is_misc_item

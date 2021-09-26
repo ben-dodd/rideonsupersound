@@ -3,12 +3,17 @@ import Image from "next/image";
 
 import SignInButton from "@/components/button/sign-in-button";
 
-export default function SignIn({ account }) {
+export default function SignIn() {
+  console.log("Sign in");
   const [session] = useSession();
   return (
     <div className="flex flex-col h-screen justify-center">
       <div className="mx-auto mb-8">
-        <Image src="/logo_400.png" height={200} width={200} />
+        <Image
+          src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/logo_400.png`}
+          height={200}
+          width={200}
+        />
       </div>
       <SignInButton />
       {session && (

@@ -85,6 +85,7 @@ module.exports = {
       height: {
         nav: "4rem",
         menu: `calc(100vh - 4rem)`,
+        menusm: `calc(100vh - 5rem)`,
         search: "4rem",
         inventory: `calc(100vh - 8rem)`,
       },

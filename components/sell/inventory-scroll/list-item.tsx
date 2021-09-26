@@ -39,7 +39,10 @@ export default function ListItem({ item }: ListItemProps) {
       </div>
       <img
         className="w-32 h-32"
-        src={item?.image_url || "/img/default.png"}
+        src={
+          item?.image_url ||
+          `${process.env.NEXT_PUBLIC_RESOURCE_URL}img/default.png`
+        }
         alt={item?.title || "Inventory image"}
       />
       <div className="flex flex-col justify-between pl-2 w-full">

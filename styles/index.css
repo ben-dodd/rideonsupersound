@@ -93,7 +93,7 @@
 }
 
 .icon-button-small-white {
-  @apply p-4 text-white hover:text-red-100;
+  @apply p-2 sm:p-4 text-white hover:text-red-100;
 }
 
 .square-button {

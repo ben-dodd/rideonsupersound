@@ -5,6 +5,7 @@ import {
   showHoldAtom,
   showCreateContactAtom,
 } from "@/lib/atoms";
+import { useInventory } from "@/lib/swr-hooks";
 import { useSwipeable } from "react-swipeable";
 
 import SearchBar from "./sell-search-bar";
@@ -21,6 +22,7 @@ export default function SellScreen() {
   const [showCreateContact, setShowCreateContact] = useAtom(
     showCreateContactAtom
   );
+  useInventory();
   const handlers = useSwipeable({
     onSwipedRight: () =>
       showSaleScreen

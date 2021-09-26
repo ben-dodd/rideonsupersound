@@ -20,7 +20,9 @@ function Clerk({ clerk }) {
       <img
         className="bg-white cursor-pointer w-full shadow-md rounded-full transform hover:scale-105 hover:shadow-2xl"
         // src={`${image ? URL.createObjectURL(blob) : "/clerk/guest.png"}`}
-        src={clerk?.name ? `/clerk/${clerk.name}.png` : "/clerk/guest.png"}
+        src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/clerk/${
+          clerk?.name || "Guest"
+        }.png`}
         alt={clerk?.name}
         height={200}
         width={200}

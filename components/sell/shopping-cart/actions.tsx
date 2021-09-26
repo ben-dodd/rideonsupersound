@@ -1,5 +1,8 @@
 import { useState } from "react";
+import { useAtom } from "jotai";
 
+import { cartAtom, clerkAtom, showCartAtom } from "@/lib/atoms";
+import { saveSaleToDatabase } from "@/lib/db-functions";
 // Material UI Icons
 import DiscardSaleIcon from "@material-ui/icons/Close";
 import RetrieveSaleIcon from "@material-ui/icons/FolderOpen";
@@ -7,11 +10,27 @@ import SaveSaleIcon from "@material-ui/icons/Save";
 // import DeleteSaleIcon from "@material-ui/icons/Delete";
 
 export default function ShoppingCartActions() {
+  const [clerk] = useAtom(clerkAtom);
+  const [cart, setCart] = useAtom(cartAtom);
+  const [, setShowCart] = useAtom(showCartAtom);
   const [, setAnchorEl] = useState(null);
+  function onClickDiscardSale() {
+    setCart({ id: null, items: [] });
+    setShowCart(false);
+  }
+
+  async function onClickSaveSale() {
+    // Create new sale in DB or update sale if sale has 'id' property
+    saveSaleToDatabase(cart, clerk, "parked");
+    setCart({ id: null, items: [] });
+    setShowCart(false);
+  }
+
   return (
     <div>
       <button
         className={"icon-button-small-white relative"}
+        disabled
         onClick={() => setAnchorEl((e: boolean) => !e)}
       >
         <RetrieveSaleIcon />
@@ -57,10 +76,10 @@ export default function ShoppingCartActions() {
             <div>NO SAVED SALES</div>
           )}
         </div>*/}
-      <button className="icon-button-small-white">
+      <button className="icon-button-small-white" onClick={onClickSaveSale}>
         <SaveSaleIcon />
       </button>
-      <button className="icon-button-small-white">
+      <button className="icon-button-small-white" onClick={onClickDiscardSale}>
         <DiscardSaleIcon />
       </button>
     </div>

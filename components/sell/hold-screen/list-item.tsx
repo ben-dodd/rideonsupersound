@@ -26,8 +26,9 @@ export default function SellListItem({ cartItem }: HoldListItemProps) {
         className="w-20 h-20"
         src={
           item?.is_gift_card
-            ? "/img/giftCard.png"
-            : item?.image_url || "/img/default.png"
+            ? `${process.env.NEXT_PUBLIC_RESOURCE_URL}img/giftCard.png`
+            : item?.image_url ||
+              `${process.env.NEXT_PUBLIC_RESOURCE_URL}img/default.png`
         }
         alt={item?.title || "Inventory image"}
       />

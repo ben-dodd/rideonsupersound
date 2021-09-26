@@ -6,10 +6,15 @@ import SignIn from "./api/auth/signin";
 export default function IndexPage() {
   const [session, sessionLoading] = useSession();
   const { account } = useAccount(session?.user?.email);
+  console.log(session);
+  console.log(account);
+  console.log(account?.is_authenticated);
+  console.log(sessionLoading);
+  console.log(session && !account);
 
   return (
     <>
-      {sessionLoading || (session && !account) ? (
+      {sessionLoading ? (
         <div className="loading-screen">
           <div className="loading-icon" />
         </div>
@@ -17,12 +22,10 @@ export default function IndexPage() {
         account?.is_authenticated ? (
           <LandingPage />
         ) : (
-          <SignIn account={account} />
+          <SignIn />
         )
       ) : (
-        <>
-          <SignIn account={account} />
-        </>
+        <SignIn />
       )}
     </>
   );
