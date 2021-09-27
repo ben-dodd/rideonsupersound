@@ -102,9 +102,9 @@ export default function Acct() {
               acctPayment,
               remainingBalance,
               "acct",
+              mutateSaleTransactions,
               vendor
             );
-            mutateSaleTransactions();
             setSubmitting(false);
             setPaymentDialog(null);
           }}

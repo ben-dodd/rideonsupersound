@@ -2,17 +2,17 @@ import { NextApiHandler } from "next";
 import { query } from "../../lib/db";
 
 const handler: NextApiHandler = async (req, res) => {
-  console.log(req.body);
-  const { sale_item_id } = req.body;
+  const { sale_id, contact_id, state, note } = req.body;
   try {
     const results = await query(
-      // `
-      // DELETE FROM sale_item WHERE sale_id = ? AND item_id = ?
-      // `,
       `
-      UPDATE sale_item SET is_deleted = 1 WHERE id = ?
-      `,
-      [sale_item_id]
+      UPDATE sale
+      SET
+        contact_id = ${contact_id || null},
+        state = ${state ? `"${state}"` : null},
+        note = ${note ? `"${note}"` : null}
+      WHERE id = ${sale_id}
+      `
     );
     return res.json(results);
   } catch (e) {

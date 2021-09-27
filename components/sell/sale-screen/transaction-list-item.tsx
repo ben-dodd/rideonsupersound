@@ -1,13 +1,22 @@
-import { TransactionObject, GiftCardObject, VendorObject } from "@/lib/types";
-import { useGiftCard, useVendorFromVendorPayment } from "@/lib/swr-hooks";
+import {
+  TransactionObject,
+  GiftCardObject,
+  VendorObject,
+  SaleObject,
+} from "@/lib/types";
+import {
+  useGiftCard,
+  useVendorFromVendorPayment,
+  useSaleTransactions,
+} from "@/lib/swr-hooks";
+import { deleteSaleTransactionFromDatabase } from "@/lib/db-functions";
 import { format, parseISO } from "date-fns";
 import nz from "date-fns/locale/en-NZ";
 import DeleteIcon from "@material-ui/icons/Delete";
 
 type TransactionListItemProps = {
   transaction: TransactionObject;
-  // sale: SaleItemObject;
-  onDelete: Function;
+  sale: SaleObject;
 };
 
 type UseGiftCardProps = {
@@ -20,14 +29,16 @@ type UseVendorProps = {
 
 export default function TransactionListItem({
   transaction,
-  onDelete,
-}: // sale,
-// onDelete,
-TransactionListItemProps) {
+  sale,
+}: TransactionListItemProps) {
   const { giftCard }: UseGiftCardProps = useGiftCard(transaction?.gift_card_id);
   const { vendor }: UseVendorProps = useVendorFromVendorPayment(
     transaction?.vendor_payment_id
   );
+  const { mutateSaleTransactions } = useSaleTransactions(sale?.id);
+  const onClickDelete = () => {
+    deleteSaleTransactionFromDatabase(transaction?.id, mutateSaleTransactions);
+  };
   return (
     <div
       className={`flex justify-end items-center mt-2 mb-3 ${
@@ -41,7 +52,7 @@ TransactionListItemProps) {
           <button
             className="bg-gray-200 hover:bg-gray-300 p-1 w-10 h-10 rounded-full mr-8"
             onClick={
-              () => null
+              onClickDelete
               // dispatch(
               //   openDialog("confirm", {
               //     title: `Delete Transaction`,

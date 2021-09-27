@@ -10,6 +10,7 @@ const handler: NextApiHandler = async (req, res) => {
         s.vendor_id,
         s.artist,
         s.title,
+        s.display_as,
         s.format,
         s.genre,
         s.is_new,

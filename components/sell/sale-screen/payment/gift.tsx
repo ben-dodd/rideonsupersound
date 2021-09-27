@@ -132,9 +132,9 @@ export default function Gift() {
               giftCardPayment,
               remainingBalance,
               "acct",
+              mutateSaleTransactions,
               vendor
             );
-            mutateSaleTransactions();
             setSubmitting(false);
             setPaymentDialog(null);
           }}

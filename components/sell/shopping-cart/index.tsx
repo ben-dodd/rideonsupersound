@@ -3,9 +3,11 @@ import { useAtom } from "jotai";
 import { useInventory } from "@/lib/swr-hooks";
 import { getTotalPrice, getTotalStoreCut } from "@/lib/data-functions";
 import {
-  saveSaleToDatabase,
+  saveSaleAndItemsToDatabase,
   deleteSaleFromDatabase,
   deleteSaleItemFromDatabase,
+  updateSaleItemInDatabase,
+  saveSaleItemToDatabase,
 } from "@/lib/db-functions";
 import {
   cartAtom,
@@ -46,7 +48,7 @@ export default function ShoppingCart() {
         {(cart?.items || []).length > 0 ? (
           cart.items.map((cartItem, id) => (
             <ListItem
-              key={id}
+              key={cartItem?.item_id}
               index={id}
               cartItem={cartItem}
               deleteCartItem={deleteCartItem}
@@ -106,7 +108,7 @@ export default function ShoppingCart() {
     // setLoading(true);
     // Create new sale in DB or update sale if sale has 'id' property
     try {
-      await saveSaleToDatabase(cart, clerk, "in_progress", setCart);
+      await saveSaleAndItemsToDatabase(cart, clerk, setCart);
       setShowSaleScreen(true);
       // console.log(cart);
       // console.log({ ...newCart, items: newItems });
@@ -117,11 +119,11 @@ export default function ShoppingCart() {
     }
   }
 
-  async function deleteCartItem(itemId: string) {
+  async function deleteCartItem(itemId: string, id: number) {
     let newItems = cart?.items.filter((i) => i?.item_id !== parseInt(itemId));
-    if (cart?.id)
+    if (id)
       // Cart has been saved to the database, delete sale_item
-      deleteSaleItemFromDatabase(cart?.id, parseInt(itemId));
+      deleteSaleItemFromDatabase(id);
     // if (newCart.id) {
     // Cart is a saved sale, delete from db
     if ((cart?.items || []).length < 1) {
@@ -131,6 +133,6 @@ export default function ShoppingCart() {
       deleteSaleFromDatabase(cart?.id);
     }
     setCart({ ...cart, items: newItems });
-    setRefresh(refresh + 1);
+    // setRefresh(refresh + 1);
   }
 }

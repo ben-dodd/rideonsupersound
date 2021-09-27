@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { useAtom } from "jotai";
 import {
   useInventory,
@@ -32,15 +32,13 @@ export default function Pay() {
   const { vendor } = useVendorFromContact(cart?.contact_id);
   const { transactions } = useSaleTransactions(cart?.id);
   const [note, setNote] = useState("");
-  const totalPrice = useMemo(() => getTotalPrice(cart, inventory), [
-    cart,
-    inventory,
-    showSaleScreen,
-  ]);
-  const remainingBalance = useMemo(
-    () => getRemainingBalance(totalPrice, transactions) / 100,
-    [totalPrice, transactions]
-  );
+  const [remainingBalance, setRemainingBalance] = useState(0);
+  useEffect(() => {
+    const totalPrice = getTotalPrice(cart, inventory);
+    const remaining = getRemainingBalance(totalPrice, transactions) / 100;
+    setRemainingBalance(remaining);
+  }, [transactions]);
+
   function onClickGoBack() {
     setShowSaleScreen(false);
   }

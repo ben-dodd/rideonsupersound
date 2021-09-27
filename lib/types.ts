@@ -26,6 +26,11 @@ export interface ContactObject {
 export interface Modal {
   open: boolean;
   onClose?: Function;
+  title?: string;
+  message?: string;
+  action?: Function;
+  yesText?: string;
+  noText?: string;
 }
 
 export interface SaleObject {
@@ -50,9 +55,11 @@ export interface SaleItemObject {
   id?: number;
   sale_id?: number;
   item_id?: number;
-  quantity?: number;
-  vendor_discount?: number;
-  store_discount?: number;
+  quantity?: string;
+  vendor_discount?: string;
+  store_discount?: string;
+  is_gift_card?: boolean;
+  is_misc_item?: boolean;
   note?: string;
   is_deleted?: boolean;
 }
@@ -114,6 +121,7 @@ export interface InventoryObject {
   vendor_name?: string;
   artist?: string;
   title?: string;
+  display_as?: string;
   media?: string;
   format?: string;
   genre?: string;

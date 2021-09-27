@@ -13,7 +13,7 @@ export default function LandingPage() {
   const [session] = useSession();
   const { account } = useAccount(session?.user?.email);
   // Get clerk details
-  const { clerks, isLoading } = useAccountClerks(account?.id);
+  const { clerks, isAccountClerksLoading } = useAccountClerks(account?.id);
   const [clerk, setClerk] = useAtom(clerkAtom);
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export default function LandingPage() {
 
   return (
     <>
-      {isLoading ? (
+      {isAccountClerksLoading ? (
         <div className="loading-screen">
           <div className="loading-icon" />
         </div>

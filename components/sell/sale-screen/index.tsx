@@ -1,5 +1,6 @@
 import { useAtom } from "jotai";
-import { paymentDialogAtom } from "@/lib/atoms";
+import { paymentDialogAtom, cartAtom } from "@/lib/atoms";
+import { useInventory, useSaleTransactions } from "@/lib/swr-hooks";
 import Pay from "./pay";
 import SaleSummary from "./sale-summary";
 import Action from "./action";
@@ -9,27 +10,38 @@ import Cash from "./payment/cash";
 import Gift from "./payment/gift";
 
 export default function SaleScreen() {
+  const [cart] = useAtom(cartAtom);
   const [paymentDialog] = useAtom(paymentDialogAtom);
+  const { isInventoryLoading } = useInventory();
+  const { isSaleTransactionsLoading } = useSaleTransactions(cart?.id);
   return (
     <div className="bg-white text-black">
-      {paymentDialog === "acct" && <Acct />}
-      {paymentDialog === "card" && <Card />}
-      {paymentDialog === "cash" && <Cash />}
-      {paymentDialog === "gift" && <Gift />}
-      <div className="sm:hidden flex flex-col justify-between h-menu px-2">
-        <Pay />
-        <SaleSummary />
-        <Action />
-      </div>
-      <div className="hidden sm:flex h-menu">
-        <div className="w-2/3">
-          <SaleSummary />
+      {isInventoryLoading || isSaleTransactionsLoading ? (
+        <div className="loading-screen">
+          <div className="loading-icon" />
         </div>
-        <div className="w-1/3 p-2 flex flex-col justify-between">
-          <Pay />
-          <Action />
-        </div>
-      </div>
+      ) : (
+        <>
+          {paymentDialog === "acct" && <Acct />}
+          {paymentDialog === "card" && <Card />}
+          {paymentDialog === "cash" && <Cash />}
+          {paymentDialog === "gift" && <Gift />}
+          <div className="sm:hidden flex flex-col justify-between h-menu px-2">
+            <Pay />
+            <SaleSummary />
+            <Action />
+          </div>
+          <div className="hidden sm:flex h-menu">
+            <div className="w-2/3">
+              <SaleSummary />
+            </div>
+            <div className="w-1/3 p-2 flex flex-col justify-between">
+              <Pay />
+              <Action />
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

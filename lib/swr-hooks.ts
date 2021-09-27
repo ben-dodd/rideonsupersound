@@ -18,8 +18,8 @@ export function useAccount(email: string) {
   const { data, error } = useSWR(`/api/get-account?email=${email}`, fetcher);
   return {
     account: data && data[0],
-    isLoading: !error && !data,
-    isError: error,
+    isAccountLoading: !error && !data,
+    isAccountError: error,
   };
 }
 
@@ -30,8 +30,8 @@ export function useAccountClerks(account_id: number) {
   );
   return {
     clerks: data,
-    isLoading: !error && !data,
-    isError: error,
+    isAccountClerksLoading: !error && !data,
+    isAccountClerksError: error,
   };
 }
 
@@ -39,8 +39,8 @@ export function useClerks() {
   const { data, error } = useSWR(`/api/get-clerks`, fetcher);
   return {
     clerks: data,
-    isLoading: !error && !data,
-    isError: error,
+    isClerksLoading: !error && !data,
+    isClerksError: error,
   };
 }
 
@@ -51,8 +51,8 @@ export function useClerkImage(clerk_image_id: number) {
   );
   return {
     image: data && data[0]?.image,
-    isLoading: !error && !data,
-    isError: error,
+    isClerkImageLoading: !error && !data,
+    isClerkImageError: error,
   };
 }
 
@@ -60,8 +60,8 @@ export function useInventory() {
   const { data, error } = useSWR(`/api/get-inventory`, fetcher);
   return {
     inventory: data,
-    isLoading: !error && !data,
-    isError: error,
+    isInventoryLoading: !error && !data,
+    isInventoryError: error,
   };
 }
 
@@ -75,8 +75,8 @@ export function useSaleTransactions(sale_id: number) {
   );
   return {
     transactions: data,
-    isLoading: !error && !data,
-    isError: error,
+    isSaleTransactionsLoading: !error && !data,
+    isSaleTransactionsError: error,
     mutateSaleTransactions: mutate,
   };
 }
@@ -109,6 +109,15 @@ export function useSaleItems(sale_id: number) {
     isLoading: !error && !data,
     isError: error,
     mutateTotalSales: mutate,
+  };
+}
+
+export function useVendors() {
+  const { data, error } = useSWR(`/api/get-vendors`, fetcher);
+  return {
+    vendors: data,
+    isLoading: !error && !data,
+    isError: error,
   };
 }
 
@@ -203,9 +212,13 @@ export function useGiftCard(gift_card_id: number) {
 }
 
 export function useContacts() {
-  const { data, error } = useSWR(`/api/get-contacts`, fetcher, {
-    refreshInterval: 5000,
-  });
+  const { data, error } = useSWR(
+    `/api/get-contacts`,
+    fetcher
+    //   {
+    //   refreshInterval: 5000,
+    // }
+  );
   return {
     contacts: data,
     isLoading: !error && !data,

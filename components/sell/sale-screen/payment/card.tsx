@@ -72,9 +72,9 @@ export default function Cash() {
               clerk,
               cardPayment,
               remainingBalance,
-              "card"
+              "card",
+              mutateSaleTransactions
             );
-            mutateSaleTransactions();
             setSubmitting(false);
             setPaymentDialog(null);
           }}

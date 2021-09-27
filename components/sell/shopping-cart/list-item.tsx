@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 import { useInventory } from "@/lib/swr-hooks";
 
+import Image from "next/image";
 import TextField from "@/components/inputs/text-field";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { InventoryObject, SaleItemObject } from "@/lib/types";
@@ -12,6 +13,7 @@ import {
   getCartItemSummary,
   writeCartItemPriceTotal,
   writeCartItemPriceBreakdown,
+  getImageSrc,
 } from "@/lib/data-functions";
 
 type SellListItemProps = {
@@ -36,7 +38,7 @@ export default function SellListItem({
   const [expanded, setExpanded] = useState(false);
 
   function onChangeCart(e: any, property: string) {
-    let newCart = cart;
+    let newCart = { ...cart };
     if (newCart?.items && newCart?.items[index])
       newCart.items[index][property] = e.target.value;
     setCart(newCart);
@@ -48,18 +50,18 @@ export default function SellListItem({
         className="flex w-full bg-black text-white relative pt mb-2"
         onClick={() => setExpanded((e) => !e)}
       >
-        <img
-          className="w-20 h-20"
-          src={
-            item?.is_gift_card
-              ? `${process.env.NEXT_PUBLIC_RESOURCE_URL}img/giftCard.png`
-              : item?.image_url ||
-                `${process.env.NEXT_PUBLIC_RESOURCE_URL}img/default.png`
-          }
-          alt={item?.title || "Inventory image"}
-        />
-        <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white flex justify-center items-center text-sm">
-          {getItemSku(item)}
+        <div className="w-20">
+          <div className="w-20 h-20 relative">
+            <Image
+              layout="fill"
+              objectFit="cover"
+              src={getImageSrc(item)}
+              alt={item?.title || "Inventory image"}
+            />
+            <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white text-sm flex justify-center items-center">
+              {getItemSku(item)}
+            </div>
+          </div>
         </div>
         <div className="flex flex-col w-full p-2 justify-between">
           <div className="text-sm pl-1">
@@ -88,7 +90,7 @@ export default function SellListItem({
                 selectOnFocus
                 min={1}
                 inputType="number"
-                valueNum={cartItem?.quantity}
+                valueNum={parseInt(cartItem?.quantity)}
                 onChange={(e: any) => onChangeCart(e, "quantity")}
               />
               <TextField
@@ -98,7 +100,7 @@ export default function SellListItem({
                 max={100}
                 inputType="number"
                 endAdornment="%"
-                valueNum={cartItem?.vendor_discount}
+                valueNum={parseInt(cartItem?.vendor_discount)}
                 onChange={(e: any) => onChangeCart(e, "vendor_discount")}
               />
               <TextField
@@ -108,7 +110,7 @@ export default function SellListItem({
                 max={100}
                 inputType="number"
                 endAdornment="%"
-                valueNum={cartItem?.store_discount}
+                valueNum={parseInt(cartItem?.store_discount)}
                 onChange={(e: any) => onChangeCart(e, "store_discount")}
               />
             </div>

@@ -21,6 +21,24 @@ export function getItemTitle(item: InventoryObject) {
   }`;
 }
 
+export function getImageSrc(item: InventoryObject) {
+  let src = "default";
+  if (item?.is_gift_card) src = "giftCard";
+  if (item?.format === "Zine") src = "zine";
+  else if (item?.format === "Comics") src = "comic";
+  else if (item?.format === "Book") src = "book";
+  else if (item?.format === '7"') src = "7inch";
+  else if (item?.format === '10"') src = "10inch";
+  else if (item?.format === "LP") src = "LP";
+  else if (item?.format === "CD") src = "CD";
+  else if (item?.format === "Cassette") src = "cassette";
+  else if (item?.format === "Badge") src = "badge";
+  else if (item?.format === "Shirt") src = "shirt";
+  return (
+    item?.image_url || `${process.env.NEXT_PUBLIC_RESOURCE_URL}img/${src}.png`
+  );
+}
+
 export function getCartItemSummary(
   item: InventoryObject,
   cartItem: SaleItemObject
@@ -31,9 +49,13 @@ export function getCartItemSummary(
     : item?.is_misc_item
     ? item?.misc_item_description
     : `${cartItem?.quantity}${
-        cartItem?.vendor_discount > 0 ? ` x V${cartItem?.vendor_discount}%` : ""
+        parseInt(cartItem?.vendor_discount) > 0
+          ? ` x V${cartItem?.vendor_discount}%`
+          : ""
       }${
-        cartItem?.store_discount > 0 ? ` x S${cartItem?.store_discount}%` : ""
+        parseInt(cartItem?.store_discount) > 0
+          ? ` x S${cartItem?.store_discount}%`
+          : ""
       } x $${(item?.total_sell / 100).toFixed(2)}`;
 }
 
@@ -53,6 +75,15 @@ export function writeCartItemPriceTotal(
     : item?.is_misc_item
     ? `$${(item?.misc_item_amount / 100).toFixed(2)}`
     : `$${(getItemPrice(item, cartItem) / 100).toFixed(2)}`;
+}
+
+export function writeInventoryDisplayName(item: InventoryObject) {
+  if (!item || !(item?.artist || item?.title)) return "Untitled";
+  let str = item?.sku || "";
+  if (item?.display_as) return `${str}${item?.display_as}`;
+  return `${str}${item?.artist}${item?.artist && item?.title && " - "}${
+    item?.title
+  }`;
 }
 
 export function filterInventory({ inventory, search }) {
@@ -100,14 +131,14 @@ export function filterInventory({ inventory, search }) {
 export function getItemPrice(item: InventoryObject, cartItem: SaleItemObject) {
   let vendorDiscountFactor = 100,
     storeDiscountFactor = 100;
-  if (cartItem?.vendor_discount > 0)
-    vendorDiscountFactor = 100 - cartItem?.vendor_discount;
-  if (cartItem.store_discount > 0)
-    storeDiscountFactor = 100 - cartItem?.store_discount;
+  if (parseInt(cartItem?.vendor_discount) > 0)
+    vendorDiscountFactor = 100 - parseInt(cartItem?.vendor_discount);
+  if (parseInt(cartItem.store_discount) > 0)
+    storeDiscountFactor = 100 - parseInt(cartItem?.store_discount);
   let storeCut =
     ((item?.total_sell - item?.vendor_cut) * storeDiscountFactor) / 100;
   let vendorCut = (item?.vendor_cut * vendorDiscountFactor) / 100;
-  return (storeCut + vendorCut) * cartItem?.quantity;
+  return (storeCut + vendorCut) * parseInt(cartItem?.quantity);
 }
 
 export function getItemStoreCut(
@@ -116,11 +147,11 @@ export function getItemStoreCut(
 ) {
   if (item?.is_gift_card || item?.is_misc_item) return 0;
   let storeDiscountFactor = 100;
-  if (cartItem?.store_discount > 0)
-    storeDiscountFactor = 100 - cartItem?.store_discount;
+  if (parseInt(cartItem?.store_discount) > 0)
+    storeDiscountFactor = 100 - parseInt(cartItem?.store_discount);
   return (
     (((item?.total_sell - item?.vendor_cut) * storeDiscountFactor) / 100) *
-    cartItem?.quantity
+    parseInt(cartItem?.quantity)
   );
 }
 
@@ -151,13 +182,10 @@ export function getRemainingBalance(
   transactions: TransactionObject[]
 ) {
   if (!totalPrice || !transactions) return null;
-  console.log(transactions);
   // return totalPrice;
   const totalTransactions = transactions
     .filter((transaction) => !transaction.is_deleted)
     .reduce((acc, transaction) => acc + transaction?.total_amount, 0);
-  console.log(totalPrice);
-  console.log(totalTransactions);
   return totalPrice - totalTransactions;
 }
 
@@ -180,6 +208,25 @@ export function getTotalOwing(
     0
   );
   return totalSell - totalPaid;
+}
+
+export function getGrossProfit(item: InventoryObject) {
+  let sellNum = item?.total_sell || 0,
+    costNum = item?.vendor_cut || 0;
+  if (sellNum > 0) return `$${(sellNum - costNum).toFixed(2)}`;
+  else return "";
+}
+
+export function getProfitMargin(item: InventoryObject) {
+  let sellNum = item?.total_sell || 0,
+    costNum = item?.vendor_cut || 0;
+  if (sellNum > 0)
+    return `${(((sellNum - costNum) / sellNum) * 100).toFixed(1)}%`;
+  else return "";
+}
+
+export function getItemQuantity(item: InventoryObject) {
+  return item?.quantity_received - item?.quantity_returned;
 }
 
 export function getGeolocation() {

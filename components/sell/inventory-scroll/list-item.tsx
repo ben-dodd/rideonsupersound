@@ -1,12 +1,19 @@
 import { useAtom } from "jotai";
 
+import Image from "next/image";
+
 import AddIcon from "@material-ui/icons/Add";
 import InfoIcon from "@material-ui/icons/Info";
 
 import { InventoryObject, SaleObject } from "@/lib/types";
-import { cartAtom, showCartAtom, clerkAtom } from "@/lib/atoms";
+import { cartAtom, showCartAtom, clerkAtom, itemScreenAtom } from "@/lib/atoms";
 import { useWeather } from "@/lib/swr-hooks";
-import { getItemSku, getGeolocation } from "@/lib/data-functions";
+import {
+  getItemSku,
+  getGeolocation,
+  getItemQuantity,
+  getImageSrc,
+} from "@/lib/data-functions";
 
 type ListItemProps = {
   item: InventoryObject;
@@ -15,47 +22,53 @@ type ListItemProps = {
 export default function ListItem({ item }: ListItemProps) {
   const [cart, setCart] = useAtom(cartAtom);
   const [, setShowCart] = useAtom(showCartAtom);
+  const [, openInventoryModal] = useAtom(itemScreenAtom);
   const [clerk] = useAtom(clerkAtom);
   const geolocation = getGeolocation();
   const { weather } = useWeather();
+  const clickAddToCart = () =>
+    addItemToCart(
+      item,
+      cart,
+      setCart,
+      clerk?.id,
+      setShowCart,
+      weather,
+      geolocation
+    );
+  const clickOpenInventoryModal = () => openInventoryModal(item);
+  // Disable mobile only for now
+  // <div
+  //   className="flex w-full mb-2 bg-blue-100 relative"
+  //   onClick={clickAddToCart}
+  //   onDoubleClick={clickOpenInventoryModal}
+  // >
   return (
-    <div
-      className="flex w-full mb-2 bg-blue-100 relative"
-      onClick={() =>
-        addItemToCart(
-          item,
-          cart,
-          setCart,
-          clerk?.id,
-          setShowCart,
-          weather,
-          geolocation
-        )
-      }
-      onDoubleClick={() => openInventoryModal(item)}
-    >
-      <div className="absolute w-32 h-8 bg-opacity-50 bg-black text-white flex justify-center items-center">
-        {getItemSku(item)}
+    <div className="flex w-full mb-2 bg-blue-100">
+      <div className="w-32">
+        <div className="w-32 h-32 relative">
+          <Image
+            layout="fill"
+            objectFit="cover"
+            src={getImageSrc(item)}
+            alt={item?.title || "Inventory image"}
+          />
+          <div className="absolute w-32 h-8 bg-opacity-50 bg-black text-white flex justify-center items-center">
+            {getItemSku(item)}
+          </div>
+        </div>
       </div>
-      <img
-        className="w-32 h-32"
-        src={
-          item?.image_url ||
-          `${process.env.NEXT_PUBLIC_RESOURCE_URL}img/default.png`
-        }
-        alt={item?.title || "Inventory image"}
-      />
       <div className="flex flex-col justify-between pl-2 w-full">
         <div>
-          <div className="font-bold text-sm">{`${
+          <div className="font-bold text-md">{`${
             item?.title || "Untitled"
           }`}</div>
-          <div className="text-sm border-b border-gray-400">{`${
+          <div className="text-md border-b border-gray-400">{`${
             item?.artist || "Untitled"
           }`}</div>
-          <div className="text-xs">{`${item?.genre ? `${item.genre} / ` : ""}${
-            item?.format
-          } [${
+          <div className="text-sm text-green-800">{`${
+            item?.genre ? `${item.genre} / ` : ""
+          }${item?.format} [${
             item?.is_new ? "NEW" : item?.cond?.toUpperCase() || "USED"
           }]`}</div>
         </div>
@@ -63,26 +76,14 @@ export default function ListItem({ item }: ListItemProps) {
           {`${item?.vendor_name ? `Selling for ${item?.vendor_name}` : ""}`}
         </div>
         <div className="flex justify-between items-end">
-          <div className="text-md">{`${item?.quantity} in stock`}</div>
+          <div className="text-md">{`${getItemQuantity(item)} in stock`}</div>
           <div className="text-xl">{`$${((item?.total_sell || 0) / 100).toFixed(
             2
           )}`}</div>
         </div>
       </div>
       <div className="self-center pl-2 hidden sm:inline">
-        <button
-          className="icon-button-large"
-          onClick={
-            () => null
-            // addLog(
-            //   `Viewed info for stock item.`,
-            //   "inventory",
-            //   id,
-            //   currentStaff
-            // );
-            // dispatch(openDialog("inventory", { id, ...item }));
-          }
-        >
+        <button className="icon-button-large" onClick={clickOpenInventoryModal}>
           <InfoIcon style={{ fontSize: "40px" }} />
         </button>
       </div>
@@ -90,16 +91,7 @@ export default function ListItem({ item }: ListItemProps) {
         <button
           className="icon-button-large"
           disabled={!item?.total_sell}
-          onClick={
-            () => null
-            // handleItemClick({
-            //   id,
-            //   item,
-            //   cart,
-            //   currentStaff,
-            //   dispatch,
-            // })
-          }
+          onClick={clickAddToCart}
         >
           <AddIcon style={{ fontSize: "40px" }} />
         </button>
@@ -122,9 +114,9 @@ function addItemToCart(
   if (index < 0)
     newItems.push({
       item_id: item?.id,
-      quantity: 1,
+      quantity: "1",
     });
-  else newItems[index].quantity += 1;
+  else newItems[index].quantity = `${parseInt(newItems[index].quantity) + 1}`;
   setCart({
     date_sale_opened: cart?.date_sale_opened || new Date(),
     sale_opened_by: cart?.sale_opened_by || clerkId,
@@ -135,5 +127,3 @@ function addItemToCart(
   });
   setShowCart(true);
 }
-
-function openInventoryModal(item: InventoryObject) {}

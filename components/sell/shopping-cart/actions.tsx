@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 
 import { cartAtom, clerkAtom, showCartAtom } from "@/lib/atoms";
-import { saveSaleToDatabase } from "@/lib/db-functions";
+import { saveSaleAndItemsToDatabase } from "@/lib/db-functions";
 // Material UI Icons
 import DiscardSaleIcon from "@material-ui/icons/Close";
 import RetrieveSaleIcon from "@material-ui/icons/FolderOpen";
@@ -21,7 +21,7 @@ export default function ShoppingCartActions() {
 
   async function onClickSaveSale() {
     // Create new sale in DB or update sale if sale has 'id' property
-    saveSaleToDatabase(cart, clerk, "parked");
+    saveSaleAndItemsToDatabase({ ...cart, state: "parked" }, clerk);
     setCart({ id: null, items: [] });
     setShowCart(false);
   }

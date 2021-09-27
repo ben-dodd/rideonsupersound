@@ -10,7 +10,7 @@ const handler: NextApiHandler = async (req, res) => {
       // DELETE FROM sale_item WHERE sale_id = ? AND item_id = ?
       // `,
       `
-      UPDATE sale SET is_deleted = 0 WHERE id = ?
+      UPDATE sale SET is_deleted = 1 WHERE id = ?
       `,
       [sale_id]
     );

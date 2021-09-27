@@ -4,6 +4,7 @@ import { pageAtom } from "@/lib/atoms";
 import Nav from "@/components/nav";
 import Menu from "@/components/menu";
 import SellScreen from "@/components/sell";
+import ConfirmModal from "@/components/modal/confirm-modal";
 
 export default function MainPage() {
   // Get google auth details
@@ -17,6 +18,7 @@ export default function MainPage() {
         <div className="bg-green-500 h-full w-full absolute sm:static">
           {page === "sell" && <SellScreen />}
         </div>
+        <ConfirmModal />
       </div>
     </>
   );

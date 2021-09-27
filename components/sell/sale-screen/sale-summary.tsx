@@ -205,28 +205,27 @@ export default function SaleSummary() {
         {transactions?.map((transaction: TransactionObject) => (
           <TransactionListItem
             key={transaction?.id}
+            sale={cart}
             transaction={transaction}
-            onDelete={(doDelete: boolean) => {
-              return null;
-              // let transactions = {
-              //   ...get(saleDialog, "transactions", {}),
-              //   [id]: { ...payment, deleted: doDelete },
-              // };
-              // dispatch(
-              //   updateLocal("cart", {
-              //     transactions,
-              //   })
-              // );
-              // dispatch(
-              //   updateDialog("sale", {
-              //     transactions,
-              //   })
-              // );
-              // if (payment.type === "GIFT")
-              //   returnMoneyToGiftCard({ payment, giftCards, dispatch });
-              // else if (payment.type === "ACCT")
-              //   returnMoneyToAccount({ payment, contactVendor, dispatch });
-            }}
+            // let transactions = {
+            //   ...get(saleDialog, "transactions", {}),
+            //   [id]: { ...payment, deleted: doDelete },
+            // };
+            // dispatch(
+            //   updateLocal("cart", {
+            //     transactions,
+            //   })
+            // );
+            // dispatch(
+            //   updateDialog("sale", {
+            //     transactions,
+            //   })
+            // );
+            // if (payment.type === "GIFT")
+            //   returnMoneyToGiftCard({ payment, giftCards, dispatch });
+            // else if (payment.type === "ACCT")
+            //   returnMoneyToAccount({ payment, contactVendor, dispatch });
+            // }}
           />
         ))}
       </div>

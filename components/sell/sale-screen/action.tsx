@@ -1,11 +1,25 @@
 import { useMemo } from "react";
 import { useAtom } from "jotai";
-import { cartAtom } from "@/lib/atoms";
+import {
+  cartAtom,
+  clerkAtom,
+  showSaleScreenAtom,
+  showCartAtom,
+} from "@/lib/atoms";
 import { useSaleTransactions, useInventory } from "@/lib/swr-hooks";
 import { getRemainingBalance, getTotalPrice } from "@/lib/data-functions";
+import {
+  saveStockMovementToDatabase,
+  saveGiftCardToDatabase,
+  updateSaleInDatabase,
+  updateSaleItemInDatabase,
+} from "@/lib/db-functions";
 
 export default function Action() {
-  const [cart] = useAtom(cartAtom);
+  const [cart, setCart] = useAtom(cartAtom);
+  const [clerk] = useAtom(clerkAtom);
+  const [, setShowCart] = useAtom(showCartAtom);
+  const [, setShowSaleScreen] = useAtom(showSaleScreenAtom);
   const { inventory } = useInventory();
   const totalPrice = useMemo(() => getTotalPrice(cart, inventory), [
     cart,
@@ -34,6 +48,26 @@ export default function Action() {
     //    If misc item, ignore
     //    If other item, change quantity sold
     // Update sale to 'complete', add date_sale_completed, sale_completed_by
+    cart?.items.forEach((cartItem) => {
+      if (cart?.state === "layby" && !cartItem?.is_gift_card) {
+        saveStockMovementToDatabase(cartItem, clerk, "unlayby", null);
+      }
+      if (cartItem?.is_gift_card) {
+        // Add to collection
+        saveGiftCardToDatabase();
+        // Add gift card to sale items
+      } else if (!cartItem?.is_misc_item) {
+        // Do something
+        // Add misc item to sale items
+      } else {
+        if (cartItem?.id) updateSaleItemInDatabase(cartItem, cart);
+        saveStockMovementToDatabase(cartItem, clerk, "sold", null);
+      }
+    });
+    updateSaleInDatabase({ ...cart, state: "completed" });
+    setShowSaleScreen(false);
+    setCart({ id: null, items: [] });
+    setShowCart(false);
   }
   return (
     <div>
