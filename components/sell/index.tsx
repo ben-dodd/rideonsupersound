@@ -4,6 +4,7 @@ import {
   showSaleScreenAtom,
   showHoldAtom,
   showCreateContactAtom,
+  showItemScreenAtom,
 } from "@/lib/atoms";
 import { useInventory } from "@/lib/swr-hooks";
 import { useSwipeable } from "react-swipeable";
@@ -14,6 +15,7 @@ import ShoppingCart from "./shopping-cart";
 import HoldScreen from "./hold-screen";
 import CreateContactScreen from "./create-contact-screen";
 import SaleScreen from "./sale-screen";
+import InventoryItemScreen from "../inventory/inventory-item-screen";
 
 export default function SellScreen() {
   const [showCart, setShowCart] = useAtom(showCartAtom);
@@ -22,6 +24,7 @@ export default function SellScreen() {
   const [showCreateContact, setShowCreateContact] = useAtom(
     showCreateContactAtom
   );
+  const [showItemScreen] = useAtom(showItemScreenAtom);
   useInventory();
   const handlers = useSwipeable({
     onSwipedRight: () =>
@@ -71,6 +74,13 @@ export default function SellScreen() {
         } h-full w-full bg-yellow-200 sm:h-menu`}
       >
         <SaleScreen />
+      </div>
+      <div
+        className={`absolute top-0 transition-offset duration-300 ${
+          showItemScreen ? "left-0" : "left-full"
+        } h-full w-full bg-yellow-200 sm:h-menu`}
+      >
+        <InventoryItemScreen />
       </div>
     </div>
   );

@@ -20,7 +20,7 @@ import { saveTransactionToDatabase } from "@/lib/db-functions";
 export default function Acct() {
   const [clerk] = useAtom(clerkAtom);
   const [paymentDialog, setPaymentDialog] = useAtom(paymentDialogAtom);
-  const [cart] = useAtom(cartAtom);
+  const [cart, setCart] = useAtom(cartAtom);
   const { inventory } = useInventory();
   const { vendor } = useVendorFromContact(cart?.contact_id);
   const { totalPayments } = useVendorTotalPayments(cart?.contact_id);
@@ -103,6 +103,7 @@ export default function Acct() {
               remainingBalance,
               "acct",
               mutateSaleTransactions,
+              setCart,
               vendor
             );
             setSubmitting(false);

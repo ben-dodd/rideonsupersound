@@ -22,7 +22,7 @@ import { saveTransactionToDatabase } from "@/lib/db-functions";
 export default function Gift() {
   const [clerk] = useAtom(clerkAtom);
   const [paymentDialog, setPaymentDialog] = useAtom(paymentDialogAtom);
-  const [cart] = useAtom(cartAtom);
+  const [cart, setCart] = useAtom(cartAtom);
   const { inventory } = useInventory();
   const { giftCards } = useGiftCards();
   const { vendor } = useVendorFromContact(cart?.contact_id);
@@ -133,6 +133,7 @@ export default function Gift() {
               remainingBalance,
               "acct",
               mutateSaleTransactions,
+              setCart,
               vendor
             );
             setSubmitting(false);

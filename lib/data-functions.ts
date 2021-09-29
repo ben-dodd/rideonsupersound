@@ -211,8 +211,8 @@ export function getTotalOwing(
 }
 
 export function getGrossProfit(item: InventoryObject) {
-  let sellNum = item?.total_sell || 0,
-    costNum = item?.vendor_cut || 0;
+  let sellNum = item?.total_sell / 100 || 0,
+    costNum = item?.vendor_cut / 100 || 0;
   if (sellNum > 0) return `$${(sellNum - costNum).toFixed(2)}`;
   else return "";
 }
@@ -226,7 +226,9 @@ export function getProfitMargin(item: InventoryObject) {
 }
 
 export function getItemQuantity(item: InventoryObject) {
-  return item?.quantity_received - item?.quantity_returned;
+  return item?.quantity
+    ? item?.quantity
+    : item?.quantity_received - item?.quantity_returned;
 }
 
 export function getGeolocation() {
@@ -275,4 +277,205 @@ export function convertDegToCardinal(deg: number) {
 
 export function convertMPStoKPH(mps: number) {
   return mps * 3.6;
+}
+
+export function getDiscogsOptions(
+  item: InventoryObject,
+  setDiscogsOptions: Function
+) {
+  fetch(
+    `https://api.discogs.com/database/search?type=release&artist=${
+      item?.artist || ""
+    }&title=${item?.title || ""}&key=${
+      process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_KEY
+    }&secret=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_SECRET}`
+  ).then((results) => {
+    // console.log(results);
+    if (results.ok)
+      results.json().then((json) => {
+        if (json.results && json.results.length > 0) {
+          setDiscogsOptions(json.results);
+        } else setDiscogsOptions([]);
+      });
+    else setDiscogsOptions([]);
+  });
+}
+
+export async function getDiscogsItem(
+  discogsItem: any,
+  item: InventoryObject,
+  setItem: Function
+) {
+  let detailedDiscogsItem = {};
+  let priceSuggestions = {};
+
+  fetch(
+    `https://api.discogs.com/marketplace/price_suggestions/${
+      discogsItem?.id || ""
+    }?token=${process.env.NEXT_PUBLIC_DISCOGS_PERSONAL_ACCESS_TOKEN}`
+  ).then((results) => {
+    if (results.ok)
+      results.json().then((json) => {
+        priceSuggestions = json;
+        let url = `https://api.discogs.com/masters/${
+          discogsItem?.master_id || ""
+        }`;
+        if (discogsItem?.master_id === 0 || !discogsItem?.master_id)
+          url = discogsItem?.resource_url;
+        fetch(url).then((results) => {
+          results.json().then((json) => {
+            detailedDiscogsItem = json;
+            setItem({
+              ...item,
+              image_url: discogsItem?.thumb || null,
+              discogsItem: {
+                ...discogsItem,
+                ...detailedDiscogsItem,
+                priceSuggestions,
+              },
+            });
+            //
+            // MORE ARTIST INFORMATION CAN BE GATHERED
+            // THIS TENDS TO PUT DISCOGS QUERIES OVER THE LIMIT
+            // WHICH EFFECTS OTHER REQUESTS
+            //
+
+            // let artists = get(detailedDiscogsItem, "artists", []);
+            // detailedDiscogsItem.artists = [];
+            // for (const discogsArtist of artists) {
+            //   fetch(get(discogsArtist, "resource_url", "")).then((results) => {
+            //     results.json().then((artist) => {
+            //       detailedDiscogsItem.artists = [
+            //         ...detailedDiscogsItem.artists,
+            //         { ...artist, name: discogsArtist.name },
+            //       ];
+            //     });
+            //   });
+            // }
+          });
+        });
+      });
+  });
+}
+
+export function getGoogleBooksOptions(
+  item: InventoryObject,
+  setGoogleBooksOptions: Function
+) {
+  // Move this to a helper function
+  // Add for books too
+  console.log(
+    `https://www.googleapis.com/books/v1/volumes?q=${item?.artist || ""}${
+      item?.title || ""
+    }&key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`
+  );
+  fetch(
+    `https://www.googleapis.com/books/v1/volumes?q=${item?.artist || ""}${
+      item?.title || ""
+    }&key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`
+  )
+    .then((results) => results.text())
+    .then((data) => {
+      let json = JSON.parse(data);
+      setGoogleBooksOptions(json?.items || []);
+    });
+}
+
+export function getGoogleBooksItem(
+  googleBooksItem: any,
+  item: InventoryObject,
+  setItem: Function
+) {
+  // No new information in volume fetch
+  setItem({
+    ...item,
+    image_url: googleBooksItem?.volumeInfo?.imageLinks?.thumbnail || null,
+    googleBooksItem,
+  });
+}
+
+export function isMoneyFormat(value: string) {
+  return !value || /^((\d+\.?|\.(?=\d))?\d{0,2})$/.test(value);
+}
+
+export function isDollarMoneyFormat(value: string) {
+  return !value || /^\$?((\d+\.?|\.(?=\d))?\d{0,2})$/.test(value);
+}
+
+export function writeIntegerAsWord(number: number) {
+  const first = [
+    "",
+    "one ",
+    "two ",
+    "three ",
+    "four ",
+    "five ",
+    "six ",
+    "seven ",
+    "eight ",
+    "nine ",
+    "ten ",
+    "eleven ",
+    "twelve ",
+    "thirteen ",
+    "fourteen ",
+    "fifteen ",
+    "sixteen ",
+    "seventeen ",
+    "eighteen ",
+    "nineteen ",
+  ];
+  const tens = [
+    "",
+    "",
+    "twenty",
+    "thirty",
+    "forty",
+    "fifty",
+    "sixty",
+    "seventy",
+    "eighty",
+    "ninety",
+  ];
+  const mad = ["", "thousand", "million", "billion", "trillion"];
+  let word = "";
+
+  for (let i = 0; i < mad.length; i++) {
+    let tempNumber = number % (100 * Math.pow(1000, i));
+    if (Math.floor(tempNumber / Math.pow(1000, i)) !== 0) {
+      if (Math.floor(tempNumber / Math.pow(1000, i)) < 20) {
+        word =
+          first[Math.floor(tempNumber / Math.pow(1000, i))] +
+          mad[i] +
+          " " +
+          word;
+      } else {
+        word =
+          tens[Math.floor(tempNumber / (10 * Math.pow(1000, i)))] +
+          "-" +
+          first[Math.floor(tempNumber / Math.pow(1000, i)) % 10] +
+          mad[i] +
+          " " +
+          word;
+      }
+    }
+
+    tempNumber = number % Math.pow(1000, i + 1);
+    if (Math.floor(tempNumber / (100 * Math.pow(1000, i))) !== 0)
+      word =
+        first[Math.floor(tempNumber / (100 * Math.pow(1000, i)))] +
+        "hunderd " +
+        word;
+  }
+  return word;
+}
+
+export function andList(list: string[]) {
+  if (list === undefined || list.length === 0) return "";
+  if (list.length === 1) return list[0];
+  else
+    return list
+      .join("@")
+      .replace(/@([^@]*)$/, " and $1")
+      .replace(/@/g, ", ");
 }

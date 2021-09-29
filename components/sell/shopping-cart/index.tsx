@@ -108,7 +108,7 @@ export default function ShoppingCart() {
     // setLoading(true);
     // Create new sale in DB or update sale if sale has 'id' property
     try {
-      await saveSaleAndItemsToDatabase(cart, clerk, setCart);
+      saveSaleAndItemsToDatabase(cart, clerk, setCart);
       setShowSaleScreen(true);
       // console.log(cart);
       // console.log({ ...newCart, items: newItems });

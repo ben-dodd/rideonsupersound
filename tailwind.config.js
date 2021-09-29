@@ -92,6 +92,9 @@ module.exports = {
       width: { icons: "3rem" },
       transitionProperty: { width: "width", height: "height" },
       // fontFamily: { sans: ["Varela Round", "sans-serif"] },
+      gridTemplateColumns: {
+        right: "auto 200px 200px",
+      },
     },
   },
   variants: {

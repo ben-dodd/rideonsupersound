@@ -11,21 +11,18 @@ const handler: NextApiHandler = async (req, res) => {
         s.artist,
         s.title,
         s.display_as,
+        s.media,
         s.format,
         s.genre,
         s.is_new,
         s.cond,
         p.vendor_cut,
         p.total_sell,
-        rec.quantity_received,
-        ret.quantity_returned
+        q.quantity
       FROM stock AS s
       LEFT JOIN
-      (SELECT stock_id, SUM(quantity) AS quantity_received FROM stock_movement WHERE act = 'received' GROUP BY stock_id) AS rec
-      ON rec.stock_id = s.id
-      LEFT JOIN
-      (SELECT stock_id, SUM(quantity) AS quantity_returned FROM stock_movement WHERE act = 'returned' GROUP BY stock_id) AS ret
-      ON ret.stock_id = s.id
+      (SELECT stock_id, SUM(quantity) AS quantity FROM stock_movement GROUP BY stock_id) AS q
+      ON q.stock_id = s.id
       LEFT JOIN stock_price AS p ON p.stock_id = s.id
       WHERE
          p.id = (

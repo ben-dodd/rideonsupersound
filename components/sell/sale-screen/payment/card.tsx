@@ -10,7 +10,7 @@ import { saveTransactionToDatabase } from "@/lib/db-functions";
 export default function Cash() {
   const [clerk] = useAtom(clerkAtom);
   const [paymentDialog, setPaymentDialog] = useAtom(paymentDialogAtom);
-  const [cart] = useAtom(cartAtom);
+  const [cart, setCart] = useAtom(cartAtom);
   const { inventory } = useInventory();
   const { transactions, mutateSaleTransactions } = useSaleTransactions(
     cart?.id
@@ -73,7 +73,8 @@ export default function Cash() {
               cardPayment,
               remainingBalance,
               "card",
-              mutateSaleTransactions
+              mutateSaleTransactions,
+              setCart
             );
             setSubmitting(false);
             setPaymentDialog(null);

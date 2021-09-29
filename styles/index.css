@@ -100,6 +100,10 @@
   @apply text-xl shadow-md py-8 cursor-pointer bg-tertiary-dark text-white w-full hover:shadow-lg hover:bg-tertiary active:bg-tertiary-light disabled:pointer-events-none disabled:bg-gray-300 disabled:shadow-none;
 }
 
+.dialog__title--has-actions {
+  @apply flex items-center text-lg font-bold py-1 px-2 bg-primary-light shadow-md;
+}
+
 .dialog-action__button {
   @apply w-full mt-2 border rounded-xl ring-4 py-4 cursor-pointer bg-white disabled:pointer-events-none disabled:bg-gray-300 disabled:text-gray-400 disabled:ring-gray-400;
 }
@@ -114,4 +118,58 @@
 
 .dialog-action__cancel-button {
   @apply dialog-action__button text-tertiary ring-tertiary hover:text-tertiary-dark hover:ring-tertiary-dark;
+}
+
+.dialog__footer--actions-right {
+  @apply grid grid-cols-right bg-gray-100;
+}
+
+.dialog__footer--actions-center {
+  @apply grid grid-cols-2;
+}
+
+.dialog__footer-buttons--cancel {
+  @apply p-2 text-lg bg-tertiary w-full hover:bg-tertiary-dark;
+}
+
+.dialog__footer-buttons--secondary {
+  @apply p-2 text-lg bg-secondary w-full hover:bg-secondary-dark font-bold disabled:bg-gray-200 disabled:text-gray-300 disabled:cursor-default;
+}
+
+.dialog__footer-buttons--quarternary {
+  @apply p-2 text-lg bg-quarternary w-full hover:bg-quarternary-dark font-bold disabled:bg-gray-200 disabled:text-gray-300 disabled:cursor-default;
+}
+
+.dialog__footer-buttons--ok {
+  @apply p-2 text-lg bg-primary w-full hover:bg-primary-dark font-bold disabled:bg-gray-200 disabled:text-gray-300 disabled:cursor-default;
+}
+
+.stock-indicator__container {
+  @apply flex items-center;
+}
+
+.stock-indicator__number {
+  @apply ml-5 my-1 rounded-full h-8 w-8 flex items-center justify-center shadow-inner;
+}
+
+.input-label {
+  @apply transition-all px-1 text-xs mt-2 mb-2;
+}
+
+.radio-button__container {
+  /* @apply block relative pl-4 mb-2 cursor-pointer font-lg select-none */
+  @apply flex;
+}
+
+.radio-button__input {
+  /* @apply absolute opacity-0 cursor-pointer h-0 w-0 */
+  @apply mr-2 text-lg;
+}
+
+.radio-button__label {
+  @apply flex pr-6;
+}
+
+.radio-button__checkmark {
+  /* @apply absolute top-0 left-0 h-12 w-12 bg-gray-200 */
 }

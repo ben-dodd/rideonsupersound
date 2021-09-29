@@ -65,6 +65,18 @@ export function useInventory() {
   };
 }
 
+export function useStockItem(stock_id: number) {
+  const { data, error } = useSWR(
+    `/api/get-stock-item?stock_id=${stock_id}`,
+    fetcher
+  );
+  return {
+    stockItem: data && data[0],
+    isStockItemLoading: !error && !data,
+    isStockItemError: error,
+  };
+}
+
 export function useSaleTransactions(sale_id: number) {
   const { data, error, mutate } = useSWR(
     `/api/get-sale-transactions?sale_id=${sale_id}`,
@@ -235,6 +247,20 @@ export function useContact(contact_id: number) {
     contact: data && data[0],
     isLoading: !error && !data,
     isError: error,
+  };
+}
+
+export function useSelect(setting_select: string) {
+  const { data, error, mutate } = useSWR(
+    `/api/get-selects?setting_select=${setting_select}`,
+    fetcher
+  );
+  console.log(data);
+  return {
+    selects: data,
+    isSelectsLoading: !error && !data,
+    isSelectsError: error,
+    mutateSelects: mutate,
   };
 }
 

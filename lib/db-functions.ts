@@ -89,16 +89,18 @@ export async function saveSaleItemToDatabase(
 }
 
 export async function saveTransactionToDatabase(
-  cart: SaleObject,
+  sale: SaleObject,
   clerk: ClerkObject,
   amount: string,
   remainingBalance: number,
   paymentMethod: string,
   mutate?: Function,
+  setCart?: Function,
   vendor?: VendorObject
 ) {
+  let newSale = { ...sale };
   let transaction: TransactionObject = {
-    sale_id: cart?.id,
+    sale_id: sale?.id,
     clerk_id: clerk?.id,
     payment_method: paymentMethod,
     total_amount:
@@ -106,7 +108,7 @@ export async function saveTransactionToDatabase(
         ? remainingBalance * 100
         : parseFloat(amount) * 100,
   };
-  if (paymentMethod === "cash")
+  if (paymentMethod === "cash") {
     transaction = {
       ...transaction,
       cash_received: parseFloat(amount) * 100,
@@ -115,6 +117,7 @@ export async function saveTransactionToDatabase(
           ? (parseFloat(amount) - remainingBalance) * 100
           : null,
     };
+  }
   if (paymentMethod === "acct") {
     let vendorPaymentId = null;
     const vendorPayment = {
@@ -123,24 +126,30 @@ export async function saveTransactionToDatabase(
       vendor_id: vendor?.id,
       type: "sale",
     };
-    try {
-      const res = await fetch("/api/create-vendor-payment", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(vendorPayment),
-      });
-      const json = await res.json();
-      if (!res.ok) throw Error(json.message);
-      vendorPaymentId = json.insertId;
-    } catch (e) {
-      throw Error(e.message);
-    }
+    vendorPaymentId = await saveVendorPaymentToDatabase(vendorPayment);
     transaction = { ...transaction, vendor_payment_id: vendorPaymentId };
   }
+  let newTransactions = [];
+  newSale?.transactions.forEach(async (transaction) => {
+    if (!transaction?.id) {
+      let newTransaction = { ...transaction };
+      const newTransactionId = await saveSaleTransactionToDatabase(transaction);
+      newTransaction = { ...newTransaction, id: newTransactionId };
+      newTransactions.push(newTransaction);
+    } else {
+      await updateSaleTransactionInDatabase(transaction);
+      newTransactions.push(transaction);
+    }
+  });
+  setCart && setCart({ ...newSale, transactions: newTransactions });
+  mutate();
   if (paymentMethod === "gift") {
   }
+}
+
+export async function saveSaleTransactionToDatabase(
+  transaction: TransactionObject
+) {
   try {
     const res = await fetch("/api/create-sale-transaction", {
       method: "POST",
@@ -151,7 +160,46 @@ export async function saveTransactionToDatabase(
     });
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
-    mutate && mutate();
+    return json?.insertId;
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
+
+export async function saveVendorPaymentToDatabase(vendorPayment) {
+  try {
+    const res = await fetch("/api/create-vendor-payment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(vendorPayment),
+    });
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+    return json.insertId;
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
+
+export async function saveSelectToDatabase(
+  label: string,
+  setting_select: string,
+  mutate: Function
+) {
+  try {
+    const res = await fetch("/api/create-setting-select", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ label, setting_select }),
+    });
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+    mutate();
+    return json.insertId;
   } catch (e) {
     throw Error(e.message);
   }
@@ -272,6 +320,33 @@ export async function updateSaleItemInDatabase(
         store_discount: parseInt(cartItem?.store_discount),
         note: cartItem?.note,
         is_deleted: cartItem?.is_deleted,
+      }),
+    });
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
+
+export async function updateSaleTransactionInDatabase(
+  transaction: TransactionObject
+) {
+  try {
+    const res = await fetch("/api/update-sale-transaction", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        // sale_item_id: cartItem?.id,
+        // sale_id: cart?.id,
+        // item_id: cartItem?.item_id,
+        // quantity: parseInt(cartItem?.quantity),
+        // vendor_discount: parseInt(cartItem?.vendor_discount),
+        // store_discount: parseInt(cartItem?.store_discount),
+        // note: cartItem?.note,
+        // is_deleted: cartItem?.is_deleted,
       }),
     });
     const json = await res.json();

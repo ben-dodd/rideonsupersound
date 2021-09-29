@@ -2,11 +2,16 @@ import { useAtom } from "jotai";
 
 import Image from "next/image";
 
-import AddIcon from "@material-ui/icons/Add";
+import AddIcon from "@material-ui/icons/AddCircleOutline";
 import InfoIcon from "@material-ui/icons/Info";
 
 import { InventoryObject, SaleObject } from "@/lib/types";
-import { cartAtom, showCartAtom, clerkAtom, itemScreenAtom } from "@/lib/atoms";
+import {
+  cartAtom,
+  showCartAtom,
+  clerkAtom,
+  showItemScreenAtom,
+} from "@/lib/atoms";
 import { useWeather } from "@/lib/swr-hooks";
 import {
   getItemSku,
@@ -22,7 +27,7 @@ type ListItemProps = {
 export default function ListItem({ item }: ListItemProps) {
   const [cart, setCart] = useAtom(cartAtom);
   const [, setShowCart] = useAtom(showCartAtom);
-  const [, openInventoryModal] = useAtom(itemScreenAtom);
+  const [, openInventoryModal] = useAtom(showItemScreenAtom);
   const [clerk] = useAtom(clerkAtom);
   const geolocation = getGeolocation();
   const { weather } = useWeather();
@@ -36,7 +41,7 @@ export default function ListItem({ item }: ListItemProps) {
       weather,
       geolocation
     );
-  const clickOpenInventoryModal = () => openInventoryModal(item);
+  const clickOpenInventoryModal = () => openInventoryModal(item?.id);
   // Disable mobile only for now
   // <div
   //   className="flex w-full mb-2 bg-blue-100 relative"
@@ -82,7 +87,7 @@ export default function ListItem({ item }: ListItemProps) {
           )}`}</div>
         </div>
       </div>
-      <div className="self-center pl-2 hidden sm:inline">
+      <div className="self-center pl-8 hidden sm:inline">
         <button className="icon-button-large" onClick={clickOpenInventoryModal}>
           <InfoIcon style={{ fontSize: "40px" }} />
         </button>

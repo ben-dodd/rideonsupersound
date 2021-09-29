@@ -10,11 +10,11 @@ import { filterInventory } from "@/lib/data-functions";
 
 export default function InventoryScroll() {
   const [search] = useAtom(sellSearchBarAtom);
-  const { inventory, isLoading } = useInventory();
+  const { inventory, isInventoryLoading } = useInventory();
 
   return (
     <div className="h-inventory overflow-y-scroll px-2">
-      {isLoading ? (
+      {isInventoryLoading ? (
         <div className="w-full flex h-full">
           <div className="loading-icon" />
         </div>
