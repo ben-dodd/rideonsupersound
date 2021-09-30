@@ -256,7 +256,6 @@ export function useSelect(setting_select: string) {
     `/api/get-selects?setting_select=${setting_select}`,
     fetcher
   );
-  console.log(data);
   return {
     selects: data,
     isSelectsLoading: !error && !data,

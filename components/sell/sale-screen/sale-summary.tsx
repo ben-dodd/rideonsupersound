@@ -144,7 +144,7 @@ export default function SaleSummary() {
     return (
       <div className="max-h-2/5 overflow-y-scroll">
         {(cart?.items || []).length > 0 ? (
-          cart.items.map((cartItem, id) => (
+          cart?.items?.map((cartItem, id) => (
             <ItemListItem key={id} cartItem={cartItem} />
           ))
         ) : (

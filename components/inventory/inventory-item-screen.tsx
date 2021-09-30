@@ -88,7 +88,7 @@ export default function InventoryItemScreen() {
       <div className="loading-icon" />
     </div>
   ) : (
-    <div className="bg-white">
+    <div className="bg-white h-menu flex flex-col">
       <div className="dialog__title--has-actions">
         <button
           className="icon-button-small-black pr-2"
@@ -98,7 +98,7 @@ export default function InventoryItemScreen() {
         </button>
         {writeInventoryDisplayName(item)}
       </div>
-      <div className="flex items-start h-menu">
+      <div className="flex items-start overflow-auto">
         <div className={`p-6 ${syncInfo ? "w-6/12" : "w-full"}`}>
           <div className="flex justify-start w-full">
             <div className="pr-2 w-52 mr-2">

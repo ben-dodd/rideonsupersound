@@ -174,9 +174,9 @@ export default function Menu() {
         menuDisplay && "w-full "
       }sm:w-full sm:w-icons sm:border-r sm:shadow-lg lg:w-1/6 transition-width duration-200 `}
     >
-      {menu.map((list, i) => (
+      {menu?.map((list, i) => (
         <ul key={i}>
-          {list.map((item: MenuType, i: number) =>
+          {list?.map((item: MenuType, i: number) =>
             item?.type === "divider" ? (
               <hr key={i} />
             ) : (
