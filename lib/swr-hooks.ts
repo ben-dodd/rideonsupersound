@@ -57,11 +57,12 @@ export function useClerkImage(clerk_image_id: number) {
 }
 
 export function useInventory() {
-  const { data, error } = useSWR(`/api/get-inventory`, fetcher);
+  const { data, error, mutate } = useSWR(`/api/get-inventory`, fetcher);
   return {
     inventory: data,
     isInventoryLoading: !error && !data,
     isInventoryError: error,
+    mutateInventory: mutate,
   };
 }
 

@@ -23,6 +23,7 @@ export function getItemTitle(item: InventoryObject) {
 
 export function getImageSrc(item: InventoryObject) {
   let src = "default";
+  if (item?.image_url) return item.image_url;
   if (item?.is_gift_card) src = "giftCard";
   if (item?.format === "Zine") src = "zine";
   else if (item?.format === "Comics") src = "comic";
@@ -34,9 +35,7 @@ export function getImageSrc(item: InventoryObject) {
   else if (item?.format === "Cassette") src = "cassette";
   else if (item?.format === "Badge") src = "badge";
   else if (item?.format === "Shirt") src = "shirt";
-  return (
-    item?.image_url || `${process.env.NEXT_PUBLIC_RESOURCE_URL}img/${src}.png`
-  );
+  return `${process.env.NEXT_PUBLIC_RESOURCE_URL}img/${src}.png`;
 }
 
 export function getCartItemSummary(
@@ -88,21 +87,23 @@ export function writeInventoryDisplayName(item: InventoryObject) {
 
 export function filterInventory({ inventory, search }) {
   if (!inventory) return [];
-  return inventory
-    ?.sort((a: InventoryObject, b: InventoryObject) => {
-      if (!a?.quantity || !b?.quantity) return 0;
-      if (a?.quantity === b?.quantity) return 0;
-      if (a?.quantity < 1) return 1;
-      if (b?.quantity < 1) return -1;
-      return 0;
-    })
-    .filter((item: InventoryObject) => {
-      let res = true;
-      if (!search || search === "") return false;
+  console.log(inventory);
+  return (
+    inventory
+      // ?.sort((a: InventoryObject, b: InventoryObject) => {
+      //   if (!a?.quantity || !b?.quantity) return 0;
+      //   if (a?.quantity === b?.quantity) return 0;
+      //   if (a?.quantity < 1) return 1;
+      //   if (b?.quantity < 1) return -1;
+      //   return 0;
+      // })
+      .filter((item: InventoryObject) => {
+        let res = true;
+        if (!search || search === "") return false;
 
-      if (search) {
-        let terms = search.split(" ");
-        let itemMatch = `
+        if (search) {
+          let terms = search.split(" ");
+          let itemMatch = `
           ${item?.sku || ""}
           ${item?.artist || ""}
           ${item?.title || ""}
@@ -117,15 +118,16 @@ export function filterInventory({ inventory, search }) {
           ${item?.googleBooksItem?.volumeInfo?.subtitle || ""}
           ${item?.googleBooksItem?.volumeInfo?.categories?.join(" ") || ""}
         `;
-        terms.forEach((term: string) => {
-          if (!itemMatch.toLowerCase().includes(term.toLowerCase()))
-            res = false;
-        });
-      }
+          terms.forEach((term: string) => {
+            if (!itemMatch.toLowerCase().includes(term.toLowerCase()))
+              res = false;
+          });
+        }
 
-      return res;
-    })
-    .slice(0, 50);
+        return res;
+      })
+      .slice(0, 50)
+  );
 }
 
 export function getItemPrice(item: InventoryObject, cartItem: SaleItemObject) {
@@ -325,9 +327,15 @@ export async function getDiscogsItem(
         fetch(url).then((results) => {
           results.json().then((json) => {
             detailedDiscogsItem = json;
+            console.log({
+              ...discogsItem,
+              ...detailedDiscogsItem,
+              priceSuggestions,
+            });
             setItem({
               ...item,
-              image_url: discogsItem?.thumb || null,
+              thumb_url: discogsItem?.thumb || null,
+              image_url: discogsItem?.cover_image || null,
               discogsItem: {
                 ...discogsItem,
                 ...detailedDiscogsItem,

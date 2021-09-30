@@ -13,6 +13,7 @@ interface SettingsSelectProps {
   isClearable?: boolean;
   isCreateDisabled?: boolean;
   customEdit?: Function;
+  delimiter?: string;
   className?: string;
 }
 
@@ -26,6 +27,7 @@ export default function SettingsSelect({
   isClearable,
   isCreateDisabled,
   customEdit,
+  delimiter,
   className,
 }: SettingsSelectProps) {
   const { selects, isSelectsLoading, mutateSelects } = useSelect(dbField);
@@ -40,16 +42,17 @@ export default function SettingsSelect({
         isDisabled={isLoading || isSelectsLoading || isDisabled || false}
         isLoading={isLoading || isSelectsLoading || false}
         isClearable={isClearable || true}
+        delimiter={delimiter || null}
         value={
           dbField
             ? isMulti
-              ? (object?.dbField || []).map((val: string) => ({
+              ? ((object && object[dbField]) || []).map((val: string) => ({
                   value: val,
                   label: val,
                 }))
               : {
-                  value: object?.dbField || "",
-                  label: object?.dbField || "",
+                  value: (object && object[dbField]) || "",
+                  label: (object && object[dbField]) || "",
                 }
             : null
         }

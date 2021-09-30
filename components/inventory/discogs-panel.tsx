@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 // Actions
-import { getDiscogsOptions, getDiscogsItem } from "@/lib/data-functions";
+import {
+  getDiscogsOptions,
+  getDiscogsItem,
+  andList,
+} from "@/lib/data-functions";
 
 import ReactPlayer from "react-player";
 
@@ -47,7 +51,7 @@ export default function DiscogsPanel({ item, setItem, exchangeRate }) {
         <div className="pt-4 mx-4">
           <div className="text-xl">
             <div className="font-bold">
-              {(discogsItem?.artists || []).map((e: any) => e.name)}
+              {andList((discogsItem?.artists || []).map((e: any) => e.name))}
             </div>
             <div className="font-bold italic">
               {`${discogsItem?.title}

@@ -4,6 +4,7 @@ import {
   ClerkObject,
   TransactionObject,
   VendorObject,
+  InventoryObject,
 } from "@/lib/types";
 
 export async function saveSaleAndItemsToDatabase(
@@ -272,6 +273,22 @@ export async function saveStockMovementToDatabase(
         act,
         note,
       }),
+    });
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
+
+export async function updateStockItemInDatabase(item: InventoryObject) {
+  try {
+    const res = await fetch("/api/update-stock-item", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(item),
     });
     const json = await res.json();
     if (!res.ok) throw Error(json.message);

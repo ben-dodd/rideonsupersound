@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { useAtom } from "jotai";
 import { showItemScreenAtom, clerkAtom } from "@/lib/atoms";
-import { useVendors, useStockItem } from "@/lib/swr-hooks";
+import { useVendors, useStockItem, useInventory } from "@/lib/swr-hooks";
 import { VendorObject, InventoryObject } from "@/lib/types";
 import {
   writeInventoryDisplayName,
@@ -11,10 +11,10 @@ import {
   getImageSrc,
   getItemSku,
 } from "@/lib/data-functions";
+import { updateStockItemInDatabase } from "@/lib/db-functions";
 
 import TextField from "@/components/inputs/text-field";
 import SettingsSelect from "@/components/inputs/settings-select";
-import Select from "react-select";
 import RadioButton from "@/components/inputs/radio-button";
 import DiscogsPanel from "./discogs-panel";
 import GoogleBooksPanel from "./google-books-panel";
@@ -28,8 +28,17 @@ export default function InventoryItemScreen() {
   // const newItem = Boolean(item?.newItem);
   // const onClose = item?.onClose;
   const { stockItem, isStockItemLoading } = useStockItem(stockItemId);
+  const { mutateInventory } = useInventory();
   useEffect(() => {
-    setItem(stockItem);
+    let newItem = { ...stockItem };
+    // Parse JSON fields
+    newItem.discogsItem = newItem?.discogsItem
+      ? JSON.parse(newItem.discogsItem)
+      : null;
+    newItem.googleBooksItem = newItem?.googleBooksItem
+      ? JSON.parse(newItem.googleBooksItem)
+      : null;
+    setItem(newItem);
   }, [stockItem]);
   const syncInfo = Boolean(
     item?.media === "Audio" || item?.media === "Literature"
@@ -74,40 +83,38 @@ export default function InventoryItemScreen() {
     // Delete inventory item
   }
 
-  return (
-    <div className="bg-white text-black">
-      {isStockItemLoading ? (
-        <div className="loading-screen">
-          <div className="loading-icon" />
-        </div>
-      ) : (
-        <>
-          <div className="dialog__title--has-actions">
-            <button
-              className="icon-button-small-black pr-2"
-              onClick={() => setShowItemScreen(0)}
-            >
-              <ChevronLeft />
-            </button>
-            {writeInventoryDisplayName(item)}
-          </div>
-          <div className="flex items-start overflow-y-scroll">
-            <div className={`p-6 ${syncInfo ? "w-6/12" : "w-full"}`}>
-              <div className="flex justify-start w-full">
-                <div className="pr-2 w-52 mr-2">
-                  <div className="w-52 h-52 relative">
-                    <Image
-                      layout="fill"
-                      objectFit="cover"
-                      src={getImageSrc(item)}
-                      alt={item?.title || "Inventory image"}
-                    />
-                    <div className="absolute w-52 h-8 bg-opacity-50 bg-black text-white flex justify-center items-center">
-                      {getItemSku(item)}
-                    </div>
-                  </div>
+  return isStockItemLoading ? (
+    <div className="loading-screen">
+      <div className="loading-icon" />
+    </div>
+  ) : (
+    <div className="bg-white">
+      <div className="dialog__title--has-actions">
+        <button
+          className="icon-button-small-black pr-2"
+          onClick={() => setShowItemScreen(0)}
+        >
+          <ChevronLeft />
+        </button>
+        {writeInventoryDisplayName(item)}
+      </div>
+      <div className="flex items-start h-menu">
+        <div className={`p-6 ${syncInfo ? "w-6/12" : "w-full"}`}>
+          <div className="flex justify-start w-full">
+            <div className="pr-2 w-52 mr-2">
+              <div className="w-52 h-52 relative">
+                <Image
+                  layout="fill"
+                  objectFit="contain"
+                  src={getImageSrc(item)}
+                  alt={item?.title || "Inventory image"}
+                />
+                <div className="absolute w-52 h-8 bg-opacity-50 bg-black text-white flex justify-center items-center">
+                  {getItemSku(item)}
                 </div>
-                {/*<div className="pr-2 w-1/2">
+              </div>
+            </div>
+            {/*<div className="pr-2 w-1/2">
                   <Image
                     width={32}
                     height={32}
@@ -118,242 +125,241 @@ export default function InventoryItemScreen() {
                     alt={item?.title || "Inventory image"}
                   />
                 </div>*/}
-                <div className="w-full">
-                  <TextField
-                    value={item?.artist || ""}
-                    onChange={(e: any) =>
-                      setItem({ ...item, artist: e.target.value })
-                    }
-                    inputLabel="ARTIST"
-                  />
-                  <TextField
-                    value={item?.title || ""}
-                    onChange={(e: any) =>
-                      setItem({ ...item, title: e.target.value })
-                    }
-                    inputLabel="TITLE"
-                  />
-                  <TextField
-                    value={item?.display_as || writeInventoryDisplayName(item)}
-                    onChange={(e: any) =>
-                      setItem({ ...item, display_as: e.target.value })
-                    }
-                    inputLabel="DISPLAY NAME"
-                  />
-                  <div className="font-bold text-sm">{`Selling for ${vendor?.name}`}</div>
-                </div>
-              </div>
-              <div className="grid grid-cols-4 justify-items-start rounded border p-2 mt-2">
-                <div className="stock-indicator__container">IN STOCK</div>
-                <div
-                  className={`stock-indicator__number ${
-                    item?.quantity <= 0
-                      ? "bg-tertiary-light"
-                      : "bg-primary-light"
-                  }`}
-                >
-                  {item?.quantity || 0}
-                </div>
-                <div className="stock-indicator__container">RECEIVED</div>
-                <div className="stock-indicator__number bg-secondary-light">
-                  {item?.quantity_received || 0}
-                </div>
-                <div className="stock-indicator__container">SOLD</div>
-                <div className="stock-indicator__number bg-secondary-light">
-                  {item?.quantity_sold || 0}
-                </div>
-                <div className="stock-indicator__container">RETURNED</div>
-                <div className="stock-indicator__number bg-secondary-light">
-                  {item?.quantity_returned || 0}
-                </div>
-                <div className="stock-indicator__container">LAYBY/HOLD</div>
-                <div className="stock-indicator__number bg-secondary-light">
-                  {item?.quantity_layby +
-                    item?.quantity_hold -
-                    item?.quantity_unlayby -
-                    item?.quantity_unhold}
-                </div>
-                <div className="stock-indicator__container">DISCARD/LOST</div>
-                <div className="stock-indicator__number bg-secondary-light">
-                  {item?.quantity_discarded + item?.quantity_lost}
-                </div>
-              </div>
-              <div className="grid grid-cols-4 gap-2 mb-4">
-                <TextField
-                  inputClass="font-bold"
-                  inputLabel="SELL PRICE"
-                  value={`${(item?.total_sell / 100).toFixed(2)}` || ""}
-                  onChange={(e: any) =>
-                    setItem({ ...item, total_sell: e.target.value })
-                  }
-                  startAdornment="$"
-                />
-                <TextField
-                  inputLabel="COST PRICE"
-                  value={`${(item?.vendor_cut / 100).toFixed(2)}` || ""}
-                  onChange={(e: any) =>
-                    setItem({ ...item, vendor_cut: e.target.value })
-                  }
-                  startAdornment="$"
-                />
-                <TextField
-                  inputLabel="STORE CUT"
-                  value={getGrossProfit(item) || "-"}
-                  displayOnly
-                />
-                <TextField
-                  inputLabel="MARGIN"
-                  value={getProfitMargin(item) || "-"}
-                  displayOnly
-                />
-              </div>
+            <div className="w-full">
               <TextField
-                inputLabel="BARCODE"
-                value={item?.barcode || ""}
+                value={item?.artist || ""}
                 onChange={(e: any) =>
-                  setItem({ ...item, barcode: e.target.value })
+                  setItem({ ...item, artist: e.target.value })
                 }
+                inputLabel="ARTIST"
               />
-              <div className="grid grid-cols-2 gap-2 mb-2">
-                <SettingsSelect
-                  object={item}
-                  onEdit={setItem}
-                  inputLabel="TYPE"
-                  dbField="media"
-                />
-                <SettingsSelect
-                  object={item}
-                  onEdit={setItem}
-                  inputLabel="FORMAT"
-                  dbField="format"
-                />
-              </div>
-              {item?.format == "Shirt" ? (
-                <div className="grid grid-cols-2 gap-2 mb-2">
-                  <SettingsSelect
-                    object={item}
-                    onEdit={setItem}
-                    inputLabel="COLOUR"
-                    dbField="colour"
-                  />
-                  <SettingsSelect
-                    object={item}
-                    onEdit={setItem}
-                    inputLabel="SIZE"
-                    dbField="size"
-                  />
-                </div>
-              ) : (
-                <div className="flex items-end">
-                  <RadioButton
-                    inputLabel="CONDITION"
-                    group="isNew"
-                    value={Boolean(item?.is_new)}
-                    onChange={(value: any) =>
-                      setItem({ ...item, is_new: value })
-                    }
-                    options={[
-                      { id: "new", value: true, label: "New" },
-                      { id: "used", value: false, label: "Used" },
-                    ]}
-                  />
-                  <SettingsSelect
-                    className="w-full"
-                    object={item}
-                    onEdit={setItem}
-                    dbField="cond"
-                    isCreateDisabled={true}
-                  />
-                </div>
-              )}
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: "10px",
-                  alignItems: "flex-start",
-                  justifyContent: "flex-start",
-                }}
-              >
-                <SettingsSelect
-                  object={item}
-                  onEdit={setItem}
-                  inputLabel="COUNTRY"
-                  dbField="country"
-                />
-                <SettingsSelect
-                  object={item}
-                  onEdit={setItem}
-                  inputLabel="GENRE"
-                  dbField="genre"
-                />
-              </div>
+              <TextField
+                value={item?.title || ""}
+                onChange={(e: any) =>
+                  setItem({ ...item, title: e.target.value })
+                }
+                inputLabel="TITLE"
+              />
+              <TextField
+                value={item?.display_as || writeInventoryDisplayName(item)}
+                onChange={(e: any) =>
+                  setItem({ ...item, display_as: e.target.value })
+                }
+                inputLabel="DISPLAY NAME"
+              />
+              <div className="font-bold text-sm">{`Selling for ${vendor?.name}`}</div>
+            </div>
+          </div>
+          <div className="grid grid-cols-4 justify-items-start rounded border p-2 mt-2">
+            <div className="stock-indicator__container">IN STOCK</div>
+            <div
+              className={`stock-indicator__number ${
+                item?.quantity <= 0 ? "bg-tertiary-light" : "bg-primary-light"
+              }`}
+            >
+              {item?.quantity || 0}
+            </div>
+            <div className="stock-indicator__container">RECEIVED</div>
+            <div className="stock-indicator__number bg-secondary-light">
+              {item?.quantity_received || 0}
+            </div>
+            <div className="stock-indicator__container">SOLD</div>
+            <div className="stock-indicator__number bg-secondary-light">
+              {item?.quantity_sold || 0}
+            </div>
+            <div className="stock-indicator__container">RETURNED</div>
+            <div className="stock-indicator__number bg-secondary-light">
+              {item?.quantity_returned || 0}
+            </div>
+            <div className="stock-indicator__container">LAYBY/HOLD</div>
+            <div className="stock-indicator__number bg-secondary-light">
+              {item?.quantity_layby +
+                item?.quantity_hold -
+                item?.quantity_unlayby -
+                item?.quantity_unhold}
+            </div>
+            <div className="stock-indicator__container">DISCARD/LOST</div>
+            <div className="stock-indicator__number bg-secondary-light">
+              {item?.quantity_discarded + item?.quantity_lost}
+            </div>
+          </div>
+          <div className="grid grid-cols-4 gap-2 mb-4">
+            <TextField
+              inputClass="font-bold"
+              inputLabel="SELL PRICE"
+              value={`${(item?.total_sell / 100).toFixed(2)}` || ""}
+              onChange={(e: any) =>
+                setItem({ ...item, total_sell: e.target.value })
+              }
+              startAdornment="$"
+            />
+            <TextField
+              inputLabel="COST PRICE"
+              value={`${(item?.vendor_cut / 100).toFixed(2)}` || ""}
+              onChange={(e: any) =>
+                setItem({ ...item, vendor_cut: e.target.value })
+              }
+              startAdornment="$"
+            />
+            <TextField
+              inputLabel="STORE CUT"
+              value={getGrossProfit(item) || "-"}
+              displayOnly
+            />
+            <TextField
+              inputLabel="MARGIN"
+              value={getProfitMargin(item) || "-"}
+              displayOnly
+            />
+          </div>
+          <TextField
+            inputLabel="BARCODE"
+            value={item?.barcode || ""}
+            onChange={(e: any) => setItem({ ...item, barcode: e.target.value })}
+          />
+          <div className="grid grid-cols-2 gap-2 mb-2">
+            <SettingsSelect
+              object={item}
+              onEdit={setItem}
+              inputLabel="TYPE"
+              dbField="media"
+              isCreateDisabled={true}
+            />
+            <SettingsSelect
+              object={item}
+              onEdit={setItem}
+              inputLabel="FORMAT"
+              dbField="format"
+            />
+          </div>
+          {item?.format == "Shirt" ? (
+            <div className="grid grid-cols-2 gap-2 mb-2">
               <SettingsSelect
                 object={item}
                 onEdit={setItem}
-                isMulti
-                inputLabel="TAGS"
-                dbField="tag"
+                inputLabel="COLOUR"
+                dbField="colour"
               />
-              <TextField
-                inputLabel="DESCRIPTION"
-                value={item?.description || ""}
-                onChange={(e: any) =>
-                  setItem({ ...item, description: e.target.value })
-                }
-                multiline
+              <SettingsSelect
+                object={item}
+                onEdit={setItem}
+                inputLabel="SIZE"
+                dbField="size"
               />
-              <TextField
-                inputLabel="NOTES"
-                value={item?.note || ""}
-                onChange={(e: any) =>
-                  setItem({ ...item, note: e.target.value })
-                }
-                multiline
-              />
-              {/*}<SalesStats item={item} />*/}
-              <div className="flex justify-end">
-                <button
-                  className="p-1 border border-black hover:bg-tertiary rounded-xl mt-2"
-                  onClick={onClickDelete}
-                >
-                  Delete Item
-                </button>
-              </div>
             </div>
-            {syncInfo && (
-              <div className="bg-gray-100 p8 border w-6/12">
-                {(item?.media === "Audio" ||
-                  item?.media === "Video" ||
-                  item?.media === "Mixed") && (
-                  <DiscogsPanel
-                    item={item}
-                    setItem={setItem}
-                    exchangeRate={exchangeRate}
-                  />
-                )}
-                {item?.media === "Literature" && (
-                  <GoogleBooksPanel item={item} setItem={setItem} />
-                )}
-              </div>
+          ) : (
+            <div className="flex items-end">
+              <RadioButton
+                inputLabel="CONDITION"
+                group="isNew"
+                value={Boolean(item?.is_new)}
+                onChange={(value: any) => setItem({ ...item, is_new: value })}
+                options={[
+                  { id: "new", value: true, label: "New" },
+                  { id: "used", value: false, label: "Used" },
+                ]}
+              />
+              <SettingsSelect
+                className="w-full"
+                object={item}
+                onEdit={setItem}
+                dbField="cond"
+                isCreateDisabled={true}
+              />
+            </div>
+          )}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "10px",
+              alignItems: "flex-start",
+              justifyContent: "flex-start",
+            }}
+          >
+            <SettingsSelect
+              object={item}
+              onEdit={setItem}
+              inputLabel="COUNTRY"
+              dbField="country"
+            />
+            <SettingsSelect
+              object={item}
+              onEdit={setItem}
+              inputLabel="GENRE"
+              dbField="genre"
+            />
+          </div>
+          <SettingsSelect
+            object={item}
+            onEdit={setItem}
+            isMulti
+            inputLabel="TAGS"
+            dbField="tag"
+          />
+          <TextField
+            inputLabel="DESCRIPTION"
+            value={item?.description || ""}
+            onChange={(e: any) =>
+              setItem({ ...item, description: e.target.value })
+            }
+            multiline
+          />
+          <TextField
+            inputLabel="NOTES"
+            value={item?.note || ""}
+            onChange={(e: any) => setItem({ ...item, note: e.target.value })}
+            multiline
+          />
+          {/*}<SalesStats item={item} />*/}
+          <div className="flex justify-end">
+            <button
+              className="p-1 border border-black hover:bg-tertiary rounded-xl mt-2"
+              onClick={onClickDelete}
+            >
+              Delete Item
+            </button>
+          </div>
+        </div>
+        {syncInfo && (
+          <div className="bg-gray-100 p8 border w-6/12">
+            {(item?.media === "Audio" ||
+              item?.media === "Video" ||
+              item?.media === "Mixed") && (
+              <DiscogsPanel
+                item={item}
+                setItem={setItem}
+                exchangeRate={exchangeRate}
+              />
+            )}
+            {item?.media === "Literature" && (
+              <GoogleBooksPanel item={item} setItem={setItem} />
             )}
           </div>
-          <div className="dialog__footer--actions-right">
-            <div />
-            <button
-              className="dialog__footer-buttons--cancel"
-              onClick={() => {
-                setShowItemScreen(0);
-              }}
-            >
-              CLOSE
-            </button>
-            <button className="dialog__footer-buttons--ok" onClick={null}>
-              SAVE
-            </button>
-          </div>
-        </>
-      )}
+        )}
+      </div>
+      <div className="dialog__footer--actions-right">
+        <div />
+        <button
+          className="dialog__footer-buttons--cancel"
+          onClick={() => {
+            setShowItemScreen(0);
+          }}
+        >
+          CLOSE
+        </button>
+        <button
+          className="dialog__footer-buttons--ok"
+          onClick={async () => {
+            setShowItemScreen(0);
+            await updateStockItemInDatabase(item);
+            setItem(null);
+            mutateInventory();
+          }}
+        >
+          SAVE
+        </button>
+      </div>
     </div>
   );
 }
