@@ -1,5 +1,5 @@
 import {
-  TransactionObject,
+  SaleTransactionObject,
   GiftCardObject,
   VendorObject,
   SaleObject,
@@ -15,7 +15,7 @@ import nz from "date-fns/locale/en-NZ";
 import DeleteIcon from "@material-ui/icons/Delete";
 
 type TransactionListItemProps = {
-  transaction: TransactionObject;
+  transaction: SaleTransactionObject;
   sale: SaleObject;
 };
 
