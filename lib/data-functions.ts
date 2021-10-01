@@ -87,7 +87,6 @@ export function writeInventoryDisplayName(item: InventoryObject) {
 
 export function filterInventory({ inventory, search }) {
   if (!inventory) return [];
-  console.log(inventory);
   return inventory
     .filter((item: InventoryObject) => {
       let res = true;
@@ -193,8 +192,6 @@ export function getTotalOwing(
   totalPayments: VendorPayment[],
   totalSales: VendorSaleItemObject[]
 ) {
-  console.log(totalPayments);
-  console.log(totalSales);
   const totalPaid = totalPayments.reduce(
     (acc: number, payment: VendorPayment) => acc + payment?.amount,
     0
@@ -325,11 +322,6 @@ export async function getDiscogsItem(
         fetch(url).then((results) => {
           results.json().then((json) => {
             detailedDiscogsItem = json;
-            console.log({
-              ...discogsItem,
-              ...detailedDiscogsItem,
-              priceSuggestions,
-            });
             setItem({
               ...item,
               thumb_url: discogsItem?.thumb || null,
@@ -370,11 +362,6 @@ export function getGoogleBooksOptions(
 ) {
   // Move this to a helper function
   // Add for books too
-  console.log(
-    `https://www.googleapis.com/books/v1/volumes?q=${item?.artist || ""}${
-      item?.title || ""
-    }&key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`
-  );
   fetch(
     `https://www.googleapis.com/books/v1/volumes?q=${item?.artist || ""}${
       item?.title || ""

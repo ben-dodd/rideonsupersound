@@ -9,7 +9,6 @@ import SplashPage from "./splash-page";
 
 export default function LandingPage() {
   // Get google auth details
-  console.log("Landing");
   const [session] = useSession();
   const { account } = useAccount(session?.user?.email);
   // Get clerk details

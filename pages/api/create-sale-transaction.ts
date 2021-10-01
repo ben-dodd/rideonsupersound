@@ -13,7 +13,6 @@ const handler: NextApiHandler = async (req, res) => {
     gift_card_id,
     card_taken,
   } = req.body;
-  console.log(req.body);
   try {
     const results = await query(
       `

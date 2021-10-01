@@ -27,7 +27,6 @@ export default function SaleSummary() {
   const { clerks } = useClerks();
   const saleComplete = Boolean(cart?.state === "complete");
   const { contact } = useContact(cart?.contact_id);
-  const { transactions } = useSaleTransactions(cart?.id);
   const { items } = useSaleItems(cart?.id);
   const vendorCut = useMemo<number>(
     () =>
@@ -47,8 +46,8 @@ export default function SaleSummary() {
   );
   const storeCut = totalPrice - vendorCut;
   const remainingBalance = useMemo(
-    () => getRemainingBalance(totalPrice, transactions) / 100,
-    [totalPrice, transactions]
+    () => getRemainingBalance(totalPrice, cart?.transactions) / 100,
+    [totalPrice, cart?.transactions]
   );
 
   return (

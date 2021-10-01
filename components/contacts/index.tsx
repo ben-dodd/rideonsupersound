@@ -1,7 +1,6 @@
 import Contact from "./contact";
 
 function Contacts({ contacts }) {
-  console.log(contacts);
   if (contacts) {
     return (
       <div>

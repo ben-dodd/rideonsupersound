@@ -3,12 +3,10 @@ import { query } from "../../lib/db";
 
 const handler: NextApiHandler = async (req, res) => {
   const { email } = req.query;
-  console.log(email);
   try {
     if (!email) {
       return res.status(400).json({ message: "User signed out." });
     }
-    console.log(email);
     const results = await query(
       `
       SELECT *

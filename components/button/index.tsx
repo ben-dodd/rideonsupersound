@@ -1,8 +1,8 @@
-import cn from 'clsx'
+import cn from "clsx";
 
 function Button({
-  onClick = console.log,
-  className = '',
+  onClick = null,
+  className = "",
   children = null,
   type = null,
   disabled = false,
@@ -13,13 +13,13 @@ function Button({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        'bg-black',
-        'text-white',
-        'p-2',
-        'rounded',
-        'uppercase',
-        'text-sm',
-        'font-bold',
+        "bg-black",
+        "text-white",
+        "p-2",
+        "rounded",
+        "uppercase",
+        "text-sm",
+        "font-bold",
         {
           [className]: Boolean(className),
         }
@@ -27,7 +27,7 @@ function Button({
     >
       {children}
     </button>
-  )
+  );
 }
 
-export default Button
+export default Button;

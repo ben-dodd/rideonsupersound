@@ -2,7 +2,6 @@ import { NextApiHandler } from "next";
 import { query } from "../../lib/db";
 
 const handler: NextApiHandler = async (req, res) => {
-  console.log(req.body);
   const { transaction_id } = req.body;
   try {
     const results = await query(

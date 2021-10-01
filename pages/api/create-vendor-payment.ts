@@ -11,7 +11,6 @@ const handler: NextApiHandler = async (req, res) => {
     vendor_id,
     type,
   } = req.body;
-  console.log(req.body);
   try {
     const results = await query(
       `

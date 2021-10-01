@@ -1,6 +1,5 @@
 import { useAtom } from "jotai";
-import { paymentDialogAtom, cartAtom } from "@/lib/atoms";
-import { useInventory, useSaleTransactions } from "@/lib/swr-hooks";
+import { paymentDialogAtom } from "@/lib/atoms";
 import Pay from "./pay";
 import SaleSummary from "./sale-summary";
 import Action from "./action";
@@ -10,7 +9,6 @@ import Cash from "./payment/cash";
 import Gift from "./payment/gift";
 
 export default function SaleScreen() {
-  const [cart] = useAtom(cartAtom);
   const [paymentDialog] = useAtom(paymentDialogAtom);
   return (
     <div className="bg-white text-black">

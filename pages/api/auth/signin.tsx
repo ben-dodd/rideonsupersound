@@ -4,7 +4,6 @@ import Image from "next/image";
 import SignInButton from "@/components/button/sign-in-button";
 
 export default function SignIn() {
-  console.log("Sign in");
   const [session] = useSession();
   return (
     <div className="flex flex-col h-screen justify-center">
