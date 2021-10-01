@@ -9,7 +9,7 @@ import {
   convertDegToCardinal,
   getSaleVars,
 } from "@/lib/data-functions";
-import { TransactionObject } from "@/lib/types";
+import { SaleTransactionObject } from "@/lib/types";
 import ItemListItem from "./item-list-item";
 import TransactionListItem from "./transaction-list-item";
 
@@ -188,7 +188,7 @@ export default function SaleSummary() {
   function TransactionItems() {
     return (
       <div className="mt-1 pt-1 border-t border-gray-500 max-h-1/3 overflow-y-scroll">
-        {cart?.transactions?.map((transaction: TransactionObject) => (
+        {cart?.transactions?.map((transaction: SaleTransactionObject) => (
           <TransactionListItem
             key={transaction?.id}
             sale={cart}
