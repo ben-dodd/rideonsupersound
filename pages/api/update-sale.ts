@@ -1,5 +1,6 @@
 import { NextApiHandler } from "next";
 import { query } from "../../lib/db";
+import { escape } from "sqlstring";
 
 const handler: NextApiHandler = async (req, res) => {
   const { sale_id, contact_id, state, note } = req.body;
@@ -10,7 +11,7 @@ const handler: NextApiHandler = async (req, res) => {
       SET
         contact_id = ${contact_id || null},
         state = ${state ? `"${state}"` : null},
-        note = ${note ? `"${note}"` : null}
+        note = ${escape(note)}
       WHERE id = ${sale_id}
       `
     );

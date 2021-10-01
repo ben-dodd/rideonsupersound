@@ -1,33 +1,23 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import Modal from "@/components/modal";
 import { useAtom } from "jotai";
 import { paymentDialogAtom, cartAtom, clerkAtom } from "@/lib/atoms";
 import TextField from "@/components/inputs/text-field";
-import { useInventory, useSaleTransactions } from "@/lib/swr-hooks";
-import { getTotalPrice, getRemainingBalance } from "@/lib/data-functions";
-import { saveTransactionToDatabase } from "@/lib/db-functions";
+import { useSaleTransactions } from "@/lib/swr-hooks";
+import { saveSaleTransaction } from "@/lib/db-functions";
 
 export default function Cash() {
   const [clerk] = useAtom(clerkAtom);
   const [paymentDialog, setPaymentDialog] = useAtom(paymentDialogAtom);
   const [cart, setCart] = useAtom(cartAtom);
-  const { inventory } = useInventory();
-  const { transactions, mutateSaleTransactions } = useSaleTransactions(
-    cart?.id
+  const { mutateSaleTransactions } = useSaleTransactions(cart?.id);
+  const [cashReceived, setCashReceived] = useState(
+    `${paymentDialog?.remainingBalance}`
   );
-  const totalPrice = useMemo(() => getTotalPrice(cart, inventory), [
-    cart,
-    inventory,
-  ]);
-  const remainingBalance = useMemo(
-    () => getRemainingBalance(totalPrice, transactions) / 100,
-    [totalPrice, transactions]
-  );
-  const [cashReceived, setCashReceived] = useState(`${remainingBalance}`);
   const [submitting, setSubmitting] = useState(false);
   return (
     <Modal
-      open={paymentDialog === "cash"}
+      open={paymentDialog?.method === "cash"}
       onClose={() => setPaymentDialog(null)}
     >
       <div className="p-4">
@@ -42,20 +32,20 @@ export default function Cash() {
           onChange={(e: any) => setCashReceived(e.target.value)}
         />
         <div className="text-center">{`Remaining to pay: $${(
-          remainingBalance || 0
+          paymentDialog?.remainingBalance || 0
         ).toFixed(2)}`}</div>
         <div className="text-center text-xl font-bold my-4">
           {cashReceived === "" || parseFloat(cashReceived) === 0
             ? "..."
             : isNaN(parseFloat(cashReceived))
             ? "NUMBERS ONLY PLEASE"
-            : parseFloat(cashReceived) > remainingBalance
-            ? `GIVE $${(parseFloat(cashReceived) - remainingBalance).toFixed(
-                2
-              )} IN CHANGE`
-            : parseFloat(cashReceived) < remainingBalance
+            : parseFloat(cashReceived) > paymentDialog?.remainingBalance
+            ? `GIVE $${(
+                parseFloat(cashReceived) - paymentDialog?.remainingBalance
+              ).toFixed(2)} IN CHANGE`
+            : parseFloat(cashReceived) < paymentDialog?.remainingBalance
             ? `AMOUNT SHORT BY $${(
-                remainingBalance - parseFloat(cashReceived)
+                paymentDialog?.remainingBalance - parseFloat(cashReceived)
               ).toFixed(2)}`
             : "ALL GOOD!"}
         </div>
@@ -69,11 +59,11 @@ export default function Cash() {
           }
           onClick={async () => {
             setSubmitting(true);
-            await saveTransactionToDatabase(
+            await saveSaleTransaction(
               cart,
               clerk,
               cashReceived,
-              remainingBalance,
+              paymentDialog?.remainingBalance,
               "cash",
               mutateSaleTransactions,
               setCart

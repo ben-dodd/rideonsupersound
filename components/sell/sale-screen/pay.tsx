@@ -1,8 +1,7 @@
-import { useMemo, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAtom } from "jotai";
 import {
   useInventory,
-  useSaleTransactions,
   useContacts,
   useVendorFromContact,
 } from "@/lib/swr-hooks";
@@ -13,11 +12,7 @@ import {
   showCreateContactAtom,
 } from "@/lib/atoms";
 import { ContactObject } from "@/lib/types";
-import {
-  getTotalPrice,
-  // getTotalStoreCut,
-  getRemainingBalance,
-} from "@/lib/data-functions";
+import { getSaleVars } from "@/lib/data-functions";
 import CreateableSelect from "@/components/inputs/createable-select";
 import TextField from "@/components/inputs/text-field";
 import BackIcon from "@material-ui/icons/ChevronLeft";
@@ -30,14 +25,12 @@ export default function Pay() {
   const { inventory } = useInventory();
   const { contacts } = useContacts();
   const { vendor } = useVendorFromContact(cart?.contact_id);
-  const { transactions } = useSaleTransactions(cart?.id);
   const [note, setNote] = useState("");
   const [remainingBalance, setRemainingBalance] = useState(0);
   useEffect(() => {
-    const totalPrice = getTotalPrice(cart, inventory);
-    const remaining = getRemainingBalance(totalPrice, transactions) / 100;
-    setRemainingBalance(remaining);
-  }, [transactions]);
+    const { totalRemaining } = getSaleVars(cart, inventory);
+    setRemainingBalance(totalRemaining);
+  }, [showSaleScreen, cart]);
 
   function onClickGoBack() {
     setShowSaleScreen(false);
@@ -58,21 +51,27 @@ export default function Pay() {
           <button
             className="square-button"
             disabled={remainingBalance === 0}
-            onClick={() => openPaymentDialog("cash")}
+            onClick={() =>
+              openPaymentDialog({ method: "cash", remainingBalance })
+            }
           >
             CASH
           </button>
           <button
             className="square-button"
             disabled={remainingBalance === 0}
-            onClick={() => openPaymentDialog("card")}
+            onClick={() =>
+              openPaymentDialog({ method: "card", remainingBalance })
+            }
           >
             CARD
           </button>
           <button
             className="square-button"
             disabled={!cart?.contact_id || !vendor || remainingBalance === 0}
-            onClick={() => openPaymentDialog("acct")}
+            onClick={() =>
+              openPaymentDialog({ method: "acct", remainingBalance })
+            }
           >
             ACCT
             <div
@@ -84,7 +83,9 @@ export default function Pay() {
           <button
             className="square-button"
             disabled={remainingBalance === 0}
-            onClick={() => openPaymentDialog("gift")}
+            onClick={() =>
+              openPaymentDialog({ method: "gift", remainingBalance })
+            }
           >
             GIFT
           </button>

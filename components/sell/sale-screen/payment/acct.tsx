@@ -4,38 +4,22 @@ import { useAtom } from "jotai";
 import { paymentDialogAtom, cartAtom, clerkAtom } from "@/lib/atoms";
 import TextField from "@/components/inputs/text-field";
 import {
-  useInventory,
   useSaleTransactions,
   useVendorTotalPayments,
   useVendorTotalSales,
   useVendorFromContact,
 } from "@/lib/swr-hooks";
-import {
-  getTotalPrice,
-  getRemainingBalance,
-  getTotalOwing,
-} from "@/lib/data-functions";
-import { saveTransactionToDatabase } from "@/lib/db-functions";
+import { getTotalOwing } from "@/lib/data-functions";
+import { saveSaleTransaction } from "@/lib/db-functions";
 
 export default function Acct() {
   const [clerk] = useAtom(clerkAtom);
   const [paymentDialog, setPaymentDialog] = useAtom(paymentDialogAtom);
   const [cart, setCart] = useAtom(cartAtom);
-  const { inventory } = useInventory();
   const { vendor } = useVendorFromContact(cart?.contact_id);
   const { totalPayments } = useVendorTotalPayments(cart?.contact_id);
   const { totalSales } = useVendorTotalSales(cart?.contact_id);
-  const { transactions, mutateSaleTransactions } = useSaleTransactions(
-    cart?.id
-  );
-  const totalPrice = useMemo(() => getTotalPrice(cart, inventory), [
-    cart,
-    inventory,
-  ]);
-  const remainingBalance = useMemo(
-    () => getRemainingBalance(totalPrice, transactions) / 100,
-    [totalPrice, transactions]
-  );
+  const { mutateSaleTransactions } = useSaleTransactions(cart?.id);
   const totalOwing = useMemo(
     () =>
       totalPayments && totalSales
@@ -43,11 +27,13 @@ export default function Acct() {
         : 0,
     [totalPayments, totalSales]
   );
-  const [acctPayment, setAcctPayment] = useState(`${remainingBalance}`);
+  const [acctPayment, setAcctPayment] = useState(
+    `${paymentDialog?.remainingBalance}`
+  );
   const [submitting, setSubmitting] = useState(false);
   return (
     <Modal
-      open={paymentDialog === "acct"}
+      open={paymentDialog?.method === "acct"}
       onClose={() => setPaymentDialog(null)}
     >
       <div className="p-4">
@@ -64,7 +50,7 @@ export default function Acct() {
           onChange={(e: any) => setAcctPayment(e.target.value)}
         />
         <div className="text-center">{`Remaining to pay: $${(
-          remainingBalance || 0
+          paymentDialog?.remainingBalance || 0
         ).toFixed(2)}`}</div>
         <div className="text-center font-bold">
           {`Remaining in account: $${totalOwing.toFixed(2)}`}
@@ -74,13 +60,13 @@ export default function Acct() {
             ? "..."
             : isNaN(parseFloat(acctPayment))
             ? "NUMBERS ONLY PLEASE"
-            : parseFloat(acctPayment) > remainingBalance
+            : parseFloat(acctPayment) > paymentDialog?.remainingBalance
             ? `PAYMENT TOO HIGH`
             : totalOwing < parseFloat(acctPayment)
             ? `NOT ENOUGH IN ACCOUNT`
-            : parseFloat(acctPayment) < remainingBalance
+            : parseFloat(acctPayment) < paymentDialog?.remainingBalance
             ? `AMOUNT SHORT BY $${(
-                remainingBalance - parseFloat(acctPayment)
+                paymentDialog?.remainingBalance - parseFloat(acctPayment)
               ).toFixed(2)}`
             : "ALL GOOD!"}
         </div>
@@ -88,7 +74,7 @@ export default function Acct() {
           className="dialog-action__ok-button mb-8"
           disabled={
             submitting ||
-            parseFloat(acctPayment) > remainingBalance ||
+            parseFloat(acctPayment) > paymentDialog?.remainingBalance ||
             totalOwing < parseFloat(acctPayment) ||
             parseFloat(acctPayment) === 0 ||
             acctPayment <= "" ||
@@ -96,11 +82,11 @@ export default function Acct() {
           }
           onClick={async () => {
             setSubmitting(true);
-            await saveTransactionToDatabase(
+            await saveSaleTransaction(
               cart,
               clerk,
               acctPayment,
-              remainingBalance,
+              paymentDialog?.remainingBalance,
               "acct",
               mutateSaleTransactions,
               setCart,

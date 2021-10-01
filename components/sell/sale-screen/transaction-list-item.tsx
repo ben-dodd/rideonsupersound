@@ -35,10 +35,13 @@ export default function TransactionListItem({
   const { vendor }: UseVendorProps = useVendorFromVendorPayment(
     transaction?.vendor_payment_id
   );
-  const { mutateSaleTransactions } = useSaleTransactions(sale?.id);
   const onClickDelete = () => {
-    deleteSaleTransactionFromDatabase(transaction?.id, mutateSaleTransactions);
+    // Delete transaction item from cart
   };
+  // const { mutateSaleTransactions } = useSaleTransactions(sale?.id);
+  // const onClickDelete = () => {
+  //   deleteSaleTransactionFromDatabase(transaction?.id, mutateSaleTransactions);
+  // };
   return (
     <div
       className={`flex justify-end items-center mt-2 mb-3 ${

@@ -38,7 +38,7 @@ export default function DiscogsPanel({ item, setItem, exchangeRate }) {
           height="50px"
         />
         <button
-          className="icon-text-button"
+          className="icon-text-button hover:text-blue-600"
           onClick={() => {
             setItem({ ...item, discogsItem: null });
             getDiscogsOptions(item, setDiscogsOptions);

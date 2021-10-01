@@ -2,6 +2,11 @@ import { atom } from "jotai";
 
 import { ClerkObject, SaleObject, ContactObject, Modal } from "@/lib/types";
 
+interface paymentDialogProps {
+  method?: string;
+  remainingBalance?: number;
+}
+
 export const clerkAtom = atom<ClerkObject>({ id: null });
 export const cartAtom = atom<SaleObject>({ id: null, items: [] });
 export const pageAtom = atom<string>("sell");
@@ -15,5 +20,5 @@ export const showItemScreenAtom = atom<number>(0);
 // modals
 export const sellModalAtom = atom<Modal>({ open: false });
 export const sellSearchBarAtom = atom<string>("");
-export const paymentDialogAtom = atom<string>("");
+export const paymentDialogAtom = atom<paymentDialogProps>({});
 export const confirmModalAtom = atom<Modal>({ open: false });

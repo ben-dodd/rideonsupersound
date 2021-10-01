@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 import {
   cartAtom,
@@ -6,8 +6,8 @@ import {
   showSaleScreenAtom,
   showCartAtom,
 } from "@/lib/atoms";
-import { useSaleTransactions, useInventory } from "@/lib/swr-hooks";
-import { getRemainingBalance, getTotalPrice } from "@/lib/data-functions";
+import { useInventory } from "@/lib/swr-hooks";
+import { getSaleVars } from "@/lib/data-functions";
 import {
   saveStockMovementToDatabase,
   saveGiftCardToDatabase,
@@ -21,15 +21,12 @@ export default function Action() {
   const [, setShowCart] = useAtom(showCartAtom);
   const [, setShowSaleScreen] = useAtom(showSaleScreenAtom);
   const { inventory } = useInventory();
-  const totalPrice = useMemo(() => getTotalPrice(cart, inventory), [
-    cart,
-    inventory,
-  ]);
-  const { transactions } = useSaleTransactions(cart?.id);
-  const remainingBalance = useMemo(
-    () => getRemainingBalance(totalPrice, transactions) / 100,
-    [totalPrice, transactions]
-  );
+
+  const [remainingBalance, setRemainingBalance] = useState(0);
+  useEffect(() => {
+    const { totalRemaining } = getSaleVars(cart, inventory);
+    setRemainingBalance(totalRemaining);
+  }, [cart]);
   function clickLayby() {
     // Change quantity for all items if it wasn't a layby previously
     if (cart?.state !== "layby") {

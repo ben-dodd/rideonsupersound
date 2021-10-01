@@ -81,20 +81,25 @@ export default function ListItem({ item }: ListItemProps) {
           {`${item?.vendor_name ? `Selling for ${item?.vendor_name}` : ""}`}
         </div>
         <div className="flex justify-between items-end">
-          <div className="text-md">{`${getItemQuantity(item)} in stock`}</div>
+          <div
+            className={`text-md ${getItemQuantity(item) < 1 && "text-red-500"}`}
+          >{`${getItemQuantity(item)} in stock`}</div>
           <div className="text-xl">{`$${((item?.total_sell || 0) / 100).toFixed(
             2
           )}`}</div>
         </div>
       </div>
       <div className="self-center pl-8 hidden sm:inline">
-        <button className="icon-button-large" onClick={clickOpenInventoryModal}>
+        <button
+          className="icon-button-large text-gray-800 hover:text-gray-600"
+          onClick={clickOpenInventoryModal}
+        >
           <InfoIcon style={{ fontSize: "40px" }} />
         </button>
       </div>
       <div className="self-center pl-1 pr-2 hidden sm:inline">
         <button
-          className="icon-button-large"
+          className="icon-button-large hover:text-blue-500"
           disabled={!item?.total_sell}
           onClick={clickAddToCart}
         >

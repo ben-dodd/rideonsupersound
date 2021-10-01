@@ -69,10 +69,10 @@ export interface SaleTransactionObject {
   sale_id: number;
   clerk_id: number;
   payment_method: string;
-  amount: number;
+  total_amount: number;
   cash_received?: number;
   change_given?: number;
-  payment_id?: number;
+  vendor_payment_id?: number;
   gift_card_id?: number;
   card_taken?: boolean;
   date?: string;
@@ -137,6 +137,7 @@ export interface InventoryObject {
   note?: string;
   image_id?: string;
   image_url?: string;
+  thumb_url?: string;
   google_books_item_id?: number;
   discogs_item_id?: number;
   do_list_on_website?: number;
@@ -168,21 +169,6 @@ export interface InventoryObject {
   misc_item_amount?: number;
   googleBooksItem?: any;
   discogsItem?: any;
-}
-
-export interface TransactionObject {
-  id?: number;
-  sale_id: number;
-  clerk_id?: number;
-  date?: string;
-  payment_method?: string;
-  total_amount?: number;
-  cash_received?: number;
-  change_given?: number;
-  vendor_payment_id?: number;
-  gift_card_id?: number;
-  card_taken?: boolean;
-  is_deleted?: boolean;
 }
 
 export interface GiftCardObject {
@@ -293,4 +279,74 @@ export interface DiscogsVideo {
   embed?: boolean;
   title?: string; // Video title
   uri?: string; // Video url
+}
+
+export interface GoogleBooksItem {
+  accessInfo: {
+    accessViewStatus: string;
+    country: string;
+    embeddable: boolean;
+    epub: {
+      isAvailable: boolean;
+    };
+    pdf: {
+      isAvailable: boolean;
+    };
+    publicDomain: boolean;
+    quoteSharingAllowed: boolean;
+    textToSpeechPermission: string;
+    viewability: string;
+    webReaderLink: string;
+  };
+  etag: string;
+  id: string;
+  kind: string;
+  saleInfo: {
+    country: string;
+    isEbook: boolean;
+    saleability: string;
+  };
+  searchInfo: {
+    textSnippet: string;
+  };
+  selfLink: string;
+  volumeInfo: {
+    allowAnonLogging: boolean;
+    authors: string[];
+    averageRating: number;
+    canonicalVolumeLink: string;
+    categories: string[];
+    comicsContent: boolean;
+    contentVersion: string;
+    description: string;
+    imageLinks: {
+      smallThumbnail: string;
+      thumbnail: string;
+    };
+    industryIdentifiers: GoogleBooksIndustryIdentifiers[];
+    infoLink: string;
+    language: string;
+    maturityRating: string;
+    pageCount: number;
+    panelizationSummary: {
+      containsEpubBubbles: boolean;
+      containsImageBubbles: boolean;
+    };
+    previewLink: string;
+    printType: string;
+    publishedDate: string;
+    publisher: string;
+    ratingsCount: number;
+    readingModes: {
+      text: boolean;
+      image: boolean;
+    };
+    subtitle: string;
+    title: string;
+  };
+}
+
+export interface GoogleBooksIndustryIdentifiers {
+  identifier: string;
+  type: string;
 }

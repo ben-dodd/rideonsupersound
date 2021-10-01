@@ -2,9 +2,11 @@ import {
   InventoryObject,
   SaleObject,
   SaleItemObject,
-  TransactionObject,
+  SaleTransactionObject,
   VendorSaleItemObject,
   VendorPayment,
+  DiscogsItem,
+  GoogleBooksItem,
 } from "@/lib/types";
 
 export function getItemSku(item: InventoryObject) {
@@ -154,6 +156,19 @@ export function getItemStoreCut(
   );
 }
 
+export function getSaleVars(cart: SaleObject, inventory: InventoryObject[]) {
+  const totalPrice = getTotalPrice(cart, inventory) / 100;
+  const totalPaid = getTotalPaid(cart) / 100;
+  const totalStoreCut = getTotalStoreCut(cart, inventory) / 100;
+  return {
+    totalPrice,
+    totalPaid,
+    totalStoreCut,
+    totalVendorCut: totalPrice - totalStoreCut,
+    totalRemaining: totalPrice - totalPaid,
+  };
+}
+
 export function getTotalPrice(cart: SaleObject, inventory: InventoryObject[]) {
   return (cart?.items || []).reduce((acc, cartItem) => {
     // Misc Items and Gift Cards in inventory
@@ -176,16 +191,12 @@ export function getTotalStoreCut(
   }, 0);
 }
 
-export function getRemainingBalance(
-  totalPrice: number,
-  transactions: TransactionObject[]
-) {
-  if (!totalPrice || !transactions) return null;
-  // return totalPrice;
-  const totalTransactions = transactions
-    .filter((transaction) => !transaction.is_deleted)
-    .reduce((acc, transaction) => acc + transaction?.total_amount, 0);
-  return totalPrice - totalTransactions;
+export function getTotalPaid(cart: SaleObject) {
+  return cart?.transactions
+    ? cart.transactions
+        .filter((transaction) => !transaction.is_deleted)
+        .reduce((acc, transaction) => acc + transaction?.total_amount, 0)
+    : null;
 }
 
 export function getTotalOwing(
@@ -223,7 +234,7 @@ export function getProfitMargin(item: InventoryObject) {
 }
 
 export function getItemQuantity(item: InventoryObject) {
-  return item?.quantity
+  return item?.quantity || item?.quantity === 0
     ? item?.quantity
     : item?.quantity_received - item?.quantity_returned;
 }
@@ -299,7 +310,7 @@ export function getDiscogsOptions(
 }
 
 export async function getDiscogsItem(
-  discogsItem: any,
+  discogsItem: DiscogsItem,
   item: InventoryObject,
   setItem: Function
 ) {
@@ -375,7 +386,7 @@ export function getGoogleBooksOptions(
 }
 
 export function getGoogleBooksItem(
-  googleBooksItem: any,
+  googleBooksItem: GoogleBooksItem,
   item: InventoryObject,
   setItem: Function
 ) {

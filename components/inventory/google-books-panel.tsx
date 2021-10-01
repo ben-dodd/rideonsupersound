@@ -14,7 +14,7 @@ import SyncIcon from "@material-ui/icons/Sync";
 
 export default function GoogleBooksPanel({ item, setItem }) {
   const [googleBooksOptions, setGoogleBooksOptions] = useState(null);
-  const googleBooksItem = item?.discogsItem;
+  const googleBooksItem = item?.googleBooksItem;
 
   useEffect(() => {
     if (
@@ -35,7 +35,7 @@ export default function GoogleBooksPanel({ item, setItem }) {
           height="50px"
         />
         <button
-          className="icon-text-button"
+          className="icon-text-button hover:bg-blue-100"
           onClick={() => {
             setItem({ ...item, googleBooksItem: null });
             getGoogleBooksOptions(item, setGoogleBooksOptions);
@@ -100,17 +100,23 @@ export default function GoogleBooksPanel({ item, setItem }) {
           <div>
             {`Language: ${googleBooksItem?.volumeInfo?.language || ""}`}
           </div>
-          <div>
-            {`List Price: $${googleBooksItem?.saleInfo?.listPrice?.amount || ""}
+          {googleBooksItem?.saleInfo?.saleability !== "NOT_FOR_SALE" && (
+            <>
+              <div>
+                {`List Price: $${
+                  googleBooksItem?.saleInfo?.listPrice?.amount || ""
+                }
             ${googleBooksItem?.saleInfo?.listPrice?.currencyCode}`}
-          </div>
-          <div>
-            {`Retail Price: $${
-              googleBooksItem?.saleInfo?.retailPrice?.amount || ""
-            }
+              </div>
+              <div>
+                {`Retail Price: $${
+                  googleBooksItem?.saleInfo?.retailPrice?.amount || ""
+                }
                       ${googleBooksItem?.saleInfo?.retailPrice?.currencyCode}
                       `}
-          </div>
+              </div>
+            </>
+          )}
         </div>
       ) : googleBooksOptions ? (
         <div>

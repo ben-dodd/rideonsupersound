@@ -1,8 +1,8 @@
 import {
   SaleObject,
   SaleItemObject,
+  SaleTransactionObject,
   ClerkObject,
-  TransactionObject,
   VendorObject,
   InventoryObject,
 } from "@/lib/types";
@@ -89,7 +89,7 @@ export async function saveSaleItemToDatabase(
   }
 }
 
-export async function saveTransactionToDatabase(
+export async function saveSaleTransaction(
   sale: SaleObject,
   clerk: ClerkObject,
   amount: string,
@@ -100,7 +100,7 @@ export async function saveTransactionToDatabase(
   vendor?: VendorObject
 ) {
   let newSale = { ...sale };
-  let transaction: TransactionObject = {
+  let transaction: SaleTransactionObject = {
     sale_id: sale?.id,
     clerk_id: clerk?.id,
     payment_method: paymentMethod,
@@ -130,18 +130,23 @@ export async function saveTransactionToDatabase(
     vendorPaymentId = await saveVendorPaymentToDatabase(vendorPayment);
     transaction = { ...transaction, vendor_payment_id: vendorPaymentId };
   }
-  let newTransactions = [];
-  newSale?.transactions.forEach(async (transaction) => {
-    if (!transaction?.id) {
-      let newTransaction = { ...transaction };
-      const newTransactionId = await saveSaleTransactionToDatabase(transaction);
-      newTransaction = { ...newTransaction, id: newTransactionId };
-      newTransactions.push(newTransaction);
-    } else {
-      await updateSaleTransactionInDatabase(transaction);
-      newTransactions.push(transaction);
-    }
-  });
+  // newSale?.transactions.forEach(async (transaction) => {
+  // if (!transaction?.id) {
+  // const newTransactionId = await saveSaleTransactionToDatabase(transaction);
+  let date = new Date();
+  transaction = {
+    ...transaction,
+    // id: newTransactionId,
+    date: date.toISOString(),
+  };
+  // } else {
+  //   await updateSaleTransactionInDatabase(transaction);
+  //   newTransactions.push(transaction);
+  // }
+  // });
+  let newTransactions = newSale?.transactions
+    ? [...newSale?.transactions, transaction]
+    : [transaction];
   setCart && setCart({ ...newSale, transactions: newTransactions });
   mutate();
   if (paymentMethod === "gift") {
@@ -149,7 +154,7 @@ export async function saveTransactionToDatabase(
 }
 
 export async function saveSaleTransactionToDatabase(
-  transaction: TransactionObject
+  transaction: SaleTransactionObject
 ) {
   try {
     const res = await fetch("/api/create-sale-transaction", {
@@ -347,7 +352,7 @@ export async function updateSaleItemInDatabase(
 }
 
 export async function updateSaleTransactionInDatabase(
-  transaction: TransactionObject
+  transaction: SaleTransactionObject
 ) {
   try {
     const res = await fetch("/api/update-sale-transaction", {

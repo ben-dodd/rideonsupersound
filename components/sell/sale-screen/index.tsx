@@ -12,10 +12,10 @@ export default function SaleScreen() {
   const [paymentDialog] = useAtom(paymentDialogAtom);
   return (
     <div className="bg-white text-black">
-      {paymentDialog === "acct" && <Acct />}
-      {paymentDialog === "card" && <Card />}
-      {paymentDialog === "cash" && <Cash />}
-      {paymentDialog === "gift" && <Gift />}
+      {paymentDialog?.method === "acct" && <Acct />}
+      {paymentDialog?.method === "card" && <Card />}
+      {paymentDialog?.method === "cash" && <Cash />}
+      {paymentDialog?.method === "gift" && <Gift />}
       <div className="sm:hidden flex flex-col justify-between h-menu px-2">
         <Pay />
         <SaleSummary />

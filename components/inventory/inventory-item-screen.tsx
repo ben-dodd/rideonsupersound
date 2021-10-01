@@ -45,6 +45,7 @@ export default function InventoryItemScreen() {
   );
   const { vendors } = useVendors();
   const [clerk] = useAtom(clerkAtom);
+  console.log(item);
   // const conditionOptions = [
   //   "Mint (M)",
   //   "Near Mint (NM or M-)",
@@ -350,10 +351,11 @@ export default function InventoryItemScreen() {
         </button>
         <button
           className="dialog__footer-buttons--ok"
-          onClick={async () => {
+          onClick={() => {
             setShowItemScreen(0);
-            await updateStockItemInDatabase(item);
+            updateStockItemInDatabase(item);
             setItem(null);
+            // setTimeout(() => setItem(null), 1000);
             mutateInventory();
           }}
         >

@@ -1,55 +1,41 @@
-import { useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 import { format, parseISO } from "date-fns";
 import nz from "date-fns/locale/en-NZ";
 import { cartAtom } from "@/lib/atoms";
-import {
-  useContact,
-  useSaleTransactions,
-  useSaleItems,
-  useClerks,
-} from "@/lib/swr-hooks";
+import { useContact, useClerks, useInventory } from "@/lib/swr-hooks";
 import {
   convertMPStoKPH,
   convertDegToCardinal,
-  getRemainingBalance,
+  getSaleVars,
 } from "@/lib/data-functions";
-import { TransactionObject, VendorSaleItemObject } from "@/lib/types";
+import { TransactionObject } from "@/lib/types";
 import ItemListItem from "./item-list-item";
 import TransactionListItem from "./transaction-list-item";
 
 export default function SaleSummary() {
-  // const vendorCut = useMemo(() => totalPrice - storeCut, [
-  //   totalPrice,
-  //   storeCut,
-  // ]);
   const [cart] = useAtom(cartAtom);
   const { clerks } = useClerks();
   const saleComplete = Boolean(cart?.state === "complete");
   const { contact } = useContact(cart?.contact_id);
-  const { items } = useSaleItems(cart?.id);
-  const { transactions } = useSaleTransactions(cart?.id);
-  const vendorCut = useMemo<number>(
-    () =>
-      (items || []).reduce<number>(
-        (acc: number, item: VendorSaleItemObject) => acc + item?.vendor_cut,
-        0
-      ),
-    [items]
-  );
-  const totalPrice = useMemo<number>(
-    () =>
-      (items || []).reduce<number>(
-        (acc: number, item: VendorSaleItemObject) => acc + item?.total_sell,
-        0
-      ),
-    [items]
-  );
-  const storeCut = totalPrice - vendorCut;
-  const remainingBalance = useMemo(
-    () => getRemainingBalance(totalPrice, cart?.transactions) / 100,
-    [totalPrice, cart?.transactions]
-  );
+  const { inventory } = useInventory();
+
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [storeCut, setStoreCut] = useState(0);
+  const [vendorCut, setVendorCut] = useState(0);
+  const [remainingBalance, setRemainingBalance] = useState(0);
+  useEffect(() => {
+    const {
+      totalPrice,
+      totalStoreCut,
+      totalVendorCut,
+      totalRemaining,
+    } = getSaleVars(cart, inventory);
+    setRemainingBalance(totalRemaining);
+    setTotalPrice(totalPrice);
+    setStoreCut(totalStoreCut);
+    setVendorCut(totalVendorCut);
+  }, [cart]);
 
   return (
     <div className="flex flex-col justify-between h-menu p-2 bg-blue-200 text-black">
@@ -164,7 +150,7 @@ export default function SaleSummary() {
               vendorCut < 0 && "text-red-400"
             }`}
           >
-            {`$${(vendorCut / 100).toFixed(2)}`}
+            {`$${vendorCut.toFixed(2)}`}
           </div>
         </div>
         <div className="flex justify-end border-gray-500">
@@ -174,19 +160,19 @@ export default function SaleSummary() {
               storeCut < 0 && "text-tertiary-dark"
             }`}
           >
-            {`$${(storeCut / 100).toFixed(2)}`}
+            {`$${storeCut.toFixed(2)}`}
           </div>
         </div>
         <div className="flex justify-end mt-1">
           <div>TOTAL</div>
           <div className="text-right w-2/12 font-bold">
-            ${totalPrice !== null ? (totalPrice / 100).toFixed(2) : "0.00"}
+            ${totalPrice !== null ? totalPrice.toFixed(2) : "0.00"}
           </div>
         </div>
         <div className="flex justify-end mt-1">
           <div>TOTAL PAID</div>
           <div className="text-right w-2/12 font-bold text-secondary-dark">
-            ${(totalPrice / 100 - remainingBalance).toFixed(2)}
+            ${(totalPrice - remainingBalance).toFixed(2)}
           </div>
         </div>
         <div className="flex justify-end mt-1">
@@ -202,7 +188,7 @@ export default function SaleSummary() {
   function TransactionItems() {
     return (
       <div className="mt-1 pt-1 border-t border-gray-500 max-h-1/3 overflow-y-scroll">
-        {transactions?.map((transaction: TransactionObject) => (
+        {cart?.transactions?.map((transaction: TransactionObject) => (
           <TransactionListItem
             key={transaction?.id}
             sale={cart}
