@@ -28,6 +28,7 @@ export default function SaleSummary() {
   const saleComplete = Boolean(cart?.state === "complete");
   const { contact } = useContact(cart?.contact_id);
   const { items } = useSaleItems(cart?.id);
+  const { transactions } = useSaleTransactions(cart?.id);
   const vendorCut = useMemo<number>(
     () =>
       (items || []).reduce<number>(
