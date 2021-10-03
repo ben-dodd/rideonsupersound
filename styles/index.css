@@ -105,6 +105,14 @@
   @apply flex items-center text-lg font-bold py-1 px-2 bg-primary-light shadow-md;
 }
 
+.dialog-action__body {
+  @apply px-6 pt-6 flex-grow overflow-y-scroll;
+}
+
+.dialog-action__title {
+  @apply text-4xl text-center tracking-wide font-black w-full mb-2;
+}
+
 .dialog-action__button {
   @apply w-full mt-2 border rounded-xl ring-4 py-4 cursor-pointer bg-white disabled:pointer-events-none disabled:bg-gray-300 disabled:text-gray-400 disabled:ring-gray-400;
 }
@@ -125,12 +133,16 @@
   @apply grid grid-cols-right bg-gray-100;
 }
 
+.dialog__footer--actions-full {
+  @apply flex bg-gray-100;
+}
+
 .dialog__footer--actions-center {
   @apply grid grid-cols-2;
 }
 
 .dialog__footer-buttons--cancel {
-  @apply p-2 text-lg bg-tertiary w-full hover:bg-tertiary-dark;
+  @apply p-2 text-lg bg-tertiary w-full hover:bg-tertiary-dark disabled:bg-gray-200 disabled:text-gray-300 disabled:cursor-default;
 }
 
 .dialog__footer-buttons--secondary {

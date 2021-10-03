@@ -15,12 +15,22 @@ export function getItemSku(item: InventoryObject) {
   ).slice(-5)}`;
 }
 
-export function getItemTitle(item: InventoryObject) {
+export function getItemDisplayName(item: InventoryObject) {
   // Add special cases e.g. for comics
   // Might be better as a span component
+  if (item?.display_as) return item?.display_as;
+  if (!item || !(item?.artist || item?.title)) return "Untitled";
   return `${item?.title || ""}${item?.title && item?.artist ? " - " : ""}${
     item?.artist || ""
   }`;
+}
+
+export function getItemSkuDisplayName(
+  item_id: number,
+  inventory: InventoryObject[]
+) {
+  let item = (inventory || []).filter((i) => i?.id === item_id)[0];
+  return `[${getItemSku(item)}] ${getItemDisplayName(item)}`;
 }
 
 export function getImageSrc(item: InventoryObject) {
@@ -76,15 +86,6 @@ export function writeCartItemPriceTotal(
     : item?.is_misc_item
     ? `$${(item?.misc_item_amount / 100).toFixed(2)}`
     : `$${(getItemPrice(item, cartItem) / 100).toFixed(2)}`;
-}
-
-export function writeInventoryDisplayName(item: InventoryObject) {
-  if (!item || !(item?.artist || item?.title)) return "Untitled";
-  let str = item?.sku || "";
-  if (item?.display_as) return `${str}${item?.display_as}`;
-  return `${str}${item?.artist}${item?.artist && item?.title && " - "}${
-    item?.title
-  }`;
 }
 
 export function filterInventory({ inventory, search }) {
@@ -169,6 +170,18 @@ export function getSaleVars(cart: SaleObject, inventory: InventoryObject[]) {
   };
 }
 
+export function getItemQuantity(item: InventoryObject, cart: SaleObject) {
+  const saleItem = (cart?.items || []).filter(
+    (i: SaleItemObject) => i?.item_id === item?.id
+  )[0];
+  const cartQuantity = saleItem?.quantity || "0";
+  return item?.quantity || item?.quantity === 0
+    ? item?.quantity - parseInt(cartQuantity)
+    : item?.quantity_received -
+        item?.quantity_returned -
+        parseInt(cartQuantity);
+}
+
 export function getTotalPrice(cart: SaleObject, inventory: InventoryObject[]) {
   return (cart?.items || []).reduce((acc, cartItem) => {
     // Misc Items and Gift Cards in inventory
@@ -192,6 +205,7 @@ export function getTotalStoreCut(
 }
 
 export function getTotalPaid(cart: SaleObject) {
+  console.log(cart?.transactions);
   return cart?.transactions
     ? cart.transactions
         .filter((transaction) => !transaction.is_deleted)
@@ -231,12 +245,6 @@ export function getProfitMargin(item: InventoryObject) {
   if (sellNum > 0)
     return `${(((sellNum - costNum) / sellNum) * 100).toFixed(1)}%`;
   else return "";
-}
-
-export function getItemQuantity(item: InventoryObject) {
-  return item?.quantity || item?.quantity === 0
-    ? item?.quantity
-    : item?.quantity_received - item?.quantity_returned;
 }
 
 export function getGeolocation() {

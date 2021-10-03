@@ -5,7 +5,7 @@ import Image from "next/image";
 import { InventoryObject, SaleItemObject } from "@/lib/types";
 import {
   getItemSku,
-  getItemTitle,
+  getItemDisplayName,
   getCartItemSummary,
   getImageSrc,
 } from "@/lib/data-functions";
@@ -44,7 +44,7 @@ export default function ItemListItem({ cartItem }: SellListItemProps) {
             ? item?.gift_card_code
             : item?.is_misc_item
             ? item?.misc_item_description
-            : getItemTitle(item)}
+            : getItemDisplayName(item)}
         </div>
         <div className="text-red-500 self-end">
           {getCartItemSummary(item, cartItem)}

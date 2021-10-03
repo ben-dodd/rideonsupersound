@@ -8,7 +8,7 @@ export default function Modal({
     <div
       className={`${
         !open && "opacity-0 pointer-events-none "
-      }transition-opacity duration-300 ease-in-out absolute w-full h-full top-0 left-0 flex items-center justify-center`}
+      }transition-opacity duration-200 ease-in-out absolute w-full h-full top-0 left-0 flex items-center justify-center`}
     >
       <div
         onClick={disableBackdropClick ? null : onClose}

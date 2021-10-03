@@ -5,6 +5,7 @@ import { paymentDialogAtom, cartAtom, clerkAtom } from "@/lib/atoms";
 import TextField from "@/components/inputs/text-field";
 import { useSaleTransactions } from "@/lib/swr-hooks";
 import { saveSaleTransaction } from "@/lib/db-functions";
+import CloseButton from "@/components/button/close-button";
 
 export default function Cash() {
   const [clerk] = useAtom(clerkAtom);
@@ -21,6 +22,7 @@ export default function Cash() {
       open={paymentDialog?.method === "card"}
       onClose={() => setPaymentDialog(null)}
     >
+      <CloseButton closeFunction={() => setPaymentDialog(null)} />
       <div className="p-4">
         <div className="text-center text-4xl font-bold py-2">CARD PAYMENT</div>
         <TextField

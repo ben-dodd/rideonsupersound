@@ -38,7 +38,7 @@ export default function SaleSummary() {
   }, [cart]);
 
   return (
-    <div className="flex flex-col justify-between h-menu p-2 bg-blue-200 text-black">
+    <div className="flex flex-col justify-between p-2 bg-blue-200 text-black">
       {saleComplete ? (
         <>
           <SaleHeader />
@@ -130,8 +130,8 @@ export default function SaleSummary() {
     return (
       <div className="max-h-2/5 overflow-y-scroll">
         {(cart?.items || []).length > 0 ? (
-          cart?.items?.map((cartItem, id) => (
-            <ItemListItem key={id} cartItem={cartItem} />
+          cart?.items?.map((cartItem) => (
+            <ItemListItem key={cartItem?.item_id} cartItem={cartItem} />
           ))
         ) : (
           <div>No items in cart...</div>

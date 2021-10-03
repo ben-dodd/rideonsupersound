@@ -2,8 +2,8 @@ import { useAtom } from "jotai";
 
 import Image from "next/image";
 
-import AddIcon from "@material-ui/icons/AddCircleOutline";
-import InfoIcon from "@material-ui/icons/Info";
+import AddIcon from "@mui/icons-material/AddCircleOutline";
+import InfoIcon from "@mui/icons-material/Info";
 
 import { InventoryObject, SaleObject } from "@/lib/types";
 import {
@@ -11,11 +11,13 @@ import {
   showCartAtom,
   clerkAtom,
   showItemScreenAtom,
+  confirmModalAtom,
 } from "@/lib/atoms";
 import { useWeather } from "@/lib/swr-hooks";
 import {
   getItemSku,
   getGeolocation,
+  getItemDisplayName,
   getItemQuantity,
   getImageSrc,
 } from "@/lib/data-functions";
@@ -27,20 +29,47 @@ type ListItemProps = {
 export default function ListItem({ item }: ListItemProps) {
   const [cart, setCart] = useAtom(cartAtom);
   const [, setShowCart] = useAtom(showCartAtom);
+  const [, setConfirmModal] = useAtom(confirmModalAtom);
   const [, openInventoryModal] = useAtom(showItemScreenAtom);
   const [clerk] = useAtom(clerkAtom);
   const geolocation = getGeolocation();
   const { weather } = useWeather();
-  const clickAddToCart = () =>
-    addItemToCart(
-      item,
-      cart,
-      setCart,
-      clerk?.id,
-      setShowCart,
-      weather,
-      geolocation
-    );
+  const itemQuantity = getItemQuantity(item, cart);
+  const clickAddToCart = () => {
+    if (itemQuantity < 1) {
+      setConfirmModal({
+        open: true,
+        title: "Are you sure you want to add to cart?",
+        styledMessage: (
+          <span>
+            There is no more of <b>{getItemDisplayName(item)}</b> in stock. Are
+            you sure you want to add to cart?
+          </span>
+        ),
+        yesText: "YES, I'M SURE",
+        action: () =>
+          addItemToCart(
+            item,
+            cart,
+            setCart,
+            clerk?.id,
+            setShowCart,
+            weather,
+            geolocation
+          ),
+      });
+    } else {
+      addItemToCart(
+        item,
+        cart,
+        setCart,
+        clerk?.id,
+        setShowCart,
+        weather,
+        geolocation
+      );
+    }
+  };
   const clickOpenInventoryModal = () => openInventoryModal(item?.id);
   // Disable mobile only for now
   // <div
@@ -82,8 +111,8 @@ export default function ListItem({ item }: ListItemProps) {
         </div>
         <div className="flex justify-between items-end">
           <div
-            className={`text-md ${getItemQuantity(item) < 1 && "text-red-500"}`}
-          >{`${getItemQuantity(item)} in stock`}</div>
+            className={`text-md ${itemQuantity < 1 && "text-red-500"}`}
+          >{`${itemQuantity} in stock`}</div>
           <div className="text-xl">{`$${((item?.total_sell || 0) / 100).toFixed(
             2
           )}`}</div>
@@ -128,6 +157,7 @@ function addItemToCart(
     });
   else newItems[index].quantity = `${parseInt(newItems[index].quantity) + 1}`;
   setCart({
+    id: cart?.id || null,
     date_sale_opened: cart?.date_sale_opened || new Date(),
     sale_opened_by: cart?.sale_opened_by || clerkId,
     items: newItems,

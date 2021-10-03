@@ -10,7 +10,7 @@ import { format, parseISO } from "date-fns";
 import nz from "date-fns/locale/en-NZ";
 
 // Material UI Icons
-import SyncIcon from "@material-ui/icons/Sync";
+import SyncIcon from "@mui/icons-material/Sync";
 
 export default function GoogleBooksPanel({ item, setItem }) {
   const [googleBooksOptions, setGoogleBooksOptions] = useState(null);

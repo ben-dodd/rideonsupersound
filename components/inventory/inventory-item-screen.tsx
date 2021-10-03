@@ -5,7 +5,7 @@ import { showItemScreenAtom, clerkAtom } from "@/lib/atoms";
 import { useVendors, useStockItem, useInventory } from "@/lib/swr-hooks";
 import { VendorObject, InventoryObject } from "@/lib/types";
 import {
-  writeInventoryDisplayName,
+  getItemDisplayName,
   getGrossProfit,
   getProfitMargin,
   getImageSrc,
@@ -19,7 +19,7 @@ import RadioButton from "@/components/inputs/radio-button";
 import DiscogsPanel from "./discogs-panel";
 import GoogleBooksPanel from "./google-books-panel";
 
-import ChevronLeft from "@material-ui/icons/ChevronLeft";
+import ChevronLeft from "@mui/icons-material/ChevronLeft";
 
 export default function InventoryItemScreen() {
   const [stockItemId, setShowItemScreen] = useAtom(showItemScreenAtom);
@@ -46,16 +46,6 @@ export default function InventoryItemScreen() {
   const { vendors } = useVendors();
   const [clerk] = useAtom(clerkAtom);
   console.log(item);
-  // const conditionOptions = [
-  //   "Mint (M)",
-  //   "Near Mint (NM or M-)",
-  //   "Very Good Plus (VG+)",
-  //   "Very Good (VG)",
-  //   "Good Plus (G+)",
-  //   "Good (G)",
-  //   "Fair (F)",
-  //   "Poor (P)",
-  // ];
 
   useEffect(() => {
     fetch(`https://api.exchangeratesapi.io/latest?symbols=USD,NZD`).then(
@@ -97,7 +87,7 @@ export default function InventoryItemScreen() {
         >
           <ChevronLeft />
         </button>
-        {writeInventoryDisplayName(item)}
+        {getItemDisplayName(item)}
       </div>
       <div className="flex items-start overflow-auto">
         <div className={`p-6 ${syncInfo ? "w-6/12" : "w-full"}`}>
@@ -142,7 +132,7 @@ export default function InventoryItemScreen() {
                 inputLabel="TITLE"
               />
               <TextField
-                value={item?.display_as || writeInventoryDisplayName(item)}
+                value={item?.display_as || getItemDisplayName(item)}
                 onChange={(e: any) =>
                   setItem({ ...item, display_as: e.target.value })
                 }
@@ -166,22 +156,26 @@ export default function InventoryItemScreen() {
             </div>
             <div className="stock-indicator__container">SOLD</div>
             <div className="stock-indicator__number bg-secondary-light">
-              {item?.quantity_sold || 0}
+              {Math.abs(item?.quantity_sold || 0)}
             </div>
             <div className="stock-indicator__container">RETURNED</div>
             <div className="stock-indicator__number bg-secondary-light">
-              {item?.quantity_returned || 0}
+              {Math.abs(item?.quantity_returned || 0)}
             </div>
             <div className="stock-indicator__container">LAYBY/HOLD</div>
             <div className="stock-indicator__number bg-secondary-light">
-              {item?.quantity_layby +
-                item?.quantity_hold -
-                item?.quantity_unlayby -
-                item?.quantity_unhold}
+              {(item?.quantity_layby +
+                item?.quantity_hold +
+                item?.quantity_unlayby +
+                item?.quantity_unhold) *
+                -1}
             </div>
             <div className="stock-indicator__container">DISCARD/LOST</div>
             <div className="stock-indicator__number bg-secondary-light">
-              {item?.quantity_discarded + item?.quantity_lost}
+              {(item?.quantity_discarded +
+                item?.quantity_lost +
+                item?.quantity_found) *
+                -1}
             </div>
           </div>
           <div className="grid grid-cols-4 gap-2 mb-4">

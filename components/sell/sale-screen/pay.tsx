@@ -15,7 +15,7 @@ import { ContactObject } from "@/lib/types";
 import { getSaleVars } from "@/lib/data-functions";
 import CreateableSelect from "@/components/inputs/createable-select";
 import TextField from "@/components/inputs/text-field";
-import BackIcon from "@material-ui/icons/ChevronLeft";
+import BackIcon from "@mui/icons-material/ChevronLeft";
 
 export default function Pay() {
   const [cart, setCart] = useAtom(cartAtom);
@@ -31,98 +31,92 @@ export default function Pay() {
     const { totalRemaining } = getSaleVars(cart, inventory);
     setRemainingBalance(totalRemaining);
   }, [showSaleScreen, cart]);
-
-  function onClickGoBack() {
-    setShowSaleScreen(false);
-  }
+  //
+  // function onClickGoBack() {
+  //   setShowSaleScreen(false);
+  // }
   return (
     <div className="flex flex-col justify-between">
-      <div>
-        <div className="flex justify-between my-2">
-          <button onClick={onClickGoBack}>
-            <BackIcon />
-          </button>
-          <div className="text-2xl font-bold">LEFT TO PAY</div>
-          <div className="text-2xl text-red-500 font-bold text-xl">
-            ${(remainingBalance || 0).toFixed(2)}
-          </div>
+      <div className="flex justify-between my-2">
+        <div className="text-2xl font-bold">LEFT TO PAY</div>
+        <div className="text-2xl text-red-500 font-bold text-xl">
+          ${(remainingBalance || 0).toFixed(2)}
         </div>
-        <div className="grid grid-cols-2 gap-2 mt-4">
-          <button
-            className="square-button"
-            disabled={remainingBalance === 0}
-            onClick={() =>
-              openPaymentDialog({ method: "cash", remainingBalance })
-            }
-          >
-            CASH
-          </button>
-          <button
-            className="square-button"
-            disabled={remainingBalance === 0}
-            onClick={() =>
-              openPaymentDialog({ method: "card", remainingBalance })
-            }
-          >
-            CARD
-          </button>
-          <button
-            className="square-button"
-            disabled={!cart?.contact_id || !vendor || remainingBalance === 0}
-            onClick={() =>
-              openPaymentDialog({ method: "acct", remainingBalance })
-            }
-          >
-            ACCT
-            <div
-              className={`text-xs ${cart?.contact_id ? "hidden" : "w-full"}`}
-            >
-              Contact Required
-            </div>
-          </button>
-          <button
-            className="square-button"
-            disabled={remainingBalance === 0}
-            onClick={() =>
-              openPaymentDialog({ method: "gift", remainingBalance })
-            }
-          >
-            GIFT
-          </button>
-        </div>
-        <CreateableSelect
-          inputLabel="Select contact"
-          value={cart?.contact_id}
-          label={
-            (contacts || []).filter(
-              (c: ContactObject) => c?.id === cart?.contact_id
-            )[0]?.name || ""
-          }
-          onChange={(contactObject: any) => {
-            setCart({
-              ...cart,
-              contact_id: parseInt(contactObject?.value),
-            });
-          }}
-          onCreateOption={(inputValue: string) =>
-            setCreateContactScreen({
-              id: 1,
-              name: inputValue,
-            })
-          }
-          options={contacts?.map((val: ContactObject) => ({
-            value: val?.id,
-            label: val?.name || "",
-          }))}
-          disabled={Boolean(paymentDialog)}
-        />
-        <TextField
-          inputLabel="Note"
-          multiline
-          value={note}
-          onChange={(e: any) => setNote(e.target.value)}
-        />
       </div>
+      <div className="grid grid-cols-2 gap-2 mt-4">
+        <button
+          className="square-button"
+          disabled={remainingBalance === 0}
+          onClick={() =>
+            openPaymentDialog({ method: "cash", remainingBalance })
+          }
+        >
+          CASH
+        </button>
+        <button
+          className="square-button"
+          disabled={remainingBalance === 0}
+          onClick={() =>
+            openPaymentDialog({ method: "card", remainingBalance })
+          }
+        >
+          CARD
+        </button>
+        <button
+          className="square-button"
+          disabled={!cart?.contact_id || !vendor || remainingBalance === 0}
+          onClick={() =>
+            openPaymentDialog({ method: "acct", remainingBalance })
+          }
+        >
+          ACCT
+          <div className={`text-xs ${cart?.contact_id ? "hidden" : "w-full"}`}>
+            Contact Required
+          </div>
+        </button>
+        <button
+          className="square-button"
+          disabled={true || remainingBalance === 0}
+          onClick={() =>
+            openPaymentDialog({ method: "gift", remainingBalance })
+          }
+        >
+          GIFT
+          <div className={`text-xs`}>Out of Order</div>
+        </button>
+      </div>
+      <CreateableSelect
+        inputLabel="Select contact"
+        value={cart?.contact_id}
+        label={
+          (contacts || []).filter(
+            (c: ContactObject) => c?.id === cart?.contact_id
+          )[0]?.name || ""
+        }
+        onChange={(contactObject: any) => {
+          setCart({
+            ...cart,
+            contact_id: parseInt(contactObject?.value),
+          });
+        }}
+        onCreateOption={(inputValue: string) =>
+          setCreateContactScreen({
+            id: 1,
+            name: inputValue,
+          })
+        }
+        options={contacts?.map((val: ContactObject) => ({
+          value: val?.id,
+          label: val?.name || "",
+        }))}
+        disabled={Boolean(paymentDialog?.method)}
+      />
+      <TextField
+        inputLabel="Note"
+        multiline
+        value={note}
+        onChange={(e: any) => setNote(e.target.value)}
+      />
     </div>
   );
 }

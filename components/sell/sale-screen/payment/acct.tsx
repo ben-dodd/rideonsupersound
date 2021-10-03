@@ -3,6 +3,8 @@ import Modal from "@/components/modal";
 import { useAtom } from "jotai";
 import { paymentDialogAtom, cartAtom, clerkAtom } from "@/lib/atoms";
 import TextField from "@/components/inputs/text-field";
+import CloseButton from "@/components/button/close-button";
+
 import {
   useSaleTransactions,
   useVendorTotalPayments,
@@ -36,6 +38,7 @@ export default function Acct() {
       open={paymentDialog?.method === "acct"}
       onClose={() => setPaymentDialog(null)}
     >
+      <CloseButton closeFunction={() => setPaymentDialog(null)} />
       <div className="p-4">
         <div className="text-center text-4xl font-bold py-2">
           ACCOUNT PAYMENT

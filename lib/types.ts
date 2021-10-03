@@ -28,8 +28,11 @@ export interface Modal {
   onClose?: Function;
   title?: string;
   message?: string;
+  styledMessage?: any;
   action?: Function;
+  secondAction?: Function;
   yesText?: string;
+  secondText?: string;
   noText?: string;
 }
 
@@ -43,6 +46,8 @@ export interface SaleObject {
   sale_opened_by?: number;
   date_sale_closed?: string;
   sale_closed_by?: number;
+  date_layby_started?: string;
+  layby_started_by?: number;
   cash_note?: string;
   note?: string;
   weather?: any;
@@ -151,6 +156,7 @@ export interface InventoryObject {
   quantity_received?: number;
   quantity_returned?: number;
   quantity_lost?: number;
+  quantity_found?: number;
   quantity_discarded?: number;
   quantity_layby?: number;
   quantity_unlayby?: number;
@@ -182,6 +188,13 @@ export interface GiftCardObject {
   date_created?: string;
   date_modified?: string;
   is_deleted?: boolean;
+}
+
+export interface LogObject {
+  log: string;
+  clerk_id?: number;
+  table_id?: string;
+  row_id?: number;
 }
 
 export interface DiscogsItem {

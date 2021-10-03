@@ -1,4 +1,4 @@
-import SearchIcon from "@material-ui/icons/Search";
+import SearchIcon from "@mui/icons-material/Search";
 import { useAtom } from "jotai";
 import { sellSearchBarAtom } from "@/lib/atoms";
 

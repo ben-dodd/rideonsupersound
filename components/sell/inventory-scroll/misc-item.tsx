@@ -1,4 +1,4 @@
-import AddIcon from "@material-ui/icons/Add";
+import AddIcon from "@mui/icons-material/Add";
 import Image from "next/image";
 
 export default function MiscItem() {

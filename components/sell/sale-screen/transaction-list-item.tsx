@@ -1,3 +1,4 @@
+import { useAtom } from "jotai";
 import {
   SaleTransactionObject,
   GiftCardObject,
@@ -9,10 +10,11 @@ import {
   useVendorFromVendorPayment,
   useSaleTransactions,
 } from "@/lib/swr-hooks";
+import { cartAtom } from "@/lib/atoms";
 import { deleteSaleTransactionFromDatabase } from "@/lib/db-functions";
 import { format, parseISO } from "date-fns";
 import nz from "date-fns/locale/en-NZ";
-import DeleteIcon from "@material-ui/icons/Delete";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 type TransactionListItemProps = {
   transaction: SaleTransactionObject;
@@ -32,11 +34,20 @@ export default function TransactionListItem({
   sale,
 }: TransactionListItemProps) {
   const { giftCard }: UseGiftCardProps = useGiftCard(transaction?.gift_card_id);
+  const [cart, setCart] = useAtom(cartAtom);
   const { vendor }: UseVendorProps = useVendorFromVendorPayment(
     transaction?.vendor_payment_id
   );
+  const { mutateSaleTransactions } = useSaleTransactions(sale?.id);
   const onClickDelete = () => {
     // Delete transaction item from cart
+    setCart({
+      ...cart,
+      transactions: (cart?.transactions || []).map((t) =>
+        t?.id === transaction?.id ? { ...t, is_deleted: true } : t
+      ),
+    });
+    deleteSaleTransactionFromDatabase(transaction?.id, mutateSaleTransactions);
   };
   // const { mutateSaleTransactions } = useSaleTransactions(sale?.id);
   // const onClickDelete = () => {
@@ -132,7 +143,7 @@ export default function TransactionListItem({
         <div className="text-right text-xs">
           {transaction?.payment_method === "cash"
             ? transaction?.change_given
-              ? `($${transaction.change_given.toFixed(2)} CHANGE)`
+              ? `($${(transaction.change_given / 100).toFixed(2)} CHANGE)`
               : "(NO CHANGE)"
             : transaction?.payment_method === "acct"
             ? `[${(vendor?.name || "").toUpperCase()}]`

@@ -4,12 +4,12 @@ import { useInventory } from "@/lib/swr-hooks";
 
 import Image from "next/image";
 import TextField from "@/components/inputs/text-field";
-import DeleteIcon from "@material-ui/icons/Delete";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { InventoryObject, SaleItemObject } from "@/lib/types";
 import { cartAtom } from "@/lib/atoms";
 import {
   getItemSku,
-  getItemTitle,
+  getItemDisplayName,
   getCartItemSummary,
   writeCartItemPriceTotal,
   writeCartItemPriceBreakdown,
@@ -69,7 +69,7 @@ export default function SellListItem({
               ? item?.gift_card_code
               : item?.is_misc_item
               ? item?.misc_item_description
-              : getItemTitle(item)}
+              : getItemDisplayName(item)}
           </div>
           <div className="text-red-500 self-end">
             {getCartItemSummary(item, cartItem)}

@@ -4,7 +4,7 @@ import { useInventory } from "@/lib/swr-hooks";
 import { InventoryObject, SaleItemObject } from "@/lib/types";
 import {
   getItemSku,
-  getItemTitle,
+  getItemDisplayName,
   getCartItemSummary,
 } from "@/lib/data-functions";
 
@@ -36,7 +36,7 @@ export default function SellListItem({ cartItem }: HoldListItemProps) {
         {getItemSku(item)}
       </div>
       <div className="flex flex-col w-full p-2 justify-between">
-        <div className="text-xs pl-1">{getItemTitle(item)}</div>
+        <div className="text-xs pl-1">{getItemDisplayName(item)}</div>
         <div className="text-red-500 self-end">
           {getCartItemSummary(item, cartItem)}
         </div>

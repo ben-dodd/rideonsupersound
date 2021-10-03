@@ -4,7 +4,9 @@ import {
   SaleTransactionObject,
   ClerkObject,
   VendorObject,
+  VendorPayment,
   InventoryObject,
+  LogObject,
 } from "@/lib/types";
 
 export async function saveSaleAndItemsToDatabase(
@@ -13,17 +15,19 @@ export async function saveSaleAndItemsToDatabase(
   setCart?: Function
 ) {
   let newSale = { ...sale };
-  if (!newSale?.id) {
-    const newSaleId = await saveSaleToDatabase(
-      { ...sale, state: "in_progress" },
-      clerk
-    );
+  console.log(newSale);
+  let newSaleId = newSale?.id;
+  console.log(newSaleId);
+  if (!newSaleId) {
+    newSale.state = "in progress";
+    newSaleId = await saveSaleToDatabase(newSale, clerk);
     newSale = { ...newSale, id: newSaleId };
+    console.log(newSaleId);
   } else {
-    await updateSaleInDatabase(sale);
+    updateSaleInDatabase(sale);
   }
   let newItems = [];
-  sale?.items.forEach(async (item) => {
+  for await (const item of sale?.items) {
     if (!item?.id) {
       let newItem = { ...item };
       const newSaleItemId = await saveSaleItemToDatabase(item, newSale?.id);
@@ -33,8 +37,9 @@ export async function saveSaleAndItemsToDatabase(
       await updateSaleItemInDatabase(item, sale);
       newItems.push(item);
     }
-  });
+  }
   setCart && setCart({ ...newSale, items: newItems });
+  return newSaleId;
 }
 
 export async function saveSaleToDatabase(sale: SaleObject, clerk: ClerkObject) {
@@ -110,6 +115,7 @@ export async function saveSaleTransaction(
         : parseFloat(amount) * 100,
   };
   if (paymentMethod === "cash") {
+    // Add cash variables
     transaction = {
       ...transaction,
       cash_received: parseFloat(amount) * 100,
@@ -120,6 +126,7 @@ export async function saveSaleTransaction(
     };
   }
   if (paymentMethod === "acct") {
+    // Add account payment as a store payment to the vendor
     let vendorPaymentId = null;
     const vendorPayment = {
       amount: parseFloat(amount) * 100,
@@ -130,27 +137,22 @@ export async function saveSaleTransaction(
     vendorPaymentId = await saveVendorPaymentToDatabase(vendorPayment);
     transaction = { ...transaction, vendor_payment_id: vendorPaymentId };
   }
-  // newSale?.transactions.forEach(async (transaction) => {
-  // if (!transaction?.id) {
-  // const newTransactionId = await saveSaleTransactionToDatabase(transaction);
+  if (paymentMethod === "gift") {
+    // Update remaining balance etc. on gift card
+  }
+  const transactionId = await saveSaleTransactionToDatabase(transaction);
   let date = new Date();
   transaction = {
     ...transaction,
-    // id: newTransactionId,
+    id: transactionId,
     date: date.toISOString(),
   };
-  // } else {
-  //   await updateSaleTransactionInDatabase(transaction);
-  //   newTransactions.push(transaction);
-  // }
-  // });
-  let newTransactions = newSale?.transactions
+  const newTransactions = newSale?.transactions
     ? [...newSale?.transactions, transaction]
     : [transaction];
-  setCart && setCart({ ...newSale, transactions: newTransactions });
+  newSale.transactions = newTransactions;
+  setCart && setCart(newSale);
   mutate();
-  if (paymentMethod === "gift") {
-  }
 }
 
 export async function saveSaleTransactionToDatabase(
@@ -172,7 +174,9 @@ export async function saveSaleTransactionToDatabase(
   }
 }
 
-export async function saveVendorPaymentToDatabase(vendorPayment) {
+export async function saveVendorPaymentToDatabase(
+  vendorPayment: VendorPayment
+) {
   try {
     const res = await fetch("/api/create-vendor-payment", {
       method: "POST",
@@ -237,10 +241,11 @@ export async function saveHoldToDatabase(
     });
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
+    saveStockMovementToDatabase(item, clerk, "hold", null);
+    return json?.insertId;
   } catch (e) {
     throw Error(e.message);
   }
-  saveStockMovementToDatabase(item, clerk, "hold", null);
 }
 
 export async function saveGiftCardToDatabase() {
@@ -251,6 +256,27 @@ export async function saveGiftCardToDatabase() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({}),
+    });
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
+
+export async function saveLog(log: LogObject) {
+  try {
+    const res = await fetch("/api/create-log", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        log: escape(log?.log),
+        table_id: log?.table_id || null,
+        row_id: log?.row_id || null,
+        clerk_id: log?.clerk_id || null,
+      }),
     });
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
@@ -274,7 +300,14 @@ export async function saveStockMovementToDatabase(
       body: JSON.stringify({
         stock_id: item?.item_id,
         clerk_id: clerk?.id,
-        quantity: item?.quantity,
+        quantity:
+          act === "receive" ||
+          act === "unhold" ||
+          act === "unlayby" ||
+          act === "found" ||
+          act === "unsold"
+            ? item?.quantity
+            : -item?.quantity,
         act,
         note,
       }),
@@ -311,9 +344,9 @@ export async function updateSaleInDatabase(sale: SaleObject) {
       },
       body: JSON.stringify({
         sale_id: sale?.id,
-        contact_id: sale?.contact_id,
-        state: sale?.state,
-        note: sale?.note,
+        contact_id: sale?.contact_id || null,
+        state: sale?.state || null,
+        note: sale?.note ? escape(sale?.note) : null,
       }),
     });
     const json = await res.json();

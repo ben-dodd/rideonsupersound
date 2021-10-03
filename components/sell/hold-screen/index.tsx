@@ -5,24 +5,28 @@ import {
   clerkAtom,
   showCartAtom,
   showHoldAtom,
+  alertAtom,
   sellSearchBarAtom,
   showCreateContactAtom,
 } from "@/lib/atoms";
 import { ContactObject } from "@/lib/types";
-import { saveHoldToDatabase } from "@/lib/db-functions";
+import { getItemSkuDisplayName } from "@/lib/data-functions";
+import { saveHoldToDatabase, saveLog } from "@/lib/db-functions";
 import TextField from "@/components/inputs/text-field";
 import CreateableSelect from "@/components/inputs/createable-select";
 import ListItem from "./list-item";
-import { useContacts } from "@/lib/swr-hooks";
+import { useContacts, useInventory } from "@/lib/swr-hooks";
 
 export default function HoldScreen() {
   const [cart, setCart] = useAtom(cartAtom);
+  const [, setAlert] = useAtom(alertAtom);
   const [, setCreateContactScreen] = useAtom(showCreateContactAtom);
   const [, setShowCart] = useAtom(showCartAtom);
   const [, setShowHold] = useAtom(showHoldAtom);
   const [, setSearch] = useAtom(sellSearchBarAtom);
   const [clerk] = useAtom(clerkAtom);
   const { contacts } = useContacts();
+  const { inventory } = useInventory();
   const [holdPeriod, setHoldPeriod] = useState(30);
   const [note, setNote] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -34,10 +38,40 @@ export default function HoldScreen() {
     cart?.items.forEach(
       // Create hold for each item
       async (cartItem) => {
-        saveHoldToDatabase(cart, cartItem, holdPeriod, note, clerk);
+        const rowId = await saveHoldToDatabase(
+          cart,
+          cartItem,
+          holdPeriod,
+          note,
+          clerk
+        );
+        saveLog({
+          log: `${getItemSkuDisplayName(
+            cartItem?.item_id,
+            inventory
+          )} put on hold for ${
+            (contacts || []).filter(
+              (c: ContactObject) => c?.id === cart?.contact_id
+            )[0]?.name
+          } for ${holdPeriod} day${holdPeriod === 1 ? "" : "s"}.`,
+          clerk_id: clerk?.id,
+          table_id: "hold",
+          row_id: rowId,
+        });
       }
     );
     // Reset vars and return to inventory scroll
+    setAlert({
+      open: true,
+      type: "success",
+      message: `ITEM${
+        (cart?.items || []).length === 1 ? "" : "S"
+      } PUT ON HOLD FOR ${(
+        (contacts || []).filter(
+          (c: ContactObject) => c?.id === cart?.contact_id
+        )[0]?.name || ""
+      ).toUpperCase()}.`,
+    });
     setSubmitting(false);
     setSearch(null);
     setCart(null);

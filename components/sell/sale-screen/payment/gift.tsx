@@ -13,6 +13,7 @@ import {
 } from "@/lib/swr-hooks";
 import { getTotalOwing } from "@/lib/data-functions";
 import { saveSaleTransaction } from "@/lib/db-functions";
+import CloseButton from "@/components/button/close-button";
 
 export default function Gift() {
   const [clerk] = useAtom(clerkAtom);
@@ -49,6 +50,7 @@ export default function Gift() {
       open={paymentDialog?.method === "gift"}
       onClose={() => setPaymentDialog(null)}
     >
+      <CloseButton closeFunction={() => setPaymentDialog(null)} />
       <div className="p-4">
         <div className="text-center text-4xl font-bold py-2">
           GIFT CARD PAYMENT

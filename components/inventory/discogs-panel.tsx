@@ -10,7 +10,7 @@ import {
 import ReactPlayer from "react-player";
 
 // Material UI Icons
-import SyncIcon from "@material-ui/icons/Sync";
+import SyncIcon from "@mui/icons-material/Sync";
 
 // Custom Components
 

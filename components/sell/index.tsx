@@ -82,6 +82,13 @@ export default function SellScreen() {
       >
         <InventoryItemScreen />
       </div>
+      <div
+        className={`absolute top-0 transition-offset duration-300 ${
+          showCreateContact?.id ? "left-0 sm:left-2/3" : "left-full"
+        } h-full w-full bg-yellow-200 sm:w-1/3 sm:h-menu`}
+      >
+        <CreateContactScreen />
+      </div>
     </div>
   );
 }

@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { useAtom } from "jotai";
+import CircularProgress from "@mui/material/CircularProgress";
 import { useInventory } from "@/lib/swr-hooks";
 import { getTotalPrice, getTotalStoreCut } from "@/lib/data-functions";
 import {
   saveSaleAndItemsToDatabase,
   deleteSaleFromDatabase,
   deleteSaleItemFromDatabase,
-  updateSaleItemInDatabase,
-  saveSaleItemToDatabase,
 } from "@/lib/db-functions";
 import {
   cartAtom,
@@ -18,8 +17,8 @@ import {
 } from "@/lib/atoms";
 import Actions from "./actions";
 import ListItem from "./list-item";
-import PayIcon from "@material-ui/icons/ShoppingCart";
-import HoldIcon from "@material-ui/icons/PanTool";
+import PayIcon from "@mui/icons-material/ShoppingCart";
+import HoldIcon from "@mui/icons-material/PanTool";
 
 export default function ShoppingCart() {
   // const [, setSellModal] = useAtom(sellModalAtom);
@@ -31,10 +30,9 @@ export default function ShoppingCart() {
   const { inventory } = useInventory();
   const totalPrice = getTotalPrice(cart, inventory);
   const storeCut = getTotalStoreCut(cart, inventory);
-  const [loading] = useState(false);
+  const [loadingSale, setLoadingSale] = useState(false);
   const disableButtons =
-    loading || !(cart?.items && Object.keys(cart?.items).length > 0);
-  const [refresh, setRefresh] = useState(0);
+    loadingSale || !(cart?.items && Object.keys(cart?.items).length > 0);
 
   return (
     <div className="flex flex-col h-menu px-2 bg-black text-white">
@@ -96,7 +94,13 @@ export default function ShoppingCart() {
             disabled={disableButtons}
             onClick={() => loadSale()}
           >
-            <PayIcon className="mr-2" />
+            {loadingSale ? (
+              <span className="pr-4">
+                <CircularProgress color="inherit" size={18} />
+              </span>
+            ) : (
+              <PayIcon className="mr-2" />
+            )}
             MAKE THEM PAY
           </button>
         </div>
@@ -105,15 +109,12 @@ export default function ShoppingCart() {
   );
 
   async function loadSale() {
-    // setLoading(true);
-    // Create new sale in DB or update sale if sale has 'id' property
     try {
-      // saveSaleAndItemsToDatabase(cart, clerk, setCart);
+      setLoadingSale(true);
+      console.log(cart);
+      await saveSaleAndItemsToDatabase(cart, clerk, setCart);
+      setLoadingSale(false);
       setShowSaleScreen(true);
-      // console.log(cart);
-      // console.log({ ...newCart, items: newItems });
-      // console.log(cart);
-      // setLoading(false);
     } catch (e) {
       throw Error(e.message);
     }
@@ -124,8 +125,6 @@ export default function ShoppingCart() {
     if (id)
       // Cart has been saved to the database, delete sale_item
       deleteSaleItemFromDatabase(id);
-    // if (newCart.id) {
-    // Cart is a saved sale, delete from db
     if ((cart?.items || []).length < 1) {
       // No items left, delete cart
       setShowCart(false);
