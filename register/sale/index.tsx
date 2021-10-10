@@ -22,7 +22,7 @@ import {
 } from "@/lib/data-functions";
 import { showCartScreenAtom, cartAtom } from "@/lib/atoms";
 
-import SaleScreen from "@/components/sell/sale-screen";
+import SaleScreen from "@/components/sale-screen";
 import Table from "@/components/table";
 
 function SalesScreen() {
