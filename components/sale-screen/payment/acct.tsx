@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import Modal from "@/components/modal";
 import { useAtom } from "jotai";
-import { paymentDialogAtom, cartAtom, clerkAtom } from "@/lib/atoms";
+import { paymentDialogAtom, cartAtom, saleAtom, clerkAtom } from "@/lib/atoms";
 import TextField from "@/components/inputs/text-field";
 import CloseButton from "@/components/button/close-button";
 
