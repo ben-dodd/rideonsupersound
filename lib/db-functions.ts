@@ -6,6 +6,7 @@ import {
   VendorObject,
   VendorPayment,
   InventoryObject,
+  RegisterObject,
   LogObject,
 } from "@/lib/types";
 
@@ -174,6 +175,44 @@ export async function saveSaleTransactionToDatabase(
   }
 }
 
+export async function saveAndOpenRegister(register: RegisterObject) {
+  try {
+    const res = await fetch("/api/create-register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(register),
+    });
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+    return json?.insertId;
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
+
+// updateData({
+//   dispatch,
+//   collection: "registers",
+//   update: {
+//     openStaff: get(currentStaff, "id"),
+//     openDate: new Date(),
+//     openAmount: parseFloat(openAmount),
+//     openNotes: notes,
+//     openTill: till,
+//   },
+//   onDataUpdated: (id) => {
+//     saveLog({log: `Register opened.`, table: "register", id, clerk_id: clerk?.id);
+//     updateData({
+//       dispatch,
+//       collection: "registers",
+//       doc: "state",
+//       update: { registerOpen: true, currentRegister: id },
+//     });
+//   },
+// });
+
 export async function saveVendorPaymentToDatabase(
   vendorPayment: VendorPayment
 ) {
@@ -272,7 +311,7 @@ export async function saveLog(log: LogObject) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        log: escape(log?.log),
+        log: log?.log,
         table_id: log?.table_id || null,
         row_id: log?.row_id || null,
         clerk_id: log?.clerk_id || null,
@@ -346,7 +385,7 @@ export async function updateSaleInDatabase(sale: SaleObject) {
         sale_id: sale?.id,
         contact_id: sale?.contact_id || null,
         state: sale?.state || null,
-        note: sale?.note ? escape(sale?.note) : null,
+        note: sale?.note ? sale?.note : null,
       }),
     });
     const json = await res.json();
@@ -384,32 +423,32 @@ export async function updateSaleItemInDatabase(
   }
 }
 
-export async function updateSaleTransactionInDatabase(
-  transaction: SaleTransactionObject
-) {
-  try {
-    const res = await fetch("/api/update-sale-transaction", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        // sale_item_id: cartItem?.id,
-        // sale_id: cart?.id,
-        // item_id: cartItem?.item_id,
-        // quantity: parseInt(cartItem?.quantity),
-        // vendor_discount: parseInt(cartItem?.vendor_discount),
-        // store_discount: parseInt(cartItem?.store_discount),
-        // note: cartItem?.note,
-        // is_deleted: cartItem?.is_deleted,
-      }),
-    });
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
-  } catch (e) {
-    throw Error(e.message);
-  }
-}
+// export async function updateSaleTransactionInDatabase(
+//   transaction: SaleTransactionObject
+// ) {
+//   try {
+//     const res = await fetch("/api/update-sale-transaction", {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify({
+//         // sale_item_id: cartItem?.id,
+//         // sale_id: cart?.id,
+//         // item_id: cartItem?.item_id,
+//         // quantity: parseInt(cartItem?.quantity),
+//         // vendor_discount: parseInt(cartItem?.vendor_discount),
+//         // store_discount: parseInt(cartItem?.store_discount),
+//         // note: cartItem?.note,
+//         // is_deleted: cartItem?.is_deleted,
+//       }),
+//     });
+//     const json = await res.json();
+//     if (!res.ok) throw Error(json.message);
+//   } catch (e) {
+//     throw Error(e.message);
+//   }
+// }
 
 export async function deleteSaleItemFromDatabase(sale_item_id: number) {
   try {

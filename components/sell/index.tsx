@@ -1,7 +1,7 @@
 import { useAtom } from "jotai";
 import {
   showCartAtom,
-  showSaleScreenAtom,
+  showCartScreenAtom,
   showHoldAtom,
   showCreateContactAtom,
   showItemScreenAtom,
@@ -14,12 +14,12 @@ import InventoryScroll from "./inventory-scroll";
 import ShoppingCart from "./shopping-cart";
 import HoldScreen from "./hold-screen";
 import CreateContactScreen from "./create-contact-screen";
-import SaleScreen from "./sale-screen";
+import SaleScreen from "@/components/sale-screen";
 import InventoryItemScreen from "../inventory/inventory-item-screen";
 
 export default function SellScreen() {
   const [showCart, setShowCart] = useAtom(showCartAtom);
-  const [showSaleScreen, setShowSaleScreen] = useAtom(showSaleScreenAtom);
+  const [showSaleScreen, setShowSaleScreen] = useAtom(showCartScreenAtom);
   const [showHold, setShowHold] = useAtom(showHoldAtom);
   const [showCreateContact, setShowCreateContact] = useAtom(
     showCreateContactAtom
@@ -73,7 +73,7 @@ export default function SellScreen() {
           showSaleScreen ? "left-0" : "left-full"
         } h-full w-full bg-yellow-200 sm:h-menu`}
       >
-        <SaleScreen />
+        <SaleScreen isCart={true} />
       </div>
       <div
         className={`absolute top-0 transition-offset duration-300 ${

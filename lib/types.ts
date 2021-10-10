@@ -21,6 +21,7 @@ export interface ContactObject {
   phone?: string;
   postal_address?: string;
   note?: string;
+  is_deleted?: boolean;
 }
 
 export interface Modal {
@@ -82,6 +83,26 @@ export interface SaleTransactionObject {
   card_taken?: boolean;
   date?: string;
   is_deleted?: boolean;
+}
+
+export interface HoldObject {
+  id?: number;
+  contact_id?: number;
+  item_id?: number;
+  quantity?: number;
+  vendor_discount?: number;
+  store_discount?: number;
+  hold_period?: number;
+  date_from?: string;
+  started_by?: number;
+  date_removed_from_hold?: string;
+  removed_from_hold_by?: number;
+  is_sold?: boolean;
+  note?: string;
+  date_created?: string;
+  date_modified?: string;
+  is_deleted?: boolean;
+  overdue?: boolean;
 }
 
 export interface VendorSaleItemObject {
@@ -169,7 +190,9 @@ export interface InventoryObject {
   is_gift_card?: boolean;
   gift_card_code?: string;
   gift_card_amount?: number;
+  gift_card_remaining?: number;
   gift_card_note?: string;
+  gift_card_is_valid?: boolean;
   is_misc_item?: boolean;
   misc_item_description?: string;
   misc_item_amount?: number;
@@ -191,6 +214,7 @@ export interface GiftCardObject {
 }
 
 export interface LogObject {
+  id?: number;
   log: string;
   clerk_id?: number;
   table_id?: string;
@@ -362,4 +386,46 @@ export interface GoogleBooksItem {
 export interface GoogleBooksIndustryIdentifiers {
   identifier: string;
   type: string;
+}
+
+export interface RegisterObject {
+  id?: number;
+  opened_by_id?: number;
+  open_date?: string;
+  open_amount?: number;
+  open_note?: string;
+  open_till_id?: number;
+  closed_by_id?: number;
+  close_date?: string;
+  close_till_id?: number;
+  close_amount?: number;
+  close_petty_balance?: number;
+  close_cash_given?: number;
+  close_manual_payments?: number;
+  close_expected_amount?: number;
+  close_discrepancy?: number;
+  close_note?: string;
+}
+
+export interface TillObject {
+  id?: number;
+  register_id?: number;
+  open?: boolean;
+  "100d"?: number;
+  "50d"?: number;
+  "20d"?: number;
+  "10d"?: number;
+  "5d"?: number;
+  "2d"?: number;
+  "1d"?: number;
+  "50c"?: number;
+  "20c"?: number;
+  "10c"?: number;
+  date_created?: string;
+}
+
+export interface KiwiBankTransactionObject {
+  name?: string;
+  amount?: number;
+  accountNumber?: string;
 }

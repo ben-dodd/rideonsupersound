@@ -186,3 +186,7 @@
 .radio-button__checkmark {
   /* @apply absolute top-0 left-0 h-12 w-12 bg-gray-200 */
 }
+
+.table-div {
+  @apply h-full p-3 bg-white w-full;
+}

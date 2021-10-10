@@ -78,9 +78,25 @@ export function useStockItem(stock_id: number) {
   };
 }
 
-export function useSaleTransactions(sale_id: number) {
+export function useSaleById(sale_id: number) {
   const { data, error, mutate } = useSWR(
-    `/api/get-sale-transactions?sale_id=${sale_id}`,
+    `/api/get-sale-by-id?sale_id=${sale_id}`,
+    fetcher
+    // {
+    //   refreshInterval: 500,
+    // }
+  );
+  return {
+    sale: data,
+    isSaleLoading: !error && !data,
+    isSaleError: error,
+    mutateSale: mutate,
+  };
+}
+
+export function useSaleTransactionsForSale(sale_id: number) {
+  const { data, error, mutate } = useSWR(
+    `/api/get-sale-transactions-for-sale?sale_id=${sale_id}`,
     fetcher
     // {
     //   refreshInterval: 500,
@@ -94,9 +110,9 @@ export function useSaleTransactions(sale_id: number) {
   };
 }
 
-export function useSaleItems(sale_id: number) {
+export function useSaleItemsForSale(sale_id: number) {
   const { data, error, mutate } = useSWR(
-    `/api/get-sale-items?sale_id=${sale_id}`,
+    `/api/get-sale-items-for-sale?sale_id=${sale_id}`,
     fetcher
   );
 
@@ -119,9 +135,9 @@ export function useSaleItems(sale_id: number) {
   const totalSalesReduced = Object.values(duplicates);
   return {
     items: totalSalesReduced,
-    isLoading: !error && !data,
-    isError: error,
-    mutateTotalSales: mutate,
+    isSaleItemsLoading: !error && !data,
+    isSaleItemsError: error,
+    mutateSaleItems: mutate,
   };
 }
 
@@ -129,8 +145,8 @@ export function useVendors() {
   const { data, error } = useSWR(`/api/get-vendors`, fetcher);
   return {
     vendors: data,
-    isLoading: !error && !data,
-    isError: error,
+    isVendorsLoading: !error && !data,
+    isVendorsError: error,
   };
 }
 
@@ -207,8 +223,8 @@ export function useGiftCards() {
   const { data, error } = useSWR(`/api/get-gift-cards`, fetcher);
   return {
     giftCards: data,
-    isLoading: !error && !data,
-    isError: error,
+    isGiftCardsLoading: !error && !data,
+    isGiftCardsError: error,
   };
 }
 
@@ -248,6 +264,56 @@ export function useContact(contact_id: number) {
     contact: data && data[0],
     isLoading: !error && !data,
     isError: error,
+  };
+}
+
+export function useSales() {
+  const { data, error, mutate } = useSWR(`/api/get-sales`, fetcher);
+  return {
+    sales: data,
+    isSalesLoading: !error && !data,
+    isSalesError: error,
+    mutateSales: mutate,
+  };
+}
+
+export function useSaleItems() {
+  const { data, error, mutate } = useSWR(`/api/get-sale-items`, fetcher);
+  return {
+    saleItems: data,
+    isSaleItemsLoading: !error && !data,
+    isSaleItemsError: error,
+    mutateSaleItems: mutate,
+  };
+}
+
+export function useLaybys() {
+  const { data, error, mutate } = useSWR(`/api/get-laybys`, fetcher);
+  return {
+    laybys: data,
+    isLaybysLoading: !error && !data,
+    isLaybysError: error,
+    mutateLaybys: mutate,
+  };
+}
+
+export function useHolds() {
+  const { data, error, mutate } = useSWR(`/api/get-holds`, fetcher);
+  return {
+    holds: data,
+    isHoldsLoading: !error && !data,
+    isHoldsError: error,
+    mutateHolds: mutate,
+  };
+}
+
+export function useLogs() {
+  const { data, error, mutate } = useSWR(`/api/get-logs`, fetcher);
+  return {
+    logs: data,
+    isLogsLoading: !error && !data,
+    isLogsError: error,
+    mutateLogs: mutate,
   };
 }
 

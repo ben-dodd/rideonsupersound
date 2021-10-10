@@ -6,7 +6,8 @@ const handler: NextApiHandler = async (req, res) => {
     const results = await query(
       `
       SELECT *
-      FROM gift_card
+      FROM stock
+      WHERE is_gift_card
       `
     );
 

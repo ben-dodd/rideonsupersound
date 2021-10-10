@@ -11,7 +11,7 @@ import {
 import {
   cartAtom,
   showCartAtom,
-  showSaleScreenAtom,
+  showCartScreenAtom,
   showHoldAtom,
   clerkAtom,
 } from "@/lib/atoms";
@@ -24,7 +24,7 @@ export default function ShoppingCart() {
   // const [, setSellModal] = useAtom(sellModalAtom);
   const [, setShowCart] = useAtom(showCartAtom);
   const [, setShowHold] = useAtom(showHoldAtom);
-  const [, setShowSaleScreen] = useAtom(showSaleScreenAtom);
+  const [, setShowSaleScreen] = useAtom(showCartScreenAtom);
   const [clerk] = useAtom(clerkAtom);
   const [cart, setCart] = useAtom(cartAtom);
   const { inventory } = useInventory();
@@ -111,7 +111,6 @@ export default function ShoppingCart() {
   async function loadSale() {
     try {
       setLoadingSale(true);
-      console.log(cart);
       await saveSaleAndItemsToDatabase(cart, clerk, setCart);
       setLoadingSale(false);
       setShowSaleScreen(true);

@@ -3,11 +3,16 @@ import {
   SaleObject,
   SaleItemObject,
   SaleTransactionObject,
+  KiwiBankTransactionObject,
+  TillObject,
+  VendorObject,
   VendorSaleItemObject,
   VendorPayment,
   DiscogsItem,
   GoogleBooksItem,
 } from "@/lib/types";
+
+import { format, add, parseISO } from "date-fns";
 
 export function getItemSku(item: InventoryObject) {
   return `${("000" + item?.vendor_id || "").slice(-3)}/${(
@@ -185,7 +190,7 @@ export function getItemQuantity(item: InventoryObject, cart: SaleObject) {
 export function getTotalPrice(cart: SaleObject, inventory: InventoryObject[]) {
   return (cart?.items || []).reduce((acc, cartItem) => {
     // Misc Items and Gift Cards in inventory
-    let item: InventoryObject = inventory.filter(
+    let item: InventoryObject = (inventory || []).filter(
       (i: InventoryObject) => i?.id === cartItem?.item_id
     )[0];
     return (acc += getItemPrice(item, cartItem));
@@ -197,7 +202,7 @@ export function getTotalStoreCut(
   inventory: InventoryObject[]
 ) {
   return (cart?.items || []).reduce((acc, cartItem: SaleItemObject) => {
-    let item: InventoryObject = inventory.filter(
+    let item: InventoryObject = (inventory || []).filter(
       (i: InventoryObject) => i?.id === cartItem?.item_id
     )[0];
     return acc + getItemStoreCut(item, cartItem);
@@ -245,6 +250,31 @@ export function getProfitMargin(item: InventoryObject) {
   if (sellNum > 0)
     return `${(((sellNum - costNum) / sellNum) * 100).toFixed(1)}%`;
   else return "";
+}
+
+export function getAmountFromCashMap(till: TillObject) {
+  let closeAmount: number = 0;
+  if (till) {
+    const amountMap = {
+      "100d": 100,
+      "50d": 50,
+      "20d": 20,
+      "10d": 10,
+      "5d": 5,
+      "2d": 2,
+      "1d": 1,
+      "50c": 0.5,
+      "20c": 0.2,
+      "10c": 0.1,
+    };
+    Object.entries(till).forEach(([denom, amount]: [string, string]) => {
+      if (!amount) amount = "0";
+      closeAmount += parseInt(amount) * amountMap[denom];
+    });
+  }
+  // return rounded to 2 d.p.
+  if (isNaN(closeAmount)) return "ERROR";
+  return Math.round((closeAmount + Number.EPSILON) * 100) / 100;
 }
 
 export function getGeolocation() {
@@ -490,4 +520,147 @@ export function andList(list: string[]) {
       .join("@")
       .replace(/@([^@]*)$/, " and $1")
       .replace(/@/g, ", ");
+}
+
+export function writeItemList(
+  inventory: InventoryObject[],
+  items: SaleItemObject[]
+) {
+  if ((items || []).length > 0) {
+    return items
+      .map((item) => {
+        let stockItem: InventoryObject = (inventory || []).filter(
+          (i) => i?.id === item?.item_id
+        )[0];
+        if (item?.is_gift_card) {
+          return `Gift Card [${stockItem?.gift_card_code}]`;
+        } else {
+          let cartQuantity = item?.quantity || 1;
+          let str = "";
+          if (cartQuantity > 1) str = `${cartQuantity} x `;
+          str = str + getItemDisplayName(stockItem);
+          return str;
+        }
+      })
+      .join(", ");
+  } else return "";
+}
+
+//                   //
+// CSV FUNCTIONS //
+//                   //
+
+// export function getCSVData(items, inventory: InventoryObject[]) {
+//   let csv = [];
+//   (items || []).forEach((row:any) => {
+//     Array.from(Array(parseInt(row?.printQuantity || 1)).keys()).forEach(
+//       () => {
+//         let item = inventory?.row?.item?.value || {}), {});
+//         console.log(item);
+//         if (Object.keys(item).length > 0)
+//           csv.push([
+//             item?.sku,
+//             item?.artist,
+//             item.title,
+//             get(item, "newUsed", "USED"),
+//             item.sell,
+//             "",
+//           ]);
+//       }
+//     );
+//   });
+//   return csv;
+// }
+
+interface KiwiBankBatchFileProps {
+  transactions: KiwiBankTransactionObject[];
+  vendors: VendorObject[];
+  batchNumber: string;
+  sequenceNumber: string;
+  storeAccountNumber: string;
+}
+
+export function writeKiwiBankBatchFile({
+  transactions,
+  vendors,
+  batchNumber,
+  sequenceNumber,
+  storeAccountNumber,
+}: KiwiBankBatchFileProps) {
+  // storeAccountNumber BBbbbbaaaaaaass
+  let error = "";
+  let transactionAmount = 0;
+  let transactionCount = 0;
+  let hashTotal = 0;
+  let kbb = [
+    [
+      1,
+      "",
+      batchNumber || "",
+      sequenceNumber || "",
+      storeAccountNumber,
+      7,
+      parseInt(format(new Date(), "yyMMdd")),
+      parseInt(format(new Date(), "yyMMdd")),
+      "",
+    ],
+  ];
+  transactions.forEach((transaction: KiwiBankTransactionObject) => {
+    if (!transaction?.accountNumber)
+      error = `${
+        transaction?.name || "Unknown Vendor"
+      } is missing an account number.`;
+    if (!transaction?.amount)
+      error = `No payment amount set for ${
+        transaction?.name || "Unknown Vendor"
+      }.`;
+    transactionAmount += transaction?.amount;
+    transactionCount += 1;
+    let accountNumber = `${transaction?.accountNumber}`.replace(/\D/g, "");
+    // console.log(accountNumber);
+    // remove bank number
+    accountNumber = accountNumber.substr(2);
+    // console.log(accountNumber);
+    // remove suffix
+    accountNumber = accountNumber.slice(0, 11);
+    // add to hash total
+    // console.log(accountNumber);
+    hashTotal += parseInt(accountNumber);
+    kbb.push([
+      2,
+      parseInt(`${transaction?.accountNumber}`.replace(/\D/g, "")),
+      50,
+      transaction?.amount,
+      transaction?.name,
+      "Ride On Super Sound",
+      "",
+      "",
+      "",
+      "Ride On Super Sound",
+      `Seq ${sequenceNumber}`,
+      `Batch ${batchNumber}`,
+      "",
+    ]);
+  });
+
+  let paddedHashTotal = `00000000000${hashTotal}`;
+  paddedHashTotal = paddedHashTotal.slice(paddedHashTotal.length - 11);
+
+  console.log(paddedHashTotal);
+
+  kbb.push([3, transactionAmount, transactionCount, parseInt(paddedHashTotal)]);
+  console.log(kbb);
+  return kbb;
+}
+
+export function nzDate(isoDate: string) {
+  return isoDate ? add(parseISO(isoDate), { hours: 19 }) : null;
+}
+
+export function fDate(date: Date) {
+  return date ? format(date, "d MMMM yyyy, p") : "";
+}
+
+export function fDateTime(date: Date) {
+  return date ? format(date, "d MMMM yyyy, p") : "";
 }

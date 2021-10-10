@@ -1,0 +1,38 @@
+import { useAtom } from "jotai";
+// import { useUpdateAtom } from "jotai/utils";
+import Image from "next/image";
+import { clerkAtom } from "@/lib/atoms";
+// import { useClerkImage } from "@/lib/swr-hooks";
+
+import Skeleton from "react-loading-skeleton";
+
+function Clerk({ clerk }) {
+  const [, setClerk] = useAtom(clerkAtom);
+  // const setClerk = useUpdateAtom(clerkAtom);
+
+  // const { image, isLoading } = useClerkImage(clerk?.image_id);
+  const isLoading = false;
+  //
+  // var arrayBufferView = new Uint8Array(image?.data);
+  // var blob = new Blob([arrayBufferView], { type: "image/png" });
+
+  return clerk && !isLoading ? (
+    <button onClick={() => setClerk(clerk)}>
+      <div className="relative bg-white cursor-pointer w-full shadow-md rounded-full transform hover:scale-105 hover:shadow-2xl">
+        <Image
+          // src={`${image ? URL.createObjectURL(blob) : "/clerk/guest.png"}`}
+          src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/clerk/${
+            clerk?.name || "Guest"
+          }.png`}
+          alt={clerk?.name}
+          height={200}
+          width={200}
+        />
+      </div>
+    </button>
+  ) : (
+    <Skeleton circle={true} height={200} width={200} />
+  );
+}
+
+export default Clerk;
