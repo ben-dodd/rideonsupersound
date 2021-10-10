@@ -219,6 +219,8 @@ export interface LogObject {
   clerk_id?: number;
   table_id?: string;
   row_id?: number;
+  date_created?: string;
+  is_deleted?: boolean;
 }
 
 export interface DiscogsItem {
