@@ -23,7 +23,7 @@ import { getItemDisplayName } from "@/lib/data-functions";
 // Material UI Components
 import Table from "@/components/table";
 
-function ContactsScreen() {
+export default function ContactsScreen() {
   const { contacts } = useContacts();
   const { vendors } = useVendors();
   const { laybys } = useLaybys();
@@ -60,14 +60,9 @@ function ContactsScreen() {
           laybys: (laybys || []).filter(
             (l: SaleObject) => l?.contact_id === c?.id && !l?.is_deleted
           ),
-          // orders:
-          //   orders &&
-          //   Object.values(orders).filter((e) => get(e, "contactId") === id),
         })),
     [contacts, laybys, holds, vendors]
   );
-
-  console.log(data);
 
   const columns = useMemo(() => {
     const openVendorDialog = (vendor: VendorObject) => {
@@ -194,5 +189,3 @@ function ContactsScreen() {
     </div>
   );
 }
-
-export default ContactsScreen;

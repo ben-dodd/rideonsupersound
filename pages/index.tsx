@@ -1,4 +1,4 @@
-import { useAccount } from "@/lib/swr-hooks";
+import { useAccount, useRegisterID } from "@/lib/swr-hooks";
 import { useSession } from "next-auth/client";
 import LandingPage from "@/components/main/landing-page";
 import SignIn from "./api/auth/signin";
@@ -6,6 +6,7 @@ import SignIn from "./api/auth/signin";
 export default function IndexPage() {
   const [session, sessionLoading] = useSession();
   const { account } = useAccount(session?.user?.email);
+  useRegisterID();
 
   return (
     <>

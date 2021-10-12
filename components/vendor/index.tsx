@@ -1,17 +1,34 @@
 import { useAtom } from "jotai";
 import { useMemo } from "react";
 import { showVendorScreenAtom } from "@/lib/atoms";
-import { useVendors, useClerks, useContacts } from "@/lib/swr-hooks";
-import { VendorObject, ClerkObject, ContactObject } from "@/lib/types";
+import {
+  useVendors,
+  useClerks,
+  useContacts,
+  useInventory,
+  useSalesJoined,
+  useVendorPayments,
+} from "@/lib/swr-hooks";
+import {
+  VendorObject,
+  ClerkObject,
+  ContactObject,
+  InventoryObject,
+} from "@/lib/types";
+import { getPaymentVars } from "@/lib/data-functions";
 
 // Actions
 // import { getSaleInformation, getItemsInStock } from "@/lib/data-functions";
 
 // Material UI Components
 import Table from "@/components/table";
+import VendorScreen from "./vendor-screen";
 
-function VendorsScreen() {
-  const [, setShowVendorScreen] = useAtom(showVendorScreenAtom);
+export default function VendorsScreen() {
+  const [showVendorScreen, setShowVendorScreen] = useAtom(showVendorScreenAtom);
+  const { inventory } = useInventory();
+  const { sales } = useSalesJoined();
+  const { vendorPayments } = useVendorPayments();
   const { vendors } = useVendors();
   const { clerks } = useClerks();
   const { contacts } = useContacts();
@@ -21,13 +38,12 @@ function VendorsScreen() {
         ? (vendors || [])
             .filter((v: VendorObject) => !v?.is_deleted)
             .map((v: VendorObject) => {
-              // let itemsInStock = getItemsInStock({ inventory, vendorId: id });
-              // let saleInformation = getSaleInformation({
-              //   vendorId: id,
-              //   inventory,
-              //   sales,
-              //   debits,
-              // });
+              let vendorVars = getPaymentVars(
+                inventory,
+                sales,
+                vendorPayments,
+                v?.id
+              );
               return {
                 id: v?.id,
                 name: v?.name || "-",
@@ -41,17 +57,15 @@ function VendorsScreen() {
                   )[0] || {},
                 type: v?.category || "-",
                 bankAccountNumber: v?.bank_account_number || "-",
-                // totalTake: get(saleInformation, "totalTake", 0),
-                // totalOwing: get(saleInformation, "totalOwing", 0),
-                // totalDebitAmount: get(saleInformation, "totalDebitAmount", 0),
-                // uniqueItemsInStock: Object.keys(itemsInStock || {}).length,
-                // totalItemsInStock: Object.values(itemsInStock || {}).reduce(
-                //   (sum, item) =>
-                //     isNaN(get(item, "quantity", 0))
-                //       ? sum
-                //       : get(item, "quantity", 0) + sum,
-                //   0
-                // ),
+                totalTake: vendorVars?.totalSell || 0,
+                totalOwing: vendorVars?.totalOwing || 0,
+                totalDebitAmount: vendorVars?.totalPaid || 0,
+                uniqueItemsInStock: (vendorVars?.totalItems || [])?.length,
+                totalItemsInStock: (vendorVars?.totalItems || []).reduce(
+                  (sum: number, item: InventoryObject) =>
+                    (item?.quantity || 0) + sum,
+                  0
+                ),
               };
             })
         : [],
@@ -94,57 +108,61 @@ function VendorsScreen() {
       },
       { Header: "Type", accessor: "type", width: 100 },
       { Header: "Bank Account #", accessor: "bankAccountNumber", width: 200 },
-      // {
-      //   Header: "Total Take",
-      //   accessor: "totalTake",
-      //   width: 100,
-      //   Cell: ({ value }) =>
-      //     value && !isNaN(value) ? `$${value.toFixed(2)}` : "$0.00",
-      // },
-      // {
-      //   Header: "Total Paid",
-      //   accessor: "totalDebitAmount",
-      //   width: 100,
-      //   Cell: ({ value }) =>
-      //     value && !isNaN(value) ? `$${value.toFixed(2)}` : "$0.00",
-      // },
-      // {
-      //   Header: "Total Owing",
-      //   accessor: "totalOwing",
-      //   width: 120,
-      //   Cell: ({ value }) =>
-      //     value && !isNaN(value) ? `$${value.toFixed(2)}` : "$0.00",
-      // },
-      // {
-      //   Header: "Unique Items",
-      //   accessor: "uniqueItemsInStock",
-      //   width: 130,
-      // },
-      // {
-      //   Header: "Total Items",
-      //   accessor: "totalItemsInStock",
-      //   width: 110,
-      // },
+      {
+        Header: "Total Take",
+        accessor: "totalTake",
+        width: 100,
+        Cell: ({ value }) =>
+          value && !isNaN(value) ? `$${(value / 100).toFixed(2)}` : "$0.00",
+      },
+      {
+        Header: "Total Paid",
+        accessor: "totalDebitAmount",
+        width: 100,
+        Cell: ({ value }) =>
+          value && !isNaN(value) ? `$${(value / 100).toFixed(2)}` : "$0.00",
+      },
+      {
+        Header: "Total Owing",
+        accessor: "totalOwing",
+        width: 120,
+        Cell: ({ value }) =>
+          value && !isNaN(value) ? `$${(value / 100).toFixed(2)}` : "$0.00",
+      },
+      {
+        Header: "Unique Items",
+        accessor: "uniqueItemsInStock",
+        width: 130,
+      },
+      {
+        Header: "Total Items",
+        accessor: "totalItemsInStock",
+        width: 110,
+      },
     ];
   }, []);
 
-  console.log(data);
-  console.log(columns);
-
   return (
-    <div className="table-div">
-      <Table
-        color="bg-col3"
-        colorLight="bg-col3-light"
-        colorDark="bg-col3-dark"
-        data={data}
-        columns={columns}
-        heading={"Vendors"}
-        pageSize={20}
-        sortOptions={[{ id: "name", desc: false }]}
-      />
+    <div className="flex relative overflow-x-hidden bg-white text-black">
+      <div className="h-menu">
+        <Table
+          color="bg-col3"
+          colorLight="bg-col3-light"
+          colorDark="bg-col3-dark"
+          data={data}
+          columns={columns}
+          heading={"Vendors"}
+          pageSize={20}
+          sortOptions={[{ id: "name", desc: false }]}
+        />
+      </div>
+      <div
+        className={`absolute top-0 transition-offset duration-300 ${
+          showVendorScreen ? "left-0" : "left-full"
+        } h-full w-full bg-yellow-200`}
+      >
+        <VendorScreen />
+      </div>
     </div>
   );
 }
-
-export default VendorsScreen;

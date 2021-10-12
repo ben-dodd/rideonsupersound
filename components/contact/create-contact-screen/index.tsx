@@ -16,7 +16,9 @@ export default function CreateContactScreen() {
 
   useEffect(() => {
     contacts &&
-      setNameConflict(contacts?.map((c) => c?.name).includes(contact?.name));
+      setNameConflict(
+        contacts?.map((c: ContactObject) => c?.name).includes(contact?.name)
+      );
   }, [contacts, contact?.name]);
 
   async function onClickCreateContact() {

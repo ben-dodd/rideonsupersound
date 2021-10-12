@@ -11,7 +11,7 @@ import {
 type HoldListItemProps = {
   cartItem: SaleItemObject;
 };
-export default function SellListItem({ cartItem }: HoldListItemProps) {
+export default function HoldListItem({ cartItem }: HoldListItemProps) {
   const { inventory } = useInventory();
   const [item, setItem] = useState(null);
   useEffect(() => {

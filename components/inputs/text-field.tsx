@@ -10,6 +10,7 @@ interface TextFieldProps {
   endAdornment?: any;
   multiline?: boolean;
   displayOnly?: boolean;
+  disabled?: boolean;
   autoFocus?: boolean;
   selectOnFocus?: boolean;
   error?: boolean;
@@ -37,6 +38,7 @@ export default function TextField({
   endAdornment,
   multiline = false,
   displayOnly = false,
+  disabled = false,
   autoFocus = false,
   selectOnFocus = false,
   error = false,
@@ -91,6 +93,7 @@ export default function TextField({
             onChange={onChange}
             rows={rows || 3}
             value={value}
+            disabled={disabled}
           />
         ) : (
           <input
@@ -106,6 +109,7 @@ export default function TextField({
             onFocus={selectOnFocus ? (e) => e.target.select() : null}
             max={max ?? null}
             min={min ?? null}
+            disabled={disabled}
           />
         )}
         {endAdornment && (

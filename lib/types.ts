@@ -117,9 +117,18 @@ export interface VendorSaleItemObject {
   date_sale_closed?: string;
 }
 
-export interface VendorPayment {
+export interface VendorPaymentObject {
+  id?: number;
   amount?: number;
+  bank_account_number?: string;
+  batch_number?: string;
   date?: string;
+  sequence_number?: string;
+  clerk_id?: number;
+  vendor_id?: number;
+  register_id?: number;
+  type?: string;
+  is_deleted?: boolean;
 }
 
 export interface VendorObject {
@@ -138,6 +147,12 @@ export interface VendorObject {
   date_created?: string;
   date_modified?: string;
   is_deleted?: boolean;
+  totalSell?: number;
+  totalPaid?: number;
+  totalOwing?: number;
+  totalItemsInStock?: number;
+  lastPaid?: string;
+  lastSold?: string;
 }
 
 export interface InventoryObject {
@@ -411,19 +426,16 @@ export interface RegisterObject {
 
 export interface TillObject {
   id?: number;
-  register_id?: number;
-  open?: boolean;
-  "100d"?: number;
-  "50d"?: number;
-  "20d"?: number;
-  "10d"?: number;
-  "5d"?: number;
-  "2d"?: number;
-  "1d"?: number;
-  "50c"?: number;
-  "20c"?: number;
-  "10c"?: number;
-  date_created?: string;
+  one_hundred_dollar?: number;
+  fifty_dollar?: number;
+  twenty_dollar?: number;
+  ten_dollar?: number;
+  five_dollar?: number;
+  two_dollar?: number;
+  one_dollar?: number;
+  fifty_cent?: number;
+  twenty_cent?: number;
+  ten_cent?: number;
 }
 
 export interface KiwiBankTransactionObject {

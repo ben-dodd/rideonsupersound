@@ -150,6 +150,16 @@ export function useVendors() {
   };
 }
 
+export function useVendorPayments() {
+  const { data, error, mutate } = useSWR(`/api/get-vendor-payments`, fetcher);
+  return {
+    vendorPayments: data,
+    isVendorPaymentsLoading: !error && !data,
+    isVendorPaymentsError: error,
+    mutateVendorPayments: mutate,
+  };
+}
+
 export function useVendorTotalPayments(contact_id: number) {
   const { data, error, mutate } = useSWR(
     `/api/get-vendor-total-payments?contact_id=${contact_id}`,
@@ -157,8 +167,8 @@ export function useVendorTotalPayments(contact_id: number) {
   );
   return {
     totalPayments: data,
-    isLoading: !error && !data,
-    isError: error,
+    isVendorTotalPaymentsLoading: !error && !data,
+    isVendorTotalPaymentsError: error,
     mutateVendorTotalPayments: mutate,
   };
 }
@@ -262,8 +272,8 @@ export function useContact(contact_id: number) {
   );
   return {
     contact: data && data[0],
-    isLoading: !error && !data,
-    isError: error,
+    isContactLoading: !error && !data,
+    isContactError: error,
   };
 }
 
@@ -271,6 +281,35 @@ export function useSales() {
   const { data, error, mutate } = useSWR(`/api/get-sales`, fetcher);
   return {
     sales: data,
+    isSalesLoading: !error && !data,
+    isSalesError: error,
+    mutateSales: mutate,
+  };
+}
+
+export function useSalesJoined() {
+  const { data, error, mutate } = useSWR(`/api/get-sales-join`, fetcher);
+
+  // If any sold items have more than one "stock price" row, we need to only select the latest one
+  // (If stock prices are changed after a sale, it won't be included in the returned data)
+  // TODO: Make it so MYSQL only returns the latest one.
+
+  let duplicates = {};
+
+  data &&
+    data.forEach((sale: VendorSaleItemObject) => {
+      let key = `${sale?.sale_id}-${sale?.item_id}`;
+      if (
+        !duplicates[key] ||
+        duplicates[key]?.date_valid_from < sale?.date_price_valid_from
+      )
+        duplicates[key] = sale;
+    });
+
+  const totalSalesReduced = Object.values(duplicates);
+
+  return {
+    sales: totalSalesReduced,
     isSalesLoading: !error && !data,
     isSalesError: error,
     mutateSales: mutate,
@@ -307,6 +346,15 @@ export function useHolds() {
   };
 }
 
+export function useHold(hold_id: number) {
+  const { data, error } = useSWR(`/api/get-hold?hold_id=${hold_id}`, fetcher);
+  return {
+    hold: data && data[0],
+    isHoldLoading: !error && !data,
+    isHoldError: error,
+  };
+}
+
 export function useLogs() {
   const { data, error, mutate } = useSWR(`/api/get-logs`, fetcher);
   return {
@@ -314,6 +362,81 @@ export function useLogs() {
     isLogsLoading: !error && !data,
     isLogsError: error,
     mutateLogs: mutate,
+  };
+}
+
+export function useRegisterID() {
+  const { data, error, mutate } = useSWR(`/api/get-register-id`, fetcher);
+  return {
+    registerID: data && data[0] && data[0]?.value,
+    isRegisterIDLoading: !error && !data,
+    isRegisterIDError: error,
+    mutateRegisterID: mutate,
+  };
+}
+
+export function useRegister(register_id: number) {
+  const { data, error, mutate } = useSWR(
+    `/api/get-register?register_id=${register_id}`,
+    fetcher
+  );
+  return {
+    register: data && data[0],
+    isRegisterLoading: !error && !data,
+    isRegisterError: error,
+    mutateRegister: mutate,
+  };
+}
+
+export function usePettyCash(register_id: number) {
+  const { data, error, mutate } = useSWR(
+    `/api/get-petty-cash?register_id=${register_id}`,
+    fetcher
+  );
+  return {
+    pettyCash: data,
+    isPettyCashLoading: !error && !data,
+    isPettyCashError: error,
+    mutatePettyCash: mutate,
+  };
+}
+
+export function useCashGiven(register_id: number) {
+  const { data, error, mutate } = useSWR(
+    `/api/get-cash-given?register_id=${register_id}`,
+    fetcher
+  );
+  return {
+    cashGiven: data,
+    isCashGivenLoading: !error && !data,
+    isCashGivenError: error,
+    mutateCashGiven: mutate,
+  };
+}
+
+export function useCashReceived(register_id: number) {
+  const { data, error, mutate } = useSWR(
+    `/api/get-cash-received?register_id=${register_id}`,
+    fetcher
+  );
+  return {
+    cashReceived: data,
+    isCashReceivedLoading: !error && !data,
+    isCashReceivedError: error,
+    mutateCashReceived: mutate,
+  };
+}
+
+export function useManualPayments(register_id: number) {
+  const { data, error, mutate } = useSWR(
+    `/api/get-manual-payments?register_id=${register_id}`,
+    fetcher
+  );
+  return {
+    manualPayments: data,
+    isManualPaymentsLoading: !error && !data,
+    isManualPaymentsError: error,
+    mutateManualPayments: mutate,
   };
 }
 

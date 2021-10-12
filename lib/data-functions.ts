@@ -7,12 +7,18 @@ import {
   TillObject,
   VendorObject,
   VendorSaleItemObject,
-  VendorPayment,
+  VendorPaymentObject,
   DiscogsItem,
   GoogleBooksItem,
 } from "@/lib/types";
 
-import { format, add, parseISO } from "date-fns";
+import {
+  format,
+  add,
+  parseISO,
+  formatDistanceToNowStrict,
+  max,
+} from "date-fns";
 
 export function getItemSku(item: InventoryObject) {
   return `${("000" + item?.vendor_id || "").slice(-3)}/${(
@@ -175,6 +181,76 @@ export function getSaleVars(cart: SaleObject, inventory: InventoryObject[]) {
   };
 }
 
+export function getPaymentVars(
+  inventory: InventoryObject[],
+  vendorSales: VendorSaleItemObject[],
+  vendorPayments: VendorPaymentObject[],
+  vendor_id: number
+) {
+  let totalItems = (inventory || []).filter(
+    (i: InventoryObject) => i?.vendor_id === vendor_id
+  );
+
+  let totalSales = (vendorSales || []).filter(
+    (v: VendorSaleItemObject) =>
+      (totalItems || []).filter((i: InventoryObject) => i?.id === v?.item_id)[0]
+  );
+  let totalPayments = (vendorPayments || []).filter(
+    (v: VendorPaymentObject) => v?.vendor_id === vendor_id
+  );
+
+  const totalPaid = totalPayments.reduce(
+    (acc: number, payment: VendorPaymentObject) => acc + payment?.amount,
+    0
+  );
+
+  const totalSell: any = totalSales.reduce(
+    (acc: number, sale: VendorSaleItemObject) =>
+      acc +
+      (sale?.quantity * sale?.vendor_cut * (100 - sale?.vendor_discount || 0)) /
+        100,
+    0
+  );
+
+  let lastPaid = latestDate(
+    totalPayments.map((p: VendorPaymentObject) => p?.date)
+  );
+  let lastSold = latestDate(
+    totalSales.map((s: VendorSaleItemObject) => s?.date_sale_closed)
+  );
+  let totalOwing = totalSell - totalPaid;
+
+  return {
+    totalItems,
+    totalSales,
+    totalSell,
+    totalPayments,
+    totalPaid,
+    lastPaid,
+    totalOwing,
+    lastSold,
+  };
+}
+
+export function getVendorQuantityInStock(
+  inventory: InventoryObject[],
+  vendor_id: number
+) {
+  return getVendorItemsInStock(inventory, vendor_id).reduce(
+    (sum, item) => (item?.quantity || 0) + sum,
+    0
+  );
+}
+
+export function getVendorItemsInStock(
+  inventory: InventoryObject[],
+  vendor_id: number
+) {
+  return (inventory || []).filter(
+    (i: InventoryObject) => i?.vendor_id === vendor_id
+  );
+}
+
 export function getItemQuantity(item: InventoryObject, cart: SaleObject) {
   const saleItem = (cart?.items || []).filter(
     (i: SaleItemObject) => i?.item_id === item?.id
@@ -219,11 +295,11 @@ export function getTotalPaid(cart: SaleObject) {
 }
 
 export function getTotalOwing(
-  totalPayments: VendorPayment[],
+  totalPayments: VendorPaymentObject[],
   totalSales: VendorSaleItemObject[]
 ) {
   const totalPaid = totalPayments.reduce(
-    (acc: number, payment: VendorPayment) => acc + payment?.amount,
+    (acc: number, payment: VendorPaymentObject) => acc + payment?.amount,
     0
   );
 
@@ -256,16 +332,16 @@ export function getAmountFromCashMap(till: TillObject) {
   let closeAmount: number = 0;
   if (till) {
     const amountMap = {
-      "100d": 100,
-      "50d": 50,
-      "20d": 20,
-      "10d": 10,
-      "5d": 5,
-      "2d": 2,
-      "1d": 1,
-      "50c": 0.5,
-      "20c": 0.2,
-      "10c": 0.1,
+      one_hundred_dollar: 100,
+      fifty_dollar: 50,
+      twenty_dollar: 20,
+      ten_dollar: 10,
+      five_dollar: 5,
+      two_dollar: 2,
+      one_dollar: 1,
+      fifty_cent: 0.5,
+      twenty_cent: 0.2,
+      ten_cent: 0.1,
     };
     Object.entries(till).forEach(([denom, amount]: [string, string]) => {
       if (!amount) amount = "0";
@@ -546,31 +622,29 @@ export function writeItemList(
   } else return "";
 }
 
-//                   //
+//               //
 // CSV FUNCTIONS //
-//                   //
+//               //
 
-// export function getCSVData(items, inventory: InventoryObject[]) {
-//   let csv = [];
-//   (items || []).forEach((row:any) => {
-//     Array.from(Array(parseInt(row?.printQuantity || 1)).keys()).forEach(
-//       () => {
-//         let item = inventory?.row?.item?.value || {}), {});
-//         console.log(item);
-//         if (Object.keys(item).length > 0)
-//           csv.push([
-//             item?.sku,
-//             item?.artist,
-//             item.title,
-//             get(item, "newUsed", "USED"),
-//             item.sell,
-//             "",
-//           ]);
-//       }
-//     );
-//   });
-//   return csv;
-// }
+export function getCSVData(items, inventory: InventoryObject[]) {
+  let csv = [];
+  (items || []).forEach((row: any) => {
+    console.log(row);
+    Array.from(Array(parseInt(row?.printQuantity || 1)).keys()).forEach(() => {
+      // let item:InventoryObject = (inventory || []).filter()?.row?.item?.value || {}), {});
+      // if (Object.keys(item).length > 0)
+      //   csv.push([
+      //     item?.sku,
+      //     item?.artist,
+      //     item.title,
+      //     get(item, "newUsed", "USED"),
+      //     item.sell,
+      //     "",
+      //   ]);
+    });
+  });
+  return csv;
+}
 
 interface KiwiBankBatchFileProps {
   transactions: KiwiBankTransactionObject[];
@@ -653,14 +727,55 @@ export function writeKiwiBankBatchFile({
   return kbb;
 }
 
+//                //
+// DATE FUNCTIONS //
+//                //
+
 export function nzDate(isoDate: string) {
   return isoDate ? add(parseISO(isoDate), { hours: 19 }) : null;
 }
 
-export function fDate(date: Date) {
-  return date ? format(date, "d MMMM yyyy, p") : "";
+export function fDate(date?: Date | string) {
+  console.log(date);
+  return format(
+    date ? (date instanceof Date ? date : nzDate(date)) : new Date(),
+    "d MMMM yyyy, p"
+  );
 }
 
-export function fDateTime(date: Date) {
-  return date ? format(date, "d MMMM yyyy, p") : "";
+export function fDateTime(date?: Date | string) {
+  return format(
+    date ? (date instanceof Date ? date : nzDate(date)) : new Date(),
+    "d MMMM yyyy, p"
+  );
+}
+
+export function fTimeDate(date?: Date | string) {
+  return format(
+    date ? (date instanceof Date ? date : nzDate(date)) : new Date(),
+    "p, d MMMM yyyy"
+  );
+}
+
+export function fFileDate(date?: Date | string) {
+  return format(
+    date ? (date instanceof Date ? date : nzDate(date)) : new Date(),
+    "yyyy-MM-dd-HH-mm-ss"
+  );
+}
+
+export function daysFrom(date: Date | string) {
+  return date
+    ? formatDistanceToNowStrict(date instanceof Date ? date : nzDate(date))
+    : null;
+}
+
+export function latestDate(dates: Date[] | string[]) {
+  return dates?.length > 0
+    ? max(
+        dates?.map((date: Date | string) =>
+          date instanceof Date ? date : nzDate(date)
+        )
+      )
+    : null;
 }

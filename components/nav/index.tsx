@@ -1,14 +1,22 @@
 import { useAtom } from "jotai";
 import { clerkAtom, pageAtom, menuDisplayAtom } from "@/lib/atoms";
-import { useClerkImage } from "@/lib/swr-hooks";
+import { useClerkImage, useRegisterID } from "@/lib/swr-hooks";
 import { getImageSrc } from "@/lib/data-functions";
 import Image from "next/image";
 
 import Hamburger from "@/components/icon/hamburger";
 
+import SellNavActions from "./actions/sell";
+import InventoryNavActions from "./actions/inventory";
+import PaymentNavActions from "./actions/payment";
+import VendorNavActions from "./actions/vendor";
+import ContactNavActions from "./actions/contact";
+
 export default function Nav() {
   const [clerk] = useAtom(clerkAtom);
+  const [page] = useAtom(pageAtom);
   const [menuDisplay, setMenuDisplay] = useAtom(menuDisplayAtom);
+  const { registerID } = useRegisterID();
   // const [page] = useAtom(pageAtom);
   // const { image } = useClerkImage(clerk?.image_id);
 
@@ -16,7 +24,7 @@ export default function Nav() {
   // var blob = new Blob([arrayBufferView], { type: "image/png" });
 
   return (
-    <nav className="py-2 bg-white text-black h-nav">
+    <nav className="py-2 bg-black text-white h-nav">
       <div className="flex justify-between items-center">
         <div className="flex items-center">
           <div className="w-12">
@@ -41,12 +49,17 @@ export default function Nav() {
             {/*<div>{page?.toUpperCase()}</div>*/}
           </div>
         </div>
-        <button
+        {page === "sell" && registerID && <SellNavActions />}
+        {page === "inventory" && <InventoryNavActions />}
+        {page === "contacts" && <ContactNavActions />}
+        {page === "vendors" && <VendorNavActions />}
+        {page === "payments" && <PaymentNavActions />}
+        {/*<button
           className="px-4 sm:hidden"
           onClick={() => setMenuDisplay(!menuDisplay)}
         >
           <Hamburger />
-        </button>
+        </button>*/}
       </div>
     </nav>
   );

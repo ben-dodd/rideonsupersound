@@ -122,7 +122,7 @@ export default function Menu() {
       },
       {
         type: "link",
-        page: "transactions",
+        page: "payments",
         text: "PAYMENTS",
         class: "bg-col8-light hover:bg-col8",
         icon: <PaymentsIcon />,
@@ -143,13 +143,13 @@ export default function Menu() {
         class: "bg-col8-light hover:bg-col8",
         icon: <LogsIcon />,
       },
-      {
-        type: "link",
-        page: "importExport",
-        text: "IMPORT/EXPORT",
-        class: "bg-col9-light hover:bg-col9",
-        icon: <ImportExportIcon />,
-      },
+      // {
+      //   type: "link",
+      //   page: "importExport",
+      //   text: "IMPORT/EXPORT",
+      //   class: "bg-col9-light hover:bg-col9",
+      //   icon: <ImportExportIcon />,
+      // },
       // {
       //   type: "link",
       //   page: "settings",

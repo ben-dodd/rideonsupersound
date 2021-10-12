@@ -85,6 +85,10 @@
   }
 }
 
+.icon-text-button {
+  @apply flex justify-between items-center text-sm rounded shadow-md p-2 m-1 whitespace-nowrap cursor-pointer bg-primary-dark text-white hover:shadow-lg hover:bg-primary disabled:pointer-events-none disabled:bg-gray-300 disabled:shadow-none;
+}
+
 .fab-button {
   @apply border rounded-xl ring-4 py-4 cursor-pointer bg-white text-primary ring-primary hover:text-primary-dark hover:ring-primary-dark disabled:pointer-events-none disabled:bg-gray-300 disabled:text-gray-400 disabled:ring-gray-400;
 }

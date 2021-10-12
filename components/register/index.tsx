@@ -3,47 +3,43 @@ import { useAtom } from "jotai";
 
 // Store
 import { getAmountFromCashMap } from "@/lib/data-functions";
-import { saveLog } from "@/lib/db-functions";
-import { TillObject } from "@/lib/types";
+import { saveAndOpenRegister } from "@/lib/db-functions";
+import { TillObject, RegisterObject } from "@/lib/types";
+import { useRegisterID } from "@/lib/swr-hooks";
 import { clerkAtom } from "@/lib/atoms";
 
 import TextField from "@/components/inputs/text-field";
+import CircularProgress from "@mui/material/CircularProgress";
+import OpenIcon from "@mui/icons-material/ShoppingCart";
 import CashMap from "./cash-map";
 
-function OpenRegisterScreen() {
+export default function OpenRegisterScreen() {
   // State
+  const { mutateRegisterID } = useRegisterID();
   const [clerk] = useAtom(clerkAtom);
   const [till, setTill] = useState({});
   const [notes, setNotes] = useState("");
-  const [openAmount, setOpenAmount] = useState(getAmountFromCashMap(till));
+  const [openAmount, setOpenAmount]: [string, Function] = useState(
+    `${getAmountFromCashMap(till)}`
+  );
+  const [loading, setLoading] = useState(false);
   useEffect(() => setOpenAmount(getAmountFromCashMap(till)), [till]);
   const invalidOpenAmount = isNaN(parseFloat(`${openAmount}`));
 
-  const openRegister = () => {
-    // updateData({
-    //   dispatch,
-    //   collection: "registers",
-    //   update: {
-    //     openStaff: get(currentStaff, "id"),
-    //     openDate: new Date(),
-    //     openAmount: parseFloat(openAmount),
-    //     openNotes: notes,
-    //     openTill: till,
-    //   },
-    //   onDataUpdated: (id) => {
-    //     saveLog({log: `Register opened.`, table: "register", id, clerk_id: clerk?.id);
-    //     updateData({
-    //       dispatch,
-    //       collection: "registers",
-    //       doc: "state",
-    //       update: { registerOpen: true, currentRegister: id },
-    //     });
-    //   },
-    // });
+  const openRegister = async () => {
+    const register: RegisterObject = {
+      opened_by_id: clerk?.id,
+      open_amount: openAmount ? parseFloat(openAmount) * 100 : 0,
+      open_note: notes || null,
+    };
+    setLoading(true);
+    await saveAndOpenRegister(register, till, clerk);
+    mutateRegisterID();
+    setLoading(false);
   };
 
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center bg-white h-menu">
       <div className="flex flex-col justify-center h-full pt-12 max-w-md">
         <div className="text-sm">
           Open register by entering the total float in the till. Either enter
@@ -53,6 +49,7 @@ function OpenRegisterScreen() {
           startAdornment="$"
           inputLabel="Total Float"
           divClass="text-5xl"
+          selectOnFocus
           error={isError(till)}
           value={`${openAmount}`}
           onChange={(e: any) => setOpenAmount(e.target.value)}
@@ -65,10 +62,17 @@ function OpenRegisterScreen() {
           multiline
         />
         <button
-          disabled={isError(till)}
+          disabled={isError(till) || invalidOpenAmount || loading}
           className="my-6 dialog-action__ok-button"
           onClick={openRegister}
         >
+          {loading ? (
+            <span className="pr-4">
+              <CircularProgress color="inherit" size={18} />
+            </span>
+          ) : (
+            <OpenIcon className="mr-2" />
+          )}
           Open Register
         </button>
       </div>
@@ -78,16 +82,23 @@ function OpenRegisterScreen() {
 
 function isError(till: TillObject) {
   let error = false;
-  ["100d", "50d", "20d", "10d", "5d", "2d", "1d", "50c", "20c", "10c"].forEach(
-    (denom) => {
-      if (
-        till[denom] &&
-        (isNaN(parseInt(till[denom])) || parseInt(till[denom]) < 0)
-      )
-        error = true;
-    }
-  );
+  [
+    "one_hundred_dollar",
+    "fifty_dollar",
+    "twenty_dollar",
+    "ten_dollar",
+    "five_dollar",
+    "two_dollar",
+    "one_dollar",
+    "fifty_cent",
+    "twenty_cent",
+    "ten_cent",
+  ].forEach((denom) => {
+    if (
+      till[denom] &&
+      (isNaN(parseInt(till[denom])) || parseInt(till[denom]) < 0)
+    )
+      error = true;
+  });
   return error;
 }
-
-export default OpenRegisterScreen;

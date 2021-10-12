@@ -2,9 +2,17 @@ import { useMemo } from "react";
 import { useAtom } from "jotai";
 import { useInventory, useVendors } from "@/lib/swr-hooks";
 import { InventoryObject, VendorObject } from "@/lib/types";
-import { showItemScreenAtom } from "@/lib/atoms";
+import {
+  showItemScreenAtom,
+  showLabelPrintDialogAtom,
+  showReceiveItemsScreenAtom,
+  showReturnItemsScreenAtom,
+} from "@/lib/atoms";
 import { getItemSku } from "@/lib/data-functions";
-import InventoryItemScreen from "../inventory/inventory-item-screen";
+import InventoryItemScreen from "./inventory-item-screen";
+import LabelPrintDialog from "./label-print-dialog";
+import ReceiveStockScreen from "./receive-stock-screen";
+import ReturnStockScreen from "./return-stock-screen";
 import Table from "@/components/table";
 import {
   DataGrid,
@@ -21,6 +29,9 @@ export default function InventoryScreen() {
   const { inventory, isInventoryLoading } = useInventory();
   const { vendors, isVendorsLoading } = useVendors();
   const [showItemScreen, openInventoryModal] = useAtom(showItemScreenAtom);
+  const [showLabelPrintDialog] = useAtom(showLabelPrintDialogAtom);
+  const [showReceiveStockScreen] = useAtom(showReceiveItemsScreenAtom);
+  const [showReturnStockScreen] = useAtom(showReturnItemsScreenAtom);
 
   const data = useMemo(
     () =>
@@ -165,6 +176,15 @@ export default function InventoryScreen() {
       >
         <InventoryItemScreen />
       </div>
+      <div
+        className={`absolute top-0 transition-offset duration-300 ${
+          showReceiveStockScreen ? "left-0" : "left-full"
+        } h-full w-full bg-yellow-200`}
+      >
+        <ReceiveStockScreen />
+      </div>
+      {showReturnStockScreen && <ReturnStockScreen />}
+      {showLabelPrintDialog && <LabelPrintDialog />}
     </div>
   );
 }
