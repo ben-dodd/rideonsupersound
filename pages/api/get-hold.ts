@@ -10,7 +10,7 @@ const handler: NextApiHandler = async (req, res) => {
       FROM hold
       WHERE id = ?
       `,
-      contact_id
+      hold_id
     );
 
     return res.json(results);
