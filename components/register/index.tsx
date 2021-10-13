@@ -23,7 +23,10 @@ export default function OpenRegisterScreen() {
     `${getAmountFromCashMap(till)}`
   );
   const [loading, setLoading] = useState(false);
-  useEffect(() => setOpenAmount(getAmountFromCashMap(till)), [till]);
+  useEffect(() => {
+    const amount = getAmountFromCashMap(till);
+    setOpenAmount(!isNaN(amount) ? amount.toFixed(2) : "0");
+  }, [till]);
   const invalidOpenAmount = isNaN(parseFloat(`${openAmount}`));
 
   const openRegister = async () => {
@@ -40,7 +43,10 @@ export default function OpenRegisterScreen() {
 
   return (
     <div className="flex justify-center bg-white h-menu">
-      <div className="flex flex-col justify-center h-full pt-12 max-w-md">
+      <div className="flex flex-col justify-center h-full pt-4 max-w-md">
+        <div className="flex justify-center text-5xl font-bold pb-4">
+          REGISTER CLOSED
+        </div>
         <div className="text-sm">
           Open register by entering the total float in the till. Either enter
           the notes and coins or enter the total directly.
@@ -48,7 +54,7 @@ export default function OpenRegisterScreen() {
         <TextField
           startAdornment="$"
           inputLabel="Total Float"
-          divClass="text-5xl"
+          divClass="text-6xl"
           selectOnFocus
           error={isError(till)}
           value={`${openAmount}`}
@@ -63,7 +69,7 @@ export default function OpenRegisterScreen() {
         />
         <button
           disabled={isError(till) || invalidOpenAmount || loading}
-          className="my-6 dialog-action__ok-button"
+          className="modal__button--ok"
           onClick={openRegister}
         >
           {loading ? (

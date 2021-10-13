@@ -48,7 +48,7 @@
 
 /* Your own custom utilities */
 .loading-screen {
-  @apply flex h-screen w-screen;
+  @apply flex h-menu w-board;
 }
 
 .loading-icon {
@@ -105,34 +105,6 @@
   @apply text-xl shadow-md py-8 cursor-pointer bg-tertiary-dark text-white w-full hover:shadow-lg hover:bg-tertiary active:bg-tertiary-light disabled:pointer-events-none disabled:bg-gray-300 disabled:shadow-none;
 }
 
-.dialog__title--has-actions {
-  @apply flex items-center text-lg font-bold py-1 px-2 bg-primary-light shadow-md;
-}
-
-.dialog-action__body {
-  @apply px-6 pt-6 flex-grow overflow-y-scroll;
-}
-
-.dialog-action__title {
-  @apply text-4xl text-center tracking-wide font-black w-full mb-2;
-}
-
-.dialog-action__button {
-  @apply w-full mt-2 border rounded-xl ring-4 py-4 cursor-pointer bg-white disabled:pointer-events-none disabled:bg-gray-300 disabled:text-gray-400 disabled:ring-gray-400;
-}
-
-.dialog-action__ok-button {
-  @apply dialog-action__button text-primary ring-primary hover:text-primary-dark hover:ring-primary-dark;
-}
-
-.dialog-action__second-button {
-  @apply dialog-action__button text-secondary ring-secondary hover:text-secondary-dark hover:ring-secondary-dark;
-}
-
-.dialog-action__cancel-button {
-  @apply dialog-action__button text-tertiary ring-tertiary hover:text-tertiary-dark hover:ring-tertiary-dark;
-}
-
 .dialog__footer--actions-right {
   @apply grid grid-cols-right bg-gray-100;
 }
@@ -143,22 +115,6 @@
 
 .dialog__footer--actions-center {
   @apply grid grid-cols-2;
-}
-
-.dialog__footer-buttons--cancel {
-  @apply p-2 text-lg bg-tertiary w-full hover:bg-tertiary-dark disabled:bg-gray-200 disabled:text-gray-300 disabled:cursor-default;
-}
-
-.dialog__footer-buttons--secondary {
-  @apply p-2 text-lg bg-secondary w-full hover:bg-secondary-dark font-bold disabled:bg-gray-200 disabled:text-gray-300 disabled:cursor-default;
-}
-
-.dialog__footer-buttons--quarternary {
-  @apply p-2 text-lg bg-quarternary w-full hover:bg-quarternary-dark font-bold disabled:bg-gray-200 disabled:text-gray-300 disabled:cursor-default;
-}
-
-.dialog__footer-buttons--ok {
-  @apply p-2 text-lg bg-primary w-full hover:bg-primary-dark font-bold disabled:bg-gray-200 disabled:text-gray-300 disabled:cursor-default;
 }
 
 .stock-indicator__container {
@@ -193,4 +149,87 @@
 
 .table-div {
   @apply h-full p-3 bg-white w-full;
+}
+
+/* Modal Container */
+.modal__close-button-div {
+  @apply flex justify-end bg-blue-200;
+}
+
+.modal__close-button {
+  @apply p-2 text-gray-800 hover:text-gray-500 outline-none border-none;
+}
+
+.modal__title {
+  @apply flex justify-center w-full text-4xl font-extrabold bg-blue-200 mb-2;
+}
+
+.modal__body {
+  @apply px-6 pt-6 flex-grow overflow-y-scroll;
+}
+
+.modal__button-div {
+  @apply flex -mr-4 py-4 px-8;
+}
+
+.modal__button {
+  @apply w-full mt-2 mr-4 border rounded-xl ring-4 py-4 cursor-pointer bg-white disabled:pointer-events-none disabled:bg-gray-300 disabled:text-gray-400 disabled:ring-gray-400;
+}
+
+.modal__button--ok {
+  @apply modal__button text-primary ring-primary hover:text-primary-dark hover:ring-primary-dark;
+}
+
+.modal__button--alt {
+  @apply modal__button text-secondary ring-secondary hover:text-secondary-dark hover:ring-secondary-dark;
+}
+
+.modal__button--cancel {
+  @apply modal__button text-tertiary ring-tertiary hover:text-tertiary-dark hover:ring-tertiary-dark;
+}
+
+/* Screen Container  */
+
+.screen__content {
+  @apply bg-white h-menu flex flex-col;
+}
+
+.screen__title {
+  @apply flex items-center text-lg font-bold py-1 px-2 bg-primary-light shadow-md;
+}
+
+.screen__back-button {
+  @apply pr-2 text-black hover:text-gray-800;
+}
+
+.screen__body {
+  @apply flex items-start overflow-y-scroll px-6 pt-6 flex-grow;
+}
+
+.screen__button-div {
+  @apply flex w-full justify-end bg-gray-100;
+}
+
+.screen__button {
+  @apply p-2 text-lg w-1/5 font-bold disabled:bg-gray-200 disabled:text-gray-300 disabled:cursor-default;
+}
+
+.screen__button--ok {
+  @apply screen__button bg-primary hover:bg-primary-dark;
+}
+
+.screen__button--cancel {
+  @apply screen__button bg-tertiary hover:bg-tertiary-dark;
+}
+
+.screen__button--alt1 {
+  @apply screen__button bg-secondary hover:bg-secondary-dark;
+}
+
+.screen__button--alt2 {
+  @apply screen__button bg-quarternary hover:bg-quarternary-dark;
+}
+
+.screen__button--alt3 {
+  @apply screen__button bg-primary hover:bg-primary-dark;
 }

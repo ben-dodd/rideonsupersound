@@ -112,7 +112,7 @@ export async function saveSaleTransaction(
     sale_id: sale?.id,
     clerk_id: clerk?.id,
     payment_method: paymentMethod,
-    total_amount:
+    amount:
       parseFloat(amount) >= remainingBalance
         ? remainingBalance * 100
         : parseFloat(amount) * 100,
@@ -359,6 +359,7 @@ export async function saveHoldToDatabase(
     });
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
+    console.log(item);
     saveStockMovementToDatabase(item, clerk, "hold", null);
     return json?.insertId;
   } catch (e) {
@@ -472,8 +473,8 @@ export async function saveStockMovementToDatabase(
           act === "unlayby" ||
           act === "found" ||
           act === "unsold"
-            ? item?.quantity
-            : -item?.quantity,
+            ? parseInt(item?.quantity)
+            : -parseInt(item?.quantity),
         act,
         note,
       }),
@@ -513,6 +514,8 @@ export async function updateSaleInDatabase(sale: SaleObject) {
         contact_id: sale?.contact_id || null,
         state: sale?.state || null,
         note: sale?.note ? sale?.note : null,
+        date_layby_started: sale?.date_layby_started || null,
+        layby_started_by: sale?.layby_started_by || null,
       }),
     });
     const json = await res.json();

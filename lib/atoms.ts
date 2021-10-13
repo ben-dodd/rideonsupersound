@@ -1,6 +1,11 @@
 import { atom } from "jotai";
 
-import { ClerkObject, SaleObject, ContactObject, Modal } from "@/lib/types";
+import {
+  ClerkObject,
+  SaleObject,
+  ContactObject,
+  ConfirmModal,
+} from "@/lib/types";
 
 interface PaymentDialogProps {
   method?: string;
@@ -30,17 +35,13 @@ export const pettyCashAtom = atom<number>(0);
 export const showCloseRegisterScreenAtom = atom<boolean>(false);
 export const showBatchPaymentDialogAtom = atom<boolean>(false);
 export const showCashPaymentDialogAtom = atom<boolean>(false);
-export const showReceiveItemsScreenAtom = atom<boolean>(false);
-export const showReturnItemsScreenAtom = atom<boolean>(false);
-export const showPrintLabelsDialogAtom = atom<boolean>(false);
 export const showReceiveStockScreenAtom = atom<boolean>(false);
 export const showReturnStockScreenAtom = atom<boolean>(false);
 
 // modals
-export const sellModalAtom = atom<Modal>({ open: false });
 export const sellSearchBarAtom = atom<string>("");
 export const paymentDialogAtom = atom<PaymentDialogProps>({});
 export const showHoldDialogAtom = atom<number>(0);
 export const showLabelPrintDialogAtom = atom<boolean>(false);
-export const confirmModalAtom = atom<Modal>({ open: false });
+export const confirmModalAtom = atom<ConfirmModal>({ open: false });
 export const alertAtom = atom<AlertProps>({ open: false });

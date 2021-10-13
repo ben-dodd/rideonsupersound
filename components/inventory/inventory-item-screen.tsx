@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useAtom } from "jotai";
 import { showItemScreenAtom, clerkAtom } from "@/lib/atoms";
 import { useVendors, useStockItem, useInventory } from "@/lib/swr-hooks";
-import { VendorObject, InventoryObject } from "@/lib/types";
+import { VendorObject, InventoryObject, ModalButton } from "@/lib/types";
 import {
   getItemDisplayName,
   getGrossProfit,
@@ -19,7 +19,7 @@ import RadioButton from "@/components/inputs/radio-button";
 import DiscogsPanel from "./discogs-panel";
 import GoogleBooksPanel from "./google-books-panel";
 
-import ChevronLeft from "@mui/icons-material/ChevronLeft";
+import ScreenContainer from "@/components/container/screen";
 
 export default function InventoryItemScreen() {
   const [stockItemId, setShowItemScreen] = useAtom(showItemScreenAtom);
@@ -74,22 +74,30 @@ export default function InventoryItemScreen() {
     // Delete inventory item
   }
 
-  return isStockItemLoading ? (
-    <div className="loading-screen">
-      <div className="loading-icon" />
-    </div>
-  ) : (
-    <div className="bg-white h-menu flex flex-col">
-      <div className="dialog__title--has-actions">
-        <button
-          className="icon-button-small-black pr-2"
-          onClick={() => setShowItemScreen(0)}
-        >
-          <ChevronLeft />
-        </button>
-        {getItemDisplayName(item)}
-      </div>
-      <div className="flex items-start overflow-auto">
+  const buttons: ModalButton[] = [
+    { type: "cancel", onClick: () => setShowItemScreen(0), text: "CLOSE" },
+    {
+      type: "ok",
+      onClick: () => {
+        setShowItemScreen(0);
+        updateStockItemInDatabase(item);
+        setItem(null);
+        // setTimeout(() => setItem(null), 1000);
+        mutateInventory();
+      },
+      text: "SAVE",
+    },
+  ];
+
+  return (
+    <ScreenContainer
+      show={Boolean(stockItemId)}
+      closeFunction={() => setShowItemScreen(0)}
+      title={getItemDisplayName(item)}
+      loading={isStockItemLoading}
+      buttons={buttons}
+    >
+      <>
         <div className={`p-6 ${syncInfo ? "w-6/12" : "w-full"}`}>
           <div className="flex justify-start w-full">
             <div className="pr-2 w-52 mr-2">
@@ -332,31 +340,8 @@ export default function InventoryItemScreen() {
             )}
           </div>
         )}
-      </div>
-      <div className="dialog__footer--actions-right">
-        <div />
-        <button
-          className="dialog__footer-buttons--cancel"
-          onClick={() => {
-            setShowItemScreen(0);
-          }}
-        >
-          CLOSE
-        </button>
-        <button
-          className="dialog__footer-buttons--ok"
-          onClick={() => {
-            setShowItemScreen(0);
-            updateStockItemInDatabase(item);
-            setItem(null);
-            // setTimeout(() => setItem(null), 1000);
-            mutateInventory();
-          }}
-        >
-          SAVE
-        </button>
-      </div>
-    </div>
+      </>
+    </ScreenContainer>
   );
 }
 

@@ -13,12 +13,13 @@ export default function CashItem({ transaction, negative }: CashItemProps) {
     (c: ClerkObject) => c?.id === transaction?.clerk_id
   )[0]?.name;
   let date = fTimeDate(transaction?.date);
+  console.log(transaction);
   return (
     <>
       <div className="flex justify-between text-sm">
         <div
           className={
-            transaction?.total_amount < 0
+            transaction?.amount < 0
               ? negative
                 ? "text-secondary"
                 : "text-tertiary"
@@ -27,14 +28,14 @@ export default function CashItem({ transaction, negative }: CashItemProps) {
               : "text-secondary"
           }
         >{`${
-          transaction?.total_amount < 0
+          transaction?.amount < 0
             ? negative
               ? "+"
               : "-"
             : negative
             ? "-"
             : "+"
-        } $${Math.abs(transaction?.total_amount / 100).toFixed(2)}`}</div>
+        } $${Math.abs(transaction?.amount / 100).toFixed(2)}`}</div>
         <div>{`${transactionBy} (${date})`}</div>
       </div>
       {/*transaction?.note && <div className="text-xs">{transaction?.note}</div>*/}

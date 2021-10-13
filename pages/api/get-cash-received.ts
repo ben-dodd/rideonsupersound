@@ -6,7 +6,7 @@ const handler: NextApiHandler = async (req, res) => {
   try {
     const results = await query(
       `
-      SELECT sale_id, clerk_id, date, payment_method, total_amount, change_given
+      SELECT sale_id, clerk_id, date, payment_method, amount, change_given
       FROM sale_transaction
       WHERE register_id = ${register_id} AND change_given AND is_deleted = FALSE
       `

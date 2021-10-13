@@ -6,8 +6,8 @@ export default function LogScreen() {
   const { logs, isLogsLoading } = useLogs();
 
   return (
-    <div className="h-menu overflow-y-scroll px-2 bg-yellow-200">
-      <div className="text-xl font-bold mt-4 mb-2">Logs</div>
+    <div className="h-menu overflow-y-scroll px-2 bg-black">
+      <div className="text-2xl mt-4 mb-2 text-white font-mono">Logs</div>
       {isLogsLoading ? (
         <div className="w-full flex h-full">
           <div className="loading-icon" />

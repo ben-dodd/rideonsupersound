@@ -10,37 +10,44 @@ import {
   useCashGiven,
   useCashReceived,
 } from "@/lib/swr-hooks";
-import { ClerkObject } from "@/lib/types";
+import { ClerkObject, ModalButton } from "@/lib/types";
 import { fTimeDate, getAmountFromCashMap } from "@/lib/data-functions";
 import { saveClosedRegisterToDatabase } from "@/lib/db-functions";
 
 import TextField from "@/components/inputs/text-field";
 import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/VpnKey";
+import ScreenContainer from "@/components/container/screen";
 import CashItem from "./cash-item";
 import CashMap from "./cash-map";
 
 export default function CloseRegisterScreen() {
   const [clerk] = useAtom(clerkAtom);
-  const [, setShowCloseRegisterScreen] = useAtom(showCloseRegisterScreenAtom);
-  const { clerks } = useClerks();
+  const [showCloseRegisterScreen, setShowCloseRegisterScreen] = useAtom(
+    showCloseRegisterScreenAtom
+  );
+  const { clerks, isClerksLoading } = useClerks();
   const { registerID } = useRegisterID();
-  const { register } = useRegister(registerID);
+  const { register, isRegisterLoading } = useRegister(registerID);
   const [till, setTill] = useState({});
   const [notes, setNotes] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const [closeAmount, setCloseAmount] = useState(
     `${getAmountFromCashMap(till)}`
   );
-  const [loading, setLoading] = useState(false);
-  const openAmount = register?.open_amount;
+  const openAmount = register?.open_amount / 100;
   const openedBy = (clerks || []).filter(
     (c: ClerkObject) => c?.id === register?.opened_by_id
   )[0]?.name;
   const openedOn = fTimeDate(register?.open_date);
-  const { pettyCash } = usePettyCash(register?.id || 0);
-  const { cashGiven } = useCashGiven(register?.id || 0);
-  const { cashReceived } = useCashReceived(register?.id || 0);
-  const { manualPayments } = useManualPayments(register?.id || 0);
+  const { pettyCash, isPettyCashLoading } = usePettyCash(register?.id || 0);
+  const { cashGiven, isCashGivenLoading } = useCashGiven(register?.id || 0);
+  const { cashReceived, isCashReceivedLoading } = useCashReceived(
+    register?.id || 0
+  );
+  const { manualPayments, isManualPaymentsLoading } = useManualPayments(
+    register?.id || 0
+  );
   const closePettyBalance =
     pettyCash?.reduce(
       (acc: number, transaction) => acc + transaction?.amount,
@@ -71,8 +78,9 @@ export default function CloseRegisterScreen() {
   const closeDiscrepancy = invalidCloseAmount
     ? 0
     : closeExpectedAmount - parseFloat(closeAmount);
-  const closeRegister = () => {
-    saveClosedRegisterToDatabase(
+  const closeRegister = async () => {
+    setSubmitting(true);
+    await saveClosedRegisterToDatabase(
       registerID,
       {
         close_amount: parseFloat(closeAmount) * 100,
@@ -86,6 +94,8 @@ export default function CloseRegisterScreen() {
       },
       till
     );
+    setSubmitting(false);
+    setShowCloseRegisterScreen(false);
   };
   useEffect(() => setCloseAmount(`${getAmountFromCashMap(till)}`), [till]);
   // const cashList =
@@ -93,137 +103,153 @@ export default function CloseRegisterScreen() {
   //   cashGiven.length > 0 ||
   //   manualPayments.length > 0 ||
   //   pettyCash.length > 0;
+
+  const buttons: ModalButton[] = [
+    {
+      type: "cancel",
+      onClick: () => setShowCloseRegisterScreen(false),
+      disabled: invalidCloseAmount,
+      text: "CANCEL",
+    },
+    {
+      type: "ok",
+      onClick: closeRegister,
+      disabled: invalidCloseAmount || submitting,
+      loading: submitting,
+      text: "CLOSE REGISTER",
+    },
+  ];
+
   return (
-    <div className="bg-white">
-      <div className="text-xl">Close Register</div>
-      <div className="flex mb-4">
-        <div className="w-1/2">
-          <div className="text-3xl">Start Float</div>
-          <div className="text-3xl text-red-400 py-2">{`$${openAmount?.toFixed(
-            2
-          )}`}</div>
-          <div className="text-xs">{`Opened by ${openedBy} (${openedOn})`}</div>
-        </div>
-        <div className="w-1/2">
-          <div className="text-3xl">Close Float</div>
+    <ScreenContainer
+      show={Boolean(showCloseRegisterScreen)}
+      closeFunction={() => setShowCloseRegisterScreen(false)}
+      title={"Close Register"}
+      loading={
+        isClerksLoading ||
+        isCashGivenLoading ||
+        isRegisterLoading ||
+        isManualPaymentsLoading ||
+        isCashReceivedLoading ||
+        isPettyCashLoading
+      }
+      buttons={buttons}
+    >
+      <div className="flex">
+        <div className="w-1/2 mr-12">
+          <div className="flex mb-4">
+            <div className="w-1/2">
+              <div className="text-3xl">Start Float</div>
+              <div className="text-3xl text-red-400 py-2">{`$${openAmount?.toFixed(
+                2
+              )}`}</div>
+              <div className="text-xs">{`Opened by ${openedBy} (${openedOn})`}</div>
+            </div>
+            <div className="w-1/2">
+              <div className="text-3xl">Close Float</div>
+              <TextField
+                className="text-3xl text-red-400"
+                startAdornment="$"
+                value={`${closeAmount}`}
+                onChange={(e: any) => {
+                  setCloseAmount(e.target.value);
+                }}
+              />
+            </div>
+          </div>
+          <div
+            className={`text-3xl text-center py-2 ${
+              invalidCloseAmount || closeDiscrepancy > 0
+                ? "text-tertiary"
+                : closeDiscrepancy < 0
+                ? "text-secondary"
+                : "text-primary"
+            }`}
+          >{`$${closeExpectedAmount?.toFixed(2)} Expected`}</div>
+          <div
+            className={`text-xl text-center ${
+              invalidCloseAmount || closeDiscrepancy > 0
+                ? "text-tertiary"
+                : closeDiscrepancy < 0
+                ? "text-secondary"
+                : "text-primary"
+            }`}
+          >
+            {invalidCloseAmount
+              ? "Close amount must be a number"
+              : closeDiscrepancy > 0
+              ? `Close amount short by $${closeDiscrepancy?.toFixed(2)}`
+              : closeDiscrepancy < 0
+              ? `Close amount over by $${Math.abs(closeDiscrepancy)?.toFixed(
+                  2
+                )}`
+              : "All square!"}
+          </div>
+          <CashMap till={till} setTill={setTill} />
           <TextField
-            className="text-3xl text-red-400"
-            startAdornment="$"
-            value={`${closeAmount}`}
-            onChange={(e: any) => {
-              setCloseAmount(e.target.value);
-            }}
+            inputLabel="Notes"
+            value={notes}
+            onChange={(e: any) => setNotes(e.target.value)}
+            multiline
           />
         </div>
-      </div>
-      {cashReceived?.length > 0 && (
-        <>
-          <div className="text-xl font-bold mt-4">Cash Received</div>
-          {cashReceived?.map((transaction, i) => (
-            <CashItem transaction={transaction} key={i} />
-          ))}
-          <div
-            className={`border-t text-sm font-bold ${
-              closeCashReceived < 0 ? "text-tertiary" : "text-secondary"
-            }`}
-          >{`${closeCashReceived < 0 ? "-" : "+"} $${Math.abs(
-            closeCashReceived
-          ).toFixed(2)}`}</div>
-        </>
-      )}
-      {cashGiven?.length > 0 && (
-        <>
-          <div className="text-xl font-bold mt-4">Cash Given</div>
-          {cashGiven?.map((transaction, i) => (
-            <CashItem transaction={transaction} negative key={i} />
-          ))}
-          <div
-            className={`border-t text-sm font-bold text-tertiary`}
-          >{`- $${Math.abs(closeCashGiven).toFixed(2)}`}</div>
-        </>
-      )}
-      {manualPayments?.length > 0 && (
-        <>
-          <div className="text-xl font-bold mt-4">Vendor Cash Payments</div>
-          {manualPayments.map((transaction, i) => (
-            <CashItem transaction={transaction} negative key={i} />
-          ))}
-          <div
-            className={`border-t text-sm font-bold text-tertiary`}
-          >{`- $${Math.abs(closeManualPayments).toFixed(2)}`}</div>
-        </>
-      )}
-      {pettyCash?.length > 0 && (
-        <>
-          <div className="text-xl font-bold mt-4">Petty Cash Transactions</div>
-          {pettyCash.map((transaction, i) => (
-            <CashItem transaction={transaction} key={i} />
-          ))}
-          <div
-            className={`border-t text-sm font-bold ${
-              closePettyBalance < 0 ? "text-tertiary" : "text-secondary"
-            }`}
-          >{`${closePettyBalance < 0 ? "-" : "+"} $${Math.abs(
-            closePettyBalance
-          ).toFixed(2)}`}</div>
-        </>
-      )}
-      <div
-        className={`text-3xl text-center py-2 ${
-          invalidCloseAmount || closeDiscrepancy > 0
-            ? "text-tertiary"
-            : closeDiscrepancy < 0
-            ? "text-secondary"
-            : "text-primary"
-        }`}
-      >{`$${closeExpectedAmount?.toFixed(2)} Expected`}</div>
-      <div
-        className={`text-xl text-center ${
-          invalidCloseAmount || closeDiscrepancy > 0
-            ? "text-tertiary"
-            : closeDiscrepancy < 0
-            ? "text-secondary"
-            : "text-primary"
-        }`}
-      >
-        {invalidCloseAmount
-          ? "Close amount must be a number"
-          : closeDiscrepancy > 0
-          ? `Close amount short by $${closeDiscrepancy?.toFixed(2)}`
-          : closeDiscrepancy < 0
-          ? `Close amount over by $${Math.abs(closeDiscrepancy)?.toFixed(2)}`
-          : "All square!"}
-      </div>
-      <CashMap till={till} setTill={setTill} />
-      <TextField
-        inputLabel="Notes"
-        value={notes}
-        onChange={(e: any) => setNotes(e.target.value)}
-        multiline
-      />
-      <div className="flex">
-        <button
-          disabled={invalidCloseAmount}
-          className="my-6 dialog-action__cancel-button"
-          onClick={() => setShowCloseRegisterScreen(false)}
-        >
-          Cancel{" "}
-        </button>
-        <button
-          disabled={invalidCloseAmount}
-          className="my-6 dialog-action__ok-button"
-          onClick={closeRegister}
-        >
-          {loading ? (
-            <span className="pr-4">
-              <CircularProgress color="inherit" size={18} />
-            </span>
-          ) : (
-            <CloseIcon className="mr-2" />
+        <div className="w-1/2">
+          {cashReceived?.length > 0 && (
+            <>
+              <div className="text-xl font-bold mt-4">Cash Received</div>
+              {cashReceived?.map((transaction, i) => (
+                <CashItem transaction={transaction} key={i} />
+              ))}
+              <div
+                className={`border-t text-sm font-bold ${
+                  closeCashReceived < 0 ? "text-tertiary" : "text-secondary"
+                }`}
+              >{`${closeCashReceived < 0 ? "-" : "+"} $${Math.abs(
+                closeCashReceived
+              ).toFixed(2)}`}</div>
+            </>
           )}
-          Close Register
-        </button>
+          {cashGiven?.length > 0 && (
+            <>
+              <div className="text-xl font-bold mt-4">Cash Given</div>
+              {cashGiven?.map((transaction, i) => (
+                <CashItem transaction={transaction} negative key={i} />
+              ))}
+              <div
+                className={`border-t text-sm font-bold text-tertiary`}
+              >{`- $${Math.abs(closeCashGiven).toFixed(2)}`}</div>
+            </>
+          )}
+          {manualPayments?.length > 0 && (
+            <>
+              <div className="text-xl font-bold mt-4">Vendor Cash Payments</div>
+              {manualPayments.map((transaction, i) => (
+                <CashItem transaction={transaction} negative key={i} />
+              ))}
+              <div
+                className={`border-t text-sm font-bold text-tertiary`}
+              >{`- $${Math.abs(closeManualPayments).toFixed(2)}`}</div>
+            </>
+          )}
+          {pettyCash?.length > 0 && (
+            <>
+              <div className="text-xl font-bold mt-4">
+                Petty Cash Transactions
+              </div>
+              {pettyCash.map((transaction, i) => (
+                <CashItem transaction={transaction} key={i} />
+              ))}
+              <div
+                className={`border-t text-sm font-bold ${
+                  closePettyBalance < 0 ? "text-tertiary" : "text-secondary"
+                }`}
+              >{`${closePettyBalance < 0 ? "-" : "+"} $${Math.abs(
+                closePettyBalance
+              ).toFixed(2)}`}</div>
+            </>
+          )}
+        </div>
       </div>
-    </div>
+    </ScreenContainer>
   );
 }

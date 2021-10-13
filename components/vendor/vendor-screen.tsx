@@ -29,10 +29,10 @@ import {
   fDate,
   nzDate,
 } from "@/lib/data-functions";
+import ScreenContainer from "@/components/container/screen";
 
 import Select from "react-select";
 import MaskedInput from "react-text-mask";
-import CloseButton from "@/components/button/close-button";
 import TextField from "@/components/inputs/text-field";
 import CreateableSelect from "@/components/inputs/createable-select";
 import SettingsSelect from "@/components/inputs/settings-select";
@@ -43,12 +43,12 @@ import defaultImage from "../../res/default.png";
 export default function VendorScreen() {
   const [vendorId, setShowVendorScreen] = useAtom(showVendorScreenAtom);
   const [, setCreateContactScreen] = useAtom(showCreateContactAtom);
-  const { vendors } = useVendors();
-  const { clerks } = useClerks();
-  const { contacts } = useContacts();
-  const { inventory } = useInventory();
-  const { sales } = useSalesJoined();
-  const { vendorPayments } = useVendorPayments();
+  const { vendors, isVendorsLoading } = useVendors();
+  const { clerks, isClerksLoading } = useClerks();
+  const { contacts, isContactsLoading } = useContacts();
+  const { inventory, isInventoryLoading } = useInventory();
+  const { sales, isSalesLoading } = useSalesJoined();
+  const { vendorPayments, isVendorPaymentsLoading } = useVendorPayments();
   const [clerk] = useAtom(clerkAtom);
   const [vendor, setVendor]: [VendorObject, Function] = useState({});
 
@@ -88,7 +88,20 @@ export default function VendorScreen() {
   ];
   const isNew = !vendor?.id;
   return (
-    <div>
+    <ScreenContainer
+      show={Boolean(vendorId)}
+      closeFunction={() => setShowVendorScreen(0)}
+      title={vendor?.name}
+      loading={
+        isSalesLoading ||
+        isClerksLoading ||
+        isVendorsLoading ||
+        isContactsLoading ||
+        isInventoryLoading ||
+        isVendorPaymentsLoading
+      }
+      buttons={[]}
+    >
       <div className="flex">
         <div className={`flex flex-col mr-8 ${isNew ? "w-full" : "w-1/5"}`}>
           <div className="text-xl font-bold bg-col1 px-1">General Details</div>
@@ -323,7 +336,7 @@ export default function VendorScreen() {
           </div>
         )}
       </div>
-    </div>
+    </ScreenContainer>
   );
 
   function StockItem({ item }) {

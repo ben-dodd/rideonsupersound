@@ -49,7 +49,7 @@ export default function Nav() {
             {/*<div>{page?.toUpperCase()}</div>*/}
           </div>
         </div>
-        {page === "sell" && registerID && <SellNavActions />}
+        {page === "sell" && registerID > 0 && <SellNavActions />}
         {page === "inventory" && <InventoryNavActions />}
         {page === "contacts" && <ContactNavActions />}
         {page === "vendors" && <VendorNavActions />}

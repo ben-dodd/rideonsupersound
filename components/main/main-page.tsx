@@ -17,7 +17,7 @@ import GiftCardsScreen from "@/components/gift-card";
 import PaymentsScreen from "@/components/payment";
 import SalesScreen from "@/components/sale";
 import LogScreen from "@/components/log";
-import ConfirmModal from "@/components/modal/confirm-modal";
+import ConfirmModal from "@/components/container/modal/confirm-modal";
 
 export default function MainPage() {
   // Get google auth details
@@ -32,7 +32,7 @@ export default function MainPage() {
         <Menu />
         <div className="bg-green-500 h-full w-full absolute sm:static">
           {page === "sell" ? (
-            registerID ? (
+            registerID > 0 ? (
               <SellScreen />
             ) : (
               <OpenRegisterScreen />

@@ -90,7 +90,7 @@ module.exports = {
         search: "4rem",
         inventory: `calc(100vh - 8rem)`,
       },
-      width: { icons: "3rem", table: `calc(100vw * 0.85)` },
+      width: { icons: "3rem", menu: `12rem`, board: `calc(100vw - 12rem)` },
       transitionProperty: { width: "width", height: "height" },
       // fontFamily: { sans: ["Varela Round", "sans-serif"] },
       gridTemplateColumns: {

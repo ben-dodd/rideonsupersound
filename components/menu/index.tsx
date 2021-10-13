@@ -172,7 +172,7 @@ export default function Menu() {
     <div
       className={`w-0 overflow-y-auto flex flex-col h-menu justify-between bg-white z-50 flex-shrink-0 whitespace-pre relative ${
         menuDisplay && "w-full "
-      }sm:w-full sm:w-icons sm:border-r sm:shadow-lg lg:w-1/6 transition-width duration-200 `}
+      }sm:w-full sm:w-icons sm:border-r sm:shadow-lg lg:w-menu transition-width duration-200 `}
     >
       {menu?.map((list, i) => (
         <ul key={i}>

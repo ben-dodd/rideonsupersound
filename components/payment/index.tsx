@@ -50,7 +50,7 @@ export default function PaymentsScreen() {
       },
       {
         Header: "Vendor",
-        accessor: "vendor",
+        accessor: "vendor_id",
         Cell: ({ value }) =>
           (vendors || []).filter((v: VendorObject) => v?.id === value)[0]
             ?.name || "",
@@ -60,7 +60,7 @@ export default function PaymentsScreen() {
         accessor: "amount",
         width: 100,
         Cell: ({ value }) =>
-          value && !isNaN(value) ? `$${value?.toFixed(2)}` : "N/A",
+          value && !isNaN(value) ? `$${(value / 100)?.toFixed(2)}` : "N/A",
       },
       { Header: "Clerk", accessor: "clerk" },
       { Header: "Type", accessor: "type" },

@@ -260,8 +260,8 @@ export function useContacts() {
   );
   return {
     contacts: data,
-    isLoading: !error && !data,
-    isError: error,
+    isContactsLoading: !error && !data,
+    isContactsError: error,
   };
 }
 

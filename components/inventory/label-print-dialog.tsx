@@ -9,13 +9,11 @@ import {
 import { saveLog } from "@/lib/db-functions";
 import { showLabelPrintDialogAtom, clerkAtom } from "@/lib/atoms";
 import { useInventory } from "@/lib/swr-hooks";
-import { InventoryObject } from "@/lib/types";
+import { InventoryObject, ModalButton } from "@/lib/types";
 
-import { CSVLink } from "react-csv";
-import Modal from "@/components/modal";
+import Modal from "@/components/container/modal";
 import TextField from "@/components/inputs/text-field";
 import Select from "react-select";
-import CloseButton from "@/components/button/close-button";
 
 export default function LabelPrintDialog() {
   const [labelPrintDialog, setLabelPrintDialog] = useAtom(
@@ -36,14 +34,34 @@ export default function LabelPrintDialog() {
     9: { item: {}, printQuantity: 1 },
   });
 
+  const buttons: ModalButton[] = [
+    {
+      type: "cancel",
+      onClick: () => setLabelPrintDialog(false),
+      text: "CANCEL",
+    },
+    {
+      type: "ok",
+      data: getCSVData(items, inventory),
+      headers: ["SKU", "ARTIST", "TITLE", "NEW/USED", "SELL PRICE", "GENRE"],
+      fileName: `label-print-${fFileDate()}.csv`,
+      text: "PRINT LABELS",
+      onClick: () =>
+        saveLog({
+          log: "Labels printed from label print dialog.",
+          clerk_id: clerk?.id,
+        }),
+    },
+  ];
+
   return (
     <Modal
       open={Boolean(labelPrintDialog)}
-      onClose={() => setLabelPrintDialog(false)}
+      closeFunction={() => setLabelPrintDialog(false)}
+      title={"LABEL PRINT"}
+      buttons={buttons}
     >
-      <CloseButton closeFunction={() => setLabelPrintDialog(false)} />
-      <div className="dialog-action__title">LABEL PRINT</div>
-      <div className="dialog-action__body">
+      <>
         <div className="input-label">Add Items</div>
         {Array.from(Array(10).keys()).map((key) => (
           <div key={key} className="flex mb-1 items-center">
@@ -75,38 +93,7 @@ export default function LabelPrintDialog() {
             </div>
           </div>
         ))}
-      </div>
-      <div className="dialog-action__button-div mb-2">
-        <button
-          className="dialog-action__cancel-button mr-2"
-          onClick={() => {
-            setLabelPrintDialog(false);
-          }}
-        >
-          CANCEL
-        </button>
-        <CSVLink
-          className="dialog-action__ok-button ml-2 text-center"
-          data={getCSVData(items, inventory)}
-          headers={[
-            "SKU",
-            "ARTIST",
-            "TITLE",
-            "NEW/USED",
-            "SELL PRICE",
-            "GENRE",
-          ]}
-          filename={`label-print-${fFileDate()}.csv`}
-          onClick={() =>
-            saveLog({
-              log: "Labels printed from label print dialog.",
-              clerk_id: clerk?.id,
-            })
-          }
-        >
-          PRINT LABELS
-        </CSVLink>
-      </div>
+      </>
     </Modal>
   );
 }

@@ -24,16 +24,16 @@ export interface ContactObject {
   is_deleted?: boolean;
 }
 
-export interface Modal {
+export interface ConfirmModal {
   open: boolean;
   onClose?: Function;
   title?: string;
   message?: string;
   styledMessage?: any;
   action?: Function;
-  secondAction?: Function;
+  altAction?: Function;
   yesText?: string;
-  secondText?: string;
+  altText?: string;
   noText?: string;
 }
 
@@ -75,7 +75,7 @@ export interface SaleTransactionObject {
   sale_id: number;
   clerk_id: number;
   payment_method: string;
-  total_amount: number;
+  amount: number;
   cash_received?: number;
   change_given?: number;
   vendor_payment_id?: number;
@@ -442,4 +442,16 @@ export interface KiwiBankTransactionObject {
   name?: string;
   amount?: number;
   accountNumber?: string;
+}
+
+export interface ModalButton {
+  type?: string;
+  onClick?: Function;
+  text?: string;
+  disabled?: boolean;
+  loading?: boolean;
+  hidden?: boolean;
+  data?: any[];
+  headers?: string[];
+  fileName?: string;
 }

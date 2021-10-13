@@ -290,7 +290,7 @@ export function getTotalPaid(cart: SaleObject) {
   return cart?.transactions
     ? cart.transactions
         .filter((transaction) => !transaction.is_deleted)
-        .reduce((acc, transaction) => acc + transaction?.total_amount, 0)
+        .reduce((acc, transaction) => acc + transaction?.amount, 0)
     : null;
 }
 
@@ -349,7 +349,7 @@ export function getAmountFromCashMap(till: TillObject) {
     });
   }
   // return rounded to 2 d.p.
-  if (isNaN(closeAmount)) return "ERROR";
+  if (isNaN(closeAmount)) return 0;
   return Math.round((closeAmount + Number.EPSILON) * 100) / 100;
 }
 
@@ -628,8 +628,7 @@ export function writeItemList(
 
 export function getCSVData(items, inventory: InventoryObject[]) {
   let csv = [];
-  (items || []).forEach((row: any) => {
-    console.log(row);
+  Object.values(items || {}).forEach((row: any) => {
     Array.from(Array(parseInt(row?.printQuantity || 1)).keys()).forEach(() => {
       // let item:InventoryObject = (inventory || []).filter()?.row?.item?.value || {}), {});
       // if (Object.keys(item).length > 0)

@@ -13,6 +13,7 @@ import {
   VendorPaymentObject,
   InventoryObject,
   VendorObject,
+  ModalButton,
 } from "@/lib/types";
 
 // Actions
@@ -21,7 +22,7 @@ import { getTotalOwing } from "@/lib/data-functions";
 
 // Material UI Components
 import TextField from "@/components/inputs/text-field";
-import Modal from "@/components/modal";
+import Modal from "@/components/container/modal";
 import CreateableSelect from "@/components/inputs/createable-select";
 
 export default function CashPaymentDialog() {
@@ -29,13 +30,13 @@ export default function CashPaymentDialog() {
   const { inventory } = useInventory();
   const { vendors } = useVendors();
   const { sales } = useSalesJoined();
-  const { vendorPayments } = useVendorPayments();
+  const { vendorPayments, mutateVendorPayments } = useVendorPayments();
   const [clerk] = useAtom(clerkAtom);
   const [showCashPaymentDialog, setShowCashPaymentDialog] = useAtom(
     showCashPaymentDialogAtom
   );
   const [submitting, setSubmitting] = useState(false);
-  const [vendor_id, setVendor]: [number, Function] = useState();
+  const [vendor_id, setVendor]: [number, Function] = useState(0);
   const [payment, setPayment] = useState("0");
   const [notes, setNotes] = useState("");
   const totalOwing = useMemo(
@@ -54,102 +55,106 @@ export default function CashPaymentDialog() {
     [vendor_id]
   );
   const vendor = useMemo(
-    () => (vendors || []).filter((v: VendorObject) => v?.id === vendor_id),
+    () => (vendors || []).filter((v: VendorObject) => v?.id === vendor_id)[0],
     [vendor_id, vendors]
   );
+
+  const buttons: ModalButton[] = [
+    {
+      type: "cancel",
+      text: "CANCEL",
+      onClick: () => setShowCashPaymentDialog(false),
+    },
+    {
+      type: "ok",
+      text: "PAY VENDOR",
+      loading: submitting,
+      onClick: async () => {
+        setSubmitting(true);
+        const vendorPaymentId = await saveVendorPaymentToDatabase({
+          amount: Math.round(parseFloat(payment) * 100),
+          bank_account_number: vendor?.bank_account_number,
+          batch_number: `${registerID}`,
+          sequence_number: "Test",
+          clerk_id: clerk?.id,
+          vendor_id: vendor?.id,
+          register_id: registerID,
+          type: "cash",
+        });
+        await saveLog({
+          log: `Cash payment made to Vendor (${vendor?.id || ""}).`,
+          clerk_id: clerk?.id,
+          table_id: "vendor_payment",
+          row_id: vendorPaymentId,
+        });
+        mutateVendorPayments();
+        setSubmitting(false);
+        setShowCashPaymentDialog(false);
+      },
+      disabled:
+        totalOwing < parseFloat(payment) ||
+        !payment ||
+        parseFloat(payment) <= 0,
+    },
+  ];
 
   return (
     <Modal
       open={Boolean(showCashPaymentDialog)}
-      onClose={() => setShowCashPaymentDialog(false)}
+      closeFunction={() => setShowCashPaymentDialog(false)}
+      title={"CASH PAYMENT"}
+      buttons={buttons}
     >
-      <CreateableSelect
-        inputLabel="Select vendor"
-        fieldRequired
-        value={vendor_id}
-        label={
-          (vendors || []).filter((v: VendorObject) => v?.id === vendor_id)[0]
-            ?.name || ""
-        }
-        onChange={(vendorObject: any) => setVendor(vendorObject?.value)}
-        onCreateOption={(inputValue: string) =>
-          // setCreateContactScreen({
-          //   id: 1,
-          //   name: inputValue,
-          // })
-          null
-        }
-        options={(vendors || [])?.map((val: VendorObject) => ({
-          value: val?.id,
-          label: val?.name || "",
-        }))}
-      />
-      <TextField
-        className="mt-4"
-        divClass="text-8xl"
-        inputClass="text-center"
-        startAdornment="$"
-        autoFocus
-        selectOnFocus
-        value={payment}
-        onChange={(e: any) => setPayment(e.target.value)}
-      />
-      <TextField
-        inputLabel="Notes"
-        multiline
-        rows={3}
-        value={notes}
-        onChange={(e: any) => setNotes(e.target.value)}
-      />
-      <div className="mt-4 text-center">
-        {`VENDOR OWED $${totalOwing.toFixed(2)}`}
-      </div>
-      <div className="my-4 text-center text-xl font-bold">
-        {totalOwing < parseFloat(payment)
-          ? `YOU CANNOT PAY VENDOR MORE THAN THEY ARE OWED`
-          : "PAYMENT OK"}
-      </div>
-      <div className="flex">
-        <div className="dialog-action__button-div mb-4">
-          <button
-            className="dialog-action__cancel-button mr-2"
-            onClick={() => setShowCashPaymentDialog(false)}
-          >
-            CANCEL
-          </button>
-
-          <button
-            className="dialog-action__ok-button mb-8"
-            disabled={
-              totalOwing < parseFloat(payment) ||
-              !payment ||
-              parseFloat(payment) <= 0
-            }
-            onClick={async () => {
-              const vendorPaymentId = await saveVendorPaymentToDatabase({
-                amount: Math.round(parseFloat(payment) * 100),
-                bank_account_number: vendor?.bank_account_number,
-                batch_number: `${registerID}`,
-                sequence_number: "Test",
-                clerk_id: clerk?.id,
-                vendor_id: vendor?.id,
-                register_id: registerID,
-                type: "cash",
-              });
-              await saveLog({
-                log: `Cash payment made to Vendor (${vendor?.id || ""}).`,
-                clerk_id: clerk?.id,
-                table_id: "vendor_payment",
-                row_id: vendorPaymentId,
-              });
-              setSubmitting(false);
-              setShowCashPaymentDialog(false);
-            }}
-          >
-            PAY VENDOR
-          </button>
+      <>
+        <CreateableSelect
+          inputLabel="Select vendor"
+          fieldRequired
+          value={vendor_id}
+          label={
+            (vendors || []).filter((v: VendorObject) => v?.id === vendor_id)[0]
+              ?.name || ""
+          }
+          onChange={(vendorObject: any) => setVendor(vendorObject?.value)}
+          onCreateOption={(inputValue: string) =>
+            // setCreateContactScreen({
+            //   id: 1,
+            //   name: inputValue,
+            // })
+            null
+          }
+          options={(vendors || [])?.map((val: VendorObject) => ({
+            value: val?.id,
+            label: val?.name || "",
+          }))}
+        />
+        <TextField
+          className="mt-4"
+          divClass="text-8xl"
+          inputClass="text-center"
+          startAdornment="$"
+          autoFocus
+          selectOnFocus
+          value={payment}
+          onChange={(e: any) => setPayment(e.target.value)}
+        />
+        <TextField
+          inputLabel="Notes"
+          multiline
+          rows={3}
+          value={notes}
+          onChange={(e: any) => setNotes(e.target.value)}
+        />
+        <div className="mt-4 text-center">
+          {vendor_id > 0 && `VENDOR OWED $${(totalOwing / 100).toFixed(2)}`}
         </div>
-      </div>
+        <div className="my-4 text-center text-xl font-bold">
+          {vendor_id > 0
+            ? totalOwing / 100 < parseFloat(payment)
+              ? `YOU CANNOT PAY VENDOR MORE THAN THEY ARE OWED`
+              : "PAYMENT OK"
+            : "SELECT VENDOR"}
+        </div>
+      </>
     </Modal>
   );
 }

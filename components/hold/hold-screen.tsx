@@ -9,20 +9,21 @@ import {
   sellSearchBarAtom,
   showCreateContactAtom,
 } from "@/lib/atoms";
-import { ContactObject } from "@/lib/types";
+import { ContactObject, ModalButton } from "@/lib/types";
 import { getItemSkuDisplayName } from "@/lib/data-functions";
 import { saveHoldToDatabase, saveLog } from "@/lib/db-functions";
 import TextField from "@/components/inputs/text-field";
 import CreateableSelect from "@/components/inputs/createable-select";
 import ListItem from "./list-item";
 import { useContacts, useInventory } from "@/lib/swr-hooks";
+import SidebarContainer from "@/components/container/side-bar";
 
 export default function HoldScreen() {
   const [cart, setCart] = useAtom(cartAtom);
   const [, setAlert] = useAtom(alertAtom);
   const [, setCreateContactScreen] = useAtom(showCreateContactAtom);
   const [, setShowCart] = useAtom(showCartAtom);
-  const [, setShowHold] = useAtom(showHoldAtom);
+  const [showHold, setShowHold] = useAtom(showHoldAtom);
   const [, setSearch] = useAtom(sellSearchBarAtom);
   const [clerk] = useAtom(clerkAtom);
   const { contacts } = useContacts();
@@ -83,11 +84,21 @@ export default function HoldScreen() {
     setShowHold(false);
   }
 
+  const buttons: ModalButton[] = [
+    { type: "cancel", onClick: () => setShowHold(false), text: "CANCEL" },
+    {
+      type: "ok",
+      onClick: onClickConfirmHold,
+      disabled:
+        !cart?.contact_id ||
+        Object.keys(cart?.items || {}).length === 0 ||
+        !holdPeriod,
+      text: submitting ? "HOLDING..." : "CONFIRM HOLD",
+    },
+  ];
+
   return (
-    <div className="flex flex-col h-menu px-2 bg-blue-200 text-black">
-      <div className="flex justify-between mb-2 relative">
-        <div className="text-lg my-2 tracking-wide self-center">Hold Items</div>
-      </div>
+    <SidebarContainer show={showHold} title={"Hold Items"} buttons={buttons}>
       <div className="flex-grow overflow-x-hidden overflow-y-scroll">
         {(cart?.items || []).length > 0 ? (
           cart?.items?.map((cartItem) => <ListItem cartItem={cartItem} />)
@@ -139,25 +150,6 @@ export default function HoldScreen() {
           onChange={(e: any) => setNote(e.target.value)}
         />
       </div>
-      <div className="flex">
-        <button
-          className="fab-button__secondary w-full my-4 mr-2"
-          onClick={onClickCancelHold}
-        >
-          CANCEL
-        </button>
-        <button
-          className="fab-button w-full my-4 ml-2"
-          disabled={
-            !cart?.contact_id ||
-            Object.keys(cart?.items || {}).length === 0 ||
-            !holdPeriod
-          }
-          onClick={onClickConfirmHold}
-        >
-          {submitting ? "HOLDING..." : "CONFIRM HOLD"}
-        </button>
-      </div>
-    </div>
+    </SidebarContainer>
   );
 }

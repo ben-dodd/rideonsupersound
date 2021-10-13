@@ -1,11 +1,11 @@
 import { useState } from "react";
-import Modal from "@/components/modal";
+import Modal from "@/components/container/modal";
 import { useAtom } from "jotai";
 import { paymentDialogAtom, cartAtom, saleAtom, clerkAtom } from "@/lib/atoms";
 import TextField from "@/components/inputs/text-field";
 import { useSaleTransactionsForSale } from "@/lib/swr-hooks";
 import { saveSaleTransaction } from "@/lib/db-functions";
-import CloseButton from "@/components/button/close-button";
+import { ModalButton } from "@/lib/types";
 
 export default function Cash({ isCart }) {
   const [clerk] = useAtom(clerkAtom);
@@ -16,14 +16,40 @@ export default function Cash({ isCart }) {
     `${paymentDialog?.remainingBalance}`
   );
   const [submitting, setSubmitting] = useState(false);
+  const buttons: ModalButton[] = [
+    {
+      type: "ok",
+      disabled:
+        submitting ||
+        parseFloat(cashReceived) === 0 ||
+        cashReceived <= "" ||
+        isNaN(parseFloat(cashReceived)),
+      onClick: async () => {
+        setSubmitting(true);
+        await saveSaleTransaction(
+          cart,
+          clerk,
+          cashReceived,
+          paymentDialog?.remainingBalance,
+          "cash",
+          mutateSaleTransactions,
+          setCart
+        );
+        setSubmitting(false);
+        setPaymentDialog(null);
+      },
+      text: "COMPLETE",
+    },
+  ];
+
   return (
     <Modal
       open={paymentDialog?.method === "cash"}
-      onClose={() => setPaymentDialog(null)}
+      closeFunction={() => setPaymentDialog(null)}
+      title={"CASH PAYMENT"}
+      buttons={buttons}
     >
-      <CloseButton closeFunction={() => setPaymentDialog(null)} />
-      <div className="p-4">
-        <div className="text-center text-4xl font-bold py-2">CASH PAYMENT</div>
+      <>
         <TextField
           divClass="text-8xl"
           startAdornment="$"
@@ -51,32 +77,7 @@ export default function Cash({ isCart }) {
               ).toFixed(2)}`
             : "ALL GOOD!"}
         </div>
-        <button
-          className="dialog-action__ok-button mb-8"
-          disabled={
-            submitting ||
-            parseFloat(cashReceived) === 0 ||
-            cashReceived <= "" ||
-            isNaN(parseFloat(cashReceived))
-          }
-          onClick={async () => {
-            setSubmitting(true);
-            await saveSaleTransaction(
-              cart,
-              clerk,
-              cashReceived,
-              paymentDialog?.remainingBalance,
-              "cash",
-              mutateSaleTransactions,
-              setCart
-            );
-            setSubmitting(false);
-            setPaymentDialog(null);
-          }}
-        >
-          COMPLETE
-        </button>
-      </div>
+      </>
     </Modal>
   );
 }

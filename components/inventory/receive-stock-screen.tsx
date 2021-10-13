@@ -1,10 +1,10 @@
 import { useState, useMemo, useEffect } from "react";
 import { useAtom } from "jotai";
-import { showReceiveItemsScreenAtom, clerkAtom } from "@/lib/atoms";
+import { showReceiveStockScreenAtom, clerkAtom } from "@/lib/atoms";
 import { useInventory, useVendors } from "@/lib/swr-hooks";
 import CreateableSelect from "@/components/inputs/createable-select";
-import { VendorObject, InventoryObject } from "@/lib/types";
-
+import { VendorObject, InventoryObject, ModalButton } from "@/lib/types";
+import ScreenContainer from "@/components/container/screen";
 // Actions
 import {
   getProfitMargin,
@@ -15,23 +15,17 @@ import {
 import { receiveStock, saveLog } from "@/lib/db-functions";
 
 // Material UI Components
-import { CSVLink } from "react-csv";
-import Modal from "@/components/modal";
 import TextField from "@/components/inputs/text-field";
 import Select from "react-select";
 import EditableTable from "@/components/table/editable";
-import SettingsSelect from "@/components/inputs/settings-select";
 
 // Material UI Icons
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-// Images
-import defaultImage from "../../res/default.png";
-
 export default function ReceiveStockScreen() {
   const [showReceiveStockScreen, setShowReceiveStockScreen] = useAtom(
-    showReceiveItemsScreenAtom
+    showReceiveStockScreenAtom
   );
   const [clerk] = useAtom(clerkAtom);
   const { inventory } = useInventory();
@@ -42,36 +36,10 @@ export default function ReceiveStockScreen() {
       {
         Header: "Artist/Author",
         accessor: "artist",
-        // Cell: ({ cell }) => (
-        //   <TextField
-        //     id={cell?.row?.id}
-        //     value={cell?.value}
-        //     onChange={(e) =>
-        //       updateNewStockData(
-        //         cell?.row?.index,
-        //         cell?.column?.id,
-        //         e.target.value
-        //       )
-        //     }
-        //   />
-        // ),
       },
       {
         Header: "Title",
         accessor: "title",
-        // Cell: ({ cell }) => (
-        //   <TextField
-        //     id={cell?.row?.id}
-        //     value={cell?.value}
-        //     onChange={(e) =>
-        //       updateNewStockData(
-        //         cell?.row?.index,
-        //         cell?.column?.id,
-        //         e.target.value
-        //       )
-        //     }
-        //   />
-        // ),
       },
       {
         Header: "Vendor Price",
@@ -155,7 +123,7 @@ export default function ReceiveStockScreen() {
     []
   );
 
-  const makeNewStockData = (num) => {
+  const makeNewStockData = (num: number) => {
     return [...Array.from(Array(num).keys())].map((num: number) => ({
       num,
       artist: "",
@@ -186,8 +154,49 @@ export default function ReceiveStockScreen() {
     setSkipPageReset(false);
   }, [newStockData]);
 
+  const buttons: ModalButton[] = [
+    {
+      type: "cancel",
+      onClick: () => setShowReceiveStockScreen(false),
+      text: "CANCEL",
+    },
+    {
+      type: "alt",
+      disabled: isDisabled(),
+      data: getCSVData(
+        Object.entries(obj?.items || {}).map(([id, quantity]) => ({
+          printQuantity: parseFloat(`${quantity}`),
+          item: { value: id },
+        })),
+        inventory
+      ),
+      headers: ["SKU", "ARTIST", "TITLE", "NEW/USED", "SELL PRICE", "GENRE"],
+      fileName: `label-print-${fFileDate()}.csv`,
+      onClick: () =>
+        saveLog({
+          log: "Labels printed from receive stock dialog.",
+          clerk_id: clerk?.id,
+        }),
+      text: "PRINT LABELS",
+    },
+    {
+      type: "ok",
+      disabled: isDisabled(),
+      text: "RECEIVE ITEMS",
+      onClick: async () => {
+        await receiveStock(newStockData, obj, clerk);
+        setShowReceiveStockScreen(false);
+      },
+    },
+  ];
+
   return (
-    <div>
+    <ScreenContainer
+      show={showReceiveStockScreen}
+      closeFunction={() => setShowReceiveStockScreen(false)}
+      title={"RECEIVE STOCK"}
+      buttons={buttons}
+    >
       <div className="flex">
         <div className="w-2/3">
           <div className="font-bold text-xl mt-4">Select Vendor</div>
@@ -227,7 +236,8 @@ export default function ReceiveStockScreen() {
               options={(inventory || [])
                 .filter(
                   (item: InventoryObject) =>
-                    item?.vendor_id === obj?.vendor_id && !obj?.items[item?.id]
+                    item?.vendor_id === obj?.vendor_id &&
+                    !(obj?.items && obj?.items[item?.id])
                 )
                 .map((item: InventoryObject) => ({
                   value: item?.id,
@@ -363,60 +373,7 @@ export default function ReceiveStockScreen() {
           </div>
         </div>
       </div>
-      <div className="flex">
-        <div className="dialog-action__button-div mb-4">
-          <button
-            className="dialog-action__cancel-button mr-2"
-            onClick={() => setShowReceiveStockScreen(false)}
-          >
-            CANCEL
-          </button>
-          {isDisabled() ? (
-            <button className="dialog-action__button mx-2" disabled>
-              PRINT LABELS
-            </button>
-          ) : (
-            <CSVLink
-              className="dialog-action__second-button mx-2 text-center"
-              data={getCSVData(
-                Object.entries(obj?.items || {}).map(([id, quantity]) => ({
-                  printQuantity: parseFloat(`${quantity}`),
-                  item: { value: id },
-                })),
-                inventory
-              )}
-              headers={[
-                "SKU",
-                "ARTIST",
-                "TITLE",
-                "NEW/USED",
-                "SELL PRICE",
-                "GENRE",
-              ]}
-              filename={`label-print-${fFileDate()}.csv`}
-              onClick={() =>
-                saveLog({
-                  log: "Labels printed from receive stock dialog.",
-                  clerk_id: clerk?.id,
-                })
-              }
-            >
-              PRINT LABELS
-            </CSVLink>
-          )}
-          <button
-            className="dialog-action__ok-button ml-2"
-            disabled={isDisabled()}
-            onClick={async () => {
-              await receiveStock(newStockData, obj, clerk);
-              setShowReceiveStockScreen(false);
-            }}
-          >
-            RECEIVE ITEMS
-          </button>
-        </div>
-      </div>
-    </div>
+    </ScreenContainer>
   );
 
   function isDisabled() {

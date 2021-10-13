@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import Modal from "@/components/modal";
+import Modal from "@/components/container/modal";
 import { useAtom } from "jotai";
 import { paymentDialogAtom, cartAtom, saleAtom, clerkAtom } from "@/lib/atoms";
 import { GiftCardObject } from "@/lib/types";
@@ -13,7 +13,7 @@ import {
 } from "@/lib/swr-hooks";
 import { getTotalOwing } from "@/lib/data-functions";
 import { saveSaleTransaction } from "@/lib/db-functions";
-import CloseButton from "@/components/button/close-button";
+import { ModalButton } from "@/lib/types";
 
 export default function Gift({ isCart }) {
   const [clerk] = useAtom(clerkAtom);
@@ -45,16 +45,43 @@ export default function Gift({ isCart }) {
       )[0],
     [giftCardCode, giftCards]
   );
+
+  const buttons: ModalButton[] = [
+    {
+      type: "ok",
+      disabled:
+        submitting ||
+        parseFloat(giftCardPayment) > paymentDialog?.remainingBalance ||
+        totalOwing < parseFloat(giftCardPayment) ||
+        parseFloat(giftCardPayment) === 0 ||
+        giftCardPayment <= "" ||
+        isNaN(parseFloat(giftCardPayment)),
+      onClick: async () => {
+        setSubmitting(true);
+        await saveSaleTransaction(
+          cart,
+          clerk,
+          giftCardPayment,
+          paymentDialog?.remainingBalance,
+          "acct",
+          mutateSaleTransactions,
+          setCart,
+          vendor
+        );
+        setSubmitting(false);
+        setPaymentDialog(null);
+      },
+      text: "COMPLETE",
+    },
+  ];
   return (
     <Modal
       open={paymentDialog?.method === "gift"}
-      onClose={() => setPaymentDialog(null)}
+      closeFunction={() => setPaymentDialog(null)}
+      title={"GIFT CARD PAYMENT"}
+      buttons={buttons}
     >
-      <CloseButton closeFunction={() => setPaymentDialog(null)} />
-      <div className="p-4">
-        <div className="text-center text-4xl font-bold py-2">
-          GIFT CARD PAYMENT
-        </div>
+      <>
         <TextField
           divClass="text-8xl"
           inputClass="text-center text-red-800 font-mono uppercase"
@@ -101,35 +128,7 @@ export default function Gift({ isCart }) {
               ).toFixed(2)}`
             : "ALL GOOD!"}
         </div>
-        <button
-          className="dialog-action__ok-button mb-8"
-          disabled={
-            submitting ||
-            parseFloat(giftCardPayment) > paymentDialog?.remainingBalance ||
-            totalOwing < parseFloat(giftCardPayment) ||
-            parseFloat(giftCardPayment) === 0 ||
-            giftCardPayment <= "" ||
-            isNaN(parseFloat(giftCardPayment))
-          }
-          onClick={async () => {
-            setSubmitting(true);
-            await saveSaleTransaction(
-              cart,
-              clerk,
-              giftCardPayment,
-              paymentDialog?.remainingBalance,
-              "acct",
-              mutateSaleTransactions,
-              setCart,
-              vendor
-            );
-            setSubmitting(false);
-            setPaymentDialog(null);
-          }}
-        >
-          COMPLETE
-        </button>
-      </div>
+      </>
     </Modal>
   );
 }

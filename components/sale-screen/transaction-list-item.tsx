@@ -138,7 +138,7 @@ export default function TransactionListItem({
       </div>
       <div className="w-3/12">
         <div className="text-right">
-          ${(transaction?.total_amount / 100 || 0).toFixed(2)}
+          ${(transaction?.amount / 100 || 0).toFixed(2)}
         </div>
         <div className="text-right text-xs">
           {transaction?.payment_method === "cash"
