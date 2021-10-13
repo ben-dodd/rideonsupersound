@@ -3,7 +3,7 @@ import { useAtom } from "jotai";
 import { showHoldDialogAtom, cartAtom, clerkAtom } from "@/lib/atoms";
 import { useClerks, useInventory, useHold } from "@/lib/swr-hooks";
 import { InventoryObject, SaleItemObject } from "@/lib/types";
-import Modal from "@/components/modal";
+import Modal from "@/components/container/modal/base";
 import { daysFrom } from "@/lib/data-functions";
 import {
   returnHoldToStock,
