@@ -23,7 +23,7 @@ const handler: NextApiHandler = async (req, res) => {
         quantity = ${quantity || null},
         vendor_discount = ${vendor_discount || null},
         store_discount = ${store_discount || null},
-        note = ${note},
+        note = ${escape(note)},
         is_deleted = ${is_deleted || 0}
       WHERE id = ${sale_item_id}
       `

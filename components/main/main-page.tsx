@@ -24,6 +24,9 @@ export default function MainPage() {
   const [page] = useAtom(pageAtom);
   const { registerID } = useRegisterID();
   const [alert, setAlert] = useAtom(alertAtom);
+  console.log(registerID);
+  console.log(registerID > 0);
+  console.log(0);
 
   return (
     <>

@@ -4,9 +4,6 @@ import {
   showCartScreenAtom,
   showHoldAtom,
   showCreateContactAtom,
-  showItemScreenAtom,
-  showCloseRegisterScreenAtom,
-  pettyCashAtom,
 } from "@/lib/atoms";
 import { useInventory } from "@/lib/swr-hooks";
 import { useSwipeable } from "react-swipeable";

@@ -366,12 +366,17 @@ export function useLogs() {
 }
 
 export function useRegisterID() {
-  const { data, error, mutate } = useSWR(`/api/get-register-id`, fetcher);
+  const { data, error, mutate, revalidate } = useSWR(
+    `/api/get-register-id`,
+    fetcher
+  );
+  console.log(data);
   return {
     registerID: data && data[0] && data[0]?.value,
     isRegisterIDLoading: !error && !data,
     isRegisterIDError: error,
     mutateRegisterID: mutate,
+    revalidateRegisterID: revalidate,
   };
 }
 

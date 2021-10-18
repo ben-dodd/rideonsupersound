@@ -15,7 +15,7 @@ import CashMap from "./cash-map";
 
 export default function OpenRegisterScreen() {
   // State
-  const { mutateRegisterID } = useRegisterID();
+  const { registerID, mutateRegisterID } = useRegisterID();
   const [clerk] = useAtom(clerkAtom);
   const [till, setTill] = useState({});
   const [notes, setNotes] = useState("");
@@ -36,10 +36,11 @@ export default function OpenRegisterScreen() {
       open_note: notes || null,
     };
     setLoading(true);
-    await saveAndOpenRegister(register, till, clerk);
-    mutateRegisterID();
+    await mutateRegisterID(saveAndOpenRegister(register, till, clerk), false);
     setLoading(false);
   };
+
+  console.log(registerID);
 
   return (
     <div className="flex justify-center bg-white h-menu">

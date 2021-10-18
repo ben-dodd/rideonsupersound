@@ -232,6 +232,7 @@ export async function saveAndOpenRegister(
       clerk_id: clerk?.id,
     });
     setRegister(json?.insertId);
+    return [{ value: json?.insertId }];
   } catch (e) {
     throw Error(e.message);
   }

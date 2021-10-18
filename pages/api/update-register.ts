@@ -1,5 +1,6 @@
 import { NextApiHandler } from "next";
 import { query } from "../../lib/db";
+import { escape } from "sqlstring";
 
 const handler: NextApiHandler = async (req, res) => {
   const {
@@ -26,7 +27,7 @@ const handler: NextApiHandler = async (req, res) => {
           close_manual_payments=${close_manual_payments || null},
           close_expected_amount=${close_expected_amount || null},
           close_discrepancy=${close_discrepancy || null},
-          close_note=${close_note || null},
+          close_note=${escape(close_note)},
           close_till_id=${close_till_id || null}
         WHERE id = ${id}
       `

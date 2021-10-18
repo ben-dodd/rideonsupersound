@@ -15,8 +15,6 @@ import { fTimeDate, getAmountFromCashMap } from "@/lib/data-functions";
 import { saveClosedRegisterToDatabase } from "@/lib/db-functions";
 
 import TextField from "@/components/inputs/text-field";
-import CircularProgress from "@mui/material/CircularProgress";
-import CloseIcon from "@mui/icons-material/VpnKey";
 import ScreenContainer from "@/components/container/screen";
 import CashItem from "./cash-item";
 import CashMap from "./cash-map";
@@ -27,7 +25,7 @@ export default function CloseRegisterScreen() {
     showCloseRegisterScreenAtom
   );
   const { clerks, isClerksLoading } = useClerks();
-  const { registerID } = useRegisterID();
+  const { registerID, mutateRegisterID } = useRegisterID();
   const { register, isRegisterLoading } = useRegister(registerID);
   const [till, setTill] = useState({});
   const [notes, setNotes] = useState("");
@@ -79,8 +77,7 @@ export default function CloseRegisterScreen() {
     ? 0
     : closeExpectedAmount - parseFloat(closeAmount);
   const closeRegister = async () => {
-    setSubmitting(true);
-    await saveClosedRegisterToDatabase(
+    saveClosedRegisterToDatabase(
       registerID,
       {
         close_amount: parseFloat(closeAmount) * 100,
@@ -94,7 +91,7 @@ export default function CloseRegisterScreen() {
       },
       till
     );
-    setSubmitting(false);
+    mutateRegisterID([{ value: 0 }], false);
     setShowCloseRegisterScreen(false);
   };
   useEffect(() => setCloseAmount(`${getAmountFromCashMap(till)}`), [till]);
