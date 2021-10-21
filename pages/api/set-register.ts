@@ -8,7 +8,7 @@ const handler: NextApiHandler = async (req, res) => {
       `
       UPDATE global
       SET
-        value = ${register_id}
+        num = ${register_id}
       WHERE id = 'current_register'
       `
     );

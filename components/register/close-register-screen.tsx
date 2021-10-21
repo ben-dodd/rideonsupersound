@@ -91,7 +91,7 @@ export default function CloseRegisterScreen() {
       },
       till
     );
-    mutateRegisterID([{ value: 0 }], false);
+    mutateRegisterID([{ num: 0 }], false);
     setShowCloseRegisterScreen(false);
   };
   useEffect(() => setCloseAmount(`${getAmountFromCashMap(till)}`), [till]);

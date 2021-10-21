@@ -5,7 +5,7 @@ const handler: NextApiHandler = async (req, res) => {
   try {
     const results = await query(
       `
-      SELECT value
+      SELECT num
       FROM global
       WHERE id = 'current_register'
       `

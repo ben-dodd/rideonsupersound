@@ -232,7 +232,7 @@ export async function saveAndOpenRegister(
       clerk_id: clerk?.id,
     });
     setRegister(json?.insertId);
-    return [{ value: json?.insertId }];
+    return [{ num: json?.insertId }];
   } catch (e) {
     throw Error(e.message);
   }
@@ -555,6 +555,7 @@ export async function updateSaleItemInDatabase(
 }
 
 export async function setRegister(register_id: number) {
+  console.log("Set Register");
   try {
     const res = await fetch("/api/set-register", {
       method: "POST",
