@@ -19,29 +19,43 @@ interface AlertProps {
   undo?: Function;
 }
 
+interface ViewProps {
+  menu?: boolean;
+  cart?: boolean;
+  createHold?: boolean;
+  createContact?: boolean;
+  saleScreen?: boolean;
+  itemScreen?: boolean;
+  vendorScreen?: boolean;
+  returnCashDialog?: boolean;
+  takeCashDialog?: boolean;
+  closeRegisterScreen?: boolean;
+  batchVendorPaymentDialog?: boolean;
+  cashVendorPaymentDialog?: boolean;
+  receiveStockScreen?: boolean;
+  returnStockScreen?: boolean;
+  acctPaymentDialog?: boolean;
+  cardPaymentDialog?: boolean;
+  cashPaymentDialog?: boolean;
+  giftPaymentDialog?: boolean;
+  holdDialog?: boolean;
+  labelPrintDialog?: boolean;
+}
+
+export const viewAtom = atom<ViewProps>({});
 export const clerkAtom = atom<ClerkObject>({ id: null });
 export const pageAtom = atom<string>("sell");
-export const menuDisplayAtom = atom<boolean>(false);
-export const showCartAtom = atom<boolean>(false);
-export const showHoldAtom = atom<boolean>(false);
-export const showCreateContactAtom = atom<ContactObject>({ id: null });
-export const showCartScreenAtom = atom<boolean>(false);
-export const cartAtom = atom<SaleObject>({ id: null, items: [] });
-export const showSaleScreenAtom = atom<boolean>(false);
-export const saleAtom = atom<SaleObject>({ id: null, items: [] });
-export const showItemScreenAtom = atom<number>(0);
-export const showVendorScreenAtom = atom<number>(0);
-export const pettyCashAtom = atom<number>(0);
-export const showCloseRegisterScreenAtom = atom<boolean>(false);
-export const showBatchPaymentDialogAtom = atom<boolean>(false);
-export const showCashPaymentDialogAtom = atom<boolean>(false);
-export const showReceiveStockScreenAtom = atom<boolean>(false);
-export const showReturnStockScreenAtom = atom<boolean>(false);
 
-// modals
+export const cartAtom = atom<SaleObject>({ id: null, items: [] });
+export const newSaleObjectAtom = atom<SaleObject>({});
+export const loadedSaleObjectAtom = atom<SaleObject>({});
+export const saleAtom = atom<SaleObject>({ id: null, items: [] });
+
+export const loadedItemIdAtom = atom<number>(0);
+export const loadedVendorIdAtom = atom<number>(0);
+export const loadedHoldIdAtom = atom<number>(0);
+export const loadedContactObjectAtom = atom<ContactObject>({});
+
 export const sellSearchBarAtom = atom<string>("");
-export const paymentDialogAtom = atom<PaymentDialogProps>({});
-export const showHoldDialogAtom = atom<number>(0);
-export const showLabelPrintDialogAtom = atom<boolean>(false);
 export const confirmModalAtom = atom<ConfirmModal>({ open: false });
 export const alertAtom = atom<AlertProps>({ open: false });

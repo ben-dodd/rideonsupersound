@@ -1,4 +1,4 @@
-import { LogObject } from "@/lib/types";
+import { LogObject, ClerkObject } from "@/lib/types";
 import { useClerks } from "@/lib/swr-hooks";
 
 type ListItemProps = {
@@ -15,7 +15,11 @@ export default function ListLog({ log }: ListItemProps) {
             {log?.date_created}
           </div>
           <div className="font-bold w-16 text-blue-800">
-            {(clerks || []).filter((c) => c?.id === log?.clerk_id)[0]?.name}
+            {
+              (clerks || []).filter(
+                (c: ClerkObject) => c?.id === log?.clerk_id
+              )[0]?.name
+            }
           </div>
           <div>{log?.log}</div>
         </div>

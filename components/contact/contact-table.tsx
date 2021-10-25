@@ -14,7 +14,7 @@ import {
   HoldObject,
   InventoryObject,
 } from "@/lib/types";
-import { showVendorScreenAtom } from "@/lib/atoms";
+import { viewAtom, loadedVendorIdAtom } from "@/lib/atoms";
 import { parseISO, add } from "date-fns";
 
 // Actions
@@ -30,7 +30,8 @@ export default function ContactTable() {
   const { laybys } = useLaybys();
   const { holds } = useHolds();
   const { inventory } = useInventory();
-  const [, setShowVendorScreen] = useAtom(showVendorScreenAtom);
+  const [view, setView] = useAtom(viewAtom);
+  const [, setLoadedVendorId] = useAtom(loadedVendorIdAtom);
   const data = useMemo(
     () =>
       (contacts || [])
@@ -67,7 +68,8 @@ export default function ContactTable() {
 
   const columns = useMemo(() => {
     const openVendorDialog = (vendor: VendorObject) => {
-      setShowVendorScreen(vendor?.id);
+      setLoadedVendorId(vendor?.id);
+      setView({ ...view, vendorScreen: true });
     };
 
     // const openLaybyDialog = (layby) => {
@@ -134,7 +136,7 @@ export default function ContactTable() {
               ))
             : "";
         },
-        sortType: (rowA: any, rowB: any, columnId: any) => {
+        sortType: (rowA: any, rowB: any) => {
           console.log(rowA);
           const a = rowA.original?.holds?.length || 0;
           const b = rowB.original?.holds?.length || 0;

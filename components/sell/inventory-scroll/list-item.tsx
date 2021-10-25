@@ -8,10 +8,10 @@ import InfoIcon from "@mui/icons-material/Info";
 import { InventoryObject, SaleObject } from "@/lib/types";
 import {
   cartAtom,
-  showCartAtom,
+  viewAtom,
   clerkAtom,
-  showItemScreenAtom,
   confirmModalAtom,
+  loadedItemIdAtom,
 } from "@/lib/atoms";
 import { useWeather } from "@/lib/swr-hooks";
 import {
@@ -28,9 +28,9 @@ type ListItemProps = {
 
 export default function ListItem({ item }: ListItemProps) {
   const [cart, setCart] = useAtom(cartAtom);
-  const [, setShowCart] = useAtom(showCartAtom);
+  const [view, setView] = useAtom(viewAtom);
+  const [, setLoadedItemId] = useAtom(loadedItemIdAtom);
   const [, setConfirmModal] = useAtom(confirmModalAtom);
-  const [, openInventoryModal] = useAtom(showItemScreenAtom);
   const [clerk] = useAtom(clerkAtom);
   const geolocation = getGeolocation();
   const { weather } = useWeather();
@@ -47,30 +47,20 @@ export default function ListItem({ item }: ListItemProps) {
           </span>
         ),
         yesText: "YES, I'M SURE",
-        action: () =>
-          addItemToCart(
-            item,
-            cart,
-            setCart,
-            clerk?.id,
-            setShowCart,
-            weather,
-            geolocation
-          ),
+        action: () => {
+          addItemToCart(item, cart, setCart, clerk?.id, weather, geolocation);
+          setView({ ...view, cart: true });
+        },
       });
     } else {
-      addItemToCart(
-        item,
-        cart,
-        setCart,
-        clerk?.id,
-        setShowCart,
-        weather,
-        geolocation
-      );
+      addItemToCart(item, cart, setCart, clerk?.id, weather, geolocation);
+      setView({ ...view, cart: true });
     }
   };
-  const clickOpenInventoryModal = () => openInventoryModal(item?.id);
+  const clickOpenInventoryModal = () => {
+    setLoadedItemId(item?.id);
+    setView({ ...view, itemScreen: true });
+  };
   // Disable mobile only for now
   // <div
   //   className="flex w-full mb-2 bg-blue-100 relative"
@@ -144,7 +134,6 @@ function addItemToCart(
   cart: SaleObject,
   setCart: any,
   clerkId: number,
-  setShowCart: any,
   weather: any,
   geolocation: any
 ) {
@@ -165,5 +154,4 @@ function addItemToCart(
     geo_latitude: cart?.geo_latitude || geolocation?.latitude,
     geo_longitude: cart?.geo_longitude || geolocation?.longitude,
   });
-  setShowCart(true);
 }

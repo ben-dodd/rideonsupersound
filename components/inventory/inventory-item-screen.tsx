@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { useAtom } from "jotai";
-import { showItemScreenAtom, clerkAtom } from "@/lib/atoms";
+import { viewAtom, clerkAtom, loadedItemIdAtom } from "@/lib/atoms";
 import { useVendors, useStockItem, useInventory } from "@/lib/swr-hooks";
 import { VendorObject, InventoryObject, ModalButton } from "@/lib/types";
 import {
@@ -22,12 +22,13 @@ import GoogleBooksPanel from "./google-books-panel";
 import ScreenContainer from "@/components/container/screen";
 
 export default function InventoryItemScreen() {
-  const [stockItemId, setShowItemScreen] = useAtom(showItemScreenAtom);
+  const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom);
+  const [view, setView] = useAtom(viewAtom);
   const [exchangeRate, setExchangeRate] = useState(1);
   const [item, setItem]: [InventoryObject, Function] = useState(null);
   // const newItem = Boolean(item?.newItem);
   // const onClose = item?.onClose;
-  const { stockItem, isStockItemLoading } = useStockItem(stockItemId);
+  const { stockItem, isStockItemLoading } = useStockItem(loadedItemId);
   const { mutateInventory } = useInventory();
   useEffect(() => {
     let newItem = { ...stockItem };
@@ -75,11 +76,15 @@ export default function InventoryItemScreen() {
   }
 
   const buttons: ModalButton[] = [
-    { type: "cancel", onClick: () => setShowItemScreen(0), text: "CLOSE" },
+    {
+      type: "cancel",
+      onClick: () => setView({ ...view, itemScreen: false }),
+      text: "CLOSE",
+    },
     {
       type: "ok",
       onClick: () => {
-        setShowItemScreen(0);
+        setView({ ...view, itemScreen: false });
         updateStockItemInDatabase(item);
         setItem(null);
         // setTimeout(() => setItem(null), 1000);
@@ -91,8 +96,8 @@ export default function InventoryItemScreen() {
 
   return (
     <ScreenContainer
-      show={Boolean(stockItemId)}
-      closeFunction={() => setShowItemScreen(0)}
+      show={view?.itemScreen}
+      closeFunction={() => setView({ ...view, itemScreen: false })}
       title={getItemDisplayName(item)}
       loading={isStockItemLoading}
       buttons={buttons}

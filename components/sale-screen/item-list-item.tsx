@@ -11,15 +11,15 @@ import {
 } from "@/lib/data-functions";
 
 type SellListItemProps = {
-  cartItem: SaleItemObject;
+  saleItem: SaleItemObject;
 };
 
-export default function ItemListItem({ cartItem }: SellListItemProps) {
+export default function ItemListItem({ saleItem }: SellListItemProps) {
   const { inventory } = useInventory();
   const [item, setItem] = useState(null);
   useEffect(() => {
     setItem(
-      inventory.filter((i: InventoryObject) => i.id === cartItem?.item_id)[0]
+      inventory.filter((i: InventoryObject) => i.id === saleItem?.item_id)[0]
     );
   }, [inventory]);
 
@@ -47,7 +47,7 @@ export default function ItemListItem({ cartItem }: SellListItemProps) {
             : getItemDisplayName(item)}
         </div>
         <div className="text-red-500 self-end">
-          {getCartItemSummary(item, cartItem)}
+          {getCartItemSummary(item, saleItem)}
         </div>
       </div>
     </div>

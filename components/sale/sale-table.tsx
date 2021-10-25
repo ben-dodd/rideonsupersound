@@ -20,7 +20,7 @@ import {
   nzDate,
   fDateTime,
 } from "@/lib/data-functions";
-import { showSaleScreenAtom, saleAtom } from "@/lib/atoms";
+import { viewAtom, loadedSaleObjectAtom } from "@/lib/atoms";
 
 import Table from "@/components/table";
 import TableContainer from "@/components/container/table";
@@ -31,8 +31,8 @@ export default function SaleTable() {
   const { inventory } = useInventory();
   const { contacts } = useContacts();
   const { clerks } = useClerks();
-  const [showSaleScreen, setShowSaleScreen] = useAtom(showSaleScreenAtom);
-  const [, setSale] = useAtom(saleAtom);
+  const [view, setView] = useAtom(viewAtom);
+  const [, setLoadedSale] = useAtom(loadedSaleObjectAtom);
   const data = useMemo(
     () =>
       (sales || []).map((s: SaleObject) => {
@@ -86,12 +86,12 @@ export default function SaleTable() {
               }}
               onClick={() => {
                 console.log(item);
-                setSale(
+                setLoadedSale(
                   (sales || []).filter(
                     (s: SaleObject) => s?.id === item?.row?.original?.id
                   )[0]
                 );
-                setShowSaleScreen(true);
+                setView({ ...view, saleScreen: true });
               }}
             >
               {fDateTime(item?.value)}

@@ -3,10 +3,7 @@ import { useAtom } from "jotai";
 import { useClerks, useVendors, useVendorPayments } from "@/lib/swr-hooks";
 import { ClerkObject, VendorPaymentObject, VendorObject } from "@/lib/types";
 import { nzDate, fDateTime } from "@/lib/data-functions";
-import {
-  showCashPaymentDialogAtom,
-  showBatchPaymentDialogAtom,
-} from "@/lib/atoms";
+import { viewAtom } from "@/lib/atoms";
 import CashPaymentDialog from "./cash-payment-dialog";
 import BatchPaymentDialog from "./batch-payment-dialog";
 
@@ -16,8 +13,7 @@ export default function PaymentsScreen() {
   const { vendors } = useVendors();
   const { vendorPayments } = useVendorPayments();
   const { clerks } = useClerks();
-  const [showCashPaymentDialog] = useAtom(showCashPaymentDialogAtom);
-  const [showBatchPaymentDialog] = useAtom(showBatchPaymentDialogAtom);
+  const [view] = useAtom(viewAtom);
   const data = useMemo(
     () =>
       (vendorPayments || []).map((v: VendorPaymentObject) => ({
@@ -82,8 +78,8 @@ export default function PaymentsScreen() {
           sortOptions={[{ id: "date", desc: true }]}
         />
       </div>
-      {showBatchPaymentDialog && <BatchPaymentDialog />}
-      {showCashPaymentDialog && <CashPaymentDialog />}
+      {view?.batchVendorPaymentDialog && <BatchPaymentDialog />}
+      {view?.cashVendorPaymentDialog && <CashPaymentDialog />}
     </div>
   );
 }

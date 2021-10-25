@@ -7,7 +7,7 @@ import {
   fFileDate,
 } from "@/lib/data-functions";
 import { saveLog } from "@/lib/db-functions";
-import { showLabelPrintDialogAtom, clerkAtom } from "@/lib/atoms";
+import { viewAtom, clerkAtom } from "@/lib/atoms";
 import { useInventory } from "@/lib/swr-hooks";
 import { InventoryObject, ModalButton } from "@/lib/types";
 
@@ -16,9 +16,7 @@ import TextField from "@/components/inputs/text-field";
 import Select from "react-select";
 
 export default function LabelPrintDialog() {
-  const [labelPrintDialog, setLabelPrintDialog] = useAtom(
-    showLabelPrintDialogAtom
-  );
+  const [view, setView] = useAtom(viewAtom);
   const { inventory } = useInventory();
   const [clerk] = useAtom(clerkAtom);
   const [items, setItems] = useState({
@@ -37,7 +35,7 @@ export default function LabelPrintDialog() {
   const buttons: ModalButton[] = [
     {
       type: "cancel",
-      onClick: () => setLabelPrintDialog(false),
+      onClick: () => setView({ ...view, labelPrintDialog: false }),
       text: "CANCEL",
     },
     {
@@ -56,8 +54,8 @@ export default function LabelPrintDialog() {
 
   return (
     <Modal
-      open={Boolean(labelPrintDialog)}
-      closeFunction={() => setLabelPrintDialog(false)}
+      open={view?.labelPrintDialog}
+      closeFunction={() => setView({ ...view, labelPrintDialog: false })}
       title={"LABEL PRINT"}
       buttons={buttons}
     >

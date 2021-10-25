@@ -1,14 +1,11 @@
 import { useAtom } from "jotai";
 import { useState, useEffect } from "react";
 import {
-  paymentDialogAtom,
-  cartAtom,
   clerkAtom,
   alertAtom,
-  saleAtom,
-  showCartScreenAtom,
-  showCartAtom,
-  showSaleScreenAtom,
+  viewAtom,
+  loadedSaleObjectAtom,
+  newSaleObjectAtom,
 } from "@/lib/atoms";
 import {
   useSaleItemsForSale,
@@ -34,15 +31,14 @@ import Cash from "./payment/cash";
 import Gift from "./payment/gift";
 import ScreenContainer from "@/components/container/screen";
 
-export default function SaleScreen({ isCart }) {
-  const [cart, setCart] = useAtom(isCart ? cartAtom : saleAtom);
+export default function SaleScreen({ isNew }) {
+  const [sale, setSale] = useAtom(
+    isNew ? newSaleObjectAtom : loadedSaleObjectAtom
+  );
   const [clerk] = useAtom(clerkAtom);
   const [, setAlert] = useAtom(alertAtom);
   const { contacts } = useContacts();
-  const [, setShowCart] = useAtom(showCartAtom);
-  const [showSaleScreen, setShowSaleScreen] = useAtom(
-    isCart ? showCartScreenAtom : showSaleScreenAtom
-  );
+  const [view, setView] = useAtom(viewAtom);
   const { inventory } = useInventory();
   const [laybyLoading, setLaybyLoading] = useState(false);
   const [completeSaleLoading, setCompleteSaleLoading] = useState(false);
@@ -51,53 +47,52 @@ export default function SaleScreen({ isCart }) {
   const [remainingBalance, setRemainingBalance] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
   useEffect(() => {
-    const { totalPrice, totalRemaining } = getSaleVars(cart, inventory);
+    const { totalPrice, totalRemaining } = getSaleVars(sale, inventory);
     setTotalPrice(totalPrice);
     setRemainingBalance(totalRemaining);
-  }, [cart]);
-  const [paymentDialog] = useAtom(paymentDialogAtom);
-  const { items, isSaleItemsLoading } = useSaleItemsForSale(cart?.id);
+  }, [sale]);
+  const { items, isSaleItemsLoading } = useSaleItemsForSale(sale?.id);
   const {
     transactions,
     isSaleTransactionsLoading,
-  } = useSaleTransactionsForSale(cart?.id);
+  } = useSaleTransactionsForSale(sale?.id);
   useEffect(() => {
-    if (!isCart) {
-      console.log("setting cart");
-      setCart({ ...cart, items, transactions });
+    if (!isNew) {
+      console.log("setting sale");
+      setSale({ ...sale, items, transactions });
     }
   }, [isSaleItemsLoading, isSaleTransactionsLoading]);
 
   const buttons: ModalButton[] = [
     {
       type: "cancel",
-      onClick: () => setShowSaleScreen(false),
+      onClick: () => setView({ ...view, saleScreen: false }),
       disabled: true || remainingBalance === 0,
-      text: cart?.state === "layby" ? "CANCEL LAYBY" : "DISCARD SALE",
+      text: sale?.state === "layby" ? "CANCEL LAYBY" : "DISCARD SALE",
     },
     {
       type: "alt3",
       onClick: clickParkSale,
       disabled:
-        (cart?.state && cart?.state !== "in_progress") ||
+        (sale?.state && sale?.state !== "in_progress") ||
         remainingBalance === 0,
       loading: parkSaleLoading,
       text: "PARK SALE",
     },
     {
       type: "alt2",
-      onClick: () => setShowSaleScreen(false),
+      onClick: () => setView({ ...view, saleScreen: false }),
       disabled:
-        (cart?.state && cart?.state !== "in_progress") ||
+        (sale?.state && sale?.state !== "in_progress") ||
         remainingBalance === 0,
       text: "ADD MORE ITEMS",
     },
     {
       type: "alt1",
       onClick: clickLayby,
-      disabled: laybyLoading || !cart?.contact_id || remainingBalance <= 0,
+      disabled: laybyLoading || !sale?.contact_id || remainingBalance <= 0,
       loading: laybyLoading,
-      text: cart?.state === "layby" ? "CONTINUE LAYBY" : "START LAYBY",
+      text: sale?.state === "layby" ? "CONTINUE LAYBY" : "START LAYBY",
     },
     {
       type: "ok",
@@ -105,58 +100,57 @@ export default function SaleScreen({ isCart }) {
       disabled:
         completeSaleLoading ||
         remainingBalance > 0 ||
-        cart?.state === "complete",
+        sale?.state === "complete",
       loading: completeSaleLoading,
       text: "COMPLETE SALE",
     },
   ];
   return (
     <>
-      {paymentDialog?.method === "acct" && <Acct isCart={isCart} />}
-      {paymentDialog?.method === "card" && <Card isCart={isCart} />}
-      {paymentDialog?.method === "cash" && <Cash isCart={isCart} />}
-      {paymentDialog?.method === "gift" && <Gift isCart={isCart} />}
+      {view?.acctPaymentDialog && <Acct isNew={isNew} />}
+      {view?.cardPaymentDialog && <Card isNew={isNew} />}
+      {view?.cashPaymentDialog && <Cash isNew={isNew} />}
+      {view?.giftPaymentDialog && <Gift isNew={isNew} />}
       <ScreenContainer
-        show={Boolean(showSaleScreen)}
-        closeFunction={() => setShowSaleScreen(false)}
-        title={`SALE #${cart?.id} [${
-          cart?.state ? cart?.state.toUpperCase() : "IN PROGRESS"
+        show={view?.saleScreen}
+        closeFunction={() => setView({ ...view, saleScreen: false })}
+        title={`SALE #${sale?.id} [${
+          sale?.state ? sale?.state.toUpperCase() : "IN PROGRESS"
         }]`}
         loading={isSaleItemsLoading || isSaleTransactionsLoading}
         buttons={buttons}
       >
         <div className="flex items-start overflow-auto w-full">
           <div className="w-2/3">
-            <SaleSummary isCart={isCart} />
+            <SaleSummary isNew={isNew} />
           </div>
           <div className="w-1/3 p-2 flex flex-col justify-between">
-            <Pay isCart={isCart} />
+            <Pay isNew={isNew} />
             {/*<Action />*/}
           </div>
         </div>
       </ScreenContainer>
     </>
   );
-  function clearCart() {
-    setShowSaleScreen(false);
-    setCart({ id: null, items: [] });
-    setShowCart(false);
+  function clearSale() {
+    setSale(null);
+    setView({ ...view, saleScreen: false });
   }
 
   async function clickParkSale() {
     setParkSaleLoading(true);
     const saleId = await saveSaleAndItemsToDatabase(
-      { ...cart, state: "parked" },
+      { ...sale, state: "parked" },
       clerk
     );
     saveLog({
-      log: `Sale parked (${cart?.items.length} item${
-        cart?.items.length === 1 ? "" : "s"
+      log: `Sale parked (${sale?.items.length} item${
+        sale?.items.length === 1 ? "" : "s"
       }${
-        cart?.contact_id
+        sale?.contact_id
           ? ` for ${
               (contacts || []).filter(
-                (c: ContactObject) => c?.id === cart?.contact_id
+                (c: ContactObject) => c?.id === sale?.contact_id
               )[0]?.name
             }.`
           : ""
@@ -170,25 +164,25 @@ export default function SaleScreen({ isCart }) {
       type: "success",
       message: "SALE PARKED",
     });
-    clearCart();
+    clearSale();
     setParkSaleLoading(false);
   }
 
   async function clickLayby() {
     setLaybyLoading(true);
     // Change quantity for all items if it wasn't a layby previously
-    for await (const cartItem of cart?.items) {
-      // For each item, add quantity on layby, remove quantity in cart
-      saveStockMovementToDatabase(cartItem, clerk, "layby", null);
+    for await (const saleItem of sale?.items) {
+      // For each item, add quantity on layby, remove quantity in sale
+      saveStockMovementToDatabase(saleItem, clerk, "layby", null);
     }
-    if (cart?.state !== "layby") {
+    if (sale?.state !== "layby") {
       // If not already a layby in progress...
       // Change sale state to layby
       // date_layby_started
       // layby_started_by
       let date = new Date();
       await updateSaleInDatabase({
-        ...cart,
+        ...sale,
         state: "layby",
         date_layby_started: date.toISOString(),
         layby_started_by: clerk?.id,
@@ -196,21 +190,21 @@ export default function SaleScreen({ isCart }) {
     }
     saveLog({
       log: `Layby started${
-        cart?.contact_id
+        sale?.contact_id
           ? ` for ${
               (contacts || []).filter(
-                (c: ContactObject) => c?.id === cart?.contact_id
+                (c: ContactObject) => c?.id === sale?.contact_id
               )[0]?.name
             }`
           : ""
-      } (${cart?.items.length} item${
-        cart?.items.length === 1 ? "" : "s"
+      } (${sale?.items.length} item${
+        sale?.items.length === 1 ? "" : "s"
       } / $${totalPrice.toFixed(2)} with $${remainingBalance.toFixed(
         2
       )} left to pay).`,
       clerk_id: clerk?.id,
       table_id: "sale",
-      row_id: cart?.id,
+      row_id: sale?.id,
     });
     setAlert({
       open: true,
@@ -218,7 +212,7 @@ export default function SaleScreen({ isCart }) {
       message: "LAYBY STARTED.",
     });
     // close dialog
-    clearCart();
+    clearSale();
     setLaybyLoading(false);
   }
 
@@ -231,24 +225,24 @@ export default function SaleScreen({ isCart }) {
     //    If misc item, ignore
     //    If other item, change quantity sold
     // Update sale to 'complete', add date_sale_completed, sale_completed_by
-    cart?.items.forEach((cartItem) => {
-      if (cart?.state === "layby" && !cartItem?.is_gift_card) {
-        saveStockMovementToDatabase(cartItem, clerk, "unlayby", null);
+    sale?.items.forEach((saleItem) => {
+      if (sale?.state === "layby" && !saleItem?.is_gift_card) {
+        saveStockMovementToDatabase(saleItem, clerk, "unlayby", null);
       }
-      if (cartItem?.is_gift_card) {
+      if (saleItem?.is_gift_card) {
         // Add to collection
         saveGiftCardToDatabase();
         // Add gift card to sale items
-      } else if (!cartItem?.is_misc_item) {
+      } else if (!saleItem?.is_misc_item) {
         // Do something
         // Add misc item to sale items
       } else {
-        if (cartItem?.id) updateSaleItemInDatabase(cartItem, cart);
-        saveStockMovementToDatabase(cartItem, clerk, "sold", null);
+        if (saleItem?.id) updateSaleItemInDatabase(saleItem, sale);
+        saveStockMovementToDatabase(saleItem, clerk, "sold", null);
       }
     });
-    updateSaleInDatabase({ ...cart, state: "completed" });
-    clearCart();
+    updateSaleInDatabase({ ...sale, state: "completed" });
+    clearSale();
     setCompleteSaleLoading(false);
   }
 }

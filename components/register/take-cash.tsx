@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Modal from "@/components/container/modal";
 import { useAtom } from "jotai";
-import { pettyCashAtom, clerkAtom } from "@/lib/atoms";
+import { viewAtom, clerkAtom } from "@/lib/atoms";
 import TextField from "@/components/inputs/text-field";
 import { ModalButton } from "@/lib/types";
 import { savePettyCashToRegister } from "@/lib/db-functions";
@@ -11,8 +11,7 @@ export default function PettyCashDialog() {
   const [clerk] = useAtom(clerkAtom);
   const { registerID } = useRegisterID();
   const { mutatePettyCash } = usePettyCash(registerID);
-  const [pettyCashDialog, setPettyCashDialog] = useAtom(pettyCashAtom);
-  const isTake = pettyCashDialog === 2; // 1 means Give Cash Back, 0 means close dialog
+  const [view, setView] = useAtom(viewAtom);
   const [amount, setAmount] = useState("0");
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -30,7 +29,7 @@ export default function PettyCashDialog() {
         await savePettyCashToRegister(
           registerID,
           clerk?.id,
-          isTake,
+          true,
           amount,
           notes
         );
@@ -38,17 +37,17 @@ export default function PettyCashDialog() {
         setNotes("");
         mutatePettyCash();
         setSubmitting(false);
-        setPettyCashDialog(0);
+        setView({ ...view, takeCashDialog: false });
       },
-      text: isTake ? "TAKE IT!" : "GIVE IT BACK!",
+      text: "TAKE IT!",
     },
   ];
 
   return (
     <Modal
-      open={pettyCashDialog > 0}
-      closeFunction={() => setPettyCashDialog(0)}
-      title={isTake ? "TAKE CASH" : "RETURN CASH"}
+      open={view?.takeCashDialog}
+      closeFunction={() => setView({ ...view, takeCashDialog: false })}
+      title={"TAKE CASH"}
       buttons={buttons}
     >
       <>
@@ -58,7 +57,7 @@ export default function PettyCashDialog() {
           inputClass="text-center"
           value={amount}
           error={amount && isNaN(parseFloat(amount))}
-          autoFocus
+          autoFocus={true}
           selectOnFocus
           onChange={(e: any) => setAmount(e.target.value)}
         />

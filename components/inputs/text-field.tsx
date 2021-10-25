@@ -105,7 +105,7 @@ export default function TextField({
             }`}
             value={inputType === "number" ? valueNum : value}
             onChange={onChange}
-            autoFocus={autoFocus || false}
+            autoFocus={Boolean(autoFocus) || false}
             onFocus={selectOnFocus ? (e) => e.target.select() : null}
             max={max ?? null}
             min={min ?? null}

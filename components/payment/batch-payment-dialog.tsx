@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useAtom } from "jotai";
-import { showBatchPaymentDialogAtom, clerkAtom } from "@/lib/atoms";
+import { viewAtom, clerkAtom } from "@/lib/atoms";
 import {
   useInventory,
   useVendors,
@@ -35,9 +35,7 @@ export default function BatchPaymentDialog() {
   const { sales } = useSalesJoined();
   const { vendorPayments } = useVendorPayments();
   const [clerk] = useAtom(clerkAtom);
-  const [showBatchPaymentDialog, setShowBatchPaymentDialog] = useAtom(
-    showBatchPaymentDialogAtom
-  );
+  const [view, setView] = useAtom(viewAtom);
   const [submitting, setSubmitting] = useState(false);
 
   const [paymentAmounts, setPaymentAmounts] = useState({});
@@ -81,7 +79,7 @@ export default function BatchPaymentDialog() {
   const buttons: ModalButton[] = [
     {
       type: "cancel",
-      onClick: () => setShowBatchPaymentDialog(false),
+      onClick: () => setView({ ...view, batchVendorPaymentDialog: false }),
       text: "CANCEL",
     },
     {
@@ -146,8 +144,10 @@ export default function BatchPaymentDialog() {
 
   return (
     <Modal
-      open={Boolean(showBatchPaymentDialog)}
-      closeFunction={() => setShowBatchPaymentDialog(false)}
+      open={view?.batchVendorPaymentDialog}
+      closeFunction={() =>
+        setView({ ...view, batchVendorPaymentDialog: false })
+      }
       title={"MAKE BATCH PAYMENT"}
       buttons={buttons}
     >

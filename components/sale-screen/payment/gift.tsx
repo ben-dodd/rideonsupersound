@@ -1,7 +1,12 @@
 import { useState, useMemo } from "react";
 import Modal from "@/components/container/modal";
 import { useAtom } from "jotai";
-import { paymentDialogAtom, cartAtom, saleAtom, clerkAtom } from "@/lib/atoms";
+import {
+  viewAtom,
+  newSaleObjectAtom,
+  loadedSaleObjectAtom,
+  clerkAtom,
+} from "@/lib/atoms";
 import { GiftCardObject } from "@/lib/types";
 import TextField from "@/components/inputs/text-field";
 import {
@@ -15,15 +20,17 @@ import { getTotalOwing } from "@/lib/data-functions";
 import { saveSaleTransaction } from "@/lib/db-functions";
 import { ModalButton } from "@/lib/types";
 
-export default function Gift({ isCart }) {
+export default function Gift({ isNew }) {
   const [clerk] = useAtom(clerkAtom);
-  const [paymentDialog, setPaymentDialog] = useAtom(paymentDialogAtom);
-  const [cart, setCart] = useAtom(isCart ? cartAtom : saleAtom);
+  const [view, setView] = useAtom(viewAtom);
+  const [sale, setSale] = useAtom(
+    isNew ? newSaleObjectAtom : loadedSaleObjectAtom
+  );
   const { giftCards } = useGiftCards();
-  const { vendor } = useVendorFromContact(cart?.contact_id);
-  const { totalPayments } = useVendorTotalPayments(cart?.contact_id);
-  const { totalSales } = useVendorTotalSales(cart?.contact_id);
-  const { mutateSaleTransactions } = useSaleTransactionsForSale(cart?.id);
+  const { vendor } = useVendorFromContact(sale?.contact_id);
+  const { totalPayments } = useVendorTotalPayments(sale?.contact_id);
+  const { totalSales } = useVendorTotalSales(sale?.contact_id);
+  const { mutateSaleTransactions } = useSaleTransactionsForSale(sale?.id);
   const totalOwing = useMemo(
     () =>
       totalPayments && totalSales
@@ -32,7 +39,7 @@ export default function Gift({ isCart }) {
     [totalPayments, totalSales]
   );
   const [giftCardPayment, setGiftCardPayment] = useState(
-    `${paymentDialog?.remainingBalance}`
+    `${sale?.remainingBalance}`
   );
   const [giftCardCode, setGiftCardCode] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -51,7 +58,7 @@ export default function Gift({ isCart }) {
       type: "ok",
       disabled:
         submitting ||
-        parseFloat(giftCardPayment) > paymentDialog?.remainingBalance ||
+        parseFloat(giftCardPayment) > sale?.remainingBalance ||
         totalOwing < parseFloat(giftCardPayment) ||
         parseFloat(giftCardPayment) === 0 ||
         giftCardPayment <= "" ||
@@ -59,25 +66,24 @@ export default function Gift({ isCart }) {
       onClick: async () => {
         setSubmitting(true);
         await saveSaleTransaction(
-          cart,
+          sale,
           clerk,
           giftCardPayment,
-          paymentDialog?.remainingBalance,
           "acct",
           mutateSaleTransactions,
-          setCart,
+          setSale,
           vendor
         );
         setSubmitting(false);
-        setPaymentDialog(null);
+        setView({ ...view, giftPaymentDialog: false });
       },
       text: "COMPLETE",
     },
   ];
   return (
     <Modal
-      open={paymentDialog?.method === "gift"}
-      closeFunction={() => setPaymentDialog(null)}
+      open={view?.giftPaymentDialog}
+      closeFunction={() => setView({ ...view, giftPaymentDialog: false })}
       title={"GIFT CARD PAYMENT"}
       buttons={buttons}
     >
@@ -86,7 +92,7 @@ export default function Gift({ isCart }) {
           divClass="text-8xl"
           inputClass="text-center text-red-800 font-mono uppercase"
           value={giftCardCode}
-          autoFocus
+          autoFocus={true}
           onChange={(e: any) => setGiftCardCode(e.target.value)}
         />
         <TextField
@@ -98,7 +104,7 @@ export default function Gift({ isCart }) {
           onChange={(e: any) => setGiftCardPayment(e.target.value)}
         />
         <div className="text-center">{`Remaining to pay: $${(
-          paymentDialog?.remainingBalance || 0
+          sale?.remainingBalance || 0
         ).toFixed(2)}`}</div>
         <div className="text-center font-bold">
           {!giftCardCode || giftCardCode === ""
@@ -118,13 +124,13 @@ export default function Gift({ isCart }) {
             ? "..."
             : isNaN(parseFloat(giftCardPayment))
             ? "NUMBERS ONLY PLEASE"
-            : parseFloat(giftCardPayment) > paymentDialog?.remainingBalance
+            : parseFloat(giftCardPayment) > sale?.remainingBalance
             ? `PAYMENT TOO HIGH`
             : totalOwing < parseFloat(giftCardPayment)
             ? `NOT ENOUGH IN ACCOUNT`
-            : parseFloat(giftCardPayment) < paymentDialog?.remainingBalance
+            : parseFloat(giftCardPayment) < sale?.remainingBalance
             ? `AMOUNT SHORT BY $${(
-                paymentDialog?.remainingBalance - parseFloat(giftCardPayment)
+                sale?.remainingBalance - parseFloat(giftCardPayment)
               ).toFixed(2)}`
             : "ALL GOOD!"}
         </div>

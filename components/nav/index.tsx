@@ -1,5 +1,5 @@
 import { useAtom } from "jotai";
-import { clerkAtom, pageAtom, menuDisplayAtom } from "@/lib/atoms";
+import { clerkAtom, pageAtom, viewAtom } from "@/lib/atoms";
 import { useClerkImage, useRegisterID } from "@/lib/swr-hooks";
 import { getImageSrc } from "@/lib/data-functions";
 import Image from "next/image";
@@ -15,7 +15,7 @@ import ContactNavActions from "./actions/contact";
 export default function Nav() {
   const [clerk] = useAtom(clerkAtom);
   const [page] = useAtom(pageAtom);
-  const [menuDisplay, setMenuDisplay] = useAtom(menuDisplayAtom);
+  const [view, setView] = useAtom(viewAtom);
   const { registerID } = useRegisterID();
   // const [page] = useAtom(pageAtom);
   // const { image } = useClerkImage(clerk?.image_id);
@@ -56,7 +56,7 @@ export default function Nav() {
         {page === "payments" && <PaymentNavActions />}
         {/*<button
           className="px-4 sm:hidden"
-          onClick={() => setMenuDisplay(!menuDisplay)}
+          onClick={() => setView({...view, menu: !view?.menu})}
         >
           <Hamburger />
         </button>*/}

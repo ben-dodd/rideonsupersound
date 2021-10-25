@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
 import { useAtom } from "jotai";
 import {
-  showVendorScreenAtom,
   clerkAtom,
-  showCreateContactAtom,
+  viewAtom,
+  loadedContactObjectAtom,
+  loadedVendorIdAtom,
 } from "@/lib/atoms";
 import {
   useVendors,
@@ -41,8 +42,9 @@ import SettingsSelect from "@/components/inputs/settings-select";
 import defaultImage from "../../res/default.png";
 
 export default function VendorScreen() {
-  const [vendorId, setShowVendorScreen] = useAtom(showVendorScreenAtom);
-  const [, setCreateContactScreen] = useAtom(showCreateContactAtom);
+  const [loadedVendorId, setLoadedVendorId] = useAtom(loadedVendorIdAtom);
+  const [view, setView] = useAtom(viewAtom);
+  const [, setContact] = useAtom(loadedContactObjectAtom);
   const { vendors, isVendorsLoading } = useVendors();
   const { clerks, isClerksLoading } = useClerks();
   const { contacts, isContactsLoading } = useContacts();
@@ -54,13 +56,13 @@ export default function VendorScreen() {
 
   useEffect(() => {
     setVendor(
-      (vendors || []).filter((v: VendorObject) => v?.id === vendorId)[0]
+      (vendors || []).filter((v: VendorObject) => v?.id === loadedVendorId)[0]
     );
-  }, [vendorId]);
+  }, [loadedVendorId]);
 
   const v = useMemo(
-    () => getPaymentVars(inventory, sales, vendorPayments, vendorId),
-    [inventory, sales, vendorPayments, vendorId]
+    () => getPaymentVars(inventory, sales, vendorPayments, loadedVendorId),
+    [inventory, sales, vendorPayments, loadedVendorId]
   );
 
   console.log(v);
@@ -89,8 +91,11 @@ export default function VendorScreen() {
   const isNew = !vendor?.id;
   return (
     <ScreenContainer
-      show={Boolean(vendorId)}
-      closeFunction={() => setShowVendorScreen(0)}
+      show={view?.vendorScreen}
+      closeFunction={() => {
+        setLoadedVendorId(0);
+        setView({ ...view, vendorScreen: false });
+      }}
       title={vendor?.name}
       loading={
         isSalesLoading ||
@@ -136,12 +141,10 @@ export default function VendorScreen() {
                   contact_id: parseInt(contactObject?.value),
                 });
               }}
-              onCreateOption={(inputValue: string) =>
-                setCreateContactScreen({
-                  id: 1,
-                  name: inputValue,
-                })
-              }
+              onCreateOption={(inputValue: string) => {
+                setContact({ name: inputValue });
+                setView({ ...view, createContact: true });
+              }}
               options={contacts?.map((val: ContactObject) => ({
                 value: val?.id,
                 label: val?.name || "",

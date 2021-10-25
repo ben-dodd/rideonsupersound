@@ -8,22 +8,14 @@ import {
   deleteSaleFromDatabase,
   deleteSaleItemFromDatabase,
 } from "@/lib/db-functions";
-import {
-  cartAtom,
-  showCartAtom,
-  showCartScreenAtom,
-  showHoldAtom,
-  clerkAtom,
-} from "@/lib/atoms";
+import { cartAtom, viewAtom, clerkAtom } from "@/lib/atoms";
 import Actions from "./actions";
 import ListItem from "./list-item";
 import PayIcon from "@mui/icons-material/ShoppingCart";
 import HoldIcon from "@mui/icons-material/PanTool";
 
 export default function ShoppingCart() {
-  const [showCart, setShowCart] = useAtom(showCartAtom);
-  const [, setShowHold] = useAtom(showHoldAtom);
-  const [, setShowSaleScreen] = useAtom(showCartScreenAtom);
+  const [view, setView] = useAtom(viewAtom);
   const [clerk] = useAtom(clerkAtom);
   const [cart, setCart] = useAtom(cartAtom);
   const { inventory } = useInventory();
@@ -36,7 +28,7 @@ export default function ShoppingCart() {
   return (
     <div
       className={`absolute top-0 transition-offset duration-300 ${
-        showCart ? "left-0" : "left-full"
+        view?.cart ? "left-0" : "left-full"
       } sm:left-2/3 h-full w-full bg-yellow-200 sm:w-1/3 sm:h-menu`}
     >
       <div className="flex flex-col h-menu px-2 bg-black text-white">
@@ -65,7 +57,7 @@ export default function ShoppingCart() {
             <button
               className="fab-button__secondary w-1/3"
               disabled={disableButtons}
-              onClick={() => setShowHold(true)}
+              onClick={() => setView({ ...view, createHold: true })}
             >
               <HoldIcon className="mr-2" />
               HOLD
@@ -118,7 +110,7 @@ export default function ShoppingCart() {
       setLoadingSale(true);
       await saveSaleAndItemsToDatabase(cart, clerk, setCart);
       setLoadingSale(false);
-      setShowSaleScreen(true);
+      setView({ ...view, saleScreen: true });
     } catch (e) {
       throw Error(e.message);
     }
@@ -131,7 +123,7 @@ export default function ShoppingCart() {
       deleteSaleItemFromDatabase(id);
     if ((cart?.items || []).length < 1) {
       // No items left, delete cart
-      setShowCart(false);
+      setView({ ...view, cart: false });
       // TODO Any transactions need to be refunded.
       deleteSaleFromDatabase(cart?.id);
     }

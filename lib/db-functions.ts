@@ -101,7 +101,6 @@ export async function saveSaleTransaction(
   sale: SaleObject,
   clerk: ClerkObject,
   amount: string,
-  remainingBalance: number,
   paymentMethod: string,
   mutate?: Function,
   setCart?: Function,
@@ -113,8 +112,8 @@ export async function saveSaleTransaction(
     clerk_id: clerk?.id,
     payment_method: paymentMethod,
     amount:
-      parseFloat(amount) >= remainingBalance
-        ? remainingBalance * 100
+      parseFloat(amount) >= sale?.remainingBalance
+        ? sale?.remainingBalance * 100
         : parseFloat(amount) * 100,
   };
   if (paymentMethod === "cash") {
@@ -123,8 +122,8 @@ export async function saveSaleTransaction(
       ...transaction,
       cash_received: parseFloat(amount) * 100,
       change_given:
-        parseFloat(amount) > remainingBalance
-          ? (parseFloat(amount) - remainingBalance) * 100
+        parseFloat(amount) > sale?.remainingBalance
+          ? (parseFloat(amount) - sale?.remainingBalance) * 100
           : null,
     };
   }

@@ -6,34 +6,30 @@ import {
   useVendorFromContact,
 } from "@/lib/swr-hooks";
 import {
-  cartAtom,
-  saleAtom,
-  paymentDialogAtom,
-  showSaleScreenAtom,
-  showCartScreenAtom,
-  showCreateContactAtom,
+  newSaleObjectAtom,
+  loadedSaleObjectAtom,
+  viewAtom,
+  loadedContactObjectAtom,
 } from "@/lib/atoms";
 import { ContactObject } from "@/lib/types";
 import { getSaleVars } from "@/lib/data-functions";
 import CreateableSelect from "@/components/inputs/createable-select";
 import TextField from "@/components/inputs/text-field";
 
-export default function Pay({ isCart }) {
-  const [cart, setCart] = useAtom(isCart ? cartAtom : saleAtom);
-  const [paymentDialog, openPaymentDialog] = useAtom(paymentDialogAtom);
-  const [, setCreateContactScreen] = useAtom(showCreateContactAtom);
-  const [showSaleScreen] = useAtom(
-    isCart ? showCartScreenAtom : showSaleScreenAtom
+export default function Pay({ isNew }) {
+  const [sale, setSale] = useAtom(
+    isNew ? newSaleObjectAtom : loadedSaleObjectAtom
   );
+  const [, setContact] = useAtom(loadedContactObjectAtom);
+  const [view, setView] = useAtom(viewAtom);
   const { inventory } = useInventory();
   const { contacts } = useContacts();
-  const { vendor } = useVendorFromContact(cart?.contact_id);
+  const { vendor } = useVendorFromContact(sale?.contact_id);
   const [note, setNote] = useState("");
-  const [remainingBalance, setRemainingBalance] = useState(0);
   useEffect(() => {
-    const { totalRemaining } = getSaleVars(cart, inventory);
-    setRemainingBalance(totalRemaining);
-  }, [showSaleScreen, cart]);
+    const { totalRemaining } = getSaleVars(sale, inventory);
+    setSale({ ...sale, remainingBalance: totalRemaining });
+  }, [view, sale]);
   //
   // function onClickGoBack() {
   //   setShowSaleScreen(false);
@@ -43,46 +39,40 @@ export default function Pay({ isCart }) {
       <div className="flex justify-between my-2">
         <div className="text-2xl font-bold">LEFT TO PAY</div>
         <div className="text-2xl text-red-500 font-bold text-xl">
-          ${(remainingBalance || 0).toFixed(2)}
+          ${(sale?.remainingBalance || 0).toFixed(2)}
         </div>
       </div>
       <div className="grid grid-cols-2 gap-2 mt-4">
         <button
           className="square-button"
-          disabled={remainingBalance === 0}
-          onClick={() =>
-            openPaymentDialog({ method: "cash", remainingBalance })
-          }
+          disabled={sale?.remainingBalance === 0}
+          onClick={() => setView({ ...view, cashPaymentDialog: true })}
         >
           CASH
         </button>
         <button
           className="square-button"
-          disabled={remainingBalance === 0}
-          onClick={() =>
-            openPaymentDialog({ method: "card", remainingBalance })
-          }
+          disabled={sale?.remainingBalance === 0}
+          onClick={() => setView({ ...view, cardPaymentDialog: true })}
         >
           CARD
         </button>
         <button
           className="square-button"
-          disabled={!cart?.contact_id || !vendor || remainingBalance === 0}
-          onClick={() =>
-            openPaymentDialog({ method: "acct", remainingBalance })
+          disabled={
+            !sale?.contact_id || !vendor || sale?.remainingBalance === 0
           }
+          onClick={() => setView({ ...view, acctPaymentDialog: true })}
         >
           ACCT
-          <div className={`text-xs ${cart?.contact_id ? "hidden" : "w-full"}`}>
+          <div className={`text-xs ${sale?.contact_id ? "hidden" : "w-full"}`}>
             Contact Required
           </div>
         </button>
         <button
           className="square-button"
-          disabled={true || remainingBalance === 0}
-          onClick={() =>
-            openPaymentDialog({ method: "gift", remainingBalance })
-          }
+          disabled={true || sale?.remainingBalance === 0}
+          onClick={() => setView({ ...view, giftPaymentDialog: true })}
         >
           GIFT
           <div className={`text-xs`}>Out of Order</div>
@@ -90,29 +80,26 @@ export default function Pay({ isCart }) {
       </div>
       <CreateableSelect
         inputLabel="Select contact"
-        value={cart?.contact_id}
+        value={sale?.contact_id}
         label={
           (contacts || []).filter(
-            (c: ContactObject) => c?.id === cart?.contact_id
+            (c: ContactObject) => c?.id === sale?.contact_id
           )[0]?.name || ""
         }
         onChange={(contactObject: any) => {
-          setCart({
-            ...cart,
+          setSale({
+            ...sale,
             contact_id: parseInt(contactObject?.value),
           });
         }}
-        onCreateOption={(inputValue: string) =>
-          setCreateContactScreen({
-            id: 1,
-            name: inputValue,
-          })
-        }
+        onCreateOption={(inputValue: string) => {
+          setContact({ name: inputValue });
+          setView({ ...view, createContact: true });
+        }}
         options={contacts?.map((val: ContactObject) => ({
           value: val?.id,
           label: val?.name || "",
         }))}
-        disabled={Boolean(paymentDialog?.method)}
       />
       <TextField
         inputLabel="Note"

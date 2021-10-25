@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 import { format, parseISO } from "date-fns";
 import nz from "date-fns/locale/en-NZ";
-import { cartAtom, saleAtom } from "@/lib/atoms";
+import { newSaleObjectAtom, loadedSaleObjectAtom } from "@/lib/atoms";
 import { useContact, useClerks, useInventory } from "@/lib/swr-hooks";
 import {
   convertMPStoKPH,
@@ -13,11 +13,11 @@ import { SaleTransactionObject } from "@/lib/types";
 import ItemListItem from "./item-list-item";
 import TransactionListItem from "./transaction-list-item";
 
-export default function SaleSummary({ isCart }) {
-  const [cart] = useAtom(isCart ? cartAtom : saleAtom);
+export default function SaleSummary({ isNew }) {
+  const [sale] = useAtom(isNew ? newSaleObjectAtom : loadedSaleObjectAtom);
   const { clerks } = useClerks();
-  const saleComplete = Boolean(cart?.state === "complete");
-  const { contact } = useContact(cart?.contact_id);
+  const saleComplete = Boolean(sale?.state === "complete");
+  const { contact } = useContact(sale?.contact_id);
   const { inventory } = useInventory();
 
   const [totalPrice, setTotalPrice] = useState(0);
@@ -30,14 +30,14 @@ export default function SaleSummary({ isCart }) {
       totalStoreCut,
       totalVendorCut,
       totalRemaining,
-    } = getSaleVars(cart, inventory);
+    } = getSaleVars(sale, inventory);
     setRemainingBalance(totalRemaining);
     setTotalPrice(totalPrice);
     setStoreCut(totalStoreCut);
     setVendorCut(totalVendorCut);
-  }, [cart]);
+  }, [sale]);
 
-  // console.log(cart);
+  // console.log(sale);
 
   return (
     <div className="flex flex-col justify-between p-2 bg-blue-200 text-black">
@@ -49,7 +49,7 @@ export default function SaleSummary({ isCart }) {
       ) : (
         <SaleInformation />
       )}
-      {saleComplete ? <SaleWeatherAndLocation cart={cart} /> : <div />}
+      {saleComplete ? <SaleWeatherAndLocation sale={sale} /> : <div />}
     </div>
   );
 
@@ -65,20 +65,20 @@ export default function SaleSummary({ isCart }) {
         {[
           {
             label: "# of Items",
-            value: cart?.items?.length || 0,
+            value: sale?.items?.length || 0,
           },
           {
             label: "Sale Opened By",
             value: clerks
               ? clerks.filter(
-                  (clerk: any) => clerk?.id === cart?.sale_opened_by
+                  (clerk: any) => clerk?.id === sale?.sale_opened_by
                 )[0]?.name
               : "N/A",
           },
           {
             label: "Date Opened",
-            value: cart?.date_sale_opened
-              ? format(parseISO(cart?.date_sale_opened), "d MMMM yyyy, p", {
+            value: sale?.date_sale_opened
+              ? format(parseISO(sale?.date_sale_opened), "d MMMM yyyy, p", {
                   locale: nz,
                 })
               : "N/A",
@@ -87,14 +87,14 @@ export default function SaleSummary({ isCart }) {
             label: "Sale Closed By",
             value: clerks
               ? clerks.filter(
-                  (clerk: any) => clerk?.id === cart?.sale_closed_by
+                  (clerk: any) => clerk?.id === sale?.sale_closed_by
                 )[0]?.name
               : "N/A",
           },
           {
             label: "Date Closed",
-            value: cart?.date_sale_closed
-              ? format(parseISO(cart?.date_sale_closed), "d MMMM yyyy, p", {
+            value: sale?.date_sale_closed
+              ? format(parseISO(sale?.date_sale_closed), "d MMMM yyyy, p", {
                   locale: nz,
                 })
               : "N/A",
@@ -105,10 +105,10 @@ export default function SaleSummary({ isCart }) {
             <div>{item?.value}</div>
           </div>
         ))}
-        {cart?.note && (
+        {sale?.note && (
           <div>
             <div className="font-bold">Notes</div>
-            <div className="italic">{cart?.note}</div>
+            <div className="italic">{sale?.note}</div>
           </div>
         )}
       </div>
@@ -131,9 +131,9 @@ export default function SaleSummary({ isCart }) {
   function SaleItems() {
     return (
       <div className="max-h-2/5 overflow-y-scroll">
-        {(cart?.items || []).length > 0 ? (
-          cart?.items?.map((cartItem) => (
-            <ItemListItem key={cartItem?.item_id} cartItem={cartItem} />
+        {(sale?.items || []).length > 0 ? (
+          sale?.items?.map((saleItem) => (
+            <ItemListItem key={saleItem?.item_id} saleItem={saleItem} />
           ))
         ) : (
           <div>No items in cart...</div>
@@ -190,17 +190,17 @@ export default function SaleSummary({ isCart }) {
   function TransactionItems() {
     return (
       <div className="mt-1 pt-1 border-t border-gray-500 max-h-1/3 overflow-y-scroll">
-        {cart?.transactions?.map((transaction: SaleTransactionObject) => (
+        {sale?.transactions?.map((transaction: SaleTransactionObject) => (
           <TransactionListItem
             key={transaction?.id}
-            sale={cart}
+            sale={sale}
             transaction={transaction}
             // let transactions = {
             //   ...get(saleDialog, "transactions", {}),
             //   [id]: { ...payment, deleted: doDelete },
             // };
             // dispatch(
-            //   updateLocal("cart", {
+            //   updateLocal("sale", {
             //     transactions,
             //   })
             // );
@@ -220,10 +220,10 @@ export default function SaleSummary({ isCart }) {
     );
   }
 
-  function SaleWeatherAndLocation({ cart }) {
-    const weather = cart?.weather;
-    const latitude = cart?.geo_latitude;
-    const longitude = cart?.geo_longitude;
+  function SaleWeatherAndLocation({ sale }) {
+    const weather = sale?.weather;
+    const latitude = sale?.geo_latitude;
+    const longitude = sale?.geo_longitude;
     return (
       <div className="px-2 w-1/2">
         {weather && (

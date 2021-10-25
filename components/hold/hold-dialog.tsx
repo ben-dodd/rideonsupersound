@@ -1,15 +1,10 @@
 import { useState } from "react";
 import { useAtom } from "jotai";
-import { showHoldDialogAtom, cartAtom, clerkAtom } from "@/lib/atoms";
-import { useClerks, useInventory, useHold } from "@/lib/swr-hooks";
-import { InventoryObject, SaleItemObject } from "@/lib/types";
+import { viewAtom, clerkAtom, loadedHoldIdAtom } from "@/lib/atoms";
+import { useHold } from "@/lib/swr-hooks";
 import Modal from "@/components/container/modal/base";
 import { daysFrom } from "@/lib/data-functions";
-import {
-  returnHoldToStock,
-  updateHoldInDatabase,
-  saveLog,
-} from "@/lib/db-functions";
+import { returnHoldToStock, updateHoldInDatabase } from "@/lib/db-functions";
 
 // Material UI Components
 import TextField from "@/components/inputs/text-field";
@@ -19,18 +14,27 @@ import HoldListItem from "./list-item";
 import CloseButton from "@/components/button/close-button";
 
 export default function HoldDialog() {
-  const [holdDialogId, setShowHoldDialog] = useAtom(showHoldDialogAtom);
-  const [cart, setCart] = useAtom(cartAtom);
+  const [view, setView] = useAtom(viewAtom);
+  const [loadedHoldId, setLoadedHoldId] = useAtom(loadedHoldIdAtom);
   const [clerk] = useAtom(clerkAtom);
-  const { clerks } = useClerks();
-  const { inventory } = useInventory();
-  const { hold } = useHold(holdDialogId);
+  const { hold } = useHold(loadedHoldId);
   const [holdPeriod, setHoldPeriod] = useState(null);
   const [notes, setNotes] = useState(null);
 
   return (
-    <Modal open={Boolean(holdDialogId)} onClose={() => setShowHoldDialog(0)}>
-      <CloseButton closeFunction={() => setShowHoldDialog(0)} />
+    <Modal
+      open={view?.holdDialog}
+      onClose={() => {
+        setLoadedHoldId(0);
+        setView({ ...view, holdDialog: false });
+      }}
+    >
+      <CloseButton
+        closeFunction={() => {
+          setLoadedHoldId(0);
+          setView({ ...view, holdDialog: false });
+        }}
+      />
       <div className="p-4">
         <div className="text-center text-4xl font-bold py-2">HOLD ITEM</div>
       </div>
@@ -53,7 +57,10 @@ export default function HoldDialog() {
       <div className="grid grid-cols-4">
         <button
           className="dialog__footer-buttons--cancel"
-          onClick={() => setShowHoldDialog(0)}
+          onClick={() => {
+            setLoadedHoldId(0);
+            setView({ ...view, holdDialog: false });
+          }}
         >
           Cancel
         </button>
@@ -75,7 +82,7 @@ export default function HoldDialog() {
           onClick={() => {
             if (holdPeriod !== null || notes !== null) {
               updateHoldInDatabase({
-                id: holdDialogId,
+                id: loadedHoldId,
                 hold_period:
                   holdPeriod === null
                     ? hold?.hold_period
@@ -83,7 +90,8 @@ export default function HoldDialog() {
                 note: notes === null ? hold?.note : notes,
               });
             }
-            setShowHoldDialog(0);
+            setLoadedHoldId(0);
+            setView({ ...view, holdDialog: false });
           }}
         >
           OK

@@ -4,7 +4,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import {
   cartAtom,
   clerkAtom,
-  showCartAtom,
+  viewAtom,
   confirmModalAtom,
   alertAtom,
 } from "@/lib/atoms";
@@ -22,13 +22,13 @@ export default function ShoppingCartActions() {
   const [cart, setCart] = useAtom(cartAtom);
   const [, setAlert] = useAtom(alertAtom);
   const [, setConfirmModal] = useAtom(confirmModalAtom);
-  const [, setShowCart] = useAtom(showCartAtom);
+  const [view, setView] = useAtom(viewAtom);
   const { contacts } = useContacts();
   const [, setAnchorEl] = useState(null);
   const [saveSaleLoading, setSaveSaleLoading] = useState(false);
   function clearCart() {
     setCart({ id: null, items: [] });
-    setShowCart(false);
+    setView({ ...view, cart: false });
   }
 
   async function onClickSaveSale() {

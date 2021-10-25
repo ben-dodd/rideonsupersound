@@ -3,11 +3,10 @@ import { useAtom } from "jotai";
 import {
   cartAtom,
   clerkAtom,
-  showCartAtom,
-  showHoldAtom,
+  viewAtom,
   alertAtom,
   sellSearchBarAtom,
-  showCreateContactAtom,
+  loadedContactObjectAtom,
 } from "@/lib/atoms";
 import { ContactObject, ModalButton } from "@/lib/types";
 import { getItemSkuDisplayName } from "@/lib/data-functions";
@@ -21,9 +20,8 @@ import SidebarContainer from "@/components/container/side-bar";
 export default function HoldScreen() {
   const [cart, setCart] = useAtom(cartAtom);
   const [, setAlert] = useAtom(alertAtom);
-  const [, setCreateContactScreen] = useAtom(showCreateContactAtom);
-  const [, setShowCart] = useAtom(showCartAtom);
-  const [showHold, setShowHold] = useAtom(showHoldAtom);
+  const [, setContact] = useAtom(loadedContactObjectAtom);
+  const [view, setView] = useAtom(viewAtom);
   const [, setSearch] = useAtom(sellSearchBarAtom);
   const [clerk] = useAtom(clerkAtom);
   const { contacts } = useContacts();
@@ -76,16 +74,15 @@ export default function HoldScreen() {
     setSubmitting(false);
     setSearch(null);
     setCart(null);
-    setShowCart(false);
-    setShowHold(false);
-  }
-
-  function onClickCancelHold() {
-    setShowHold(false);
+    setView({ ...view, cart: false, createHold: false });
   }
 
   const buttons: ModalButton[] = [
-    { type: "cancel", onClick: () => setShowHold(false), text: "CANCEL" },
+    {
+      type: "cancel",
+      onClick: () => setView({ ...view, cart: false, createHold: false }),
+      text: "CANCEL",
+    },
     {
       type: "ok",
       onClick: onClickConfirmHold,
@@ -98,7 +95,11 @@ export default function HoldScreen() {
   ];
 
   return (
-    <SidebarContainer show={showHold} title={"Hold Items"} buttons={buttons}>
+    <SidebarContainer
+      show={view?.createHold}
+      title={"Hold Items"}
+      buttons={buttons}
+    >
       <div className="flex-grow overflow-x-hidden overflow-y-scroll">
         {(cart?.items || []).length > 0 ? (
           cart?.items?.map((cartItem) => <ListItem cartItem={cartItem} />)
@@ -122,12 +123,10 @@ export default function HoldScreen() {
               contact_id: parseInt(contactObject?.value),
             });
           }}
-          onCreateOption={(inputValue: string) =>
-            setCreateContactScreen({
-              id: 1,
-              name: inputValue,
-            })
-          }
+          onCreateOption={(inputValue: string) => {
+            setContact({ name: inputValue });
+            setView({ ...view, createContact: true });
+          }}
           options={contacts?.map((val: ContactObject) => ({
             value: val?.id,
             label: val?.name || "",

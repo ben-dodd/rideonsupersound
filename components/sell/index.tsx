@@ -1,10 +1,5 @@
 import { useAtom } from "jotai";
-import {
-  showCartAtom,
-  showCartScreenAtom,
-  showHoldAtom,
-  showCreateContactAtom,
-} from "@/lib/atoms";
+import { viewAtom } from "@/lib/atoms";
 import { useInventory } from "@/lib/swr-hooks";
 import { useSwipeable } from "react-swipeable";
 
@@ -15,30 +10,26 @@ import HoldScreen from "@/components/hold/hold-screen";
 import CreateContactScreen from "@/components/contact/contact-screen";
 import SaleScreen from "@/components/sale-screen";
 import InventoryItemScreen from "../inventory/inventory-item-screen";
-import PettyCashDialog from "@/components/register/petty-cash";
+import ReturnCashDialog from "@/components/register/return-cash";
+import TakeCashDialog from "@/components/register/take-cash";
 import CloseRegisterScreen from "@/components/register/close-register-screen";
 import MidScreenContainer from "@/components/container/mid-screen";
 
 export default function SellScreen() {
-  const [showCart, setShowCart] = useAtom(showCartAtom);
-  const [showSaleScreen, setShowSaleScreen] = useAtom(showCartScreenAtom);
-  const [showHold, setShowHold] = useAtom(showHoldAtom);
-  const [showCreateContact, setShowCreateContact] = useAtom(
-    showCreateContactAtom
-  );
+  const [view, setView] = useAtom(viewAtom);
   useInventory();
   const handlers = useSwipeable({
     onSwipedRight: () =>
-      showSaleScreen
-        ? setShowSaleScreen(false)
-        : showCreateContact?.id
-        ? setShowCreateContact({ id: 0 })
-        : showHold
-        ? setShowHold(false)
-        : showCart
-        ? setShowCart(false)
+      view?.saleScreen
+        ? setView({ ...view, saleScreen: false })
+        : view?.createContact
+        ? setView({ ...view, createContact: false })
+        : view?.createHold
+        ? setView({ ...view, createHold: false })
+        : view?.cart
+        ? setView({ ...view, cart: false })
         : null,
-    onSwipedLeft: () => (!showCart ? setShowCart(true) : null),
+    onSwipedLeft: () => (!view?.cart ? setView({ ...view, cart: true }) : null),
     preventDefaultTouchmoveEvent: true,
   });
 
@@ -51,10 +42,11 @@ export default function SellScreen() {
       <ShoppingCart />
       <HoldScreen />
       <CreateContactScreen />
-      <SaleScreen isCart={true} />
+      <SaleScreen isNew={true} />
       <InventoryItemScreen />
       <CloseRegisterScreen />
-      <PettyCashDialog />
+      <ReturnCashDialog />
+      <TakeCashDialog />
     </div>
   );
 }

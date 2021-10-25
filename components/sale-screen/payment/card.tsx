@@ -1,22 +1,27 @@
 import { useState } from "react";
 import Modal from "@/components/container/modal";
 import { useAtom } from "jotai";
-import { paymentDialogAtom, cartAtom, saleAtom, clerkAtom } from "@/lib/atoms";
+import {
+  viewAtom,
+  newSaleObjectAtom,
+  loadedSaleObjectAtom,
+  clerkAtom,
+} from "@/lib/atoms";
 import TextField from "@/components/inputs/text-field";
 import { useSaleTransactionsForSale } from "@/lib/swr-hooks";
 import { saveSaleTransaction } from "@/lib/db-functions";
 import { ModalButton } from "@/lib/types";
 
-export default function Cash({ isCart }) {
+export default function Cash({ isNew }) {
   const [clerk] = useAtom(clerkAtom);
-  const [paymentDialog, setPaymentDialog] = useAtom(paymentDialogAtom);
-  const [cart, setCart] = useAtom(isCart ? cartAtom : saleAtom);
-  const { mutateSaleTransactions } = useSaleTransactionsForSale(cart?.id);
+  const [view, setView] = useAtom(viewAtom);
+  const [sale, setSale] = useAtom(
+    isNew ? newSaleObjectAtom : loadedSaleObjectAtom
+  );
+  const { mutateSaleTransactions } = useSaleTransactionsForSale(sale?.id);
   const [submitting, setSubmitting] = useState(false);
 
-  const [cardPayment, setCardPayment] = useState(
-    `${paymentDialog?.remainingBalance}`
-  );
+  const [cardPayment, setCardPayment] = useState(`${sale?.remainingBalance}`);
 
   const buttons: ModalButton[] = [
     {
@@ -29,24 +34,23 @@ export default function Cash({ isCart }) {
       onClick: async () => {
         setSubmitting(true);
         await saveSaleTransaction(
-          cart,
+          sale,
           clerk,
           cardPayment,
-          paymentDialog?.remainingBalance,
           "card",
           mutateSaleTransactions,
-          setCart
+          setSale
         );
         setSubmitting(false);
-        setPaymentDialog(null);
+        setView({ ...view, cardPaymentDialog: false });
       },
       text: "COMPLETE",
     },
   ];
   return (
     <Modal
-      open={paymentDialog?.method === "card"}
-      closeFunction={() => setPaymentDialog(null)}
+      open={view?.cardPaymentDialog}
+      closeFunction={() => setView({ ...view, cardPaymentDialog: false })}
       title={"CARD PAYMENT"}
       buttons={buttons}
     >
@@ -56,23 +60,23 @@ export default function Cash({ isCart }) {
           startAdornment="$"
           inputClass="text-center"
           value={cardPayment}
-          autoFocus
+          autoFocus={true}
           selectOnFocus
           onChange={(e: any) => setCardPayment(e.target.value)}
         />
         <div className="text-center">{`Remaining to pay: $${(
-          paymentDialog?.remainingBalance || 0
+          sale?.remainingBalance || 0
         ).toFixed(2)}`}</div>
         <div className="text-center text-xl font-bold my-4">
           {cardPayment === "" || parseFloat(cardPayment) === 0
             ? "..."
             : isNaN(parseFloat(cardPayment))
             ? "NUMBERS ONLY PLEASE"
-            : parseFloat(cardPayment) > paymentDialog?.remainingBalance
+            : parseFloat(cardPayment) > sale?.remainingBalance
             ? `PAYMENT TOO HIGH`
-            : parseFloat(cardPayment) < paymentDialog?.remainingBalance
+            : parseFloat(cardPayment) < sale?.remainingBalance
             ? `AMOUNT SHORT BY $${(
-                paymentDialog?.remainingBalance - parseFloat(cardPayment)
+                sale?.remainingBalance - parseFloat(cardPayment)
               ).toFixed(2)}`
             : "ALL GOOD!"}
         </div>

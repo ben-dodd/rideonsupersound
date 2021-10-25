@@ -1,27 +1,32 @@
 import { useAtom } from "jotai";
-import { showCloseRegisterScreenAtom, pettyCashAtom } from "@/lib/atoms";
+import { viewAtom } from "@/lib/atoms";
 // Material UI Icons
 import AddCashIcon from "@mui/icons-material/AttachMoney";
 import TakeCashIcon from "@mui/icons-material/MoneyOff";
 import CloseRegisterIcon from "@mui/icons-material/VpnKey";
 
 export default function SellNavActions() {
-  const [, setPettyCash] = useAtom(pettyCashAtom);
-  const [, showCloseRegisterScreen] = useAtom(showCloseRegisterScreenAtom);
+  const [view, setView] = useAtom(viewAtom);
 
   return (
     <div className="flex">
-      <button className="icon-text-button" onClick={() => setPettyCash(1)}>
+      <button
+        className="icon-text-button"
+        onClick={() => setView({ ...view, returnCashDialog: true })}
+      >
         <AddCashIcon className="mr-1" />
         Return Cash
       </button>
-      <button className="icon-text-button" onClick={() => setPettyCash(2)}>
+      <button
+        className="icon-text-button"
+        onClick={() => setView({ ...view, takeCashDialog: true })}
+      >
         <TakeCashIcon className="mr-1" />
         Take Cash
       </button>
       <button
         className="icon-text-button"
-        onClick={() => showCloseRegisterScreen(true)}
+        onClick={() => setView({ ...view, closeRegisterScreen: true })}
       >
         <CloseRegisterIcon className="mr-1" />
         Close Register

@@ -5,7 +5,7 @@ export default function SalesScreen() {
   return (
     <div className="flex relative overflow-x-hidden bg-white text-black">
       <SaleTable />
-      <SaleScreen isCart={false} />
+      <SaleScreen isNew={false} />
     </div>
   );
 }

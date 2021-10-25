@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAtom } from "jotai";
-import { showReturnStockScreenAtom, clerkAtom } from "@/lib/atoms";
+import { viewAtom, clerkAtom } from "@/lib/atoms";
 import { useInventory, useVendors } from "@/lib/swr-hooks";
 import { InventoryObject, VendorObject, ModalButton } from "@/lib/types";
 
@@ -21,16 +21,14 @@ export default function ReturnStockScreen() {
   const { inventory } = useInventory();
   const { vendors } = useVendors();
   const [clerk] = useAtom(clerkAtom);
-  const [showReturnStockScreen, setShowReturnStockScreen] = useAtom(
-    showReturnStockScreenAtom
-  );
+  const [view, setView] = useAtom(viewAtom);
   const [doc, setDoc]: [any, Function] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
   const buttons: ModalButton[] = [
     {
       type: "cancel",
-      onClick: () => setShowReturnStockScreen(false),
+      onClick: () => setView({ ...view, returnStockScreen: false }),
       text: "CANCEL",
     },
     {
@@ -39,7 +37,7 @@ export default function ReturnStockScreen() {
         setSubmitting(true);
         returnStock(doc, clerk);
         setSubmitting(false);
-        setShowReturnStockScreen(false);
+        setView({ ...view, returnStockScreen: false });
       },
       disabled:
         submitting ||
@@ -59,8 +57,8 @@ export default function ReturnStockScreen() {
 
   return (
     <Modal
-      open={Boolean(showReturnStockScreen)}
-      closeFunction={() => setShowReturnStockScreen(false)}
+      open={view?.returnStockScreen}
+      closeFunction={() => setView({ ...view, returnStockScreen: false })}
       title={"RETURN STOCK"}
       buttons={buttons}
     >

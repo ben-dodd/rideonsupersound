@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useAtom } from "jotai";
 import { useInventory, useVendors } from "@/lib/swr-hooks";
 import { InventoryObject, VendorObject } from "@/lib/types";
-import { showItemScreenAtom } from "@/lib/atoms";
+import { viewAtom, loadedItemIdAtom } from "@/lib/atoms";
 import { getItemSku } from "@/lib/data-functions";
 import Table from "@/components/table";
 import TableContainer from "@/components/container/table";
@@ -14,7 +14,8 @@ interface NumberProps {
 export default function InventoryTable() {
   const { inventory } = useInventory();
   const { vendors } = useVendors();
-  const [, openInventoryModal] = useAtom(showItemScreenAtom);
+  const [, setLoadedItemId] = useAtom(loadedItemIdAtom);
+  const [view, setView] = useAtom(viewAtom);
 
   const data = useMemo(
     () =>
@@ -60,7 +61,10 @@ export default function InventoryTable() {
         Cell: (params: any) => (
           <span
             className="cursor-pointer underline"
-            onClick={() => openInventoryModal(params?.row?.original?.id)}
+            onClick={() => {
+              setLoadedItemId(params?.row?.original?.id);
+              setView({ ...view, itemScreen: true });
+            }}
           >
             {params?.value}
           </span>

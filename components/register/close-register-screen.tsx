@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
-import { clerkAtom, showCloseRegisterScreenAtom } from "@/lib/atoms";
+import { clerkAtom, viewAtom } from "@/lib/atoms";
 import {
   useClerks,
   useRegisterID,
@@ -21,9 +21,7 @@ import CashMap from "./cash-map";
 
 export default function CloseRegisterScreen() {
   const [clerk] = useAtom(clerkAtom);
-  const [showCloseRegisterScreen, setShowCloseRegisterScreen] = useAtom(
-    showCloseRegisterScreenAtom
-  );
+  const [view, setView] = useAtom(viewAtom);
   const { clerks, isClerksLoading } = useClerks();
   const { registerID, mutateRegisterID } = useRegisterID();
   const { register, isRegisterLoading } = useRegister(registerID);
@@ -92,7 +90,7 @@ export default function CloseRegisterScreen() {
       till
     );
     mutateRegisterID([{ num: 0 }], false);
-    setShowCloseRegisterScreen(false);
+    setView({ ...view, closeRegisterScreen: false });
   };
   useEffect(() => setCloseAmount(`${getAmountFromCashMap(till)}`), [till]);
   // const cashList =
@@ -104,7 +102,7 @@ export default function CloseRegisterScreen() {
   const buttons: ModalButton[] = [
     {
       type: "cancel",
-      onClick: () => setShowCloseRegisterScreen(false),
+      onClick: () => setView({ ...view, closeRegisterScreen: false }),
       disabled: invalidCloseAmount,
       text: "CANCEL",
     },
@@ -119,8 +117,8 @@ export default function CloseRegisterScreen() {
 
   return (
     <ScreenContainer
-      show={Boolean(showCloseRegisterScreen)}
-      closeFunction={() => setShowCloseRegisterScreen(false)}
+      show={view?.closeRegisterScreen}
+      closeFunction={() => setView({ ...view, closeRegisterScreen: false })}
       title={"Close Register"}
       loading={
         isClerksLoading ||

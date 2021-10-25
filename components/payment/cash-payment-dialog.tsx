@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useAtom } from "jotai";
-import { showCashPaymentDialogAtom, clerkAtom } from "@/lib/atoms";
+import { viewAtom, clerkAtom } from "@/lib/atoms";
 import {
   useInventory,
   useVendors,
@@ -32,9 +32,7 @@ export default function CashPaymentDialog() {
   const { sales } = useSalesJoined();
   const { vendorPayments, mutateVendorPayments } = useVendorPayments();
   const [clerk] = useAtom(clerkAtom);
-  const [showCashPaymentDialog, setShowCashPaymentDialog] = useAtom(
-    showCashPaymentDialogAtom
-  );
+  const [view, setView] = useAtom(viewAtom);
   const [submitting, setSubmitting] = useState(false);
   const [vendor_id, setVendor]: [number, Function] = useState(0);
   const [payment, setPayment] = useState("0");
@@ -63,7 +61,7 @@ export default function CashPaymentDialog() {
     {
       type: "cancel",
       text: "CANCEL",
-      onClick: () => setShowCashPaymentDialog(false),
+      onClick: () => setView({ ...view, cashVendorPaymentDialog: false }),
     },
     {
       type: "ok",
@@ -89,7 +87,7 @@ export default function CashPaymentDialog() {
         });
         mutateVendorPayments();
         setSubmitting(false);
-        setShowCashPaymentDialog(false);
+        setView({ ...view, cashVendorPaymentDialog: false });
       },
       disabled:
         totalOwing < parseFloat(payment) ||
@@ -100,8 +98,8 @@ export default function CashPaymentDialog() {
 
   return (
     <Modal
-      open={Boolean(showCashPaymentDialog)}
-      closeFunction={() => setShowCashPaymentDialog(false)}
+      open={view?.cashPaymentDialog}
+      closeFunction={() => setView({ ...view, cashVendorPaymentDialog: false })}
       title={"CASH PAYMENT"}
       buttons={buttons}
     >

@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useAtom } from "jotai";
-import { showReceiveStockScreenAtom, clerkAtom } from "@/lib/atoms";
+import { viewAtom, clerkAtom } from "@/lib/atoms";
 import { useInventory, useVendors } from "@/lib/swr-hooks";
 import CreateableSelect from "@/components/inputs/createable-select";
 import { VendorObject, InventoryObject, ModalButton } from "@/lib/types";
@@ -24,9 +24,7 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function ReceiveStockScreen() {
-  const [showReceiveStockScreen, setShowReceiveStockScreen] = useAtom(
-    showReceiveStockScreenAtom
-  );
+  const [view, setView] = useAtom(viewAtom);
   const [clerk] = useAtom(clerkAtom);
   const { inventory } = useInventory();
   const { vendors } = useVendors();
@@ -157,7 +155,7 @@ export default function ReceiveStockScreen() {
   const buttons: ModalButton[] = [
     {
       type: "cancel",
-      onClick: () => setShowReceiveStockScreen(false),
+      onClick: () => setView({ ...view, receiveStockScreen: false }),
       text: "CANCEL",
     },
     {
@@ -185,15 +183,15 @@ export default function ReceiveStockScreen() {
       text: "RECEIVE ITEMS",
       onClick: async () => {
         await receiveStock(newStockData, obj, clerk);
-        setShowReceiveStockScreen(false);
+        setView({ ...view, receiveStockScreen: false });
       },
     },
   ];
 
   return (
     <ScreenContainer
-      show={showReceiveStockScreen}
-      closeFunction={() => setShowReceiveStockScreen(false)}
+      show={view?.receiveStockScreen}
+      closeFunction={() => setView({ ...view, receiveStockScreen: false })}
       title={"RECEIVE STOCK"}
       buttons={buttons}
     >

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useAccount, useInventory, useAccountClerks } from "@/lib/swr-hooks";
+import { useAccount, useAccountClerks } from "@/lib/swr-hooks";
 import { useSession } from "next-auth/client";
 import { useAtom } from "jotai";
 import { clerkAtom } from "@/lib/atoms";

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
-import { showCreateContactAtom, cartAtom } from "@/lib/atoms";
+import { viewAtom, cartAtom, loadedContactObjectAtom } from "@/lib/atoms";
 import { useContacts } from "@/lib/swr-hooks";
 import { ContactObject, ModalButton } from "@/lib/types";
 import TextField from "@/components/inputs/text-field";
@@ -8,9 +8,8 @@ import SidebarContainer from "@/components/container/side-bar";
 
 export default function CreateContactScreen() {
   const [cart, setCart] = useAtom(cartAtom);
-  const [contact, setContact]: [ContactObject, any] = useAtom(
-    showCreateContactAtom
-  );
+  const [view, setView] = useAtom(viewAtom);
+  const [contact, setContact] = useAtom(loadedContactObjectAtom);
   const [nameConflict, setNameConflict] = useState(false);
   const { contacts } = useContacts();
   const [submitting, setSubmitting] = useState(false);
@@ -41,7 +40,8 @@ export default function CreateContactScreen() {
       setSubmitting(false);
       const json = await res.json();
       if (!res.ok) throw Error(json.message);
-      setContact({ id: 0 });
+      setContact(null);
+      setView({ ...view, createContact: false });
       setCart({ ...cart, contact_id: json?.insertId });
     } catch (e) {
       throw Error(e.message);
@@ -49,7 +49,14 @@ export default function CreateContactScreen() {
   }
 
   const buttons: ModalButton[] = [
-    { type: "cancel", onClick: () => setContact({ id: 0 }), text: "CANCEL" },
+    {
+      type: "cancel",
+      onClick: () => {
+        setContact(null);
+        setView({ ...view, createContact: false });
+      },
+      text: "CANCEL",
+    },
     {
       type: "ok",
       onClick: onClickCreateContact,
@@ -60,7 +67,7 @@ export default function CreateContactScreen() {
 
   return (
     <SidebarContainer
-      show={Boolean(contact?.id)}
+      show={view?.createContact}
       title={"Create New Contact"}
       buttons={buttons}
     >

@@ -1,7 +1,12 @@
 import { useState, useMemo } from "react";
 import Modal from "@/components/container/modal";
 import { useAtom } from "jotai";
-import { paymentDialogAtom, cartAtom, saleAtom, clerkAtom } from "@/lib/atoms";
+import {
+  viewAtom,
+  newSaleObjectAtom,
+  loadedSaleObjectAtom,
+  clerkAtom,
+} from "@/lib/atoms";
 import TextField from "@/components/inputs/text-field";
 import { ModalButton } from "@/lib/types";
 
@@ -14,14 +19,16 @@ import {
 import { getTotalOwing } from "@/lib/data-functions";
 import { saveSaleTransaction } from "@/lib/db-functions";
 
-export default function Acct({ isCart }) {
+export default function Acct({ isNew }) {
   const [clerk] = useAtom(clerkAtom);
-  const [paymentDialog, setPaymentDialog] = useAtom(paymentDialogAtom);
-  const [cart, setCart] = useAtom(isCart ? cartAtom : saleAtom);
-  const { vendor } = useVendorFromContact(cart?.contact_id);
-  const { totalPayments } = useVendorTotalPayments(cart?.contact_id);
-  const { totalSales } = useVendorTotalSales(cart?.contact_id);
-  const { mutateSaleTransactions } = useSaleTransactionsForSale(cart?.id);
+  const [view, setView] = useAtom(viewAtom);
+  const [sale, setSale] = useAtom(
+    isNew ? newSaleObjectAtom : loadedSaleObjectAtom
+  );
+  const { vendor } = useVendorFromContact(sale?.contact_id);
+  const { totalPayments } = useVendorTotalPayments(sale?.contact_id);
+  const { totalSales } = useVendorTotalSales(sale?.contact_id);
+  const { mutateSaleTransactions } = useSaleTransactionsForSale(sale?.id);
   const totalOwing = useMemo(
     () =>
       totalPayments && totalSales
@@ -29,9 +36,7 @@ export default function Acct({ isCart }) {
         : 0,
     [totalPayments, totalSales]
   );
-  const [acctPayment, setAcctPayment] = useState(
-    `${paymentDialog?.remainingBalance}`
-  );
+  const [acctPayment, setAcctPayment] = useState(`${sale?.remainingBalance}`);
   const [submitting, setSubmitting] = useState(false);
 
   const buttons: ModalButton[] = [
@@ -39,7 +44,7 @@ export default function Acct({ isCart }) {
       type: "ok",
       disabled:
         submitting ||
-        parseFloat(acctPayment) > paymentDialog?.remainingBalance ||
+        parseFloat(acctPayment) > sale?.remainingBalance ||
         totalOwing < parseFloat(acctPayment) ||
         parseFloat(acctPayment) === 0 ||
         acctPayment <= "" ||
@@ -47,17 +52,16 @@ export default function Acct({ isCart }) {
       onClick: async () => {
         setSubmitting(true);
         await saveSaleTransaction(
-          cart,
+          sale,
           clerk,
           acctPayment,
-          paymentDialog?.remainingBalance,
           "acct",
           mutateSaleTransactions,
-          setCart,
+          setSale,
           vendor
         );
         setSubmitting(false);
-        setPaymentDialog(null);
+        setView({ ...view, acctPaymentDialog: false });
       },
       text: "COMPLETE",
     },
@@ -65,8 +69,8 @@ export default function Acct({ isCart }) {
 
   return (
     <Modal
-      open={paymentDialog?.method === "acct"}
-      closeFunction={() => setPaymentDialog(null)}
+      open={view?.acctPaymentDialog}
+      closeFunction={() => setView({ ...view, acctPaymentDialog: false })}
       title={"ACCOUNT PAYMENT"}
       buttons={buttons}
     >
@@ -76,12 +80,12 @@ export default function Acct({ isCart }) {
           startAdornment="$"
           inputClass="text-center"
           value={acctPayment}
-          autoFocus
+          autoFocus={true}
           selectOnFocus
           onChange={(e: any) => setAcctPayment(e.target.value)}
         />
         <div className="text-center">{`Remaining to pay: $${(
-          paymentDialog?.remainingBalance || 0
+          sale?.remainingBalance || 0
         ).toFixed(2)}`}</div>
         <div className="text-center font-bold">
           {`Remaining in account: $${totalOwing.toFixed(2)}`}
@@ -91,13 +95,13 @@ export default function Acct({ isCart }) {
             ? "..."
             : isNaN(parseFloat(acctPayment))
             ? "NUMBERS ONLY PLEASE"
-            : parseFloat(acctPayment) > paymentDialog?.remainingBalance
+            : parseFloat(acctPayment) > sale?.remainingBalance
             ? `PAYMENT TOO HIGH`
             : totalOwing < parseFloat(acctPayment)
             ? `NOT ENOUGH IN ACCOUNT`
-            : parseFloat(acctPayment) < paymentDialog?.remainingBalance
+            : parseFloat(acctPayment) < sale?.remainingBalance
             ? `AMOUNT SHORT BY $${(
-                paymentDialog?.remainingBalance - parseFloat(acctPayment)
+                sale?.remainingBalance - parseFloat(acctPayment)
               ).toFixed(2)}`
             : "ALL GOOD!"}
         </div>

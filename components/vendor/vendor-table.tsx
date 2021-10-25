@@ -1,6 +1,6 @@
 import { useAtom } from "jotai";
 import { useMemo } from "react";
-import { showVendorScreenAtom } from "@/lib/atoms";
+import { viewAtom, loadedVendorIdAtom } from "@/lib/atoms";
 import {
   useVendors,
   useClerks,
@@ -25,7 +25,8 @@ import Table from "@/components/table";
 import TableContainer from "@/components/container/table";
 
 export default function VendorsScreen() {
-  const [showVendorScreen, setShowVendorScreen] = useAtom(showVendorScreenAtom);
+  const [loadedVendorId, setLoadedVendorId] = useAtom(loadedVendorIdAtom);
+  const [view, setView] = useAtom(viewAtom);
   const { inventory } = useInventory();
   const { sales } = useSalesJoined();
   const { vendorPayments } = useVendorPayments();
@@ -88,7 +89,10 @@ export default function VendorsScreen() {
         Cell: (item: any) => (
           <span
             className="cursor-pointer underline"
-            onClick={() => setShowVendorScreen(item?.row?.original?.id)}
+            onClick={() => {
+              setLoadedVendorId(item?.row?.original?.id);
+              setView({ ...view, vendorScreen: true });
+            }}
           >
             {item?.value || ""}
           </span>

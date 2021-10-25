@@ -15,7 +15,7 @@ export interface ClerkObject {
 }
 
 export interface ContactObject {
-  id: number;
+  id?: number;
   name?: string;
   email?: string;
   phone?: string;
@@ -55,6 +55,7 @@ export interface SaleObject {
   geo_latitude?: number;
   geo_longitude?: number;
   is_deleted?: boolean;
+  remainingBalance?: number;
 }
 
 export interface SaleItemObject {
