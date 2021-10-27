@@ -31,7 +31,7 @@ export default function ContactTable() {
   const { holds } = useHolds();
   const { inventory } = useInventory();
   const [view, setView] = useAtom(viewAtom);
-  const [, setLoadedVendorId] = useAtom(loadedVendorIdAtom);
+  const [loadedVendorId, setLoadedVendorId] = useAtom(loadedVendorIdAtom);
   const data = useMemo(
     () =>
       (contacts || [])
@@ -67,10 +67,8 @@ export default function ContactTable() {
   );
 
   const columns = useMemo(() => {
-    const openVendorDialog = (vendor: VendorObject) => {
-      setLoadedVendorId(vendor?.id);
-      setView({ ...view, vendorScreen: true });
-    };
+    const openVendorDialog = (vendor: VendorObject) =>
+      setLoadedVendorId({ ...loadedVendorId, contacts: vendor?.id });
 
     // const openLaybyDialog = (layby) => {
     //   dispatch(

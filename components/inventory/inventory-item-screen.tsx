@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { useAtom } from "jotai";
-import { viewAtom, clerkAtom, loadedItemIdAtom } from "@/lib/atoms";
+import { viewAtom, clerkAtom, loadedItemIdAtom, pageAtom } from "@/lib/atoms";
 import { useVendors, useStockItem, useInventory } from "@/lib/swr-hooks";
 import { VendorObject, InventoryObject, ModalButton } from "@/lib/types";
 import {
@@ -21,14 +21,13 @@ import GoogleBooksPanel from "./google-books-panel";
 
 import ScreenContainer from "@/components/container/screen";
 
-export default function InventoryItemScreen() {
+export default function InventoryItemScreen({ page }) {
   const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom);
-  const [view, setView] = useAtom(viewAtom);
   const [exchangeRate, setExchangeRate] = useState(1);
   const [item, setItem]: [InventoryObject, Function] = useState(null);
   // const newItem = Boolean(item?.newItem);
   // const onClose = item?.onClose;
-  const { stockItem, isStockItemLoading } = useStockItem(loadedItemId);
+  const { stockItem, isStockItemLoading } = useStockItem(loadedItemId[page]);
   const { mutateInventory } = useInventory();
   useEffect(() => {
     let newItem = { ...stockItem };
@@ -46,7 +45,7 @@ export default function InventoryItemScreen() {
   );
   const { vendors } = useVendors();
   const [clerk] = useAtom(clerkAtom);
-  console.log(item);
+  // console.log(item);
 
   useEffect(() => {
     fetch(`https://api.exchangeratesapi.io/latest?symbols=USD,NZD`).then(
@@ -78,14 +77,14 @@ export default function InventoryItemScreen() {
   const buttons: ModalButton[] = [
     {
       type: "cancel",
-      onClick: () => setView({ ...view, itemScreen: false }),
+      onClick: () => setLoadedItemId({ ...loadedItemId, [page]: 0 }),
       text: "CLOSE",
     },
     {
       type: "ok",
       onClick: () => {
-        setView({ ...view, itemScreen: false });
         updateStockItemInDatabase(item);
+        setLoadedItemId({ ...loadedItemId, [page]: 0 });
         setItem(null);
         // setTimeout(() => setItem(null), 1000);
         mutateInventory();
@@ -96,8 +95,10 @@ export default function InventoryItemScreen() {
 
   return (
     <ScreenContainer
-      show={view?.itemScreen}
-      closeFunction={() => setView({ ...view, itemScreen: false })}
+      show={Boolean(loadedItemId[page])}
+      closeFunction={() => {
+        setLoadedItemId({ ...loadedItemId, [page]: 0 });
+      }}
       title={getItemDisplayName(item)}
       loading={isStockItemLoading}
       buttons={buttons}
@@ -195,7 +196,7 @@ export default function InventoryItemScreen() {
             <TextField
               inputClass="font-bold"
               inputLabel="SELL PRICE"
-              value={`${(item?.total_sell / 100).toFixed(2)}` || ""}
+              value={`${(item?.total_sell / 100)?.toFixed(2)}` || ""}
               onChange={(e: any) =>
                 setItem({ ...item, total_sell: e.target.value })
               }
@@ -203,7 +204,7 @@ export default function InventoryItemScreen() {
             />
             <TextField
               inputLabel="COST PRICE"
-              value={`${(item?.vendor_cut / 100).toFixed(2)}` || ""}
+              value={`${(item?.vendor_cut / 100)?.toFixed(2)}` || ""}
               onChange={(e: any) =>
                 setItem({ ...item, vendor_cut: e.target.value })
               }

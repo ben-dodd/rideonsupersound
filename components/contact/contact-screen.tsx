@@ -1,13 +1,17 @@
 import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
-import { viewAtom, cartAtom, loadedContactObjectAtom } from "@/lib/atoms";
+import {
+  viewAtom,
+  newSaleObjectAtom,
+  loadedContactObjectAtom,
+} from "@/lib/atoms";
 import { useContacts } from "@/lib/swr-hooks";
 import { ContactObject, ModalButton } from "@/lib/types";
 import TextField from "@/components/inputs/text-field";
 import SidebarContainer from "@/components/container/side-bar";
 
 export default function CreateContactScreen() {
-  const [cart, setCart] = useAtom(cartAtom);
+  const [cart, setCart] = useAtom(newSaleObjectAtom);
   const [view, setView] = useAtom(viewAtom);
   const [contact, setContact] = useAtom(loadedContactObjectAtom);
   const [nameConflict, setNameConflict] = useState(false);

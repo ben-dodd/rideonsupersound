@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAtom } from "jotai";
-import { viewAtom, clerkAtom, loadedHoldIdAtom } from "@/lib/atoms";
+import { viewAtom, clerkAtom, loadedHoldIdAtom, pageAtom } from "@/lib/atoms";
 import { useHold } from "@/lib/swr-hooks";
 import Modal from "@/components/container/modal/base";
 import { daysFrom } from "@/lib/data-functions";
@@ -17,23 +17,18 @@ export default function HoldDialog() {
   const [view, setView] = useAtom(viewAtom);
   const [loadedHoldId, setLoadedHoldId] = useAtom(loadedHoldIdAtom);
   const [clerk] = useAtom(clerkAtom);
-  const { hold } = useHold(loadedHoldId);
+  const [page] = useAtom(pageAtom);
+  const { hold } = useHold(loadedHoldId[page]);
   const [holdPeriod, setHoldPeriod] = useState(null);
   const [notes, setNotes] = useState(null);
 
   return (
     <Modal
       open={view?.holdDialog}
-      onClose={() => {
-        setLoadedHoldId(0);
-        setView({ ...view, holdDialog: false });
-      }}
+      onClose={() => setLoadedHoldId({ ...loadedHoldId, [page]: 0 })}
     >
       <CloseButton
-        closeFunction={() => {
-          setLoadedHoldId(0);
-          setView({ ...view, holdDialog: false });
-        }}
+        closeFunction={() => setLoadedHoldId({ ...loadedHoldId, [page]: 0 })}
       />
       <div className="p-4">
         <div className="text-center text-4xl font-bold py-2">HOLD ITEM</div>
@@ -57,10 +52,7 @@ export default function HoldDialog() {
       <div className="grid grid-cols-4">
         <button
           className="dialog__footer-buttons--cancel"
-          onClick={() => {
-            setLoadedHoldId(0);
-            setView({ ...view, holdDialog: false });
-          }}
+          onClick={() => setLoadedHoldId({ ...loadedHoldId, [page]: 0 })}
         >
           Cancel
         </button>
@@ -90,8 +82,7 @@ export default function HoldDialog() {
                 note: notes === null ? hold?.note : notes,
               });
             }
-            setLoadedHoldId(0);
-            setView({ ...view, holdDialog: false });
+            setLoadedHoldId({ ...loadedHoldId, [page]: 0 });
           }}
         >
           OK

@@ -21,7 +21,7 @@ export default function Cash({ isNew }) {
   const { mutateSaleTransactions } = useSaleTransactionsForSale(sale?.id);
   const [submitting, setSubmitting] = useState(false);
 
-  const [cardPayment, setCardPayment] = useState(`${sale?.remainingBalance}`);
+  const [cardPayment, setCardPayment] = useState(`${sale?.totalRemaining}`);
 
   const buttons: ModalButton[] = [
     {
@@ -65,19 +65,19 @@ export default function Cash({ isNew }) {
           onChange={(e: any) => setCardPayment(e.target.value)}
         />
         <div className="text-center">{`Remaining to pay: $${(
-          sale?.remainingBalance || 0
-        ).toFixed(2)}`}</div>
+          sale?.totalRemaining || 0
+        )?.toFixed(2)}`}</div>
         <div className="text-center text-xl font-bold my-4">
           {cardPayment === "" || parseFloat(cardPayment) === 0
             ? "..."
             : isNaN(parseFloat(cardPayment))
             ? "NUMBERS ONLY PLEASE"
-            : parseFloat(cardPayment) > sale?.remainingBalance
+            : parseFloat(cardPayment) > sale?.totalRemaining
             ? `PAYMENT TOO HIGH`
-            : parseFloat(cardPayment) < sale?.remainingBalance
+            : parseFloat(cardPayment) < sale?.totalRemaining
             ? `AMOUNT SHORT BY $${(
-                sale?.remainingBalance - parseFloat(cardPayment)
-              ).toFixed(2)}`
+                sale?.totalRemaining - parseFloat(cardPayment)
+              )?.toFixed(2)}`
             : "ALL GOOD!"}
         </div>
       </>

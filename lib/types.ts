@@ -55,7 +55,11 @@ export interface SaleObject {
   geo_latitude?: number;
   geo_longitude?: number;
   is_deleted?: boolean;
-  remainingBalance?: number;
+  totalPrice?: number;
+  totalPaid?: number;
+  totalStoreCut?: number;
+  totalVendorCut?: number;
+  totalRemaining?: number;
 }
 
 export interface SaleItemObject {

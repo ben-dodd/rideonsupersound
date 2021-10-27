@@ -18,12 +18,12 @@ export default function LandingPage() {
   useEffect(() => {
     // If google account only connected to one clerk, automatically set clerk
     if (clerks && clerks.length === 1) setClerk(clerks[0]);
-  }, clerks);
+  }, clerks || null);
 
   return (
     <>
       {isAccountClerksLoading ? (
-        <div className="loading-screen">
+        <div className="flex h-screen w-screen">
           <div className="loading-icon" />
         </div>
       ) : clerk?.id ? (

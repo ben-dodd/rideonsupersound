@@ -39,7 +39,7 @@ export default function Gift({ isNew }) {
     [totalPayments, totalSales]
   );
   const [giftCardPayment, setGiftCardPayment] = useState(
-    `${sale?.remainingBalance}`
+    `${sale?.totalRemaining}`
   );
   const [giftCardCode, setGiftCardCode] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -58,7 +58,7 @@ export default function Gift({ isNew }) {
       type: "ok",
       disabled:
         submitting ||
-        parseFloat(giftCardPayment) > sale?.remainingBalance ||
+        parseFloat(giftCardPayment) > sale?.totalRemaining ||
         totalOwing < parseFloat(giftCardPayment) ||
         parseFloat(giftCardPayment) === 0 ||
         giftCardPayment <= "" ||
@@ -104,15 +104,15 @@ export default function Gift({ isNew }) {
           onChange={(e: any) => setGiftCardPayment(e.target.value)}
         />
         <div className="text-center">{`Remaining to pay: $${(
-          sale?.remainingBalance || 0
-        ).toFixed(2)}`}</div>
+          sale?.totalRemaining || 0
+        )?.toFixed(2)}`}</div>
         <div className="text-center font-bold">
           {!giftCardCode || giftCardCode === ""
             ? "ENTER GIFT CARD CODE"
             : !giftCard
             ? "INVALID GIFT CARD CODE"
             : giftCard?.amount_remaining > 0
-            ? `$${giftCard?.amount_remaining.toFixed(2)} ON CARD`
+            ? `$${giftCard?.amount_remaining?.toFixed(2)} ON CARD`
             : ""}
         </div>
         <div className="text-center text-xl font-bold my-4">
@@ -124,14 +124,14 @@ export default function Gift({ isNew }) {
             ? "..."
             : isNaN(parseFloat(giftCardPayment))
             ? "NUMBERS ONLY PLEASE"
-            : parseFloat(giftCardPayment) > sale?.remainingBalance
+            : parseFloat(giftCardPayment) > sale?.totalRemaining
             ? `PAYMENT TOO HIGH`
             : totalOwing < parseFloat(giftCardPayment)
             ? `NOT ENOUGH IN ACCOUNT`
-            : parseFloat(giftCardPayment) < sale?.remainingBalance
+            : parseFloat(giftCardPayment) < sale?.totalRemaining
             ? `AMOUNT SHORT BY $${(
-                sale?.remainingBalance - parseFloat(giftCardPayment)
-              ).toFixed(2)}`
+                sale?.totalRemaining - parseFloat(giftCardPayment)
+              )?.toFixed(2)}`
             : "ALL GOOD!"}
         </div>
       </>

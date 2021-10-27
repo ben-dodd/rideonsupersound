@@ -116,7 +116,7 @@ export default function DiscogsPanel({ item, setItem, exchangeRate }) {
                     discogsItem?.priceSuggestions[
                       item?.cond || item?.is_new ? "Mint (M)" : "Good (G)"
                     ]?.value
-                  ).toFixed(2)} NZD (${
+                  )?.toFixed(2)} NZD (${
                     item?.cond
                       ? item?.cond
                       : item?.is_new
@@ -133,7 +133,7 @@ export default function DiscogsPanel({ item, setItem, exchangeRate }) {
                 ? `$${(
                     parseFloat(discogsItem?.lowest_price) *
                     parseFloat(exchangeRate)
-                  ).toFixed(2)} NZD`
+                  )?.toFixed(2)} NZD`
                 : "No Data"}
             </div>
           </div>
@@ -159,10 +159,10 @@ export default function DiscogsPanel({ item, setItem, exchangeRate }) {
         </div>
       ) : discogsOptions ? (
         discogsOptions.length > 0 ? (
-          <div>
-            {discogsOptions.map((opt: any) => (
+          <div className="overflow-y-scroll">
+            {discogsOptions.map((opt: any, i: number) => (
               <div
-                key={opt?.id}
+                key={i}
                 className="flex item-start cursor-pointer p-2 mb-8 hover:bg-gray-300"
                 onClick={() => {
                   getDiscogsItem(opt, item, setItem);

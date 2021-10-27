@@ -220,7 +220,7 @@ export default function BatchPaymentDialog() {
                 paymentAmounts[vendor?.id] ||
                 vendor?.totalOwing ||
                 0
-              ).toFixed(2)}
+              )?.toFixed(2)}
               onChange={(e: any) =>
                 setPaymentAmounts({
                   ...paymentAmounts,

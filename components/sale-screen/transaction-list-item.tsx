@@ -10,7 +10,7 @@ import {
   useVendorFromVendorPayment,
   useSaleTransactionsForSale,
 } from "@/lib/swr-hooks";
-import { cartAtom } from "@/lib/atoms";
+import { newSaleObjectAtom } from "@/lib/atoms";
 import { deleteSaleTransactionFromDatabase } from "@/lib/db-functions";
 import { format, parseISO } from "date-fns";
 import nz from "date-fns/locale/en-NZ";
@@ -34,7 +34,7 @@ export default function TransactionListItem({
   sale,
 }: TransactionListItemProps) {
   const { giftCard }: UseGiftCardProps = useGiftCard(transaction?.gift_card_id);
-  const [cart, setCart] = useAtom(cartAtom);
+  const [cart, setCart] = useAtom(newSaleObjectAtom);
   const { vendor }: UseVendorProps = useVendorFromVendorPayment(
     transaction?.vendor_payment_id
   );
@@ -138,19 +138,19 @@ export default function TransactionListItem({
       </div>
       <div className="w-3/12">
         <div className="text-right">
-          ${(transaction?.amount / 100 || 0).toFixed(2)}
+          ${(transaction?.amount / 100 || 0)?.toFixed(2)}
         </div>
         <div className="text-right text-xs">
           {transaction?.payment_method === "cash"
             ? transaction?.change_given
-              ? `($${(transaction.change_given / 100).toFixed(2)} CHANGE)`
+              ? `($${(transaction.change_given / 100)?.toFixed(2)} CHANGE)`
               : "(NO CHANGE)"
             : transaction?.payment_method === "acct"
             ? `[${(vendor?.name || "").toUpperCase()}]`
             : transaction?.payment_method === "gift"
             ? transaction?.card_taken
               ? transaction?.change_given
-                ? `CARD TAKEN, $${(transaction.change_given / 100).toFixed(
+                ? `CARD TAKEN, $${(transaction.change_given / 100)?.toFixed(
                     2
                   )} CHANGE [${(giftCard?.code || "").toUpperCase()}]`
                 : `CARD TAKEN [${(giftCard?.code || "").toUpperCase()}]`

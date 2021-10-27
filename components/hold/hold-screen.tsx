@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAtom } from "jotai";
 import {
-  cartAtom,
+  newSaleObjectAtom,
   clerkAtom,
   viewAtom,
   alertAtom,
@@ -18,7 +18,7 @@ import { useContacts, useInventory } from "@/lib/swr-hooks";
 import SidebarContainer from "@/components/container/side-bar";
 
 export default function HoldScreen() {
-  const [cart, setCart] = useAtom(cartAtom);
+  const [cart, setCart] = useAtom(newSaleObjectAtom);
   const [, setAlert] = useAtom(alertAtom);
   const [, setContact] = useAtom(loadedContactObjectAtom);
   const [view, setView] = useAtom(viewAtom);

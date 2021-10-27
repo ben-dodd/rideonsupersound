@@ -1,7 +1,9 @@
 import VendorTable from "@/components/vendor/vendor-table";
 import VendorScreen from "@/components/vendor/vendor-screen";
+import { useAtom } from "jotai";
+import { pageAtom } from "@/lib/atoms";
 
-export default function SellScreen() {
+export default function VendorPage() {
   // const handlers = useSwipeable({
   //   onSwipedRight: () =>
   //     showSaleScreen
@@ -17,8 +19,14 @@ export default function SellScreen() {
   //   preventDefaultTouchmoveEvent: true,
   // });
 
+  const [page] = useAtom(pageAtom);
+
   return (
-    <div className="flex relative overflow-x-hidden">
+    <div
+      className={`flex relative overflow-x-hidden ${
+        page !== "vendors" ? "hidden" : ""
+      }`}
+    >
       <VendorTable />
       <VendorScreen />
     </div>

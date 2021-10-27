@@ -6,7 +6,7 @@ import { getAmountFromCashMap } from "@/lib/data-functions";
 import { saveAndOpenRegister } from "@/lib/db-functions";
 import { TillObject, RegisterObject } from "@/lib/types";
 import { useRegisterID } from "@/lib/swr-hooks";
-import { clerkAtom } from "@/lib/atoms";
+import { clerkAtom, pageAtom } from "@/lib/atoms";
 
 import TextField from "@/components/inputs/text-field";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -17,6 +17,7 @@ export default function OpenRegisterScreen() {
   // State
   const { registerID, mutateRegisterID } = useRegisterID();
   const [clerk] = useAtom(clerkAtom);
+  const [page] = useAtom(pageAtom);
   const [till, setTill] = useState({});
   const [notes, setNotes] = useState("");
   const [openAmount, setOpenAmount]: [string, Function] = useState(
@@ -25,7 +26,7 @@ export default function OpenRegisterScreen() {
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     const amount = getAmountFromCashMap(till);
-    setOpenAmount(!isNaN(amount) ? amount.toFixed(2) : "0");
+    setOpenAmount(!isNaN(amount) ? amount?.toFixed(2) : "0");
   }, [till]);
   const invalidOpenAmount = isNaN(parseFloat(`${openAmount}`));
 
@@ -43,7 +44,11 @@ export default function OpenRegisterScreen() {
   console.log(registerID);
 
   return (
-    <div className="flex justify-center bg-white h-menu">
+    <div
+      className={`flex justify-center bg-white h-menu${
+        page !== "sell" || registerID > 0 ? " hidden" : ""
+      }`}
+    >
       <div className="flex flex-col justify-center h-full pt-4 max-w-md">
         <div className="flex justify-center text-5xl font-bold pb-4">
           REGISTER CLOSED

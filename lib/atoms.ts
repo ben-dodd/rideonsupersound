@@ -9,7 +9,7 @@ import {
 
 interface PaymentDialogProps {
   method?: string;
-  remainingBalance?: number;
+  totalRemaining?: number;
 }
 
 interface AlertProps {
@@ -20,13 +20,11 @@ interface AlertProps {
 }
 
 interface ViewProps {
-  menu?: boolean;
+  mainMenu?: boolean;
   cart?: boolean;
   createHold?: boolean;
   createContact?: boolean;
   saleScreen?: boolean;
-  itemScreen?: boolean;
-  vendorScreen?: boolean;
   returnCashDialog?: boolean;
   takeCashDialog?: boolean;
   closeRegisterScreen?: boolean;
@@ -42,19 +40,31 @@ interface ViewProps {
   labelPrintDialog?: boolean;
 }
 
+interface PageProps {
+  sell?: number;
+  inventory?: number;
+  vendors?: number;
+  contacts?: number;
+  giftCards?: number;
+  sales?: number;
+  payments?: number;
+  logs?: number;
+}
+
 export const viewAtom = atom<ViewProps>({});
 export const clerkAtom = atom<ClerkObject>({ id: null });
 export const pageAtom = atom<string>("sell");
 
-export const cartAtom = atom<SaleObject>({ id: null, items: [] });
 export const newSaleObjectAtom = atom<SaleObject>({});
 export const loadedSaleObjectAtom = atom<SaleObject>({});
-export const saleAtom = atom<SaleObject>({ id: null, items: [] });
 
-export const loadedItemIdAtom = atom<number>(0);
-export const loadedVendorIdAtom = atom<number>(0);
-export const loadedHoldIdAtom = atom<number>(0);
+export const loadedItemIdAtom = atom<PageProps>({});
+export const loadedVendorIdAtom = atom<PageProps>({});
+export const loadedHoldIdAtom = atom<PageProps>({});
+
 export const loadedContactObjectAtom = atom<ContactObject>({});
+
+export const createableContactName = atom<string>("");
 
 export const sellSearchBarAtom = atom<string>("");
 export const confirmModalAtom = atom<ConfirmModal>({ open: false });

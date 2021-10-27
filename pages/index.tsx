@@ -11,7 +11,7 @@ export default function IndexPage() {
   return (
     <>
       {sessionLoading ? (
-        <div className="loading-screen">
+        <div className="flex h-screen w-screen">
           <div className="loading-icon" />
         </div>
       ) : session ? (

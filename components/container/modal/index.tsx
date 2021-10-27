@@ -32,8 +32,9 @@ export default function Modal({
       <div className="modal__body">{children}</div>
       {buttons && (
         <div className={`modal__button-div`}>
-          {buttons.map((button: ModalButton) => (
+          {buttons.map((button: ModalButton, i: number) => (
             <button
+              key={i}
               className={`modal__button--${button?.type} ${
                 button?.hidden ? " hidden" : ""
               }`}

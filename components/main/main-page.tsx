@@ -1,6 +1,5 @@
 import { useAtom } from "jotai";
-import { pageAtom, alertAtom } from "@/lib/atoms";
-import { useRegisterID } from "@/lib/swr-hooks";
+import { alertAtom } from "@/lib/atoms";
 
 import Snackbar from "@mui/material/Snackbar";
 import Slide from "@mui/material/Slide";
@@ -21,8 +20,6 @@ import ConfirmModal from "@/components/container/modal/confirm-modal";
 
 export default function MainPage() {
   // Get google auth details
-  const [page] = useAtom(pageAtom);
-  const { registerID } = useRegisterID();
   const [alert, setAlert] = useAtom(alertAtom);
 
   return (
@@ -31,22 +28,15 @@ export default function MainPage() {
       <div className="flex h-menu relative">
         <Menu />
         <div className="bg-green-500 h-full w-full absolute sm:static">
-          {page === "sell" ? (
-            registerID > 0 ? (
-              <SellScreen />
-            ) : (
-              <OpenRegisterScreen />
-            )
-          ) : (
-            <div />
-          )}
-          {page === "inventory" && <InventoryScreen />}
-          {page === "vendors" && <VendorScreen />}
-          {page === "contacts" && <ContactScreen />}
-          {page === "giftCards" && <GiftCardsScreen />}
-          {page === "sales" && <SalesScreen />}
-          {page === "logs" && <LogScreen />}
-          {page === "payments" && <PaymentsScreen />}
+          <SellScreen />
+          <OpenRegisterScreen />
+          <InventoryScreen />
+          <VendorScreen />
+          <ContactScreen />
+          <GiftCardsScreen />
+          <SalesScreen />
+          <LogScreen />
+          <PaymentsScreen />
         </div>
         <ConfirmModal />
         {/* ALERTS */}

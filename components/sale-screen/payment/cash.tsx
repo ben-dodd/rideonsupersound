@@ -19,7 +19,7 @@ export default function Cash({ isNew }) {
     isNew ? newSaleObjectAtom : loadedSaleObjectAtom
   );
   const { mutateSaleTransactions } = useSaleTransactionsForSale(sale?.id);
-  const [cashReceived, setCashReceived] = useState(`${sale?.remainingBalance}`);
+  const [cashReceived, setCashReceived] = useState(`${sale?.totalRemaining}`);
   const [submitting, setSubmitting] = useState(false);
   const buttons: ModalButton[] = [
     {
@@ -64,21 +64,21 @@ export default function Cash({ isNew }) {
           onChange={(e: any) => setCashReceived(e.target.value)}
         />
         <div className="text-center">{`Remaining to pay: $${(
-          sale?.remainingBalance || 0
-        ).toFixed(2)}`}</div>
+          sale?.totalRemaining || 0
+        )?.toFixed(2)}`}</div>
         <div className="text-center text-xl font-bold my-4">
           {cashReceived === "" || parseFloat(cashReceived) === 0
             ? "..."
             : isNaN(parseFloat(cashReceived))
             ? "NUMBERS ONLY PLEASE"
-            : parseFloat(cashReceived) > sale?.remainingBalance
+            : parseFloat(cashReceived) > sale?.totalRemaining
             ? `GIVE $${(
-                parseFloat(cashReceived) - sale?.remainingBalance
-              ).toFixed(2)} IN CHANGE`
-            : parseFloat(cashReceived) < sale?.remainingBalance
+                parseFloat(cashReceived) - sale?.totalRemaining
+              )?.toFixed(2)} IN CHANGE`
+            : parseFloat(cashReceived) < sale?.totalRemaining
             ? `AMOUNT SHORT BY $${(
-                sale?.remainingBalance - parseFloat(cashReceived)
-              ).toFixed(2)}`
+                sale?.totalRemaining - parseFloat(cashReceived)
+              )?.toFixed(2)}`
             : "ALL GOOD!"}
         </div>
       </>

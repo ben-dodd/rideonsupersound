@@ -201,7 +201,7 @@ export default function CloseRegisterScreen() {
                 }`}
               >{`${closeCashReceived < 0 ? "-" : "+"} $${Math.abs(
                 closeCashReceived
-              ).toFixed(2)}`}</div>
+              )?.toFixed(2)}`}</div>
             </>
           )}
           {cashGiven?.length > 0 && (
@@ -212,7 +212,7 @@ export default function CloseRegisterScreen() {
               ))}
               <div
                 className={`border-t text-sm font-bold text-tertiary`}
-              >{`- $${Math.abs(closeCashGiven).toFixed(2)}`}</div>
+              >{`- $${Math.abs(closeCashGiven)?.toFixed(2)}`}</div>
             </>
           )}
           {manualPayments?.length > 0 && (
@@ -223,7 +223,7 @@ export default function CloseRegisterScreen() {
               ))}
               <div
                 className={`border-t text-sm font-bold text-tertiary`}
-              >{`- $${Math.abs(closeManualPayments).toFixed(2)}`}</div>
+              >{`- $${Math.abs(closeManualPayments)?.toFixed(2)}`}</div>
             </>
           )}
           {pettyCash?.length > 0 && (
@@ -240,7 +240,7 @@ export default function CloseRegisterScreen() {
                 }`}
               >{`${closePettyBalance < 0 ? "-" : "+"} $${Math.abs(
                 closePettyBalance
-              ).toFixed(2)}`}</div>
+              )?.toFixed(2)}`}</div>
             </>
           )}
         </div>

@@ -98,7 +98,7 @@ export default function CashPaymentDialog() {
 
   return (
     <Modal
-      open={view?.cashPaymentDialog}
+      open={view?.cashVendorPaymentDialog}
       closeFunction={() => setView({ ...view, cashVendorPaymentDialog: false })}
       title={"CASH PAYMENT"}
       buttons={buttons}
@@ -143,7 +143,7 @@ export default function CashPaymentDialog() {
           onChange={(e: any) => setNotes(e.target.value)}
         />
         <div className="mt-4 text-center">
-          {vendor_id > 0 && `VENDOR OWED $${(totalOwing / 100).toFixed(2)}`}
+          {vendor_id > 0 && `VENDOR OWED $${(totalOwing / 100)?.toFixed(2)}`}
         </div>
         <div className="my-4 text-center text-xl font-bold">
           {vendor_id > 0

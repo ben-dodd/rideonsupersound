@@ -147,7 +147,7 @@ export default function SaleTable() {
         Header: "Store Cut",
         accessor: "store",
         Cell: ({ value }) =>
-          value && !isNaN(value) ? `$${(value / 100).toFixed(2)}` : "N/A",
+          value && !isNaN(value) ? `$${(value / 100)?.toFixed(2)}` : "N/A",
         // Footer: (info) => {
         //   const total = useMemo(
         //     () =>
@@ -161,13 +161,13 @@ export default function SaleTable() {
         //     [info.page]
         //   );
         //
-        //   return <>${total.toFixed(2)}</>;
+        //   return <>${total?.toFixed(2)}</>;
         // },
       },
       {
         Header: "Total Price",
         accessor: "sell",
-        Cell: ({ value }) => (value ? `$${(value / 100).toFixed(2)}` : "N/A"),
+        Cell: ({ value }) => (value ? `$${(value / 100)?.toFixed(2)}` : "N/A"),
         // Footer: (info) => {
         //   const total = useMemo(
         //     () =>
@@ -181,7 +181,7 @@ export default function SaleTable() {
         //     [info.page]
         //   );
         //
-        //   return <>${total.toFixed(2)}</>;
+        //   return <>${total?.toFixed(2)}</>;
         // },
       },
     ];

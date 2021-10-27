@@ -56,7 +56,7 @@ export default function Nav() {
         {page === "payments" && <PaymentNavActions />}
         {/*<button
           className="px-4 sm:hidden"
-          onClick={() => setView({...view, menu: !view?.menu})}
+          onClick={() => setView({...view, mainMenu: !view?.mainMenu})}
         >
           <Hamburger />
         </button>*/}

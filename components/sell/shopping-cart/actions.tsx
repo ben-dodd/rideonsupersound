@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 import CircularProgress from "@mui/material/CircularProgress";
 import {
-  cartAtom,
+  newSaleObjectAtom,
   clerkAtom,
   viewAtom,
   confirmModalAtom,
@@ -19,7 +19,7 @@ import SaveSaleIcon from "@mui/icons-material/Save";
 
 export default function ShoppingCartActions() {
   const [clerk] = useAtom(clerkAtom);
-  const [cart, setCart] = useAtom(cartAtom);
+  const [cart, setCart] = useAtom(newSaleObjectAtom);
   const [, setAlert] = useAtom(alertAtom);
   const [, setConfirmModal] = useAtom(confirmModalAtom);
   const [view, setView] = useAtom(viewAtom);

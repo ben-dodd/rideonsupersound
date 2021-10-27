@@ -44,13 +44,10 @@ export default function SaleScreen({ isNew }) {
   const [completeSaleLoading, setCompleteSaleLoading] = useState(false);
   const [parkSaleLoading, setParkSaleLoading] = useState(false);
 
-  const [remainingBalance, setRemainingBalance] = useState(0);
-  const [totalPrice, setTotalPrice] = useState(0);
   useEffect(() => {
-    const { totalPrice, totalRemaining } = getSaleVars(sale, inventory);
-    setTotalPrice(totalPrice);
-    setRemainingBalance(totalRemaining);
-  }, [sale]);
+    const saleVars = getSaleVars(sale, inventory);
+    setSale({ ...sale, ...saleVars });
+  }, [sale?.id]);
   const { items, isSaleItemsLoading } = useSaleItemsForSale(sale?.id);
   const {
     transactions,
@@ -67,7 +64,7 @@ export default function SaleScreen({ isNew }) {
     {
       type: "cancel",
       onClick: () => setView({ ...view, saleScreen: false }),
-      disabled: true || remainingBalance === 0,
+      disabled: true || sale?.totalRemaining === 0,
       text: sale?.state === "layby" ? "CANCEL LAYBY" : "DISCARD SALE",
     },
     {
@@ -75,7 +72,7 @@ export default function SaleScreen({ isNew }) {
       onClick: clickParkSale,
       disabled:
         (sale?.state && sale?.state !== "in_progress") ||
-        remainingBalance === 0,
+        sale?.totalRemaining === 0,
       loading: parkSaleLoading,
       text: "PARK SALE",
     },
@@ -84,13 +81,13 @@ export default function SaleScreen({ isNew }) {
       onClick: () => setView({ ...view, saleScreen: false }),
       disabled:
         (sale?.state && sale?.state !== "in_progress") ||
-        remainingBalance === 0,
+        sale?.totalRemaining === 0,
       text: "ADD MORE ITEMS",
     },
     {
       type: "alt1",
       onClick: clickLayby,
-      disabled: laybyLoading || !sale?.contact_id || remainingBalance <= 0,
+      disabled: laybyLoading || !sale?.contact_id || sale?.totalRemaining <= 0,
       loading: laybyLoading,
       text: sale?.state === "layby" ? "CONTINUE LAYBY" : "START LAYBY",
     },
@@ -99,7 +96,7 @@ export default function SaleScreen({ isNew }) {
       onClick: clickCompleteSale,
       disabled:
         completeSaleLoading ||
-        remainingBalance > 0 ||
+        sale?.totalRemaining > 0 ||
         sale?.state === "complete",
       loading: completeSaleLoading,
       text: "COMPLETE SALE",
@@ -199,9 +196,9 @@ export default function SaleScreen({ isNew }) {
           : ""
       } (${sale?.items.length} item${
         sale?.items.length === 1 ? "" : "s"
-      } / $${totalPrice.toFixed(2)} with $${remainingBalance.toFixed(
+      } / $${sale?.totalPrice?.toFixed(
         2
-      )} left to pay).`,
+      )} with $${sale?.totalRemaining?.toFixed(2)} left to pay).`,
       clerk_id: clerk?.id,
       table_id: "sale",
       row_id: sale?.id,

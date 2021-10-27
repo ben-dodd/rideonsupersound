@@ -5,6 +5,7 @@ import {
   viewAtom,
   loadedContactObjectAtom,
   loadedVendorIdAtom,
+  pageAtom,
 } from "@/lib/atoms";
 import {
   useVendors,
@@ -44,6 +45,7 @@ import defaultImage from "../../res/default.png";
 export default function VendorScreen() {
   const [loadedVendorId, setLoadedVendorId] = useAtom(loadedVendorIdAtom);
   const [view, setView] = useAtom(viewAtom);
+  const [page] = useAtom(pageAtom);
   const [, setContact] = useAtom(loadedContactObjectAtom);
   const { vendors, isVendorsLoading } = useVendors();
   const { clerks, isClerksLoading } = useClerks();
@@ -61,7 +63,8 @@ export default function VendorScreen() {
   }, [loadedVendorId]);
 
   const v = useMemo(
-    () => getPaymentVars(inventory, sales, vendorPayments, loadedVendorId),
+    () =>
+      getPaymentVars(inventory, sales, vendorPayments, loadedVendorId[page]),
     [inventory, sales, vendorPayments, loadedVendorId]
   );
 
@@ -91,11 +94,8 @@ export default function VendorScreen() {
   const isNew = !vendor?.id;
   return (
     <ScreenContainer
-      show={view?.vendorScreen}
-      closeFunction={() => {
-        setLoadedVendorId(0);
-        setView({ ...view, vendorScreen: false });
-      }}
+      show={loadedVendorId[page]}
+      closeFunction={() => setLoadedVendorId({ ...loadedVendorId, [page]: 0 })}
       title={vendor?.name}
       loading={
         isSalesLoading ||
@@ -235,17 +235,17 @@ export default function VendorScreen() {
                   },
                   {
                     label: "Total Take",
-                    value: `$${(v?.totalSell || 0).toFixed(2)}`,
+                    value: `$${(v?.totalSell || 0)?.toFixed(2)}`,
                     className: "text-primary",
                   },
                   {
                     label: "Total Paid",
-                    value: `$${(v?.totalPaid || 0).toFixed(2)}`,
+                    value: `$${(v?.totalPaid || 0)?.toFixed(2)}`,
                     className: "text-secondary",
                   },
                   {
                     label: "Total Owed",
-                    value: `$${(v?.totalOwing || 0).toFixed(2)}`,
+                    value: `$${(v?.totalOwing || 0)?.toFixed(2)}`,
                     className: "text-tertiary",
                   },
                 ].map((item) => (
@@ -306,7 +306,7 @@ export default function VendorScreen() {
                           <div className="font-bold text-sm">
                             {fDate(debit?.date)}
                           </div>
-                          <div>{`$${(debit?.amount / 100).toFixed(2)} (${
+                          <div>{`$${(debit?.amount / 100)?.toFixed(2)} (${
                             debit?.type
                           })`}</div>
                         </div>

@@ -26,7 +26,6 @@ import TableContainer from "@/components/container/table";
 
 export default function VendorsScreen() {
   const [loadedVendorId, setLoadedVendorId] = useAtom(loadedVendorIdAtom);
-  const [view, setView] = useAtom(viewAtom);
   const { inventory } = useInventory();
   const { sales } = useSalesJoined();
   const { vendorPayments } = useVendorPayments();
@@ -89,10 +88,12 @@ export default function VendorsScreen() {
         Cell: (item: any) => (
           <span
             className="cursor-pointer underline"
-            onClick={() => {
-              setLoadedVendorId(item?.row?.original?.id);
-              setView({ ...view, vendorScreen: true });
-            }}
+            onClick={() =>
+              setLoadedVendorId({
+                ...loadedVendorId,
+                vendors: item?.row?.original?.id,
+              })
+            }
           >
             {item?.value || ""}
           </span>
@@ -117,21 +118,21 @@ export default function VendorsScreen() {
         accessor: "totalTake",
         width: 100,
         Cell: ({ value }) =>
-          value && !isNaN(value) ? `$${(value / 100).toFixed(2)}` : "$0.00",
+          value && !isNaN(value) ? `$${(value / 100)?.toFixed(2)}` : "$0.00",
       },
       {
         Header: "Total Paid",
         accessor: "totalDebitAmount",
         width: 100,
         Cell: ({ value }) =>
-          value && !isNaN(value) ? `$${(value / 100).toFixed(2)}` : "$0.00",
+          value && !isNaN(value) ? `$${(value / 100)?.toFixed(2)}` : "$0.00",
       },
       {
         Header: "Total Owing",
         accessor: "totalOwing",
         width: 120,
         Cell: ({ value }) =>
-          value && !isNaN(value) ? `$${(value / 100).toFixed(2)}` : "$0.00",
+          value && !isNaN(value) ? `$${(value / 100)?.toFixed(2)}` : "$0.00",
       },
       {
         Header: "Unique Items",

@@ -1,6 +1,6 @@
 import { useAtom } from "jotai";
-import { viewAtom } from "@/lib/atoms";
-import { useInventory } from "@/lib/swr-hooks";
+import { viewAtom, pageAtom } from "@/lib/atoms";
+import { useInventory, useRegisterID } from "@/lib/swr-hooks";
 import { useSwipeable } from "react-swipeable";
 
 import SearchBar from "./sell-search-bar";
@@ -17,6 +17,8 @@ import MidScreenContainer from "@/components/container/mid-screen";
 
 export default function SellScreen() {
   const [view, setView] = useAtom(viewAtom);
+  const { registerID } = useRegisterID();
+  const [page] = useAtom(pageAtom);
   useInventory();
   const handlers = useSwipeable({
     onSwipedRight: () =>
@@ -34,7 +36,12 @@ export default function SellScreen() {
   });
 
   return (
-    <div className="flex relative overflow-x-hidden" {...handlers}>
+    <div
+      className={`flex relative overflow-x-hidden ${
+        page !== "sell" || registerID < 1 ? "hidden" : ""
+      }`}
+      {...handlers}
+    >
       <MidScreenContainer>
         <SearchBar />
         <InventoryScroll />
@@ -43,7 +50,7 @@ export default function SellScreen() {
       <HoldScreen />
       <CreateContactScreen />
       <SaleScreen isNew={true} />
-      <InventoryItemScreen />
+      <InventoryItemScreen page="sell" />
       <CloseRegisterScreen />
       <ReturnCashDialog />
       <TakeCashDialog />

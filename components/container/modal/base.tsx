@@ -15,7 +15,7 @@ export default function ModalBase({
         className="absolute w-full h-full bg-green-900 opacity-50"
       />
       <div
-        className={`bg-white w-11/12 sm:max-w-md mx-auto rounded shadow-md z-40 overflow-y-auto`}
+        className={`bg-white w-11/12 sm:max-w-md mx-auto rounded shadow-md z-40 overflow-y-auto overflow-x-hidden`}
       >
         {children}
       </div>

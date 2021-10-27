@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useAtom } from "jotai";
 import { useInventory, useVendors } from "@/lib/swr-hooks";
 import { InventoryObject, VendorObject } from "@/lib/types";
-import { viewAtom, loadedItemIdAtom } from "@/lib/atoms";
+import { loadedItemIdAtom } from "@/lib/atoms";
 import { getItemSku } from "@/lib/data-functions";
 import Table from "@/components/table";
 import TableContainer from "@/components/container/table";
@@ -14,8 +14,7 @@ interface NumberProps {
 export default function InventoryTable() {
   const { inventory } = useInventory();
   const { vendors } = useVendors();
-  const [, setLoadedItemId] = useAtom(loadedItemIdAtom);
-  const [view, setView] = useAtom(viewAtom);
+  const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom);
 
   const data = useMemo(
     () =>
@@ -50,7 +49,7 @@ export default function InventoryTable() {
         })),
     [inventory, vendors]
   );
-  console.log(data);
+  // console.log(data);
   const columns = useMemo(() => {
     // const openInventoryDialog = (item:any) => openInventoryModal(item?.row?.original?.id);
     return [
@@ -61,10 +60,12 @@ export default function InventoryTable() {
         Cell: (params: any) => (
           <span
             className="cursor-pointer underline"
-            onClick={() => {
-              setLoadedItemId(params?.row?.original?.id);
-              setView({ ...view, itemScreen: true });
-            }}
+            onClick={() =>
+              setLoadedItemId({
+                ...loadedItemId,
+                inventory: params?.row?.original?.id,
+              })
+            }
           >
             {params?.value}
           </span>
@@ -105,14 +106,14 @@ export default function InventoryTable() {
         Header: "Sell",
         width: 90,
         Cell: ({ value }: NumberProps) =>
-          value && !isNaN(value) ? `$${value.toFixed(2)}` : "-",
+          value && !isNaN(value) ? `$${value?.toFixed(2)}` : "-",
       },
       // {
       //   accessor: "profitMargin",
       //   Header: "Margin",
       //   width: 80,
       //   Cell: ({ value }: NumberProps) =>
-      //     value && !isNaN(value) ? `${value.toFixed(1)}%` : "-",
+      //     value && !isNaN(value) ? `${value?.toFixed(1)}%` : "-",
       // },
       {
         accessor: "quantity",

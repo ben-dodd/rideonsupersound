@@ -370,7 +370,6 @@ export function useRegisterID() {
   const { data, error, mutate } = useSWR(`/api/get-register-id`, fetcher, {
     revalidateIfStale: false,
   });
-  console.log(data);
   return {
     registerID: data && data[0] && data[0]?.num,
     isRegisterIDLoading: !error && !data,

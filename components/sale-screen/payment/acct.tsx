@@ -36,7 +36,7 @@ export default function Acct({ isNew }) {
         : 0,
     [totalPayments, totalSales]
   );
-  const [acctPayment, setAcctPayment] = useState(`${sale?.remainingBalance}`);
+  const [acctPayment, setAcctPayment] = useState(`${sale?.totalRemaining}`);
   const [submitting, setSubmitting] = useState(false);
 
   const buttons: ModalButton[] = [
@@ -44,7 +44,7 @@ export default function Acct({ isNew }) {
       type: "ok",
       disabled:
         submitting ||
-        parseFloat(acctPayment) > sale?.remainingBalance ||
+        parseFloat(acctPayment) > sale?.totalRemaining ||
         totalOwing < parseFloat(acctPayment) ||
         parseFloat(acctPayment) === 0 ||
         acctPayment <= "" ||
@@ -85,24 +85,24 @@ export default function Acct({ isNew }) {
           onChange={(e: any) => setAcctPayment(e.target.value)}
         />
         <div className="text-center">{`Remaining to pay: $${(
-          sale?.remainingBalance || 0
-        ).toFixed(2)}`}</div>
+          sale?.totalRemaining || 0
+        )?.toFixed(2)}`}</div>
         <div className="text-center font-bold">
-          {`Remaining in account: $${totalOwing.toFixed(2)}`}
+          {`Remaining in account: $${totalOwing?.toFixed(2)}`}
         </div>
         <div className="text-center text-xl font-bold my-4">
           {acctPayment === "" || parseFloat(acctPayment) === 0
             ? "..."
             : isNaN(parseFloat(acctPayment))
             ? "NUMBERS ONLY PLEASE"
-            : parseFloat(acctPayment) > sale?.remainingBalance
+            : parseFloat(acctPayment) > sale?.totalRemaining
             ? `PAYMENT TOO HIGH`
             : totalOwing < parseFloat(acctPayment)
             ? `NOT ENOUGH IN ACCOUNT`
-            : parseFloat(acctPayment) < sale?.remainingBalance
+            : parseFloat(acctPayment) < sale?.totalRemaining
             ? `AMOUNT SHORT BY $${(
-                sale?.remainingBalance - parseFloat(acctPayment)
-              ).toFixed(2)}`
+                sale?.totalRemaining - parseFloat(acctPayment)
+              )?.toFixed(2)}`
             : "ALL GOOD!"}
         </div>
       </>

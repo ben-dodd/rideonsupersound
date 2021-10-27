@@ -8,7 +8,7 @@ import {
   deleteSaleFromDatabase,
   deleteSaleItemFromDatabase,
 } from "@/lib/db-functions";
-import { cartAtom, viewAtom, clerkAtom } from "@/lib/atoms";
+import { newSaleObjectAtom, viewAtom, clerkAtom } from "@/lib/atoms";
 import Actions from "./actions";
 import ListItem from "./list-item";
 import PayIcon from "@mui/icons-material/ShoppingCart";
@@ -17,7 +17,7 @@ import HoldIcon from "@mui/icons-material/PanTool";
 export default function ShoppingCart() {
   const [view, setView] = useAtom(viewAtom);
   const [clerk] = useAtom(clerkAtom);
-  const [cart, setCart] = useAtom(cartAtom);
+  const [cart, setCart] = useAtom(newSaleObjectAtom);
   const { inventory } = useInventory();
   const totalPrice = getTotalPrice(cart, inventory);
   const storeCut = getTotalStoreCut(cart, inventory);
@@ -72,14 +72,14 @@ export default function ShoppingCart() {
                 >
                   {storeCut < 0 && "-"}$
                   {(cart?.items || []).length > 0
-                    ? Math.abs(storeCut / 100).toFixed(2)
+                    ? Math.abs(storeCut / 100)?.toFixed(2)
                     : "0.00"}
                 </div>
               </div>
               <div className="flex justify-end mt-1">
                 <div className="self-center">TOTAL</div>
                 <div className="self-center text-right ml-4">
-                  ${((totalPrice || 0) / 100).toFixed(2)}
+                  ${((totalPrice || 0) / 100)?.toFixed(2)}
                 </div>
               </div>
             </div>

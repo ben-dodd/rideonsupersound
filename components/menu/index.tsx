@@ -1,5 +1,5 @@
 import { useAtom } from "jotai";
-import { pageAtom, cartAtom, clerkAtom, viewAtom } from "@/lib/atoms";
+import { pageAtom, newSaleObjectAtom, clerkAtom, viewAtom } from "@/lib/atoms";
 import { SaleItemObject } from "@/lib/types";
 
 // Change to lazy loading
@@ -34,7 +34,7 @@ type MenuType = {
 };
 
 export default function Menu() {
-  const [cart] = useAtom(cartAtom);
+  const [cart] = useAtom(newSaleObjectAtom);
   const [page, setPage] = useAtom(pageAtom);
   const [view, setView] = useAtom(viewAtom);
   const [, setClerk] = useAtom(clerkAtom);
@@ -171,7 +171,7 @@ export default function Menu() {
   return (
     <div
       className={`w-0 overflow-y-auto flex flex-col h-menu justify-between bg-white z-50 flex-shrink-0 whitespace-pre relative ${
-        view?.menu && "w-full "
+        view?.mainMenu && "w-full "
       }sm:w-full sm:w-icons sm:border-r sm:shadow-lg lg:w-menu transition-width duration-200 `}
     >
       {menu?.map((list, i) => (
@@ -193,7 +193,7 @@ export default function Menu() {
                     : () => {
                         window.scrollTo(0, 0);
                         setPage(item?.page);
-                        setView({ ...view, menu: false });
+                        setView({ ...view, mainMenu: false });
                       }
                 }
               >

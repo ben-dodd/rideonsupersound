@@ -420,7 +420,7 @@ export default function ReceiveStockScreen() {
                 : ""
             }$${Math.abs(
               parseFloat(row?.original?.sell) - parseFloat(row?.original?.cost)
-            ).toFixed(2)}`
+            )?.toFixed(2)}`
           : ""}
       </div>
     );

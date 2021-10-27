@@ -112,8 +112,8 @@ export async function saveSaleTransaction(
     clerk_id: clerk?.id,
     payment_method: paymentMethod,
     amount:
-      parseFloat(amount) >= sale?.remainingBalance
-        ? sale?.remainingBalance * 100
+      parseFloat(amount) >= sale?.totalRemaining
+        ? sale?.totalRemaining * 100
         : parseFloat(amount) * 100,
   };
   if (paymentMethod === "cash") {
@@ -122,8 +122,8 @@ export async function saveSaleTransaction(
       ...transaction,
       cash_received: parseFloat(amount) * 100,
       change_given:
-        parseFloat(amount) > sale?.remainingBalance
-          ? (parseFloat(amount) - sale?.remainingBalance) * 100
+        parseFloat(amount) > sale?.totalRemaining
+          ? (parseFloat(amount) - sale?.totalRemaining) * 100
           : null,
     };
   }
@@ -263,7 +263,7 @@ export async function savePettyCashToRegister(
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
     saveLog({
-      log: `Cash ($${parseFloat(amount).toFixed(2)}) ${
+      log: `Cash ($${parseFloat(amount)?.toFixed(2)}) ${
         isTake ? "taken from till." : "put in till."
       }`,
       table_id: "register_petty_cash",

@@ -120,9 +120,9 @@ export default function GoogleBooksPanel({ item, setItem }) {
         </div>
       ) : googleBooksOptions ? (
         <div>
-          {googleBooksOptions.map((opt: any) => (
+          {googleBooksOptions.map((opt: any, i: number) => (
             <div
-              key={opt?.id}
+              key={i}
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 2fr",

@@ -41,11 +41,12 @@ export default function ScreenContainer({
           <div className="screen__body">{children}</div>
           {buttons && (
             <div className="screen__button-div">
-              {buttons.map((button: ModalButton) =>
+              {buttons.map((button: ModalButton, i: number) =>
                 button?.type === "div" ? (
-                  <div />
+                  <div key={i} />
                 ) : button?.data && !button?.disabled ? (
                   <CSVLink
+                    key={i}
                     className={`screen__button--${button?.type}`}
                     data={button?.data}
                     headers={button?.headers}
@@ -56,6 +57,7 @@ export default function ScreenContainer({
                   </CSVLink>
                 ) : (
                   <button
+                    key={i}
                     className={`screen__button--${button?.type}`}
                     onClick={() => button?.onClick()}
                     disabled={button?.disabled}

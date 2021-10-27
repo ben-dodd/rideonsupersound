@@ -6,7 +6,7 @@ import Image from "next/image";
 import TextField from "@/components/inputs/text-field";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { InventoryObject, SaleItemObject } from "@/lib/types";
-import { cartAtom } from "@/lib/atoms";
+import { newSaleObjectAtom } from "@/lib/atoms";
 import {
   getItemSku,
   getItemDisplayName,
@@ -28,7 +28,7 @@ export default function SellListItem({
   deleteCartItem,
 }: SellListItemProps) {
   const { inventory } = useInventory();
-  const [cart, setCart] = useAtom(cartAtom);
+  const [cart, setCart] = useAtom(newSaleObjectAtom);
   const [item, setItem] = useState(null);
   useEffect(() => {
     setItem(

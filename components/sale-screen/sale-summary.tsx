@@ -1,14 +1,9 @@
-import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 import { format, parseISO } from "date-fns";
 import nz from "date-fns/locale/en-NZ";
 import { newSaleObjectAtom, loadedSaleObjectAtom } from "@/lib/atoms";
-import { useContact, useClerks, useInventory } from "@/lib/swr-hooks";
-import {
-  convertMPStoKPH,
-  convertDegToCardinal,
-  getSaleVars,
-} from "@/lib/data-functions";
+import { useContact, useClerks } from "@/lib/swr-hooks";
+import { convertMPStoKPH, convertDegToCardinal } from "@/lib/data-functions";
 import { SaleTransactionObject } from "@/lib/types";
 import ItemListItem from "./item-list-item";
 import TransactionListItem from "./transaction-list-item";
@@ -18,24 +13,6 @@ export default function SaleSummary({ isNew }) {
   const { clerks } = useClerks();
   const saleComplete = Boolean(sale?.state === "complete");
   const { contact } = useContact(sale?.contact_id);
-  const { inventory } = useInventory();
-
-  const [totalPrice, setTotalPrice] = useState(0);
-  const [storeCut, setStoreCut] = useState(0);
-  const [vendorCut, setVendorCut] = useState(0);
-  const [remainingBalance, setRemainingBalance] = useState(0);
-  useEffect(() => {
-    const {
-      totalPrice,
-      totalStoreCut,
-      totalVendorCut,
-      totalRemaining,
-    } = getSaleVars(sale, inventory);
-    setRemainingBalance(totalRemaining);
-    setTotalPrice(totalPrice);
-    setStoreCut(totalStoreCut);
-    setVendorCut(totalVendorCut);
-  }, [sale]);
 
   // console.log(sale);
 
@@ -149,38 +126,38 @@ export default function SaleSummary({ isNew }) {
           <div>VENDOR CUT</div>
           <div
             className={`text-right w-2/12 text-gray-600 ${
-              vendorCut < 0 && "text-red-400"
+              sale?.totalVendorCut < 0 && "text-red-400"
             }`}
           >
-            {`$${vendorCut.toFixed(2)}`}
+            {`$${sale?.totalVendorCut?.toFixed(2)}`}
           </div>
         </div>
         <div className="flex justify-end border-gray-500">
           <div>STORE CUT</div>
           <div
             className={`text-right w-2/12 text-gray-600 ${
-              storeCut < 0 && "text-tertiary-dark"
+              sale?.totalStoreCut < 0 && "text-tertiary-dark"
             }`}
           >
-            {`$${storeCut.toFixed(2)}`}
+            {`$${sale?.totalStoreCut?.toFixed(2)}`}
           </div>
         </div>
         <div className="flex justify-end mt-1">
           <div>TOTAL</div>
           <div className="text-right w-2/12 font-bold">
-            ${totalPrice !== null ? totalPrice.toFixed(2) : "0.00"}
+            ${sale?.totalPrice !== null ? sale?.totalPrice?.toFixed(2) : "0.00"}
           </div>
         </div>
         <div className="flex justify-end mt-1">
           <div>TOTAL PAID</div>
           <div className="text-right w-2/12 font-bold text-secondary-dark">
-            ${(totalPrice - remainingBalance).toFixed(2)}
+            ${(sale?.totalPrice - sale?.totalRemaining)?.toFixed(2)}
           </div>
         </div>
         <div className="flex justify-end mt-1">
           <div>TOTAL OWING</div>
           <div className="text-right w-2/12 font-bold text-tertiary-dark">
-            ${remainingBalance.toFixed(2)}
+            ${sale?.totalRemaining?.toFixed(2)}
           </div>
         </div>
       </>
@@ -235,12 +212,14 @@ export default function SaleSummary({ isNew }) {
             </div>
             <div>
               <div className="font-bold">{`${weather?.weather[0]?.main} (${weather?.weather[0]?.description})`}</div>
-              <div>{`${weather?.main?.temp.toFixed(
+              <div>{`${weather?.main?.temp?.toFixed(
                 1
-              )}°C (felt like ${weather?.main?.feels_like.toFixed(1)}°C)`}</div>
+              )}°C (felt like ${weather?.main?.feels_like?.toFixed(
+                1
+              )}°C)`}</div>
               {weather?.wind && (
                 <div>
-                  Wind was {convertMPStoKPH(weather?.wind?.speed).toFixed(1)}
+                  Wind was {convertMPStoKPH(weather?.wind?.speed)?.toFixed(1)}
                   km/hr, {convertDegToCardinal(weather?.wind?.deg)}
                 </div>
               )}

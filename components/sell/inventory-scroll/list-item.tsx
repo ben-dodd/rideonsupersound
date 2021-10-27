@@ -7,7 +7,7 @@ import InfoIcon from "@mui/icons-material/Info";
 
 import { InventoryObject, SaleObject } from "@/lib/types";
 import {
-  cartAtom,
+  newSaleObjectAtom,
   viewAtom,
   clerkAtom,
   confirmModalAtom,
@@ -27,9 +27,9 @@ type ListItemProps = {
 };
 
 export default function ListItem({ item }: ListItemProps) {
-  const [cart, setCart] = useAtom(cartAtom);
+  const [cart, setCart] = useAtom(newSaleObjectAtom);
   const [view, setView] = useAtom(viewAtom);
-  const [, setLoadedItemId] = useAtom(loadedItemIdAtom);
+  const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom);
   const [, setConfirmModal] = useAtom(confirmModalAtom);
   const [clerk] = useAtom(clerkAtom);
   const geolocation = getGeolocation();
@@ -57,10 +57,8 @@ export default function ListItem({ item }: ListItemProps) {
       setView({ ...view, cart: true });
     }
   };
-  const clickOpenInventoryModal = () => {
-    setLoadedItemId(item?.id);
-    setView({ ...view, itemScreen: true });
-  };
+  const clickOpenInventoryModal = () =>
+    setLoadedItemId({ ...loadedItemId, sell: item?.id });
   // Disable mobile only for now
   // <div
   //   className="flex w-full mb-2 bg-blue-100 relative"
@@ -103,9 +101,9 @@ export default function ListItem({ item }: ListItemProps) {
           <div
             className={`text-md ${itemQuantity < 1 && "text-red-500"}`}
           >{`${itemQuantity} in stock`}</div>
-          <div className="text-xl">{`$${((item?.total_sell || 0) / 100).toFixed(
-            2
-          )}`}</div>
+          <div className="text-xl">{`$${(
+            (item?.total_sell || 0) / 100
+          )?.toFixed(2)}`}</div>
         </div>
       </div>
       <div className="self-center pl-8 hidden sm:inline">

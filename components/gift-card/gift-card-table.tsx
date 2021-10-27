@@ -43,7 +43,7 @@ export default function GiftCardTable() {
         Header: "Initial Value",
         accessor: "initial",
         Cell: ({ value }) => (
-          <span>${(value ? value / 100 : 0).toFixed(2)}</span>
+          <span>${(value ? value / 100 : 0)?.toFixed(2)}</span>
         ),
       },
       {

@@ -1,10 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAtom } from "jotai";
-import {
-  useInventory,
-  useContacts,
-  useVendorFromContact,
-} from "@/lib/swr-hooks";
+import { useContacts, useVendorFromContact } from "@/lib/swr-hooks";
 import {
   newSaleObjectAtom,
   loadedSaleObjectAtom,
@@ -12,7 +8,6 @@ import {
   loadedContactObjectAtom,
 } from "@/lib/atoms";
 import { ContactObject } from "@/lib/types";
-import { getSaleVars } from "@/lib/data-functions";
 import CreateableSelect from "@/components/inputs/createable-select";
 import TextField from "@/components/inputs/text-field";
 
@@ -22,14 +17,9 @@ export default function Pay({ isNew }) {
   );
   const [, setContact] = useAtom(loadedContactObjectAtom);
   const [view, setView] = useAtom(viewAtom);
-  const { inventory } = useInventory();
   const { contacts } = useContacts();
   const { vendor } = useVendorFromContact(sale?.contact_id);
   const [note, setNote] = useState("");
-  useEffect(() => {
-    const { totalRemaining } = getSaleVars(sale, inventory);
-    setSale({ ...sale, remainingBalance: totalRemaining });
-  }, [view, sale]);
   //
   // function onClickGoBack() {
   //   setShowSaleScreen(false);
@@ -39,29 +29,27 @@ export default function Pay({ isNew }) {
       <div className="flex justify-between my-2">
         <div className="text-2xl font-bold">LEFT TO PAY</div>
         <div className="text-2xl text-red-500 font-bold text-xl">
-          ${(sale?.remainingBalance || 0).toFixed(2)}
+          ${(sale?.totalRemaining || 0)?.toFixed(2)}
         </div>
       </div>
       <div className="grid grid-cols-2 gap-2 mt-4">
         <button
           className="square-button"
-          disabled={sale?.remainingBalance === 0}
+          disabled={sale?.totalRemaining === 0}
           onClick={() => setView({ ...view, cashPaymentDialog: true })}
         >
           CASH
         </button>
         <button
           className="square-button"
-          disabled={sale?.remainingBalance === 0}
+          disabled={sale?.totalRemaining === 0}
           onClick={() => setView({ ...view, cardPaymentDialog: true })}
         >
           CARD
         </button>
         <button
           className="square-button"
-          disabled={
-            !sale?.contact_id || !vendor || sale?.remainingBalance === 0
-          }
+          disabled={!sale?.contact_id || !vendor || sale?.totalRemaining === 0}
           onClick={() => setView({ ...view, acctPaymentDialog: true })}
         >
           ACCT
@@ -71,7 +59,7 @@ export default function Pay({ isNew }) {
         </button>
         <button
           className="square-button"
-          disabled={true || sale?.remainingBalance === 0}
+          disabled={true || sale?.totalRemaining === 0}
           onClick={() => setView({ ...view, giftPaymentDialog: true })}
         >
           GIFT

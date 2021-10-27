@@ -78,7 +78,7 @@ export function getCartItemSummary(
         parseInt(cartItem?.store_discount) > 0
           ? ` x S${cartItem?.store_discount}%`
           : ""
-      } x $${(item?.total_sell / 100).toFixed(2)}`;
+      } x $${(item?.total_sell / 100)?.toFixed(2)}`;
 }
 
 export function writeCartItemPriceBreakdown(
@@ -93,10 +93,10 @@ export function writeCartItemPriceTotal(
   cartItem: SaleItemObject
 ) {
   return item?.is_gift_card
-    ? `$${(item?.gift_card_amount / 100).toFixed(2)}`
+    ? `$${(item?.gift_card_amount / 100)?.toFixed(2)}`
     : item?.is_misc_item
-    ? `$${(item?.misc_item_amount / 100).toFixed(2)}`
-    : `$${(getItemPrice(item, cartItem) / 100).toFixed(2)}`;
+    ? `$${(item?.misc_item_amount / 100)?.toFixed(2)}`
+    : `$${(getItemPrice(item, cartItem) / 100)?.toFixed(2)}`;
 }
 
 export function filterInventory({ inventory, search }) {
@@ -285,10 +285,10 @@ export function getTotalStoreCut(
   }, 0);
 }
 
-export function getTotalPaid(cart: SaleObject) {
-  console.log(cart?.transactions);
-  return cart?.transactions
-    ? cart.transactions
+export function getTotalPaid(sale: SaleObject) {
+  console.log(sale?.transactions);
+  return sale?.transactions
+    ? sale.transactions
         .filter((transaction) => !transaction.is_deleted)
         .reduce((acc, transaction) => acc + transaction?.amount, 0)
     : null;
@@ -316,7 +316,7 @@ export function getTotalOwing(
 export function getGrossProfit(item: InventoryObject) {
   let sellNum = item?.total_sell / 100 || 0,
     costNum = item?.vendor_cut / 100 || 0;
-  if (sellNum > 0) return `$${(sellNum - costNum).toFixed(2)}`;
+  if (sellNum > 0) return `$${(sellNum - costNum)?.toFixed(2)}`;
   else return "";
 }
 
@@ -324,7 +324,7 @@ export function getProfitMargin(item: InventoryObject) {
   let sellNum = item?.total_sell || 0,
     costNum = item?.vendor_cut || 0;
   if (sellNum > 0)
-    return `${(((sellNum - costNum) / sellNum) * 100).toFixed(1)}%`;
+    return `${(((sellNum - costNum) / sellNum) * 100)?.toFixed(1)}%`;
   else return "";
 }
 
@@ -719,10 +719,10 @@ export function writeKiwiBankBatchFile({
   let paddedHashTotal = `00000000000${hashTotal}`;
   paddedHashTotal = paddedHashTotal.slice(paddedHashTotal.length - 11);
 
-  console.log(paddedHashTotal);
+  // console.log(paddedHashTotal);
 
   kbb.push([3, transactionAmount, transactionCount, parseInt(paddedHashTotal)]);
-  console.log(kbb);
+  // console.log(kbb);
   return kbb;
 }
 
