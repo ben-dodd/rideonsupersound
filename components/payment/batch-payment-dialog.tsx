@@ -7,6 +7,7 @@ import {
   useVendorPayments,
   useSalesJoined,
   useRegisterID,
+  useCashGiven,
 } from "@/lib/swr-hooks";
 import { VendorObject, ModalButton } from "@/lib/types";
 import { sub } from "date-fns";
@@ -33,7 +34,8 @@ export default function BatchPaymentDialog() {
   const { inventory } = useInventory();
   const { vendors } = useVendors();
   const { sales } = useSalesJoined();
-  const { vendorPayments } = useVendorPayments();
+  const { vendorPayments, mutateVendorPayments } = useVendorPayments();
+  const { mutateCashGiven } = useCashGiven(registerID || 0);
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
   const [submitting, setSubmitting] = useState(false);
@@ -95,7 +97,7 @@ export default function BatchPaymentDialog() {
               ) > 0
           )
           .forEach(async (vendor: VendorObject) => {
-            const vendorPaymentId = await saveVendorPaymentToDatabase({
+            let vendorPayment = {
               amount: Math.round(
                 parseFloat(
                   paymentAmounts[vendor?.id] || vendor?.totalOwing || "0"
@@ -108,12 +110,19 @@ export default function BatchPaymentDialog() {
               vendor_id: vendor?.id,
               register_id: registerID,
               type: "batch",
-            });
-            await saveLog({
-              log: `Batch payment made to Vendor (${vendor?.id || ""}).`,
-              clerk_id: clerk?.id,
-              table_id: "vendor_payment",
-              row_id: vendorPaymentId,
+            };
+            saveVendorPaymentToDatabase(vendorPayment).then((id) => {
+              mutateVendorPayments([
+                ...vendorPayments,
+                { ...vendorPayment, id },
+              ]);
+              mutateCashGiven();
+              saveLog({
+                log: `Batch payment made to Vendor (${vendor?.id || ""}).`,
+                clerk_id: clerk?.id,
+                table_id: "vendor_payment",
+                row_id: id,
+              });
             });
           });
       },

@@ -7,6 +7,7 @@ import {
   useVendorPayments,
   useSalesJoined,
   useRegisterID,
+  useCashGiven,
 } from "@/lib/swr-hooks";
 import {
   VendorSaleItemObject,
@@ -30,6 +31,7 @@ export default function CashPaymentDialog() {
   const { inventory } = useInventory();
   const { vendors } = useVendors();
   const { sales } = useSalesJoined();
+  const { mutateCashGiven } = useCashGiven(registerID || 0);
   const { vendorPayments, mutateVendorPayments } = useVendorPayments();
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
@@ -50,18 +52,24 @@ export default function CashPaymentDialog() {
             )[0]?.vendor_id === vendor_id
         )
       ),
-    [vendor_id]
+    [vendor_id, vendorPayments]
   );
   const vendor = useMemo(
     () => (vendors || []).filter((v: VendorObject) => v?.id === vendor_id)[0],
     [vendor_id, vendors]
   );
 
+  function resetAndCloseDialog() {
+    setView({ ...view, cashVendorPaymentDialog: false });
+    setVendor(0);
+    setPayment("0");
+  }
+
   const buttons: ModalButton[] = [
     {
       type: "cancel",
       text: "CANCEL",
-      onClick: () => setView({ ...view, cashVendorPaymentDialog: false }),
+      onClick: resetAndCloseDialog,
     },
     {
       type: "ok",
@@ -69,7 +77,7 @@ export default function CashPaymentDialog() {
       loading: submitting,
       onClick: async () => {
         setSubmitting(true);
-        const vendorPaymentId = await saveVendorPaymentToDatabase({
+        let vendorPayment = {
           amount: Math.round(parseFloat(payment) * 100),
           bank_account_number: vendor?.bank_account_number,
           batch_number: `${registerID}`,
@@ -78,16 +86,19 @@ export default function CashPaymentDialog() {
           vendor_id: vendor?.id,
           register_id: registerID,
           type: "cash",
+        };
+        saveVendorPaymentToDatabase(vendorPayment).then((id) => {
+          mutateVendorPayments([...vendorPayments, { ...vendorPayment, id }]);
+          mutateCashGiven();
+          saveLog({
+            log: `Cash payment made to Vendor (${vendor?.id || ""}).`,
+            clerk_id: clerk?.id,
+            table_id: "vendor_payment",
+            row_id: id,
+          });
+          setSubmitting(false);
+          resetAndCloseDialog();
         });
-        await saveLog({
-          log: `Cash payment made to Vendor (${vendor?.id || ""}).`,
-          clerk_id: clerk?.id,
-          table_id: "vendor_payment",
-          row_id: vendorPaymentId,
-        });
-        mutateVendorPayments();
-        setSubmitting(false);
-        setView({ ...view, cashVendorPaymentDialog: false });
       },
       disabled:
         totalOwing < parseFloat(payment) ||

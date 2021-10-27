@@ -15,7 +15,7 @@ export default function SellNavActions() {
         onClick={() => setView({ ...view, returnCashDialog: true })}
       >
         <AddCashIcon className="mr-1" />
-        Return Cash
+        Add Cash
       </button>
       <button
         className="icon-text-button"

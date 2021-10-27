@@ -47,7 +47,7 @@ export default function PettyCashDialog() {
     <Modal
       open={view?.returnCashDialog}
       closeFunction={() => setView({ ...view, returnCashDialog: false })}
-      title={"RETURN CASH"}
+      title={"ADD CASH"}
       buttons={buttons}
     >
       <>
