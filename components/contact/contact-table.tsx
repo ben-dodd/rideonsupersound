@@ -116,8 +116,9 @@ export default function ContactTable() {
         width: 220,
         Cell: ({ value }) => {
           return value && value.length > 0
-            ? value.map((hold: HoldObject) => (
+            ? value.map((hold: HoldObject, i: number) => (
                 <div
+                  key={i}
                   className={`pb-2 cursor-pointer underline ${
                     hold?.overdue
                       ? "text-red-600 font-bold animate-bounce"
@@ -147,8 +148,8 @@ export default function ContactTable() {
         width: 220,
         Cell: ({ value }) =>
           value && value.length > 0
-            ? value.map((layby: SaleObject) => (
-                <div className="pb-2" onClick={() => null}>
+            ? value.map((layby: SaleObject, i: number) => (
+                <div key={i} className="pb-2" onClick={() => null}>
                   Items not visible yet
                 </div>
               ))

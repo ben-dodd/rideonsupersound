@@ -9,7 +9,7 @@ import TableContainer from "@/components/container/table";
 
 export default function GiftCardTable() {
   const { giftCards } = useGiftCards();
-  console.log(giftCards);
+  // console.log(giftCards);
   const data = useMemo(
     () =>
       (giftCards || []).map((g: InventoryObject) => ({

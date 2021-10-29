@@ -286,7 +286,7 @@ export function getTotalStoreCut(
 }
 
 export function getTotalPaid(sale: SaleObject) {
-  console.log(sale?.transactions);
+  // console.log(sale?.transactions);
   return sale?.transactions
     ? sale.transactions
         .filter((transaction) => !transaction.is_deleted)

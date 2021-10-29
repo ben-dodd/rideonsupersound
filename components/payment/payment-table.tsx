@@ -27,7 +27,7 @@ export default function PaymentTable() {
     [vendorPayments, clerks]
   );
 
-  console.log(data);
+  // console.log(data);
 
   const columns = useMemo(
     () => [

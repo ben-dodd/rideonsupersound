@@ -18,7 +18,7 @@ export default function LandingPage() {
   useEffect(() => {
     // If google account only connected to one clerk, automatically set clerk
     if (clerks && clerks.length === 1) setClerk(clerks[0]);
-  }, clerks || null);
+  }, [clerks]);
 
   return (
     <>

@@ -68,7 +68,7 @@ export default function VendorScreen() {
     [inventory, sales, vendorPayments, loadedVendorId]
   );
 
-  console.log(v);
+  // console.log(v);
 
   const bankAccountMask = [
     /\d/,
