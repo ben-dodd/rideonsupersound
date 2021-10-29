@@ -1,17 +1,30 @@
+// Packages
 import { useState } from "react";
-import Modal from "@/components/container/modal";
 import { useAtom } from "jotai";
-import { viewAtom, clerkAtom } from "@/lib/atoms";
-import TextField from "@/components/inputs/text-field";
-import { ModalButton } from "@/lib/types";
-import { savePettyCashToRegister } from "@/lib/db-functions";
+
+// DB
+import { viewAtom, clerkAtom, alertAtom } from "@/lib/atoms";
 import { useRegisterID, usePettyCash } from "@/lib/swr-hooks";
+import { ModalButton } from "@/lib/types";
+
+// Functions
+import { savePettyCashToRegister } from "@/lib/db-functions";
+
+// Components
+import Modal from "@/components/container/modal";
+import TextField from "@/components/inputs/text-field";
 
 export default function PettyCashDialog() {
-  const [clerk] = useAtom(clerkAtom);
+  // SWR
   const { registerID } = useRegisterID();
   const { mutatePettyCash } = usePettyCash(registerID);
+
+  // Atoms
+  const [clerk] = useAtom(clerkAtom);
+  const [, setAlert] = useAtom(alertAtom);
   const [view, setView] = useAtom(viewAtom);
+
+  // State
   const [amount, setAmount] = useState("0");
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -24,6 +37,7 @@ export default function PettyCashDialog() {
         parseFloat(amount) === 0 ||
         amount <= "" ||
         isNaN(parseFloat(amount)),
+      loading: submitting,
       onClick: async () => {
         setSubmitting(true);
         await savePettyCashToRegister(
@@ -33,11 +47,18 @@ export default function PettyCashDialog() {
           amount,
           notes
         );
-        setAmount("0");
-        setNotes("");
         mutatePettyCash();
         setSubmitting(false);
         setView({ ...view, takeCashDialog: false });
+        setAmount("0");
+        setNotes("");
+        setAlert({
+          open: true,
+          type: "success",
+          message: `$${
+            amount ? parseFloat(amount).toFixed(2) : 0.0
+          } taken from the till.`,
+        });
       },
       text: "TAKE IT!",
     },

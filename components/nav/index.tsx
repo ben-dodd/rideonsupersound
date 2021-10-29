@@ -1,9 +1,12 @@
+// Packages
 import { useAtom } from "jotai";
-import { clerkAtom, pageAtom, viewAtom } from "@/lib/atoms";
-import { useClerkImage, useRegisterID } from "@/lib/swr-hooks";
-import { getImageSrc } from "@/lib/data-functions";
-import Image from "next/image";
 
+// DB
+import { useRegisterID } from "@/lib/swr-hooks";
+import { clerkAtom, pageAtom, viewAtom } from "@/lib/atoms";
+
+// Components
+import Image from "next/image";
 import Hamburger from "@/components/icon/hamburger";
 
 import SellNavActions from "./actions/sell";
@@ -12,16 +15,15 @@ import PaymentNavActions from "./actions/payment";
 import VendorNavActions from "./actions/vendor";
 import ContactNavActions from "./actions/contact";
 
+// TODO fix all actions
+
 export default function Nav() {
+  // SWR
+  const { registerID } = useRegisterID();
+
+  // Atoms
   const [clerk] = useAtom(clerkAtom);
   const [page] = useAtom(pageAtom);
-  const [view, setView] = useAtom(viewAtom);
-  const { registerID } = useRegisterID();
-  // const [page] = useAtom(pageAtom);
-  // const { image } = useClerkImage(clerk?.image_id);
-
-  // var arrayBufferView = new Uint8Array(image?.data);
-  // var blob = new Blob([arrayBufferView], { type: "image/png" });
 
   return (
     <nav className="py-2 bg-black text-white h-nav">

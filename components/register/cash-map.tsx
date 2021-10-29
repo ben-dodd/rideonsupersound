@@ -1,6 +1,12 @@
+// Components
 import TextField from "@/components/inputs/text-field";
 
-function CashMap({ till, setTill }) {
+export default function CashMap({ till, setTill }) {
+  // Functions
+  function isError(val: string) {
+    return val && (isNaN(parseInt(val)) || parseInt(val) < 0);
+  }
+
   return (
     <div className="bg-primary-light p-2 mt-2 rounded-md">
       <div className="text-2xl">Notes</div>
@@ -111,9 +117,3 @@ function CashMap({ till, setTill }) {
     </div>
   );
 }
-
-function isError(val: string) {
-  return val && (isNaN(parseInt(val)) || parseInt(val) < 0);
-}
-
-export default CashMap;

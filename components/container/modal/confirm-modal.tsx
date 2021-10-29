@@ -1,14 +1,26 @@
-import Modal from "@/components/container/modal";
+// Packages
 import { useAtom } from "jotai";
+
+// DB
 import { confirmModalAtom } from "@/lib/atoms";
+
+// Components
+import Modal from "@/components/container/modal";
+
+// Types
 import { ModalButton } from "@/lib/types";
 
 export default function ConfirmModal() {
+  // Atoms
   const [confirmModal, setConfirmModal] = useAtom(confirmModalAtom);
+
+  // Functions
   function closeModal() {
     setConfirmModal({ ...confirmModal, open: false });
     setTimeout(() => setConfirmModal({ open: false }), 200);
   }
+
+  // Buttons
   const buttons: ModalButton[] = [
     {
       text: confirmModal?.noText || "CANCEL",

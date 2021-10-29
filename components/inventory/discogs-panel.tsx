@@ -29,7 +29,7 @@ export default function DiscogsPanel({ item, setItem, exchangeRate }) {
   }, []);
 
   return (
-    <div>
+    <div className="flex flex-col h-menusm">
       <div className="flex justify-between px-2">
         <Image
           src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/discogs-logo.png`}
@@ -49,6 +49,7 @@ export default function DiscogsPanel({ item, setItem, exchangeRate }) {
       </div>
       {discogsItem ? (
         <div className="pt-4 mx-4">
+          {/* HEADER DETAILS */}
           <div className="text-xl">
             <div className="font-bold">
               {andList((discogsItem?.artists || []).map((e: any) => e.name))}
@@ -159,7 +160,7 @@ export default function DiscogsPanel({ item, setItem, exchangeRate }) {
         </div>
       ) : discogsOptions ? (
         discogsOptions.length > 0 ? (
-          <div className="overflow-y-scroll">
+          <div className="flex-1 overflow-auto">
             {discogsOptions.map((opt: any, i: number) => (
               <div
                 key={i}

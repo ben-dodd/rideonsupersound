@@ -1,6 +1,5 @@
+// Packages
 import { useMemo, useState, useEffect } from "react";
-
-// Material UI Components
 import {
   useTable,
   usePagination,

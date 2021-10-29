@@ -1,14 +1,20 @@
+// Packages
 import { useState, useEffect } from "react";
-import { useInventory } from "@/lib/swr-hooks";
-import Image from "next/image";
 
+// DB
+import { useInventory } from "@/lib/swr-hooks";
 import { InventoryObject, SaleItemObject } from "@/lib/types";
+
+// Functions
 import {
   getItemSku,
   getItemDisplayName,
   getCartItemSummary,
   getImageSrc,
 } from "@/lib/data-functions";
+
+// Components
+import Image from "next/image";
 
 type SellListItemProps = {
   saleItem: SaleItemObject;

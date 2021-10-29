@@ -1,6 +1,9 @@
+// Packages
 import { useState } from "react";
 import { useAtom } from "jotai";
-import CircularProgress from "@mui/material/CircularProgress";
+
+// DB
+import { useContacts } from "@/lib/swr-hooks";
 import {
   newSaleObjectAtom,
   clerkAtom,
@@ -8,24 +11,37 @@ import {
   confirmModalAtom,
   alertAtom,
 } from "@/lib/atoms";
-import { useContacts } from "@/lib/swr-hooks";
 import { ContactObject } from "@/lib/types";
+
+// Functions
 import { saveSaleAndItemsToDatabase, saveLog } from "@/lib/db-functions";
-// Material UI Icons
+
+// Components
+import CircularProgress from "@mui/material/CircularProgress";
+
+// Icons
 import DiscardSaleIcon from "@mui/icons-material/Close";
 import RetrieveSaleIcon from "@mui/icons-material/FolderOpen";
 import SaveSaleIcon from "@mui/icons-material/Save";
-// import DeleteSaleIcon from "@mui/icons-material/Delete";
+
+// TODO add mutate logs to all logs
 
 export default function ShoppingCartActions() {
+  // SWR
+  const { contacts } = useContacts();
+
+  // Atoms
   const [clerk] = useAtom(clerkAtom);
   const [cart, setCart] = useAtom(newSaleObjectAtom);
   const [, setAlert] = useAtom(alertAtom);
   const [, setConfirmModal] = useAtom(confirmModalAtom);
   const [view, setView] = useAtom(viewAtom);
-  const { contacts } = useContacts();
+
+  // State
   const [, setAnchorEl] = useState(null);
   const [saveSaleLoading, setSaveSaleLoading] = useState(false);
+
+  // Functions
   function clearCart() {
     setCart({ id: null, items: [] });
     setView({ ...view, cart: false });
@@ -91,6 +107,8 @@ export default function ShoppingCartActions() {
       noText: "CANCEL",
     });
   }
+
+  // TODO Shopping cart actions
 
   return (
     <div>

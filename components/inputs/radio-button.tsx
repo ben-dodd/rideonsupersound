@@ -1,3 +1,4 @@
+// Types
 interface RadioButtonProps {
   value: boolean;
   onChange: Function;

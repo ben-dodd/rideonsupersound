@@ -1,9 +1,13 @@
+// Packages
 import { useState, useEffect, useMemo } from "react";
-import Image from "next/image";
 import { useAtom } from "jotai";
-import { viewAtom, clerkAtom, loadedItemIdAtom, pageAtom } from "@/lib/atoms";
+
+// DB
 import { useVendors, useStockItem, useInventory } from "@/lib/swr-hooks";
+import { clerkAtom, loadedItemIdAtom } from "@/lib/atoms";
 import { VendorObject, InventoryObject, ModalButton } from "@/lib/types";
+
+// Functions
 import {
   getItemDisplayName,
   getGrossProfit,
@@ -13,22 +17,31 @@ import {
 } from "@/lib/data-functions";
 import { updateStockItemInDatabase } from "@/lib/db-functions";
 
+// Components
+import Image from "next/image";
 import TextField from "@/components/inputs/text-field";
 import SettingsSelect from "@/components/inputs/settings-select";
 import RadioButton from "@/components/inputs/radio-button";
 import DiscogsPanel from "./discogs-panel";
 import GoogleBooksPanel from "./google-books-panel";
-
+import ChangePriceIcon from "@mui/icons-material/AutoFixNormal";
 import ScreenContainer from "@/components/container/screen";
 
 export default function InventoryItemScreen({ page }) {
+  // Atoms
   const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom);
-  const [exchangeRate, setExchangeRate] = useState(1);
-  const [item, setItem]: [InventoryObject, Function] = useState(null);
-  // const newItem = Boolean(item?.newItem);
-  // const onClose = item?.onClose;
+  const [clerk] = useAtom(clerkAtom);
+
+  // SWR
   const { stockItem, isStockItemLoading } = useStockItem(loadedItemId[page]);
   const { mutateInventory } = useInventory();
+  const { vendors } = useVendors();
+
+  // State
+  const [exchangeRate, setExchangeRate] = useState(1);
+  const [item, setItem]: [InventoryObject, Function] = useState(null);
+
+  // Load
   useEffect(() => {
     let newItem = { ...stockItem };
     // Parse JSON fields
@@ -43,9 +56,6 @@ export default function InventoryItemScreen({ page }) {
   const syncInfo = Boolean(
     item?.media === "Audio" || item?.media === "Literature"
   );
-  const { vendors } = useVendors();
-  const [clerk] = useAtom(clerkAtom);
-  // console.log(item);
 
   useEffect(() => {
     fetch(`https://api.exchangeratesapi.io/latest?symbols=USD,NZD`).then(
@@ -70,6 +80,7 @@ export default function InventoryItemScreen({ page }) {
     [item]
   );
 
+  // Functions
   function onClickDelete() {
     // Delete inventory item
   }
@@ -106,6 +117,7 @@ export default function InventoryItemScreen({ page }) {
       <>
         <div className={`p-6 ${syncInfo ? "w-6/12" : "w-full"}`}>
           <div className="flex justify-start w-full">
+            {/* IMAGE */}
             <div className="pr-2 w-52 mr-2">
               <div className="w-52 h-52 relative">
                 <Image
@@ -119,17 +131,7 @@ export default function InventoryItemScreen({ page }) {
                 </div>
               </div>
             </div>
-            {/*<div className="pr-2 w-1/2">
-                  <Image
-                    width={32}
-                    height={32}
-                    src={
-                      item?.image_url ||
-                      `${process.env.NEXT_PUBLIC_RESOURCE_URL}img/default.png`
-                    }
-                    alt={item?.title || "Inventory image"}
-                  />
-                </div>*/}
+            {/* MAIN DETAILS */}
             <div className="w-full">
               <TextField
                 value={item?.artist || ""}
@@ -153,6 +155,37 @@ export default function InventoryItemScreen({ page }) {
                 inputLabel="DISPLAY NAME"
               />
               <div className="font-bold text-sm">{`Selling for ${vendor?.name}`}</div>
+            </div>
+          </div>
+          {/* PRICE DETAILS */}
+          <div className="grid grid-cols-6 gap-2 mt-4 mb-4">
+            <div className="flex justify-center items-center text-xl hover:text-primary">
+              <button>
+                <ChangePriceIcon />
+              </button>
+            </div>
+            <div>
+              <div className="px-1 text-xs mt-2 mb-2">COST PRICE</div>
+              <div className="font-bold text-xl">
+                {`$${(item?.vendor_cut / 100)?.toFixed(2)}` || "N/A"}
+              </div>
+            </div>
+            <div>
+              <div className="px-1 text-xs mt-2 mb-2">STORE CUT</div>
+              <div className="font-bold text-xl">
+                {getGrossProfit(item) || "N/A"}
+              </div>
+            </div>
+            <div>
+              <div className="px-1 text-xs mt-2 mb-2">MARGIN</div>
+              <div className="font-bold text-xl">
+                {getProfitMargin(item) || "N/A"}
+              </div>
+            </div>
+            <div className="flex justify-center items-center p-4 bg-tertiary-dark rounded col-start-5 col-end-7">
+              <div className="font-bold text-4xl text-white">
+                {`$${(item?.total_sell / 100)?.toFixed(2)}` || "N/A"}
+              </div>
             </div>
           </div>
           <div className="grid grid-cols-4 justify-items-start rounded border p-2 mt-2">
@@ -192,35 +225,7 @@ export default function InventoryItemScreen({ page }) {
                 -1}
             </div>
           </div>
-          <div className="grid grid-cols-4 gap-2 mb-4">
-            <TextField
-              inputClass="font-bold"
-              inputLabel="SELL PRICE"
-              value={`${(item?.total_sell / 100)?.toFixed(2)}` || ""}
-              onChange={(e: any) =>
-                setItem({ ...item, total_sell: e.target.value })
-              }
-              startAdornment="$"
-            />
-            <TextField
-              inputLabel="COST PRICE"
-              value={`${(item?.vendor_cut / 100)?.toFixed(2)}` || ""}
-              onChange={(e: any) =>
-                setItem({ ...item, vendor_cut: e.target.value })
-              }
-              startAdornment="$"
-            />
-            <TextField
-              inputLabel="STORE CUT"
-              value={getGrossProfit(item) || "-"}
-              displayOnly
-            />
-            <TextField
-              inputLabel="MARGIN"
-              value={getProfitMargin(item) || "-"}
-              displayOnly
-            />
-          </div>
+          {/* OTHER DETAILS */}
           <TextField
             inputLabel="BARCODE"
             value={item?.barcode || ""}
@@ -445,3 +450,31 @@ export default function InventoryItemScreen({ page }) {
 //     fileUpload.uploadProgress
 //   )}% UPLOADED...`}</div>
 // )}
+
+// <TextField
+//   inputClass="font-bold"
+//   inputLabel="SELL PRICE"
+//   value={`${(item?.total_sell / 100)?.toFixed(2)}` || ""}
+//   onChange={(e: any) =>
+//     setItem({ ...item, total_sell: e.target.value })
+//   }
+//   startAdornment="$"
+// />
+// <TextField
+//   inputLabel="COST PRICE"
+//   value={`${(item?.vendor_cut / 100)?.toFixed(2)}` || ""}
+//   onChange={(e: any) =>
+//     setItem({ ...item, vendor_cut: e.target.value })
+//   }
+//   startAdornment="$"
+// />
+// <TextField
+//   inputLabel="STORE CUT"
+//   value={getGrossProfit(item) || "-"}
+//   displayOnly
+// />
+// <TextField
+//   inputLabel="MARGIN"
+//   value={getProfitMargin(item) || "-"}
+//   displayOnly
+// />

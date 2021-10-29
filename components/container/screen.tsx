@@ -1,8 +1,14 @@
-import { MouseEventHandler } from "react";
+// DB
 import { ModalButton } from "@/lib/types";
+
+// Icons
 import ChevronLeft from "@mui/icons-material/ChevronLeft";
+
+// Components
 import { CSVLink } from "react-csv";
 
+// Types
+import { MouseEventHandler } from "react";
 interface ScreenProps {
   show: boolean;
   closeFunction: MouseEventHandler<HTMLButtonElement>;

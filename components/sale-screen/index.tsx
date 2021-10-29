@@ -47,12 +47,14 @@ export default function SaleScreen({ isNew }) {
   useEffect(() => {
     const saleVars = getSaleVars(sale, inventory);
     setSale({ ...sale, ...saleVars });
-  }, [sale?.id]);
+  }, [sale?.id, sale?.transactions, sale?.items]);
+  console.log(sale);
   const { items, isSaleItemsLoading } = useSaleItemsForSale(sale?.id);
   const {
     transactions,
     isSaleTransactionsLoading,
   } = useSaleTransactionsForSale(sale?.id);
+
   useEffect(() => {
     if (!isNew) {
       console.log("setting sale");

@@ -1,26 +1,43 @@
+// Packages
 import { useAtom } from "jotai";
-// import { useUpdateAtom } from "jotai/utils";
-import Image from "next/image";
-import { clerkAtom } from "@/lib/atoms";
-// import { useClerkImage } from "@/lib/swr-hooks";
 
+// DB
+import { useLogs } from "@/lib/swr-hooks";
+import { clerkAtom } from "@/lib/atoms";
+
+// Functions
+import { saveLog } from "@/lib/db-functions";
+
+// Components
+import Image from "next/image";
 import Skeleton from "react-loading-skeleton";
 
-function Clerk({ clerk }) {
-  const [, setClerk] = useAtom(clerkAtom);
-  // const setClerk = useUpdateAtom(clerkAtom);
+export default function Clerk({ clerk }) {
+  // SWR
+  const { mutateLogs } = useLogs();
 
-  // const { image, isLoading } = useClerkImage(clerk?.image_id);
+  // Atoms
+  const [, setClerk] = useAtom(clerkAtom);
+
+  // Constants
+  // TODO Check if clerk image needs loading skeleton
   const isLoading = false;
-  //
-  // var arrayBufferView = new Uint8Array(image?.data);
-  // var blob = new Blob([arrayBufferView], { type: "image/png" });
 
   return clerk && !isLoading ? (
-    <button onClick={() => setClerk(clerk)}>
+    <button
+      onClick={() => {
+        setClerk(clerk);
+        saveLog(
+          {
+            log: `${clerk.name} set as clerk.`,
+            clerk_id: clerk?.id,
+          },
+          mutateLogs
+        );
+      }}
+    >
       <div className="relative bg-white cursor-pointer w-full shadow-md rounded-full transform hover:scale-105 hover:shadow-2xl">
         <Image
-          // src={`${image ? URL.createObjectURL(blob) : "/clerk/guest.png"}`}
           src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/clerk/${
             clerk?.name || "Guest"
           }.png`}
@@ -35,4 +52,7 @@ function Clerk({ clerk }) {
   );
 }
 
-export default Clerk;
+// How to do images in the DB
+// var arrayBufferView = new Uint8Array(image?.data);
+// var blob = new Blob([arrayBufferView], { type: "image/png" });
+// src={`${image ? URL.createObjectURL(blob) : "/clerk/guest.png"}`}

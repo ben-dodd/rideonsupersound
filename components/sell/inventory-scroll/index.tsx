@@ -1,16 +1,25 @@
+// Packages
+import { useAtom } from "jotai";
+
+// DB
+import { useInventory } from "@/lib/swr-hooks";
+import { sellSearchBarAtom } from "@/lib/atoms";
+import { InventoryObject } from "@/lib/types";
+
+// Functions
+import { filterInventory } from "@/lib/data-functions";
+
+// Components
 import ListItem from "./list-item";
 import GiftCardItem from "./gift-card-item";
 import MiscItem from "./misc-item";
 
-import { useInventory } from "@/lib/swr-hooks";
-import { useAtom } from "jotai";
-import { sellSearchBarAtom } from "@/lib/atoms";
-import { InventoryObject } from "@/lib/types";
-import { filterInventory } from "@/lib/data-functions";
-
 export default function InventoryScroll() {
-  const [search] = useAtom(sellSearchBarAtom);
+  // SWR
   const { inventory, isInventoryLoading } = useInventory();
+
+  // Atoms
+  const [search] = useAtom(sellSearchBarAtom);
 
   return (
     <div className="h-inventory overflow-y-scroll px-2">

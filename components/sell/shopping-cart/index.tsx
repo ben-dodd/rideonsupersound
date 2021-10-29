@@ -1,27 +1,71 @@
+// Packages
 import { useState } from "react";
 import { useAtom } from "jotai";
-import CircularProgress from "@mui/material/CircularProgress";
+
+// DB
 import { useInventory } from "@/lib/swr-hooks";
+import { newSaleObjectAtom, viewAtom, clerkAtom } from "@/lib/atoms";
+
+// Functions
 import { getTotalPrice, getTotalStoreCut } from "@/lib/data-functions";
 import {
   saveSaleAndItemsToDatabase,
   deleteSaleFromDatabase,
   deleteSaleItemFromDatabase,
 } from "@/lib/db-functions";
-import { newSaleObjectAtom, viewAtom, clerkAtom } from "@/lib/atoms";
+
+// Components
+import Tooltip from "@mui/material/Tooltip";
+import CircularProgress from "@mui/material/CircularProgress";
 import Actions from "./actions";
 import ListItem from "./list-item";
+
+// Icons
 import PayIcon from "@mui/icons-material/ShoppingCart";
 import HoldIcon from "@mui/icons-material/PanTool";
 
 export default function ShoppingCart() {
+  // SWR
+  const { inventory } = useInventory();
+
+  // Atoms
   const [view, setView] = useAtom(viewAtom);
   const [clerk] = useAtom(clerkAtom);
   const [cart, setCart] = useAtom(newSaleObjectAtom);
-  const { inventory } = useInventory();
+
+  // State
+  const [loadingSale, setLoadingSale] = useState(false);
+
+  // Functions
+  async function loadSale() {
+    try {
+      setLoadingSale(true);
+      await saveSaleAndItemsToDatabase(cart, clerk, setCart);
+      setLoadingSale(false);
+      setView({ ...view, saleScreen: true });
+    } catch (e) {
+      throw Error(e.message);
+    }
+  }
+
+  async function deleteCartItem(itemId: string, id: number) {
+    let newItems = cart?.items.filter((i) => i?.item_id !== parseInt(itemId));
+    if (id)
+      // Cart has been saved to the database, delete sale_item
+      deleteSaleItemFromDatabase(id);
+    if ((cart?.items || []).length < 1) {
+      // No items left, delete cart
+      setView({ ...view, cart: false });
+      // TODO Any transactions need to be refunded.
+      deleteSaleFromDatabase(cart?.id);
+    }
+    setCart({ ...cart, items: newItems });
+    // setRefresh(refresh + 1);
+  }
+
+  // Constants
   const totalPrice = getTotalPrice(cart, inventory);
   const storeCut = getTotalStoreCut(cart, inventory);
-  const [loadingSale, setLoadingSale] = useState(false);
   const disableButtons =
     loadingSale || !(cart?.items && Object.keys(cart?.items).length > 0);
 
@@ -49,7 +93,9 @@ export default function ShoppingCart() {
               />
             ))
           ) : (
-            <div>No items in cart...</div>
+            <Tooltip title="To add items to the cart. Use the search bar and then add items with the (+) icon.">
+              <div>No items in cart...</div>
+            </Tooltip>
           )}
         </div>
         <div className="pt-4">
@@ -104,30 +150,6 @@ export default function ShoppingCart() {
       </div>
     </div>
   );
-
-  async function loadSale() {
-    try {
-      setLoadingSale(true);
-      await saveSaleAndItemsToDatabase(cart, clerk, setCart);
-      setLoadingSale(false);
-      setView({ ...view, saleScreen: true });
-    } catch (e) {
-      throw Error(e.message);
-    }
-  }
-
-  async function deleteCartItem(itemId: string, id: number) {
-    let newItems = cart?.items.filter((i) => i?.item_id !== parseInt(itemId));
-    if (id)
-      // Cart has been saved to the database, delete sale_item
-      deleteSaleItemFromDatabase(id);
-    if ((cart?.items || []).length < 1) {
-      // No items left, delete cart
-      setView({ ...view, cart: false });
-      // TODO Any transactions need to be refunded.
-      deleteSaleFromDatabase(cart?.id);
-    }
-    setCart({ ...cart, items: newItems });
-    // setRefresh(refresh + 1);
-  }
 }
+
+// TODO button should be disabled if any fields on the shopping items are invalid (e.g. discount is over 100 etc.)

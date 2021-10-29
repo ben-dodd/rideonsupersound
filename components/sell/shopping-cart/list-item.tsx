@@ -1,12 +1,13 @@
+// Packages
 import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
-import { useInventory } from "@/lib/swr-hooks";
 
-import Image from "next/image";
-import TextField from "@/components/inputs/text-field";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { InventoryObject, SaleItemObject } from "@/lib/types";
+// DB
+import { useInventory } from "@/lib/swr-hooks";
 import { newSaleObjectAtom } from "@/lib/atoms";
+import { InventoryObject, SaleItemObject } from "@/lib/types";
+
+// Functions
 import {
   getItemSku,
   getItemDisplayName,
@@ -15,6 +16,13 @@ import {
   writeCartItemPriceBreakdown,
   getImageSrc,
 } from "@/lib/data-functions";
+
+// Components
+import Image from "next/image";
+import TextField from "@/components/inputs/text-field";
+
+// Icons
+import DeleteIcon from "@mui/icons-material/Delete";
 
 type SellListItemProps = {
   index: number;
@@ -27,16 +35,24 @@ export default function SellListItem({
   cartItem,
   deleteCartItem,
 }: SellListItemProps) {
+  // SWR
   const { inventory } = useInventory();
+
+  // Atoms
   const [cart, setCart] = useAtom(newSaleObjectAtom);
+
+  // State
   const [item, setItem] = useState(null);
+  const [expanded, setExpanded] = useState(false);
+
+  // Load
   useEffect(() => {
     setItem(
       inventory.filter((i: InventoryObject) => i.id === cartItem?.item_id)[0]
     );
   }, [inventory]);
-  const [expanded, setExpanded] = useState(false);
 
+  // Functions
   function onChangeCart(e: any, property: string) {
     let newCart = { ...cart };
     if (newCart?.items && newCart?.items[index])

@@ -1,8 +1,16 @@
+// Packages
 import { useState } from "react";
-import CreatableSelect from "react-select/creatable";
+
+// DB
 import { useSelect } from "@/lib/swr-hooks";
+
+// Functions
 import { saveSelectToDatabase } from "@/lib/db-functions";
 
+// Components
+import CreatableSelect from "react-select/creatable";
+
+// Types
 interface SettingsSelectProps {
   object?: any;
   onEdit?: Function;
@@ -30,7 +38,10 @@ export default function SettingsSelect({
   delimiter,
   className,
 }: SettingsSelectProps) {
+  // SWR
   const { selects, isSelectsLoading, mutateSelects } = useSelect(dbField);
+
+  // State
   const [isLoading, setLoading] = useState(false);
   return (
     <div className={className}>

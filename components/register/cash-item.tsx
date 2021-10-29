@@ -1,19 +1,28 @@
+// DB
 import { useClerks } from "@/lib/swr-hooks";
 import { SaleTransactionObject, ClerkObject } from "@/lib/types";
+
+// Functions
 import { fTimeDate } from "@/lib/data-functions";
 
+// Types
 interface CashItemProps {
   transaction: SaleTransactionObject;
   negative?: boolean;
 }
 
 export default function CashItem({ transaction, negative }: CashItemProps) {
+  // SWR
   const { clerks } = useClerks();
-  let transactionBy = (clerks || []).filter(
+
+  // Constants
+  const transactionBy = (clerks || []).filter(
     (c: ClerkObject) => c?.id === transaction?.clerk_id
   )[0]?.name;
-  let date = fTimeDate(transaction?.date);
-  console.log(transaction);
+  const date = fTimeDate(transaction?.date);
+
+  // TODO Add more info to cash items, possibly add receipt pop up info dialog
+
   return (
     <>
       <div className="flex justify-between text-sm">

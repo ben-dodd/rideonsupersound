@@ -263,7 +263,7 @@ export async function savePettyCashToRegister(
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
     saveLog({
-      log: `Cash ($${parseFloat(amount)?.toFixed(2)}) ${
+      log: `$${parseFloat(amount)?.toFixed(2)} ${
         isTake ? "taken from till." : "put in till."
       }`,
       table_id: "register_petty_cash",
@@ -431,7 +431,7 @@ export async function saveGiftCardToDatabase() {
   }
 }
 
-export async function saveLog(log: LogObject) {
+export async function saveLog(log: LogObject, mutate?: Function) {
   try {
     const res = await fetch("/api/create-log", {
       method: "POST",
@@ -447,6 +447,7 @@ export async function saveLog(log: LogObject) {
     });
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
+    mutate && mutate();
   } catch (e) {
     throw Error(e.message);
   }

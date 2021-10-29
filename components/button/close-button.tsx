@@ -1,6 +1,8 @@
-import { MouseEventHandler } from "react";
+// Icons
 import CloseIcon from "@mui/icons-material/Close";
 
+// Types
+import { MouseEventHandler } from "react";
 interface CloseButtonProps {
   closeFunction: MouseEventHandler<HTMLButtonElement>;
 }

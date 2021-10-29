@@ -1,4 +1,7 @@
+// Packages
 import { useState } from "react";
+
+// Components
 import CreatableSelect from "react-select/creatable";
 
 interface TextFieldProps {
@@ -38,6 +41,7 @@ export default function CreateableSelect({
   divClass,
   labelClass,
 }: TextFieldProps) {
+  // State
   const [isLoading] = useState(false);
   return (
     <div

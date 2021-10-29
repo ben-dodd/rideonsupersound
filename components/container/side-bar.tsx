@@ -1,3 +1,4 @@
+// Types
 import { ModalButton } from "@/lib/types";
 
 export default function SidebarContainer({ show, title, buttons, children }) {

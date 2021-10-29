@@ -8,7 +8,7 @@ import {
 } from "@/lib/data-functions";
 import { saveLog } from "@/lib/db-functions";
 import { viewAtom, clerkAtom } from "@/lib/atoms";
-import { useInventory } from "@/lib/swr-hooks";
+import { useInventory, useLogs } from "@/lib/swr-hooks";
 import { InventoryObject, ModalButton } from "@/lib/types";
 
 import Modal from "@/components/container/modal";
@@ -18,6 +18,7 @@ import Select from "react-select";
 export default function LabelPrintDialog() {
   const [view, setView] = useAtom(viewAtom);
   const { inventory } = useInventory();
+  const { mutateLogs } = useLogs();
   const [clerk] = useAtom(clerkAtom);
   const [items, setItems] = useState({
     0: { item: {}, printQuantity: 1 },
@@ -45,10 +46,13 @@ export default function LabelPrintDialog() {
       fileName: `label-print-${fFileDate()}.csv`,
       text: "PRINT LABELS",
       onClick: () =>
-        saveLog({
-          log: "Labels printed from label print dialog.",
-          clerk_id: clerk?.id,
-        }),
+        saveLog(
+          {
+            log: "Labels printed from label print dialog.",
+            clerk_id: clerk?.id,
+          },
+          mutateLogs
+        ),
     },
   ];
 

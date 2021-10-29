@@ -1,6 +1,11 @@
+// Packages
 import { useAtom } from "jotai";
-import { alertAtom } from "@/lib/atoms";
 
+// DB
+import { alertAtom } from "@/lib/atoms";
+import { useInventory } from "@/lib/swr-hooks";
+
+// Components
 import Snackbar from "@mui/material/Snackbar";
 import Slide from "@mui/material/Slide";
 import Alert from "@mui/material/Alert";
@@ -19,8 +24,11 @@ import LogScreen from "@/components/log";
 import ConfirmModal from "@/components/container/modal/confirm-modal";
 
 export default function MainPage() {
-  // Get google auth details
+  // Atoms
   const [alert, setAlert] = useAtom(alertAtom);
+
+  // Load necessary data
+  useInventory();
 
   return (
     <>

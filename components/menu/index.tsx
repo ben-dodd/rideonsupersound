@@ -1,28 +1,22 @@
+// Packages
 import { useAtom } from "jotai";
+
+// DB
 import { pageAtom, newSaleObjectAtom, clerkAtom, viewAtom } from "@/lib/atoms";
 import { SaleItemObject } from "@/lib/types";
 
-// Change to lazy loading
+// Icons
 import ContactsIcon from "@mui/icons-material/LocalLibrary";
-// import HoldsIcon from "@mui/icons-material/PanTool";
-import ImportExportIcon from "@mui/icons-material/ImportExport";
 import InventoryIcon from "@mui/icons-material/Category";
-// import LaybyIcon from "@mui/icons-material/ShoppingBasket";
 import LogoutIcon from "@mui/icons-material/ExitToApp";
-// import OrdersIcon from "@mui/icons-material/Flight";
 import SalesIcon from "@mui/icons-material/MonetizationOn";
 import SellIcon from "@mui/icons-material/LocalAtm";
-// import SettingsIcon from "@mui/icons-material/Settings";
 import LogsIcon from "@mui/icons-material/GridOn";
-// import StaffIcon from "@mui/icons-material/ChildCare";
-// import AnalyticsIcon from "@mui/icons-material/PieChart";
-// import StocktakeIcon from "@mui/icons-material/Storage";
-// import TasksIcon from "@mui/icons-material/PlaylistAddCheck";
 import VendorsIcon from "@mui/icons-material/Store";
-// import SuppliersIcon from "@mui/icons-material/LocalShipping";
 import PaymentsIcon from "@mui/icons-material/Receipt";
 import GiftCardsIcon from "@mui/icons-material/Redeem";
-// import LampRepairIcon from "@mui/icons-material/EmojiObjects";
+
+// Types
 type MenuType = {
   type: string;
   page: string;
@@ -34,15 +28,19 @@ type MenuType = {
 };
 
 export default function Menu() {
+  // Atoms
   const [cart] = useAtom(newSaleObjectAtom);
   const [page, setPage] = useAtom(pageAtom);
   const [view, setView] = useAtom(viewAtom);
   const [, setClerk] = useAtom(clerkAtom);
+
+  // Constants
   const cartItems = (cart?.items || []).reduce(
     (accumulator: number, item: SaleItemObject) =>
       accumulator + (parseInt(item?.quantity) || 1),
     0
   );
+
   const menu = [
     [
       {
