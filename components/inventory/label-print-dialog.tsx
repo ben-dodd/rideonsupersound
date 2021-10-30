@@ -1,25 +1,35 @@
+// Packages
 import { useState } from "react";
 import { useAtom } from "jotai";
 
+// DB
+import { useInventory, useLogs } from "@/lib/swr-hooks";
+import { viewAtom, clerkAtom } from "@/lib/atoms";
+import { InventoryObject, ModalButton } from "@/lib/types";
+
+// Functions
 import {
   getItemDisplayName,
   getCSVData,
   fFileDate,
 } from "@/lib/data-functions";
 import { saveLog } from "@/lib/db-functions";
-import { viewAtom, clerkAtom } from "@/lib/atoms";
-import { useInventory, useLogs } from "@/lib/swr-hooks";
-import { InventoryObject, ModalButton } from "@/lib/types";
 
+// Components
 import Modal from "@/components/container/modal";
 import TextField from "@/components/inputs/text-field";
 import Select from "react-select";
 
 export default function LabelPrintDialog() {
+  // Atoms
   const [view, setView] = useAtom(viewAtom);
+  const [clerk] = useAtom(clerkAtom);
+
+  // SWR
   const { inventory } = useInventory();
   const { mutateLogs } = useLogs();
-  const [clerk] = useAtom(clerkAtom);
+
+  // State
   const [items, setItems] = useState({
     0: { item: {}, printQuantity: 1 },
     1: { item: {}, printQuantity: 1 },
@@ -33,6 +43,7 @@ export default function LabelPrintDialog() {
     9: { item: {}, printQuantity: 1 },
   });
 
+  // Constants
   const buttons: ModalButton[] = [
     {
       type: "cancel",

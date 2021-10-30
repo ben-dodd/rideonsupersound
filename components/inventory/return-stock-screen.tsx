@@ -1,27 +1,35 @@
+// Packages
 import { useState } from "react";
 import { useAtom } from "jotai";
-import { viewAtom, clerkAtom } from "@/lib/atoms";
+
+// DB
 import { useInventory, useVendors } from "@/lib/swr-hooks";
+import { viewAtom, clerkAtom } from "@/lib/atoms";
 import { InventoryObject, VendorObject, ModalButton } from "@/lib/types";
 
-// Actions
+// Functions
 import { returnStock, saveLog } from "@/lib/db-functions";
 import { getItemDisplayName } from "@/lib/data-functions";
 
-// Material UI Components
+// Components
 import TextField from "@/components/inputs/text-field";
 import Modal from "@/components/container/modal";
 import CreateableSelect from "@/components/inputs/createable-select";
 import Select from "react-select";
 
-// Material UI Icons
+// Icons
 import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function ReturnStockScreen() {
+  // SWR
   const { inventory } = useInventory();
   const { vendors } = useVendors();
+
+  // Atoms
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
+
+  // State
   const [doc, setDoc]: [any, Function] = useState({});
   const [submitting, setSubmitting] = useState(false);
 

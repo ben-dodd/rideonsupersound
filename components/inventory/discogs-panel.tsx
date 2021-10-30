@@ -1,23 +1,28 @@
+// Packages
 import { useState, useEffect } from "react";
-import Image from "next/image";
-// Actions
+
+// Functions
 import {
   getDiscogsOptions,
   getDiscogsItem,
   andList,
 } from "@/lib/data-functions";
 
+// Components
+import Image from "next/image";
 import ReactPlayer from "react-player";
 
-// Material UI Icons
+// Icons
 import SyncIcon from "@mui/icons-material/Sync";
 
-// Custom Components
-
 export default function DiscogsPanel({ item, setItem, exchangeRate }) {
+  // State
   const [discogsOptions, setDiscogsOptions] = useState(null);
+
+  // Constants
   const discogsItem = item?.discogsItem || null;
 
+  // Load
   useEffect(() => {
     if (
       (item?.media === "Audio" &&
@@ -111,7 +116,7 @@ export default function DiscogsPanel({ item, setItem, exchangeRate }) {
             <div>
               {discogsItem?.priceSuggestions &&
               discogsItem?.priceSuggestions[
-                item?.cond || item?.is_new ? "Mint (M)" : "Good (G)"
+                item?.is_new ? "Mint (M)" : item?.cond || "Good (G)"
               ]?.value
                 ? `$${parseFloat(
                     discogsItem?.priceSuggestions[
@@ -237,3 +242,7 @@ export default function DiscogsPanel({ item, setItem, exchangeRate }) {
     </div>
   );
 }
+
+// TODO fix radio buttons
+// TODO make discogs list more searchable
+// TODO make discogs list scroll independently of other info

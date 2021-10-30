@@ -1,10 +1,16 @@
+// Packages
+import { useAtom } from "jotai";
+
+// DB
+import { pageAtom } from "@/lib/atoms";
+
+// Components
 import PaymentTable from "./payment-table";
 import BatchPaymentDialog from "./batch-payment-dialog";
 import CashPaymentDialog from "./cash-payment-dialog";
-import { useAtom } from "jotai";
-import { pageAtom } from "@/lib/atoms";
 
 export default function PaymentsScreen() {
+  // Atoms
   const [page] = useAtom(pageAtom);
   return (
     <div

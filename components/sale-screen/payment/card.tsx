@@ -1,39 +1,61 @@
+// Packages
 import { useState } from "react";
-import Modal from "@/components/container/modal";
 import { useAtom } from "jotai";
+
+// DB
+import {
+  useSaleTransactionsForSale,
+  useContacts,
+  useLogs,
+} from "@/lib/swr-hooks";
 import {
   viewAtom,
   newSaleObjectAtom,
   loadedSaleObjectAtom,
   clerkAtom,
+  alertAtom,
 } from "@/lib/atoms";
+import { ModalButton, ContactObject } from "@/lib/types";
+
+// Functions
+import { saveSaleTransaction, saveLog } from "@/lib/db-functions";
+
+// Components
+import Modal from "@/components/container/modal";
 import TextField from "@/components/inputs/text-field";
-import { useSaleTransactionsForSale } from "@/lib/swr-hooks";
-import { saveSaleTransaction } from "@/lib/db-functions";
-import { ModalButton } from "@/lib/types";
 
 export default function Cash({ isNew }) {
+  // Atoms
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
   const [sale, setSale] = useAtom(
     isNew ? newSaleObjectAtom : loadedSaleObjectAtom
   );
-  const { mutateSaleTransactions } = useSaleTransactionsForSale(sale?.id);
-  const [submitting, setSubmitting] = useState(false);
+  const [, setAlert] = useAtom(alertAtom);
 
+  // SWR
+  const { contacts } = useContacts();
+  const { mutateSaleTransactions } = useSaleTransactionsForSale(sale?.id);
+  const { mutateLogs } = useLogs();
+
+  // State
+  const [submitting, setSubmitting] = useState(false);
   const [cardPayment, setCardPayment] = useState(`${sale?.totalRemaining}`);
 
+  // Constants
   const buttons: ModalButton[] = [
     {
       type: "ok",
       disabled:
         submitting ||
+        parseFloat(cardPayment) > sale?.totalRemaining ||
         parseFloat(cardPayment) === 0 ||
         cardPayment <= "" ||
         isNaN(parseFloat(cardPayment)),
+      loading: submitting,
       onClick: async () => {
         setSubmitting(true);
-        await saveSaleTransaction(
+        const id = await saveSaleTransaction(
           sale,
           clerk,
           cardPayment,
@@ -43,10 +65,31 @@ export default function Cash({ isNew }) {
         );
         setSubmitting(false);
         setView({ ...view, cardPaymentDialog: false });
+        saveLog(
+          {
+            log: `$${parseFloat(cardPayment)?.toFixed(2)} card payment from ${
+              sale?.contact_id
+                ? contacts?.filter(
+                    (c: ContactObject) => c?.id === sale?.contact_id
+                  )[0]?.name
+                : "customer"
+            } (sale #${sale?.id}).`,
+            clerk_id: clerk?.id,
+            table_id: "sale_transaction",
+            row_id: id,
+          },
+          mutateLogs
+        );
+        setAlert({
+          open: true,
+          type: "success",
+          message: `$${parseFloat(cardPayment)?.toFixed(2)} CARD PAYMENT`,
+        });
       },
       text: "COMPLETE",
     },
   ];
+
   return (
     <Modal
       open={view?.cardPaymentDialog}

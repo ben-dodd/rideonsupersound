@@ -1,15 +1,20 @@
+// Packages
 import { useMemo } from "react";
-import { useGiftCards } from "@/lib/swr-hooks";
-import { InventoryObject } from "@/lib/types";
 import { format, parseISO } from "date-fns";
 
-// Material UI Components
+// DB
+import { useGiftCards } from "@/lib/swr-hooks";
+import { InventoryObject } from "@/lib/types";
+
+// Components
 import Table from "@/components/table";
 import TableContainer from "@/components/container/table";
 
 export default function GiftCardTable() {
+  // SWR
   const { giftCards } = useGiftCards();
-  // console.log(giftCards);
+
+  // Constants
   const data = useMemo(
     () =>
       (giftCards || []).map((g: InventoryObject) => ({

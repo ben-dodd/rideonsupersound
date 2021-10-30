@@ -1,6 +1,8 @@
-import { useAtom } from "jotai";
+// Packages
 import { useMemo } from "react";
-import { viewAtom, loadedVendorIdAtom } from "@/lib/atoms";
+import { useAtom } from "jotai";
+
+// DB
 import {
   useVendors,
   useClerks,
@@ -9,29 +11,34 @@ import {
   useSalesJoined,
   useVendorPayments,
 } from "@/lib/swr-hooks";
+import { loadedVendorIdAtom } from "@/lib/atoms";
 import {
   VendorObject,
   ClerkObject,
   ContactObject,
   InventoryObject,
 } from "@/lib/types";
+
+// Functions
 import { getPaymentVars } from "@/lib/data-functions";
 
-// Actions
-// import { getSaleInformation, getItemsInStock } from "@/lib/data-functions";
-
-// Material UI Components
+// Components
 import Table from "@/components/table";
 import TableContainer from "@/components/container/table";
 
 export default function VendorsScreen() {
+  // Atoms
   const [loadedVendorId, setLoadedVendorId] = useAtom(loadedVendorIdAtom);
+
+  // SWR
   const { inventory } = useInventory();
   const { sales } = useSalesJoined();
   const { vendorPayments } = useVendorPayments();
   const { vendors } = useVendors();
   const { clerks } = useClerks();
   const { contacts } = useContacts();
+
+  // Constants
   const data = useMemo(
     () =>
       vendors

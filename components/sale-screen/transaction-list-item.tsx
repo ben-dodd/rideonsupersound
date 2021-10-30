@@ -1,21 +1,30 @@
+// Packages
 import { useAtom } from "jotai";
+import { format, parseISO } from "date-fns";
+import nz from "date-fns/locale/en-NZ";
+
+// DB
+import {
+  useGiftCard,
+  useVendorFromVendorPayment,
+  useSaleTransactionsForSale,
+  useLogs,
+} from "@/lib/swr-hooks";
+import { newSaleObjectAtom, alertAtom, clerkAtom } from "@/lib/atoms";
 import {
   SaleTransactionObject,
   GiftCardObject,
   VendorObject,
   SaleObject,
 } from "@/lib/types";
-import {
-  useGiftCard,
-  useVendorFromVendorPayment,
-  useSaleTransactionsForSale,
-} from "@/lib/swr-hooks";
-import { newSaleObjectAtom } from "@/lib/atoms";
-import { deleteSaleTransactionFromDatabase } from "@/lib/db-functions";
-import { format, parseISO } from "date-fns";
-import nz from "date-fns/locale/en-NZ";
+
+// Functions
+import { deleteSaleTransactionFromDatabase, saveLog } from "@/lib/db-functions";
+
+// Icons
 import DeleteIcon from "@mui/icons-material/Delete";
 
+// Types
 type TransactionListItemProps = {
   transaction: SaleTransactionObject;
   sale: SaleObject;
@@ -33,12 +42,20 @@ export default function TransactionListItem({
   transaction,
   sale,
 }: TransactionListItemProps) {
-  const { giftCard }: UseGiftCardProps = useGiftCard(transaction?.gift_card_id);
+  // Atoms
   const [cart, setCart] = useAtom(newSaleObjectAtom);
+  const [clerk] = useAtom(clerkAtom);
+  const [, setAlert] = useAtom(alertAtom);
+
+  // SWR
+  const { giftCard }: UseGiftCardProps = useGiftCard(transaction?.gift_card_id);
   const { vendor }: UseVendorProps = useVendorFromVendorPayment(
     transaction?.vendor_payment_id
   );
   const { mutateSaleTransactions } = useSaleTransactionsForSale(sale?.id);
+  const { mutateLogs } = useLogs();
+
+  // Functions
   const onClickDelete = () => {
     // Delete transaction item from cart
     setCart({
@@ -48,11 +65,26 @@ export default function TransactionListItem({
       ),
     });
     deleteSaleTransactionFromDatabase(transaction?.id, mutateSaleTransactions);
+    saveLog(
+      {
+        log: `$${(transaction?.amount / 100)?.toFixed(2)} ${
+          transaction?.payment_method
+        } transaction deleted.`,
+        clerk_id: clerk?.id,
+        table_id: "sale_transaction",
+        row_id: transaction?.id,
+      },
+      mutateLogs
+    );
+    setAlert({
+      open: true,
+      type: "success",
+      message: `$${(transaction?.amount / 100)?.toFixed(
+        2
+      )} ${transaction?.payment_method?.toUpperCase()} PAYMENT DELETED`,
+    });
   };
-  // const { mutateSaleTransactions } = useSaleTransactionsForSale(sale?.id);
-  // const onClickDelete = () => {
-  //   deleteSaleTransactionFromDatabase(transaction?.id, mutateSaleTransactions);
-  // };
+
   return (
     <div
       className={`flex justify-end items-center mt-2 mb-3 ${
@@ -65,66 +97,7 @@ export default function TransactionListItem({
         ) : (
           <button
             className="bg-gray-200 hover:bg-gray-300 p-1 w-10 h-10 rounded-full mr-8"
-            onClick={
-              onClickDelete
-              // dispatch(
-              //   openDialog("confirm", {
-              //     title: `Delete Transaction`,
-              //     message: `Are you sure you want to delete this transaction? This action cannot be reversed.`,
-              //     yesText: "YES",
-              //     action: () => {
-              //       addLog(
-              //         `Transaction [${payment.id}] deleted.`,
-              //         "sales",
-              //         sale.uid,
-              //         currentStaff
-              //       );
-              //       updateData({
-              //         dispatch,
-              //         collection: "sale",
-              //         doc: `${sale.uid}`,
-              //         update: {
-              //           ...sale,
-              //           transactions: {
-              //             ...get(sale, "transactions", {}),
-              //             [payment.id]: { ...payment, deleted: true },
-              //           },
-              //         },
-              //       });
-              //       onDelete && onDelete(true);
-              //       dispatch(closeDialog("confirm"));
-              //       dispatch(
-              //         setAlert({
-              //           type: "warning",
-              //           message: `TRANSACTION DELETED`,
-              //           undo: () => {
-              //             addLog(
-              //               `Undo transaction [${payment.id}] delete.`,
-              //               "sales",
-              //               sale.uid,
-              //               currentStaff
-              //             );
-              //             updateData({
-              //               dispatch,
-              //               collection: "sale",
-              //               doc: `${sale.uid}`,
-              //               update: {
-              //                 ...sale,
-              //                 transactions: {
-              //                   ...get(sale, "transactions", {}),
-              //                   [payment.id]: { ...payment, deleted: true },
-              //                 },
-              //               },
-              //             });
-              //             onDelete && onDelete(false);
-              //             dispatch(closeAlert());
-              //           },
-              //         })
-              //       );
-              //     },
-              //   })
-              // )
-            }
+            onClick={onClickDelete}
           >
             <DeleteIcon />
           </button>
@@ -161,3 +134,61 @@ export default function TransactionListItem({
     </div>
   );
 }
+
+// dispatch(
+//   openDialog("confirm", {
+//     title: `Delete Transaction`,
+//     message: `Are you sure you want to delete this transaction? This action cannot be reversed.`,
+//     yesText: "YES",
+//     action: () => {
+//       addLog(
+//         `Transaction [${payment.id}] deleted.`,
+//         "sales",
+//         sale.uid,
+//         currentStaff
+//       );
+//       updateData({
+//         dispatch,
+//         collection: "sale",
+//         doc: `${sale.uid}`,
+//         update: {
+//           ...sale,
+//           transactions: {
+//             ...get(sale, "transactions", {}),
+//             [payment.id]: { ...payment, deleted: true },
+//           },
+//         },
+//       });
+//       onDelete && onDelete(true);
+//       dispatch(closeDialog("confirm"));
+//       dispatch(
+//         setAlert({
+//           type: "warning",
+//           message: `TRANSACTION DELETED`,
+//           undo: () => {
+//             addLog(
+//               `Undo transaction [${payment.id}] delete.`,
+//               "sales",
+//               sale.uid,
+//               currentStaff
+//             );
+//             updateData({
+//               dispatch,
+//               collection: "sale",
+//               doc: `${sale.uid}`,
+//               update: {
+//                 ...sale,
+//                 transactions: {
+//                   ...get(sale, "transactions", {}),
+//                   [payment.id]: { ...payment, deleted: true },
+//                 },
+//               },
+//             });
+//             onDelete && onDelete(false);
+//             dispatch(closeAlert());
+//           },
+//         })
+//       );
+//     },
+//   })
+// )

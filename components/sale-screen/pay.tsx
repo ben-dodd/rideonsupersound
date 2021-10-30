@@ -1,5 +1,8 @@
+// Packages
 import { useState } from "react";
 import { useAtom } from "jotai";
+
+// DB
 import { useContacts, useVendorFromContact } from "@/lib/swr-hooks";
 import {
   newSaleObjectAtom,
@@ -8,22 +11,26 @@ import {
   loadedContactObjectAtom,
 } from "@/lib/atoms";
 import { ContactObject } from "@/lib/types";
+
+// Components
 import CreateableSelect from "@/components/inputs/createable-select";
 import TextField from "@/components/inputs/text-field";
 
 export default function Pay({ isNew }) {
+  // Atoms
   const [sale, setSale] = useAtom(
     isNew ? newSaleObjectAtom : loadedSaleObjectAtom
   );
   const [, setContact] = useAtom(loadedContactObjectAtom);
   const [view, setView] = useAtom(viewAtom);
+
+  // SWR
   const { contacts } = useContacts();
   const { vendor } = useVendorFromContact(sale?.contact_id);
+
+  // State
   const [note, setNote] = useState("");
-  //
-  // function onClickGoBack() {
-  //   setShowSaleScreen(false);
-  // }
+
   return (
     <div className="flex flex-col justify-between">
       <div className="flex justify-between my-2">

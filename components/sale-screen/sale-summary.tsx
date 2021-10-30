@@ -1,35 +1,32 @@
+// Packages
 import { useAtom } from "jotai";
 import { format, parseISO } from "date-fns";
 import nz from "date-fns/locale/en-NZ";
-import { newSaleObjectAtom, loadedSaleObjectAtom } from "@/lib/atoms";
+
+// DB
 import { useContact, useClerks } from "@/lib/swr-hooks";
-import { convertMPStoKPH, convertDegToCardinal } from "@/lib/data-functions";
+import { newSaleObjectAtom, loadedSaleObjectAtom } from "@/lib/atoms";
 import { SaleTransactionObject } from "@/lib/types";
+
+// Functions
+import { convertMPStoKPH, convertDegToCardinal } from "@/lib/data-functions";
+
+// Components
 import ItemListItem from "./item-list-item";
 import TransactionListItem from "./transaction-list-item";
 
 export default function SaleSummary({ isNew }) {
+  // Atoms
   const [sale] = useAtom(isNew ? newSaleObjectAtom : loadedSaleObjectAtom);
+
+  // SWR
   const { clerks } = useClerks();
-  const saleComplete = Boolean(sale?.state === "complete");
   const { contact } = useContact(sale?.contact_id);
 
-  // console.log(sale);
+  // Constants
+  const saleComplete = Boolean(sale?.state === "complete");
 
-  return (
-    <div className="flex flex-col justify-between p-2 bg-blue-200 text-black">
-      {saleComplete ? (
-        <>
-          <SaleHeader />
-          <SaleInformation />
-        </>
-      ) : (
-        <SaleInformation />
-      )}
-      {saleComplete ? <SaleWeatherAndLocation sale={sale} /> : <div />}
-    </div>
-  );
-
+  // Functions
   function SaleHeader() {
     return (
       <div className="p-4 mb-2 bg-blue-100 text-gray-800">
@@ -238,4 +235,18 @@ export default function SaleSummary({ isNew }) {
       </div>
     );
   }
+
+  return (
+    <div className="flex flex-col justify-between p-2 bg-blue-200 text-black">
+      {saleComplete ? (
+        <>
+          <SaleHeader />
+          <SaleInformation />
+        </>
+      ) : (
+        <SaleInformation />
+      )}
+      {saleComplete ? <SaleWeatherAndLocation sale={sale} /> : <div />}
+    </div>
+  );
 }

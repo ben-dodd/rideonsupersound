@@ -1,18 +1,24 @@
+// Packages
 import { useMemo } from "react";
-import { useAtom } from "jotai";
+
+// DB
 import { useClerks, useVendors, useVendorPayments } from "@/lib/swr-hooks";
 import { ClerkObject, VendorPaymentObject, VendorObject } from "@/lib/types";
-import { nzDate, fDateTime } from "@/lib/data-functions";
-import { viewAtom } from "@/lib/atoms";
-import TableContainer from "@/components/container/table";
 
+// Functions
+import { nzDate, fDateTime } from "@/lib/data-functions";
+
+// Components
+import TableContainer from "@/components/container/table";
 import Table from "@/components/table";
 
 export default function PaymentTable() {
+  // SWR
   const { vendors } = useVendors();
   const { vendorPayments } = useVendorPayments();
   const { clerks } = useClerks();
-  const [view] = useAtom(viewAtom);
+
+  // Constants
   const data = useMemo(
     () =>
       (vendorPayments || []).map((v: VendorPaymentObject) => ({
@@ -26,8 +32,6 @@ export default function PaymentTable() {
       })),
     [vendorPayments, clerks]
   );
-
-  // console.log(data);
 
   const columns = useMemo(
     () => [

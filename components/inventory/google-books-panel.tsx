@@ -1,21 +1,29 @@
+// Packages
 import { useState, useEffect } from "react";
-import Image from "next/image";
-// Actions
+import { format, parseISO } from "date-fns";
+import nz from "date-fns/locale/en-NZ";
+
+// Functions
 import {
   andList,
   getGoogleBooksOptions,
   getGoogleBooksItem,
 } from "@/lib/data-functions";
-import { format, parseISO } from "date-fns";
-import nz from "date-fns/locale/en-NZ";
 
-// Material UI Icons
+// Components
+import Image from "next/image";
+
+// Icons
 import SyncIcon from "@mui/icons-material/Sync";
 
 export default function GoogleBooksPanel({ item, setItem }) {
+  // State
   const [googleBooksOptions, setGoogleBooksOptions] = useState(null);
+
+  // Constants
   const googleBooksItem = item?.googleBooksItem;
 
+  // Load
   useEffect(() => {
     if (
       item?.media === "Literature" &&
@@ -70,8 +78,12 @@ export default function GoogleBooksPanel({ item, setItem }) {
           </div>
           <div>
             {googleBooksItem?.volumeInfo?.publisher || ""}
+            {googleBooksItem?.volumeInfo?.publisher &&
+            googleBooksItem?.volumeInfo?.pageCount
+              ? ", "
+              : ""}
             {googleBooksItem?.volumeInfo?.pageCount
-              ? `, ${googleBooksItem?.volumeInfo?.pageCount}pp.`
+              ? `${googleBooksItem?.volumeInfo?.pageCount}pp.`
               : ""}
           </div>
           {googleBooksItem?.volumeInfo?.publishedDate && (

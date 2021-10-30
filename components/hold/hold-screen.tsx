@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { useAtom } from "jotai";
 
+// TODO make hold screen into index and table, clean up all files, add dialog etc.
+
 // DB
 import { useContacts, useInventory, useLogs } from "@/lib/swr-hooks";
 import {

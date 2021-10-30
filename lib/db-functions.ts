@@ -155,6 +155,7 @@ export async function saveSaleTransaction(
   newSale.transactions = newTransactions;
   setCart && setCart(newSale);
   mutate();
+  return transactionId;
 }
 
 export async function saveSaleTransactionToDatabase(
@@ -359,7 +360,6 @@ export async function saveHoldToDatabase(
     });
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
-    console.log(item);
     saveStockMovementToDatabase(item, clerk, "hold", null);
     return json?.insertId;
   } catch (e) {

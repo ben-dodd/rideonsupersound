@@ -1,6 +1,10 @@
+// Packages
 import { useState, useMemo } from "react";
 import { useAtom } from "jotai";
-import { viewAtom, clerkAtom } from "@/lib/atoms";
+import { sub } from "date-fns";
+// import { CSVLink } from "react-csv";
+
+// DB
 import {
   useInventory,
   useVendors,
@@ -9,11 +13,10 @@ import {
   useRegisterID,
   useCashGiven,
 } from "@/lib/swr-hooks";
+import { viewAtom, clerkAtom } from "@/lib/atoms";
 import { VendorObject, ModalButton } from "@/lib/types";
-import { sub } from "date-fns";
-import { CSVLink } from "react-csv";
 
-// Actions
+// Functions
 import { saveLog, saveVendorPaymentToDatabase } from "@/lib/db-functions";
 import {
   getPaymentVars,
@@ -23,29 +26,32 @@ import {
   nzDate,
 } from "@/lib/data-functions";
 
-// Material UI Components
+// Components
 import TextField from "@/components/inputs/text-field";
 import Modal from "@/components/container/modal";
 
-// Images
-
 export default function BatchPaymentDialog() {
+  // SWR
   const { registerID } = useRegisterID();
   const { inventory } = useInventory();
   const { vendors } = useVendors();
   const { sales } = useSalesJoined();
   const { vendorPayments, mutateVendorPayments } = useVendorPayments();
   const { mutateCashGiven } = useCashGiven(registerID || 0);
+
+  // Atoms
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
-  const [submitting, setSubmitting] = useState(false);
+  // const [submitting, setSubmitting] = useState(false);
 
+  // State
   const [paymentAmounts, setPaymentAmounts] = useState({});
   const [filterMinOwing, setFilterMinOwing] = useState("20");
   const [filterMinStock, setFilterMinStock] = useState("0");
   const [filterLastPay, setFilterLastPay] = useState("4");
   const [filterLastSold, setFilterLastSold] = useState("26");
 
+  // Constants
   const payVendors = useMemo(
     () =>
       (vendors || [])
@@ -77,7 +83,6 @@ export default function BatchPaymentDialog() {
         ),
     [inventory, vendors]
   );
-
   const buttons: ModalButton[] = [
     {
       type: "cancel",
@@ -171,7 +176,7 @@ export default function BatchPaymentDialog() {
               className="w-16"
               startAdornment="$"
               value={filterMinOwing}
-              onChange={(e) => setFilterMinOwing(e.target.value)}
+              onChange={(e: any) => setFilterMinOwing(e.target.value)}
             />
           </div>
           <div className="flex items-center">
@@ -181,7 +186,7 @@ export default function BatchPaymentDialog() {
             <TextField
               className="w-8"
               value={filterMinStock}
-              onChange={(e) => setFilterMinStock(e.target.value)}
+              onChange={(e: any) => setFilterMinStock(e.target.value)}
             />
             <div className="whitespace-nowrap ml-2">items in stock</div>
           </div>
@@ -192,7 +197,7 @@ export default function BatchPaymentDialog() {
             <TextField
               className="w-12"
               value={filterLastPay}
-              onChange={(e) => setFilterLastPay(e.target.value)}
+              onChange={(e: any) => setFilterLastPay(e.target.value)}
             />
             <div className="whitespace-nowrap ml-2">weeks</div>
           </div>
@@ -203,7 +208,7 @@ export default function BatchPaymentDialog() {
             <TextField
               className="w-12"
               value={filterLastSold}
-              onChange={(e) => setFilterLastSold(e.target.value)}
+              onChange={(e: any) => setFilterLastSold(e.target.value)}
             />
             <div className="whitespace-nowrap ml-2">weeks</div>
           </div>

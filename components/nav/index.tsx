@@ -15,7 +15,7 @@ import PaymentNavActions from "./actions/payment";
 import VendorNavActions from "./actions/vendor";
 import ContactNavActions from "./actions/contact";
 
-// TODO fix all actions
+// TODO fix all actions and clean up files
 
 export default function Nav() {
   // SWR

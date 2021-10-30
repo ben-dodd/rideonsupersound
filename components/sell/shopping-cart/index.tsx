@@ -3,15 +3,20 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useInventory } from "@/lib/swr-hooks";
+import { useInventory, useLogs } from "@/lib/swr-hooks";
 import { newSaleObjectAtom, viewAtom, clerkAtom } from "@/lib/atoms";
 
 // Functions
-import { getTotalPrice, getTotalStoreCut } from "@/lib/data-functions";
+import {
+  getTotalPrice,
+  getTotalStoreCut,
+  writeItemList,
+} from "@/lib/data-functions";
 import {
   saveSaleAndItemsToDatabase,
   deleteSaleFromDatabase,
   deleteSaleItemFromDatabase,
+  saveLog,
 } from "@/lib/db-functions";
 
 // Components
@@ -27,6 +32,7 @@ import HoldIcon from "@mui/icons-material/PanTool";
 export default function ShoppingCart() {
   // SWR
   const { inventory } = useInventory();
+  const { mutateLogs } = useLogs();
 
   // Atoms
   const [view, setView] = useAtom(viewAtom);
@@ -36,12 +42,23 @@ export default function ShoppingCart() {
   // State
   const [loadingSale, setLoadingSale] = useState(false);
 
+  const itemList = writeItemList(inventory, cart?.items);
+
   // Functions
   async function loadSale() {
     try {
       setLoadingSale(true);
-      await saveSaleAndItemsToDatabase(cart, clerk, setCart);
+      const id = await saveSaleAndItemsToDatabase(cart, clerk, setCart);
       setLoadingSale(false);
+      saveLog(
+        {
+          log: `New sale #${id} loaded. ${itemList}.`,
+          clerk_id: clerk?.id,
+          table_id: "sale",
+          row_id: id,
+        },
+        mutateLogs
+      );
       setView({ ...view, saleScreen: true });
     } catch (e) {
       throw Error(e.message);

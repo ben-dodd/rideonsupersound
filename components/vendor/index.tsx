@@ -1,26 +1,16 @@
-import VendorTable from "@/components/vendor/vendor-table";
-import VendorScreen from "@/components/vendor/vendor-screen";
+// Packages
 import { useAtom } from "jotai";
+
+// DB
 import { pageAtom } from "@/lib/atoms";
 
+// Components
+import VendorTable from "@/components/vendor/vendor-table";
+import VendorScreen from "@/components/vendor/vendor-screen";
+
 export default function VendorPage() {
-  // const handlers = useSwipeable({
-  //   onSwipedRight: () =>
-  //     showSaleScreen
-  //       ? setShowSaleScreen(false)
-  //       : showCreateContact?.id
-  //       ? setShowCreateContact({ id: 0 })
-  //       : showHold
-  //       ? setShowHold(false)
-  //       : showCart
-  //       ? setShowCart(false)
-  //       : null,
-  //   onSwipedLeft: () => (!showCart ? setShowCart(true) : null),
-  //   preventDefaultTouchmoveEvent: true,
-  // });
-
+  // Atoms
   const [page] = useAtom(pageAtom);
-
   return (
     <div
       className={`flex relative overflow-x-hidden ${
@@ -32,3 +22,18 @@ export default function VendorPage() {
     </div>
   );
 }
+
+// const handlers = useSwipeable({
+//   onSwipedRight: () =>
+//     showSaleScreen
+//       ? setShowSaleScreen(false)
+//       : showCreateContact?.id
+//       ? setShowCreateContact({ id: 0 })
+//       : showHold
+//       ? setShowHold(false)
+//       : showCart
+//       ? setShowCart(false)
+//       : null,
+//   onSwipedLeft: () => (!showCart ? setShowCart(true) : null),
+//   preventDefaultTouchmoveEvent: true,
+// });

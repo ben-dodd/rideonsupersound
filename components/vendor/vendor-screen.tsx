@@ -1,12 +1,8 @@
+// Packages
 import { useState, useEffect, useMemo } from "react";
 import { useAtom } from "jotai";
-import {
-  clerkAtom,
-  viewAtom,
-  loadedContactObjectAtom,
-  loadedVendorIdAtom,
-  pageAtom,
-} from "@/lib/atoms";
+
+// DB
 import {
   useVendors,
   useClerks,
@@ -16,6 +12,13 @@ import {
   useContacts,
 } from "@/lib/swr-hooks";
 import {
+  clerkAtom,
+  viewAtom,
+  loadedContactObjectAtom,
+  loadedVendorIdAtom,
+  pageAtom,
+} from "@/lib/atoms";
+import {
   VendorObject,
   InventoryObject,
   VendorSaleItemObject,
@@ -24,51 +27,73 @@ import {
   ClerkObject,
 } from "@/lib/types";
 
-// Actions
+// Functions
 import {
   getItemDisplayName,
   getPaymentVars,
   fDate,
   nzDate,
 } from "@/lib/data-functions";
-import ScreenContainer from "@/components/container/screen";
 
+// Components
+import ScreenContainer from "@/components/container/screen";
 import Select from "react-select";
 import MaskedInput from "react-text-mask";
 import TextField from "@/components/inputs/text-field";
 import CreateableSelect from "@/components/inputs/createable-select";
 import SettingsSelect from "@/components/inputs/settings-select";
 
-// Images
-import defaultImage from "../../res/default.png";
-
 export default function VendorScreen() {
+  // Atoms
   const [loadedVendorId, setLoadedVendorId] = useAtom(loadedVendorIdAtom);
   const [view, setView] = useAtom(viewAtom);
   const [page] = useAtom(pageAtom);
   const [, setContact] = useAtom(loadedContactObjectAtom);
+  const [clerk] = useAtom(clerkAtom);
+
+  // SWR
   const { vendors, isVendorsLoading } = useVendors();
   const { clerks, isClerksLoading } = useClerks();
   const { contacts, isContactsLoading } = useContacts();
   const { inventory, isInventoryLoading } = useInventory();
   const { sales, isSalesLoading } = useSalesJoined();
   const { vendorPayments, isVendorPaymentsLoading } = useVendorPayments();
-  const [clerk] = useAtom(clerkAtom);
+
+  // State
   const [vendor, setVendor]: [VendorObject, Function] = useState({});
 
+  // Load
   useEffect(() => {
     setVendor(
       (vendors || []).filter((v: VendorObject) => v?.id === loadedVendorId)[0]
     );
   }, [loadedVendorId]);
 
+  // Functions
+  function StockItem({ item }) {
+    return (
+      <div className="flex justify-between my-2 border-b">
+        <div className="flex">
+          <div className="cursor-pointer w-1/3" onClick={() => null}></div>
+          <div className="ml-8 w-2/3">
+            {getItemDisplayName(item)}
+            <div
+              className={`mt-8 ${
+                (item?.quantity || 0) <= 0 ? "text-tertiary" : "text-black"
+              }`}
+            >{`${item?.quantity || 0} in stock.`}</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Constants
   const v = useMemo(
     () =>
       getPaymentVars(inventory, sales, vendorPayments, loadedVendorId[page]),
     [inventory, sales, vendorPayments, loadedVendorId]
   );
-
-  // console.log(v);
 
   const bankAccountMask = [
     /\d/,
@@ -92,6 +117,7 @@ export default function VendorScreen() {
     /\d/,
   ];
   const isNew = !vendor?.id;
+
   return (
     <ScreenContainer
       show={loadedVendorId[page]}
@@ -341,24 +367,6 @@ export default function VendorScreen() {
       </div>
     </ScreenContainer>
   );
-
-  function StockItem({ item }) {
-    return (
-      <div className="flex justify-between my-2 border-b">
-        <div className="flex">
-          <div className="cursor-pointer w-1/3" onClick={() => null}></div>
-          <div className="ml-8 w-2/3">
-            {getItemDisplayName(item)}
-            <div
-              className={`mt-8 ${
-                (item?.quantity || 0) <= 0 ? "text-tertiary" : "text-black"
-              }`}
-            >{`${item?.quantity || 0} in stock.`}</div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 }
 
 // onClickOk={() => {

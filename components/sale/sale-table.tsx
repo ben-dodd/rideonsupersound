@@ -1,5 +1,8 @@
+// Packages
 import { useMemo } from "react";
 import { useAtom } from "jotai";
+
+// DB
 import {
   useSales,
   useSaleItems,
@@ -7,12 +10,15 @@ import {
   useClerks,
   useInventory,
 } from "@/lib/swr-hooks";
+import { viewAtom, loadedSaleObjectAtom } from "@/lib/atoms";
 import {
   SaleObject,
   SaleItemObject,
   ContactObject,
   ClerkObject,
 } from "@/lib/types";
+
+// Functions
 import {
   writeItemList,
   getTotalStoreCut,
@@ -20,19 +26,24 @@ import {
   nzDate,
   fDateTime,
 } from "@/lib/data-functions";
-import { viewAtom, loadedSaleObjectAtom } from "@/lib/atoms";
 
+// Components
 import Table from "@/components/table";
 import TableContainer from "@/components/container/table";
 
 export default function SaleTable() {
+  // SWR
   const { sales } = useSales();
   const { saleItems } = useSaleItems();
   const { inventory } = useInventory();
   const { contacts } = useContacts();
   const { clerks } = useClerks();
+
+  // Atoms
   const [view, setView] = useAtom(viewAtom);
   const [, setLoadedSale] = useAtom(loadedSaleObjectAtom);
+
+  // Constants
   const data = useMemo(
     () =>
       (sales || []).map((s: SaleObject) => {
@@ -63,15 +74,8 @@ export default function SaleTable() {
     [sales, contacts, clerks, inventory]
   );
   const columns = useMemo(() => {
-    // const openSaleDialog = (item) => {
-    //   dispatch(
-    //     openDialog(
-    //       "sale",
-    //       get(sales, get(item, "row.original.uid", null), null)
-    //     )
-    //   );
-    // };
     return [
+      { Header: "ID", accessor: "id", width: 70 },
       {
         Header: "Date",
         accessor: "date",
@@ -85,7 +89,6 @@ export default function SaleTable() {
                 textDecoration: "underline",
               }}
               onClick={() => {
-                console.log(item);
                 setLoadedSale(
                   (sales || []).filter(
                     (s: SaleObject) => s?.id === item?.row?.original?.id
@@ -108,7 +111,26 @@ export default function SaleTable() {
       {
         Header: "Status",
         accessor: "status",
-        width: 100,
+        width: 120,
+      },
+      {
+        Header: "Clerk",
+        accessor: "clerk",
+        Cell: ({ value }) => value?.name || "",
+        width: 90,
+      },
+      {
+        Header: "Store Cut",
+        accessor: "store",
+        width: 120,
+        Cell: ({ value }) =>
+          value && !isNaN(value) ? `$${(value / 100)?.toFixed(2)}` : "N/A",
+      },
+      {
+        Header: "Total Price",
+        accessor: "sell",
+        width: 120,
+        Cell: ({ value }) => (value ? `$${(value / 100)?.toFixed(2)}` : "N/A"),
       },
       {
         Header: "Contact",
@@ -116,73 +138,14 @@ export default function SaleTable() {
         Cell: ({ value }) => value?.name || "",
       },
       {
-        Header: "Clerk",
-        accessor: "clerk",
-        Cell: ({ value }) => value?.name || "",
-        width: 80,
+        Header: "#",
+        accessor: "numberOfItems",
+        width: 30,
       },
       {
         Header: "Items",
         accessor: "items",
         width: 400,
-      },
-      {
-        Header: "#",
-        accessor: "numberOfItems",
-        width: 30,
-        // Footer: (info: any) => {
-        //   const total = useMemo(
-        //     () =>
-        //       info.page.reduce(
-        //         (sum:number, row:any) => row?.values?.numberOfItems || 0 + sum,
-        //         0
-        //       ),
-        //     [info.page]
-        //   );
-        //
-        //   return total;
-        // },
-      },
-      {
-        Header: "Store Cut",
-        accessor: "store",
-        Cell: ({ value }) =>
-          value && !isNaN(value) ? `$${(value / 100)?.toFixed(2)}` : "N/A",
-        // Footer: (info) => {
-        //   const total = useMemo(
-        //     () =>
-        //       info.page.reduce(
-        //         (sum, row) =>
-        //           isNaN(get(row, "values.store", 0))
-        //             ? sum
-        //             : get(row, "values.store", 0) + sum,
-        //         0
-        //       ),
-        //     [info.page]
-        //   );
-        //
-        //   return <>${total?.toFixed(2)}</>;
-        // },
-      },
-      {
-        Header: "Total Price",
-        accessor: "sell",
-        Cell: ({ value }) => (value ? `$${(value / 100)?.toFixed(2)}` : "N/A"),
-        // Footer: (info) => {
-        //   const total = useMemo(
-        //     () =>
-        //       info.page.reduce(
-        //         (sum, row) =>
-        //           isNaN(get(row, "values.sell", 0))
-        //             ? sum
-        //             : get(row, "values.sell", 0) + sum,
-        //         0
-        //       ),
-        //     [info.page]
-        //   );
-        //
-        //   return <>${total?.toFixed(2)}</>;
-        // },
       },
     ];
   }, [sales, saleItems, inventory]);

@@ -1,5 +1,9 @@
+// Packages
 import { useMemo } from "react";
 import { useAtom } from "jotai";
+import { parseISO, add } from "date-fns";
+
+// DB
 import {
   useContacts,
   useVendors,
@@ -7,6 +11,7 @@ import {
   useLaybys,
   useInventory,
 } from "@/lib/swr-hooks";
+import { viewAtom, loadedVendorIdAtom } from "@/lib/atoms";
 import {
   ContactObject,
   VendorObject,
@@ -14,24 +19,27 @@ import {
   HoldObject,
   InventoryObject,
 } from "@/lib/types";
-import { viewAtom, loadedVendorIdAtom } from "@/lib/atoms";
-import { parseISO, add } from "date-fns";
 
-// Actions
+// Functions
 import { getItemDisplayName } from "@/lib/data-functions";
 
-// Material UI Components
+// Components
 import Table from "@/components/table";
 import TableContainer from "@/components/container/table";
 
 export default function ContactTable() {
+  // SWR
   const { contacts } = useContacts();
   const { vendors } = useVendors();
   const { laybys } = useLaybys();
   const { holds } = useHolds();
   const { inventory } = useInventory();
+
+  // Atoms
   const [view, setView] = useAtom(viewAtom);
   const [loadedVendorId, setLoadedVendorId] = useAtom(loadedVendorIdAtom);
+
+  // Constants
   const data = useMemo(
     () =>
       (contacts || [])
@@ -65,7 +73,6 @@ export default function ContactTable() {
         })),
     [contacts, laybys, holds, vendors]
   );
-
   const columns = useMemo(() => {
     const openVendorDialog = (vendor: VendorObject) =>
       setLoadedVendorId({ ...loadedVendorId, contacts: vendor?.id });

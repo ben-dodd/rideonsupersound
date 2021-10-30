@@ -1,34 +1,53 @@
+// Packages
 import { useState, useMemo } from "react";
-import Modal from "@/components/container/modal";
 import { useAtom } from "jotai";
-import {
-  viewAtom,
-  newSaleObjectAtom,
-  loadedSaleObjectAtom,
-  clerkAtom,
-} from "@/lib/atoms";
-import TextField from "@/components/inputs/text-field";
-import { ModalButton } from "@/lib/types";
 
+// DB
 import {
   useSaleTransactionsForSale,
   useVendorTotalPayments,
   useVendorTotalSales,
   useVendorFromContact,
+  useLogs,
 } from "@/lib/swr-hooks";
+import {
+  viewAtom,
+  newSaleObjectAtom,
+  loadedSaleObjectAtom,
+  clerkAtom,
+  alertAtom,
+} from "@/lib/atoms";
+import { ModalButton } from "@/lib/types";
+
+// Functions
 import { getTotalOwing } from "@/lib/data-functions";
-import { saveSaleTransaction } from "@/lib/db-functions";
+import { saveSaleTransaction, saveLog } from "@/lib/db-functions";
+
+// Components
+import Modal from "@/components/container/modal";
+import TextField from "@/components/inputs/text-field";
 
 export default function Acct({ isNew }) {
+  // Atoms
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
   const [sale, setSale] = useAtom(
     isNew ? newSaleObjectAtom : loadedSaleObjectAtom
   );
+  const [, setAlert] = useAtom(alertAtom);
+
+  // SWR
   const { vendor } = useVendorFromContact(sale?.contact_id);
   const { totalPayments } = useVendorTotalPayments(sale?.contact_id);
   const { totalSales } = useVendorTotalSales(sale?.contact_id);
   const { mutateSaleTransactions } = useSaleTransactionsForSale(sale?.id);
+  const { mutateLogs } = useLogs();
+
+  // State
+  const [acctPayment, setAcctPayment] = useState(`${sale?.totalRemaining}`);
+  const [submitting, setSubmitting] = useState(false);
+
+  // Constants
   const totalOwing = useMemo(
     () =>
       totalPayments && totalSales
@@ -36,8 +55,6 @@ export default function Acct({ isNew }) {
         : 0,
     [totalPayments, totalSales]
   );
-  const [acctPayment, setAcctPayment] = useState(`${sale?.totalRemaining}`);
-  const [submitting, setSubmitting] = useState(false);
 
   const buttons: ModalButton[] = [
     {
@@ -49,9 +66,10 @@ export default function Acct({ isNew }) {
         parseFloat(acctPayment) === 0 ||
         acctPayment <= "" ||
         isNaN(parseFloat(acctPayment)),
+      loading: submitting,
       onClick: async () => {
         setSubmitting(true);
-        await saveSaleTransaction(
+        const id = await saveSaleTransaction(
           sale,
           clerk,
           acctPayment,
@@ -62,6 +80,24 @@ export default function Acct({ isNew }) {
         );
         setSubmitting(false);
         setView({ ...view, acctPaymentDialog: false });
+        saveLog(
+          {
+            log: `$${parseFloat(acctPayment)?.toFixed(
+              2
+            )} account payment from vendor ${vendor?.name} (sale #${
+              sale?.id
+            }).`,
+            clerk_id: clerk?.id,
+            table_id: "sale_transaction",
+            row_id: id,
+          },
+          mutateLogs
+        );
+        setAlert({
+          open: true,
+          type: "success",
+          message: `$${parseFloat(acctPayment)?.toFixed(2)} ACCOUNT PAYMENT`,
+        });
       },
       text: "COMPLETE",
     },

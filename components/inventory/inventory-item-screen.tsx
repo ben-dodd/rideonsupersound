@@ -82,7 +82,7 @@ export default function InventoryItemScreen({ page }) {
 
   // Functions
   function onClickDelete() {
-    // Delete inventory item
+    // TODO Delete inventory item
   }
 
   const buttons: ModalButton[] = [
@@ -355,6 +355,12 @@ export default function InventoryItemScreen({ page }) {
     </ScreenContainer>
   );
 }
+
+// TODO delay removing inventory item
+// TODO update inventory quicker
+// TODO add logs etc. if modified
+// TODO add change price dialog
+// TODO add lost/discarded items etc. add change stock levels dialog
 
 // ONCLICKSAVE
 // () => {

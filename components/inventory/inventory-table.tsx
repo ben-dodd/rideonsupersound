@@ -1,9 +1,16 @@
+// Packages
 import { useMemo } from "react";
 import { useAtom } from "jotai";
+
+// DB
 import { useInventory, useVendors } from "@/lib/swr-hooks";
-import { InventoryObject, VendorObject } from "@/lib/types";
 import { loadedItemIdAtom } from "@/lib/atoms";
+import { InventoryObject, VendorObject } from "@/lib/types";
+
+// Functions
 import { getItemSku } from "@/lib/data-functions";
+
+// Components
 import Table from "@/components/table";
 import TableContainer from "@/components/container/table";
 
@@ -12,10 +19,14 @@ interface NumberProps {
 }
 
 export default function InventoryTable() {
+  // SWR
   const { inventory } = useInventory();
   const { vendors } = useVendors();
+
+  // Atoms
   const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom);
 
+  // Constants
   const data = useMemo(
     () =>
       (inventory || [])
@@ -41,15 +52,19 @@ export default function InventoryTable() {
             t?.total_sell && t?.vendor_cut && t?.total_sell > 0
               ? ((t?.total_sell - t?.vendor_cut) / t?.total_sell) * 100
               : 0,
-          quantity: 0,
-          quantityReceived: 0,
-          quantityHoldLayby: 0,
-          quantityReturned: 0,
-          quantitySold: 0,
+          quantity: t?.quantity || 0,
+          quantityReceived: t?.quantity_received || 0,
+          quantityHoldLayby:
+            (t?.quantity_layby +
+              t?.quantity_hold +
+              t?.quantity_unlayby +
+              t?.quantity_unhold) *
+              -1 || 0,
+          quantityReturned: Math.abs(t?.quantity_returned || 0),
+          quantitySold: Math.abs(t?.quantity_sold || 0),
         })),
     [inventory, vendors]
   );
-  // console.log(data);
   const columns = useMemo(() => {
     // const openInventoryDialog = (item:any) => openInventoryModal(item?.row?.original?.id);
     return [

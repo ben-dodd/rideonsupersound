@@ -1,23 +1,34 @@
+// Packages
 import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
+
+// DB
+import { useContacts } from "@/lib/swr-hooks";
 import {
   viewAtom,
   newSaleObjectAtom,
   loadedContactObjectAtom,
 } from "@/lib/atoms";
-import { useContacts } from "@/lib/swr-hooks";
 import { ContactObject, ModalButton } from "@/lib/types";
+
+// Components
 import TextField from "@/components/inputs/text-field";
 import SidebarContainer from "@/components/container/side-bar";
 
 export default function CreateContactScreen() {
+  // SWR
+  const { contacts } = useContacts();
+
+  // Atoms
   const [cart, setCart] = useAtom(newSaleObjectAtom);
   const [view, setView] = useAtom(viewAtom);
   const [contact, setContact] = useAtom(loadedContactObjectAtom);
+
+  // State
   const [nameConflict, setNameConflict] = useState(false);
-  const { contacts } = useContacts();
   const [submitting, setSubmitting] = useState(false);
 
+  // Load
   useEffect(() => {
     contacts &&
       setNameConflict(
@@ -25,6 +36,7 @@ export default function CreateContactScreen() {
       );
   }, [contacts, contact?.name]);
 
+  // Functions
   async function onClickCreateContact() {
     setSubmitting(true);
     try {
@@ -52,6 +64,7 @@ export default function CreateContactScreen() {
     }
   }
 
+  // Constants
   const buttons: ModalButton[] = [
     {
       type: "cancel",

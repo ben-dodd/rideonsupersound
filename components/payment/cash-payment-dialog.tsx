@@ -1,6 +1,8 @@
+// Packages
 import { useState, useMemo } from "react";
 import { useAtom } from "jotai";
-import { viewAtom, clerkAtom } from "@/lib/atoms";
+
+// DB
 import {
   useInventory,
   useVendors,
@@ -9,6 +11,7 @@ import {
   useRegisterID,
   useCashGiven,
 } from "@/lib/swr-hooks";
+import { viewAtom, clerkAtom } from "@/lib/atoms";
 import {
   VendorSaleItemObject,
   VendorPaymentObject,
@@ -17,28 +20,35 @@ import {
   ModalButton,
 } from "@/lib/types";
 
-// Actions
+// Functions
 import { saveLog, saveVendorPaymentToDatabase } from "@/lib/db-functions";
 import { getTotalOwing } from "@/lib/data-functions";
 
-// Material UI Components
+// Components
 import TextField from "@/components/inputs/text-field";
 import Modal from "@/components/container/modal";
 import CreateableSelect from "@/components/inputs/createable-select";
 
 export default function CashPaymentDialog() {
+  // SWR
   const { registerID } = useRegisterID();
   const { inventory } = useInventory();
   const { vendors } = useVendors();
   const { sales } = useSalesJoined();
   const { mutateCashGiven } = useCashGiven(registerID || 0);
   const { vendorPayments, mutateVendorPayments } = useVendorPayments();
+
+  // Atoms
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
+
+  // State
   const [submitting, setSubmitting] = useState(false);
   const [vendor_id, setVendor]: [number, Function] = useState(0);
   const [payment, setPayment] = useState("0");
   const [notes, setNotes] = useState("");
+
+  // Constants
   const totalOwing = useMemo(
     () =>
       getTotalOwing(
@@ -58,13 +68,6 @@ export default function CashPaymentDialog() {
     () => (vendors || []).filter((v: VendorObject) => v?.id === vendor_id)[0],
     [vendor_id, vendors]
   );
-
-  function resetAndCloseDialog() {
-    setView({ ...view, cashVendorPaymentDialog: false });
-    setVendor(0);
-    setPayment("0");
-  }
-
   const buttons: ModalButton[] = [
     {
       type: "cancel",
@@ -107,6 +110,13 @@ export default function CashPaymentDialog() {
     },
   ];
 
+  // Functions
+  function resetAndCloseDialog() {
+    setView({ ...view, cashVendorPaymentDialog: false });
+    setVendor(0);
+    setPayment("0");
+  }
+
   return (
     <Modal
       open={view?.cashVendorPaymentDialog}
@@ -125,6 +135,7 @@ export default function CashPaymentDialog() {
           }
           onChange={(vendorObject: any) => setVendor(vendorObject?.value)}
           onCreateOption={(inputValue: string) =>
+            // TODO create vendor from select
             // setCreateContactScreen({
             //   id: 1,
             //   name: inputValue,

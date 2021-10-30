@@ -1,11 +1,13 @@
+// Packages
 import { useState, useMemo, useEffect } from "react";
 import { useAtom } from "jotai";
-import { viewAtom, clerkAtom } from "@/lib/atoms";
+
+// DB
 import { useInventory, useVendors } from "@/lib/swr-hooks";
-import CreateableSelect from "@/components/inputs/createable-select";
+import { viewAtom, clerkAtom } from "@/lib/atoms";
 import { VendorObject, InventoryObject, ModalButton } from "@/lib/types";
-import ScreenContainer from "@/components/container/screen";
-// Actions
+
+// Functions
 import {
   getProfitMargin,
   getCSVData,
@@ -14,21 +16,58 @@ import {
 } from "@/lib/data-functions";
 import { receiveStock, saveLog } from "@/lib/db-functions";
 
-// Material UI Components
+// Components
+import CreateableSelect from "@/components/inputs/createable-select";
+import ScreenContainer from "@/components/container/screen";
 import TextField from "@/components/inputs/text-field";
 import Select from "react-select";
 import EditableTable from "@/components/table/editable";
 
-// Material UI Icons
+// Icons
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function ReceiveStockScreen() {
+  // Atoms
   const [view, setView] = useAtom(viewAtom);
   const [clerk] = useAtom(clerkAtom);
+
+  // SWR
   const { inventory } = useInventory();
   const { vendors } = useVendors();
+
+  // Functions
+  function makeNewStockData(num: number) {
+    return [...Array.from(Array(num).keys())].map((num: number) => ({
+      num,
+      artist: "",
+      title: "",
+      cost: "",
+      sell: "",
+      quantityReceived: "",
+    }));
+  }
+  function updateNewStockData(rowIndex, columnId, value) {
+    setSkipPageReset(true);
+    setNewStockData((old) =>
+      old.map((row, index) => {
+        if (index === rowIndex) {
+          return {
+            ...old[rowIndex],
+            [columnId]: value,
+          };
+        }
+        return row;
+      })
+    );
+  }
+
+  // State
   const [obj, setObj]: [any, Function] = useState({});
+  const [newStockData, setNewStockData] = useState(() => makeNewStockData(5));
+  const [skipPageReset, setSkipPageReset] = useState(false);
+
+  // Constants
   const columns = useMemo(
     () => [
       {
@@ -120,33 +159,6 @@ export default function ReceiveStockScreen() {
     ],
     []
   );
-
-  const makeNewStockData = (num: number) => {
-    return [...Array.from(Array(num).keys())].map((num: number) => ({
-      num,
-      artist: "",
-      title: "",
-      cost: "",
-      sell: "",
-      quantityReceived: "",
-    }));
-  };
-  const [newStockData, setNewStockData] = useState(() => makeNewStockData(5));
-  const [skipPageReset, setSkipPageReset] = useState(false);
-  const updateNewStockData = (rowIndex, columnId, value) => {
-    setSkipPageReset(true);
-    setNewStockData((old) =>
-      old.map((row, index) => {
-        if (index === rowIndex) {
-          return {
-            ...old[rowIndex],
-            [columnId]: value,
-          };
-        }
-        return row;
-      })
-    );
-  };
 
   useEffect(() => {
     setSkipPageReset(false);

@@ -470,7 +470,7 @@ export function useWeather() {
   //   });
   // }
   const { data, error } = useSWR(
-    `http://api.openweathermap.org/data/2.5/weather?${loc}&appid=${process.env.NEXT_PUBLIC_OPEN_WEATHER_API}&units=metric`,
+    `https://api.openweathermap.org/data/2.5/weather?${loc}&appid=${process.env.NEXT_PUBLIC_OPEN_WEATHER_API}&units=metric`,
     fetcher
   );
   return {

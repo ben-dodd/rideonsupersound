@@ -1,5 +1,15 @@
-import { useAtom } from "jotai";
+// Packages
 import { useState, useEffect } from "react";
+import { useAtom } from "jotai";
+
+// DB
+import {
+  useSaleItemsForSale,
+  useSaleTransactionsForSale,
+  useContacts,
+  useInventory,
+  useLogs,
+} from "@/lib/swr-hooks";
 import {
   clerkAtom,
   alertAtom,
@@ -7,14 +17,10 @@ import {
   loadedSaleObjectAtom,
   newSaleObjectAtom,
 } from "@/lib/atoms";
-import {
-  useSaleItemsForSale,
-  useSaleTransactionsForSale,
-  useContacts,
-  useInventory,
-} from "@/lib/swr-hooks";
 import { ModalButton, ContactObject } from "@/lib/types";
-import { getSaleVars } from "@/lib/data-functions";
+
+// Functions
+import { getSaleVars, writeItemList } from "@/lib/data-functions";
 import {
   saveSaleAndItemsToDatabase,
   saveLog,
@@ -23,6 +29,8 @@ import {
   updateSaleItemInDatabase,
   saveGiftCardToDatabase,
 } from "@/lib/db-functions";
+
+// Components
 import Pay from "./pay";
 import SaleSummary from "./sale-summary";
 import Acct from "./payment/acct";
@@ -31,37 +39,199 @@ import Cash from "./payment/cash";
 import Gift from "./payment/gift";
 import ScreenContainer from "@/components/container/screen";
 
+// TODO add returns to sale items
+
 export default function SaleScreen({ isNew }) {
+  // Atoms
   const [sale, setSale] = useAtom(
     isNew ? newSaleObjectAtom : loadedSaleObjectAtom
   );
+
+  console.log(sale);
   const [clerk] = useAtom(clerkAtom);
   const [, setAlert] = useAtom(alertAtom);
-  const { contacts } = useContacts();
   const [view, setView] = useAtom(viewAtom);
-  const { inventory } = useInventory();
+
+  // SWR
+  const { contacts } = useContacts();
+  const { inventory, mutateInventory } = useInventory();
+  const { items, isSaleItemsLoading, mutateSaleItems } = useSaleItemsForSale(
+    sale?.id
+  );
+  console.log(items);
+  const {
+    transactions,
+    isSaleTransactionsLoading,
+    mutateSaleTransactions,
+  } = useSaleTransactionsForSale(sale?.id);
+  console.log(transactions);
+  const { mutateLogs } = useLogs();
+
+  // State
   const [laybyLoading, setLaybyLoading] = useState(false);
   const [completeSaleLoading, setCompleteSaleLoading] = useState(false);
   const [parkSaleLoading, setParkSaleLoading] = useState(false);
 
+  // Load
+  // useEffect(() => {
+  //   mutateSaleItems();
+  //   mutateSaleTransactions();
+  // }, [sale?.id]);
+  //
+  // useEffect(() => {
+  //   if (!isNew) {
+  //     // console.log("setting sale");
+  //     setSale({ ...sale, items, transactions });
+  //   }
+  // }, [items, transactions]);
+
+  // Every time transactions or items are changed, recalculate the totals
   useEffect(() => {
     const saleVars = getSaleVars(sale, inventory);
     setSale({ ...sale, ...saleVars });
   }, [sale?.id, sale?.transactions, sale?.items]);
-  // console.log(sale);
-  const { items, isSaleItemsLoading } = useSaleItemsForSale(sale?.id);
-  const {
-    transactions,
-    isSaleTransactionsLoading,
-  } = useSaleTransactionsForSale(sale?.id);
 
-  useEffect(() => {
-    if (!isNew) {
-      // console.log("setting sale");
-      setSale({ ...sale, items, transactions });
+  const itemList = writeItemList(inventory, items);
+
+  // Functions
+  function clearSale() {
+    setSale(null);
+    setView({ ...view, saleScreen: false });
+  }
+
+  async function clickParkSale() {
+    setParkSaleLoading(true);
+    const saleId = await saveSaleAndItemsToDatabase(
+      { ...sale, state: "parked" },
+      clerk
+    );
+    saveLog(
+      {
+        log: `Sale parked (${sale?.items.length} item${
+          sale?.items.length === 1 ? "" : "s"
+        }${
+          sale?.contact_id
+            ? ` for ${
+                (contacts || []).filter(
+                  (c: ContactObject) => c?.id === sale?.contact_id
+                )[0]?.name
+              }.`
+            : ""
+        }).`,
+        clerk_id: clerk?.id,
+        table_id: "sale",
+        row_id: saleId,
+      },
+      mutateLogs
+    );
+    setAlert({
+      open: true,
+      type: "success",
+      message: "SALE PARKED",
+    });
+    clearSale();
+    setParkSaleLoading(false);
+    mutateInventory();
+  }
+
+  async function clickLayby() {
+    setLaybyLoading(true);
+    // Change quantity for all items if it wasn't a layby previously
+    for await (const saleItem of sale?.items) {
+      // For each item, add quantity on layby, remove quantity in sale
+      saveStockMovementToDatabase(saleItem, clerk, "layby", null);
     }
-  }, [isSaleItemsLoading, isSaleTransactionsLoading]);
+    if (sale?.state !== "layby") {
+      // If not already a layby in progress...
+      // Change sale state to layby
+      // date_layby_started
+      // layby_started_by
+      let date = new Date();
+      await updateSaleInDatabase({
+        ...sale,
+        state: "layby",
+        date_layby_started: date.toISOString(),
+        layby_started_by: clerk?.id,
+      });
+    }
+    saveLog(
+      {
+        log: `Layby started${
+          sale?.contact_id
+            ? ` for ${
+                (contacts || []).filter(
+                  (c: ContactObject) => c?.id === sale?.contact_id
+                )[0]?.name
+              }`
+            : ""
+        } (${sale?.items.length} item${
+          sale?.items.length === 1 ? "" : "s"
+        } / $${sale?.totalPrice?.toFixed(
+          2
+        )} with $${sale?.totalRemaining?.toFixed(2)} left to pay).`,
+        clerk_id: clerk?.id,
+        table_id: "sale",
+        row_id: sale?.id,
+      },
+      mutateLogs
+    );
+    setAlert({
+      open: true,
+      type: "success",
+      message: "LAYBY STARTED.",
+    });
+    // close dialog
+    clearSale();
+    setLaybyLoading(false);
+    mutateInventory();
+  }
 
+  async function clickCompleteSale() {
+    setCompleteSaleLoading(true);
+    // If was a layby, complete layby
+    //    For all items, remove from layby
+    // For all items,
+    //    If gift card, add to the collection
+    //    If misc item, ignore
+    //    If other item, change quantity sold
+    // Update sale to 'complete', add date_sale_completed, sale_completed_by
+    sale?.items.forEach((saleItem) => {
+      if (sale?.state === "layby" && !saleItem?.is_gift_card) {
+        saveStockMovementToDatabase(saleItem, clerk, "unlayby", null);
+      }
+      if (saleItem?.is_gift_card) {
+        // Add to collection
+        saveGiftCardToDatabase();
+        // Add gift card to sale items
+      } else if (saleItem?.is_misc_item) {
+        // Do something
+        // Add misc item to sale items
+      } else {
+        if (saleItem?.id) updateSaleItemInDatabase(saleItem, sale);
+        saveStockMovementToDatabase(saleItem, clerk, "sold", null);
+      }
+    });
+    updateSaleInDatabase({ ...sale, state: "completed" });
+    clearSale();
+    setCompleteSaleLoading(false);
+    saveLog(
+      {
+        log: `Sale #${sale?.id} completed. ${itemList}.`,
+        clerk_id: clerk?.id,
+        table_id: "sale",
+        row_id: sale?.id,
+      },
+      mutateLogs
+    );
+    setAlert({
+      open: true,
+      type: "success",
+      message: "SALE COMPLETED.",
+    });
+    mutateInventory();
+  }
+
+  // Constants
   const buttons: ModalButton[] = [
     {
       type: "cancel",
@@ -104,6 +274,7 @@ export default function SaleScreen({ isNew }) {
       text: "COMPLETE SALE",
     },
   ];
+
   return (
     <>
       {view?.acctPaymentDialog && <Acct isNew={isNew} />}
@@ -131,119 +302,6 @@ export default function SaleScreen({ isNew }) {
       </ScreenContainer>
     </>
   );
-  function clearSale() {
-    setSale(null);
-    setView({ ...view, saleScreen: false });
-  }
-
-  async function clickParkSale() {
-    setParkSaleLoading(true);
-    const saleId = await saveSaleAndItemsToDatabase(
-      { ...sale, state: "parked" },
-      clerk
-    );
-    saveLog({
-      log: `Sale parked (${sale?.items.length} item${
-        sale?.items.length === 1 ? "" : "s"
-      }${
-        sale?.contact_id
-          ? ` for ${
-              (contacts || []).filter(
-                (c: ContactObject) => c?.id === sale?.contact_id
-              )[0]?.name
-            }.`
-          : ""
-      }).`,
-      clerk_id: clerk?.id,
-      table_id: "sale",
-      row_id: saleId,
-    });
-    setAlert({
-      open: true,
-      type: "success",
-      message: "SALE PARKED",
-    });
-    clearSale();
-    setParkSaleLoading(false);
-  }
-
-  async function clickLayby() {
-    setLaybyLoading(true);
-    // Change quantity for all items if it wasn't a layby previously
-    for await (const saleItem of sale?.items) {
-      // For each item, add quantity on layby, remove quantity in sale
-      saveStockMovementToDatabase(saleItem, clerk, "layby", null);
-    }
-    if (sale?.state !== "layby") {
-      // If not already a layby in progress...
-      // Change sale state to layby
-      // date_layby_started
-      // layby_started_by
-      let date = new Date();
-      await updateSaleInDatabase({
-        ...sale,
-        state: "layby",
-        date_layby_started: date.toISOString(),
-        layby_started_by: clerk?.id,
-      });
-    }
-    saveLog({
-      log: `Layby started${
-        sale?.contact_id
-          ? ` for ${
-              (contacts || []).filter(
-                (c: ContactObject) => c?.id === sale?.contact_id
-              )[0]?.name
-            }`
-          : ""
-      } (${sale?.items.length} item${
-        sale?.items.length === 1 ? "" : "s"
-      } / $${sale?.totalPrice?.toFixed(
-        2
-      )} with $${sale?.totalRemaining?.toFixed(2)} left to pay).`,
-      clerk_id: clerk?.id,
-      table_id: "sale",
-      row_id: sale?.id,
-    });
-    setAlert({
-      open: true,
-      type: "success",
-      message: "LAYBY STARTED.",
-    });
-    // close dialog
-    clearSale();
-    setLaybyLoading(false);
-  }
-
-  async function clickCompleteSale() {
-    setCompleteSaleLoading(true);
-    // If was a layby, complete layby
-    //    For all items, remove from layby
-    // For all items,
-    //    If gift card, add to the collection
-    //    If misc item, ignore
-    //    If other item, change quantity sold
-    // Update sale to 'complete', add date_sale_completed, sale_completed_by
-    sale?.items.forEach((saleItem) => {
-      if (sale?.state === "layby" && !saleItem?.is_gift_card) {
-        saveStockMovementToDatabase(saleItem, clerk, "unlayby", null);
-      }
-      if (saleItem?.is_gift_card) {
-        // Add to collection
-        saveGiftCardToDatabase();
-        // Add gift card to sale items
-      } else if (!saleItem?.is_misc_item) {
-        // Do something
-        // Add misc item to sale items
-      } else {
-        if (saleItem?.id) updateSaleItemInDatabase(saleItem, sale);
-        saveStockMovementToDatabase(saleItem, clerk, "sold", null);
-      }
-    });
-    updateSaleInDatabase({ ...sale, state: "completed" });
-    clearSale();
-    setCompleteSaleLoading(false);
-  }
 }
 
 // hidden sm:flex items-start overflow-auto

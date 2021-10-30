@@ -1,36 +1,60 @@
+// Packages
 import { useState, useMemo } from "react";
-import Modal from "@/components/container/modal";
 import { useAtom } from "jotai";
-import {
-  viewAtom,
-  newSaleObjectAtom,
-  loadedSaleObjectAtom,
-  clerkAtom,
-} from "@/lib/atoms";
-import { GiftCardObject } from "@/lib/types";
-import TextField from "@/components/inputs/text-field";
+
+// DB
 import {
   useSaleTransactionsForSale,
   useGiftCards,
   useVendorTotalPayments,
   useVendorTotalSales,
   useVendorFromContact,
+  useLogs,
+  useContacts,
 } from "@/lib/swr-hooks";
+import {
+  viewAtom,
+  newSaleObjectAtom,
+  loadedSaleObjectAtom,
+  clerkAtom,
+  alertAtom,
+} from "@/lib/atoms";
+import { GiftCardObject, ModalButton, ContactObject } from "@/lib/types";
+
+// Functions
 import { getTotalOwing } from "@/lib/data-functions";
-import { saveSaleTransaction } from "@/lib/db-functions";
-import { ModalButton } from "@/lib/types";
+import { saveSaleTransaction, saveLog } from "@/lib/db-functions";
+
+// Components
+import Modal from "@/components/container/modal";
+import TextField from "@/components/inputs/text-field";
 
 export default function Gift({ isNew }) {
+  // Atoms
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
   const [sale, setSale] = useAtom(
     isNew ? newSaleObjectAtom : loadedSaleObjectAtom
   );
+  const [, setAlert] = useAtom(alertAtom);
+
+  // SWR
   const { giftCards } = useGiftCards();
+  const { contacts } = useContacts();
   const { vendor } = useVendorFromContact(sale?.contact_id);
   const { totalPayments } = useVendorTotalPayments(sale?.contact_id);
   const { totalSales } = useVendorTotalSales(sale?.contact_id);
   const { mutateSaleTransactions } = useSaleTransactionsForSale(sale?.id);
+  const { mutateLogs } = useLogs();
+
+  // State
+  const [giftCardPayment, setGiftCardPayment] = useState(
+    `${sale?.totalRemaining}`
+  );
+  const [giftCardCode, setGiftCardCode] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  // Constants
   const totalOwing = useMemo(
     () =>
       totalPayments && totalSales
@@ -38,11 +62,6 @@ export default function Gift({ isNew }) {
         : 0,
     [totalPayments, totalSales]
   );
-  const [giftCardPayment, setGiftCardPayment] = useState(
-    `${sale?.totalRemaining}`
-  );
-  const [giftCardCode, setGiftCardCode] = useState("");
-  const [submitting, setSubmitting] = useState(false);
   const giftCard = useMemo(
     () =>
       giftCards &&
@@ -53,6 +72,7 @@ export default function Gift({ isNew }) {
     [giftCardCode, giftCards]
   );
 
+  // TODO handle take gift card and give change
   const buttons: ModalButton[] = [
     {
       type: "ok",
@@ -63,9 +83,10 @@ export default function Gift({ isNew }) {
         parseFloat(giftCardPayment) === 0 ||
         giftCardPayment <= "" ||
         isNaN(parseFloat(giftCardPayment)),
+      loading: submitting,
       onClick: async () => {
         setSubmitting(true);
-        await saveSaleTransaction(
+        const id = await saveSaleTransaction(
           sale,
           clerk,
           giftCardPayment,
@@ -76,10 +97,35 @@ export default function Gift({ isNew }) {
         );
         setSubmitting(false);
         setView({ ...view, giftPaymentDialog: false });
+        saveLog(
+          {
+            log: `$${parseFloat(giftCardPayment)?.toFixed(
+              2
+            )} gift card payment from ${
+              sale?.contact_id
+                ? contacts?.filter(
+                    (c: ContactObject) => c?.id === sale?.contact_id
+                  )[0]?.name
+                : "customer"
+            } (sale #${sale?.id}). Gift card #${giftCardCode}.`,
+            clerk_id: clerk?.id,
+            table_id: "sale_transaction",
+            row_id: id,
+          },
+          mutateLogs
+        );
+        setAlert({
+          open: true,
+          type: "success",
+          message: `$${parseFloat(giftCardPayment)?.toFixed(
+            2
+          )} GIFT CARD PAYMENT`,
+        });
       },
       text: "COMPLETE",
     },
   ];
+
   return (
     <Modal
       open={view?.giftPaymentDialog}

@@ -29,6 +29,7 @@ export default function MainPage() {
 
   // Load necessary data
   useInventory();
+  //TODO fix bug where inventory doesn't load. make all pages load until all data there, e.g. in tables
 
   return (
     <>
