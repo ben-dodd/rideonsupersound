@@ -20,8 +20,8 @@ interface NumberProps {
 
 export default function InventoryTable() {
   // SWR
-  const { inventory } = useInventory();
-  const { vendors } = useVendors();
+  const { inventory, isInventoryLoading } = useInventory();
+  const { vendors, isVendorsLoading } = useVendors();
 
   // Atoms
   const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom);
@@ -159,7 +159,7 @@ export default function InventoryTable() {
   }, [inventory]);
 
   return (
-    <TableContainer>
+    <TableContainer loading={isVendorsLoading || isInventoryLoading}>
       <Table
         color="bg-col2"
         colorLight="bg-col2-light"

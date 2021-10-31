@@ -73,7 +73,7 @@ export default function Pay({ isNew }) {
           <div className={`text-xs`}>Out of Order</div>
         </button>
       </div>
-      <div className="font-bold text-xl">
+      <div className="font-bold">
         Select contact to enable laybys and account payments.
       </div>
       {/* TODO once contact has been used for ACCT or layby lock in contact */}

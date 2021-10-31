@@ -12,7 +12,7 @@ import TableContainer from "@/components/container/table";
 
 export default function GiftCardTable() {
   // SWR
-  const { giftCards } = useGiftCards();
+  const { giftCards, isGiftCardsLoading } = useGiftCards();
 
   // Constants
   const data = useMemo(
@@ -63,7 +63,7 @@ export default function GiftCardTable() {
   );
 
   return (
-    <TableContainer>
+    <TableContainer loading={isGiftCardsLoading}>
       <Table
         color="bg-col5"
         colorLight="bg-col5-light"

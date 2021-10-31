@@ -14,9 +14,9 @@ import Table from "@/components/table";
 
 export default function PaymentTable() {
   // SWR
-  const { vendors } = useVendors();
-  const { vendorPayments } = useVendorPayments();
-  const { clerks } = useClerks();
+  const { vendors, isVendorsLoading } = useVendors();
+  const { vendorPayments, isVendorPaymentsLoading } = useVendorPayments();
+  const { clerks, isClerksLoading } = useClerks();
 
   // Constants
   const data = useMemo(
@@ -68,7 +68,9 @@ export default function PaymentTable() {
   );
 
   return (
-    <TableContainer>
+    <TableContainer
+      loading={isVendorsLoading || isVendorPaymentsLoading || isClerksLoading}
+    >
       <Table
         color="bg-col8"
         colorLight="bg-col8-light"

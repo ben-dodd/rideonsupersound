@@ -29,11 +29,11 @@ import TableContainer from "@/components/container/table";
 
 export default function ContactTable() {
   // SWR
-  const { contacts } = useContacts();
-  const { vendors } = useVendors();
-  const { laybys } = useLaybys();
-  const { holds } = useHolds();
-  const { inventory } = useInventory();
+  const { contacts, isContactsLoading } = useContacts();
+  const { vendors, isVendorsLoading } = useVendors();
+  const { laybys, isLaybysLoading } = useLaybys();
+  const { holds, isHoldsLoading } = useHolds();
+  const { inventory, isInventoryLoading } = useInventory();
 
   // Atoms
   const [view, setView] = useAtom(viewAtom);
@@ -184,7 +184,15 @@ export default function ContactTable() {
   }, [inventory, vendors]);
 
   return (
-    <TableContainer>
+    <TableContainer
+      loading={
+        isInventoryLoading ||
+        isHoldsLoading ||
+        isLaybysLoading ||
+        isContactsLoading ||
+        isVendorsLoading
+      }
+    >
       <Table
         color="bg-col4"
         colorLight="bg-col4-light"

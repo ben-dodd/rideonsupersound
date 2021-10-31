@@ -267,8 +267,8 @@ export default function InventoryItemScreen({ page }) {
                 inputLabel="CONDITION"
                 group="isNew"
                 value={item?.is_new ? "true" : "false"}
-                onChange={(value: any) =>
-                  setItem({ ...item, is_new: value === "true" ? true : false })
+                onChange={(value: string) =>
+                  setItem({ ...item, is_new: value === "true" ? 1 : 0 })
                 }
                 options={[
                   { id: "new", value: "true", label: "New" },
@@ -284,15 +284,7 @@ export default function InventoryItemScreen({ page }) {
               />
             </div>
           )}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: "10px",
-              alignItems: "flex-start",
-              justifyContent: "flex-start",
-            }}
-          >
+          <div className="grid grid-cols-2 gap-2 items-center justify-center">
             <SettingsSelect
               object={item}
               onEdit={setItem}

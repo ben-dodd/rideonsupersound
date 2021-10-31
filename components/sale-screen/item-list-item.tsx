@@ -53,8 +53,10 @@ export default function ItemListItem({ saleItem }: SellListItemProps) {
             : getItemDisplayName(item)}
         </div>
         <div className="text-red-500 self-end">
-          <button>Remove item</button>
-          {getCartItemSummary(item, saleItem)}
+          <div className="text-black">
+            <button>Remove item</button>
+          </div>
+          <div>{getCartItemSummary(item, saleItem)}</div>
         </div>
       </div>
     </div>

@@ -33,11 +33,11 @@ import TableContainer from "@/components/container/table";
 
 export default function SaleTable() {
   // SWR
-  const { sales } = useSales();
-  const { saleItems } = useSaleItems();
-  const { inventory } = useInventory();
-  const { contacts } = useContacts();
-  const { clerks } = useClerks();
+  const { sales, isSalesLoading } = useSales();
+  const { saleItems, isSaleItemsLoading } = useSaleItems();
+  const { inventory, isInventoryLoading } = useInventory();
+  const { contacts, isContactsLoading } = useContacts();
+  const { clerks, isClerksLoading } = useClerks();
 
   // Atoms
   const [view, setView] = useAtom(viewAtom);
@@ -151,7 +151,15 @@ export default function SaleTable() {
   }, [sales, saleItems, inventory]);
 
   return (
-    <TableContainer>
+    <TableContainer
+      loading={
+        isSalesLoading ||
+        isClerksLoading ||
+        isInventoryLoading ||
+        isSaleItemsLoading ||
+        isContactsLoading
+      }
+    >
       <Table
         color="bg-col7"
         colorLight="bg-col7-light"

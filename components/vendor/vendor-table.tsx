@@ -31,12 +31,12 @@ export default function VendorsScreen() {
   const [loadedVendorId, setLoadedVendorId] = useAtom(loadedVendorIdAtom);
 
   // SWR
-  const { inventory } = useInventory();
-  const { sales } = useSalesJoined();
-  const { vendorPayments } = useVendorPayments();
-  const { vendors } = useVendors();
-  const { clerks } = useClerks();
-  const { contacts } = useContacts();
+  const { inventory, isInventoryLoading } = useInventory();
+  const { sales, isSalesLoading } = useSalesJoined();
+  const { vendorPayments, isVendorPaymentsLoading } = useVendorPayments();
+  const { vendors, isVendorsLoading } = useVendors();
+  const { clerks, isClerksLoading } = useClerks();
+  const { contacts, isContactsLoading } = useContacts();
 
   // Constants
   const data = useMemo(
@@ -76,7 +76,7 @@ export default function VendorsScreen() {
               };
             })
         : [],
-    [vendors, contacts, clerks]
+    [vendors, sales, inventory, vendorPayments, contacts, clerks]
   );
 
   const columns = useMemo(() => {
@@ -155,7 +155,16 @@ export default function VendorsScreen() {
   }, []);
 
   return (
-    <TableContainer>
+    <TableContainer
+      loading={
+        isSalesLoading ||
+        isClerksLoading ||
+        isVendorsLoading ||
+        isContactsLoading ||
+        isInventoryLoading ||
+        isVendorPaymentsLoading
+      }
+    >
       <Table
         color="bg-col3"
         colorLight="bg-col3-light"

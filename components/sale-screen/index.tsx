@@ -11,6 +11,7 @@ import {
   useLogs,
   useVendorTotalSales,
   useVendorTotalPayments,
+  useSales,
 } from "@/lib/swr-hooks";
 import {
   clerkAtom,
@@ -57,35 +58,38 @@ export default function SaleScreen({ isNew }) {
   // SWR
   const { contacts } = useContacts();
   const { inventory, mutateInventory } = useInventory();
-  const { items, isSaleItemsLoading, mutateSaleItems } = useSaleItemsForSale(
-    sale?.id
-  );
+  const { isSaleItemsLoading, mutateSaleItems } = useSaleItemsForSale(sale?.id);
   const {
-    transactions,
     isSaleTransactionsLoading,
     mutateSaleTransactions,
   } = useSaleTransactionsForSale(sale?.id);
+  const { mutateSales } = useSales();
   const { mutateLogs } = useLogs();
   useVendorTotalPayments(sale?.contact_id);
   useVendorTotalSales(sale?.contact_id);
 
   // State
+  const [saleLoading, setSaleLoading] = useState(false);
   const [laybyLoading, setLaybyLoading] = useState(false);
   const [completeSaleLoading, setCompleteSaleLoading] = useState(false);
   const [parkSaleLoading, setParkSaleLoading] = useState(false);
 
   // Load
-  // useEffect(() => {
-  //   mutateSaleItems();
-  //   mutateSaleTransactions();
-  // }, [sale?.id]);
-  //
-  // useEffect(() => {
-  //   if (!isNew) {
-  //     // console.log("setting sale");
-  //     setSale({ ...sale, items, transactions });
-  //   }
-  // }, [items, transactions]);
+  useEffect(() => {
+    if (!isNew) {
+      console.log("setting sale");
+      setSaleLoading(true);
+      Promise.all([mutateSaleItems(), mutateSaleTransactions()]).then(
+        ([items, transactions]) => {
+          console.log(sale);
+          setSale((sale) => ({ ...sale, items, transactions }));
+          setSaleLoading(false);
+          console.log(sale);
+          console.log("sale set");
+        }
+      );
+    }
+  }, [sale?.id]);
 
   // BUG fix bug where close register screen appears (pressing TAB) - have fixed by just hiding sidebars and screens
   // BUG fix bug where bottom of dialog is visible
@@ -95,10 +99,12 @@ export default function SaleScreen({ isNew }) {
   // Every time transactions or items are changed, recalculate the totals
   useEffect(() => {
     const saleVars = getSaleVars(sale, inventory);
-    setSale({ ...sale, ...saleVars });
-  }, [sale?.id, sale?.transactions, sale?.items]);
+    console.log("setting sale vars");
+    console.log(sale);
+    setSale((sale) => ({ ...sale, ...saleVars }));
+  }, [sale?.transactions, sale?.items]);
 
-  const itemList = writeItemList(inventory, items);
+  const itemList = writeItemList(inventory, sale?.items);
 
   // Functions
   function clearSale() {
@@ -139,6 +145,7 @@ export default function SaleScreen({ isNew }) {
     clearSale();
     setParkSaleLoading(false);
     mutateInventory();
+    mutateSales();
   }
 
   async function clickLayby() {
@@ -191,6 +198,7 @@ export default function SaleScreen({ isNew }) {
     clearSale();
     setLaybyLoading(false);
     mutateInventory();
+    mutateSales();
   }
 
   async function clickCompleteSale() {
@@ -236,6 +244,7 @@ export default function SaleScreen({ isNew }) {
       message: "SALE COMPLETED.",
     });
     mutateInventory();
+    mutateSales();
   }
 
   // Constants
@@ -243,7 +252,10 @@ export default function SaleScreen({ isNew }) {
     // TODO discard sale, do confirm dialog
     {
       type: "cancel",
-      onClick: () => setView({ ...view, saleScreen: false }),
+      onClick: () => {
+        setView({ ...view, saleScreen: false });
+        setSale(null);
+      },
       disabled: true || sale?.totalRemaining === 0,
       text: sale?.state === "layby" ? "CANCEL LAYBY" : "DISCARD SALE",
     },
@@ -287,11 +299,14 @@ export default function SaleScreen({ isNew }) {
     <>
       <ScreenContainer
         show={view?.saleScreen}
-        closeFunction={() => setView({ ...view, saleScreen: false })}
+        closeFunction={() => {
+          setView({ ...view, saleScreen: false });
+          setSale(null);
+        }}
         title={`SALE #${sale?.id} [${
           sale?.state ? sale?.state.toUpperCase() : "IN PROGRESS"
         }]`}
-        loading={isSaleItemsLoading || isSaleTransactionsLoading}
+        loading={saleLoading || isSaleItemsLoading || isSaleTransactionsLoading}
         buttons={buttons}
       >
         <div className="flex items-start overflow-auto w-full">
