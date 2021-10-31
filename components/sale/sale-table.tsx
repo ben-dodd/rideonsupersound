@@ -71,7 +71,7 @@ export default function SaleTable() {
           sell: getTotalPrice(s, inventory),
         };
       }),
-    [sales, contacts, clerks, inventory]
+    [sales, saleItems, contacts, clerks, inventory]
   );
   const columns = useMemo(() => {
     return [

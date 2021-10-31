@@ -100,6 +100,7 @@ export async function saveSaleTransaction(
   clerk: ClerkObject,
   amount: string,
   paymentMethod: string,
+  registerID: number,
   mutate?: Function,
   setCart?: Function,
   vendor?: VendorObject
@@ -113,6 +114,7 @@ export async function saveSaleTransaction(
       parseFloat(amount) >= sale?.totalRemaining
         ? sale?.totalRemaining * 100
         : parseFloat(amount) * 100,
+    register_id: registerID,
   };
   if (paymentMethod === "cash") {
     // Add cash variables

@@ -7,6 +7,7 @@ import {
   useSaleTransactionsForSale,
   useContacts,
   useLogs,
+  useRegisterID,
 } from "@/lib/swr-hooks";
 import {
   viewAtom,
@@ -35,6 +36,7 @@ export default function Cash({ isNew }) {
 
   // SWR
   const { contacts } = useContacts();
+  const { registerID } = useRegisterID();
   const { mutateSaleTransactions } = useSaleTransactionsForSale(sale?.id);
   const { mutateLogs } = useLogs();
 
@@ -60,6 +62,7 @@ export default function Cash({ isNew }) {
           clerk,
           cardPayment,
           "card",
+          registerID,
           mutateSaleTransactions,
           setSale
         );

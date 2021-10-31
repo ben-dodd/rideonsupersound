@@ -11,6 +11,7 @@ import {
   useVendorFromContact,
   useLogs,
   useContacts,
+  useRegisterID,
 } from "@/lib/swr-hooks";
 import {
   viewAtom,
@@ -46,6 +47,7 @@ export default function Gift({ isNew }) {
   const { totalSales } = useVendorTotalSales(sale?.contact_id);
   const { mutateSaleTransactions } = useSaleTransactionsForSale(sale?.id);
   const { mutateLogs } = useLogs();
+  const { registerID } = useRegisterID();
 
   // State
   const [giftCardPayment, setGiftCardPayment] = useState(
@@ -91,6 +93,7 @@ export default function Gift({ isNew }) {
           clerk,
           giftCardPayment,
           "acct",
+          registerID,
           mutateSaleTransactions,
           setSale,
           vendor

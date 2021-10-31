@@ -31,11 +31,16 @@ export default function InventoryScroll() {
         <>
           {"gift card".includes(search) && <GiftCardItem />}
           {"misc item".includes(search) && <MiscItem />}
-          {filterInventory({ inventory, search }).map(
-            (item: InventoryObject) => (
+          {filterInventory({ inventory, search })
+            .sort((a: InventoryObject, b: InventoryObject) => {
+              if (a?.quantity === b?.quantity) return 0;
+              if (a?.quantity < 1) return 1;
+              if (b?.quantity < 1) return -1;
+              return 0;
+            })
+            .map((item: InventoryObject) => (
               <ListItem item={item} key={item?.id} />
-            )
-          )}
+            ))}
         </>
       ) : (
         <div className="text-sm">Use the search bar to find an item...</div>

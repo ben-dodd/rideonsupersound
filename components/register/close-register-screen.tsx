@@ -86,19 +86,19 @@ export default function CloseRegisterScreen() {
   const closeCashGiven =
     cashGiven?.reduce(
       (acc: number, transaction: SaleTransactionObject) =>
-        acc + transaction.change_given,
+        acc + transaction?.change_given,
       0
     ) / 100;
   const closeCashReceived =
     cashReceived?.reduce(
       (acc: number, transaction: SaleTransactionObject) =>
-        acc + transaction.cash_received,
+        acc + transaction?.cash_received,
       0
     ) / 100;
   const closeManualPayments =
     manualPayments?.reduce(
       (acc: number, transaction: SaleTransactionObject) =>
-        acc + transaction.amount,
+        acc + transaction?.amount,
       0
     ) / 100;
   const closeExpectedAmount =
@@ -246,7 +246,11 @@ export default function CloseRegisterScreen() {
                   <div className="text-xl font-bold mt-4">Cash Received</div>
                   {cashReceived?.map(
                     (transaction: SaleTransactionObject, i: number) => (
-                      <CashItem transaction={transaction} key={i} />
+                      <CashItem
+                        transaction={transaction}
+                        field={"cash_received"}
+                        key={i}
+                      />
                     )
                   )}
                   <div
@@ -263,7 +267,12 @@ export default function CloseRegisterScreen() {
                   <div className="text-xl font-bold mt-4">Cash Given</div>
                   {cashGiven?.map(
                     (transaction: SaleTransactionObject, i: number) => (
-                      <CashItem transaction={transaction} negative key={i} />
+                      <CashItem
+                        transaction={transaction}
+                        field={"change_given"}
+                        negative
+                        key={i}
+                      />
                     )
                   )}
                   <div

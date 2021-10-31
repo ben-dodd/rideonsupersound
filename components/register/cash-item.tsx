@@ -8,10 +8,15 @@ import { fTimeDate } from "@/lib/data-functions";
 // Types
 interface CashItemProps {
   transaction: SaleTransactionObject;
+  field?: string;
   negative?: boolean;
 }
 
-export default function CashItem({ transaction, negative }: CashItemProps) {
+export default function CashItem({
+  transaction,
+  field,
+  negative,
+}: CashItemProps) {
   // SWR
   const { clerks } = useClerks();
 
@@ -22,13 +27,14 @@ export default function CashItem({ transaction, negative }: CashItemProps) {
   const date = fTimeDate(transaction?.date);
 
   // TODO Add more info to cash items, possibly add receipt pop up info dialog
+  const value = transaction[field || "amount"];
 
   return (
     <>
       <div className="flex justify-between text-sm">
         <div
           className={
-            transaction?.amount < 0
+            value < 0
               ? negative
                 ? "text-secondary"
                 : "text-tertiary"
@@ -37,14 +43,8 @@ export default function CashItem({ transaction, negative }: CashItemProps) {
               : "text-secondary"
           }
         >{`${
-          transaction?.amount < 0
-            ? negative
-              ? "+"
-              : "-"
-            : negative
-            ? "-"
-            : "+"
-        } $${Math.abs(transaction?.amount / 100)?.toFixed(2)}`}</div>
+          value < 0 ? (negative ? "+" : "-") : negative ? "-" : "+"
+        } $${Math.abs(value / 100)?.toFixed(2)}`}</div>
         <div>{`${transactionBy} (${date})`}</div>
       </div>
       {/*transaction?.note && <div className="text-xs">{transaction?.note}</div>*/}

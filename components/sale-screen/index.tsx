@@ -91,6 +91,7 @@ export default function SaleScreen({ isNew }) {
     }
   }, [sale?.id]);
 
+  // BUG clicking between SELL screen and SALES screen, SELL screen shows up undefined SALESCREEN
   // BUG fix bug where close register screen appears (pressing TAB) - have fixed by just hiding sidebars and screens
   // BUG fix bug where bottom of dialog is visible
   // BUG if you go ADD MORE ITEMS then go back to sale, transactions have disappeared

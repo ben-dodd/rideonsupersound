@@ -7,6 +7,9 @@ import {
   useSaleTransactionsForSale,
   useLogs,
   useContacts,
+  useRegisterID,
+  useCashGiven,
+  useCashReceived,
 } from "@/lib/swr-hooks";
 import {
   viewAtom,
@@ -37,6 +40,9 @@ export default function Cash({ isNew }) {
   const { mutateSaleTransactions } = useSaleTransactionsForSale(sale?.id);
   const { mutateLogs } = useLogs();
   const { contacts } = useContacts();
+  const { registerID } = useRegisterID();
+  const { mutateCashGiven } = useCashGiven(registerID || 0);
+  const { mutateCashReceived } = useCashReceived(registerID || 0);
 
   // State
   const [cashReceived, setCashReceived] = useState(`${sale?.totalRemaining}`);
@@ -62,11 +68,14 @@ export default function Cash({ isNew }) {
           clerk,
           cashReceived,
           "cash",
+          registerID,
           mutateSaleTransactions,
           setSale
         );
         setSubmitting(false);
         setView({ ...view, cashPaymentDialog: false });
+        mutateCashGiven();
+        mutateCashReceived();
         saveLog(
           {
             log: `$${parseFloat(cashReceived)?.toFixed(2)} cash taken from ${

@@ -79,14 +79,15 @@ export interface SaleTransactionObject {
   id?: number;
   sale_id: number;
   clerk_id: number;
+  date?: string;
   payment_method: string;
   amount: number;
   cash_received?: number;
   change_given?: number;
   vendor_payment_id?: number;
   gift_card_id?: number;
+  register_id?: number;
   card_taken?: boolean;
-  date?: string;
   is_deleted?: boolean;
 }
 

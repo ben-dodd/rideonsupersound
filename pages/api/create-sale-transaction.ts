@@ -9,6 +9,7 @@ const handler: NextApiHandler = async (req, res) => {
     amount,
     cash_received,
     change_given,
+    register_id,
     vendor_payment_id,
     gift_card_id,
     card_taken,
@@ -23,11 +24,12 @@ const handler: NextApiHandler = async (req, res) => {
         amount,
         cash_received,
         change_given,
+        register_id,
         vendor_payment_id,
         gift_card_id,
         card_taken
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
       [
         sale_id,
@@ -36,6 +38,7 @@ const handler: NextApiHandler = async (req, res) => {
         amount,
         cash_received,
         change_given,
+        register_id,
         vendor_payment_id,
         gift_card_id,
         card_taken || 0,

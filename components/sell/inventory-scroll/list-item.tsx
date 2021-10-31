@@ -103,7 +103,11 @@ export default function ListItem({ item }: ListItemProps) {
   return (
     <div className="flex w-full mb-2 bg-blue-100">
       <div className="w-32">
-        <div className="w-32 h-32 relative">
+        <div
+          className={`w-32 h-32 relative${
+            item?.quantity < 1 ? " opacity-50" : ""
+          }`}
+        >
           <Image
             layout="fill"
             objectFit="cover"
