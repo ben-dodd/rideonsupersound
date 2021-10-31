@@ -293,7 +293,7 @@ export function useSalesJoined() {
 
   // If any sold items have more than one "stock price" row, we need to only select the latest one
   // (If stock prices are changed after a sale, it won't be included in the returned data)
-  // TODO: Make it so MYSQL only returns the latest one.
+  // REVIEW: Make it so MYSQL only returns the latest one.
 
   let duplicates = {};
 

@@ -1,97 +1,98 @@
+// Packages
 import { useState } from "react";
 import { useAtom } from "jotai";
-import { viewAtom, clerkAtom, loadedHoldIdAtom, pageAtom } from "@/lib/atoms";
+
+// DB
 import { useHold } from "@/lib/swr-hooks";
-import Modal from "@/components/container/modal/base";
+import { viewAtom, clerkAtom, loadedHoldIdAtom, pageAtom } from "@/lib/atoms";
+import { ModalButton } from "@/lib/types";
+
+// Functions
 import { daysFrom } from "@/lib/data-functions";
 import { returnHoldToStock, updateHoldInDatabase } from "@/lib/db-functions";
 
-// Material UI Components
+// Components
+import Modal from "@/components/container/modal";
 import TextField from "@/components/inputs/text-field";
-
-// Custom Components
 import HoldListItem from "./list-item";
-import CloseButton from "@/components/button/close-button";
 
 export default function HoldDialog() {
-  const [view, setView] = useAtom(viewAtom);
+  // Atoms
+  const [view] = useAtom(viewAtom);
   const [loadedHoldId, setLoadedHoldId] = useAtom(loadedHoldIdAtom);
   const [clerk] = useAtom(clerkAtom);
   const [page] = useAtom(pageAtom);
+
+  // SWR
   const { hold } = useHold(loadedHoldId[page]);
+
+  // States
   const [holdPeriod, setHoldPeriod] = useState(null);
   const [notes, setNotes] = useState(null);
 
+  // Constants
+  const buttons: ModalButton[] = [
+    {
+      type: "cancel",
+      onClick: () => setLoadedHoldId({ ...loadedHoldId, [page]: 0 }),
+    },
+    {
+      type: "alt2",
+      onClick: () => returnHoldToStock(hold, clerk),
+      text: "Return to Stock",
+    },
+    {
+      type: "alt1",
+      onClick: addHoldToCart,
+      text: "Add To Cart",
+    },
+    {
+      type: "ok",
+      disabled: isNaN(parseInt(holdPeriod)),
+      onClick: () => {
+        if (holdPeriod !== null || notes !== null) {
+          updateHoldInDatabase({
+            id: loadedHoldId,
+            hold_period:
+              holdPeriod === null ? hold?.hold_period : parseInt(holdPeriod),
+            note: notes === null ? hold?.note : notes,
+          });
+        }
+        setLoadedHoldId({ ...loadedHoldId, [page]: 0 });
+      },
+    },
+  ];
+
   return (
     <Modal
-      open={view?.holdDialog}
-      onClose={() => setLoadedHoldId({ ...loadedHoldId, [page]: 0 })}
+      open={view?.labelPrintDialog}
+      closeFunction={() => setLoadedHoldId({ ...loadedHoldId, [page]: 0 })}
+      title={"HOLD ITEM"}
+      buttons={buttons}
     >
-      <CloseButton
-        closeFunction={() => setLoadedHoldId({ ...loadedHoldId, [page]: 0 })}
-      />
-      <div className="p-4">
-        <div className="text-center text-4xl font-bold py-2">HOLD ITEM</div>
-      </div>
-      <HoldListItem cartItem={hold} />
-      <div>{`Item held for ${daysFrom(hold?.date_from)} of ${
-        hold?.hold_period || 30
-      } days.`}</div>
-      <TextField
-        inputLabel="Hold Period"
-        value={hold?.hold_period}
-        onChange={(e: any) => setHoldPeriod(e.target.value)}
-      />
-      <TextField
-        inputLabel="Notes"
-        className="mb-4"
-        value={hold?.note}
-        onChange={(e: any) => setNotes(e.target.value)}
-        multiline
-      />
-      <div className="grid grid-cols-4">
-        <button
-          className="dialog__footer-buttons--cancel"
-          onClick={() => setLoadedHoldId({ ...loadedHoldId, [page]: 0 })}
-        >
-          Cancel
-        </button>
-        <button
-          className="dialog__footer-buttons--quarternary"
-          onClick={() => returnHoldToStock(hold, clerk)}
-        >
-          Return to Stock
-        </button>
-        <button
-          className="dialog__footer-buttons--secondary"
-          onClick={addHoldToCart}
-        >
-          Add to Cart
-        </button>
-        <button
-          className="dialog__footer-buttons--ok"
-          disabled={isNaN(parseInt(holdPeriod))}
-          onClick={() => {
-            if (holdPeriod !== null || notes !== null) {
-              updateHoldInDatabase({
-                id: loadedHoldId,
-                hold_period:
-                  holdPeriod === null
-                    ? hold?.hold_period
-                    : parseInt(holdPeriod),
-                note: notes === null ? hold?.note : notes,
-              });
-            }
-            setLoadedHoldId({ ...loadedHoldId, [page]: 0 });
-          }}
-        >
-          OK
-        </button>
-      </div>
+      <>
+        <HoldListItem cartItem={hold} />
+        <div>{`Item held for ${daysFrom(hold?.date_from)} of ${
+          hold?.hold_period || 30
+        } days.`}</div>
+        <TextField
+          inputLabel="Hold Period"
+          value={hold?.hold_period}
+          onChange={(e: any) => setHoldPeriod(e.target.value)}
+        />
+        <TextField
+          inputLabel="Notes"
+          className="mb-4"
+          value={hold?.note}
+          onChange={(e: any) => setNotes(e.target.value)}
+          multiline
+        />
+      </>
     </Modal>
   );
 
   function addHoldToCart() {
+    // TODO add hold to cart
     return null;
     // () => {
     //   const cartItems: SaleItemObject[] = cart?.items || []

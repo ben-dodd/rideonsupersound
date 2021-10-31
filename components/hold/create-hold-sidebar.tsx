@@ -2,8 +2,6 @@
 import { useState } from "react";
 import { useAtom } from "jotai";
 
-// TODO make hold screen into index and table, clean up all files, add dialog etc.
-
 // DB
 import { useContacts, useInventory, useLogs } from "@/lib/swr-hooks";
 import {
@@ -26,7 +24,7 @@ import CreateableSelect from "@/components/inputs/createable-select";
 import ListItem from "./list-item";
 import SidebarContainer from "@/components/container/side-bar";
 
-export default function HoldScreen() {
+export default function CreateHoldSidebar() {
   // SWR
   const { contacts } = useContacts();
   const { inventory } = useInventory();

@@ -75,7 +75,11 @@ export default function Cash({ isNew }) {
                     (c: ContactObject) => c?.id === sale?.contact_id
                   )[0]?.name
                 : "customer"
-            } (sale #${sale?.id}). $${changeToGive} change given.`,
+            } (sale #${sale?.id}).${
+              parseFloat(changeToGive) > 0
+                ? ` $${changeToGive} change given.`
+                : ""
+            }`,
             clerk_id: clerk?.id,
             table_id: "sale_transaction",
             row_id: id,

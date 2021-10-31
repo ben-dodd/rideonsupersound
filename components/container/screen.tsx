@@ -29,7 +29,7 @@ export default function ScreenContainer({
   return (
     <div
       className={`absolute top-0 transition-offset duration-300 ${
-        show ? "left-0" : "left-full"
+        show ? "left-0" : "left-full hidden"
       } h-full w-full bg-yellow-200`}
     >
       {loading ? (

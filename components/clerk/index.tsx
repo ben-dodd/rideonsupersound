@@ -20,7 +20,7 @@ export default function Clerk({ clerk }) {
   const [, setClerk] = useAtom(clerkAtom);
 
   // Constants
-  // TODO Check if clerk image needs loading skeleton
+  // REVIEW Check if clerk image needs loading skeleton
   const isLoading = false;
 
   return clerk && !isLoading ? (

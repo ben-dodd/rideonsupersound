@@ -32,7 +32,7 @@ export default function DiscogsPanel({ item, setItem, exchangeRate }) {
     )
       getDiscogsOptions(item, setDiscogsOptions);
   }, []);
-
+  console.log(item);
   return (
     <div className="flex flex-col h-menusm">
       <div className="flex justify-between px-2">
@@ -87,9 +87,11 @@ export default function DiscogsPanel({ item, setItem, exchangeRate }) {
               <div>
                 <div className="font-bold">Barcodes</div>
                 <div className="text-sm">
-                  {(discogsItem?.barcode || []).map((barcode: string) => (
-                    <div key={barcode}>{barcode}</div>
-                  ))}
+                  {(discogsItem?.barcode || []).map(
+                    (barcode: string, i: number) => (
+                      <div key={i}>{barcode}</div>
+                    )
+                  )}
                 </div>
               </div>
             )}
@@ -98,14 +100,16 @@ export default function DiscogsPanel({ item, setItem, exchangeRate }) {
               <div>
                 <div className="pt-2 pb-1 font-bold">Identifiers</div>
                 <div className="text-sm">
-                  {(discogsItem?.identifiers || []).map((id: any) => (
-                    <div key={id?.value}>
-                      <b>{id?.type}:</b>
-                      {` ${id?.value}${
-                        id?.description ? ` (${id.description})` : ""
-                      }`}
-                    </div>
-                  ))}
+                  {(discogsItem?.identifiers || []).map(
+                    (id: any, i: number) => (
+                      <div key={i}>
+                        <b>{id?.type}:</b>
+                        {` ${id?.value}${
+                          id?.description ? ` (${id.description})` : ""
+                        }`}
+                      </div>
+                    )
+                  )}
                 </div>
               </div>
             )}
@@ -120,14 +124,10 @@ export default function DiscogsPanel({ item, setItem, exchangeRate }) {
               ]?.value
                 ? `$${parseFloat(
                     discogsItem?.priceSuggestions[
-                      item?.cond || item?.is_new ? "Mint (M)" : "Good (G)"
+                      item?.is_new ? "Mint (M)" : item?.cond || "Good (G)"
                     ]?.value
                   )?.toFixed(2)} NZD (${
-                    item?.cond
-                      ? item?.cond
-                      : item?.is_new
-                      ? "Mint (M)"
-                      : "Good (G)"
+                    item?.is_new ? "Mint (M)" : item?.cond || "Good (G)"
                   } condition)`
                 : "No Data"}
             </div>
@@ -144,8 +144,8 @@ export default function DiscogsPanel({ item, setItem, exchangeRate }) {
             </div>
           </div>
           <div className="p-2">
-            {(discogsItem?.tracklist || []).map((track: any) => (
-              <div className="flex justify-between" key={track?.position}>
+            {(discogsItem?.tracklist || []).map((track: any, i: number) => (
+              <div className="flex justify-between" key={i}>
                 <div>
                   <b>{track?.position}</b> {track?.title}
                 </div>
@@ -153,11 +153,11 @@ export default function DiscogsPanel({ item, setItem, exchangeRate }) {
               </div>
             ))}
           </div>
-          {(discogsItem?.videos || []).map((vid: any) => (
+          {(discogsItem?.videos || []).map((vid: any, i: number) => (
             <ReactPlayer
               className="p-2"
               url={vid?.uri}
-              key={vid?.uri}
+              key={i}
               controls={true}
               width={"100%"}
             />
@@ -242,7 +242,5 @@ export default function DiscogsPanel({ item, setItem, exchangeRate }) {
     </div>
   );
 }
-
-// TODO fix radio buttons
 // TODO make discogs list more searchable
 // TODO make discogs list scroll independently of other info

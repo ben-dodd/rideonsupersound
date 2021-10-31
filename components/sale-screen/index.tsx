@@ -9,6 +9,8 @@ import {
   useContacts,
   useInventory,
   useLogs,
+  useVendorTotalSales,
+  useVendorTotalPayments,
 } from "@/lib/swr-hooks";
 import {
   clerkAtom,
@@ -58,14 +60,14 @@ export default function SaleScreen({ isNew }) {
   const { items, isSaleItemsLoading, mutateSaleItems } = useSaleItemsForSale(
     sale?.id
   );
-  console.log(items);
   const {
     transactions,
     isSaleTransactionsLoading,
     mutateSaleTransactions,
   } = useSaleTransactionsForSale(sale?.id);
-  console.log(transactions);
   const { mutateLogs } = useLogs();
+  useVendorTotalPayments(sale?.contact_id);
+  useVendorTotalSales(sale?.contact_id);
 
   // State
   const [laybyLoading, setLaybyLoading] = useState(false);
@@ -84,6 +86,11 @@ export default function SaleScreen({ isNew }) {
   //     setSale({ ...sale, items, transactions });
   //   }
   // }, [items, transactions]);
+
+  // BUG fix bug where close register screen appears (pressing TAB) - have fixed by just hiding sidebars and screens
+  // BUG fix bug where bottom of dialog is visible
+  // BUG if you go ADD MORE ITEMS then go back to sale, transactions have disappeared
+  // BUG dates are wrong on vercel
 
   // Every time transactions or items are changed, recalculate the totals
   useEffect(() => {
@@ -233,6 +240,7 @@ export default function SaleScreen({ isNew }) {
 
   // Constants
   const buttons: ModalButton[] = [
+    // TODO discard sale, do confirm dialog
     {
       type: "cancel",
       onClick: () => setView({ ...view, saleScreen: false }),
@@ -243,7 +251,7 @@ export default function SaleScreen({ isNew }) {
       type: "alt3",
       onClick: clickParkSale,
       disabled:
-        (sale?.state && sale?.state !== "in_progress") ||
+        (sale?.state && sale?.state !== "in progress") ||
         sale?.totalRemaining === 0,
       loading: parkSaleLoading,
       text: "PARK SALE",
@@ -252,7 +260,7 @@ export default function SaleScreen({ isNew }) {
       type: "alt2",
       onClick: () => setView({ ...view, saleScreen: false }),
       disabled:
-        (sale?.state && sale?.state !== "in_progress") ||
+        (sale?.state && sale?.state !== "in progress") ||
         sale?.totalRemaining === 0,
       text: "ADD MORE ITEMS",
     },
@@ -277,10 +285,6 @@ export default function SaleScreen({ isNew }) {
 
   return (
     <>
-      {view?.acctPaymentDialog && <Acct isNew={isNew} />}
-      {view?.cardPaymentDialog && <Card isNew={isNew} />}
-      {view?.cashPaymentDialog && <Cash isNew={isNew} />}
-      {view?.giftPaymentDialog && <Gift isNew={isNew} />}
       <ScreenContainer
         show={view?.saleScreen}
         closeFunction={() => setView({ ...view, saleScreen: false })}
@@ -300,6 +304,10 @@ export default function SaleScreen({ isNew }) {
           </div>
         </div>
       </ScreenContainer>
+      {view?.acctPaymentDialog && <Acct isNew={isNew} />}
+      {view?.cardPaymentDialog && <Card isNew={isNew} />}
+      {view?.cashPaymentDialog && <Cash isNew={isNew} />}
+      {view?.giftPaymentDialog && <Gift isNew={isNew} />}
     </>
   );
 }

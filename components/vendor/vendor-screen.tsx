@@ -72,7 +72,7 @@ export default function VendorScreen() {
   // Functions
   function StockItem({ item }) {
     return (
-      <div className="flex justify-between my-2 border-b">
+      <div className={`flex justify-between my-2 border-b`}>
         <div className="flex">
           <div className="cursor-pointer w-1/3" onClick={() => null}></div>
           <div className="ml-8 w-2/3">

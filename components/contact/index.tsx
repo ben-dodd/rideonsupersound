@@ -8,7 +8,7 @@ import { pageAtom } from "@/lib/atoms";
 import ContactTable from "./contact-table";
 import ContactScreen from "./contact-screen";
 
-// TODO clean up all contact files and add contact-screen
+// TODO add contact-screen
 
 export default function Contact() {
   // Atoms

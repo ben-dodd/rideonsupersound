@@ -1,6 +1,6 @@
 // Types
 interface RadioButtonProps {
-  value: boolean;
+  value: string;
   onChange: Function;
   inputLabel: string;
   options: OptionProps[];
@@ -10,9 +10,11 @@ interface RadioButtonProps {
 
 interface OptionProps {
   id: string;
-  value: boolean;
+  value: string;
   label: string;
 }
+
+// BUG fix radio buttons
 
 function RadioButton({
   value,
@@ -30,6 +32,7 @@ function RadioButton({
           <label key={e.id} id={e.id} className="radio-button__label">
             <input
               className="radio-button__input"
+              id={e?.id}
               name={group || null}
               type="radio"
               checked={value === e.value}

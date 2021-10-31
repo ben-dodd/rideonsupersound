@@ -11,7 +11,7 @@ import MidScreenContainer from "@/components/container/mid-screen";
 import SearchBar from "./sell-search-bar";
 import InventoryScroll from "./inventory-scroll";
 import ShoppingCart from "./shopping-cart";
-import HoldScreen from "@/components/hold/hold-screen";
+import CreateHoldSidebar from "@/components/hold/create-hold-sidebar";
 import CreateContactScreen from "@/components/contact/contact-screen";
 import SaleScreen from "@/components/sale-screen";
 import InventoryItemScreen from "../inventory/inventory-item-screen";
@@ -56,7 +56,7 @@ export default function SellScreen() {
         <InventoryScroll />
       </MidScreenContainer>
       <ShoppingCart />
-      <HoldScreen />
+      <CreateHoldSidebar />
       <CreateContactScreen />
       <SaleScreen isNew={true} />
       <InventoryItemScreen page="sell" />

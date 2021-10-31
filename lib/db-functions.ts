@@ -18,9 +18,7 @@ export async function saveSaleAndItemsToDatabase(
   setCart?: Function
 ) {
   let newSale = { ...sale };
-  console.log(newSale);
   let newSaleId = newSale?.id;
-  console.log(newSaleId);
   if (!newSaleId) {
     newSale.state = "in progress";
     newSaleId = await saveSaleToDatabase(newSale, clerk);
@@ -54,7 +52,7 @@ export async function saveSaleToDatabase(sale: SaleObject, clerk: ClerkObject) {
       },
       body: JSON.stringify({
         contact_id: sale?.contact_id || null,
-        state: status || null,
+        state: sale?.state || null,
         sale_opened_by: clerk?.id,
         weather: JSON.stringify(sale?.weather) || "",
         geo_latitude: sale?.geo_latitude || null,

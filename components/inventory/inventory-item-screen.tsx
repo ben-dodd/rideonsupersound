@@ -266,11 +266,13 @@ export default function InventoryItemScreen({ page }) {
               <RadioButton
                 inputLabel="CONDITION"
                 group="isNew"
-                value={Boolean(item?.is_new)}
-                onChange={(value: any) => setItem({ ...item, is_new: value })}
+                value={item?.is_new ? "true" : "false"}
+                onChange={(value: any) =>
+                  setItem({ ...item, is_new: value === "true" ? true : false })
+                }
                 options={[
-                  { id: "new", value: true, label: "New" },
-                  { id: "used", value: false, label: "Used" },
+                  { id: "new", value: "true", label: "New" },
+                  { id: "used", value: "false", label: "Used" },
                 ]}
               />
               <SettingsSelect
@@ -356,8 +358,8 @@ export default function InventoryItemScreen({ page }) {
   );
 }
 
-// TODO delay removing inventory item
-// TODO update inventory quicker
+// REVIEW delay removing inventory item
+// REVIEW update inventory quicker
 // TODO add logs etc. if modified
 // TODO add change price dialog
 // TODO add lost/discarded items etc. add change stock levels dialog
