@@ -142,21 +142,25 @@ export default function ListItem({ item }: ListItemProps) {
             {getItemSku(item)}
           </div>*/}
         </div>
+        <div className="text-lg font-bold text-center bg-black text-white">
+          {getItemSku(item)}
+        </div>
       </div>
       <div className="flex flex-col justify-between pl-2 w-full">
         <div>
-          <div className="font-bold text-md">{`${
-            item?.title || "Untitled"
-          }`}</div>
-          <div className="text-md border-b border-gray-400">{`${
-            item?.artist || "Untitled"
-          }`}</div>
+          <div className="flex justify-between border-b border-gray-400">
+            <div>
+              <div className="font-bold text-md">{`${
+                item?.title || "Untitled"
+              }`}</div>
+              <div className="text-md">{`${item?.artist || "Untitled"}`}</div>
+            </div>
+          </div>
           <div className="text-sm text-green-800">{`${
             item?.genre ? `${item.genre} / ` : ""
           }${item?.format} [${
             item?.is_new ? "NEW" : item?.cond?.toUpperCase() || "USED"
           }]`}</div>
-          <div className="text-lg font-bold">{getItemSku(item)}</div>
         </div>
         <div className="text-xs">
           {`${vendor ? `Selling for ${vendor?.name}` : ""}`}

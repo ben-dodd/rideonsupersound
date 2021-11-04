@@ -42,29 +42,42 @@ export default function LoadSales() {
     (s: SaleObject) => s?.state === "parked" || s?.state === "layby"
   );
 
+  // Functions
+  async function loadSale(s: SaleObject) {
+    return null;
+  }
+
   return (
     <Modal
       open={view?.loadSalesDialog}
       closeFunction={() => setView({ ...view, loadSalesDialog: false })}
       title={"PARKED SALES AND LAYBYS"}
       loading={isSalesLoading || isSaleItemsLoading || isContactsLoading}
+      width="6xl"
     >
       {parkedSales?.length > 0 ? (
-        <div>
+        <div className="flex flex-col overflow-y-auto max-h-dialog">
           {parkedSales?.map((s: SaleObject, i: number) => {
             const items = saleItems?.filter(
               (i: SaleItemObject) => i?.sale_id === s?.id
             );
             return (
-              <div key={i} className="flex">
-                <div className="font-bold">#{s?.id}</div>
-                <div>{fDateTime(nzDate(s?.date_sale_opened))}</div>
-                <div>
+              <div
+                key={i}
+                className="flex p-4 my-2 cursor-pointer hover:bg-gray-100"
+                onClick={() => loadSale(s)}
+              >
+                <div className="font-bold w-1/12">#{s?.id}</div>
+                <div className="w-1/12">{s?.state}</div>
+                <div className="w-3/12">
+                  {fDateTime(nzDate(s?.date_sale_opened))}
+                </div>
+                <div className="w-3/12">
                   {(contacts || []).filter(
                     (c: ContactObject) => c?.id === s?.contact_id
                   )[0]?.name || ""}
                 </div>
-                <div>{writeItemList(inventory, items)}</div>
+                <div className="w-2/6">{writeItemList(inventory, items)}</div>
               </div>
             );
           })}

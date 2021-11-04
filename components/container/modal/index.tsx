@@ -14,6 +14,7 @@ interface ModalProps {
   title?: string;
   buttons?: ModalButton[];
   loading?: boolean;
+  width?: string;
   children: JSX.Element;
 }
 
@@ -24,6 +25,7 @@ export default function Modal({
   title,
   buttons,
   loading = false,
+  width = "md",
   children,
 }: ModalProps) {
   return (
@@ -31,6 +33,7 @@ export default function Modal({
       open={open}
       onClose={closeFunction}
       disableBackdropClick={disableBackdropClick}
+      width={width}
     >
       {closeFunction && <CloseButton closeFunction={closeFunction} />}
       {title && <div className="modal__title">{title}</div>}
