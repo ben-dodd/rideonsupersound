@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useContacts } from "@/lib/swr-hooks";
+import { useContacts, useLogs, useSales } from "@/lib/swr-hooks";
 import {
   newSaleObjectAtom,
   clerkAtom,
@@ -18,6 +18,7 @@ import { saveSaleAndItemsToDatabase, saveLog } from "@/lib/db-functions";
 
 // Components
 import CircularProgress from "@mui/material/CircularProgress";
+import Tooltip from "@mui/material/Tooltip";
 
 // Icons
 import DiscardSaleIcon from "@mui/icons-material/Close";
@@ -29,6 +30,8 @@ import SaveSaleIcon from "@mui/icons-material/Save";
 export default function ShoppingCartActions() {
   // SWR
   const { contacts } = useContacts();
+  const { mutateLogs } = useLogs();
+  const { mutateSales } = useSales();
 
   // Atoms
   const [clerk] = useAtom(clerkAtom);
@@ -47,28 +50,36 @@ export default function ShoppingCartActions() {
     setView({ ...view, cart: false });
   }
 
+  function onClickLoadSales() {
+    setView({ ...view, loadSalesDialog: true });
+  }
+
   async function onClickSaveSale() {
     setSaveSaleLoading(true);
     const saleId = await saveSaleAndItemsToDatabase(
       { ...cart, state: "parked" },
       clerk
     );
-    saveLog({
-      log: `Sale parked (${cart?.items.length} item${
-        cart?.items.length === 1 ? "" : "s"
-      }${
-        cart?.contact_id
-          ? ` for ${
-              (contacts || []).filter(
-                (c: ContactObject) => c?.id === cart?.contact_id
-              )[0]?.name
-            }.`
-          : ""
-      }).`,
-      clerk_id: clerk?.id,
-      table_id: "sale",
-      row_id: saleId,
-    });
+    saveLog(
+      {
+        log: `Sale parked (${cart?.items.length} item${
+          cart?.items.length === 1 ? "" : "s"
+        }${
+          cart?.contact_id
+            ? ` for ${
+                (contacts || []).filter(
+                  (c: ContactObject) => c?.id === cart?.contact_id
+                )[0]?.name
+              }.`
+            : ""
+        }).`,
+        clerk_id: clerk?.id,
+        table_id: "sale",
+        row_id: saleId,
+      },
+      mutateLogs
+    );
+    mutateSales();
     setAlert({
       open: true,
       type: "success",
@@ -85,20 +96,26 @@ export default function ShoppingCartActions() {
       message: "Are you sure you want to clear the cart of all items?",
       yesText: "DISCARD SALE",
       action: () => {
-        saveLog({
-          log: `Cart cleared.`,
-          clerk_id: clerk?.id,
-        });
+        saveLog(
+          {
+            log: `Cart cleared.`,
+            clerk_id: clerk?.id,
+          },
+          mutateLogs
+        );
         setAlert({
           open: true,
           type: "warning",
           message: "SALE DISCARDED",
           undo: () => {
             console.log("Undo");
-            saveLog({
-              log: `Cart uncleared.`,
-              clerk_id: clerk?.id,
-            });
+            saveLog(
+              {
+                log: `Cart uncleared.`,
+                clerk_id: clerk?.id,
+              },
+              mutateLogs
+            );
             setCart({ ...cart });
           },
         });
@@ -112,72 +129,36 @@ export default function ShoppingCartActions() {
 
   return (
     <div>
-      <button
-        className={"icon-button-small-white relative"}
-        disabled
-        onClick={() => setAnchorEl((e: boolean) => !e)}
-      >
-        <RetrieveSaleIcon />
-      </button>
-      {/*<div
-          className={`${
-            anchorEl ? "block" : "hidden"
-          } absolute z-20 bg-white text-black p-2 rounded-b-lg right-0 overflow-scroll w-11/12`}
-          onMouseLeave={() =>
-            document.addEventListener("click", onClickOutsideListener)
-          }
+      <Tooltip title="Load parked sales and laybys">
+        <button
+          className={"icon-button-small-white relative"}
+          onClick={onClickLoadSales}
         >
-          {sales && Object.keys(sales).length > 0 ? (
-            Object.entries(sales)
-              .filter(
-                ([id, sale]) =>
-                  get(sale, "status") !== "complete" &&
-                  get(sale, "status") !== "deleted"
-              )
-              .map(([id, sale]) => (
-                <div
-                  className="hover:bg-gray-200 cursor-pointer p-1"
-                  key={id}
-                  onClick={() => {
-                    addLog(`Retrieved parked sale.`, "sales", id, currentStaff);
-                    dispatch(setLocal("cart", { ...sale, uid: id }));
-                    dispatch(
-                      setAlert({
-                        type: "success",
-                        message: "SAVED SALE RETRIEVED.",
-                      })
-                    );
-                    setAnchorEl(null);
-                  }}
-                >
-                  {writeSaleDescription({
-                    sale,
-                    contacts,
-                  }).toUpperCase()}
-                </div>
-              ))
+          <RetrieveSaleIcon />
+        </button>
+      </Tooltip>
+      <Tooltip title="Park sale">
+        <button
+          className="icon-button-small-white"
+          onClick={onClickSaveSale}
+          disabled={saveSaleLoading || (cart?.items || []).length < 1}
+        >
+          {saveSaleLoading ? (
+            <CircularProgress color="inherit" size={16} />
           ) : (
-            <div>NO SAVED SALES</div>
+            <SaveSaleIcon />
           )}
-        </div>*/}
-      <button
-        className="icon-button-small-white"
-        onClick={onClickSaveSale}
-        disabled={saveSaleLoading || (cart?.items || []).length < 1}
-      >
-        {saveSaleLoading ? (
-          <CircularProgress color="inherit" size={16} />
-        ) : (
-          <SaveSaleIcon />
-        )}
-      </button>
-      <button
-        className="icon-button-small-white"
-        onClick={onClickDiscardSale}
-        disabled={(cart?.items || []).length < 1}
-      >
-        <DiscardSaleIcon />
-      </button>
+        </button>
+      </Tooltip>
+      <Tooltip title="Discard sale">
+        <button
+          className="icon-button-small-white"
+          onClick={onClickDiscardSale}
+          disabled={(cart?.items || []).length < 1}
+        >
+          <DiscardSaleIcon />
+        </button>
+      </Tooltip>
     </div>
   );
 }

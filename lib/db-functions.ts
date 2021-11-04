@@ -20,7 +20,7 @@ export async function saveSaleAndItemsToDatabase(
   let newSale = { ...sale };
   let newSaleId = newSale?.id;
   if (!newSaleId) {
-    newSale.state = "in progress";
+    newSale.state = newSale?.state || "in progress";
     newSaleId = await saveSaleToDatabase(newSale, clerk);
     newSale = { ...newSale, id: newSaleId };
     console.log(newSaleId);

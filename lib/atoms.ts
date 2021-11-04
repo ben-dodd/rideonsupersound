@@ -38,6 +38,7 @@ interface ViewProps {
   giftPaymentDialog?: boolean;
   holdDialog?: boolean;
   labelPrintDialog?: boolean;
+  loadSalesDialog?: boolean;
 }
 
 interface PageProps {

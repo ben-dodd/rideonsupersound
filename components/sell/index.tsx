@@ -20,6 +20,7 @@ import CloseRegisterScreen from "@/components/register/close-register-screen";
 // Dialogs
 import ReturnCashDialog from "@/components/register/return-cash";
 import TakeCashDialog from "@/components/register/take-cash";
+import LoadSalesDialog from "@/components/sell/shopping-cart/load-sales";
 
 export default function SellScreen() {
   // SWR
@@ -63,6 +64,7 @@ export default function SellScreen() {
       <CloseRegisterScreen />
       <ReturnCashDialog />
       <TakeCashDialog />
+      <LoadSalesDialog />
     </div>
   );
 }

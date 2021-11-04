@@ -9,8 +9,9 @@ import {
   clerkAtom,
   confirmModalAtom,
   loadedItemIdAtom,
+  alertAtom,
 } from "@/lib/atoms";
-import { useWeather } from "@/lib/swr-hooks";
+import { useWeather, useInventory, useLogs } from "@/lib/swr-hooks";
 
 // Components
 import Image from "next/image";
@@ -30,6 +31,7 @@ import {
   getItemQuantity,
   getImageSrc,
 } from "@/lib/data-functions";
+import { saveLog } from "@/lib/db-functions";
 
 type ListItemProps = {
   item: InventoryObject;
@@ -39,6 +41,8 @@ export default function ListItem({ item }: ListItemProps) {
   // SWR
   const geolocation = getGeolocation();
   const { weather } = useWeather();
+  const { inventory } = useInventory();
+  const { mutateLogs } = useLogs();
 
   // Atoms
   const [cart, setCart] = useAtom(newSaleObjectAtom);
@@ -46,6 +50,7 @@ export default function ListItem({ item }: ListItemProps) {
   const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom);
   const [, setConfirmModal] = useAtom(confirmModalAtom);
   const [clerk] = useAtom(clerkAtom);
+  const [, setAlert] = useAtom(alertAtom);
 
   // Constants
   const itemQuantity = getItemQuantity(item, cart);
@@ -88,6 +93,20 @@ export default function ListItem({ item }: ListItemProps) {
       geo_longitude: cart?.geo_longitude || geolocation?.longitude,
     });
     setView({ ...view, cart: true });
+    saveLog(
+      {
+        log: `${getItemDisplayName(
+          inventory?.filter((i: InventoryObject) => i?.id === item?.id)[0]
+        )} added to cart${cart?.id ? ` (sale #${cart?.id})` : ""}.`,
+        clerk_id: clerk?.id,
+      },
+      mutateLogs
+    );
+    setAlert({
+      open: true,
+      type: "success",
+      message: `ITEM ADDED TO CART`,
+    });
   }
 
   function clickOpenInventoryModal() {

@@ -4,13 +4,15 @@ import { useAtom } from "jotai";
 
 // DB
 import { useInventory, useLogs } from "@/lib/swr-hooks";
-import { newSaleObjectAtom, viewAtom, clerkAtom } from "@/lib/atoms";
+import { newSaleObjectAtom, viewAtom, clerkAtom, alertAtom } from "@/lib/atoms";
+import { InventoryObject } from "@/lib/types";
 
 // Functions
 import {
   getTotalPrice,
   getTotalStoreCut,
   writeItemList,
+  getItemDisplayName,
 } from "@/lib/data-functions";
 import {
   saveSaleAndItemsToDatabase,
@@ -38,6 +40,7 @@ export default function ShoppingCart() {
   const [view, setView] = useAtom(viewAtom);
   const [clerk] = useAtom(clerkAtom);
   const [cart, setCart] = useAtom(newSaleObjectAtom);
+  const [, setAlert] = useAtom(alertAtom);
 
   // State
   const [loadingSale, setLoadingSale] = useState(false);
@@ -77,6 +80,22 @@ export default function ShoppingCart() {
       deleteSaleFromDatabase(cart?.id);
     }
     setCart({ ...cart, items: newItems });
+    saveLog(
+      {
+        log: `${getItemDisplayName(
+          inventory?.filter(
+            (i: InventoryObject) => i?.id === parseInt(itemId)
+          )[0]
+        )} removed from cart${id ? ` (sale #${id})` : ""}.`,
+        clerk_id: clerk?.id,
+      },
+      mutateLogs
+    );
+    setAlert({
+      open: true,
+      type: "success",
+      message: `ITEM REMOVED FROM CART`,
+    });
     // setRefresh(refresh + 1);
   }
 

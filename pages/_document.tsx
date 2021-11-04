@@ -11,6 +11,7 @@ class MyDocument extends Document {
       <Html>
         <Head>
           <link rel="shortcut icon" href="/favicon.ico" />
+          <title>Ride On Super Sound</title>
         </Head>
         <body>
           <Main />
