@@ -13,6 +13,7 @@ interface ModalProps {
   disableBackdropClick?: boolean;
   title?: string;
   buttons?: ModalButton[];
+  loading?: boolean;
   children: JSX.Element;
 }
 
@@ -22,6 +23,7 @@ export default function Modal({
   disableBackdropClick,
   title,
   buttons,
+  loading = false,
   children,
 }: ModalProps) {
   return (
@@ -32,7 +34,15 @@ export default function Modal({
     >
       {closeFunction && <CloseButton closeFunction={closeFunction} />}
       {title && <div className="modal__title">{title}</div>}
-      <div className="modal__body">{children}</div>
+      <div className="modal__body">
+        {loading ? (
+          <div className="loading-screen">
+            <div className="loading-icon" />
+          </div>
+        ) : (
+          children
+        )}
+      </div>
       {buttons && (
         <div className={`modal__button-div`}>
           {buttons.map((button: ModalButton, i: number) => (

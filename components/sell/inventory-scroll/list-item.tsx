@@ -2,7 +2,6 @@
 import { useAtom } from "jotai";
 
 // DB
-import { InventoryObject } from "@/lib/types";
 import {
   newSaleObjectAtom,
   viewAtom,
@@ -11,7 +10,8 @@ import {
   loadedItemIdAtom,
   alertAtom,
 } from "@/lib/atoms";
-import { useWeather, useInventory, useLogs } from "@/lib/swr-hooks";
+import { useWeather, useInventory, useLogs, useVendors } from "@/lib/swr-hooks";
+import { InventoryObject, VendorObject } from "@/lib/types";
 
 // Components
 import Image from "next/image";
@@ -42,6 +42,7 @@ export default function ListItem({ item }: ListItemProps) {
   const geolocation = getGeolocation();
   const { weather } = useWeather();
   const { inventory } = useInventory();
+  const { vendors } = useVendors();
   const { mutateLogs } = useLogs();
 
   // Atoms
@@ -54,6 +55,10 @@ export default function ListItem({ item }: ListItemProps) {
 
   // Constants
   const itemQuantity = getItemQuantity(item, cart);
+  const vendor =
+    vendors?.filter(
+      (vendor: VendorObject) => vendor?.id === item?.vendor_id
+    )[0] || null;
 
   // Functions
   function clickAddToCart() {
@@ -133,9 +138,9 @@ export default function ListItem({ item }: ListItemProps) {
             src={getImageSrc(item)}
             alt={item?.title || "Inventory image"}
           />
-          <div className="absolute w-32 h-8 bg-opacity-50 bg-black text-white flex justify-center items-center">
+          {/*<div className="absolute w-32 h-8 bg-opacity-50 bg-black text-white flex justify-center items-center">
             {getItemSku(item)}
-          </div>
+          </div>*/}
         </div>
       </div>
       <div className="flex flex-col justify-between pl-2 w-full">
@@ -151,10 +156,12 @@ export default function ListItem({ item }: ListItemProps) {
           }${item?.format} [${
             item?.is_new ? "NEW" : item?.cond?.toUpperCase() || "USED"
           }]`}</div>
+          <div className="text-lg font-bold">{getItemSku(item)}</div>
         </div>
         <div className="text-xs">
-          {`${item?.vendor_name ? `Selling for ${item?.vendor_name}` : ""}`}
+          {`${vendor ? `Selling for ${vendor?.name}` : ""}`}
         </div>
+
         <div className="flex justify-between items-end">
           <Tooltip title="Go to the INVENTORY screen to receive or return items.">
             <div
