@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useInventory, useLogs } from "@/lib/swr-hooks";
+import { useInventory, useLogs, useSaleItemsForSale } from "@/lib/swr-hooks";
 import {
   newSaleObjectAtom,
   loadedSaleObjectAtom,
@@ -39,16 +39,17 @@ type SellListItemProps = {
 };
 
 export default function ItemListItem({ saleItem, isNew }: SellListItemProps) {
-  // SWR
-  const { inventory } = useInventory();
-  const { mutateLogs } = useLogs();
-
   // Atoms
   const [sale, setSale] = useAtom(
     isNew ? newSaleObjectAtom : loadedSaleObjectAtom
   );
   const [, setAlert] = useAtom(alertAtom);
   const [clerk] = useAtom(clerkAtom);
+
+  // SWR
+  const { inventory } = useInventory();
+  const { mutateLogs } = useLogs();
+  const { items } = useSaleItemsForSale(sale?.id);
 
   // State
   const [item, setItem] = useState(null);
@@ -62,14 +63,11 @@ export default function ItemListItem({ saleItem, isNew }: SellListItemProps) {
 
   // Functions
   async function deleteOrRefundItem(id: number, is_refund: boolean) {
-    let newItems = items.filter((i) => i?.id !== id);
-    console.log(items);
-    console.log(items?.filter((i) => i?.id === id)[0]);
+    let saleItem: SaleItemObject =
+      items?.filter((i: SaleItemObject) => i?.id === id)[0] || {};
+    saleItem.is_refunded = true;
     is_refund
-      ? updateSaleItemInDatabase(
-          { ...items?.filter((i) => i?.id === id)[0], is_refunded: true },
-          sale
-        )
+      ? updateSaleItemInDatabase(saleItem, sale)
       : deleteSaleItemFromDatabase(id);
     // if ((cart?.items || []).length < 1) {
     //   // No items left, delete cart
@@ -77,7 +75,6 @@ export default function ItemListItem({ saleItem, isNew }: SellListItemProps) {
     //   // TODO Any transactions need to be refunded.
     //   deleteSaleFromDatabase(cart?.id);
     // }
-    setSale((s) => ({ ...s, items: newItems }));
     saveLog(
       {
         log: `${getItemDisplayName(

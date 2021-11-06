@@ -41,6 +41,7 @@ export default function ShoppingCart() {
   const [clerk] = useAtom(clerkAtom);
   const [cart, setCart] = useAtom(newSaleObjectAtom);
   const [, setAlert] = useAtom(alertAtom);
+  const [, setSale] = useAtom(newSaleObjectAtom);
 
   // State
   const [loadingSale, setLoadingSale] = useState(false);
@@ -62,6 +63,7 @@ export default function ShoppingCart() {
         },
         mutateLogs
       );
+      setSale(cart);
       setView({ ...view, saleScreen: true });
     } catch (e) {
       throw Error(e.message);

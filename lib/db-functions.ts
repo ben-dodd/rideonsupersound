@@ -525,11 +525,11 @@ export async function updateSaleInDatabase(sale: SaleObject) {
 }
 
 export async function updateSaleItemInDatabase(
-  cartItem: SaleItemObject,
-  cart: SaleObject
+  saleItem: SaleItemObject,
+  sale: SaleObject
 ) {
-  console.log(cartItem);
-  console.log(cart);
+  console.log(saleItem);
+  console.log(sale);
   try {
     const res = await fetch("/api/update-sale-item", {
       method: "POST",
@@ -537,15 +537,15 @@ export async function updateSaleItemInDatabase(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        sale_item_id: cartItem?.id,
-        sale_id: cart?.id,
-        item_id: cartItem?.item_id,
-        quantity: parseInt(cartItem?.quantity),
-        vendor_discount: parseInt(cartItem?.vendor_discount),
-        store_discount: parseInt(cartItem?.store_discount),
-        note: cartItem?.note,
-        is_refunded: cartItem?.is_refunded,
-        is_deleted: cartItem?.is_deleted,
+        sale_item_id: saleItem?.id,
+        sale_id: sale?.id,
+        item_id: saleItem?.item_id,
+        quantity: parseInt(saleItem?.quantity),
+        vendor_discount: parseInt(saleItem?.vendor_discount),
+        store_discount: parseInt(saleItem?.store_discount),
+        note: saleItem?.note,
+        is_refunded: saleItem?.is_refunded,
+        is_deleted: saleItem?.is_deleted,
       }),
     });
     const json = await res.json();
