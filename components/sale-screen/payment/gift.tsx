@@ -96,6 +96,7 @@ export default function Gift({ isNew }) {
           sale,
           clerk,
           giftCardPayment,
+          totalRemaining,
           "acct",
           registerID,
           false,

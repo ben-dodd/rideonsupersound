@@ -100,6 +100,7 @@ export async function saveSaleTransaction(
   sale: SaleObject,
   clerk: ClerkObject,
   amount: string,
+  totalRemaining: number,
   paymentMethod: string,
   registerID: number,
   is_refund?: boolean,
@@ -113,8 +114,8 @@ export async function saveSaleTransaction(
     payment_method: paymentMethod,
     is_refund: is_refund || false,
     amount:
-      parseFloat(amount) >= sale?.totalRemaining
-        ? sale?.totalRemaining * 100
+      parseFloat(amount) >= totalRemaining
+        ? totalRemaining * 100
         : parseFloat(amount) * 100,
     register_id: registerID,
   };
@@ -124,8 +125,8 @@ export async function saveSaleTransaction(
       ...transaction,
       cash_received: parseFloat(amount) * 100,
       change_given:
-        parseFloat(amount) > sale?.totalRemaining
-          ? (parseFloat(amount) - sale?.totalRemaining) * 100
+        parseFloat(amount) > totalRemaining
+          ? (parseFloat(amount) - totalRemaining) * 100
           : null,
     };
   }

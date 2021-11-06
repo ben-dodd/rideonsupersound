@@ -81,6 +81,7 @@ export default function Acct({ isNew }) {
           sale,
           clerk,
           acctPayment,
+          totalRemaining,
           "acct",
           registerID,
           false,

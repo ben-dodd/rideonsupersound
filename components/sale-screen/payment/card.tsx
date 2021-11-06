@@ -68,6 +68,7 @@ export default function Cash({ isNew }) {
           sale,
           clerk,
           cardPayment,
+          totalRemaining,
           "card",
           registerID,
           false,
