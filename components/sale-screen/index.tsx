@@ -20,7 +20,12 @@ import {
   loadedSaleObjectAtom,
   newSaleObjectAtom,
 } from "@/lib/atoms";
-import { ModalButton, ContactObject, SaleItemObject } from "@/lib/types";
+import {
+  ModalButton,
+  ContactObject,
+  SaleItemObject,
+  SaleObject,
+} from "@/lib/types";
 
 // Functions
 import { getSaleVars, writeItemList } from "@/lib/data-functions";
@@ -64,7 +69,7 @@ export default function SaleScreen({ isNew }) {
     transactions,
     isSaleTransactionsLoading,
   } = useSaleTransactionsForSale(sale?.id);
-  const { mutateSales } = useSales();
+  const { sales, mutateSales } = useSales();
   const { mutateLogs } = useLogs();
   useVendorTotalPayments(sale?.contact_id);
   useVendorTotalSales(sale?.contact_id);
@@ -124,11 +129,8 @@ export default function SaleScreen({ isNew }) {
 
   async function clickParkSale() {
     setParkSaleLoading(true);
-    const saleId = await saveSaleAndItemsToDatabase(
-      { ...sale, state: "parked" },
-      items,
-      clerk
-    );
+    let parkedSale = { ...sale, state: "parked" };
+    saveSaleAndItemsToDatabase(parkedSale, items, clerk);
     saveLog(
       {
         log: `Sale parked (${items.length} item${
@@ -144,7 +146,7 @@ export default function SaleScreen({ isNew }) {
         }).`,
         clerk_id: clerk?.id,
         table_id: "sale",
-        row_id: saleId,
+        row_id: sale?.id,
       },
       mutateLogs
     );
@@ -155,8 +157,9 @@ export default function SaleScreen({ isNew }) {
     });
     clearSale();
     setParkSaleLoading(false);
+    let otherSales = sales?.filter((s: SaleObject) => s?.id !== sale?.id);
+    mutateSales([...otherSales, parkedSale], false);
     mutateInventory();
-    mutateSales();
   }
 
   async function clickLayby() {
@@ -172,44 +175,46 @@ export default function SaleScreen({ isNew }) {
       // date_layby_started
       // layby_started_by
       let date = new Date();
-      await updateSaleInDatabase({
+      let laybySale = {
         ...sale,
         state: "layby",
         date_layby_started: date.toISOString(),
         layby_started_by: clerk?.id,
+      };
+      updateSaleInDatabase(laybySale);
+      saveLog(
+        {
+          log: `Layby started${
+            sale?.contact_id
+              ? ` for ${
+                  (contacts || []).filter(
+                    (c: ContactObject) => c?.id === sale?.contact_id
+                  )[0]?.name
+                }`
+              : ""
+          } (${items.length} item${
+            items.length === 1 ? "" : "s"
+          } / $${totalPrice?.toFixed(2)} with $${totalRemaining?.toFixed(
+            2
+          )} left to pay).`,
+          clerk_id: clerk?.id,
+          table_id: "sale",
+          row_id: sale?.id,
+        },
+        mutateLogs
+      );
+      setAlert({
+        open: true,
+        type: "success",
+        message: "LAYBY STARTED.",
       });
+      let otherSales = sales?.filter((s: SaleObject) => s?.id !== sale?.id);
+      mutateSales([...otherSales, laybySale], false);
+      mutateInventory();
     }
-    saveLog(
-      {
-        log: `Layby started${
-          sale?.contact_id
-            ? ` for ${
-                (contacts || []).filter(
-                  (c: ContactObject) => c?.id === sale?.contact_id
-                )[0]?.name
-              }`
-            : ""
-        } (${items.length} item${
-          items.length === 1 ? "" : "s"
-        } / $${totalPrice?.toFixed(2)} with $${totalRemaining?.toFixed(
-          2
-        )} left to pay).`,
-        clerk_id: clerk?.id,
-        table_id: "sale",
-        row_id: sale?.id,
-      },
-      mutateLogs
-    );
-    setAlert({
-      open: true,
-      type: "success",
-      message: "LAYBY STARTED.",
-    });
     // close dialog
-    clearSale();
     setLaybyLoading(false);
-    mutateInventory();
-    mutateSales();
+    clearSale();
   }
 
   async function clickCompleteSale() {
@@ -237,7 +242,8 @@ export default function SaleScreen({ isNew }) {
         saveStockMovementToDatabase(saleItem, clerk, "sold", null);
       }
     });
-    updateSaleInDatabase({ ...sale, state: "completed" });
+    let completedSale = { ...sale, state: "completed" };
+    updateSaleInDatabase(completedSale);
     clearSale();
     setCompleteSaleLoading(false);
     saveLog(
@@ -254,8 +260,9 @@ export default function SaleScreen({ isNew }) {
       type: "success",
       message: "SALE COMPLETED.",
     });
+    let otherSales = sales?.filter((s: SaleObject) => s?.id !== sale?.id);
+    mutateSales([...otherSales, completedSale], false);
     mutateInventory();
-    mutateSales();
   }
 
   // Constants

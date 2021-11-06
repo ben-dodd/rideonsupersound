@@ -17,7 +17,7 @@ export default function GiftCardScreen() {
       }`}
     >
       {" "}
-      <GiftCardTable />
+      {page === "giftCards" && <GiftCardTable />}
     </div>
   );
 }

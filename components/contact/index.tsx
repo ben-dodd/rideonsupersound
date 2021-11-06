@@ -19,7 +19,7 @@ export default function Contact() {
         page !== "contacts" ? "hidden" : ""
       }`}
     >
-      <ContactTable />
+      {page === "contacts" && <ContactTable />}
     </div>
   );
 }

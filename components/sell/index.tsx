@@ -15,6 +15,7 @@ import CreateHoldSidebar from "@/components/hold/create-hold-sidebar";
 import CreateContactScreen from "@/components/contact/contact-screen";
 import SaleScreen from "@/components/sale-screen";
 import InventoryItemScreen from "../inventory/inventory-item-screen";
+import OpenRegisterScreen from "@/components/register";
 import CloseRegisterScreen from "@/components/register/close-register-screen";
 
 // Dialogs
@@ -61,10 +62,11 @@ export default function SellScreen() {
       <CreateContactScreen />
       <SaleScreen isNew={true} />
       <InventoryItemScreen page="sell" />
-      <CloseRegisterScreen />
-      <ReturnCashDialog />
-      <TakeCashDialog />
-      <LoadSalesDialog />
+      {page === "sell" || (registerID === 0 && <OpenRegisterScreen />)}
+      {view?.closeRegisterScreen && <CloseRegisterScreen />}
+      {view?.returnCashDialog && <ReturnCashDialog />}
+      {view?.takeCashDialog && <TakeCashDialog />}
+      {view?.loadSalesDialog && <LoadSalesDialog />}
     </div>
   );
 }

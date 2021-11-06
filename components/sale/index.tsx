@@ -20,7 +20,7 @@ export default function SalesScreen() {
       }`}
     >
       {" "}
-      <SaleTable />
+      {page === "sales" && <SaleTable />}
       <SaleScreen isNew={false} />
     </div>
   );

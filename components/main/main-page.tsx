@@ -13,7 +13,6 @@ import Alert from "@mui/material/Alert";
 import Nav from "@/components/nav";
 import Menu from "@/components/menu";
 import SellScreen from "@/components/sell";
-import OpenRegisterScreen from "@/components/register";
 import InventoryScreen from "@/components/inventory";
 import VendorScreen from "@/components/vendor";
 import ContactScreen from "@/components/contact";
@@ -39,7 +38,6 @@ export default function MainPage() {
         <Menu />
         <div className="bg-green-500 h-full w-full absolute sm:static">
           <SellScreen />
-          <OpenRegisterScreen />
           <InventoryScreen />
           <VendorScreen />
           <ContactScreen />

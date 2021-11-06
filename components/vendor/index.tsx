@@ -17,7 +17,7 @@ export default function VendorPage() {
         page !== "vendors" ? "hidden" : ""
       }`}
     >
-      <VendorTable />
+      {page === "vendors" && <VendorTable />}
       <VendorScreen />
     </div>
   );

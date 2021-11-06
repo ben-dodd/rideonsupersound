@@ -20,7 +20,7 @@ export default function InventoryScreen() {
         page !== "inventory" ? "hidden" : ""
       }`}
     >
-      <InventoryTable />
+      {page === "inventory" && <InventoryTable />}
       <InventoryItemScreen page="inventory" />
       <ReceiveStockScreen />
       <ReturnStockScreen />

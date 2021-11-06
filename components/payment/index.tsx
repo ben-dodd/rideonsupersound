@@ -18,7 +18,7 @@ export default function PaymentsScreen() {
         page !== "payments" ? "hidden" : ""
       }`}
     >
-      <PaymentTable />
+      {page === "payments" && <PaymentTable />}
       <BatchPaymentDialog />
       <CashPaymentDialog />
     </div>
