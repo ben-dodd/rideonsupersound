@@ -3,7 +3,12 @@ import { useAtom } from "jotai";
 import { useSwipeable } from "react-swipeable";
 
 // DB
-import { viewAtom, pageAtom, newSaleObjectAtom } from "@/lib/atoms";
+import {
+  viewAtom,
+  pageAtom,
+  newSaleObjectAtom,
+  loadedItemIdAtom,
+} from "@/lib/atoms";
 import { useRegisterID } from "@/lib/swr-hooks";
 
 // Components
@@ -26,6 +31,7 @@ import LoadSalesDialog from "@/components/sell/shopping-cart/load-sales";
 export default function SellScreen() {
   // SWR
   const { registerID } = useRegisterID();
+  const [loadedItemId] = useAtom(loadedItemIdAtom);
 
   // Atoms
   const [view, setView] = useAtom(viewAtom);
@@ -61,8 +67,8 @@ export default function SellScreen() {
       <ShoppingCart />
       <CreateHoldSidebar />
       <CreateContactScreen />
-      <SaleScreen isNew={true} />
-      <InventoryItemScreen page="sell" />
+      {sale?.id && <SaleScreen isNew={true} />}
+      {loadedItemId > 0 && <InventoryItemScreen page="sell" />}
       {page === "sell" || (registerID === 0 && <OpenRegisterScreen />)}
       {view?.closeRegisterScreen && <CloseRegisterScreen />}
       {view?.returnCashDialog && <ReturnCashDialog />}

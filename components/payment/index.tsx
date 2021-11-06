@@ -2,7 +2,7 @@
 import { useAtom } from "jotai";
 
 // DB
-import { pageAtom } from "@/lib/atoms";
+import { pageAtom, viewAtom } from "@/lib/atoms";
 
 // Components
 import PaymentTable from "./payment-table";
@@ -12,6 +12,7 @@ import CashPaymentDialog from "./cash-payment-dialog";
 export default function PaymentsScreen() {
   // Atoms
   const [page] = useAtom(pageAtom);
+  const [view] = useAtom(viewAtom);
   return (
     <div
       className={`flex relative overflow-x-hidden ${
@@ -19,8 +20,8 @@ export default function PaymentsScreen() {
       }`}
     >
       {page === "payments" && <PaymentTable />}
-      <BatchPaymentDialog />
-      <CashPaymentDialog />
+      {view?.batchVendorPaymentDialog && <BatchPaymentDialog />}
+      {view?.cashVendorPaymentDialog && <CashPaymentDialog />}
     </div>
   );
 }

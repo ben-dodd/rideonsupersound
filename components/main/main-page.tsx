@@ -2,7 +2,7 @@
 import { useAtom } from "jotai";
 
 // DB
-import { alertAtom } from "@/lib/atoms";
+import { alertAtom, pageAtom } from "@/lib/atoms";
 import { useInventory } from "@/lib/swr-hooks";
 
 // Components
@@ -26,6 +26,7 @@ import HelpDialog from "@/components/help";
 export default function MainPage() {
   // Atoms
   const [alert, setAlert] = useAtom(alertAtom);
+  const [page] = useAtom(pageAtom);
 
   // Load necessary data
   useInventory();
@@ -43,7 +44,7 @@ export default function MainPage() {
           <ContactScreen />
           <GiftCardsScreen />
           <SalesScreen />
-          <LogScreen />
+          {page === "logs" && <LogScreen />}
           <PaymentsScreen />
         </div>
         <HelpDialog />

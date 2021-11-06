@@ -2,7 +2,7 @@
 import { useAtom } from "jotai";
 
 // DB
-import { pageAtom } from "@/lib/atoms";
+import { pageAtom, loadedSaleObjectAtom } from "@/lib/atoms";
 
 // Components
 import SaleScreen from "@/components/sale-screen";
@@ -13,6 +13,9 @@ import SaleTable from "@/components/sale/sale-table";
 export default function SalesScreen() {
   // Atoms
   const [page] = useAtom(pageAtom);
+  const [loadedSale] = useAtom(loadedSaleObjectAtom);
+
+  // SWR
   return (
     <div
       className={`flex relative overflow-x-hidden ${
@@ -21,7 +24,7 @@ export default function SalesScreen() {
     >
       {" "}
       {page === "sales" && <SaleTable />}
-      <SaleScreen isNew={false} />
+      {loadedSale?.id && <SaleScreen isNew={false} />}
     </div>
   );
 }
