@@ -62,12 +62,12 @@ export default function ItemListItem({ saleItem, isNew }: SellListItemProps) {
 
   // Functions
   async function deleteOrRefundItem(id: number, is_refund: boolean) {
-    let newItems = sale?.items.filter((i) => i?.id !== id);
-    console.log(sale?.items);
-    console.log(sale?.items?.filter((i) => i?.id === id)[0]);
+    let newItems = items.filter((i) => i?.id !== id);
+    console.log(items);
+    console.log(items?.filter((i) => i?.id === id)[0]);
     is_refund
       ? updateSaleItemInDatabase(
-          { ...sale?.items?.filter((i) => i?.id === id)[0], is_refunded: true },
+          { ...items?.filter((i) => i?.id === id)[0], is_refunded: true },
           sale
         )
       : deleteSaleItemFromDatabase(id);
@@ -77,7 +77,7 @@ export default function ItemListItem({ saleItem, isNew }: SellListItemProps) {
     //   // TODO Any transactions need to be refunded.
     //   deleteSaleFromDatabase(cart?.id);
     // }
-    setSale({ ...sale, items: newItems });
+    setSale((s) => ({ ...s, items: newItems }));
     saveLog(
       {
         log: `${getItemDisplayName(

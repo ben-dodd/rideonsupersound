@@ -14,8 +14,9 @@ import {
 
 export async function saveSaleAndItemsToDatabase(
   sale: SaleObject,
-  clerk: ClerkObject,
-  setCart?: Function
+  items: SaleItemObject[],
+  clerk: ClerkObject
+  // setCart?: Function
 ) {
   let newSale = { ...sale };
   let newSaleId = newSale?.id;
@@ -28,7 +29,7 @@ export async function saveSaleAndItemsToDatabase(
     updateSaleInDatabase(sale);
   }
   let newItems = [];
-  for await (const item of sale?.items) {
+  for await (const item of items) {
     if (!item?.id) {
       let newItem = { ...item };
       const newSaleItemId = await saveSaleItemToDatabase(item, newSale?.id);
@@ -39,7 +40,7 @@ export async function saveSaleAndItemsToDatabase(
       newItems.push(item);
     }
   }
-  setCart && setCart({ ...newSale, items: newItems });
+  // setCart && setCart({ ...newSale, items: newItems });
   return newSaleId;
 }
 
@@ -102,11 +103,10 @@ export async function saveSaleTransaction(
   paymentMethod: string,
   registerID: number,
   is_refund?: boolean,
+  transactions?: SaleTransactionObject[],
   mutate?: Function,
-  setCart?: Function,
   vendor?: VendorObject
 ) {
-  let newSale = { ...sale };
   let transaction: SaleTransactionObject = {
     sale_id: sale?.id,
     clerk_id: clerk?.id,
@@ -151,12 +151,7 @@ export async function saveSaleTransaction(
     id: transactionId,
     date: date.toISOString(),
   };
-  const newTransactions = newSale?.transactions
-    ? [...newSale?.transactions, transaction]
-    : [transaction];
-  newSale.transactions = newTransactions;
-  setCart && setCart(newSale);
-  mutate();
+  mutate([...transactions, transaction], false);
   return transactionId;
 }
 
@@ -625,6 +620,7 @@ export async function deleteSaleItemFromDatabase(sale_item_id: number) {
 
 export async function deleteSaleTransactionFromDatabase(
   transaction_id: number,
+  transactions: SaleTransactionObject[],
   mutate: Function
 ) {
   try {
@@ -639,7 +635,16 @@ export async function deleteSaleTransactionFromDatabase(
     });
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
-    mutate();
+    let deletedTransaction = transactions?.filter(
+      (t: SaleTransactionObject) => t?.id === transaction_id
+    )[0];
+    let otherTransactions = transactions?.filter(
+      (t: SaleTransactionObject) => t?.id !== transaction_id
+    );
+    mutate(
+      [...otherTransactions, { ...deletedTransaction, is_deleted: true }],
+      false
+    );
   } catch (e) {
     throw Error(e.message);
   }

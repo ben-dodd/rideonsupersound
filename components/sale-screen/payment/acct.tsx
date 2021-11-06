@@ -5,6 +5,8 @@ import { useAtom } from "jotai";
 // DB
 import {
   useSaleTransactionsForSale,
+  useSaleItemsForSale,
+  useInventory,
   useVendorTotalPayments,
   useVendorTotalSales,
   useVendorFromContact,
@@ -21,7 +23,7 @@ import {
 import { ModalButton } from "@/lib/types";
 
 // Functions
-import { getTotalOwing } from "@/lib/data-functions";
+import { getTotalOwing, getSaleVars } from "@/lib/data-functions";
 import { saveSaleTransaction, saveLog } from "@/lib/db-functions";
 
 // Components
@@ -32,9 +34,7 @@ export default function Acct({ isNew }) {
   // Atoms
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
-  const [sale, setSale] = useAtom(
-    isNew ? newSaleObjectAtom : loadedSaleObjectAtom
-  );
+  const [sale] = useAtom(isNew ? newSaleObjectAtom : loadedSaleObjectAtom);
   const [, setAlert] = useAtom(alertAtom);
 
   // SWR
@@ -42,11 +42,17 @@ export default function Acct({ isNew }) {
   const { registerID } = useRegisterID();
   const { totalPayments } = useVendorTotalPayments(sale?.contact_id);
   const { totalSales } = useVendorTotalSales(sale?.contact_id);
-  const { mutateSaleTransactions } = useSaleTransactionsForSale(sale?.id);
+  const { transactions, mutateSaleTransactions } = useSaleTransactionsForSale(
+    sale?.id
+  );
+  const { items } = useSaleItemsForSale(sale?.id);
+  const { inventory } = useInventory();
   const { mutateLogs } = useLogs();
 
+  const { totalRemaining } = getSaleVars(items, transactions, inventory);
+
   // State
-  const [acctPayment, setAcctPayment] = useState(`${sale?.totalRemaining}`);
+  const [acctPayment, setAcctPayment] = useState(`${totalRemaining}`);
   const [submitting, setSubmitting] = useState(false);
 
   // Constants
@@ -63,7 +69,7 @@ export default function Acct({ isNew }) {
       type: "ok",
       disabled:
         submitting ||
-        parseFloat(acctPayment) > sale?.totalRemaining ||
+        parseFloat(acctPayment) > totalRemaining ||
         totalOwing < parseFloat(acctPayment) ||
         parseFloat(acctPayment) === 0 ||
         acctPayment <= "" ||
@@ -78,8 +84,8 @@ export default function Acct({ isNew }) {
           "acct",
           registerID,
           false,
+          transactions,
           mutateSaleTransactions,
-          setSale,
           vendor
         );
         setSubmitting(false);
@@ -125,7 +131,7 @@ export default function Acct({ isNew }) {
           onChange={(e: any) => setAcctPayment(e.target.value)}
         />
         <div className="text-center">{`Remaining to pay: $${(
-          sale?.totalRemaining || 0
+          totalRemaining || 0
         )?.toFixed(2)}`}</div>
         <div className="text-center font-bold">
           {`Remaining in account: $${totalOwing?.toFixed(2)}`}
@@ -135,13 +141,13 @@ export default function Acct({ isNew }) {
             ? "..."
             : isNaN(parseFloat(acctPayment))
             ? "NUMBERS ONLY PLEASE"
-            : parseFloat(acctPayment) > sale?.totalRemaining
+            : parseFloat(acctPayment) > totalRemaining
             ? `PAYMENT TOO HIGH`
             : totalOwing < parseFloat(acctPayment)
             ? `NOT ENOUGH IN ACCOUNT`
-            : parseFloat(acctPayment) < sale?.totalRemaining
+            : parseFloat(acctPayment) < totalRemaining
             ? `AMOUNT SHORT BY $${(
-                sale?.totalRemaining - parseFloat(acctPayment)
+                totalRemaining - parseFloat(acctPayment)
               )?.toFixed(2)}`
             : "ALL GOOD!"}
         </div>

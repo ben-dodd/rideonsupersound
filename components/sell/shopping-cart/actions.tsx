@@ -58,6 +58,7 @@ export default function ShoppingCartActions() {
     setSaveSaleLoading(true);
     const saleId = await saveSaleAndItemsToDatabase(
       { ...cart, state: "parked" },
+      cart?.items,
       clerk
     );
     saveLog(

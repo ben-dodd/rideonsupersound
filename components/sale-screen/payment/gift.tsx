@@ -5,6 +5,7 @@ import { useAtom } from "jotai";
 // DB
 import {
   useSaleTransactionsForSale,
+  useSaleItemsForSale,
   useGiftCards,
   useVendorTotalPayments,
   useVendorTotalSales,
@@ -12,6 +13,7 @@ import {
   useLogs,
   useContacts,
   useRegisterID,
+  useInventory,
 } from "@/lib/swr-hooks";
 import {
   viewAtom,
@@ -23,7 +25,7 @@ import {
 import { GiftCardObject, ModalButton, ContactObject } from "@/lib/types";
 
 // Functions
-import { getTotalOwing } from "@/lib/data-functions";
+import { getTotalOwing, getSaleVars } from "@/lib/data-functions";
 import { saveSaleTransaction, saveLog } from "@/lib/db-functions";
 
 // Components
@@ -34,9 +36,7 @@ export default function Gift({ isNew }) {
   // Atoms
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
-  const [sale, setSale] = useAtom(
-    isNew ? newSaleObjectAtom : loadedSaleObjectAtom
-  );
+  const [sale] = useAtom(isNew ? newSaleObjectAtom : loadedSaleObjectAtom);
   const [, setAlert] = useAtom(alertAtom);
 
   // SWR
@@ -45,14 +45,18 @@ export default function Gift({ isNew }) {
   const { vendor } = useVendorFromContact(sale?.contact_id);
   const { totalPayments } = useVendorTotalPayments(sale?.contact_id);
   const { totalSales } = useVendorTotalSales(sale?.contact_id);
-  const { mutateSaleTransactions } = useSaleTransactionsForSale(sale?.id);
+  const { transactions, mutateSaleTransactions } = useSaleTransactionsForSale(
+    sale?.id
+  );
+  const { items } = useSaleItemsForSale(sale?.id);
   const { mutateLogs } = useLogs();
   const { registerID } = useRegisterID();
+  const { inventory } = useInventory();
+
+  const { totalRemaining } = getSaleVars(items, transactions, inventory);
 
   // State
-  const [giftCardPayment, setGiftCardPayment] = useState(
-    `${sale?.totalRemaining}`
-  );
+  const [giftCardPayment, setGiftCardPayment] = useState(`${totalRemaining}`);
   const [giftCardCode, setGiftCardCode] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -80,7 +84,7 @@ export default function Gift({ isNew }) {
       type: "ok",
       disabled:
         submitting ||
-        parseFloat(giftCardPayment) > sale?.totalRemaining ||
+        parseFloat(giftCardPayment) > totalRemaining ||
         totalOwing < parseFloat(giftCardPayment) ||
         parseFloat(giftCardPayment) === 0 ||
         giftCardPayment <= "" ||
@@ -95,8 +99,8 @@ export default function Gift({ isNew }) {
           "acct",
           registerID,
           false,
+          transactions,
           mutateSaleTransactions,
-          setSale,
           vendor
         );
         setSubmitting(false);
@@ -154,7 +158,7 @@ export default function Gift({ isNew }) {
           onChange={(e: any) => setGiftCardPayment(e.target.value)}
         />
         <div className="text-center">{`Remaining to pay: $${(
-          sale?.totalRemaining || 0
+          totalRemaining || 0
         )?.toFixed(2)}`}</div>
         <div className="text-center font-bold">
           {!giftCardCode || giftCardCode === ""
@@ -174,13 +178,13 @@ export default function Gift({ isNew }) {
             ? "..."
             : isNaN(parseFloat(giftCardPayment))
             ? "NUMBERS ONLY PLEASE"
-            : parseFloat(giftCardPayment) > sale?.totalRemaining
+            : parseFloat(giftCardPayment) > totalRemaining
             ? `PAYMENT TOO HIGH`
             : totalOwing < parseFloat(giftCardPayment)
             ? `NOT ENOUGH IN ACCOUNT`
-            : parseFloat(giftCardPayment) < sale?.totalRemaining
+            : parseFloat(giftCardPayment) < totalRemaining
             ? `AMOUNT SHORT BY $${(
-                sale?.totalRemaining - parseFloat(giftCardPayment)
+                totalRemaining - parseFloat(giftCardPayment)
               )?.toFixed(2)}`
             : "ALL GOOD!"}
         </div>

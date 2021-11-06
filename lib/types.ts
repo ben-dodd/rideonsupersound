@@ -41,8 +41,6 @@ export interface SaleObject {
   id?: number;
   contact_id?: number;
   state?: string;
-  items?: SaleItemObject[];
-  transactions?: SaleTransactionObject[];
   date_sale_opened?: string;
   sale_opened_by?: number;
   date_sale_closed?: string;
@@ -55,11 +53,7 @@ export interface SaleObject {
   geo_latitude?: number;
   geo_longitude?: number;
   is_deleted?: boolean;
-  totalPrice?: number;
-  totalPaid?: number;
-  totalStoreCut?: number;
-  totalVendorCut?: number;
-  totalRemaining?: number;
+  items?: SaleItemObject[];
 }
 
 export interface SaleItemObject {

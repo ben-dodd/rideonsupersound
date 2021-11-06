@@ -1,5 +1,5 @@
 // Packages
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
@@ -20,14 +20,10 @@ import {
   loadedSaleObjectAtom,
   newSaleObjectAtom,
 } from "@/lib/atoms";
-import { ModalButton, ContactObject, InventoryObject } from "@/lib/types";
+import { ModalButton, ContactObject, SaleItemObject } from "@/lib/types";
 
 // Functions
-import {
-  getSaleVars,
-  writeItemList,
-  getItemDisplayName,
-} from "@/lib/data-functions";
+import { getSaleVars, writeItemList } from "@/lib/data-functions";
 import {
   saveSaleAndItemsToDatabase,
   saveLog,
@@ -35,7 +31,6 @@ import {
   updateSaleInDatabase,
   updateSaleItemInDatabase,
   saveGiftCardToDatabase,
-  deleteSaleItemFromDatabase,
 } from "@/lib/db-functions";
 
 // Components
@@ -64,10 +59,10 @@ export default function SaleScreen({ isNew }) {
   // SWR
   const { contacts } = useContacts();
   const { inventory, mutateInventory } = useInventory();
-  const { isSaleItemsLoading, mutateSaleItems } = useSaleItemsForSale(sale?.id);
+  const { items, isSaleItemsLoading } = useSaleItemsForSale(sale?.id);
   const {
+    transactions,
     isSaleTransactionsLoading,
-    mutateSaleTransactions,
   } = useSaleTransactionsForSale(sale?.id);
   const { mutateSales } = useSales();
   const { mutateLogs } = useLogs();
@@ -75,27 +70,35 @@ export default function SaleScreen({ isNew }) {
   useVendorTotalSales(sale?.contact_id);
 
   // State
-  const [saleLoading, setSaleLoading] = useState(false);
+  // const [saleLoading, setSaleLoading] = useState(false);
   const [laybyLoading, setLaybyLoading] = useState(false);
   const [completeSaleLoading, setCompleteSaleLoading] = useState(false);
   const [parkSaleLoading, setParkSaleLoading] = useState(false);
 
+  // Every time transactions or items are changed, recalculate the totals
+  // useEffect(() => {
+  //   const saleVars = getSaleVars({ ...sale, items, transactions }, inventory);
+  //   console.log("setting sale vars");
+  //   console.log(sale);
+  //   setSale({ ...sale, ...saleVars });
+  // }, [transactions, items]);
+
   // Load
-  useEffect(() => {
-    if (!isNew) {
-      console.log("setting sale");
-      setSaleLoading(true);
-      Promise.all([mutateSaleItems(), mutateSaleTransactions()]).then(
-        ([items, transactions]) => {
-          console.log(sale);
-          setSale((sale) => ({ ...sale, items, transactions }));
-          setSaleLoading(false);
-          console.log(sale);
-          console.log("sale set");
-        }
-      );
-    }
-  }, [sale?.id]);
+  // useEffect(() => {
+  //   if (!isNew) {
+  //     console.log("setting sale");
+  //     setSaleLoading(true);
+  //     Promise.all([mutateSaleItems(), mutateSaleTransactions()]).then(
+  //       ([items, transactions]) => {
+  //         console.log(sale);
+  //         setSale({ ...sale, items, transactions });
+  //         setSaleLoading(false);
+  //         console.log(sale);
+  //         console.log("sale set");
+  //       }
+  //     );
+  //   }
+  // }, [sale?.id]);
 
   // TODO load sales properly
   // BUG why does sale become undefined -> sets sale to only sale vars
@@ -106,15 +109,12 @@ export default function SaleScreen({ isNew }) {
   // BUG dates are wrong on vercel
   // BUG why are some sales showing items as separate line items, not 2x quantity
 
-  // Every time transactions or items are changed, recalculate the totals
-  useEffect(() => {
-    const saleVars = getSaleVars(sale, inventory);
-    console.log("setting sale vars");
-    console.log(sale);
-    setSale((sale) => ({ ...sale, ...saleVars }));
-  }, [sale?.transactions, sale?.items]);
-
-  const itemList = writeItemList(inventory, sale?.items);
+  const itemList = writeItemList(inventory, items);
+  const { totalRemaining, totalPrice } = getSaleVars(
+    items,
+    transactions,
+    inventory
+  );
 
   // Functions
   function clearSale() {
@@ -126,12 +126,13 @@ export default function SaleScreen({ isNew }) {
     setParkSaleLoading(true);
     const saleId = await saveSaleAndItemsToDatabase(
       { ...sale, state: "parked" },
+      items,
       clerk
     );
     saveLog(
       {
-        log: `Sale parked (${sale?.items.length} item${
-          sale?.items.length === 1 ? "" : "s"
+        log: `Sale parked (${items.length} item${
+          items.length === 1 ? "" : "s"
         }${
           sale?.contact_id
             ? ` for ${
@@ -161,7 +162,7 @@ export default function SaleScreen({ isNew }) {
   async function clickLayby() {
     setLaybyLoading(true);
     // Change quantity for all items if it wasn't a layby previously
-    for await (const saleItem of sale?.items) {
+    for await (const saleItem of items) {
       // For each item, add quantity on layby, remove quantity in sale
       saveStockMovementToDatabase(saleItem, clerk, "layby", null);
     }
@@ -188,11 +189,11 @@ export default function SaleScreen({ isNew }) {
                 )[0]?.name
               }`
             : ""
-        } (${sale?.items.length} item${
-          sale?.items.length === 1 ? "" : "s"
-        } / $${sale?.totalPrice?.toFixed(
+        } (${items.length} item${
+          items.length === 1 ? "" : "s"
+        } / $${totalPrice?.toFixed(2)} with $${totalRemaining?.toFixed(
           2
-        )} with $${sale?.totalRemaining?.toFixed(2)} left to pay).`,
+        )} left to pay).`,
         clerk_id: clerk?.id,
         table_id: "sale",
         row_id: sale?.id,
@@ -220,7 +221,7 @@ export default function SaleScreen({ isNew }) {
     //    If misc item, ignore
     //    If other item, change quantity sold
     // Update sale to 'complete', add date_sale_completed, sale_completed_by
-    sale?.items?.forEach((saleItem) => {
+    items?.forEach((saleItem: SaleItemObject) => {
       if (sale?.state === "layby" && !saleItem?.is_gift_card) {
         saveStockMovementToDatabase(saleItem, clerk, "unlayby", null);
       }
@@ -262,19 +263,15 @@ export default function SaleScreen({ isNew }) {
     // REVIEW discard sale, do confirm dialog
     {
       type: "cancel",
-      onClick: () => {
-        setView({ ...view, saleScreen: false });
-        setSale(null);
-      },
-      disabled: true || sale?.totalRemaining === 0,
+      onClick: clearSale,
+      disabled: true || totalRemaining === 0,
       text: sale?.state === "layby" ? "CANCEL LAYBY" : "DISCARD SALE",
     },
     {
       type: "alt3",
       onClick: clickParkSale,
       disabled:
-        (sale?.state && sale?.state !== "in progress") ||
-        sale?.totalRemaining === 0,
+        (sale?.state && sale?.state !== "in progress") || totalRemaining === 0,
       loading: parkSaleLoading,
       text: "PARK SALE",
     },
@@ -282,14 +279,13 @@ export default function SaleScreen({ isNew }) {
       type: "alt2",
       onClick: () => setView({ ...view, saleScreen: false }),
       disabled:
-        (sale?.state && sale?.state !== "in progress") ||
-        sale?.totalRemaining === 0,
+        (sale?.state && sale?.state !== "in progress") || totalRemaining === 0,
       text: "ADD MORE ITEMS",
     },
     {
       type: "alt1",
       onClick: clickLayby,
-      disabled: laybyLoading || !sale?.contact_id || sale?.totalRemaining <= 0,
+      disabled: laybyLoading || !sale?.contact_id || totalRemaining <= 0,
       loading: laybyLoading,
       text: sale?.state === "layby" ? "CONTINUE LAYBY" : "START LAYBY",
     },
@@ -297,9 +293,7 @@ export default function SaleScreen({ isNew }) {
       type: "ok",
       onClick: clickCompleteSale,
       disabled:
-        completeSaleLoading ||
-        sale?.totalRemaining > 0 ||
-        sale?.state === "complete",
+        completeSaleLoading || totalRemaining > 0 || sale?.state === "complete",
       loading: completeSaleLoading,
       text: "COMPLETE SALE",
     },
@@ -309,14 +303,11 @@ export default function SaleScreen({ isNew }) {
     <>
       <ScreenContainer
         show={view?.saleScreen}
-        closeFunction={() => {
-          setView({ ...view, saleScreen: false });
-          setSale(null);
-        }}
+        closeFunction={clearSale}
         title={`SALE #${sale?.id} [${
           sale?.state ? sale?.state.toUpperCase() : "IN PROGRESS"
         }]`}
-        loading={saleLoading || isSaleItemsLoading || isSaleTransactionsLoading}
+        loading={isSaleItemsLoading || isSaleTransactionsLoading}
         buttons={sale?.state === "completed" ? null : buttons}
       >
         <div className="flex items-start overflow-auto w-full">

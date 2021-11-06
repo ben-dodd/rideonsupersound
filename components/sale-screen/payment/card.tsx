@@ -5,6 +5,8 @@ import { useAtom } from "jotai";
 // DB
 import {
   useSaleTransactionsForSale,
+  useSaleItemsForSale,
+  useInventory,
   useContacts,
   useLogs,
   useRegisterID,
@@ -19,6 +21,7 @@ import {
 import { ModalButton, ContactObject } from "@/lib/types";
 
 // Functions
+import { getSaleVars } from "@/lib/data-functions";
 import { saveSaleTransaction, saveLog } from "@/lib/db-functions";
 
 // Components
@@ -29,20 +32,24 @@ export default function Cash({ isNew }) {
   // Atoms
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
-  const [sale, setSale] = useAtom(
-    isNew ? newSaleObjectAtom : loadedSaleObjectAtom
-  );
+  const [sale] = useAtom(isNew ? newSaleObjectAtom : loadedSaleObjectAtom);
   const [, setAlert] = useAtom(alertAtom);
 
   // SWR
   const { contacts } = useContacts();
   const { registerID } = useRegisterID();
-  const { mutateSaleTransactions } = useSaleTransactionsForSale(sale?.id);
+  const { transactions, mutateSaleTransactions } = useSaleTransactionsForSale(
+    sale?.id
+  );
+  const { items } = useSaleItemsForSale(sale?.id);
+  const { inventory } = useInventory();
   const { mutateLogs } = useLogs();
+
+  const { totalRemaining } = getSaleVars(items, transactions, inventory);
 
   // State
   const [submitting, setSubmitting] = useState(false);
-  const [cardPayment, setCardPayment] = useState(`${sale?.totalRemaining}`);
+  const [cardPayment, setCardPayment] = useState(`${totalRemaining}`);
 
   // Constants
   const buttons: ModalButton[] = [
@@ -50,7 +57,7 @@ export default function Cash({ isNew }) {
       type: "ok",
       disabled:
         submitting ||
-        parseFloat(cardPayment) > sale?.totalRemaining ||
+        parseFloat(cardPayment) > totalRemaining ||
         parseFloat(cardPayment) === 0 ||
         cardPayment <= "" ||
         isNaN(parseFloat(cardPayment)),
@@ -64,8 +71,8 @@ export default function Cash({ isNew }) {
           "card",
           registerID,
           false,
-          mutateSaleTransactions,
-          setSale
+          transactions,
+          mutateSaleTransactions
         );
         setSubmitting(false);
         setView({ ...view, cardPaymentDialog: false });
@@ -112,18 +119,18 @@ export default function Cash({ isNew }) {
           onChange={(e: any) => setCardPayment(e.target.value)}
         />
         <div className="text-center">{`Remaining to pay: $${(
-          sale?.totalRemaining || 0
+          totalRemaining || 0
         )?.toFixed(2)}`}</div>
         <div className="text-center text-xl font-bold my-4">
           {cardPayment === "" || parseFloat(cardPayment) === 0
             ? "..."
             : isNaN(parseFloat(cardPayment))
             ? "NUMBERS ONLY PLEASE"
-            : parseFloat(cardPayment) > sale?.totalRemaining
+            : parseFloat(cardPayment) > totalRemaining
             ? `PAYMENT TOO HIGH`
-            : parseFloat(cardPayment) < sale?.totalRemaining
+            : parseFloat(cardPayment) < totalRemaining
             ? `AMOUNT SHORT BY $${(
-                sale?.totalRemaining - parseFloat(cardPayment)
+                totalRemaining - parseFloat(cardPayment)
               )?.toFixed(2)}`
             : "ALL GOOD!"}
         </div>

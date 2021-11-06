@@ -4,7 +4,9 @@ import { useAtom } from "jotai";
 
 // DB
 import {
+  useSaleItemsForSale,
   useSaleTransactionsForSale,
+  useInventory,
   useLogs,
   useContacts,
   useRegisterID,
@@ -21,6 +23,7 @@ import {
 import { ModalButton, ContactObject } from "@/lib/types";
 
 // Functions
+import { getSaleVars } from "@/lib/data-functions";
 import { saveSaleTransaction, saveLog } from "@/lib/db-functions";
 
 // Components
@@ -37,9 +40,14 @@ export default function Cash({ isNew }) {
   const [, setAlert] = useAtom(alertAtom);
 
   // SWR
+  const { transactions } = useSaleTransactionsForSale(sale?.id);
+  const { items } = useSaleItemsForSale(sale?.id);
+  const { inventory } = useInventory();
+
+  const { totalRemaining } = getSaleVars(items, transactions, inventory);
 
   // State
-  const [refundAmount, setRefundAmount] = useState(`${sale?.totalRemaining}`);
+  const [refundAmount, setRefundAmount] = useState(`${totalRemaining}`);
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [submitting, setSubmitting] = useState(false);
 
@@ -113,21 +121,21 @@ export default function Cash({ isNew }) {
         <div className="flex">
           <button
             className="square-button"
-            disabled={sale?.totalRemaining === 0}
+            disabled={totalRemaining === 0}
             onClick={() => setPaymentMethod("cash")}
           >
             CASH
           </button>
           <button
             className="square-button"
-            disabled={sale?.totalRemaining === 0}
+            disabled={totalRemaining === 0}
             onClick={() => setPaymentMethod("card")}
           >
             CARD
           </button>
           <button
             className="square-button"
-            disabled={!sale?.contact_id || sale?.totalRemaining === 0}
+            disabled={!sale?.contact_id || totalRemaining === 0}
             onClick={() => setPaymentMethod("acct")}
           >
             ACCT

@@ -35,7 +35,6 @@ export default function HelpDialog() {
   useEffect(() => {
     setHelpList(filterHelps(helps, page, view, search));
   }, [search, page, view, helps]);
-  console.log(help);
 
   return (
     <Modal

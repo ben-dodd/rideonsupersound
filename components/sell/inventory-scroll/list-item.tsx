@@ -54,7 +54,7 @@ export default function ListItem({ item }: ListItemProps) {
   const [, setAlert] = useAtom(alertAtom);
 
   // Constants
-  const itemQuantity = getItemQuantity(item, cart);
+  const itemQuantity = getItemQuantity(item, cart?.items);
   const vendor =
     vendors?.filter(
       (vendor: VendorObject) => vendor?.id === item?.vendor_id

@@ -10,7 +10,7 @@ import {
   useSaleTransactionsForSale,
   useLogs,
 } from "@/lib/swr-hooks";
-import { newSaleObjectAtom, alertAtom, clerkAtom } from "@/lib/atoms";
+import { alertAtom, clerkAtom } from "@/lib/atoms";
 import {
   SaleTransactionObject,
   GiftCardObject,
@@ -43,7 +43,6 @@ export default function TransactionListItem({
   sale,
 }: TransactionListItemProps) {
   // Atoms
-  const [cart, setCart] = useAtom(newSaleObjectAtom);
   const [clerk] = useAtom(clerkAtom);
   const [, setAlert] = useAtom(alertAtom);
 
@@ -52,19 +51,19 @@ export default function TransactionListItem({
   const { vendor }: UseVendorProps = useVendorFromVendorPayment(
     transaction?.vendor_payment_id
   );
-  const { mutateSaleTransactions } = useSaleTransactionsForSale(sale?.id);
+  const { transactions, mutateSaleTransactions } = useSaleTransactionsForSale(
+    sale?.id
+  );
   const { mutateLogs } = useLogs();
 
   // Functions
   const onClickDelete = () => {
     // Delete transaction item from cart
-    setCart({
-      ...cart,
-      transactions: (cart?.transactions || []).map((t) =>
-        t?.id === transaction?.id ? { ...t, is_deleted: true } : t
-      ),
-    });
-    deleteSaleTransactionFromDatabase(transaction?.id, mutateSaleTransactions);
+    deleteSaleTransactionFromDatabase(
+      transaction?.id,
+      transactions,
+      mutateSaleTransactions
+    );
     saveLog(
       {
         log: `$${(transaction?.amount / 100)?.toFixed(2)} ${

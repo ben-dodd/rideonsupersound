@@ -4,12 +4,22 @@ import { format, parseISO } from "date-fns";
 import nz from "date-fns/locale/en-NZ";
 
 // DB
-import { useContact, useClerks } from "@/lib/swr-hooks";
+import {
+  useContact,
+  useClerks,
+  useSaleItemsForSale,
+  useSaleTransactionsForSale,
+  useInventory,
+} from "@/lib/swr-hooks";
 import { newSaleObjectAtom, loadedSaleObjectAtom } from "@/lib/atoms";
-import { SaleTransactionObject } from "@/lib/types";
+import { SaleTransactionObject, SaleItemObject } from "@/lib/types";
 
 // Functions
-import { convertMPStoKPH, convertDegToCardinal } from "@/lib/data-functions";
+import {
+  convertMPStoKPH,
+  convertDegToCardinal,
+  getSaleVars,
+} from "@/lib/data-functions";
 
 // Components
 import ItemListItem from "./item-list-item";
@@ -22,9 +32,18 @@ export default function SaleSummary({ isNew }) {
   // SWR
   const { clerks } = useClerks();
   const { contact } = useContact(sale?.contact_id);
+  const { items } = useSaleItemsForSale(sale?.id);
+  const { transactions } = useSaleTransactionsForSale(sale?.id);
+  const { inventory } = useInventory();
 
   // Constants
   const saleComplete = Boolean(sale?.state === "complete");
+  const {
+    totalRemaining,
+    totalStoreCut,
+    totalVendorCut,
+    totalPrice,
+  } = getSaleVars(items, transactions, inventory);
 
   // Functions
   function SaleHeader() {
@@ -39,7 +58,7 @@ export default function SaleSummary({ isNew }) {
         {[
           {
             label: "# of Items",
-            value: sale?.items?.length || 0,
+            value: items?.length || 0,
           },
           {
             label: "Sale Opened By",
@@ -105,8 +124,8 @@ export default function SaleSummary({ isNew }) {
   function SaleItems() {
     return (
       <div className="max-h-2/5 overflow-y-scroll">
-        {(sale?.items || []).length > 0 ? (
-          sale?.items?.map((saleItem) => (
+        {(items || []).length > 0 ? (
+          items?.map((saleItem: SaleItemObject) => (
             <ItemListItem
               key={saleItem?.item_id}
               saleItem={saleItem}
@@ -127,38 +146,38 @@ export default function SaleSummary({ isNew }) {
           <div>VENDOR CUT</div>
           <div
             className={`text-right w-2/12 text-gray-600 ${
-              sale?.totalVendorCut < 0 && "text-red-400"
+              totalVendorCut < 0 && "text-red-400"
             }`}
           >
-            {`$${sale?.totalVendorCut?.toFixed(2)}`}
+            {`$${totalVendorCut?.toFixed(2)}`}
           </div>
         </div>
         <div className="flex justify-end border-gray-500">
           <div>STORE CUT</div>
           <div
             className={`text-right w-2/12 text-gray-600 ${
-              sale?.totalStoreCut < 0 && "text-tertiary-dark"
+              totalStoreCut < 0 && "text-tertiary-dark"
             }`}
           >
-            {`$${sale?.totalStoreCut?.toFixed(2)}`}
+            {`$${totalStoreCut?.toFixed(2)}`}
           </div>
         </div>
         <div className="flex justify-end mt-1">
           <div>TOTAL</div>
           <div className="text-right w-2/12 font-bold">
-            ${sale?.totalPrice !== null ? sale?.totalPrice?.toFixed(2) : "0.00"}
+            ${totalPrice !== null ? totalPrice?.toFixed(2) : "0.00"}
           </div>
         </div>
         <div className="flex justify-end mt-1">
           <div>TOTAL PAID</div>
           <div className="text-right w-2/12 font-bold text-secondary-dark">
-            ${(sale?.totalPrice - sale?.totalRemaining)?.toFixed(2)}
+            ${(totalPrice - totalRemaining)?.toFixed(2)}
           </div>
         </div>
         <div className="flex justify-end mt-1">
           <div>TOTAL OWING</div>
           <div className="text-right w-2/12 font-bold text-tertiary-dark">
-            ${sale?.totalRemaining?.toFixed(2)}
+            ${totalRemaining?.toFixed(2)}
           </div>
         </div>
       </>
@@ -168,7 +187,7 @@ export default function SaleSummary({ isNew }) {
   function TransactionItems() {
     return (
       <div className="mt-1 pt-1 border-t border-gray-500 max-h-1/3 overflow-y-scroll">
-        {sale?.transactions?.map((transaction: SaleTransactionObject) => (
+        {transactions?.map((transaction: SaleTransactionObject) => (
           <TransactionListItem
             key={transaction?.id}
             sale={sale}

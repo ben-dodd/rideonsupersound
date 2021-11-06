@@ -216,10 +216,14 @@ export function getItemStoreCut(
   );
 }
 
-export function getSaleVars(cart: SaleObject, inventory: InventoryObject[]) {
-  const totalPrice = getTotalPrice(cart, inventory) / 100;
-  const totalPaid = getTotalPaid(cart) / 100;
-  const totalStoreCut = getTotalStoreCut(cart, inventory) / 100;
+export function getSaleVars(
+  saleItems: SaleItemObject[],
+  saleTransactions: SaleTransactionObject[],
+  inventory: InventoryObject[]
+) {
+  const totalPrice = getTotalPrice(saleItems, inventory) / 100;
+  const totalPaid = getTotalPaid(saleTransactions) / 100;
+  const totalStoreCut = getTotalStoreCut(saleItems, inventory) / 100;
   return {
     totalPrice,
     totalPaid,
@@ -299,8 +303,11 @@ export function getVendorItemsInStock(
   );
 }
 
-export function getItemQuantity(item: InventoryObject, cart: SaleObject) {
-  const saleItem = (cart?.items || []).filter(
+export function getItemQuantity(
+  item: InventoryObject,
+  saleItems: SaleItemObject[]
+) {
+  const saleItem = (saleItems || []).filter(
     (i: SaleItemObject) => i?.item_id === item?.id
   )[0];
   const cartQuantity = saleItem?.quantity || "0";
@@ -311,35 +318,36 @@ export function getItemQuantity(item: InventoryObject, cart: SaleObject) {
         parseInt(cartQuantity);
 }
 
-export function getTotalPrice(cart: SaleObject, inventory: InventoryObject[]) {
-  return (cart?.items || []).reduce((acc, cartItem) => {
+export function getTotalPrice(
+  saleItems: SaleItemObject[],
+  inventory: InventoryObject[]
+) {
+  return (saleItems || []).reduce((acc, saleItem) => {
     // Misc Items and Gift Cards in inventory
     let item: InventoryObject = (inventory || []).filter(
-      (i: InventoryObject) => i?.id === cartItem?.item_id
+      (i: InventoryObject) => i?.id === saleItem?.item_id
     )[0];
-    return (acc += getItemPrice(item, cartItem));
+    return (acc += getItemPrice(item, saleItem));
   }, 0);
 }
 
 export function getTotalStoreCut(
-  cart: SaleObject,
+  saleItems: SaleItemObject[],
   inventory: InventoryObject[]
 ) {
-  return (cart?.items || []).reduce((acc, cartItem: SaleItemObject) => {
+  return (saleItems || []).reduce((acc, saleItem: SaleItemObject) => {
     let item: InventoryObject = (inventory || []).filter(
-      (i: InventoryObject) => i?.id === cartItem?.item_id
+      (i: InventoryObject) => i?.id === saleItem?.item_id
     )[0];
-    return acc + getItemStoreCut(item, cartItem);
+    return acc + getItemStoreCut(item, saleItem);
   }, 0);
 }
 
-export function getTotalPaid(sale: SaleObject) {
-  // console.log(sale?.transactions);
-  return sale?.transactions
-    ? sale.transactions
-        .filter((transaction) => !transaction.is_deleted)
-        .reduce((acc, transaction) => acc + transaction?.amount, 0)
-    : null;
+export function getTotalPaid(saleTransactions: SaleTransactionObject[]) {
+  // console.log(transactions);
+  return (saleTransactions || [])
+    .filter((transaction) => !transaction.is_deleted)
+    .reduce((acc, transaction) => acc + transaction?.amount, 0);
 }
 
 export function getTotalOwing(

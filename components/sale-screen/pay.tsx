@@ -3,7 +3,13 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useContacts, useVendorFromContact } from "@/lib/swr-hooks";
+import {
+  useContacts,
+  useVendorFromContact,
+  useSaleTransactionsForSale,
+  useSaleItemsForSale,
+  useInventory,
+} from "@/lib/swr-hooks";
 import {
   newSaleObjectAtom,
   loadedSaleObjectAtom,
@@ -17,7 +23,11 @@ import {
 } from "@/lib/types";
 
 // Functions
-import { convertMPStoKPH, convertDegToCardinal } from "@/lib/data-functions";
+import {
+  convertMPStoKPH,
+  convertDegToCardinal,
+  getSaleVars,
+} from "@/lib/data-functions";
 
 // Components
 import CreateableSelect from "@/components/inputs/createable-select";
@@ -34,13 +44,16 @@ export default function Pay({ isNew }) {
   // SWR
   const { contacts } = useContacts();
   const { vendor } = useVendorFromContact(sale?.contact_id);
+  const { items } = useSaleItemsForSale(sale?.id);
+  const { transactions } = useSaleTransactionsForSale(sale?.id);
+  const { inventory } = useInventory();
 
   // State
   const [note, setNote] = useState("");
+  const { totalRemaining } = getSaleVars(items, transactions, inventory);
 
   // Components
   const SaleCompletedDetails = () => {
-    console.log(sale?.weather);
     const weather: OpenWeatherObject = sale?.weather
       ? JSON.parse(sale?.weather)
       : null;
@@ -91,54 +104,52 @@ export default function Pay({ isNew }) {
       <div className="flex justify-between my-2">
         <div
           className={`text-2xl font-bold ${
-            sale?.totalRemaining === 0
+            totalRemaining === 0
               ? "text-primary"
-              : sale?.totalRemaining < 0
+              : totalRemaining < 0
               ? "text-secondary"
               : "text-tertiary"
           }`}
         >
           {sale?.state === "completed"
             ? "SALE COMPLETED"
-            : sale?.totalRemaining === 0
+            : totalRemaining === 0
             ? "ALL PAID"
-            : sale?.totalRemaining < 0
+            : totalRemaining < 0
             ? "CUSTOMER OWED"
             : "LEFT TO PAY"}
         </div>
         <div className="text-2xl text-red-500 font-bold text-xl">
-          {sale?.totalRemaining === 0
+          {totalRemaining === 0
             ? ""
-            : sale?.totalRemaining < 0
-            ? `$${Math.abs(sale?.totalRemaining || 0)?.toFixed(2)}`
-            : `$${(sale?.totalRemaining || 0)?.toFixed(2)}`}
+            : totalRemaining < 0
+            ? `$${Math.abs(totalRemaining || 0)?.toFixed(2)}`
+            : `$${(totalRemaining || 0)?.toFixed(2)}`}
         </div>
       </div>
       {sale?.state === "completed" && <SaleCompletedDetails />}
-      {sale?.totalRemaining === 0 && sale?.state !== "completed" && (
+      {totalRemaining === 0 && sale?.state !== "completed" && (
         <div className="font-sm">Click complete sale to finish.</div>
       )}
       {sale?.state !== "completed" && (
         <div className="grid grid-cols-2 gap-2 mt-4">
           <button
             className="square-button"
-            disabled={sale?.totalRemaining === 0}
+            disabled={totalRemaining === 0}
             onClick={() => setView({ ...view, cashPaymentDialog: true })}
           >
             CASH
           </button>
           <button
             className="square-button"
-            disabled={sale?.totalRemaining === 0}
+            disabled={totalRemaining === 0}
             onClick={() => setView({ ...view, cardPaymentDialog: true })}
           >
             CARD
           </button>
           <button
             className="square-button"
-            disabled={
-              !sale?.contact_id || !vendor || sale?.totalRemaining === 0
-            }
+            disabled={!sale?.contact_id || !vendor || totalRemaining === 0}
             onClick={() => setView({ ...view, acctPaymentDialog: true })}
           >
             ACCT
@@ -150,7 +161,7 @@ export default function Pay({ isNew }) {
           </button>
           <button
             className="square-button"
-            disabled={true || sale?.totalRemaining === 0}
+            disabled={true || totalRemaining === 0}
             onClick={() => setView({ ...view, giftPaymentDialog: true })}
           >
             GIFT
@@ -160,7 +171,7 @@ export default function Pay({ isNew }) {
       )}
       {sale?.state === "completed" ||
       sale?.state === "layby" ||
-      sale?.transactions?.filter(
+      transactions?.filter(
         (s: SaleTransactionObject) => s?.payment_method === "acct"
       )?.length > 0 ? (
         <div className="mt-2">
@@ -191,10 +202,10 @@ export default function Pay({ isNew }) {
               )[0]?.name || ""
             }
             onChange={(contactObject: any) => {
-              setSale({
-                ...sale,
+              setSale((s) => ({
+                ...s,
                 contact_id: parseInt(contactObject?.value),
-              });
+              }));
             }}
             onCreateOption={(inputValue: string) => {
               setContact({ name: inputValue });

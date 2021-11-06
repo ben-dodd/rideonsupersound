@@ -51,7 +51,7 @@ export default function ShoppingCart() {
   async function loadSale() {
     try {
       setLoadingSale(true);
-      const id = await saveSaleAndItemsToDatabase(cart, clerk, setCart);
+      const id = await saveSaleAndItemsToDatabase(cart, cart?.items, clerk);
       setLoadingSale(false);
       saveLog(
         {
@@ -100,8 +100,8 @@ export default function ShoppingCart() {
   }
 
   // Constants
-  const totalPrice = getTotalPrice(cart, inventory);
-  const storeCut = getTotalStoreCut(cart, inventory);
+  const totalPrice = getTotalPrice(cart?.items, inventory);
+  const storeCut = getTotalStoreCut(cart?.items, inventory);
   const disableButtons =
     loadingSale || !(cart?.items && Object.keys(cart?.items).length > 0);
 

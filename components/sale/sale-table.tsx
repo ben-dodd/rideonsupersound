@@ -67,8 +67,8 @@ export default function SaleTable() {
             0
           ),
           items: writeItemList(inventory, items),
-          store: getTotalStoreCut(s, inventory),
-          sell: getTotalPrice(s, inventory),
+          store: getTotalStoreCut(items, inventory),
+          sell: getTotalPrice(items, inventory),
         };
       }),
     [sales, saleItems, contacts, clerks, inventory]
