@@ -64,7 +64,6 @@ export default function ShoppingCart() {
         mutateLogs
       );
       setSale({ ...cart, id });
-      setView({ ...view, saleScreen: true });
     } catch (e) {
       throw Error(e.message);
     }
