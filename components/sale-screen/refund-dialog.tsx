@@ -37,68 +37,60 @@ export default function Cash({ isNew }) {
   const [, setAlert] = useAtom(alertAtom);
 
   // SWR
-  const { mutateSaleTransactions } = useSaleTransactionsForSale(sale?.id);
-  const { mutateLogs } = useLogs();
-  const { contacts } = useContacts();
-  const { registerID } = useRegisterID();
-  const { mutateCashGiven } = useCashGiven(registerID || 0);
-  const { mutateCashReceived } = useCashReceived(registerID || 0);
 
   // State
   const [refundAmount, setRefundAmount] = useState(`${sale?.totalRemaining}`);
+  const [paymentMethod, setPaymentMethod] = useState("cash");
   const [submitting, setSubmitting] = useState(false);
 
   // Constants
-  const changeToGive = (
-    parseFloat(cashReceived) - sale?.totalRemaining
-  )?.toFixed(2);
   const buttons: ModalButton[] = [
-    {
-      type: "ok",
-      disabled:
-        submitting ||
-        parseFloat(cashReceived) === 0 ||
-        cashReceived <= "" ||
-        isNaN(parseFloat(cashReceived)),
-      loading: submitting,
-      onClick: async () => {
-        setSubmitting(true);
-        const id = await saveSaleTransaction(
-          sale,
-          clerk,
-          cashReceived,
-          "cash",
-          registerID,
-          mutateSaleTransactions,
-          setSale
-        );
-        setSubmitting(false);
-        setView({ ...view, cashPaymentDialog: false });
-        mutateCashGiven();
-        mutateCashReceived();
-        saveLog(
-          {
-            log: `$${parseFloat(refundAmount)?.toFixed(2)} refunded to ${
-              sale?.contact_id
-                ? contacts?.filter(
-                    (c: ContactObject) => c?.id === sale?.contact_id
-                  )[0]?.name
-                : "customer"
-            } (sale #${sale?.id}).`,
-            clerk_id: clerk?.id,
-            table_id: "sale_transaction",
-            row_id: id,
-          },
-          mutateLogs
-        );
-        setAlert({
-          open: true,
-          type: "success",
-          message: `$${parseFloat(refundAmount)?.toFixed(2)} REFUNDED.`,
-        });
-      },
-      text: "COMPLETE",
-    },
+    // {
+    //   type: "ok",
+    //   disabled:
+    //     submitting ||
+    //     parseFloat(cashReceived) === 0 ||
+    //     cashReceived <= "" ||
+    //     isNaN(parseFloat(cashReceived)),
+    //   loading: submitting,
+    //   onClick: async () => {
+    //     setSubmitting(true);
+    //     const id = await saveSaleTransaction(
+    //       sale,
+    //       clerk,
+    //       cashReceived,
+    //       "cash",
+    //       registerID,
+    //       mutateSaleTransactions,
+    //       setSale
+    //     );
+    //     setSubmitting(false);
+    //     setView({ ...view, cashPaymentDialog: false });
+    //     mutateCashGiven();
+    //     mutateCashReceived();
+    //     saveLog(
+    //       {
+    //         log: `$${parseFloat(refundAmount)?.toFixed(2)} refunded to ${
+    //           sale?.contact_id
+    //             ? contacts?.filter(
+    //                 (c: ContactObject) => c?.id === sale?.contact_id
+    //               )[0]?.name
+    //             : "customer"
+    //         } (sale #${sale?.id}).`,
+    //         clerk_id: clerk?.id,
+    //         table_id: "sale_transaction",
+    //         row_id: id,
+    //       },
+    //       mutateLogs
+    //     );
+    //     setAlert({
+    //       open: true,
+    //       type: "success",
+    //       message: `$${parseFloat(refundAmount)?.toFixed(2)} REFUNDED.`,
+    //     });
+    //   },
+    //   text: "COMPLETE",
+    // },
   ];
 
   return (
@@ -113,10 +105,10 @@ export default function Cash({ isNew }) {
           divClass="text-8xl"
           startAdornment="$"
           inputClass="text-center"
-          value={cashReceived}
+          value={refundAmount}
           autoFocus={true}
           selectOnFocus
-          onChange={(e: any) => setCashReceived(e.target.value)}
+          onChange={(e: any) => setRefundAmount(e.target.value)}
         />
         <div className="flex">
           <button
@@ -135,37 +127,12 @@ export default function Cash({ isNew }) {
           </button>
           <button
             className="square-button"
-            disabled={
-              !sale?.contact_id || !vendor || sale?.totalRemaining === 0
-            }
+            disabled={!sale?.contact_id || sale?.totalRemaining === 0}
             onClick={() => setPaymentMethod("acct")}
           >
             ACCT
           </button>
         </div>
-        <CreateableSelect
-          inputLabel="Select contact"
-          value={sale?.contact_id}
-          label={
-            (contacts || []).filter(
-              (c: ContactObject) => c?.id === sale?.contact_id
-            )[0]?.name || ""
-          }
-          onChange={(contactObject: any) => {
-            setSale({
-              ...sale,
-              contact_id: parseInt(contactObject?.value),
-            });
-          }}
-          onCreateOption={(inputValue: string) => {
-            setContact({ name: inputValue });
-            setView({ ...view, createContact: true });
-          }}
-          options={contacts?.map((val: ContactObject) => ({
-            value: val?.id,
-            label: val?.name || "",
-          }))}
-        />
       </>
     </Modal>
   );
