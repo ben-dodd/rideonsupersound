@@ -13,7 +13,7 @@ import SearchIcon from "@mui/icons-material/Search";
 export default function SellSearchBar() {
   // Atoms
   const [search, setSearch] = useAtom(sellSearchBarAtom);
-  // TODO add clear icon to search bar
+  // REVIEW add clear icon to search bar
 
   return (
     <div className="h-search py-2 px-2">

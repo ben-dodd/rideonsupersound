@@ -72,6 +72,7 @@ export interface SaleItemObject {
   is_gift_card?: boolean;
   is_misc_item?: boolean;
   note?: string;
+  is_refunded?: boolean;
   is_deleted?: boolean;
 }
 
@@ -87,6 +88,7 @@ export interface SaleTransactionObject {
   vendor_payment_id?: number;
   gift_card_id?: number;
   register_id?: number;
+  is_refund?: boolean;
   card_taken?: boolean;
   is_deleted?: boolean;
 }
@@ -460,4 +462,58 @@ export interface ModalButton {
   data?: any[];
   headers?: string[];
   fileName?: string;
+}
+
+export interface HelpObject {
+  id?: number;
+  title?: string;
+  tags?: string;
+  pages?: string;
+  views?: string;
+  body?: string;
+}
+
+export interface OpenWeatherObject {
+  base?: string;
+  clouds?: {
+    all?: number;
+  };
+  cod?: number;
+  coord?: {
+    lon?: number;
+    lat?: number;
+  };
+  dt?: number;
+  id?: number;
+  main?: {
+    feels_like?: number;
+    humidity?: number;
+    pressure?: number;
+    temp?: number;
+    temp_max?: number;
+    temp_min?: number;
+  };
+  name?: string;
+  sys?: {
+    country?: string;
+    id?: number;
+    sunrise?: number;
+    sunset?: number;
+    type?: number;
+  };
+  timezone?: number;
+  visibility?: number;
+  weather?: WeatherObject[];
+  wind?: {
+    deg?: number;
+    gust?: number;
+    speed?: number;
+  };
+}
+
+interface WeatherObject {
+  id?: number;
+  main?: string;
+  description?: string;
+  icon?: string;
 }

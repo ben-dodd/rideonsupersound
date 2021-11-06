@@ -94,6 +94,7 @@ export default function Gift({ isNew }) {
           giftCardPayment,
           "acct",
           registerID,
+          false,
           mutateSaleTransactions,
           setSale,
           vendor

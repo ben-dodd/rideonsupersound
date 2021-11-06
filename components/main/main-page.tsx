@@ -22,6 +22,7 @@ import PaymentsScreen from "@/components/payment";
 import SalesScreen from "@/components/sale";
 import LogScreen from "@/components/log";
 import ConfirmModal from "@/components/container/modal/confirm-modal";
+import HelpDialog from "@/components/help";
 
 export default function MainPage() {
   // Atoms
@@ -29,7 +30,7 @@ export default function MainPage() {
 
   // Load necessary data
   useInventory();
-  //TODO fix bug where inventory doesn't load. make all pages load until all data there, e.g. in tables
+  // BUG fix bug where inventory doesn't load. make all pages load until all data there, e.g. in tables
 
   return (
     <>
@@ -47,6 +48,7 @@ export default function MainPage() {
           <LogScreen />
           <PaymentsScreen />
         </div>
+        <HelpDialog />
         <ConfirmModal />
         {/* ALERTS */}
         {alert?.open && (

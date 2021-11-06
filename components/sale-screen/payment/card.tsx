@@ -63,6 +63,7 @@ export default function Cash({ isNew }) {
           cardPayment,
           "card",
           registerID,
+          false,
           mutateSaleTransactions,
           setSale
         );

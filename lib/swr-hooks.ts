@@ -119,7 +119,7 @@ export function useSaleItemsForSale(sale_id: number) {
 
   // If any sold items have more than one "stock price" row, we need to only select the latest one
   // (If stock prices are changed after a sale, it won't be included in the returned data)
-  // TODO: Make it so MYSQL only returns the latest one.
+  // REVIEW: Make it so MYSQL only returns the latest one.
 
   let duplicates = {};
 
@@ -182,7 +182,7 @@ export function useVendorTotalSales(contact_id: number) {
 
   // If any sold items have more than one "stock price" row, we need to only select the latest one
   // (If stock prices are changed after a sale, it won't be included in the returned data)
-  // TODO: Make it so MYSQL only returns the latest one.
+  // REVIEW: Make it so MYSQL only returns the latest one.
 
   let duplicates = {};
 
@@ -334,6 +334,16 @@ export function useLaybys() {
     isLaybysLoading: !error && !data,
     isLaybysError: error,
     mutateLaybys: mutate,
+  };
+}
+
+export function useHelps() {
+  const { data, error, mutate } = useSWR(`/api/get-helps`, fetcher);
+  return {
+    helps: data,
+    isHelpsLoading: !error && !data,
+    isHelpsError: error,
+    mutateHelps: mutate,
   };
 }
 

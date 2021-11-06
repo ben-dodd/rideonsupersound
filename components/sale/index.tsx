@@ -8,7 +8,7 @@ import { pageAtom } from "@/lib/atoms";
 import SaleScreen from "@/components/sale-screen";
 import SaleTable from "@/components/sale/sale-table";
 
-// TODO add filter buttons to table for laybys etc.
+// REVIEW add filter buttons to table for laybys etc.
 
 export default function SalesScreen() {
   // Atoms

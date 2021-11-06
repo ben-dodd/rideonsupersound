@@ -10,6 +10,7 @@ import {
   VendorPaymentObject,
   DiscogsItem,
   GoogleBooksItem,
+  HelpObject,
 } from "@/lib/types";
 
 import {
@@ -132,6 +133,53 @@ export function filterInventory({ inventory, search }) {
       return res;
     })
     .slice(0, 50);
+  // ?.sort((a: InventoryObject, b: InventoryObject) => {
+  //   if (!a?.quantity || !b?.quantity) return 0;
+  //   if (a?.quantity === b?.quantity) return 0;
+  //   if (a?.quantity < 1) return 1;
+  //   if (b?.quantity < 1) return -1;
+  //   return 0;
+  // })
+}
+
+export function filterHelps(
+  helps: HelpObject[],
+  page: string,
+  view: Object,
+  search: string
+) {
+  if (!helps) return [];
+  // REVIEW make search order by relevance with page or view
+  // if (!search || search === "") {
+  //   return helps.filter((help: HelpObject) => {
+  //     let res = false;
+  //     let helpMatch = `${
+  //       help?.pages?.toLowerCase() || ""
+  //     } ${help?.views?.toLowerCase()}`;
+  //     if (helpMatch?.includes(page?.toLowerCase())) res = true;
+  //     Object.entries(view)
+  //       ?.filter(([k, v]) => v)
+  //       ?.forEach(([k, v]) => {
+  //         if (helpMatch?.includes(k?.toLowerCase())) res = true;
+  //       });
+  //     return res;
+  //   });
+  // } else {
+  if (search)
+    return helps.filter((help: HelpObject) => {
+      let res = false;
+      let terms = search.split(" ");
+      let helpMatch = `${
+        help?.tags?.toLowerCase() || ""
+      } ${help?.title?.toLowerCase()}`;
+      terms.forEach((term: string) => {
+        if (helpMatch?.includes(term.toLowerCase())) res = true;
+      });
+      return res;
+    });
+  else return helps;
+  // .slice(0, 50);
+  // }
   // ?.sort((a: InventoryObject, b: InventoryObject) => {
   //   if (!a?.quantity || !b?.quantity) return 0;
   //   if (a?.quantity === b?.quantity) return 0;

@@ -20,10 +20,14 @@ import {
   loadedSaleObjectAtom,
   newSaleObjectAtom,
 } from "@/lib/atoms";
-import { ModalButton, ContactObject } from "@/lib/types";
+import { ModalButton, ContactObject, InventoryObject } from "@/lib/types";
 
 // Functions
-import { getSaleVars, writeItemList } from "@/lib/data-functions";
+import {
+  getSaleVars,
+  writeItemList,
+  getItemDisplayName,
+} from "@/lib/data-functions";
 import {
   saveSaleAndItemsToDatabase,
   saveLog,
@@ -31,6 +35,7 @@ import {
   updateSaleInDatabase,
   updateSaleItemInDatabase,
   saveGiftCardToDatabase,
+  deleteSaleItemFromDatabase,
 } from "@/lib/db-functions";
 
 // Components
@@ -43,6 +48,7 @@ import Gift from "./payment/gift";
 import ScreenContainer from "@/components/container/screen";
 
 // TODO add returns to sale items
+// TODO refund dialog like PAY, refund with store credit, cash or card
 
 export default function SaleScreen({ isNew }) {
   // Atoms
@@ -91,11 +97,14 @@ export default function SaleScreen({ isNew }) {
     }
   }, [sale?.id]);
 
+  // TODO load sales properly
+  // BUG why does sale become undefined -> sets sale to only sale vars
   // BUG clicking between SELL screen and SALES screen, SELL screen shows up undefined SALESCREEN
   // BUG fix bug where close register screen appears (pressing TAB) - have fixed by just hiding sidebars and screens
   // BUG fix bug where bottom of dialog is visible
   // BUG if you go ADD MORE ITEMS then go back to sale, transactions have disappeared
   // BUG dates are wrong on vercel
+  // BUG why are some sales showing items as separate line items, not 2x quantity
 
   // Every time transactions or items are changed, recalculate the totals
   useEffect(() => {
@@ -211,7 +220,7 @@ export default function SaleScreen({ isNew }) {
     //    If misc item, ignore
     //    If other item, change quantity sold
     // Update sale to 'complete', add date_sale_completed, sale_completed_by
-    sale?.items.forEach((saleItem) => {
+    sale?.items?.forEach((saleItem) => {
       if (sale?.state === "layby" && !saleItem?.is_gift_card) {
         saveStockMovementToDatabase(saleItem, clerk, "unlayby", null);
       }
@@ -250,7 +259,7 @@ export default function SaleScreen({ isNew }) {
 
   // Constants
   const buttons: ModalButton[] = [
-    // TODO discard sale, do confirm dialog
+    // REVIEW discard sale, do confirm dialog
     {
       type: "cancel",
       onClick: () => {
@@ -308,7 +317,7 @@ export default function SaleScreen({ isNew }) {
           sale?.state ? sale?.state.toUpperCase() : "IN PROGRESS"
         }]`}
         loading={saleLoading || isSaleItemsLoading || isSaleTransactionsLoading}
-        buttons={buttons}
+        buttons={sale?.state === "completed" ? null : buttons}
       >
         <div className="flex items-start overflow-auto w-full">
           <div className="w-2/3">

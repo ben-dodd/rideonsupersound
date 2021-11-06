@@ -11,6 +11,7 @@ const handler: NextApiHandler = async (req, res) => {
     vendor_discount,
     store_discount,
     note,
+    is_refunded,
     is_deleted,
   } = req.body;
   try {
@@ -24,6 +25,7 @@ const handler: NextApiHandler = async (req, res) => {
         vendor_discount = ${vendor_discount || null},
         store_discount = ${store_discount || null},
         note = ${escape(note)},
+        is_refunded = ${is_refunded || 0}
         is_deleted = ${is_deleted || 0}
       WHERE id = ${sale_item_id}
       `

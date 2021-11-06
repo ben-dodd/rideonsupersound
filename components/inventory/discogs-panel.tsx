@@ -245,4 +245,4 @@ export default function DiscogsPanel({ item, setItem, exchangeRate }) {
     </div>
   );
 }
-// TODO make discogs list more searchable
+// REVIEW make discogs list more searchable

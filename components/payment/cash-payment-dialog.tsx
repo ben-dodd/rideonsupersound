@@ -135,7 +135,7 @@ export default function CashPaymentDialog() {
           }
           onChange={(vendorObject: any) => setVendor(vendorObject?.value)}
           onCreateOption={(inputValue: string) =>
-            // TODO create vendor from select
+            // REVIEW create vendor from select
             // setCreateContactScreen({
             //   id: 1,
             //   name: inputValue,

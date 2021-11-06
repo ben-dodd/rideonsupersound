@@ -89,6 +89,7 @@ module.exports = {
         menusm: `calc(100vh - 5rem)`,
         search: "4rem",
         inventory: `calc(100vh - 8rem)`,
+        dialog: `calc(100vh - 16rem)`,
       },
       maxHeight: {
         dialog: `calc(100vh - 16rem)`,

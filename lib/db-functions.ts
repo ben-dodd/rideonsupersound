@@ -101,6 +101,7 @@ export async function saveSaleTransaction(
   amount: string,
   paymentMethod: string,
   registerID: number,
+  is_refund?: boolean,
   mutate?: Function,
   setCart?: Function,
   vendor?: VendorObject
@@ -110,6 +111,7 @@ export async function saveSaleTransaction(
     sale_id: sale?.id,
     clerk_id: clerk?.id,
     payment_method: paymentMethod,
+    is_refund: is_refund || false,
     amount:
       parseFloat(amount) >= sale?.totalRemaining
         ? sale?.totalRemaining * 100
@@ -140,7 +142,7 @@ export async function saveSaleTransaction(
     transaction = { ...transaction, vendor_payment_id: vendorPaymentId };
   }
   if (paymentMethod === "gift") {
-    // Update remaining balance etc. on gift card
+    // TODO Update remaining balance etc. on gift card
   }
   const transactionId = await saveSaleTransactionToDatabase(transaction);
   let date = new Date();
@@ -530,6 +532,8 @@ export async function updateSaleItemInDatabase(
   cartItem: SaleItemObject,
   cart: SaleObject
 ) {
+  console.log(cartItem);
+  console.log(cart);
   try {
     const res = await fetch("/api/update-sale-item", {
       method: "POST",
@@ -544,6 +548,7 @@ export async function updateSaleItemInDatabase(
         vendor_discount: parseInt(cartItem?.vendor_discount),
         store_discount: parseInt(cartItem?.store_discount),
         note: cartItem?.note,
+        is_refunded: cartItem?.is_refunded,
         is_deleted: cartItem?.is_deleted,
       }),
     });

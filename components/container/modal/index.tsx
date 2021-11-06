@@ -39,7 +39,7 @@ export default function Modal({
       {title && <div className="modal__title">{title}</div>}
       <div className="modal__body">
         {loading ? (
-          <div className="loading-screen">
+          <div className="loading-screen max-h-dialog">
             <div className="loading-icon" />
           </div>
         ) : (

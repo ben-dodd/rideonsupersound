@@ -25,13 +25,14 @@ interface ViewProps {
   createHold?: boolean;
   createContact?: boolean;
   saleScreen?: boolean;
-  returnCashDialog?: boolean;
-  takeCashDialog?: boolean;
   closeRegisterScreen?: boolean;
-  batchVendorPaymentDialog?: boolean;
-  cashVendorPaymentDialog?: boolean;
   receiveStockScreen?: boolean;
   returnStockScreen?: boolean;
+  helpDialog?: boolean;
+  returnCashDialog?: boolean;
+  takeCashDialog?: boolean;
+  batchVendorPaymentDialog?: boolean;
+  cashVendorPaymentDialog?: boolean;
   acctPaymentDialog?: boolean;
   cardPaymentDialog?: boolean;
   cashPaymentDialog?: boolean;
@@ -39,6 +40,7 @@ interface ViewProps {
   holdDialog?: boolean;
   labelPrintDialog?: boolean;
   loadSalesDialog?: boolean;
+  refundDialog?: boolean;
 }
 
 interface PageProps {

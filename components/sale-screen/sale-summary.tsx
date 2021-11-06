@@ -107,7 +107,11 @@ export default function SaleSummary({ isNew }) {
       <div className="max-h-2/5 overflow-y-scroll">
         {(sale?.items || []).length > 0 ? (
           sale?.items?.map((saleItem) => (
-            <ItemListItem key={saleItem?.item_id} saleItem={saleItem} />
+            <ItemListItem
+              key={saleItem?.item_id}
+              saleItem={saleItem}
+              isNew={isNew}
+            />
           ))
         ) : (
           <div>No items in cart...</div>

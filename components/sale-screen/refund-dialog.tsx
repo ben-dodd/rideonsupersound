@@ -45,7 +45,7 @@ export default function Cash({ isNew }) {
   const { mutateCashReceived } = useCashReceived(registerID || 0);
 
   // State
-  const [cashReceived, setCashReceived] = useState(`${sale?.totalRemaining}`);
+  const [refundAmount, setRefundAmount] = useState(`${sale?.totalRemaining}`);
   const [submitting, setSubmitting] = useState(false);
 
   // Constants
@@ -69,7 +69,6 @@ export default function Cash({ isNew }) {
           cashReceived,
           "cash",
           registerID,
-          false,
           mutateSaleTransactions,
           setSale
         );
@@ -79,17 +78,13 @@ export default function Cash({ isNew }) {
         mutateCashReceived();
         saveLog(
           {
-            log: `$${parseFloat(cashReceived)?.toFixed(2)} cash taken from ${
+            log: `$${parseFloat(refundAmount)?.toFixed(2)} refunded to ${
               sale?.contact_id
                 ? contacts?.filter(
                     (c: ContactObject) => c?.id === sale?.contact_id
                   )[0]?.name
                 : "customer"
-            } (sale #${sale?.id}).${
-              parseFloat(changeToGive) > 0
-                ? ` $${changeToGive} change given.`
-                : ""
-            }`,
+            } (sale #${sale?.id}).`,
             clerk_id: clerk?.id,
             table_id: "sale_transaction",
             row_id: id,
@@ -99,9 +94,7 @@ export default function Cash({ isNew }) {
         setAlert({
           open: true,
           type: "success",
-          message: `$${parseFloat(cashReceived)?.toFixed(
-            2
-          )} CASH TAKEN. $${changeToGive} CHANGE GIVEN.`,
+          message: `$${parseFloat(refundAmount)?.toFixed(2)} REFUNDED.`,
         });
       },
       text: "COMPLETE",
@@ -110,9 +103,9 @@ export default function Cash({ isNew }) {
 
   return (
     <Modal
-      open={view?.cashPaymentDialog}
-      closeFunction={() => setView({ ...view, cashPaymentDialog: false })}
-      title={"CASH PAYMENT"}
+      open={view?.refundDialog}
+      closeFunction={() => setView({ ...view, refundDialog: false })}
+      title={"REFUND"}
       buttons={buttons}
     >
       <>
@@ -125,22 +118,54 @@ export default function Cash({ isNew }) {
           selectOnFocus
           onChange={(e: any) => setCashReceived(e.target.value)}
         />
-        <div className="text-center">{`Remaining to pay: $${(
-          sale?.totalRemaining || 0
-        )?.toFixed(2)}`}</div>
-        <div className="text-center text-xl font-bold my-4">
-          {cashReceived === "" || parseFloat(cashReceived) === 0
-            ? "..."
-            : isNaN(parseFloat(cashReceived))
-            ? "NUMBERS ONLY PLEASE"
-            : parseFloat(cashReceived) > sale?.totalRemaining
-            ? `GIVE $${changeToGive} IN CHANGE`
-            : parseFloat(cashReceived) < sale?.totalRemaining
-            ? `AMOUNT SHORT BY $${(
-                sale?.totalRemaining - parseFloat(cashReceived)
-              )?.toFixed(2)}`
-            : "ALL GOOD!"}
+        <div className="flex">
+          <button
+            className="square-button"
+            disabled={sale?.totalRemaining === 0}
+            onClick={() => setPaymentMethod("cash")}
+          >
+            CASH
+          </button>
+          <button
+            className="square-button"
+            disabled={sale?.totalRemaining === 0}
+            onClick={() => setPaymentMethod("card")}
+          >
+            CARD
+          </button>
+          <button
+            className="square-button"
+            disabled={
+              !sale?.contact_id || !vendor || sale?.totalRemaining === 0
+            }
+            onClick={() => setPaymentMethod("acct")}
+          >
+            ACCT
+          </button>
         </div>
+        <CreateableSelect
+          inputLabel="Select contact"
+          value={sale?.contact_id}
+          label={
+            (contacts || []).filter(
+              (c: ContactObject) => c?.id === sale?.contact_id
+            )[0]?.name || ""
+          }
+          onChange={(contactObject: any) => {
+            setSale({
+              ...sale,
+              contact_id: parseInt(contactObject?.value),
+            });
+          }}
+          onCreateOption={(inputValue: string) => {
+            setContact({ name: inputValue });
+            setView({ ...view, createContact: true });
+          }}
+          options={contacts?.map((val: ContactObject) => ({
+            value: val?.id,
+            label: val?.name || "",
+          }))}
+        />
       </>
     </Modal>
   );

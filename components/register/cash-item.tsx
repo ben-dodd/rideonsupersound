@@ -26,7 +26,7 @@ export default function CashItem({
   )[0]?.name;
   const date = fTimeDate(transaction?.date);
 
-  // TODO Add more info to cash items, possibly add receipt pop up info dialog
+  // REVIEW Add more info to cash items, possibly add receipt pop up info dialog
   const value = transaction[field || "amount"];
 
   return (

@@ -25,7 +25,7 @@ import DiscardSaleIcon from "@mui/icons-material/Close";
 import RetrieveSaleIcon from "@mui/icons-material/FolderOpen";
 import SaveSaleIcon from "@mui/icons-material/Save";
 
-// TODO add mutate logs to all logs
+// REVIEW add mutate logs to all logs
 
 export default function ShoppingCartActions() {
   // SWR

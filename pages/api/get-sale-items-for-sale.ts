@@ -9,6 +9,7 @@ const handler: NextApiHandler = async (req, res) => {
       SELECT
         sale.date_sale_opened,
         sale.date_sale_closed,
+        sale_item.id,
         sale_item.sale_id,
         sale_item.item_id,
         sale_item.quantity,

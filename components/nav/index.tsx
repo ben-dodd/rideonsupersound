@@ -15,7 +15,10 @@ import PaymentNavActions from "./actions/payment";
 import VendorNavActions from "./actions/vendor";
 import ContactNavActions from "./actions/contact";
 
-// TODO fix all actions and clean up files
+// Icons
+import HelpIcon from "@mui/icons-material/Help";
+
+// REVIEW fix all actions and clean up files
 
 export default function Nav() {
   // SWR
@@ -24,6 +27,7 @@ export default function Nav() {
   // Atoms
   const [clerk] = useAtom(clerkAtom);
   const [page] = useAtom(pageAtom);
+  const [view, setView] = useAtom(viewAtom);
 
   return (
     <nav className="py-2 bg-black text-white h-nav">
@@ -51,11 +55,16 @@ export default function Nav() {
             {/*<div>{page?.toUpperCase()}</div>*/}
           </div>
         </div>
-        {page === "sell" && registerID > 0 && <SellNavActions />}
-        {page === "inventory" && <InventoryNavActions />}
-        {page === "contacts" && <ContactNavActions />}
-        {page === "vendors" && <VendorNavActions />}
-        {page === "payments" && <PaymentNavActions />}
+        <div className="flex mr-2">
+          {page === "sell" && registerID > 0 && <SellNavActions />}
+          {page === "inventory" && <InventoryNavActions />}
+          {page === "contacts" && <ContactNavActions />}
+          {page === "vendors" && <VendorNavActions />}
+          {page === "payments" && <PaymentNavActions />}
+          <button onClick={() => setView({ ...view, helpDialog: true })}>
+            <HelpIcon />
+          </button>
+        </div>
         {/*<button
           className="px-4 sm:hidden"
           onClick={() => setView({...view, mainMenu: !view?.mainMenu})}

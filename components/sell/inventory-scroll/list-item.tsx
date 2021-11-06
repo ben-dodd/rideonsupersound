@@ -21,7 +21,7 @@ import Tooltip from "@mui/material/Tooltip";
 import AddIcon from "@mui/icons-material/AddCircleOutline";
 import InfoIcon from "@mui/icons-material/Info";
 
-// TODO add tooltips everywhere. Have ability to turn them off.
+// REVIEW add tooltips everywhere. Have ability to turn them off.
 
 // Functions
 import {
@@ -89,7 +89,7 @@ export default function ListItem({ item }: ListItemProps) {
     else newItems[index].quantity = `${parseInt(newItems[index].quantity) + 1}`;
     setCart({
       id: cart?.id || null,
-      // TODO check the date to string thing works ok
+      // REVIEW check the date to string thing works ok
       date_sale_opened: cart?.date_sale_opened || new Date().toString(),
       sale_opened_by: cart?.sale_opened_by || clerk?.id,
       items: newItems,
@@ -117,7 +117,7 @@ export default function ListItem({ item }: ListItemProps) {
   function clickOpenInventoryModal() {
     setLoadedItemId({ ...loadedItemId, sell: item?.id });
   }
-  // TODO Add in way for mobile view to add items and access info
+  // REVIEW Add in way for mobile view to add items and access info
   // Disable mobile only for now
   // <div
   //   className="flex w-full mb-2 bg-blue-100 relative"

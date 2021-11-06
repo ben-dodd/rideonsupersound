@@ -1,8 +1,15 @@
 // Packages
 import { useState, useEffect } from "react";
+import { useAtom } from "jotai";
 
 // DB
-import { useInventory } from "@/lib/swr-hooks";
+import { useInventory, useLogs } from "@/lib/swr-hooks";
+import {
+  newSaleObjectAtom,
+  loadedSaleObjectAtom,
+  alertAtom,
+  clerkAtom,
+} from "@/lib/atoms";
 import { InventoryObject, SaleItemObject } from "@/lib/types";
 
 // Functions
@@ -12,22 +19,86 @@ import {
   getCartItemSummary,
   getImageSrc,
 } from "@/lib/data-functions";
+import {
+  updateSaleItemInDatabase,
+  saveLog,
+  deleteSaleItemFromDatabase,
+} from "@/lib/db-functions";
 
 // Components
 import Image from "next/image";
+import Tooltip from "@mui/material/Tooltip";
+
+// Icons
+import DeleteIcon from "@mui/icons-material/Delete";
+import RefundIcon from "@mui/icons-material/Rotate90DegreesCcw";
 
 type SellListItemProps = {
   saleItem: SaleItemObject;
+  isNew: boolean;
 };
 
-export default function ItemListItem({ saleItem }: SellListItemProps) {
+export default function ItemListItem({ saleItem, isNew }: SellListItemProps) {
+  // SWR
   const { inventory } = useInventory();
+  const { mutateLogs } = useLogs();
+
+  // Atoms
+  const [sale, setSale] = useAtom(
+    isNew ? newSaleObjectAtom : loadedSaleObjectAtom
+  );
+  const [, setAlert] = useAtom(alertAtom);
+  const [clerk] = useAtom(clerkAtom);
+
+  // State
   const [item, setItem] = useState(null);
+
+  // Load
   useEffect(() => {
     setItem(
       inventory.filter((i: InventoryObject) => i.id === saleItem?.item_id)[0]
     );
   }, [inventory]);
+
+  // Functions
+  async function deleteOrRefundItem(id: number, is_refund: boolean) {
+    let newItems = sale?.items.filter((i) => i?.id !== id);
+    console.log(sale?.items);
+    console.log(sale?.items?.filter((i) => i?.id === id)[0]);
+    is_refund
+      ? updateSaleItemInDatabase(
+          { ...sale?.items?.filter((i) => i?.id === id)[0], is_refunded: true },
+          sale
+        )
+      : deleteSaleItemFromDatabase(id);
+    // if ((cart?.items || []).length < 1) {
+    //   // No items left, delete cart
+    //   setView({ ...view, cart: false });
+    //   // TODO Any transactions need to be refunded.
+    //   deleteSaleFromDatabase(cart?.id);
+    // }
+    setSale({ ...sale, items: newItems });
+    saveLog(
+      {
+        log: `${getItemDisplayName(
+          inventory?.filter((i: InventoryObject) => i?.id === id)[0]
+        )} ${is_refund ? "refunded" : "removed from sale"}${
+          id ? ` (sale #${id})` : ""
+        }.`,
+        clerk_id: clerk?.id,
+      },
+      mutateLogs
+    );
+    setAlert({
+      open: true,
+      type: "success",
+      message: is_refund ? `ITEM REFUNDED` : `ITEM REMOVED FROM SALE`,
+    });
+    // setRefresh(refresh + 1);
+  }
+
+  // TODO remove items or refund items if complete
+  // TODO make items drop down for editing, like in shopping cart
 
   return (
     <div className="flex w-full relative pt mb-2">
@@ -52,11 +123,20 @@ export default function ItemListItem({ saleItem }: SellListItemProps) {
             ? item?.misc_item_description
             : getItemDisplayName(item)}
         </div>
-        <div className="text-red-500 self-end">
-          <div className="text-black">
-            <button>Remove item</button>
-          </div>
+        <div className="text-red-500 self-end flex flex-col">
           <div>{getCartItemSummary(item, saleItem)}</div>
+          <Tooltip
+            title={sale?.state === "completed" ? "Refund item" : "Delete item"}
+          >
+            <button
+              className="py-2 text-tertiary hover:text-tertiary-dark self-end"
+              onClick={() =>
+                deleteOrRefundItem(item, sale?.state === "completed")
+              }
+            >
+              {sale?.state === "completed" ? <RefundIcon /> : <DeleteIcon />}
+            </button>
+          </Tooltip>
         </div>
       </div>
     </div>
