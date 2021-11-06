@@ -34,7 +34,7 @@ export default function InventoryItemScreen({ page }) {
 
   // SWR
   const { stockItem, isStockItemLoading } = useStockItem(loadedItemId[page]);
-  const { mutateInventory } = useInventory();
+  const { inventory, mutateInventory } = useInventory();
   const { vendors } = useVendors();
 
   // State
@@ -94,11 +94,17 @@ export default function InventoryItemScreen({ page }) {
     {
       type: "ok",
       onClick: () => {
+        let otherInventoryItems = inventory?.filter(
+          (i: InventoryObject) => i?.id !== stockItem?.id
+        );
+        mutateInventory(
+          [...otherInventoryItems, { ...stockItem, ...item }],
+          false
+        );
         updateStockItemInDatabase(item);
         setLoadedItemId({ ...loadedItemId, [page]: 0 });
         setItem(null);
         // setTimeout(() => setItem(null), 1000);
-        mutateInventory();
       },
       text: "SAVE",
     },

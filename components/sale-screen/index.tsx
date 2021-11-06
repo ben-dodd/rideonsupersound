@@ -16,9 +16,9 @@ import {
 import {
   clerkAtom,
   alertAtom,
-  viewAtom,
   loadedSaleObjectAtom,
   newSaleObjectAtom,
+  viewAtom,
 } from "@/lib/atoms";
 import {
   ModalButton,
@@ -59,7 +59,7 @@ export default function SaleScreen({ isNew }) {
   console.log(sale);
   const [clerk] = useAtom(clerkAtom);
   const [, setAlert] = useAtom(alertAtom);
-  const [view, setView] = useAtom(viewAtom);
+  const [view] = useAtom(viewAtom);
 
   // SWR
   const { contacts } = useContacts();
@@ -80,37 +80,8 @@ export default function SaleScreen({ isNew }) {
   const [completeSaleLoading, setCompleteSaleLoading] = useState(false);
   const [parkSaleLoading, setParkSaleLoading] = useState(false);
 
-  // Every time transactions or items are changed, recalculate the totals
-  // useEffect(() => {
-  //   const saleVars = getSaleVars({ ...sale, items, transactions }, inventory);
-  //   console.log("setting sale vars");
-  //   console.log(sale);
-  //   setSale({ ...sale, ...saleVars });
-  // }, [transactions, items]);
-
-  // Load
-  // useEffect(() => {
-  //   if (!isNew) {
-  //     console.log("setting sale");
-  //     setSaleLoading(true);
-  //     Promise.all([mutateSaleItems(), mutateSaleTransactions()]).then(
-  //       ([items, transactions]) => {
-  //         console.log(sale);
-  //         setSale({ ...sale, items, transactions });
-  //         setSaleLoading(false);
-  //         console.log(sale);
-  //         console.log("sale set");
-  //       }
-  //     );
-  //   }
-  // }, [sale?.id]);
-
-  // TODO load sales properly
-  // BUG why does sale become undefined -> sets sale to only sale vars
-  // BUG clicking between SELL screen and SALES screen, SELL screen shows up undefined SALESCREEN
   // BUG fix bug where close register screen appears (pressing TAB) - have fixed by just hiding sidebars and screens
   // BUG fix bug where bottom of dialog is visible
-  // BUG if you go ADD MORE ITEMS then go back to sale, transactions have disappeared
   // BUG dates are wrong on vercel
   // BUG why are some sales showing items as separate line items, not 2x quantity
 
@@ -122,11 +93,6 @@ export default function SaleScreen({ isNew }) {
   );
 
   // Functions
-  function clearSale() {
-    setSale(null);
-    setView({ ...view, saleScreen: false });
-  }
-
   async function clickParkSale() {
     setParkSaleLoading(true);
     let parkedSale = { ...sale, state: "parked" };
@@ -155,7 +121,7 @@ export default function SaleScreen({ isNew }) {
       type: "success",
       message: "SALE PARKED",
     });
-    clearSale();
+    setSale(null);
     setParkSaleLoading(false);
     let otherSales = sales?.filter((s: SaleObject) => s?.id !== sale?.id);
     mutateSales([...otherSales, parkedSale], false);
@@ -214,7 +180,7 @@ export default function SaleScreen({ isNew }) {
     }
     // close dialog
     setLaybyLoading(false);
-    clearSale();
+    setSale(null);
   }
 
   async function clickCompleteSale() {
@@ -244,7 +210,7 @@ export default function SaleScreen({ isNew }) {
     });
     let completedSale = { ...sale, state: "completed" };
     updateSaleInDatabase(completedSale);
-    clearSale();
+    setSale(null);
     setCompleteSaleLoading(false);
     saveLog(
       {
@@ -270,7 +236,7 @@ export default function SaleScreen({ isNew }) {
     // REVIEW discard sale, do confirm dialog
     {
       type: "cancel",
-      onClick: clearSale,
+      onClick: () => setSale(null),
       disabled: true || totalRemaining === 0,
       text: sale?.state === "layby" ? "CANCEL LAYBY" : "DISCARD SALE",
     },
@@ -284,7 +250,8 @@ export default function SaleScreen({ isNew }) {
     },
     {
       type: "alt2",
-      onClick: () => setView({ ...view, saleScreen: false }),
+      // TODO add more items, load sale into cart
+      onClick: () => setSale(null),
       disabled:
         (sale?.state && sale?.state !== "in progress") || totalRemaining === 0,
       text: "ADD MORE ITEMS",
@@ -309,8 +276,8 @@ export default function SaleScreen({ isNew }) {
   return (
     <>
       <ScreenContainer
-        show={view?.saleScreen}
-        closeFunction={clearSale}
+        show={Boolean(sale?.id)}
+        closeFunction={() => setSale(null)}
         title={`SALE #${sale?.id} [${
           sale?.state ? sale?.state.toUpperCase() : "IN PROGRESS"
         }]`}

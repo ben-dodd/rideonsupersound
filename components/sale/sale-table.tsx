@@ -94,7 +94,6 @@ export default function SaleTable() {
                     (s: SaleObject) => s?.id === item?.row?.original?.id
                   )[0]
                 );
-                setView({ ...view, saleScreen: true });
               }}
             >
               {fDateTime(item?.value)}

@@ -24,7 +24,6 @@ interface ViewProps {
   cart?: boolean;
   createHold?: boolean;
   createContact?: boolean;
-  saleScreen?: boolean;
   closeRegisterScreen?: boolean;
   receiveStockScreen?: boolean;
   returnStockScreen?: boolean;
