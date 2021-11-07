@@ -18,6 +18,8 @@ interface ModalProps {
   children: JSX.Element;
 }
 
+// BUG widths on deployed version are two large
+
 export default function Modal({
   open,
   closeFunction,
