@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useInventory } from "@/lib/swr-hooks";
+import { useSaleInventory } from "@/lib/swr-hooks";
 
 import { InventoryObject, SaleItemObject } from "@/lib/types";
 import {
@@ -12,13 +12,15 @@ type HoldListItemProps = {
   cartItem: SaleItemObject;
 };
 export default function HoldListItem({ cartItem }: HoldListItemProps) {
-  const { inventory } = useInventory();
+  const { saleInventory } = useSaleInventory();
   const [item, setItem] = useState(null);
   useEffect(() => {
     setItem(
-      inventory.filter((i: InventoryObject) => i.id === cartItem?.item_id)[0]
+      saleInventory?.filter(
+        (i: InventoryObject) => i.id === cartItem?.item_id
+      )[0]
     );
-  }, [inventory]);
+  }, [saleInventory]);
 
   return (
     <div className="flex w-full bg-blue-100 text-black relative pt mb-2">

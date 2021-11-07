@@ -7,7 +7,8 @@ import {
   useSaleItemsForSale,
   useSaleTransactionsForSale,
   useContacts,
-  useInventory,
+  useSaleInventory,
+  useStockInventory,
   useLogs,
   useVendorTotalSales,
   useVendorTotalPayments,
@@ -63,7 +64,8 @@ export default function SaleScreen({ isNew }) {
 
   // SWR
   const { contacts } = useContacts();
-  const { inventory, mutateInventory } = useInventory();
+  const { saleInventory } = useSaleInventory();
+  const { mutateInventory } = useStockInventory();
   const { items, isSaleItemsLoading } = useSaleItemsForSale(sale?.id);
   const {
     transactions,
@@ -85,11 +87,11 @@ export default function SaleScreen({ isNew }) {
   // BUG dates are wrong on vercel
   // BUG why are some sales showing items as separate line items, not 2x quantity
 
-  const itemList = writeItemList(inventory, items);
+  const itemList = writeItemList(saleInventory, items);
   const { totalRemaining, totalPrice } = getSaleVars(
     items,
     transactions,
-    inventory
+    saleInventory
   );
 
   // Functions

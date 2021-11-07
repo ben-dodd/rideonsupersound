@@ -9,7 +9,7 @@ import {
   useVendors,
   useHolds,
   useLaybys,
-  useInventory,
+  useStockInventory,
 } from "@/lib/swr-hooks";
 import { viewAtom, loadedVendorIdAtom } from "@/lib/atoms";
 import {
@@ -33,7 +33,7 @@ export default function ContactTable() {
   const { vendors, isVendorsLoading } = useVendors();
   const { laybys, isLaybysLoading } = useLaybys();
   const { holds, isHoldsLoading } = useHolds();
-  const { inventory, isInventoryLoading } = useInventory();
+  const { inventory, isInventoryLoading } = useStockInventory();
 
   // Atoms
   const [view, setView] = useAtom(viewAtom);

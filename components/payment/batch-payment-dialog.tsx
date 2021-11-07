@@ -6,7 +6,7 @@ import { sub } from "date-fns";
 
 // DB
 import {
-  useInventory,
+  useStockInventory,
   useVendors,
   useVendorPayments,
   useSalesJoined,
@@ -34,7 +34,7 @@ import Modal from "@/components/container/modal";
 export default function BatchPaymentDialog() {
   // SWR
   const { registerID } = useRegisterID();
-  const { inventory } = useInventory();
+  const { inventory } = useStockInventory();
   const { vendors } = useVendors();
   const { sales } = useSalesJoined();
   const { vendorPayments, mutateVendorPayments } = useVendorPayments();

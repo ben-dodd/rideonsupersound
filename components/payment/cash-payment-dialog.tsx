@@ -4,7 +4,7 @@ import { useAtom } from "jotai";
 
 // DB
 import {
-  useInventory,
+  useStockInventory,
   useVendors,
   useVendorPayments,
   useSalesJoined,
@@ -33,7 +33,7 @@ import CreateableSelect from "@/components/inputs/createable-select";
 export default function CashPaymentDialog() {
   // SWR
   const { registerID } = useRegisterID();
-  const { inventory } = useInventory();
+  const { inventory } = useStockInventory();
   const { vendors } = useVendors();
   const { sales } = useSalesJoined();
   const { mutateCashGiven } = useCashGiven(registerID || 0);

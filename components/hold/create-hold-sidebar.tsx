@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useContacts, useInventory, useLogs } from "@/lib/swr-hooks";
+import { useContacts, useSaleInventory, useLogs } from "@/lib/swr-hooks";
 import {
   newSaleObjectAtom,
   clerkAtom,
@@ -27,7 +27,7 @@ import SidebarContainer from "@/components/container/side-bar";
 export default function CreateHoldSidebar() {
   // SWR
   const { contacts } = useContacts();
-  const { inventory } = useInventory();
+  const { saleInventory } = useSaleInventory();
   const { logs, mutateLogs } = useLogs();
 
   // Atoms
@@ -62,7 +62,7 @@ export default function CreateHoldSidebar() {
           {
             log: `${getItemSkuDisplayName(
               cartItem?.item_id,
-              inventory
+              saleInventory
             )} put on hold for ${
               (contacts || []).filter(
                 (c: ContactObject) => c?.id === cart?.contact_id

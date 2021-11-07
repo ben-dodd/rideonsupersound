@@ -6,7 +6,7 @@ import { useAtom } from "jotai";
 import {
   useVendors,
   useClerks,
-  useInventory,
+  useStockInventory,
   useSalesJoined,
   useVendorPayments,
   useContacts,
@@ -55,7 +55,7 @@ export default function VendorScreen() {
   const { vendors, isVendorsLoading } = useVendors();
   const { clerks, isClerksLoading } = useClerks();
   const { contacts, isContactsLoading } = useContacts();
-  const { inventory, isInventoryLoading } = useInventory();
+  const { inventory, isInventoryLoading } = useStockInventory();
   const { sales, isSalesLoading } = useSalesJoined();
   const { vendorPayments, isVendorPaymentsLoading } = useVendorPayments();
 

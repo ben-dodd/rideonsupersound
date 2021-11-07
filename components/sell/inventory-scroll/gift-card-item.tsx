@@ -1,7 +1,12 @@
+import { useAtom } from "jotai";
+
+import { viewAtom } from "@/lib/atoms";
+
 import Image from "next/image";
 import AddIcon from "@mui/icons-material/Add";
 
 export default function GiftCardItem() {
+  const [view, setView] = useAtom(viewAtom);
   return (
     <div className="flex justify-between w-full mb-2 bg-blue-100">
       <div className="flex">
@@ -21,7 +26,10 @@ export default function GiftCardItem() {
         </div>
       </div>
       <div className="self-center px-2 hidden sm:inline">
-        <button className="icon-button-large" onClick={null}>
+        <button
+          className="icon-button-large"
+          onClick={() => setView({ ...view, giftCardDialog: true })}
+        >
           <AddIcon style={{ fontSize: "40px" }} />
         </button>
       </div>

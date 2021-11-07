@@ -3,7 +3,7 @@ import { useAtom } from "jotai";
 
 // DB
 import { alertAtom, pageAtom } from "@/lib/atoms";
-import { useInventory } from "@/lib/swr-hooks";
+import { useStockInventory } from "@/lib/swr-hooks";
 
 // Components
 import Snackbar from "@mui/material/Snackbar";
@@ -29,7 +29,7 @@ export default function MainPage() {
   const [page] = useAtom(pageAtom);
 
   // Load necessary data
-  useInventory();
+  useStockInventory();
   // BUG fix bug where inventory doesn't load. make all pages load until all data there, e.g. in tables
 
   return (

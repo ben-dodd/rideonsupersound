@@ -36,6 +36,8 @@ interface ViewProps {
   cardPaymentDialog?: boolean;
   cashPaymentDialog?: boolean;
   giftPaymentDialog?: boolean;
+  giftCardDialog?: boolean;
+  miscItemDialog?: boolean;
   holdDialog?: boolean;
   labelPrintDialog?: boolean;
   loadSalesDialog?: boolean;

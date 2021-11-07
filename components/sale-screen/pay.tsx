@@ -8,7 +8,7 @@ import {
   useVendorFromContact,
   useSaleTransactionsForSale,
   useSaleItemsForSale,
-  useInventory,
+  useSaleInventory,
 } from "@/lib/swr-hooks";
 import {
   newSaleObjectAtom,
@@ -46,11 +46,11 @@ export default function Pay({ isNew }) {
   const { vendor } = useVendorFromContact(sale?.contact_id);
   const { items } = useSaleItemsForSale(sale?.id);
   const { transactions } = useSaleTransactionsForSale(sale?.id);
-  const { inventory } = useInventory();
+  const { saleInventory } = useSaleInventory();
 
   // State
   const [note, setNote] = useState("");
-  const { totalRemaining } = getSaleVars(items, transactions, inventory);
+  const { totalRemaining } = getSaleVars(items, transactions, saleInventory);
 
   // Components
   const SaleCompletedDetails = () => {

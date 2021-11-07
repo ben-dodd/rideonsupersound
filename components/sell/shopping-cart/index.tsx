@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useInventory, useLogs } from "@/lib/swr-hooks";
+import { useSaleInventory, useLogs } from "@/lib/swr-hooks";
 import { newSaleObjectAtom, viewAtom, clerkAtom, alertAtom } from "@/lib/atoms";
 import { InventoryObject } from "@/lib/types";
 
@@ -33,7 +33,7 @@ import HoldIcon from "@mui/icons-material/PanTool";
 
 export default function ShoppingCart() {
   // SWR
-  const { inventory } = useInventory();
+  const { saleInventory } = useSaleInventory();
   const { logs, mutateLogs } = useLogs();
 
   // Atoms
@@ -46,7 +46,8 @@ export default function ShoppingCart() {
   // State
   const [loadingSale, setLoadingSale] = useState(false);
 
-  const itemList = writeItemList(inventory, cart?.items);
+  const itemList = writeItemList(saleInventory, cart?.items);
+  console.log(cart);
 
   // Functions
   async function loadSale() {
@@ -85,7 +86,7 @@ export default function ShoppingCart() {
     saveLog(
       {
         log: `${getItemDisplayName(
-          inventory?.filter(
+          saleInventory?.filter(
             (i: InventoryObject) => i?.id === parseInt(itemId)
           )[0]
         )} removed from cart${id ? ` (sale #${id})` : ""}.`,
@@ -103,8 +104,8 @@ export default function ShoppingCart() {
   }
 
   // Constants
-  const totalPrice = getTotalPrice(cart?.items, inventory);
-  const storeCut = getTotalStoreCut(cart?.items, inventory);
+  const totalPrice = getTotalPrice(cart?.items, saleInventory);
+  const storeCut = getTotalStoreCut(cart?.items, saleInventory);
   const disableButtons =
     loadingSale || !(cart?.items && Object.keys(cart?.items).length > 0);
 

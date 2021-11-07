@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useInventory, useVendors } from "@/lib/swr-hooks";
+import { useStockInventory, useVendors } from "@/lib/swr-hooks";
 import { viewAtom, clerkAtom } from "@/lib/atoms";
 import { InventoryObject, VendorObject, ModalButton } from "@/lib/types";
 
@@ -22,7 +22,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function ReturnStockScreen() {
   // SWR
-  const { inventory } = useInventory();
+  const { inventory } = useStockInventory();
   const { vendors } = useVendors();
 
   // Atoms

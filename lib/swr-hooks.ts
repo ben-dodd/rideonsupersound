@@ -57,13 +57,23 @@ export function useClerkImage(clerk_image_id: number) {
   };
 }
 
-export function useInventory() {
-  const { data, error, mutate } = useSWR(`/api/get-inventory`, fetcher);
+export function useStockInventory() {
+  const { data, error, mutate } = useSWR(`/api/get-stock-inventory`, fetcher);
   return {
     inventory: data,
     isInventoryLoading: !error && !data,
     isInventoryError: error,
     mutateInventory: mutate,
+  };
+}
+
+export function useSaleInventory() {
+  const { data, error, mutate } = useSWR(`/api/get-sale-inventory`, fetcher);
+  return {
+    saleInventory: data,
+    isSaleInventoryLoading: !error && !data,
+    isSaleInventoryError: error,
+    mutateSaleInventory: mutate,
   };
 }
 

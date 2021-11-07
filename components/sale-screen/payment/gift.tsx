@@ -10,7 +10,7 @@ import {
   useLogs,
   useContacts,
   useRegisterID,
-  useInventory,
+  useSaleInventory,
 } from "@/lib/swr-hooks";
 import {
   viewAtom,
@@ -49,9 +49,9 @@ export default function Gift({ isNew }) {
   const { items } = useSaleItemsForSale(sale?.id);
   const { logs, mutateLogs } = useLogs();
   const { registerID } = useRegisterID();
-  const { inventory } = useInventory();
+  const { saleInventory } = useSaleInventory();
 
-  const { totalRemaining } = getSaleVars(items, transactions, inventory);
+  const { totalRemaining } = getSaleVars(items, transactions, saleInventory);
 
   // State
   const [giftCardPayment, setGiftCardPayment] = useState(`${totalRemaining}`);

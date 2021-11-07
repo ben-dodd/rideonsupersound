@@ -13,17 +13,21 @@ const handler: NextApiHandler = async (req, res) => {
         s.display_as,
         s.media,
         s.format,
-        s.genre,
-        s.is_new,
-        s.cond,
         s.image_url,
+        s.is_gift_card,
+        s.gift_card_code,
+        s.gift_card_taken,
+        s.gift_card_change_given,
+        s.gift_card_amount,
+        s.gift_card_remaining,
+        s.gift_card_note,
+        s.gift_card_is_valid,
+        s.is_misc_item,
+        s.misc_item_description,
+        s.misc_item_amount,
         p.vendor_cut,
         p.total_sell,
-        q.quantity
       FROM stock AS s
-      LEFT JOIN
-      (SELECT stock_id, SUM(quantity) AS quantity FROM stock_movement GROUP BY stock_id) AS q
-      ON q.stock_id = s.id
       LEFT JOIN stock_price AS p ON p.stock_id = s.id
       WHERE
          p.id = (

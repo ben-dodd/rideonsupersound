@@ -511,6 +511,26 @@ export async function saveStockMovementToDatabase(
   }
 }
 
+export async function saveStockToDatabase(
+  item: InventoryObject | GiftCardObject,
+  clerk: ClerkObject
+) {
+  try {
+    const res = await fetch("/api/create-stock-item", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ ...item, created_by_id: clerk?.id || null }),
+    });
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+    return json?.insertId;
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
+
 export async function updateStockItemInDatabase(
   item: InventoryObject | GiftCardObject
 ) {
@@ -692,28 +712,6 @@ export async function deleteSaleFromDatabase(sale_id: number) {
     });
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
-  } catch (e) {
-    throw Error(e.message);
-  }
-}
-
-export async function saveStockToDatabase(item: any, clerk: ClerkObject) {
-  try {
-    const res = await fetch("/api/create-stock", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        vendor_id: item?.vendor_id || null,
-        created_by_id: clerk?.id || null,
-        artist: item?.artist || null,
-        title: item?.title || null,
-      }),
-    });
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
-    return json?.insertId;
   } catch (e) {
     throw Error(e.message);
   }

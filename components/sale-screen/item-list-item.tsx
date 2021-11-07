@@ -3,7 +3,11 @@ import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useInventory, useSaleItemsForSale, useLogs } from "@/lib/swr-hooks";
+import {
+  useSaleInventory,
+  useSaleItemsForSale,
+  useLogs,
+} from "@/lib/swr-hooks";
 import {
   newSaleObjectAtom,
   loadedSaleObjectAtom,
@@ -47,7 +51,7 @@ export default function ItemListItem({ saleItem, isNew }: SellListItemProps) {
   const [clerk] = useAtom(clerkAtom);
 
   // SWR
-  const { inventory } = useInventory();
+  const { saleInventory } = useSaleInventory();
   const { items } = useSaleItemsForSale(sale?.id);
   const { logs, mutateLogs } = useLogs();
 
@@ -57,9 +61,11 @@ export default function ItemListItem({ saleItem, isNew }: SellListItemProps) {
   // Load
   useEffect(() => {
     setItem(
-      inventory.filter((i: InventoryObject) => i.id === saleItem?.item_id)[0]
+      saleInventory?.filter(
+        (i: InventoryObject) => i.id === saleItem?.item_id
+      )[0]
     );
-  }, [inventory]);
+  }, [saleInventory]);
 
   // Functions
   async function deleteOrRefundItem(id: number, is_refund: boolean) {
@@ -78,7 +84,7 @@ export default function ItemListItem({ saleItem, isNew }: SellListItemProps) {
     saveLog(
       {
         log: `${getItemDisplayName(
-          inventory?.filter((i: InventoryObject) => i?.id === id)[0]
+          saleInventory?.filter((i: InventoryObject) => i?.id === id)[0]
         )} ${is_refund ? "refunded" : "removed from sale"}${
           id ? ` (sale #${id})` : ""
         }.`,
@@ -108,19 +114,15 @@ export default function ItemListItem({ saleItem, isNew }: SellListItemProps) {
             src={getImageSrc(item)}
             alt={item?.title || "Inventory image"}
           />
-          <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white text-sm flex justify-center items-center">
-            {getItemSku(item)}
-          </div>
+          {!item?.is_gift_card && !item?.is_misc_item && (
+            <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white text-sm flex justify-center items-center">
+              {getItemSku(item)}
+            </div>
+          )}
         </div>
       </div>
       <div className="flex flex-col w-full p-2 justify-between">
-        <div className="text-sm pl-1">
-          {item?.is_gift_card
-            ? item?.gift_card_code
-            : item?.is_misc_item
-            ? item?.misc_item_description
-            : getItemDisplayName(item)}
-        </div>
+        <div className="text-sm pl-1">{getItemDisplayName(item)}</div>
         <div className="text-red-500 self-end flex flex-col">
           <div>{getCartItemSummary(item, saleItem)}</div>
           <Tooltip

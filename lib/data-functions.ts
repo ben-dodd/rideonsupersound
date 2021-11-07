@@ -1,6 +1,5 @@
 import {
   InventoryObject,
-  SaleObject,
   SaleItemObject,
   SaleTransactionObject,
   KiwiBankTransactionObject,
@@ -11,6 +10,7 @@ import {
   DiscogsItem,
   GoogleBooksItem,
   HelpObject,
+  GiftCardObject,
 } from "@/lib/types";
 
 import {
@@ -27,14 +27,18 @@ export function getItemSku(item: InventoryObject) {
   ).slice(-5)}`;
 }
 
-export function getItemDisplayName(item: InventoryObject) {
+export function getItemDisplayName(item: InventoryObject | GiftCardObject) {
   // Add special cases e.g. for comics
   // Might be better as a span component
-  if (item?.display_as) return item?.display_as;
-  if (!item || !(item?.artist || item?.title)) return "Untitled";
-  return `${item?.title || ""}${item?.title && item?.artist ? " - " : ""}${
-    item?.artist || ""
-  }`;
+  if (item?.is_gift_card)
+    return `Gift Card [${item?.gift_card_code?.toUpperCase()}]`;
+  let inventoryItem: any = item;
+  if (inventoryItem?.display_as) return inventoryItem?.display_as;
+  if (!inventoryItem || !(inventoryItem?.artist || inventoryItem?.title))
+    return "Untitled";
+  return `${inventoryItem?.title || ""}${
+    inventoryItem?.title && inventoryItem?.artist ? " - " : ""
+  }${inventoryItem?.artist || ""}`;
 }
 
 export function getItemSkuDisplayName(
@@ -68,7 +72,7 @@ export function getCartItemSummary(
 ) {
   // 1 x V10% x R50% x $27.00
   return item?.is_gift_card
-    ? item?.gift_card_code
+    ? `$${(item?.gift_card_amount / 100)?.toFixed(2)} GIFT CARD`
     : item?.is_misc_item
     ? item?.misc_item_description
     : `${cartItem?.quantity}${
@@ -327,6 +331,7 @@ export function getTotalPrice(
     let item: InventoryObject = (inventory || []).filter(
       (i: InventoryObject) => i?.id === saleItem?.item_id
     )[0];
+    if (item?.is_gift_card) return acc + item?.gift_card_amount;
     return (acc += getItemPrice(item, saleItem));
   }, 0);
 }
@@ -339,6 +344,7 @@ export function getTotalStoreCut(
     let item: InventoryObject = (inventory || []).filter(
       (i: InventoryObject) => i?.id === saleItem?.item_id
     )[0];
+    if (item?.is_gift_card) return acc + item?.gift_card_amount;
     return acc + getItemStoreCut(item, saleItem);
   }, 0);
 }
@@ -655,13 +661,13 @@ export function andList(list: string[]) {
 }
 
 export function writeItemList(
-  inventory: InventoryObject[],
+  saleInventory: InventoryObject[],
   items: SaleItemObject[]
 ) {
-  if ((items || []).length > 0) {
+  if (items) {
     return items
-      .map((item) => {
-        let stockItem: InventoryObject = (inventory || []).filter(
+      .map((item: SaleItemObject) => {
+        let stockItem: InventoryObject = saleInventory?.filter(
           (i) => i?.id === item?.item_id
         )[0];
         if (item?.is_gift_card) {

@@ -10,7 +10,7 @@ import {
   loadedItemIdAtom,
   alertAtom,
 } from "@/lib/atoms";
-import { useWeather, useInventory, useLogs, useVendors } from "@/lib/swr-hooks";
+import { useWeather, useStockInventory, useLogs, useVendors } from "@/lib/swr-hooks";
 import { InventoryObject, VendorObject } from "@/lib/types";
 
 // Components
@@ -41,7 +41,7 @@ export default function ListItem({ item }: ListItemProps) {
   // SWR
   const geolocation = getGeolocation();
   const { weather } = useWeather();
-  const { inventory } = useInventory();
+  const { inventory } = useStockInventory();
   const { vendors } = useVendors();
   const { logs, mutateLogs } = useLogs();
 

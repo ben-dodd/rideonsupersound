@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useInventory, useLogs } from "@/lib/swr-hooks";
+import { useStockInventory, useLogs } from "@/lib/swr-hooks";
 import { viewAtom, clerkAtom } from "@/lib/atoms";
 import { InventoryObject, ModalButton } from "@/lib/types";
 
@@ -26,7 +26,7 @@ export default function LabelPrintDialog() {
   const [clerk] = useAtom(clerkAtom);
 
   // SWR
-  const { inventory } = useInventory();
+  const { inventory } = useStockInventory();
   const { logs, mutateLogs } = useLogs();
 
   // State

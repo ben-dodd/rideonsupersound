@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useInventory } from "@/lib/swr-hooks";
+import { useSaleInventory, useGiftCards } from "@/lib/swr-hooks";
 import { newSaleObjectAtom } from "@/lib/atoms";
 import { InventoryObject, SaleItemObject } from "@/lib/types";
 
@@ -36,7 +36,8 @@ export default function SellListItem({
   deleteCartItem,
 }: SellListItemProps) {
   // SWR
-  const { inventory } = useInventory();
+  const { saleInventory } = useSaleInventory();
+  const { giftCards } = useGiftCards();
 
   // Atoms
   const [cart, setCart] = useAtom(newSaleObjectAtom);
@@ -48,9 +49,11 @@ export default function SellListItem({
   // Load
   useEffect(() => {
     setItem(
-      inventory.filter((i: InventoryObject) => i.id === cartItem?.item_id)[0]
+      saleInventory?.filter(
+        (i: InventoryObject) => i.id === cartItem?.item_id
+      )[0]
     );
-  }, [inventory]);
+  }, [saleInventory]);
 
   // Functions
   function onChangeCart(e: any, property: string) {
@@ -74,19 +77,15 @@ export default function SellListItem({
               src={getImageSrc(item)}
               alt={item?.title || "Inventory image"}
             />
-            <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white text-sm flex justify-center items-center">
-              {getItemSku(item)}
-            </div>
+            {!item?.is_gift_card && !item?.is_misc_item && (
+              <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white text-sm flex justify-center items-center">
+                {getItemSku(item)}
+              </div>
+            )}
           </div>
         </div>
         <div className="flex flex-col w-full p-2 justify-between">
-          <div className="text-sm pl-1">
-            {item?.is_gift_card
-              ? item?.gift_card_code
-              : item?.is_misc_item
-              ? item?.misc_item_description
-              : getItemDisplayName(item)}
-          </div>
+          <div className="text-sm pl-1">{getItemDisplayName(item)}</div>
           <div className="text-red-500 self-end">
             {getCartItemSummary(item, cartItem)}
           </div>
