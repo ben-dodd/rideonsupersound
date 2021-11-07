@@ -4,7 +4,7 @@ import { useAtom } from "jotai";
 
 // DB
 import { viewAtom, clerkAtom, alertAtom } from "@/lib/atoms";
-import { useRegisterID, usePettyCash } from "@/lib/swr-hooks";
+import { useRegisterID, usePettyCash, useLogs } from "@/lib/swr-hooks";
 import { ModalButton } from "@/lib/types";
 
 // Functions
@@ -18,6 +18,7 @@ export default function PettyCashDialog() {
   // SWR
   const { registerID } = useRegisterID();
   const { mutatePettyCash } = usePettyCash(registerID);
+  const { logs, mutateLogs } = useLogs();
 
   // Atoms
   const [clerk] = useAtom(clerkAtom);
@@ -45,7 +46,9 @@ export default function PettyCashDialog() {
           clerk?.id,
           true,
           amount,
-          notes
+          notes,
+          logs,
+          mutateLogs
         );
         mutatePettyCash();
         setSubmitting(false);
