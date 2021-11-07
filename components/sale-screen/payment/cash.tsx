@@ -43,7 +43,7 @@ export default function Cash({ isNew }) {
   );
   const { items } = useSaleItemsForSale(sale?.id);
   const { inventory } = useInventory();
-  const { mutateLogs } = useLogs();
+  const { logs, mutateLogs } = useLogs();
   const { contacts } = useContacts();
   const { registerID } = useRegisterID();
   const { mutateCashGiven } = useCashGiven(registerID || 0);
@@ -100,6 +100,7 @@ export default function Cash({ isNew }) {
             table_id: "sale_transaction",
             row_id: id,
           },
+          logs,
           mutateLogs
         );
         setAlert({

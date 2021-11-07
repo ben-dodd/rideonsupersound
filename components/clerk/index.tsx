@@ -14,7 +14,7 @@ import Skeleton from "react-loading-skeleton";
 
 export default function Clerk({ clerk }) {
   // SWR
-  const { mutateLogs } = useLogs();
+  const { logs, mutateLogs } = useLogs();
 
   // Atoms
   const [, setClerk] = useAtom(clerkAtom);
@@ -32,6 +32,7 @@ export default function Clerk({ clerk }) {
             log: `${clerk.name} set as clerk.`,
             clerk_id: clerk?.id,
           },
+          logs,
           mutateLogs
         );
       }}

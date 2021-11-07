@@ -54,7 +54,7 @@ export default function TransactionListItem({
   const { transactions, mutateSaleTransactions } = useSaleTransactionsForSale(
     sale?.id
   );
-  const { mutateLogs } = useLogs();
+  const { logs, mutateLogs } = useLogs();
 
   // Functions
   const onClickDelete = () => {
@@ -73,6 +73,7 @@ export default function TransactionListItem({
         table_id: "sale_transaction",
         row_id: transaction?.id,
       },
+      logs,
       mutateLogs
     );
     setAlert({
@@ -124,9 +125,11 @@ export default function TransactionListItem({
               ? transaction?.change_given
                 ? `CARD TAKEN, $${(transaction.change_given / 100)?.toFixed(
                     2
-                  )} CHANGE [${(giftCard?.code || "").toUpperCase()}]`
-                : `CARD TAKEN [${(giftCard?.code || "").toUpperCase()}]`
-              : `[${(giftCard?.code || "").toUpperCase()}]`
+                  )} CHANGE [${(giftCard?.gift_card_code || "").toUpperCase()}]`
+                : `CARD TAKEN [${(
+                    giftCard?.gift_card_code || ""
+                  ).toUpperCase()}]`
+              : `[${(giftCard?.gift_card_code || "").toUpperCase()}]`
             : ""}
         </div>
       </div>

@@ -27,7 +27,7 @@ export default function LabelPrintDialog() {
 
   // SWR
   const { inventory } = useInventory();
-  const { mutateLogs } = useLogs();
+  const { logs, mutateLogs } = useLogs();
 
   // State
   const [items, setItems] = useState({
@@ -62,6 +62,7 @@ export default function LabelPrintDialog() {
             log: "Labels printed from label print dialog.",
             clerk_id: clerk?.id,
           },
+          logs,
           mutateLogs
         ),
     },

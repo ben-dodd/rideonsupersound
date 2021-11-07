@@ -231,11 +231,12 @@ export function useVendorFromContact(contact_id: number) {
 }
 
 export function useGiftCards() {
-  const { data, error } = useSWR(`/api/get-gift-cards`, fetcher);
+  const { data, error, mutate } = useSWR(`/api/get-gift-cards`, fetcher);
   return {
     giftCards: data,
     isGiftCardsLoading: !error && !data,
     isGiftCardsError: error,
+    mutateGiftCards: mutate,
   };
 }
 

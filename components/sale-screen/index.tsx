@@ -70,7 +70,7 @@ export default function SaleScreen({ isNew }) {
     isSaleTransactionsLoading,
   } = useSaleTransactionsForSale(sale?.id);
   const { sales, mutateSales } = useSales();
-  const { mutateLogs } = useLogs();
+  const { logs, mutateLogs } = useLogs();
   useVendorTotalPayments(sale?.contact_id);
   useVendorTotalSales(sale?.contact_id);
 
@@ -114,6 +114,7 @@ export default function SaleScreen({ isNew }) {
         table_id: "sale",
         row_id: sale?.id,
       },
+      logs,
       mutateLogs
     );
     setAlert({
@@ -167,6 +168,7 @@ export default function SaleScreen({ isNew }) {
           table_id: "sale",
           row_id: sale?.id,
         },
+        logs,
         mutateLogs
       );
       setAlert({
@@ -219,6 +221,7 @@ export default function SaleScreen({ isNew }) {
         table_id: "sale",
         row_id: sale?.id,
       },
+      logs,
       mutateLogs
     );
     setAlert({

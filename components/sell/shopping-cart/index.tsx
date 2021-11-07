@@ -34,7 +34,7 @@ import HoldIcon from "@mui/icons-material/PanTool";
 export default function ShoppingCart() {
   // SWR
   const { inventory } = useInventory();
-  const { mutateLogs } = useLogs();
+  const { logs, mutateLogs } = useLogs();
 
   // Atoms
   const [view, setView] = useAtom(viewAtom);
@@ -61,6 +61,7 @@ export default function ShoppingCart() {
           table_id: "sale",
           row_id: id,
         },
+        logs,
         mutateLogs
       );
       setSale({ ...cart, id });
@@ -90,6 +91,7 @@ export default function ShoppingCart() {
         )} removed from cart${id ? ` (sale #${id})` : ""}.`,
         clerk_id: clerk?.id,
       },
+      logs,
       mutateLogs
     );
     setAlert({

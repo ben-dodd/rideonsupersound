@@ -4,7 +4,7 @@ import { useAtom } from "jotai";
 
 // DB
 import { viewAtom, clerkAtom, alertAtom } from "@/lib/atoms";
-import { useRegisterID, usePettyCash } from "@/lib/swr-hooks";
+import { useRegisterID, usePettyCash, useLogs } from "@/lib/swr-hooks";
 import { ModalButton } from "@/lib/types";
 
 // Functions
@@ -17,7 +17,8 @@ import TextField from "@/components/inputs/text-field";
 export default function PettyCashDialog() {
   // SWR
   const { registerID } = useRegisterID();
-  const { mutatePettyCash } = usePettyCash(registerID);
+  const { pettyCash, mutatePettyCash } = usePettyCash(registerID);
+  const { logs, mutateLogs } = useLogs();
 
   // Atoms
   const [clerk] = useAtom(clerkAtom);
@@ -40,15 +41,17 @@ export default function PettyCashDialog() {
       loading: submitting,
       onClick: async () => {
         setSubmitting(true);
-        await savePettyCashToRegister(
+        const id = await savePettyCashToRegister(
           registerID,
           clerk?.id,
           false,
           amount,
-          notes
+          notes,
+          logs,
+          mutateLogs
         );
         setSubmitting(false);
-        mutatePettyCash();
+        mutatePettyCash([...pettyCash]);
         setView({ ...view, returnCashDialog: false });
         setAmount("0");
         setNotes("");

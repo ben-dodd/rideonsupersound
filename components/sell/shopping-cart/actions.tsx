@@ -30,7 +30,7 @@ import SaveSaleIcon from "@mui/icons-material/Save";
 export default function ShoppingCartActions() {
   // SWR
   const { contacts } = useContacts();
-  const { mutateLogs } = useLogs();
+  const { logs, mutateLogs } = useLogs();
   const { mutateSales } = useSales();
 
   // Atoms
@@ -78,6 +78,7 @@ export default function ShoppingCartActions() {
         table_id: "sale",
         row_id: saleId,
       },
+      logs,
       mutateLogs
     );
     mutateSales();
@@ -102,6 +103,7 @@ export default function ShoppingCartActions() {
             log: `Cart cleared.`,
             clerk_id: clerk?.id,
           },
+          logs,
           mutateLogs
         );
         setAlert({
@@ -115,6 +117,7 @@ export default function ShoppingCartActions() {
                 log: `Cart uncleared.`,
                 clerk_id: clerk?.id,
               },
+              logs,
               mutateLogs
             );
             setCart({ ...cart });

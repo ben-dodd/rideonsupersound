@@ -28,7 +28,7 @@ export default function CreateHoldSidebar() {
   // SWR
   const { contacts } = useContacts();
   const { inventory } = useInventory();
-  const { mutateLogs } = useLogs();
+  const { logs, mutateLogs } = useLogs();
 
   // Atoms
   const [cart, setCart] = useAtom(newSaleObjectAtom);
@@ -72,6 +72,7 @@ export default function CreateHoldSidebar() {
             table_id: "hold",
             row_id: rowId,
           },
+          logs,
           mutateLogs
         );
       }

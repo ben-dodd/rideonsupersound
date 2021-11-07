@@ -206,6 +206,8 @@ export interface InventoryObject {
   tags?: string[];
   is_gift_card?: boolean;
   gift_card_code?: string;
+  gift_card_taken?: boolean;
+  gift_card_change_given?: number;
   gift_card_amount?: number;
   gift_card_remaining?: number;
   gift_card_note?: string;
@@ -219,12 +221,14 @@ export interface InventoryObject {
 
 export interface GiftCardObject {
   id?: number;
-  code?: string;
-  card_taken?: boolean;
-  change_given?: number;
-  initial_amount?: number;
-  amount_remaining?: number;
-  is_valid?: boolean;
+  is_gift_card?: boolean;
+  gift_card_code?: string;
+  gift_card_taken?: boolean;
+  gift_card_change_given?: number;
+  gift_card_amount?: number;
+  gift_card_remaining?: number;
+  gift_card_note?: string;
+  gift_card_is_valid?: boolean;
   date_created?: string;
   date_modified?: string;
   is_deleted?: boolean;

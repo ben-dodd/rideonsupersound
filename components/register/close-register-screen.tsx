@@ -12,6 +12,7 @@ import {
   useManualPayments,
   useCashGiven,
   useCashReceived,
+  useLogs,
 } from "@/lib/swr-hooks";
 import { ClerkObject, ModalButton, SaleTransactionObject } from "@/lib/types";
 
@@ -28,6 +29,7 @@ import CashMap from "./cash-map";
 export default function CloseRegisterScreen() {
   // SWR
   const { clerks, isClerksLoading } = useClerks();
+  const { logs, mutateLogs } = useLogs();
   const { registerID, mutateRegisterID } = useRegisterID();
   const { register, isRegisterLoading } = useRegister(registerID);
   const { pettyCash, isPettyCashLoading, mutatePettyCash } = usePettyCash(
@@ -126,16 +128,22 @@ export default function CloseRegisterScreen() {
         close_discrepancy: closeDiscrepancy * 100,
         close_note: notes,
       },
-      till
+      till,
+      logs,
+      mutateLogs
     );
-    saveLog({
-      log: `Register closed with $${
-        closeAmount ? parseFloat(closeAmount) : 0
-      } in the till.`,
-      clerk_id: clerk?.id,
-      table_id: "register",
-      row_id: registerID,
-    });
+    saveLog(
+      {
+        log: `Register closed with $${
+          closeAmount ? parseFloat(closeAmount) : 0
+        } in the till.`,
+        clerk_id: clerk?.id,
+        table_id: "register",
+        row_id: registerID,
+      },
+      logs,
+      mutateLogs
+    );
     mutateRegisterID([{ num: 0 }], false);
     setView({ ...view, closeRegisterScreen: false });
     setAlert({

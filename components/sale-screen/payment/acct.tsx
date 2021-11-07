@@ -47,7 +47,7 @@ export default function Acct({ isNew }) {
   );
   const { items } = useSaleItemsForSale(sale?.id);
   const { inventory } = useInventory();
-  const { mutateLogs } = useLogs();
+  const { logs, mutateLogs } = useLogs();
 
   const { totalRemaining } = getSaleVars(items, transactions, inventory);
 
@@ -102,6 +102,7 @@ export default function Acct({ isNew }) {
             table_id: "sale_transaction",
             row_id: id,
           },
+          logs,
           mutateLogs
         );
         setAlert({

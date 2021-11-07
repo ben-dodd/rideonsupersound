@@ -12,6 +12,7 @@ import {
   useSalesJoined,
   useRegisterID,
   useCashGiven,
+  useLogs,
 } from "@/lib/swr-hooks";
 import { viewAtom, clerkAtom } from "@/lib/atoms";
 import { VendorObject, ModalButton } from "@/lib/types";
@@ -38,6 +39,7 @@ export default function BatchPaymentDialog() {
   const { sales } = useSalesJoined();
   const { vendorPayments, mutateVendorPayments } = useVendorPayments();
   const { mutateCashGiven } = useCashGiven(registerID || 0);
+  const { logs, mutateLogs } = useLogs();
 
   // Atoms
   const [clerk] = useAtom(clerkAtom);
@@ -122,12 +124,16 @@ export default function BatchPaymentDialog() {
                 { ...vendorPayment, id },
               ]);
               mutateCashGiven();
-              saveLog({
-                log: `Batch payment made to Vendor (${vendor?.id || ""}).`,
-                clerk_id: clerk?.id,
-                table_id: "vendor_payment",
-                row_id: id,
-              });
+              saveLog(
+                {
+                  log: `Batch payment made to Vendor (${vendor?.id || ""}).`,
+                  clerk_id: clerk?.id,
+                  table_id: "vendor_payment",
+                  row_id: id,
+                },
+                logs,
+                mutateLogs
+              );
             });
           });
       },

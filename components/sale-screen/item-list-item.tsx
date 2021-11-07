@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useInventory, useLogs, useSaleItemsForSale } from "@/lib/swr-hooks";
+import { useInventory, useSaleItemsForSale, useLogs } from "@/lib/swr-hooks";
 import {
   newSaleObjectAtom,
   loadedSaleObjectAtom,
@@ -48,8 +48,8 @@ export default function ItemListItem({ saleItem, isNew }: SellListItemProps) {
 
   // SWR
   const { inventory } = useInventory();
-  const { mutateLogs } = useLogs();
   const { items } = useSaleItemsForSale(sale?.id);
+  const { logs, mutateLogs } = useLogs();
 
   // State
   const [item, setItem] = useState(null);
@@ -84,6 +84,7 @@ export default function ItemListItem({ saleItem, isNew }: SellListItemProps) {
         }.`,
         clerk_id: clerk?.id,
       },
+      logs,
       mutateLogs
     );
     setAlert({

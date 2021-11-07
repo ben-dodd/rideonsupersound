@@ -43,7 +43,7 @@ export default function ListItem({ item }: ListItemProps) {
   const { weather } = useWeather();
   const { inventory } = useInventory();
   const { vendors } = useVendors();
-  const { mutateLogs } = useLogs();
+  const { logs, mutateLogs } = useLogs();
 
   // Atoms
   const [cart, setCart] = useAtom(newSaleObjectAtom);
@@ -105,6 +105,7 @@ export default function ListItem({ item }: ListItemProps) {
         )} added to cart${cart?.id ? ` (sale #${cart?.id})` : ""}.`,
         clerk_id: clerk?.id,
       },
+      logs,
       mutateLogs
     );
     setAlert({

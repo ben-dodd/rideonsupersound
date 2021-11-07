@@ -5,7 +5,7 @@ import { useAtom } from "jotai";
 // DB
 import { TillObject, RegisterObject } from "@/lib/types";
 import { clerkAtom, pageAtom, alertAtom } from "@/lib/atoms";
-import { useRegisterID } from "@/lib/swr-hooks";
+import { useRegisterID, useLogs } from "@/lib/swr-hooks";
 
 // Functions
 import { getAmountFromCashMap } from "@/lib/data-functions";
@@ -20,6 +20,7 @@ import CashMap from "./cash-map";
 export default function OpenRegisterScreen() {
   // SWR
   const { registerID, mutateRegisterID } = useRegisterID();
+  const { logs, mutateLogs } = useLogs();
 
   // Atoms
   const [, setAlert] = useAtom(alertAtom);
@@ -49,7 +50,10 @@ export default function OpenRegisterScreen() {
     };
     setLoading(true);
     // Save register to DB and mutate register with returned ID number
-    await mutateRegisterID(saveAndOpenRegister(register, till, clerk), false);
+    await mutateRegisterID(
+      saveAndOpenRegister(register, till, clerk, logs, mutateLogs),
+      false
+    );
     setLoading(false);
 
     // Reset State
@@ -62,14 +66,18 @@ export default function OpenRegisterScreen() {
       type: "success",
       message: "REGISTER OPENED",
     });
-    saveLog({
-      log: `Register opened with $${
-        openAmount ? parseFloat(openAmount) : 0
-      } in the till.`,
-      clerk_id: clerk?.id,
-      table_id: "register",
-      row_id: registerID,
-    });
+    saveLog(
+      {
+        log: `Register opened with $${
+          openAmount ? parseFloat(openAmount) : 0
+        } in the till.`,
+        clerk_id: clerk?.id,
+        table_id: "register",
+        row_id: registerID,
+      },
+      logs,
+      mutateLogs
+    );
   }
 
   function isError(till: TillObject) {

@@ -135,37 +135,28 @@ export default function Pay({ isNew }) {
         <div className="grid grid-cols-2 gap-2 mt-4">
           <button
             className="square-button"
-            disabled={totalRemaining === 0}
             onClick={() => setView({ ...view, cashPaymentDialog: true })}
           >
             CASH
           </button>
           <button
             className="square-button"
-            disabled={totalRemaining === 0}
             onClick={() => setView({ ...view, cardPaymentDialog: true })}
           >
             CARD
           </button>
           <button
             className="square-button"
-            disabled={!sale?.contact_id || !vendor || totalRemaining === 0}
+            disabled={!sale?.contact_id || !vendor}
             onClick={() => setView({ ...view, acctPaymentDialog: true })}
           >
             ACCT
-            <div
-              className={`text-xs ${sale?.contact_id ? "hidden" : "w-full"}`}
-            >
-              Contact Required
-            </div>
           </button>
           <button
             className="square-button"
-            disabled={true || totalRemaining === 0}
             onClick={() => setView({ ...view, giftPaymentDialog: true })}
           >
             GIFT
-            <div className={`text-xs`}>Out of Order</div>
           </button>
         </div>
       )}

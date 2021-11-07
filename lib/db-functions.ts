@@ -3,6 +3,7 @@ import {
   SaleItemObject,
   SaleTransactionObject,
   ClerkObject,
+  GiftCardObject,
   VendorObject,
   VendorPaymentObject,
   InventoryObject,
@@ -106,7 +107,8 @@ export async function saveSaleTransaction(
   is_refund?: boolean,
   transactions?: SaleTransactionObject[],
   mutate?: Function,
-  vendor?: VendorObject
+  vendor?: VendorObject,
+  giftCardID?: number
 ) {
   let transaction: SaleTransactionObject = {
     sale_id: sale?.id,
@@ -117,6 +119,7 @@ export async function saveSaleTransaction(
       parseFloat(amount) >= totalRemaining
         ? totalRemaining * 100
         : parseFloat(amount) * 100,
+    gift_card_id: giftCardID || null,
     register_id: registerID,
   };
   if (paymentMethod === "cash") {
@@ -178,7 +181,9 @@ export async function saveSaleTransactionToDatabase(
 export async function saveClosedRegisterToDatabase(
   register_id: number,
   register: RegisterObject,
-  till: TillObject
+  till: TillObject,
+  logs: LogObject[],
+  mutateLogs: Function
 ) {
   try {
     const tillID = await saveTillToDatabase(till);
@@ -195,12 +200,16 @@ export async function saveClosedRegisterToDatabase(
     });
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
-    saveLog({
-      log: `Register closed.`,
-      table_id: "register",
-      row_id: json?.insertId,
-      clerk_id: register?.closed_by_id,
-    });
+    saveLog(
+      {
+        log: `Register closed.`,
+        table_id: "register",
+        row_id: json?.insertId,
+        clerk_id: register?.closed_by_id,
+      },
+      logs,
+      mutateLogs
+    );
     setRegister(json?.insertId);
   } catch (e) {
     throw Error(e.message);
@@ -210,7 +219,9 @@ export async function saveClosedRegisterToDatabase(
 export async function saveAndOpenRegister(
   register: RegisterObject,
   till: TillObject,
-  clerk: ClerkObject
+  clerk: ClerkObject,
+  logs: LogObject[],
+  mutateLogs: Function
 ) {
   try {
     const tillID = await saveTillToDatabase(till);
@@ -223,12 +234,16 @@ export async function saveAndOpenRegister(
     });
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
-    saveLog({
-      log: `Register opened.`,
-      table_id: "register",
-      row_id: json?.insertId,
-      clerk_id: clerk?.id,
-    });
+    saveLog(
+      {
+        log: `Register opened.`,
+        table_id: "register",
+        row_id: json?.insertId,
+        clerk_id: clerk?.id,
+      },
+      logs,
+      mutateLogs
+    );
     setRegister(json?.insertId);
     return [{ num: json?.insertId }];
   } catch (e) {
@@ -241,7 +256,9 @@ export async function savePettyCashToRegister(
   clerkID: number,
   isTake: boolean,
   amount: string,
-  note: string
+  note: string,
+  logs: LogObject[],
+  mutateLogs: Function
 ) {
   try {
     let numberAmount = parseFloat(amount) * 100;
@@ -261,14 +278,18 @@ export async function savePettyCashToRegister(
     });
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
-    saveLog({
-      log: `$${parseFloat(amount)?.toFixed(2)} ${
-        isTake ? "taken from till." : "put in till."
-      }`,
-      table_id: "register_petty_cash",
-      row_id: json?.insertId,
-      clerk_id: clerkID,
-    });
+    saveLog(
+      {
+        log: `$${parseFloat(amount)?.toFixed(2)} ${
+          isTake ? "taken from till." : "put in till."
+        }`,
+        table_id: "register_petty_cash",
+        row_id: json?.insertId,
+        clerk_id: clerkID,
+      },
+      logs,
+      mutateLogs
+    );
   } catch (e) {
     throw Error(e.message);
   }
@@ -429,23 +450,28 @@ export async function saveGiftCardToDatabase() {
   }
 }
 
-export async function saveLog(log: LogObject, mutate?: Function) {
+export async function saveLog(
+  log: LogObject,
+  logs: LogObject[],
+  mutateLogs: Function
+) {
+  let logObj = {
+    log: log?.log,
+    table_id: log?.table_id || null,
+    row_id: log?.row_id || null,
+    clerk_id: log?.clerk_id || null,
+  };
   try {
     const res = await fetch("/api/create-log", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        log: log?.log,
-        table_id: log?.table_id || null,
-        row_id: log?.row_id || null,
-        clerk_id: log?.clerk_id || null,
-      }),
+      body: JSON.stringify(logObj),
     });
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
-    mutate && mutate();
+    mutateLogs([...logs, { ...logObj, id: json?.insertId }], false);
   } catch (e) {
     throw Error(e.message);
   }
@@ -485,7 +511,9 @@ export async function saveStockMovementToDatabase(
   }
 }
 
-export async function updateStockItemInDatabase(item: InventoryObject) {
+export async function updateStockItemInDatabase(
+  item: InventoryObject | GiftCardObject
+) {
   try {
     const res = await fetch("/api/update-stock-item", {
       method: "POST",

@@ -3,7 +3,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useInventory, useVendors } from "@/lib/swr-hooks";
+import { useInventory, useVendors, useLogs } from "@/lib/swr-hooks";
 import { viewAtom, clerkAtom } from "@/lib/atoms";
 import { VendorObject, InventoryObject, ModalButton } from "@/lib/types";
 
@@ -35,6 +35,7 @@ export default function ReceiveStockScreen() {
   // SWR
   const { inventory } = useInventory();
   const { vendors } = useVendors();
+  const { logs, mutateLogs } = useLogs();
 
   // Functions
   function makeNewStockData(num: number) {
@@ -183,10 +184,14 @@ export default function ReceiveStockScreen() {
       headers: ["SKU", "ARTIST", "TITLE", "NEW/USED", "SELL PRICE", "GENRE"],
       fileName: `label-print-${fFileDate()}.csv`,
       onClick: () =>
-        saveLog({
-          log: "Labels printed from receive stock dialog.",
-          clerk_id: clerk?.id,
-        }),
+        saveLog(
+          {
+            log: "Labels printed from receive stock dialog.",
+            clerk_id: clerk?.id,
+          },
+          logs,
+          mutateLogs
+        ),
       text: "PRINT LABELS",
     },
     {

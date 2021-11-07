@@ -10,6 +10,7 @@ import {
   useSalesJoined,
   useRegisterID,
   useCashGiven,
+  useLogs,
 } from "@/lib/swr-hooks";
 import { viewAtom, clerkAtom } from "@/lib/atoms";
 import {
@@ -37,6 +38,7 @@ export default function CashPaymentDialog() {
   const { sales } = useSalesJoined();
   const { mutateCashGiven } = useCashGiven(registerID || 0);
   const { vendorPayments, mutateVendorPayments } = useVendorPayments();
+  const { logs, mutateLogs } = useLogs();
 
   // Atoms
   const [clerk] = useAtom(clerkAtom);
@@ -93,12 +95,16 @@ export default function CashPaymentDialog() {
         saveVendorPaymentToDatabase(vendorPayment).then((id) => {
           mutateVendorPayments([...vendorPayments, { ...vendorPayment, id }]);
           mutateCashGiven();
-          saveLog({
-            log: `Cash payment made to Vendor (${vendor?.id || ""}).`,
-            clerk_id: clerk?.id,
-            table_id: "vendor_payment",
-            row_id: id,
-          });
+          saveLog(
+            {
+              log: `Cash payment made to Vendor (${vendor?.id || ""}).`,
+              clerk_id: clerk?.id,
+              table_id: "vendor_payment",
+              row_id: id,
+            },
+            logs,
+            mutateLogs
+          );
           setSubmitting(false);
           resetAndCloseDialog();
         });

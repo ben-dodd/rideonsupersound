@@ -68,7 +68,7 @@ export default function SellScreen() {
       <CreateHoldSidebar />
       <CreateContactScreen />
       {sale?.id && <SaleScreen isNew={true} />}
-      {loadedItemId > 0 && <InventoryItemScreen page="sell" />}
+      {loadedItemId && <InventoryItemScreen page="sell" />}
       {page === "sell" || (registerID === 0 && <OpenRegisterScreen />)}
       {view?.closeRegisterScreen && <CloseRegisterScreen />}
       {view?.returnCashDialog && <ReturnCashDialog />}
