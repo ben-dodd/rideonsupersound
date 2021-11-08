@@ -664,7 +664,7 @@ export function writeItemList(
   saleInventory: InventoryObject[],
   items: SaleItemObject[]
 ) {
-  if (items) {
+  if (items && saleInventory) {
     return items
       .map((item: SaleItemObject) => {
         let stockItem: InventoryObject = saleInventory?.filter(

@@ -67,6 +67,7 @@ export interface SaleItemObject {
   is_misc_item?: boolean;
   note?: string;
   is_refunded?: boolean;
+  date_refunded?: string;
   is_deleted?: boolean;
 }
 

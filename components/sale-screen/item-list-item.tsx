@@ -60,6 +60,7 @@ export default function ItemListItem({ saleItem, isNew }: SellListItemProps) {
 
   // Load
   useEffect(() => {
+    console.log(saleInventory);
     setItem(
       saleInventory?.filter(
         (i: InventoryObject) => i.id === saleItem?.item_id
@@ -100,6 +101,9 @@ export default function ItemListItem({ saleItem, isNew }: SellListItemProps) {
     });
     // setRefresh(refresh + 1);
   }
+
+  console.log(item);
+  console.log(saleItem);
 
   // TODO remove items or refund items if complete
   // TODO make items drop down for editing, like in shopping cart

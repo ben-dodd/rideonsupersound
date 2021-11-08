@@ -74,7 +74,7 @@ export default function GiftCardDialog() {
           gift_card_amount: parseFloat(amount) * 100,
           gift_card_remaining: parseFloat(amount) * 100,
           gift_card_note: notes,
-          gift_card_is_valid: true,
+          gift_card_is_valid: false,
         };
         const id = await saveStockToDatabase(newGiftCard, clerk);
         mutateGiftCards([...giftCards, { ...newGiftCard, id }], false);

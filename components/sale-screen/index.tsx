@@ -202,7 +202,8 @@ export default function SaleScreen({ isNew }) {
       }
       if (saleItem?.is_gift_card) {
         // Add to collection
-        saveGiftCardToDatabase();
+        // TODO make gift card valid
+        // saveGiftCardToDatabase();
         // Add gift card to sale items
       } else if (saleItem?.is_misc_item) {
         // Do something
