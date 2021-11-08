@@ -54,9 +54,15 @@ export default function GiftCardTable() {
       {
         Header: "Remaining Value",
         accessor: "remaining",
-        Cell: ({ value }) => <span>${value}</span>,
+        Cell: ({ value }) => (
+          <span>${(value ? value / 100 : 0)?.toFixed(2)}</span>
+        ),
       },
-      { Header: "Valid", accessor: "valid" },
+      {
+        Header: "Valid",
+        accessor: "valid",
+        Cell: ({ value }) => (value ? "YES" : "NO"),
+      },
       { Header: "Notes", accessor: "notes", width: 350 },
     ],
     []

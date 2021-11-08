@@ -82,6 +82,7 @@ export default function Gift({ isNew }) {
         giftCardPayment <= "" ||
         isNaN(parseFloat(giftCardPayment)) ||
         !giftCard ||
+        !giftCard?.gift_card_is_valid ||
         leftOver < 0,
       loading: submitting,
       onClick: async () => {
@@ -200,7 +201,7 @@ export default function Gift({ isNew }) {
           ) : parseFloat(giftCardPayment) > totalRemaining ? (
             <div>PAYMENT TOO HIGH</div>
           ) : !giftCard?.gift_card_is_valid ? (
-            <div>GIFT CARD IS NO LONGER VALID</div>
+            <div>GIFT CARD IS NOT VALID</div>
           ) : remainingOnGiftCard < parseFloat(giftCardPayment) ? (
             <div>NOT ENOUGH ON CARD</div>
           ) : leftOver >= 10 ? (

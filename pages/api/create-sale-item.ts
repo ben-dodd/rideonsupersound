@@ -8,6 +8,8 @@ const handler: NextApiHandler = async (req, res) => {
     quantity,
     vendor_discount,
     store_discount,
+    is_gift_card,
+    is_misc_item,
     note,
   } = req.body;
   try {
@@ -19,11 +21,22 @@ const handler: NextApiHandler = async (req, res) => {
         quantity,
         vendor_discount,
         store_discount,
+        is_gift_card,
+        is_misc_item,
         note
       )
-      VALUES (?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
       `,
-      [sale_id, item_id, quantity, vendor_discount, store_discount, note]
+      [
+        sale_id,
+        item_id,
+        quantity,
+        vendor_discount,
+        store_discount,
+        is_gift_card,
+        is_misc_item,
+        note,
+      ]
     );
     return res.json(results);
   } catch (e) {

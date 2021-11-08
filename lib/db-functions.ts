@@ -86,6 +86,8 @@ export async function saveSaleItemToDatabase(
         quantity: item?.quantity,
         vendor_discount: item?.vendor_discount || null,
         store_discount: item?.store_discount || null,
+        is_gift_card: item?.is_gift_card || null,
+        is_misc_item: item?.is_misc_item || null,
         note: item?.note || null,
       }),
     });
@@ -471,7 +473,7 @@ export async function saveLog(
     });
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
-    mutateLogs([...logs, { ...logObj, id: json?.insertId }], false);
+    if (logs) mutateLogs([...logs, { ...logObj, id: json?.insertId }], false);
   } catch (e) {
     throw Error(e.message);
   }
@@ -614,6 +616,22 @@ export async function setRegister(register_id: number) {
       body: JSON.stringify({
         register_id: register_id,
       }),
+    });
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
+
+export async function validateGiftCard(id: number) {
+  try {
+    const res = await fetch("/api/validate-gift-card", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id }),
     });
     const json = await res.json();
     if (!res.ok) throw Error(json.message);

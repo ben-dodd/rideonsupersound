@@ -89,6 +89,7 @@ export default function GiftCardDialog() {
         newItems.push({
           item_id: id,
           quantity: "1",
+          is_gift_card: true,
         });
         setCart({
           id: cart?.id || null,

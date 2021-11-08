@@ -26,6 +26,7 @@ import {
   ContactObject,
   SaleItemObject,
   SaleObject,
+  InventoryObject,
 } from "@/lib/types";
 
 // Functions
@@ -36,7 +37,7 @@ import {
   saveStockMovementToDatabase,
   updateSaleInDatabase,
   updateSaleItemInDatabase,
-  saveGiftCardToDatabase,
+  validateGiftCard,
 } from "@/lib/db-functions";
 
 // Components
@@ -64,7 +65,7 @@ export default function SaleScreen({ isNew }) {
 
   // SWR
   const { contacts } = useContacts();
-  const { saleInventory } = useSaleInventory();
+  const { saleInventory, mutateSaleInventory } = useSaleInventory();
   const { mutateInventory } = useStockInventory();
   const { items, isSaleItemsLoading } = useSaleItemsForSale(sale?.id);
   const {
@@ -197,13 +198,21 @@ export default function SaleScreen({ isNew }) {
     //    If other item, change quantity sold
     // Update sale to 'complete', add date_sale_completed, sale_completed_by
     items?.forEach((saleItem: SaleItemObject) => {
+      console.log(saleItem);
       if (sale?.state === "layby" && !saleItem?.is_gift_card) {
         saveStockMovementToDatabase(saleItem, clerk, "unlayby", null);
       }
       if (saleItem?.is_gift_card) {
         // Add to collection
-        // TODO make gift card valid
-        // saveGiftCardToDatabase();
+        let updatedGiftCard = saleInventory?.filter(
+          (s: InventoryObject) => s?.id === saleItem?.item_id
+        );
+        updatedGiftCard.gift_card_is_valid = true;
+        let otherSaleStock = saleInventory?.filter(
+          (s: InventoryObject) => s?.id !== saleItem?.item_id
+        );
+        mutateSaleInventory([...otherSaleStock, updatedGiftCard]);
+        validateGiftCard(saleItem?.item_id);
         // Add gift card to sale items
       } else if (saleItem?.is_misc_item) {
         // Do something
