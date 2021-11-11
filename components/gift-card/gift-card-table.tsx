@@ -13,6 +13,7 @@ import TableContainer from "@/components/container/table";
 export default function GiftCardTable() {
   // SWR
   const { giftCards, isGiftCardsLoading } = useGiftCards();
+  console.log(giftCards);
 
   // Constants
   const data = useMemo(

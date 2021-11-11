@@ -37,7 +37,7 @@ export default function Clerk({ clerk }) {
         );
       }}
     >
-      <div className="relative bg-white cursor-pointer w-full shadow-md rounded-full transform hover:scale-105 hover:shadow-2xl">
+      <div className="relative cursor-pointer w-full rounded-full transform hover:scale-105">
         <Image
           src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/clerk/${
             clerk?.name || "Guest"
