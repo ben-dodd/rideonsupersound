@@ -32,7 +32,7 @@ export default function Menu() {
   const [cart] = useAtom(newSaleObjectAtom);
   const [page, setPage] = useAtom(pageAtom);
   const [view, setView] = useAtom(viewAtom);
-  const [, setClerk] = useAtom(clerkAtom);
+  const [clerk, setClerk] = useAtom(clerkAtom);
 
   // Constants
   const cartItems = (cart?.items || []).reduce(
@@ -168,7 +168,7 @@ export default function Menu() {
 
   return (
     <div
-      className={`w-0 overflow-y-auto flex flex-col h-menu justify-between bg-white z-50 flex-shrink-0 whitespace-pre relative ${
+      className={`w-0 overflow-y-auto flex flex-col h-menu justify-between bg-clerk_${clerk?.name?.toLowerCase()} z-50 flex-shrink-0 whitespace-pre relative ${
         view?.mainMenu && "w-full "
       }sm:w-full sm:w-icons sm:border-r sm:shadow-lg lg:w-menu transition-width duration-200 `}
     >

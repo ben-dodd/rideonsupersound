@@ -30,11 +30,13 @@ export default function Nav() {
   const [view, setView] = useAtom(viewAtom);
 
   return (
-    <nav className="py-2 bg-black text-white h-nav">
+    <nav
+      className={`py-2 bg-clerk_${clerk?.name?.toLowerCase()} text-white h-nav`}
+    >
       <div className="flex justify-between items-center">
         <div className="flex items-center">
           <div className="w-12">
-            <div className="w-12 h-12 bg-black rounded-full mx-2 relative">
+            <div className={`w-12 h-12 rounded-full mx-2 relative`}>
               <Image
                 layout="fill"
                 objectFit="cover"
@@ -49,10 +51,13 @@ export default function Nav() {
             <Image
               src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/POS-RIDEONSUPERSOUNDLOGO.png`}
               alt="Ride On Super Sound"
-              height="41px"
-              width="283px"
+              height="42px"
+              width="493px"
             />
             {/*<div>{page?.toUpperCase()}</div>*/}
+          </div>
+          <div className="ml-4 text-white text-5xl italic font-black justify-self-start drop-shadow-2xl">
+            {clerk?.name}
           </div>
         </div>
         <div className="flex mr-2">
@@ -61,7 +66,10 @@ export default function Nav() {
           {page === "contacts" && <ContactNavActions />}
           {page === "vendors" && <VendorNavActions />}
           {page === "payments" && <PaymentNavActions />}
-          <button onClick={() => setView({ ...view, helpDialog: true })}>
+          <button
+            onClick={() => setView({ ...view, helpDialog: true })}
+            className="text-brown-dark hover:text-brown"
+          >
             <HelpIcon />
           </button>
         </div>

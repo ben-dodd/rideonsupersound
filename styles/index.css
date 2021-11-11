@@ -86,7 +86,7 @@
 }
 
 .icon-text-button {
-  @apply flex justify-between items-center text-sm rounded shadow-md p-2 m-1 whitespace-nowrap cursor-pointer bg-primary-dark text-white hover:shadow-lg hover:bg-primary disabled:pointer-events-none disabled:bg-gray-300 disabled:shadow-none;
+  @apply flex justify-between items-center text-sm rounded shadow-md p-2 m-1 whitespace-nowrap cursor-pointer bg-brown-dark text-white hover:shadow-lg hover:bg-brown disabled:pointer-events-none disabled:bg-gray-300 disabled:shadow-none;
 }
 
 .fab-button {

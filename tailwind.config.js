@@ -82,6 +82,29 @@ module.exports = {
           DEFAULT: "#ff87ff",
           light: "#ffdeff",
         },
+        clerk_nick: {
+          DEFAULT: "#faf989",
+        },
+        clerk_mieke: {
+          DEFAULT: "#d59ae4",
+        },
+        clerk_michael: {
+          DEFAULT: "#f9da88",
+        },
+        clerk_john: {
+          DEFAULT: "#f99bad",
+        },
+        clerk_isaac: {
+          DEFAULT: "#98f991",
+        },
+        clerk_guest: {
+          DEFAULT: "#97cafa",
+        },
+        brown: {
+          dark: "#423e3e",
+          DEFAULT: "#7c7474",
+          light: "#908989",
+        },
       },
       // fontFamily: { sans: ["OpenDyslexic", "sans-serif"] },
       // fontFamily: { sans: ["Varela Round", "sans-serif"] },
