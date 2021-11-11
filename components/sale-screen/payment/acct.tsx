@@ -88,6 +88,7 @@ export default function Acct({ isNew }) {
           register_id: registerID,
         };
         const id = await saveSaleTransaction(
+          transaction,
           transactions,
           mutateSaleTransactions,
           vendor
