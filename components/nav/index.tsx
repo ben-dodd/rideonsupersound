@@ -30,9 +30,7 @@ export default function Nav() {
   const [view, setView] = useAtom(viewAtom);
 
   return (
-    <nav
-      className={`py-2 bg-clerk_${clerk?.name?.toLowerCase()} text-white h-nav`}
-    >
+    <nav className={`py-2 ${clerk?.name?.toLowerCase()} text-white h-nav`}>
       <div className="flex justify-between items-center">
         <div className="flex items-center">
           <div className="w-12">

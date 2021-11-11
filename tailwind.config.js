@@ -82,22 +82,22 @@ module.exports = {
           DEFAULT: "#ff87ff",
           light: "#ffdeff",
         },
-        clerk_nick: {
+        nick: {
           DEFAULT: "#faf989",
         },
-        clerk_mieke: {
+        mieke: {
           DEFAULT: "#d59ae4",
         },
-        clerk_michael: {
+        michael: {
           DEFAULT: "#f9da88",
         },
-        clerk_john: {
+        john: {
           DEFAULT: "#f99bad",
         },
-        clerk_isaac: {
+        isaac: {
           DEFAULT: "#98f991",
         },
-        clerk_guest: {
+        guest: {
           DEFAULT: "#97cafa",
         },
         brown: {
