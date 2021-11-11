@@ -82,9 +82,11 @@ export interface SaleTransactionObject {
   change_given?: number;
   vendor_payment_id?: number;
   gift_card_id?: number;
+  gift_card_remaining?: number;
+  gift_card_taken?: boolean;
+  gift_card_change?: number;
   register_id?: number;
   is_refund?: boolean;
-  card_taken?: boolean;
   is_deleted?: boolean;
 }
 
@@ -207,8 +209,6 @@ export interface InventoryObject {
   tags?: string[];
   is_gift_card?: boolean;
   gift_card_code?: string;
-  gift_card_taken?: boolean;
-  gift_card_change_given?: number;
   gift_card_amount?: number;
   gift_card_remaining?: number;
   gift_card_note?: string;
@@ -218,6 +218,16 @@ export interface InventoryObject {
   misc_item_amount?: number;
   googleBooksItem?: any;
   discogsItem?: any;
+}
+
+export interface StockPriceObject {
+  id?: number;
+  stock_id?: number;
+  clerk_id?: number;
+  vendor_cut?: number;
+  total_sell?: number;
+  date_valid_from?: string;
+  note?: string;
 }
 
 export interface GiftCardObject {

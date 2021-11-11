@@ -27,6 +27,7 @@ interface ViewProps {
   closeRegisterScreen?: boolean;
   receiveStockScreen?: boolean;
   returnStockScreen?: boolean;
+  changePriceDialog?: boolean;
   helpDialog?: boolean;
   returnCashDialog?: boolean;
   takeCashDialog?: boolean;

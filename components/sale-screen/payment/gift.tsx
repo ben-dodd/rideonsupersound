@@ -19,7 +19,12 @@ import {
   clerkAtom,
   alertAtom,
 } from "@/lib/atoms";
-import { GiftCardObject, ModalButton, ContactObject } from "@/lib/types";
+import {
+  GiftCardObject,
+  ModalButton,
+  ContactObject,
+  SaleTransactionObject,
+} from "@/lib/types";
 
 // Functions
 import { getSaleVars } from "@/lib/data-functions";
@@ -100,18 +105,24 @@ export default function Gift({ isNew }) {
         mutateGiftCards([...otherGiftCards, giftCardUpdate], false);
         // TODO gift card taken and gift card change given should be in transaction object
         // TODO make save sale transaction a cleaner function, bundle transaction into object
+        let transaction: SaleTransactionObject = {
+          sale_id: sale?.id,
+          clerk_id: clerk?.id,
+          payment_method: "acct",
+          amount:
+            parseFloat(giftCardPayment) >= totalRemaining
+              ? totalRemaining * 100
+              : parseFloat(giftCardPayment) * 100,
+          register_id: registerID,
+          gift_card_id: giftCardUpdate?.id,
+          gift_card_taken: giftCardUpdate?.gift_card_is_valid,
+          gift_card_remaining: giftCardUpdate?.gift_card_remaining,
+          gift_card_change: leftOver < 10 ? leftOver * 100 : 0,
+        };
         const id = await saveSaleTransaction(
-          sale,
-          clerk,
-          giftCardPayment,
-          totalRemaining,
-          "gift",
-          registerID,
-          false,
+          transaction,
           transactions,
-          mutateSaleTransactions,
-          null,
-          giftCard?.id
+          mutateSaleTransactions
         );
         setSubmitting(false);
         setView({ ...view, giftPaymentDialog: false });

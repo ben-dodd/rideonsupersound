@@ -20,7 +20,7 @@ import {
   clerkAtom,
   alertAtom,
 } from "@/lib/atoms";
-import { ModalButton } from "@/lib/types";
+import { ModalButton, SaleTransactionObject } from "@/lib/types";
 
 // Functions
 import { getTotalOwing, getSaleVars } from "@/lib/data-functions";
@@ -77,14 +77,17 @@ export default function Acct({ isNew }) {
       loading: submitting,
       onClick: async () => {
         setSubmitting(true);
+        let transaction: SaleTransactionObject = {
+          sale_id: sale?.id,
+          clerk_id: clerk?.id,
+          payment_method: "acct",
+          amount:
+            parseFloat(acctPayment) >= totalRemaining
+              ? totalRemaining * 100
+              : parseFloat(acctPayment) * 100,
+          register_id: registerID,
+        };
         const id = await saveSaleTransaction(
-          sale,
-          clerk,
-          acctPayment,
-          totalRemaining,
-          "acct",
-          registerID,
-          false,
           transactions,
           mutateSaleTransactions,
           vendor

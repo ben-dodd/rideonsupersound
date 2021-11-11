@@ -4,7 +4,7 @@ import { useAtom } from "jotai";
 
 // DB
 import { useVendors, useStockItem, useStockInventory } from "@/lib/swr-hooks";
-import { clerkAtom, loadedItemIdAtom } from "@/lib/atoms";
+import { clerkAtom, loadedItemIdAtom, viewAtom } from "@/lib/atoms";
 import { VendorObject, InventoryObject, ModalButton } from "@/lib/types";
 
 // Functions
@@ -31,6 +31,7 @@ export default function InventoryItemScreen({ page }) {
   // Atoms
   const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom);
   const [clerk] = useAtom(clerkAtom);
+  const [view, setView] = useAtom(viewAtom);
 
   // SWR
   const { stockItem, isStockItemLoading } = useStockItem(loadedItemId[page]);
@@ -166,7 +167,9 @@ export default function InventoryItemScreen({ page }) {
           {/* PRICE DETAILS */}
           <div className="grid grid-cols-6 gap-2 mt-4 mb-4">
             <div className="flex justify-center items-center text-xl hover:text-primary">
-              <button>
+              <button
+                onClick={() => setView({ ...view, changePriceDialog: true })}
+              >
                 <ChangePriceIcon />
               </button>
             </div>

@@ -20,7 +20,7 @@ import {
   clerkAtom,
   alertAtom,
 } from "@/lib/atoms";
-import { ModalButton, ContactObject } from "@/lib/types";
+import { ModalButton, ContactObject, SaleTransactionObject } from "@/lib/types";
 
 // Functions
 import { getSaleVars } from "@/lib/data-functions";
@@ -68,14 +68,23 @@ export default function Cash({ isNew }) {
       loading: submitting,
       onClick: async () => {
         setSubmitting(true);
+        let transaction: SaleTransactionObject = {
+          sale_id: sale?.id,
+          clerk_id: clerk?.id,
+          payment_method: "cash",
+          amount:
+            parseFloat(cashReceived) >= totalRemaining
+              ? totalRemaining * 100
+              : parseFloat(cashReceived) * 100,
+          cash_received: parseFloat(cashReceived) * 100,
+          change_given:
+            parseFloat(cashReceived) > totalRemaining
+              ? (parseFloat(cashReceived) - totalRemaining) * 100
+              : null,
+          register_id: registerID,
+        };
         const id = await saveSaleTransaction(
-          sale,
-          clerk,
-          cashReceived,
-          totalRemaining,
-          "cash",
-          registerID,
-          false,
+          transaction,
           transactions,
           mutateSaleTransactions
         );

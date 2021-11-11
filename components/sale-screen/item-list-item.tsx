@@ -102,9 +102,6 @@ export default function ItemListItem({ saleItem, isNew }: SellListItemProps) {
     // setRefresh(refresh + 1);
   }
 
-  console.log(item);
-  console.log(saleItem);
-
   // TODO remove items or refund items if complete
   // TODO make items drop down for editing, like in shopping cart
 

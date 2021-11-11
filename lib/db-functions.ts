@@ -100,55 +100,22 @@ export async function saveSaleItemToDatabase(
 }
 
 export async function saveSaleTransaction(
-  sale: SaleObject,
-  clerk: ClerkObject,
-  amount: string,
-  totalRemaining: number,
-  paymentMethod: string,
-  registerID: number,
-  is_refund?: boolean,
+  transaction: SaleTransactionObject,
   transactions?: SaleTransactionObject[],
   mutate?: Function,
-  vendor?: VendorObject,
-  giftCardID?: number
+  vendor?: VendorObject
 ) {
-  let transaction: SaleTransactionObject = {
-    sale_id: sale?.id,
-    clerk_id: clerk?.id,
-    payment_method: paymentMethod,
-    is_refund: is_refund || false,
-    amount:
-      parseFloat(amount) >= totalRemaining
-        ? totalRemaining * 100
-        : parseFloat(amount) * 100,
-    gift_card_id: giftCardID || null,
-    register_id: registerID,
-  };
-  if (paymentMethod === "cash") {
-    // Add cash variables
-    transaction = {
-      ...transaction,
-      cash_received: parseFloat(amount) * 100,
-      change_given:
-        parseFloat(amount) > totalRemaining
-          ? (parseFloat(amount) - totalRemaining) * 100
-          : null,
-    };
-  }
-  if (paymentMethod === "acct") {
+  if (transaction?.payment_method === "acct") {
     // Add account payment as a store payment to the vendor
     let vendorPaymentId = null;
     const vendorPayment = {
-      amount: parseFloat(amount) * 100,
-      clerk_id: clerk?.id,
+      amount: transaction?.amount,
+      clerk_id: transaction?.clerk_id,
       vendor_id: vendor?.id,
       type: "sale",
     };
     vendorPaymentId = await saveVendorPaymentToDatabase(vendorPayment);
     transaction = { ...transaction, vendor_payment_id: vendorPaymentId };
-  }
-  if (paymentMethod === "gift") {
-    // TODO Update remaining balance etc. on gift card
   }
   const transactionId = await saveSaleTransactionToDatabase(transaction);
   let date = new Date();
@@ -479,6 +446,35 @@ export async function saveLog(
   }
 }
 
+export async function saveStockPriceToDatabase(
+  stock_id: number,
+  clerk: ClerkObject,
+  total_sell: number,
+  vendor_cut: number,
+  note: string
+) {
+  try {
+    const res = await fetch("/api/create-stock-price", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        stock_id,
+        clerk_id: clerk?.id,
+        vendor_cut,
+        total_sell,
+        note,
+      }),
+    });
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+    return json?.insertId;
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
+
 export async function saveStockMovementToDatabase(
   item: SaleItemObject,
   clerk: ClerkObject,
@@ -543,6 +539,22 @@ export async function updateStockItemInDatabase(
         "Content-Type": "application/json",
       },
       body: JSON.stringify(item),
+    });
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
+
+export async function updateGiftCard(giftCard: GiftCardObject) {
+  try {
+    const res = await fetch("/api/update-gift-card", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(giftCard),
     });
     const json = await res.json();
     if (!res.ok) throw Error(json.message);

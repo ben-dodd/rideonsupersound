@@ -16,8 +16,6 @@ const handler: NextApiHandler = async (req, res) => {
         s.image_url,
         s.is_gift_card,
         s.gift_card_code,
-        s.gift_card_taken,
-        s.gift_card_change_given,
         s.gift_card_amount,
         s.gift_card_remaining,
         s.gift_card_note,

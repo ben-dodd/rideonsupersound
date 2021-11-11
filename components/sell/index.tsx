@@ -24,6 +24,7 @@ import OpenRegisterScreen from "@/components/register";
 import CloseRegisterScreen from "@/components/register/close-register-screen";
 
 // Dialogs
+import ChangePriceDialog from "@/components/inventory/change-price-dialog";
 import ReturnCashDialog from "@/components/register/return-cash";
 import TakeCashDialog from "@/components/register/take-cash";
 import LoadSalesDialog from "@/components/sell/shopping-cart/load-sales";
@@ -72,6 +73,7 @@ export default function SellScreen() {
       {view?.giftCardDialog && <GiftCardDialog />}
       {loadedItemId && <InventoryItemScreen page="sell" />}
       {page === "sell" || (registerID === 0 && <OpenRegisterScreen />)}
+      {view?.changePriceDialog && <ChangePriceDialog />}
       {view?.closeRegisterScreen && <CloseRegisterScreen />}
       {view?.returnCashDialog && <ReturnCashDialog />}
       {view?.takeCashDialog && <TakeCashDialog />}
