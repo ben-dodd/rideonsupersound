@@ -166,9 +166,20 @@ export default function Menu() {
     ],
   ];
 
+  const bg = {
+    nick: "bg-nick",
+    mieke: "bg-mieke",
+    john: "bg-john",
+    michael: "bg-michael",
+    guest: "bg-guest",
+    isaac: "bg-isaac",
+  };
+
   return (
     <div
-      className={`w-0 overflow-y-auto flex flex-col h-menu justify-between ${clerk?.name?.toLowerCase()} z-50 flex-shrink-0 whitespace-pre relative ${
+      className={`w-0 overflow-y-auto flex flex-col h-menu justify-between ${
+        bg[clerk?.name?.toLowerCase()]
+      } z-50 flex-shrink-0 whitespace-pre relative ${
         view?.mainMenu && "w-full "
       }sm:w-full sm:w-icons sm:border-r sm:shadow-lg lg:w-menu transition-width duration-200 `}
     >
