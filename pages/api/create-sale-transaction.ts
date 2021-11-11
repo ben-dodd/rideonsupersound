@@ -12,7 +12,8 @@ const handler: NextApiHandler = async (req, res) => {
     register_id,
     vendor_payment_id,
     gift_card_id,
-    card_taken,
+    gift_card_taken,
+    gift_card_change,
   } = req.body;
   try {
     const results = await query(
@@ -27,9 +28,10 @@ const handler: NextApiHandler = async (req, res) => {
         register_id,
         vendor_payment_id,
         gift_card_id,
-        card_taken
+        gift_card_taken,
+        gift_card_change
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
       [
         sale_id,
@@ -41,7 +43,8 @@ const handler: NextApiHandler = async (req, res) => {
         register_id,
         vendor_payment_id,
         gift_card_id,
-        card_taken || 0,
+        gift_card_taken,
+        gift_card_change,
       ]
     );
     return res.json(results);

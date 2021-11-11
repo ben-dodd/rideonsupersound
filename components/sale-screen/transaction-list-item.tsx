@@ -121,9 +121,9 @@ export default function TransactionListItem({
             : transaction?.payment_method === "acct"
             ? `[${(vendor?.name || "").toUpperCase()}]`
             : transaction?.payment_method === "gift"
-            ? transaction?.card_taken
+            ? transaction?.gift_card_taken
               ? transaction?.change_given
-                ? `CARD TAKEN, $${(transaction.change_given / 100)?.toFixed(
+                ? `CARD TAKEN, $${(transaction.gift_card_change / 100)?.toFixed(
                     2
                   )} CHANGE [${(giftCard?.gift_card_code || "").toUpperCase()}]`
                 : `CARD TAKEN [${(

@@ -47,7 +47,7 @@ export default function Nav() {
             {/*<div className="sm:hidden">{`${clerk?.name?.toUpperCase()} @ R.O.S.S.`}</div>
             <div className="hidden sm:block">{`${clerk?.name?.toUpperCase()} @ RIDE ON SUPER SOUND`}</div>*/}
             <Image
-              src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/ross-banner.png`}
+              src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/POS-RIDEONSUPERSOUNDLOGO.png`}
               alt="Ride On Super Sound"
               height="41px"
               width="283px"
