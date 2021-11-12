@@ -11,10 +11,9 @@ import {
   confirmModalAtom,
   alertAtom,
 } from "@/lib/atoms";
-import { CustomerObject } from "@/lib/types";
 
 // Functions
-import { saveSaleAndItemsToDatabase, saveLog } from "@/lib/db-functions";
+import { saveSaleAndPark, saveLog } from "@/lib/db-functions";
 
 // Components
 import CircularProgress from "@mui/material/CircularProgress";
@@ -56,32 +55,14 @@ export default function ShoppingCartActions() {
 
   async function onClickSaveSale() {
     setSaveSaleLoading(true);
-    const saleId = await saveSaleAndItemsToDatabase(
-      { ...cart, state: "parked" },
-      cart?.items,
-      clerk
-    );
-    saveLog(
-      {
-        log: `Sale parked (${cart?.items.length} item${
-          cart?.items.length === 1 ? "" : "s"
-        }${
-          cart?.customer_id
-            ? ` for ${
-                (customers || []).filter(
-                  (c: CustomerObject) => c?.id === cart?.customer_id
-                )[0]?.name
-              }.`
-            : ""
-        }).`,
-        clerk_id: clerk?.id,
-        table_id: "sale",
-        row_id: saleId,
-      },
+    await saveSaleAndPark(
+      cart,
+      clerk,
+      customers,
       logs,
-      mutateLogs
+      mutateLogs,
+      mutateSales
     );
-    mutateSales();
     setAlert({
       open: true,
       type: "success",

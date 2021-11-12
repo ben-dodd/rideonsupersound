@@ -11,7 +11,44 @@ import {
   LogObject,
   TillObject,
   HoldObject,
+  CustomerObject,
 } from "@/lib/types";
+
+export async function saveSaleAndPark(
+  cart: SaleObject,
+  clerk: ClerkObject,
+  customers: CustomerObject[],
+  logs: LogObject[],
+  mutateLogs: Function,
+  mutateSales: Function
+) {
+  const saleId = await saveSaleAndItemsToDatabase(
+    { ...cart, state: "parked" },
+    cart?.items,
+    clerk
+  );
+  saveLog(
+    {
+      log: `Sale parked (${cart?.items.length} item${
+        cart?.items.length === 1 ? "" : "s"
+      }${
+        cart?.customer_id
+          ? ` for ${
+              (customers || []).filter(
+                (c: CustomerObject) => c?.id === cart?.customer_id
+              )[0]?.name
+            }.`
+          : ""
+      }).`,
+      clerk_id: clerk?.id,
+      table_id: "sale",
+      row_id: saleId,
+    },
+    logs,
+    mutateLogs
+  );
+  mutateSales();
+}
 
 export async function saveSaleAndItemsToDatabase(
   sale: SaleObject,
