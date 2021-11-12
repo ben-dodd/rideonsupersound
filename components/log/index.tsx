@@ -27,9 +27,7 @@ export default function LogScreen() {
             <div className="loading-icon" />
           </div>
         ) : (
-          (logs || []).map((log: LogObject) => (
-            <ListLog log={log} key={log?.id} />
-          ))
+          logs?.map((log: LogObject) => <ListLog log={log} key={log?.id} />)
         )}
       </div>
     </div>

@@ -35,7 +35,7 @@ export default function Menu() {
   const [clerk, setClerk] = useAtom(clerkAtom);
 
   // Constants
-  const cartItems = (cart?.items || []).reduce(
+  const cartItems = cart?.items?.reduce(
     (accumulator: number, item: SaleItemObject) =>
       accumulator + (parseInt(item?.quantity) || 1),
     0

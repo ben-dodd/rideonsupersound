@@ -124,7 +124,7 @@ export default function SaleSummary({ isNew }) {
   function SaleItems() {
     return (
       <div className="max-h-2/5 overflow-y-scroll">
-        {(items || []).length > 0 ? (
+        {items?.length > 0 ? (
           items?.map((saleItem: SaleItemObject) => (
             <ItemListItem
               key={saleItem?.item_id}

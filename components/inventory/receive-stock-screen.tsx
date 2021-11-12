@@ -220,9 +220,8 @@ export default function ReceiveStockScreen() {
             fieldRequired
             value={obj?.vendor_id}
             label={
-              (vendors || []).filter(
-                (v: VendorObject) => v?.id === obj?.vendor_id
-              )[0]?.name || ""
+              vendors?.filter((v: VendorObject) => v?.id === obj?.vendor_id)[0]
+                ?.name || ""
             }
             onChange={(vendorObject: any) => {
               setObj({
@@ -237,7 +236,7 @@ export default function ReceiveStockScreen() {
               // })
               null
             }
-            options={(vendors || [])?.map((val: VendorObject) => ({
+            options={vendors?.map((val: VendorObject) => ({
               value: val?.id,
               label: val?.name || "",
             }))}
@@ -248,8 +247,8 @@ export default function ReceiveStockScreen() {
               className="w-full text-xs"
               isDisabled={!obj?.vendor_id}
               value={null}
-              options={(inventory || [])
-                .filter(
+              options={inventory
+                ?.filter(
                   (item: InventoryObject) =>
                     item?.vendor_id === obj?.vendor_id &&
                     !(obj?.items && obj?.items[item?.id])
@@ -332,7 +331,7 @@ export default function ReceiveStockScreen() {
             </div>
             {Object.keys(obj?.items || {}).length > 0 ? (
               Object.entries(obj?.items || {}).map(([itemId, itemQuantity]) => {
-                const item: InventoryObject = (inventory || []).filter(
+                const item: InventoryObject = inventory?.filter(
                   (i: InventoryObject) => i?.id === parseInt(itemId)
                 )[0];
                 return (

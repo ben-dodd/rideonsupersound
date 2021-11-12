@@ -57,7 +57,8 @@ export default function SettingsSelect({
         value={
           dbField
             ? isMulti
-              ? ((object && object[dbField]) || []).map((val: string) => ({
+              ? object &&
+                object[dbField]?.map((val: string) => ({
                   value: val,
                   label: val,
                 }))
@@ -84,7 +85,7 @@ export default function SettingsSelect({
             setLoading(false);
           }
         }}
-        options={(selects || []).map((select: any) => ({
+        options={selects?.map((select: any) => ({
           value: select?.label,
           label: select?.label,
         }))}

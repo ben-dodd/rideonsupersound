@@ -45,7 +45,7 @@ export function getItemSkuDisplayName(
   item_id: number,
   inventory: InventoryObject[]
 ) {
-  let item = (inventory || []).filter((i) => i?.id === item_id)[0];
+  let item = inventory?.filter((i) => i?.id === item_id)[0];
   return `[${getItemSku(item)}] ${getItemDisplayName(item)}`;
 }
 
@@ -243,24 +243,24 @@ export function getPaymentVars(
   vendorPayments: VendorPaymentObject[],
   vendor_id: number
 ) {
-  let totalItems = (inventory || []).filter(
+  let totalItems = inventory?.filter(
     (i: InventoryObject) => i?.vendor_id === vendor_id
   );
 
-  let totalSales = (vendorSales || []).filter(
+  let totalSales = vendorSales?.filter(
     (v: VendorSaleItemObject) =>
-      (totalItems || []).filter((i: InventoryObject) => i?.id === v?.item_id)[0]
+      totalItems?.filter((i: InventoryObject) => i?.id === v?.item_id)[0]
   );
-  let totalPayments = (vendorPayments || []).filter(
+  let totalPayments = vendorPayments?.filter(
     (v: VendorPaymentObject) => v?.vendor_id === vendor_id
   );
 
-  const totalPaid = totalPayments.reduce(
+  const totalPaid = totalPayments?.reduce(
     (acc: number, payment: VendorPaymentObject) => acc + payment?.amount,
     0
   );
 
-  const totalSell: any = totalSales.reduce(
+  const totalSell: any = totalSales?.reduce(
     (acc: number, sale: VendorSaleItemObject) =>
       acc +
       (sale?.quantity * sale?.vendor_cut * (100 - sale?.vendor_discount || 0)) /
@@ -269,10 +269,10 @@ export function getPaymentVars(
   );
 
   let lastPaid = latestDate(
-    totalPayments.map((p: VendorPaymentObject) => p?.date)
+    totalPayments?.map((p: VendorPaymentObject) => p?.date)
   );
   let lastSold = latestDate(
-    totalSales.map((s: VendorSaleItemObject) => s?.date_sale_closed)
+    totalSales?.map((s: VendorSaleItemObject) => s?.date_sale_closed)
   );
   let totalOwing = totalSell - totalPaid;
 
@@ -292,7 +292,7 @@ export function getVendorQuantityInStock(
   inventory: InventoryObject[],
   vendor_id: number
 ) {
-  return getVendorItemsInStock(inventory, vendor_id).reduce(
+  return getVendorItemsInStock(inventory, vendor_id)?.reduce(
     (sum, item) => (item?.quantity || 0) + sum,
     0
   );
@@ -302,16 +302,14 @@ export function getVendorItemsInStock(
   inventory: InventoryObject[],
   vendor_id: number
 ) {
-  return (inventory || []).filter(
-    (i: InventoryObject) => i?.vendor_id === vendor_id
-  );
+  return inventory?.filter((i: InventoryObject) => i?.vendor_id === vendor_id);
 }
 
 export function getItemQuantity(
   item: InventoryObject,
   saleItems: SaleItemObject[]
 ) {
-  const saleItem = (saleItems || []).filter(
+  const saleItem = saleItems?.filter(
     (i: SaleItemObject) => i?.item_id === item?.id
   )[0];
   const cartQuantity = saleItem?.quantity || "0";
@@ -326,9 +324,9 @@ export function getTotalPrice(
   saleItems: SaleItemObject[],
   inventory: InventoryObject[]
 ) {
-  return (saleItems || []).reduce((acc, saleItem) => {
+  return saleItems?.reduce((acc, saleItem) => {
     // Misc Items and Gift Cards in inventory
-    let item: InventoryObject = (inventory || []).filter(
+    let item: InventoryObject = inventory?.filter(
       (i: InventoryObject) => i?.id === saleItem?.item_id
     )[0];
     if (item?.is_gift_card) return acc + item?.gift_card_amount;
@@ -340,8 +338,8 @@ export function getTotalStoreCut(
   saleItems: SaleItemObject[],
   inventory: InventoryObject[]
 ) {
-  return (saleItems || []).reduce((acc, saleItem: SaleItemObject) => {
-    let item: InventoryObject = (inventory || []).filter(
+  return saleItems?.reduce((acc, saleItem: SaleItemObject) => {
+    let item: InventoryObject = inventory?.filter(
       (i: InventoryObject) => i?.id === saleItem?.item_id
     )[0];
     if (item?.is_gift_card) return acc + item?.gift_card_amount;
@@ -351,21 +349,21 @@ export function getTotalStoreCut(
 
 export function getTotalPaid(saleTransactions: SaleTransactionObject[]) {
   // console.log(transactions);
-  return (saleTransactions || [])
-    .filter((transaction) => !transaction.is_deleted)
-    .reduce((acc, transaction) => acc + transaction?.amount, 0);
+  return saleTransactions
+    ?.filter((transaction) => !transaction.is_deleted)
+    ?.reduce((acc, transaction) => acc + transaction?.amount, 0);
 }
 
 export function getTotalOwing(
   totalPayments: VendorPaymentObject[],
   totalSales: VendorSaleItemObject[]
 ) {
-  const totalPaid = totalPayments.reduce(
+  const totalPaid = totalPayments?.reduce(
     (acc: number, payment: VendorPaymentObject) => acc + payment?.amount,
     0
   );
 
-  const totalSell: any = totalSales.reduce(
+  const totalSell: any = totalSales?.reduce(
     (acc: number, sale: VendorSaleItemObject) =>
       acc +
       (sale?.quantity * sale?.vendor_cut * (100 - sale?.vendor_discount || 0)) /
@@ -692,7 +690,7 @@ export function getCSVData(items, inventory: InventoryObject[]) {
   let csv = [];
   Object.values(items || {}).forEach((row: any) => {
     Array.from(Array(parseInt(row?.printQuantity || 1)).keys()).forEach(() => {
-      // let item:InventoryObject = (inventory || []).filter()?.row?.item?.value || {}), {});
+      // let item:InventoryObject = inventory?.filter()?.row?.item?.value || {}), {});
       // if (Object.keys(item).length > 0)
       //   csv.push([
       //     item?.sku,
@@ -806,6 +804,7 @@ export function fDate(date?: Date | string) {
 }
 
 export function fDateTime(date?: Date | string) {
+  console.log(date);
   return format(
     date ? (date instanceof Date ? date : nzDate(date)) : new Date(),
     "d MMMM yyyy, p"

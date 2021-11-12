@@ -170,7 +170,7 @@ export default function Pay({ isNew }) {
             <div>
               <span className="font-bold">Customer: </span>
               <span>
-                {(customers || []).filter(
+                {customers?.filter(
                   (c: CustomerObject) => c?.id === sale?.customer_id
                 )[0]?.name || ""}
               </span>
@@ -188,7 +188,7 @@ export default function Pay({ isNew }) {
             inputLabel="Select customer"
             value={sale?.customer_id}
             label={
-              (customers || []).filter(
+              customers?.filter(
                 (c: CustomerObject) => c?.id === sale?.customer_id
               )[0]?.name || ""
             }

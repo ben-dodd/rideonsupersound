@@ -3,7 +3,12 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useCustomers, useLogs, useSales } from "@/lib/swr-hooks";
+import {
+  useCustomers,
+  useLogs,
+  useSales,
+  useStockInventory,
+} from "@/lib/swr-hooks";
 import {
   newSaleObjectAtom,
   clerkAtom,
@@ -30,7 +35,8 @@ export default function ShoppingCartActions() {
   // SWR
   const { customers } = useCustomers();
   const { logs, mutateLogs } = useLogs();
-  const { mutateSales } = useSales();
+  const { sales, mutateSales } = useSales();
+  const { mutateInventory } = useStockInventory();
 
   // Atoms
   const [clerk] = useAtom(clerkAtom);
@@ -40,7 +46,6 @@ export default function ShoppingCartActions() {
   const [view, setView] = useAtom(viewAtom);
 
   // State
-  const [, setAnchorEl] = useState(null);
   const [saveSaleLoading, setSaveSaleLoading] = useState(false);
 
   // Functions
@@ -57,11 +62,14 @@ export default function ShoppingCartActions() {
     setSaveSaleLoading(true);
     await saveSaleAndPark(
       cart,
+      cart?.items,
       clerk,
       customers,
       logs,
       mutateLogs,
-      mutateSales
+      sales,
+      mutateSales,
+      mutateInventory
     );
     setAlert({
       open: true,
@@ -109,9 +117,6 @@ export default function ShoppingCartActions() {
       noText: "CANCEL",
     });
   }
-
-  // TODO Shopping cart actions
-
   return (
     <div>
       <Tooltip title="Load parked sales and laybys">
@@ -126,7 +131,7 @@ export default function ShoppingCartActions() {
         <button
           className="icon-button-small-white"
           onClick={onClickSaveSale}
-          disabled={saveSaleLoading || (cart?.items || []).length < 1}
+          disabled={saveSaleLoading || cart?.items?.length < 1}
         >
           {saveSaleLoading ? (
             <CircularProgress color="inherit" size={16} />
@@ -139,7 +144,7 @@ export default function ShoppingCartActions() {
         <button
           className="icon-button-small-white"
           onClick={onClickDiscardSale}
-          disabled={(cart?.items || []).length < 1}
+          disabled={cart?.items?.length < 1}
         >
           <DiscardSaleIcon />
         </button>

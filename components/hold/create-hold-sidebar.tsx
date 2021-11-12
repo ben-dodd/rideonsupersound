@@ -64,7 +64,7 @@ export default function CreateHoldSidebar() {
               cartItem?.item_id,
               saleInventory
             )} put on hold for ${
-              (customers || []).filter(
+              customers?.filter(
                 (c: CustomerObject) => c?.id === cart?.customer_id
               )[0]?.name
             } for ${holdPeriod} day${holdPeriod === 1 ? "" : "s"}.`,
@@ -80,12 +80,9 @@ export default function CreateHoldSidebar() {
     setAlert({
       open: true,
       type: "success",
-      message: `ITEM${
-        (cart?.items || []).length === 1 ? "" : "S"
-      } PUT ON HOLD FOR ${(
-        (customers || []).filter(
-          (c: CustomerObject) => c?.id === cart?.customer_id
-        )[0]?.name || ""
+      message: `ITEM${cart?.items?.length === 1 ? "" : "S"} PUT ON HOLD FOR ${(
+        customers?.filter((c: CustomerObject) => c?.id === cart?.customer_id)[0]
+          ?.name || ""
       ).toUpperCase()}.`,
     });
 
@@ -120,7 +117,7 @@ export default function CreateHoldSidebar() {
       buttons={buttons}
     >
       <div className="flex-grow overflow-x-hidden overflow-y-scroll">
-        {(cart?.items || []).length > 0 ? (
+        {cart?.items?.length > 0 ? (
           cart?.items?.map((cartItem) => <ListItem cartItem={cartItem} />)
         ) : (
           <div>No items</div>
@@ -132,7 +129,7 @@ export default function CreateHoldSidebar() {
           fieldRequired
           value={cart?.customer_id}
           label={
-            (customers || []).filter(
+            customers?.filter(
               (c: CustomerObject) => c?.id === cart?.customer_id
             )[0]?.name || ""
           }

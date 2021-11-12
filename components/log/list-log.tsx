@@ -19,9 +19,8 @@ export default function ListLog({ log }: ListItemProps) {
           </div>
           <div className="font-bold w-16 text-blue-800">
             {
-              (clerks || []).filter(
-                (c: ClerkObject) => c?.id === log?.clerk_id
-              )[0]?.name
+              clerks?.filter((c: ClerkObject) => c?.id === log?.clerk_id)[0]
+                ?.name
             }
           </div>
           <div>{log?.log}</div>

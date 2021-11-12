@@ -75,10 +75,8 @@ export default function GoogleBooksPanel({ item, setItem }) {
               {googleBooksItem?.volumeInfo?.title}
             </div>
             <div>{googleBooksItem?.volumeInfo?.subtitle}</div>
-            <div>{andList(googleBooksItem?.volumeInfo?.authors || [])}</div>
-            <div>
-              {(googleBooksItem?.volumeInfo?.categories || []).join(", ")}
-            </div>
+            <div>{andList(googleBooksItem?.volumeInfo?.authors)}</div>
+            <div>{googleBooksItem?.volumeInfo?.categories?.join(", ")}</div>
             <div>
               {googleBooksItem?.volumeInfo?.publisher || ""}
               {googleBooksItem?.volumeInfo?.publisher &&
@@ -101,9 +99,7 @@ export default function GoogleBooksPanel({ item, setItem }) {
             <div style={{ marginBottom: 16, fontStyle: "italic" }}>
               {googleBooksItem?.volumeInfo?.description}
             </div>
-            <div>
-              {(googleBooksItem?.volumeInfo?.categories || []).join(", ")}
-            </div>
+            <div>{googleBooksItem?.volumeInfo?.categories?.join(", ")}</div>
             <div>
               {`Print Type: ${googleBooksItem?.volumeInfo?.printType || ""}`}
             </div>

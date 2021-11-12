@@ -14,27 +14,61 @@ import {
   CustomerObject,
 } from "@/lib/types";
 
-export async function saveSaleAndPark(
+export async function loadSaleToCart(
   cart: SaleObject,
+  items: SaleItemObject[],
+  setCart: Function,
+  sale: SaleObject,
   clerk: ClerkObject,
   customers: CustomerObject[],
   logs: LogObject[],
   mutateLogs: Function,
+  sales: SaleObject[],
   mutateSales: Function
+) {
+  if (cart?.items || cart?.id !== sale?.id) {
+    // Cart is loaded with a different sale or
+    // Cart has been started but not loaded into sale
+    await saveSaleAndPark(
+      cart,
+      items,
+      clerk,
+      customers,
+      logs,
+      mutateLogs,
+      sales,
+      mutateSales
+    );
+  }
+  console.log(cart);
+  console.log(sale);
+  setCart({ ...sale, items });
+}
+
+export async function saveSaleAndPark(
+  cart: SaleObject,
+  items: SaleItemObject[],
+  clerk: ClerkObject,
+  customers: CustomerObject[],
+  logs: LogObject[],
+  mutateLogs: Function,
+  sales: SaleObject[],
+  mutateSales: Function,
+  mutateInventory?: Function
 ) {
   const saleId = await saveSaleAndItemsToDatabase(
     { ...cart, state: "parked" },
-    cart?.items,
+    items,
     clerk
   );
   saveLog(
     {
-      log: `Sale parked (${cart?.items.length} item${
-        cart?.items.length === 1 ? "" : "s"
+      log: `Sale #${saleId} parked (${items?.length} item${
+        items?.length === 1 ? "" : "s"
       }${
         cart?.customer_id
           ? ` for ${
-              (customers || []).filter(
+              customers?.filter(
                 (c: CustomerObject) => c?.id === cart?.customer_id
               )[0]?.name
             }.`
@@ -47,7 +81,9 @@ export async function saveSaleAndPark(
     logs,
     mutateLogs
   );
-  mutateSales();
+  let otherSales = sales?.filter((s: SaleObject) => s?.id !== cart?.id);
+  mutateSales([...otherSales, { ...cart, state: "parked" }], false);
+  mutateInventory && mutateInventory();
 }
 
 export async function saveSaleAndItemsToDatabase(

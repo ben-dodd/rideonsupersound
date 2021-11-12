@@ -11,11 +11,12 @@ import {
   useCustomers,
   useSaleInventory,
 } from "@/lib/swr-hooks";
-import { viewAtom, clerkAtom, alertAtom } from "@/lib/atoms";
+import { viewAtom, clerkAtom, alertAtom, newSaleObjectAtom } from "@/lib/atoms";
 import { SaleObject, SaleItemObject, CustomerObject } from "@/lib/types";
 
 // Functions
 import { fDateTime, nzDate, writeItemList } from "@/lib/data-functions";
+import { loadSaleToCart } from "@/lib/db-functions";
 
 // Components
 import Modal from "@/components/container/modal";
@@ -24,12 +25,13 @@ export default function LoadSales() {
   // Atoms
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
+  const [cart, setCart] = useAtom(newSaleObjectAtom);
   const [, setAlert] = useAtom(alertAtom);
 
   // SWR
   const { registerID } = useRegisterID();
-  const { mutateLogs } = useLogs();
-  const { sales, isSalesLoading } = useSales();
+  const { logs, mutateLogs } = useLogs();
+  const { sales, isSalesLoading, mutateSales } = useSales();
   const { saleItems, isSaleItemsLoading } = useSaleItems();
   const { customers, isCustomersLoading } = useCustomers();
   const { saleInventory, isSaleInventoryLoading } = useSaleInventory();
@@ -43,8 +45,27 @@ export default function LoadSales() {
   );
 
   // Functions
-  async function loadSale(s: SaleObject) {
-    return null;
+  async function loadSale(sale: SaleObject, items: SaleItemObject[]) {
+    console.log(items);
+    const cartItems = items?.map((i: SaleItemObject) => ({
+      item_id: i?.item_id,
+      quantity: i?.quantity?.toString(),
+    }));
+    setSubmitting(true);
+    await loadSaleToCart(
+      cart,
+      cartItems,
+      setCart,
+      sale,
+      clerk,
+      customers,
+      logs,
+      mutateLogs,
+      sales,
+      mutateSales
+    );
+    setSubmitting(false);
+    setView({ ...view, loadSalesDialog: false });
   }
 
   return (
@@ -65,7 +86,7 @@ export default function LoadSales() {
               <div
                 key={i}
                 className="flex p-4 my-2 cursor-pointer hover:bg-gray-100"
-                onClick={() => loadSale(s)}
+                onClick={() => loadSale(s, items)}
               >
                 <div className="font-bold w-1/12">#{s?.id}</div>
                 <div className="w-1/12">{s?.state}</div>
@@ -73,7 +94,7 @@ export default function LoadSales() {
                   {fDateTime(nzDate(s?.date_sale_opened))}
                 </div>
                 <div className="w-3/12">
-                  {(customers || []).filter(
+                  {customers?.filter(
                     (c: CustomerObject) => c?.id === s?.customer_id
                   )[0]?.name || ""}
                 </div>

@@ -54,9 +54,8 @@ export default function ReturnStockScreen() {
         Object.entries(doc?.items || {}).filter(
           ([id, itemQuantity]) =>
             isNaN(parseFloat(`${itemQuantity}`)) ||
-            (inventory || []).filter(
-              (i: InventoryObject) => i?.id === parseInt(id)
-            )[0]?.quantity < parseFloat(`${itemQuantity}`) ||
+            inventory?.filter((i: InventoryObject) => i?.id === parseInt(id))[0]
+              ?.quantity < parseFloat(`${itemQuantity}`) ||
             parseFloat(`${itemQuantity}`) < 0
         ).length > 0,
       text: "RETURN STOCK",
@@ -77,9 +76,8 @@ export default function ReturnStockScreen() {
           fieldRequired
           value={doc?.vendor_id}
           label={
-            (vendors || []).filter(
-              (v: VendorObject) => v?.id === doc?.vendor_id
-            )[0]?.name || ""
+            vendors?.filter((v: VendorObject) => v?.id === doc?.vendor_id)[0]
+              ?.name || ""
           }
           onChange={(vendorObject: any) => {
             setDoc({
@@ -94,7 +92,7 @@ export default function ReturnStockScreen() {
             // })
             null
           }
-          options={(vendors || [])?.map((val: VendorObject) => ({
+          options={vendors?.map((val: VendorObject) => ({
             value: val?.id,
             label: val?.name || "",
           }))}
@@ -105,8 +103,8 @@ export default function ReturnStockScreen() {
             className="w-full text-xs"
             isDisabled={!doc?.vendor_id}
             value={null}
-            options={(inventory || [])
-              .filter(
+            options={inventory
+              ?.filter(
                 (item: InventoryObject) =>
                   item?.vendor_id === doc?.vendor_id &&
                   !(doc?.items && doc?.items[item?.id])
@@ -121,7 +119,7 @@ export default function ReturnStockScreen() {
                 items: {
                   ...(doc?.items || {}),
                   [item?.value]:
-                    (inventory || []).filter(
+                    inventory?.filter(
                       (i: InventoryObject) => i?.id === parseInt(item?.value)
                     )[0]?.quantity || 1,
                 },
@@ -138,7 +136,7 @@ export default function ReturnStockScreen() {
               </div>
               {Object.entries(doc?.items || {}).map(
                 ([itemId, itemQuantity]) => {
-                  const item = (inventory || []).filter(
+                  const item = inventory?.filter(
                     (i: InventoryObject) => i?.id === parseInt(itemId)
                   )[0];
                   return (

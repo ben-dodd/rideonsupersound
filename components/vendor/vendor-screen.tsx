@@ -65,7 +65,7 @@ export default function VendorScreen() {
   // Load
   useEffect(() => {
     setVendor(
-      (vendors || []).filter((v: VendorObject) => v?.id === loadedVendorId)[0]
+      vendors?.filter((v: VendorObject) => v?.id === loadedVendorId)[0]
     );
   }, [loadedVendorId]);
 
@@ -157,7 +157,7 @@ export default function VendorScreen() {
               fieldRequired
               value={vendor?.customer_id}
               label={
-                (customers || []).filter(
+                customers?.filter(
                   (c: CustomerObject) => c?.id === vendor?.customer_id
                 )[0]?.name || ""
               }
@@ -183,11 +183,11 @@ export default function VendorScreen() {
             <Select
               value={{
                 value: vendor?.clerk_id,
-                label: (clerks || []).filter(
+                label: clerks?.filter(
                   (c: ClerkObject) => c?.id === vendor?.clerk_id
                 )[0]?.name,
               }}
-              options={(clerks || []).map((clerk: ClerkObject) => ({
+              options={clerks?.map((clerk: ClerkObject) => ({
                 value: clerk?.id,
                 label: clerk?.name,
               }))}
@@ -249,7 +249,7 @@ export default function VendorScreen() {
                 {[
                   {
                     label: "Total Sales",
-                    value: (v?.totalSales || []).length,
+                    value: v?.totalSales?.length,
                   },
                   {
                     label: "Last Sale",
@@ -303,7 +303,7 @@ export default function VendorScreen() {
                             {fDate(sale?.date_sale_closed)}
                           </div>
                           <div>{`${getItemDisplayName(
-                            (inventory || []).filter(
+                            inventory?.filter(
                               (i: InventoryObject) => i?.id === sale?.item_id
                             )[0]
                           )} (${sale?.quantity})`}</div>

@@ -75,7 +75,7 @@ export default function ItemListItem({ saleItem, isNew }: SellListItemProps) {
     is_refund
       ? updateSaleItemInDatabase(saleItem, sale)
       : deleteSaleItemFromDatabase(id);
-    // if ((cart?.items || []).length < 1) {
+    // if (cart?.items?.length < 1) {
     //   // No items left, delete cart
     //   setView({ ...view, cart: false });
     //   // TODO Any transactions need to be refunded.

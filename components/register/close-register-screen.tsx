@@ -73,7 +73,7 @@ export default function CloseRegisterScreen() {
 
   // Constants
   const openAmount = register?.open_amount / 100;
-  const openedBy = (clerks || []).filter(
+  const openedBy = clerks?.filter(
     (c: ClerkObject) => c?.id === register?.opened_by_id
   )[0]?.name;
   const openedOn = fTimeDate(register?.open_date);

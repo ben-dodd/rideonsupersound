@@ -58,7 +58,7 @@ export default function DiscogsPanel({ item, setItem, exchangeRate }) {
             {/* HEADER DETAILS */}
             <div className="text-xl">
               <div className="font-bold">
-                {andList((discogsItem?.artists || []).map((e: any) => e.name))}
+                {andList(discogsItem?.artists?.map((e: any) => e.name))}
               </div>
               <div className="font-bold italic">
                 {`${discogsItem?.title}
@@ -69,48 +69,42 @@ export default function DiscogsPanel({ item, setItem, exchangeRate }) {
                               }`}
               </div>
             </div>
-            <div className="text-md">
-              {(discogsItem?.format || []).join(", ")}
-            </div>
+            <div className="text-md">{discogsItem?.format?.join(", ")}</div>
             <div className="pr-1 italic">
               {`${discogsItem?.label[0] || ""}${
                 discogsItem?.label && discogsItem?.country ? ", " : ""
               }${discogsItem?.country || ""}`}
             </div>
             <div className="pt-4 text-sm">
-              {(discogsItem?.genres || [])
-                .concat(discogsItem?.styles || [])
+              {discogsItem?.genres
+                ?.concat(discogsItem?.styles || [])
                 .join(", ")}
             </div>
             <div className="pt-2" />
             <div className="p-2">
-              {(discogsItem?.barcode || []).length > 0 && (
+              {discogsItem?.barcode?.length > 0 && (
                 <div>
                   <div className="font-bold">Barcodes</div>
                   <div className="text-sm">
-                    {(discogsItem?.barcode || []).map(
-                      (barcode: string, i: number) => (
-                        <div key={i}>{barcode}</div>
-                      )
-                    )}
+                    {discogsItem?.barcode?.map((barcode: string, i: number) => (
+                      <div key={i}>{barcode}</div>
+                    ))}
                   </div>
                 </div>
               )}
 
-              {(discogsItem?.identifiers || []).length > 0 && (
+              {discogsItem?.identifiers?.length > 0 && (
                 <div>
                   <div className="pt-2 pb-1 font-bold">Identifiers</div>
                   <div className="text-sm">
-                    {(discogsItem?.identifiers || []).map(
-                      (id: any, i: number) => (
-                        <div key={i}>
-                          <b>{id?.type}:</b>
-                          {` ${id?.value}${
-                            id?.description ? ` (${id.description})` : ""
-                          }`}
-                        </div>
-                      )
-                    )}
+                    {discogsItem?.identifiers?.map((id: any, i: number) => (
+                      <div key={i}>
+                        <b>{id?.type}:</b>
+                        {` ${id?.value}${
+                          id?.description ? ` (${id.description})` : ""
+                        }`}
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
@@ -145,7 +139,7 @@ export default function DiscogsPanel({ item, setItem, exchangeRate }) {
               </div>
             </div>
             <div className="p-2">
-              {(discogsItem?.tracklist || []).map((track: any, i: number) => (
+              {discogsItem?.tracklist?.map((track: any, i: number) => (
                 <div className="flex justify-between" key={i}>
                   <div>
                     <b>{track?.position}</b> {track?.title}
@@ -154,7 +148,7 @@ export default function DiscogsPanel({ item, setItem, exchangeRate }) {
                 </div>
               ))}
             </div>
-            {(discogsItem?.videos || []).map((vid: any, i: number) => (
+            {discogsItem?.videos?.map((vid: any, i: number) => (
               <ReactPlayer
                 className="p-2"
                 url={vid?.uri}
@@ -193,26 +187,26 @@ export default function DiscogsPanel({ item, setItem, exchangeRate }) {
                   </div>
                   <div className="w-2/3 ml-6">
                     <div className="font-bold">{opt?.title || ""}</div>
-                    <div>{(opt?.format || []).join(", ")}</div>
+                    <div>{opt?.format?.join(", ")}</div>
                     <div>{opt?.country || ""}</div>
                     <div>{opt?.year || ""}</div>
 
-                    {(opt?.barcode || []).length > 0 && (
+                    {opt?.barcode?.length > 0 && (
                       <div>
                         <div className="pt-2 pb-1 font-bold">Barcodes</div>
                         <div className="text-sm">
-                          {(opt?.barcode || []).map((barcode: string) => (
+                          {opt?.barcode?.map((barcode: string) => (
                             <div key={barcode}>{barcode}</div>
                           ))}
                         </div>
                       </div>
                     )}
 
-                    {(opt?.identifiers || []).length > 0 && (
+                    {opt?.identifiers?.length > 0 && (
                       <div>
                         <div className="pt-2 pb-1 font-bold">Identifiers</div>
                         <div className="text-sm">
-                          {(opt?.identifiers || []).map((id: any) => (
+                          {opt?.identifiers?.map((id: any) => (
                             <div key={id?.value}>
                               <b>{id?.type}:</b>
                               {` ${id?.value}${

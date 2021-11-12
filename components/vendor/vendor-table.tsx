@@ -42,8 +42,8 @@ export default function VendorsScreen() {
   const data = useMemo(
     () =>
       vendors
-        ? (vendors || [])
-            .filter((v: VendorObject) => !v?.is_deleted)
+        ? vendors
+            ?.filter((v: VendorObject) => !v?.is_deleted)
             .map((v: VendorObject) => {
               let vendorVars = getPaymentVars(
                 inventory,
@@ -55,11 +55,11 @@ export default function VendorsScreen() {
                 id: v?.id,
                 name: v?.name || "-",
                 vendorCustomer:
-                  (customers || []).filter(
+                  customers?.filter(
                     (c: CustomerObject) => c?.id === v?.customer_id
                   )[0] || {},
                 storeCustomer:
-                  (clerks || []).filter(
+                  clerks?.filter(
                     (c: ClerkObject) => c?.id === v?.clerk_id
                   )[0] || {},
                 type: v?.category || "-",
@@ -67,8 +67,8 @@ export default function VendorsScreen() {
                 totalTake: vendorVars?.totalSell || 0,
                 totalOwing: vendorVars?.totalOwing || 0,
                 totalDebitAmount: vendorVars?.totalPaid || 0,
-                uniqueItemsInStock: (vendorVars?.totalItems || [])?.length,
-                totalItemsInStock: (vendorVars?.totalItems || []).reduce(
+                uniqueItemsInStock: vendorVars?.totalItems?.length,
+                totalItemsInStock: vendorVars?.totalItems?.reduce(
                   (sum: number, item: InventoryObject) =>
                     (item?.quantity || 0) + sum,
                   0

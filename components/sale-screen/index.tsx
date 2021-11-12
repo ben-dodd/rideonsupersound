@@ -33,6 +33,7 @@ import {
 import { getSaleVars, writeItemList } from "@/lib/data-functions";
 import {
   saveSaleAndItemsToDatabase,
+  saveSaleAndPark,
   saveLog,
   saveStockMovementToDatabase,
   updateSaleInDatabase,
@@ -98,43 +99,18 @@ export default function SaleScreen({ isNew }) {
   );
 
   // Functions
-  async function checkLoadSaleToCart() {
-    if (cart?.id !== sale?.id) {
-      // Cart is loaded with a different sale
-      // TODO park loaded sale
-    } else if (cart?.items) {
-      // Cart has been started but not loaded into sale
-      // TODO create sale and park it
-    }
-  }
-
-  async function loadSaleToCart() {
-    // TODO load this sale into cart
-  }
-
   async function clickParkSale() {
     setParkSaleLoading(true);
-    let parkedSale = { ...sale, state: "parked" };
-    saveSaleAndItemsToDatabase(parkedSale, items, clerk);
-    saveLog(
-      {
-        log: `Sale parked (${items.length} item${
-          items.length === 1 ? "" : "s"
-        }${
-          sale?.customer_id
-            ? ` for ${
-                (customers || []).filter(
-                  (c: CustomerObject) => c?.id === sale?.customer_id
-                )[0]?.name
-              }.`
-            : ""
-        }).`,
-        clerk_id: clerk?.id,
-        table_id: "sale",
-        row_id: sale?.id,
-      },
+    saveSaleAndPark(
+      cart,
+      items,
+      clerk,
+      customers,
       logs,
-      mutateLogs
+      mutateLogs,
+      sales,
+      mutateSales,
+      mutateInventory
     );
     setAlert({
       open: true,
@@ -143,9 +119,6 @@ export default function SaleScreen({ isNew }) {
     });
     setSale(null);
     setParkSaleLoading(false);
-    let otherSales = sales?.filter((s: SaleObject) => s?.id !== sale?.id);
-    mutateSales([...otherSales, parkedSale], false);
-    mutateInventory();
   }
 
   async function clickLayby() {
@@ -173,7 +146,7 @@ export default function SaleScreen({ isNew }) {
           log: `Layby started${
             sale?.customer_id
               ? ` for ${
-                  (customers || []).filter(
+                  customers?.filter(
                     (c: CustomerObject) => c?.id === sale?.customer_id
                   )[0]?.name
                 }`

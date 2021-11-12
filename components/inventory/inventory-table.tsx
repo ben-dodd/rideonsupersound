@@ -29,14 +29,14 @@ export default function InventoryTable() {
   // Constants
   const data = useMemo(
     () =>
-      (inventory || [])
-        .filter((t: InventoryObject) => !t?.is_deleted)
+      inventory
+        ?.filter((t: InventoryObject) => !t?.is_deleted)
         .map((t: InventoryObject) => ({
           id: t?.id,
           sku: getItemSku(t),
           title: t?.title || "-",
           artist: t?.artist || "-",
-          vendor: (vendors || []).filter(
+          vendor: vendors?.filter(
             (v: VendorObject) => v?.id === t?.vendor_id
           )[0]?.name,
           genre: t?.genre || "-",

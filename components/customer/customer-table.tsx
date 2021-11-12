@@ -42,21 +42,20 @@ export default function CustomerTable() {
   // Constants
   const data = useMemo(
     () =>
-      (customers || [])
-        .filter((c: CustomerObject) => !c?.is_deleted)
+      customers
+        ?.filter((c: CustomerObject) => !c?.is_deleted)
         .map((c: CustomerObject) => ({
           id: c?.id,
           name: c?.name,
           vendor:
-            (vendors || []).filter(
-              (v: VendorObject) => v?.customer_id === c?.id
-            )[0] || null,
+            vendors?.filter((v: VendorObject) => v?.customer_id === c?.id)[0] ||
+            null,
           email: c?.email,
           phone: c?.phone,
           postalAddress: c?.postal_address,
           notes: c?.note,
-          holds: (holds || [])
-            .filter(
+          holds: holds
+            ?.filter(
               (h: HoldObject) => h?.customer_id === c?.id && !h?.is_deleted
             )
             .map((h: HoldObject) => {
@@ -67,7 +66,7 @@ export default function CustomerTable() {
                   new Date(),
               };
             }),
-          laybys: (laybys || []).filter(
+          laybys: laybys?.filter(
             (l: SaleObject) => l?.customer_id === c?.id && !l?.is_deleted
           ),
         })),
@@ -134,7 +133,7 @@ export default function CustomerTable() {
                   onClick={() => null}
                 >
                   {`${hold?.quantity || 1} x ${getItemDisplayName(
-                    (inventory || []).filter(
+                    inventory?.filter(
                       (i: InventoryObject) => i?.id === hold?.item_id
                     )[0]
                   )}`}

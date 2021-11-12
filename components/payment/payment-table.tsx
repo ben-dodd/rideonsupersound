@@ -21,14 +21,13 @@ export default function PaymentTable() {
   // Constants
   const data = useMemo(
     () =>
-      (vendorPayments || []).map((v: VendorPaymentObject) => ({
+      vendorPayments?.map((v: VendorPaymentObject) => ({
         date: v?.date,
         vendor_id: v?.vendor_id,
         amount: v?.amount,
         type: v?.type,
-        clerk: (clerks || []).filter(
-          (c: ClerkObject) => c?.id === v?.clerk_id
-        )[0]?.name,
+        clerk: clerks?.filter((c: ClerkObject) => c?.id === v?.clerk_id)[0]
+          ?.name,
       })),
     [vendorPayments, clerks]
   );
@@ -51,8 +50,7 @@ export default function PaymentTable() {
         Header: "Vendor",
         accessor: "vendor_id",
         Cell: ({ value }) =>
-          (vendors || []).filter((v: VendorObject) => v?.id === value)[0]
-            ?.name || "",
+          vendors?.filter((v: VendorObject) => v?.id === value)[0]?.name || "",
       },
       {
         Header: "Amount",

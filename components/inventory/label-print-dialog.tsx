@@ -83,7 +83,7 @@ export default function LabelPrintDialog() {
               <Select
                 className="w-full self-stretch"
                 value={items[key]?.item}
-                options={(inventory || []).map((item: InventoryObject) => ({
+                options={inventory?.map((item: InventoryObject) => ({
                   value: item?.id,
                   label: getItemDisplayName(item),
                 }))}

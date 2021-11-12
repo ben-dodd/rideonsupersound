@@ -54,20 +54,19 @@ export default function CashPaymentDialog() {
   const totalOwing = useMemo(
     () =>
       getTotalOwing(
-        (vendorPayments || []).filter(
+        vendorPayments?.filter(
           (v: VendorPaymentObject) => v?.vendor_id === vendor_id
         ),
-        (sales || []).filter(
+        sales?.filter(
           (v: VendorSaleItemObject) =>
-            (inventory || []).filter(
-              (i: InventoryObject) => i?.id === v?.item_id
-            )[0]?.vendor_id === vendor_id
+            inventory?.filter((i: InventoryObject) => i?.id === v?.item_id)[0]
+              ?.vendor_id === vendor_id
         )
       ),
     [vendor_id, vendorPayments]
   );
   const vendor = useMemo(
-    () => (vendors || []).filter((v: VendorObject) => v?.id === vendor_id)[0],
+    () => vendors?.filter((v: VendorObject) => v?.id === vendor_id)[0],
     [vendor_id, vendors]
   );
   const buttons: ModalButton[] = [
@@ -136,7 +135,7 @@ export default function CashPaymentDialog() {
           fieldRequired
           value={vendor_id}
           label={
-            (vendors || []).filter((v: VendorObject) => v?.id === vendor_id)[0]
+            vendors?.filter((v: VendorObject) => v?.id === vendor_id)[0]
               ?.name || ""
           }
           onChange={(vendorObject: any) => setVendor(vendorObject?.value)}
@@ -148,7 +147,7 @@ export default function CashPaymentDialog() {
             // })
             null
           }
-          options={(vendors || [])?.map((val: VendorObject) => ({
+          options={vendors?.map((val: VendorObject) => ({
             value: val?.id,
             label: val?.name || "",
           }))}

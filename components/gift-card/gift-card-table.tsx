@@ -18,7 +18,7 @@ export default function GiftCardTable() {
   // Constants
   const data = useMemo(
     () =>
-      (giftCards || []).map((g: InventoryObject) => ({
+      giftCards?.map((g: InventoryObject) => ({
         id: g?.id,
         code: g?.gift_card_code,
         date: parseISO(g?.date_created),

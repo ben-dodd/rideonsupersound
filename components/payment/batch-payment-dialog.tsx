@@ -56,8 +56,8 @@ export default function BatchPaymentDialog() {
   // Constants
   const payVendors = useMemo(
     () =>
-      (vendors || [])
-        .map((v: VendorObject) => {
+      vendors
+        ?.map((v: VendorObject) => {
           let saleInformation = getPaymentVars(
             inventory,
             sales,

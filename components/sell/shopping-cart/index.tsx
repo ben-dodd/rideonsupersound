@@ -76,7 +76,7 @@ export default function ShoppingCart() {
     if (id)
       // Cart has been saved to the database, delete sale_item
       deleteSaleItemFromDatabase(id);
-    if ((cart?.items || []).length < 1) {
+    if (cart?.items?.length < 1) {
       // No items left, delete cart
       setView({ ...view, cart: false });
       // TODO Any transactions need to be refunded.
@@ -109,6 +109,8 @@ export default function ShoppingCart() {
   const disableButtons =
     loadingSale || !(cart?.items && Object.keys(cart?.items).length > 0);
 
+  console.log(cart);
+
   return (
     <div
       className={`absolute top-0 transition-offset duration-300 ${
@@ -123,7 +125,7 @@ export default function ShoppingCart() {
           <Actions />
         </div>
         <div className="flex-grow overflow-x-hidden overflow-y-scroll">
-          {(cart?.items || []).length > 0 ? (
+          {cart?.items?.length > 0 ? (
             cart.items.map((cartItem, id) => (
               <ListItem
                 key={cartItem?.item_id}
@@ -157,7 +159,7 @@ export default function ShoppingCart() {
                   }`}
                 >
                   {storeCut < 0 && "-"}$
-                  {(cart?.items || []).length > 0
+                  {cart?.items?.length > 0
                     ? Math.abs(storeCut / 100)?.toFixed(2)
                     : "0.00"}
                 </div>

@@ -47,7 +47,7 @@ export default function SaleTable() {
   // Constants
   const data = useMemo(
     () =>
-      (sales || []).map((s: SaleObject) => {
+      sales?.map((s: SaleObject) => {
         const items = saleItems?.filter(
           (i: SaleItemObject) => i?.sale_id === s?.id
         );
@@ -56,10 +56,10 @@ export default function SaleTable() {
           id: s?.id,
           date: nzDate(s?.date_sale_opened),
           status: s?.state,
-          customer: (customers || []).filter(
+          customer: customers?.filter(
             (c: CustomerObject) => c?.id === s?.customer_id
           )[0],
-          clerk: (clerks || []).filter(
+          clerk: clerks?.filter(
             (c: ClerkObject) => c?.id === s?.sale_opened_by
           )[0],
           numberOfItems: items?.reduce(
@@ -91,7 +91,7 @@ export default function SaleTable() {
               }}
               onClick={() => {
                 setLoadedSale(
-                  (sales || []).filter(
+                  sales?.filter(
                     (s: SaleObject) => s?.id === item?.row?.original?.id
                   )[0]
                 );

@@ -21,7 +21,7 @@ export default function CashItem({
   const { clerks } = useClerks();
 
   // Constants
-  const transactionBy = (clerks || []).filter(
+  const transactionBy = clerks?.filter(
     (c: ClerkObject) => c?.id === transaction?.clerk_id
   )[0]?.name;
   const date = fTimeDate(transaction?.date);
