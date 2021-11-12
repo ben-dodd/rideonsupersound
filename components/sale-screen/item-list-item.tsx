@@ -99,8 +99,8 @@ export default function ItemListItem({ saleItem, isNew }: SellListItemProps) {
     // setRefresh(refresh + 1);
   }
 
-  // TODO remove items or refund items if complete
-  // TODO make items drop down for editing, like in shopping cart
+  console.log(item);
+  console.log(saleItem);
 
   return (
     <div className="flex w-full relative pt mb-2">
@@ -121,8 +121,10 @@ export default function ItemListItem({ saleItem, isNew }: SellListItemProps) {
       </div>
       <div className="flex flex-col w-full p-2 justify-between">
         <div className="text-sm pl-1">{getItemDisplayName(item)}</div>
-        <div className="text-red-500 self-end flex flex-col">
+        <div className="text-red-500 self-end">
           <div>{getCartItemSummary(item, saleItem)}</div>
+        </div>
+        {/*<div className="text-red-500 self-end flex flex-col">
           <Tooltip
             title={sale?.state === "completed" ? "Refund item" : "Delete item"}
           >
@@ -135,7 +137,7 @@ export default function ItemListItem({ saleItem, isNew }: SellListItemProps) {
               {sale?.state === "completed" ? <RefundIcon /> : <DeleteIcon />}
             </button>
           </Tooltip>
-        </div>
+        </div>*/}
       </div>
     </div>
   );

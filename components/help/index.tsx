@@ -17,7 +17,7 @@ import { filterHelps } from "@/lib/data-functions";
 
 // Icons
 import SearchIcon from "@mui/icons-material/Search";
-import BackIcon from "@mui/icons-material/ChevronLeft";
+import BackIcon from "@mui/icons-material/ArrowLeft";
 
 export default function HelpDialog() {
   // SWR

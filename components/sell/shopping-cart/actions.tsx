@@ -135,7 +135,7 @@ export default function ShoppingCartActions() {
         <button
           className="icon-button-small-white"
           onClick={onClickSaveSale}
-          disabled={saveSaleLoading || cart?.items?.length < 1}
+          disabled={saveSaleLoading || !cart || cart?.items?.length < 1}
         >
           {saveSaleLoading ? (
             <CircularProgress color="inherit" size={16} />
@@ -148,7 +148,7 @@ export default function ShoppingCartActions() {
         <button
           className="icon-button-small-white"
           onClick={onClickDiscardSale}
-          disabled={cart?.items?.length < 1}
+          disabled={!cart || cart?.items?.length < 1}
         >
           <DiscardSaleIcon />
         </button>

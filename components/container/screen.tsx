@@ -2,7 +2,7 @@
 import { ModalButton } from "@/lib/types";
 
 // Icons
-import ChevronLeft from "@mui/icons-material/ChevronLeft";
+import ArrowLeft from "@mui/icons-material/ArrowLeft";
 
 // Components
 import { CSVLink } from "react-csv";
@@ -40,7 +40,7 @@ export default function ScreenContainer({
         <div className="screen__content">
           <div className="screen__title">
             <button className="screen__back-button" onClick={closeFunction}>
-              <ChevronLeft />
+              <ArrowLeft />
             </button>
             {title}
           </div>

@@ -92,8 +92,11 @@ export async function saveSaleAndPark(
     logs,
     mutateLogs
   );
-  let otherSales = sales?.filter((s: SaleObject) => s?.id !== cart?.id);
-  mutateSales([...otherSales, { ...cart, state: "parked" }], false);
+  let otherSales = sales?.filter((s: SaleObject) => s?.id !== saleId);
+  mutateSales(
+    [...otherSales, { ...cart, id: saleId, state: SaleStateTypes.Parked }],
+    false
+  );
   mutateInventory && mutateInventory();
 }
 
@@ -108,21 +111,38 @@ export async function saveSaleAndItemsToDatabase(
 ) {
   let newSale = { ...sale };
   let newSaleId = newSale?.id;
+  console.log(items);
+  //
+  // HANDLE SALE OBJECT
+  //
   if (!newSaleId) {
+    // Sale is new, save to database and add id to sales
     newSale.state = newSale?.state || SaleStateTypes.InProgress;
+    console.log("Getting sale ID");
     newSaleId = await saveSaleToDatabase(newSale, clerk);
+    console.log("Got sale ID");
     newSale = { ...newSale, id: newSaleId };
     mutateSales([...sales, newSale], false);
   } else {
+    // Sale already has id, update
     updateSaleInDatabase(sale);
     let otherSales = sales?.filter((s: SaleObject) => s?.id !== newSaleId);
     mutateSales([...otherSales, sale], false);
   }
+  //
+  // HANDLE ITEMS
+  //
   for await (const item of items) {
+    console.log(item);
     if (!item?.id) {
-      const newSaleItemId = await saveSaleItemToDatabase(item, newSale?.id);
+      // Item is new to sale
+      const newSaleItemId = await saveSaleItemToDatabase({
+        ...item,
+        sale_id: newSaleId,
+      });
       mutateSaleItems([...saleItems, { ...item, id: newSaleItemId }], false);
     } else {
+      // Item was already in sale, update in case discount, quantity has changed or item has been deleted
       let updatedSaleItem = { ...item, sale_id: sale?.id };
       updateSaleItemInDatabase(updatedSaleItem);
       let otherSaleItems = saleItems?.filter(
@@ -159,10 +179,7 @@ export async function saveSaleToDatabase(sale: SaleObject, clerk: ClerkObject) {
   }
 }
 
-export async function saveSaleItemToDatabase(
-  item: SaleItemObject,
-  sale_id: number
-) {
+export async function saveSaleItemToDatabase(item: SaleItemObject) {
   try {
     const res = await fetch("/api/create-sale-item", {
       method: "POST",
@@ -170,7 +187,7 @@ export async function saveSaleItemToDatabase(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        sale_id: sale_id,
+        sale_id: item?.sale_id,
         item_id: item?.item_id,
         quantity: item?.quantity,
         vendor_discount: item?.vendor_discount || null,

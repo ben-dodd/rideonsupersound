@@ -795,34 +795,36 @@ export function nzDate(isoDate: string) {
   return isoDate ? add(parseISO(isoDate), { hours: 6 }) : null;
 }
 
+export function checkDate(date: Date | string) {
+  if (date) {
+    if (date instanceof Date) {
+      if (isNaN(date.getTime())) {
+        return null;
+      } else return date;
+    } else return nzDate(date);
+  } else return new Date();
+}
+
 export function fDate(date?: Date | string) {
-  console.log(date);
-  return format(
-    date ? (date instanceof Date ? date : nzDate(date)) : new Date(),
-    "d MMMM yyyy, p"
-  );
+  let checkedDate = checkDate(date);
+  return checkedDate ? format(checkedDate, "d MMMM yyyy") : "Invalid Date";
 }
 
 export function fDateTime(date?: Date | string) {
-  console.log(date);
-  return format(
-    date ? (date instanceof Date ? date : nzDate(date)) : new Date(),
-    "d MMMM yyyy, p"
-  );
+  let checkedDate = checkDate(date);
+  return checkedDate ? format(checkedDate, "d MMMM yyyy, p") : "Invalid Date";
 }
 
 export function fTimeDate(date?: Date | string) {
-  return format(
-    date ? (date instanceof Date ? date : nzDate(date)) : new Date(),
-    "p, d MMMM yyyy"
-  );
+  let checkedDate = checkDate(date);
+  return checkedDate ? format(checkedDate, "p, d MMMM yyyy") : "Invalid Date";
 }
 
 export function fFileDate(date?: Date | string) {
-  return format(
-    date ? (date instanceof Date ? date : nzDate(date)) : new Date(),
-    "yyyy-MM-dd-HH-mm-ss"
-  );
+  let checkedDate = checkDate(date);
+  return checkedDate
+    ? format(checkedDate, "yyyy-MM-dd-HH-mm-ss")
+    : "Invalid Date";
 }
 
 export function daysFrom(date: Date | string) {

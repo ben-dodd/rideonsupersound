@@ -54,7 +54,6 @@ export default function ShoppingCart() {
   const [loadingSale, setLoadingSale] = useState(false);
 
   const itemList = writeItemList(saleInventory, cart?.items);
-  console.log(cart);
 
   // Functions
   async function loadSale() {
@@ -72,7 +71,13 @@ export default function ShoppingCart() {
       setLoadingSale(false);
       saveLog(
         {
-          log: `New sale #${id} loaded. ${itemList}.`,
+          log: `${
+            cart?.id
+              ? cart?.state === SaleStateTypes.Layby
+                ? "Layby"
+                : "Parked sale"
+              : "New sale"
+          } #${id} loaded. ${itemList}.`,
           clerk_id: clerk?.id,
           table_id: "sale",
           row_id: id,
@@ -80,7 +85,7 @@ export default function ShoppingCart() {
         logs,
         mutateLogs
       );
-      setSale({ ...cart, id });
+      setSale({ ...cart, state: SaleStateTypes.InProgress, id });
       setView({ ...view, saleScreen: true });
     } catch (e) {
       throw Error(e.message);
@@ -140,10 +145,10 @@ export default function ShoppingCart() {
         </div>
         <div className="flex-grow overflow-x-hidden overflow-y-scroll">
           {cart?.items?.length > 0 ? (
-            cart.items.map((cartItem, id) => (
+            cart.items.map((cartItem, i) => (
               <ListItem
-                key={cartItem?.item_id}
-                index={id}
+                key={i}
+                index={i}
                 cartItem={cartItem}
                 deleteCartItem={deleteCartItem}
               />

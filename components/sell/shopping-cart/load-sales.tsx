@@ -50,6 +50,7 @@ export default function LoadSales() {
       item_id: i?.item_id,
       quantity: i?.quantity?.toString(),
     }));
+    // BUG sale items and cart items getting mixed up, new IDs being made etc.
     setSubmitting(true);
     await loadSaleToCart(
       cart,

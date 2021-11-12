@@ -23,6 +23,8 @@ import TextField from "@/components/inputs/text-field";
 
 // Icons
 import DeleteIcon from "@mui/icons-material/Delete";
+import ArrowUp from "@mui/icons-material/ArrowDropUp";
+import ArrowDown from "@mui/icons-material/ArrowDropDown";
 
 type SellListItemProps = {
   index: number;
@@ -88,6 +90,19 @@ export default function SellListItem({
           <div className="text-sm pl-1">{getItemDisplayName(item)}</div>
           <div className="text-red-500 self-end">
             {getCartItemSummary(item, cartItem)}
+          </div>
+          <div className="self-end text-xs">
+            {expanded ? (
+              <div>
+                CLOSE PANEL
+                <ArrowUp />
+              </div>
+            ) : (
+              <div>
+                CLICK TO EDIT ITEM
+                <ArrowDown />
+              </div>
+            )}
           </div>
         </div>
       </div>
