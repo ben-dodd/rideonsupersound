@@ -1,3 +1,33 @@
+export enum SaleStateTypes {
+  InProgress = "in progress",
+  Layby = "layby",
+  Parked = "parked",
+  Completed = "completed",
+}
+
+export enum PaymentMethodTypes {
+  Cash = "cash",
+  Card = "card",
+  Account = "acct",
+  GiftCard = "gift",
+}
+
+export enum ButtonTypes {
+  Ok = "ok",
+  Cancel = "cancel",
+}
+
+export enum DiscogsConditionTypes {
+  M = "Mint (M)",
+  NM = "Near Mint (NM or M-)",
+  VGP = "Very Good Plus (VG+)",
+  VG = "Very Good (VG)",
+  GP = "Good Plus (G+)",
+  G = "Good (G)",
+  F = "Fair (F)",
+  P = "Poor (P)",
+}
+
 export interface ClerkObject {
   id: number;
   name?: string;
@@ -40,7 +70,7 @@ export interface ConfirmModal {
 export interface SaleObject {
   id?: number;
   customer_id?: number;
-  state?: string;
+  state?: SaleStateTypes;
   date_sale_opened?: string;
   sale_opened_by?: number;
   date_sale_closed?: string;
@@ -76,7 +106,7 @@ export interface SaleTransactionObject {
   sale_id: number;
   clerk_id: number;
   date?: string;
-  payment_method: string;
+  payment_method: PaymentMethodTypes;
   amount: number;
   cash_received?: number;
   change_given?: number;
@@ -283,14 +313,14 @@ export interface DiscogsItem {
   most_recent_release_url?: string;
   num_for_sale?: number;
   priceSuggestions?: {
-    "Mint (M)": DiscogsPriceSuggestion;
-    "Near Mint (NM or M-)": DiscogsPriceSuggestion;
-    "Very Good Plus (VG+)": DiscogsPriceSuggestion;
-    "Very Good (VG)": DiscogsPriceSuggestion;
-    "Good Plus (G+)": DiscogsPriceSuggestion;
-    "Good (G)": DiscogsPriceSuggestion;
-    "Fair (F)": DiscogsPriceSuggestion;
-    "Poor (P)": DiscogsPriceSuggestion;
+    [DiscogsConditionTypes.M]: DiscogsPriceSuggestion;
+    [DiscogsConditionTypes.NM]: DiscogsPriceSuggestion;
+    [DiscogsConditionTypes.VGP]: DiscogsPriceSuggestion;
+    [DiscogsConditionTypes.VG]: DiscogsPriceSuggestion;
+    [DiscogsConditionTypes.GP]: DiscogsPriceSuggestion;
+    [DiscogsConditionTypes.G]: DiscogsPriceSuggestion;
+    [DiscogsConditionTypes.F]: DiscogsPriceSuggestion;
+    [DiscogsConditionTypes.P]: DiscogsPriceSuggestion;
   };
   resource_url?: string;
   style?: string[];

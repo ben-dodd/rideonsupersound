@@ -44,9 +44,7 @@ type SellListItemProps = {
 
 export default function ItemListItem({ saleItem, isNew }: SellListItemProps) {
   // Atoms
-  const [sale, setSale] = useAtom(
-    isNew ? newSaleObjectAtom : loadedSaleObjectAtom
-  );
+  const [sale] = useAtom(isNew ? newSaleObjectAtom : loadedSaleObjectAtom);
   const [, setAlert] = useAtom(alertAtom);
   const [clerk] = useAtom(clerkAtom);
 
@@ -73,7 +71,7 @@ export default function ItemListItem({ saleItem, isNew }: SellListItemProps) {
       items?.filter((i: SaleItemObject) => i?.id === id)[0] || {};
     saleItem.is_refunded = true;
     is_refund
-      ? updateSaleItemInDatabase(saleItem, sale)
+      ? updateSaleItemInDatabase({ ...saleItem, sale_id: sale?.id })
       : deleteSaleItemFromDatabase(id);
     // if (cart?.items?.length < 1) {
     //   // No items left, delete cart

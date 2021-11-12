@@ -32,7 +32,7 @@ export default function LoadSales() {
   const { registerID } = useRegisterID();
   const { logs, mutateLogs } = useLogs();
   const { sales, isSalesLoading, mutateSales } = useSales();
-  const { saleItems, isSaleItemsLoading } = useSaleItems();
+  const { saleItems, isSaleItemsLoading, mutateSaleItems } = useSaleItems();
   const { customers, isCustomersLoading } = useCustomers();
   const { saleInventory, isSaleInventoryLoading } = useSaleInventory();
 
@@ -46,7 +46,6 @@ export default function LoadSales() {
 
   // Functions
   async function loadSale(sale: SaleObject, items: SaleItemObject[]) {
-    console.log(items);
     const cartItems = items?.map((i: SaleItemObject) => ({
       item_id: i?.item_id,
       quantity: i?.quantity?.toString(),
@@ -62,7 +61,9 @@ export default function LoadSales() {
       logs,
       mutateLogs,
       sales,
-      mutateSales
+      mutateSales,
+      saleItems,
+      mutateSaleItems
     );
     setSubmitting(false);
     setView({ ...view, loadSalesDialog: false });
@@ -73,7 +74,13 @@ export default function LoadSales() {
       open={view?.loadSalesDialog}
       closeFunction={() => setView({ ...view, loadSalesDialog: false })}
       title={"PARKED SALES AND LAYBYS"}
-      loading={isSalesLoading || isSaleItemsLoading || isCustomersLoading}
+      loading={
+        isSalesLoading ||
+        isSaleItemsLoading ||
+        isCustomersLoading ||
+        submitting ||
+        isSaleInventoryLoading
+      }
       width="6xl"
     >
       {parkedSales?.length > 0 ? (

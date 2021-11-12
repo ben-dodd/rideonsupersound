@@ -11,7 +11,7 @@ import {
   useLaybys,
   useStockInventory,
 } from "@/lib/swr-hooks";
-import { viewAtom, loadedVendorIdAtom } from "@/lib/atoms";
+import { loadedVendorIdAtom } from "@/lib/atoms";
 import {
   CustomerObject,
   VendorObject,
@@ -36,7 +36,7 @@ export default function CustomerTable() {
   const { inventory, isInventoryLoading } = useStockInventory();
 
   // Atoms
-  const [view, setView] = useAtom(viewAtom);
+  // const [view, setView] = useAtom(viewAtom);
   const [loadedVendorId, setLoadedVendorId] = useAtom(loadedVendorIdAtom);
 
   // Constants
@@ -156,7 +156,7 @@ export default function CustomerTable() {
           value && value.length > 0
             ? value.map((layby: SaleObject, i: number) => (
                 <div key={i} className="pb-2" onClick={() => null}>
-                  Items not visible yet
+                  #{layby?.id}
                 </div>
               ))
             : "",

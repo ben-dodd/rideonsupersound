@@ -20,7 +20,11 @@ import {
   clerkAtom,
   alertAtom,
 } from "@/lib/atoms";
-import { ModalButton, SaleTransactionObject } from "@/lib/types";
+import {
+  ModalButton,
+  SaleTransactionObject,
+  PaymentMethodTypes,
+} from "@/lib/types";
 
 // Functions
 import { getTotalOwing, getSaleVars } from "@/lib/data-functions";
@@ -80,7 +84,7 @@ export default function Acct({ isNew }) {
         let transaction: SaleTransactionObject = {
           sale_id: sale?.id,
           clerk_id: clerk?.id,
-          payment_method: "acct",
+          payment_method: PaymentMethodTypes.Account,
           amount:
             parseFloat(acctPayment) >= totalRemaining
               ? totalRemaining * 100

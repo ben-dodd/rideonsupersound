@@ -3,9 +3,14 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useSaleInventory, useLogs } from "@/lib/swr-hooks";
+import {
+  useSaleInventory,
+  useLogs,
+  useSales,
+  useSaleItems,
+} from "@/lib/swr-hooks";
 import { newSaleObjectAtom, viewAtom, clerkAtom, alertAtom } from "@/lib/atoms";
-import { InventoryObject } from "@/lib/types";
+import { InventoryObject, SaleStateTypes } from "@/lib/types";
 
 // Functions
 import {
@@ -34,6 +39,8 @@ import HoldIcon from "@mui/icons-material/PanTool";
 export default function ShoppingCart() {
   // SWR
   const { saleInventory } = useSaleInventory();
+  const { sales, mutateSales } = useSales();
+  const { saleItems, mutateSaleItems } = useSaleItems();
   const { logs, mutateLogs } = useLogs();
 
   // Atoms
@@ -53,7 +60,15 @@ export default function ShoppingCart() {
   async function loadSale() {
     try {
       setLoadingSale(true);
-      const id = await saveSaleAndItemsToDatabase(cart, cart?.items, clerk);
+      const id = await saveSaleAndItemsToDatabase(
+        { ...cart, state: SaleStateTypes.InProgress },
+        cart?.items,
+        clerk,
+        sales,
+        mutateSales,
+        saleItems,
+        mutateSaleItems
+      );
       setLoadingSale(false);
       saveLog(
         {
@@ -66,6 +81,7 @@ export default function ShoppingCart() {
         mutateLogs
       );
       setSale({ ...cart, id });
+      setView({ ...view, saleScreen: true });
     } catch (e) {
       throw Error(e.message);
     }
@@ -108,8 +124,6 @@ export default function ShoppingCart() {
   const storeCut = getTotalStoreCut(cart?.items, saleInventory);
   const disableButtons =
     loadingSale || !(cart?.items && Object.keys(cart?.items).length > 0);
-
-  console.log(cart);
 
   return (
     <div

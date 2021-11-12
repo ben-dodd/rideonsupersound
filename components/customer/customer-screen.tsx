@@ -15,7 +15,7 @@ import { CustomerObject, ModalButton } from "@/lib/types";
 import TextField from "@/components/inputs/text-field";
 import SidebarContainer from "@/components/container/side-bar";
 
-export default function CreateCustomerSidebar() {
+export default function CustomerScreen() {
   // SWR
   const { customers } = useCustomers();
 

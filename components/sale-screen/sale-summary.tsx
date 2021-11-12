@@ -12,7 +12,11 @@ import {
   useSaleInventory,
 } from "@/lib/swr-hooks";
 import { newSaleObjectAtom, loadedSaleObjectAtom } from "@/lib/atoms";
-import { SaleTransactionObject, SaleItemObject } from "@/lib/types";
+import {
+  SaleTransactionObject,
+  SaleItemObject,
+  SaleStateTypes,
+} from "@/lib/types";
 
 // Functions
 import {
@@ -37,7 +41,7 @@ export default function SaleSummary({ isNew }) {
   const { saleInventory } = useSaleInventory();
 
   // Constants
-  const saleComplete = Boolean(sale?.state === "complete");
+  const saleComplete = Boolean(sale?.state === SaleStateTypes.Completed);
   const {
     totalRemaining,
     totalStoreCut,

@@ -43,6 +43,7 @@ interface ViewProps {
   labelPrintDialog?: boolean;
   loadSalesDialog?: boolean;
   refundDialog?: boolean;
+  saleScreen?: boolean;
 }
 
 interface PageProps {

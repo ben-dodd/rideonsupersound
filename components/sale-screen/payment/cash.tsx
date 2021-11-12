@@ -20,7 +20,12 @@ import {
   clerkAtom,
   alertAtom,
 } from "@/lib/atoms";
-import { ModalButton, CustomerObject, SaleTransactionObject } from "@/lib/types";
+import {
+  ModalButton,
+  CustomerObject,
+  SaleTransactionObject,
+  PaymentMethodTypes,
+} from "@/lib/types";
 
 // Functions
 import { getSaleVars } from "@/lib/data-functions";
@@ -71,7 +76,7 @@ export default function Cash({ isNew }) {
         let transaction: SaleTransactionObject = {
           sale_id: sale?.id,
           clerk_id: clerk?.id,
-          payment_method: "cash",
+          payment_method: PaymentMethodTypes.Cash,
           amount:
             parseFloat(cashReceived) >= totalRemaining
               ? totalRemaining * 100

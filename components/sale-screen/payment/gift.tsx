@@ -24,6 +24,7 @@ import {
   ModalButton,
   CustomerObject,
   SaleTransactionObject,
+  PaymentMethodTypes,
 } from "@/lib/types";
 
 // Functions
@@ -108,7 +109,7 @@ export default function Gift({ isNew }) {
         let transaction: SaleTransactionObject = {
           sale_id: sale?.id,
           clerk_id: clerk?.id,
-          payment_method: "acct",
+          payment_method: PaymentMethodTypes.GiftCard,
           amount:
             parseFloat(giftCardPayment) >= totalRemaining
               ? totalRemaining * 100

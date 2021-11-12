@@ -10,7 +10,7 @@ import CustomerScreen from "./customer-screen";
 
 // REVIEW add customer-screen
 
-export default function Customer() {
+export default function CustomersScreen() {
   // Atoms
   const [page] = useAtom(pageAtom);
   return (
