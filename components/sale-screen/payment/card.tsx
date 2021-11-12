@@ -7,7 +7,7 @@ import {
   useSaleTransactionsForSale,
   useSaleItemsForSale,
   useSaleInventory,
-  useContacts,
+  useCustomers,
   useLogs,
   useRegisterID,
 } from "@/lib/swr-hooks";
@@ -18,7 +18,7 @@ import {
   clerkAtom,
   alertAtom,
 } from "@/lib/atoms";
-import { ModalButton, ContactObject, SaleTransactionObject } from "@/lib/types";
+import { ModalButton, CustomerObject, SaleTransactionObject } from "@/lib/types";
 
 // Functions
 import { getSaleVars } from "@/lib/data-functions";
@@ -36,7 +36,7 @@ export default function Cash({ isNew }) {
   const [, setAlert] = useAtom(alertAtom);
 
   // SWR
-  const { contacts } = useContacts();
+  const { customers } = useCustomers();
   const { registerID } = useRegisterID();
   const { transactions, mutateSaleTransactions } = useSaleTransactionsForSale(
     sale?.id
@@ -84,9 +84,9 @@ export default function Cash({ isNew }) {
         saveLog(
           {
             log: `$${parseFloat(cardPayment)?.toFixed(2)} card payment from ${
-              sale?.contact_id
-                ? contacts?.filter(
-                    (c: ContactObject) => c?.id === sale?.contact_id
+              sale?.customer_id
+                ? customers?.filter(
+                    (c: CustomerObject) => c?.id === sale?.customer_id
                   )[0]?.name
                 : "customer"
             } (sale #${sale?.id}).`,

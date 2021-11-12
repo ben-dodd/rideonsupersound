@@ -15,7 +15,7 @@ import Menu from "@/components/menu";
 import SellScreen from "@/components/sell";
 import InventoryScreen from "@/components/inventory";
 import VendorScreen from "@/components/vendor";
-import ContactScreen from "@/components/contact";
+import CustomerScreen from "@/components/customer";
 import GiftCardsScreen from "@/components/gift-card";
 import PaymentsScreen from "@/components/payment";
 import SalesScreen from "@/components/sale";
@@ -41,7 +41,7 @@ export default function MainPage() {
           <SellScreen />
           <InventoryScreen />
           <VendorScreen />
-          <ContactScreen />
+          <CustomerScreen />
           <GiftCardsScreen />
           <SalesScreen />
           {page === "logs" && <LogScreen />}

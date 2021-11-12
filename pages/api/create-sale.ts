@@ -3,7 +3,7 @@ import { query } from "../../lib/db";
 
 const handler: NextApiHandler = async (req, res) => {
   const {
-    contact_id,
+    customer_id,
     state,
     sale_opened_by,
     note,
@@ -15,7 +15,7 @@ const handler: NextApiHandler = async (req, res) => {
     const results = await query(
       `
       INSERT INTO sale (
-        contact_id,
+        customer_id,
         state,
         sale_opened_by,
         weather,
@@ -26,7 +26,7 @@ const handler: NextApiHandler = async (req, res) => {
       VALUES (?, ?, ?, ?, ?, ?, ?)
       `,
       [
-        contact_id,
+        customer_id,
         state,
         sale_opened_by,
         weather,

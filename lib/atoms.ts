@@ -3,7 +3,7 @@ import { atom } from "jotai";
 import {
   ClerkObject,
   SaleObject,
-  ContactObject,
+  CustomerObject,
   ConfirmModal,
 } from "@/lib/types";
 
@@ -23,7 +23,7 @@ interface ViewProps {
   mainMenu?: boolean;
   cart?: boolean;
   createHold?: boolean;
-  createContact?: boolean;
+  createCustomer?: boolean;
   closeRegisterScreen?: boolean;
   receiveStockScreen?: boolean;
   returnStockScreen?: boolean;
@@ -49,7 +49,7 @@ interface PageProps {
   sell?: number;
   inventory?: number;
   vendors?: number;
-  contacts?: number;
+  customers?: number;
   giftCards?: number;
   sales?: number;
   payments?: number;
@@ -67,9 +67,9 @@ export const loadedItemIdAtom = atom<PageProps>({});
 export const loadedVendorIdAtom = atom<PageProps>({});
 export const loadedHoldIdAtom = atom<PageProps>({});
 
-export const loadedContactObjectAtom = atom<ContactObject>({});
+export const loadedCustomerObjectAtom = atom<CustomerObject>({});
 
-export const createableContactName = atom<string>("");
+export const createableCustomerName = atom<string>("");
 
 export const sellSearchBarAtom = atom<string>("");
 export const confirmModalAtom = atom<ConfirmModal>({ open: false });

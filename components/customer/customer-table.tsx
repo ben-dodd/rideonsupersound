@@ -5,7 +5,7 @@ import { parseISO, add } from "date-fns";
 
 // DB
 import {
-  useContacts,
+  useCustomers,
   useVendors,
   useHolds,
   useLaybys,
@@ -13,7 +13,7 @@ import {
 } from "@/lib/swr-hooks";
 import { viewAtom, loadedVendorIdAtom } from "@/lib/atoms";
 import {
-  ContactObject,
+  CustomerObject,
   VendorObject,
   SaleObject,
   HoldObject,
@@ -27,9 +27,9 @@ import { getItemDisplayName } from "@/lib/data-functions";
 import Table from "@/components/table";
 import TableContainer from "@/components/container/table";
 
-export default function ContactTable() {
+export default function CustomerTable() {
   // SWR
-  const { contacts, isContactsLoading } = useContacts();
+  const { customers, isCustomersLoading } = useCustomers();
   const { vendors, isVendorsLoading } = useVendors();
   const { laybys, isLaybysLoading } = useLaybys();
   const { holds, isHoldsLoading } = useHolds();
@@ -42,14 +42,14 @@ export default function ContactTable() {
   // Constants
   const data = useMemo(
     () =>
-      (contacts || [])
-        .filter((c: ContactObject) => !c?.is_deleted)
-        .map((c: ContactObject) => ({
+      (customers || [])
+        .filter((c: CustomerObject) => !c?.is_deleted)
+        .map((c: CustomerObject) => ({
           id: c?.id,
           name: c?.name,
           vendor:
             (vendors || []).filter(
-              (v: VendorObject) => v?.contact_id === c?.id
+              (v: VendorObject) => v?.customer_id === c?.id
             )[0] || null,
           email: c?.email,
           phone: c?.phone,
@@ -57,7 +57,7 @@ export default function ContactTable() {
           notes: c?.note,
           holds: (holds || [])
             .filter(
-              (h: HoldObject) => h?.contact_id === c?.id && !h?.is_deleted
+              (h: HoldObject) => h?.customer_id === c?.id && !h?.is_deleted
             )
             .map((h: HoldObject) => {
               return {
@@ -68,14 +68,14 @@ export default function ContactTable() {
               };
             }),
           laybys: (laybys || []).filter(
-            (l: SaleObject) => l?.contact_id === c?.id && !l?.is_deleted
+            (l: SaleObject) => l?.customer_id === c?.id && !l?.is_deleted
           ),
         })),
-    [contacts, laybys, holds, vendors]
+    [customers, laybys, holds, vendors]
   );
   const columns = useMemo(() => {
     const openVendorDialog = (vendor: VendorObject) =>
-      setLoadedVendorId({ ...loadedVendorId, contacts: vendor?.id });
+      setLoadedVendorId({ ...loadedVendorId, customers: vendor?.id });
 
     // const openLaybyDialog = (layby) => {
     //   dispatch(
@@ -189,7 +189,7 @@ export default function ContactTable() {
         isInventoryLoading ||
         isHoldsLoading ||
         isLaybysLoading ||
-        isContactsLoading ||
+        isCustomersLoading ||
         isVendorsLoading
       }
     >
@@ -199,7 +199,7 @@ export default function ContactTable() {
         colorDark="bg-col4-dark"
         data={data}
         columns={columns}
-        heading={"Contacts"}
+        heading={"Customers"}
         pageSize={20}
         sortOptions={[{ id: "name", desc: false }]}
       />

@@ -4,8 +4,8 @@ import { useAtom } from "jotai";
 
 // DB
 import {
-  useContacts,
-  useVendorFromContact,
+  useCustomers,
+  useVendorFromCustomer,
   useSaleTransactionsForSale,
   useSaleItemsForSale,
   useSaleInventory,
@@ -14,10 +14,10 @@ import {
   newSaleObjectAtom,
   loadedSaleObjectAtom,
   viewAtom,
-  loadedContactObjectAtom,
+  loadedCustomerObjectAtom,
 } from "@/lib/atoms";
 import {
-  ContactObject,
+  CustomerObject,
   SaleTransactionObject,
   OpenWeatherObject,
 } from "@/lib/types";
@@ -38,12 +38,12 @@ export default function Pay({ isNew }) {
   const [sale, setSale] = useAtom(
     isNew ? newSaleObjectAtom : loadedSaleObjectAtom
   );
-  const [, setContact] = useAtom(loadedContactObjectAtom);
+  const [, setCustomer] = useAtom(loadedCustomerObjectAtom);
   const [view, setView] = useAtom(viewAtom);
 
   // SWR
-  const { contacts } = useContacts();
-  const { vendor } = useVendorFromContact(sale?.contact_id);
+  const { customers } = useCustomers();
+  const { vendor } = useVendorFromCustomer(sale?.customer_id);
   const { items } = useSaleItemsForSale(sale?.id);
   const { transactions } = useSaleTransactionsForSale(sale?.id);
   const { saleInventory } = useSaleInventory();
@@ -147,7 +147,7 @@ export default function Pay({ isNew }) {
           </button>
           <button
             className="square-button"
-            disabled={!sale?.contact_id || !vendor}
+            disabled={!sale?.customer_id || !vendor}
             onClick={() => setView({ ...view, acctPaymentDialog: true })}
           >
             ACCT
@@ -166,43 +166,43 @@ export default function Pay({ isNew }) {
         (s: SaleTransactionObject) => s?.payment_method === "acct"
       )?.length > 0 ? (
         <div className="mt-2">
-          {sale?.contact_id ? (
+          {sale?.customer_id ? (
             <div>
-              <span className="font-bold">Contact: </span>
+              <span className="font-bold">Customer: </span>
               <span>
-                {(contacts || []).filter(
-                  (c: ContactObject) => c?.id === sale?.contact_id
+                {(customers || []).filter(
+                  (c: CustomerObject) => c?.id === sale?.customer_id
                 )[0]?.name || ""}
               </span>
             </div>
           ) : (
-            <div>No contact set.</div>
+            <div>No customer set.</div>
           )}
         </div>
       ) : (
         <>
           <div className="font-bold mt-2">
-            Select contact to enable laybys and account payments.
+            Select customer to enable laybys and account payments.
           </div>
           <CreateableSelect
-            inputLabel="Select contact"
-            value={sale?.contact_id}
+            inputLabel="Select customer"
+            value={sale?.customer_id}
             label={
-              (contacts || []).filter(
-                (c: ContactObject) => c?.id === sale?.contact_id
+              (customers || []).filter(
+                (c: CustomerObject) => c?.id === sale?.customer_id
               )[0]?.name || ""
             }
-            onChange={(contactObject: any) => {
+            onChange={(customerObject: any) => {
               setSale((s) => ({
                 ...s,
-                contact_id: parseInt(contactObject?.value),
+                customer_id: parseInt(customerObject?.value),
               }));
             }}
             onCreateOption={(inputValue: string) => {
-              setContact({ name: inputValue });
-              setView({ ...view, createContact: true });
+              setCustomer({ name: inputValue });
+              setView({ ...view, createCustomer: true });
             }}
-            options={contacts?.map((val: ContactObject) => ({
+            options={customers?.map((val: CustomerObject) => ({
               value: val?.id,
               label: val?.name || "",
             }))}

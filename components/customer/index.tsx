@@ -5,21 +5,21 @@ import { useAtom } from "jotai";
 import { pageAtom } from "@/lib/atoms";
 
 // Components
-import ContactTable from "./contact-table";
-import ContactScreen from "./contact-screen";
+import CustomerTable from "./customer-table";
+import CustomerScreen from "./customer-screen";
 
-// REVIEW add contact-screen
+// REVIEW add customer-screen
 
-export default function Contact() {
+export default function Customer() {
   // Atoms
   const [page] = useAtom(pageAtom);
   return (
     <div
       className={`flex relative overflow-x-hidden ${
-        page !== "contacts" ? "hidden" : ""
+        page !== "customers" ? "hidden" : ""
       }`}
     >
-      {page === "contacts" && <ContactTable />}
+      {page === "customers" && <CustomerTable />}
     </div>
   );
 }

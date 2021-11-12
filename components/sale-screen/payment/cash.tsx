@@ -8,7 +8,7 @@ import {
   useSaleItemsForSale,
   useSaleInventory,
   useLogs,
-  useContacts,
+  useCustomers,
   useRegisterID,
   useCashGiven,
   useCashReceived,
@@ -20,7 +20,7 @@ import {
   clerkAtom,
   alertAtom,
 } from "@/lib/atoms";
-import { ModalButton, ContactObject, SaleTransactionObject } from "@/lib/types";
+import { ModalButton, CustomerObject, SaleTransactionObject } from "@/lib/types";
 
 // Functions
 import { getSaleVars } from "@/lib/data-functions";
@@ -44,7 +44,7 @@ export default function Cash({ isNew }) {
   const { items } = useSaleItemsForSale(sale?.id);
   const { saleInventory } = useSaleInventory();
   const { logs, mutateLogs } = useLogs();
-  const { contacts } = useContacts();
+  const { customers } = useCustomers();
   const { registerID } = useRegisterID();
   const { mutateCashGiven } = useCashGiven(registerID || 0);
   const { mutateCashReceived } = useCashReceived(registerID || 0);
@@ -95,9 +95,9 @@ export default function Cash({ isNew }) {
         saveLog(
           {
             log: `$${parseFloat(cashReceived)?.toFixed(2)} cash taken from ${
-              sale?.contact_id
-                ? contacts?.filter(
-                    (c: ContactObject) => c?.id === sale?.contact_id
+              sale?.customer_id
+                ? customers?.filter(
+                    (c: CustomerObject) => c?.id === sale?.customer_id
                   )[0]?.name
                 : "customer"
             } (sale #${sale?.id}).${

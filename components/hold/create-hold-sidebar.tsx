@@ -3,16 +3,16 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useContacts, useSaleInventory, useLogs } from "@/lib/swr-hooks";
+import { useCustomers, useSaleInventory, useLogs } from "@/lib/swr-hooks";
 import {
   newSaleObjectAtom,
   clerkAtom,
   viewAtom,
   alertAtom,
   sellSearchBarAtom,
-  loadedContactObjectAtom,
+  loadedCustomerObjectAtom,
 } from "@/lib/atoms";
-import { ContactObject, ModalButton } from "@/lib/types";
+import { CustomerObject, ModalButton } from "@/lib/types";
 
 // Functions
 import { getItemSkuDisplayName } from "@/lib/data-functions";
@@ -26,14 +26,14 @@ import SidebarContainer from "@/components/container/side-bar";
 
 export default function CreateHoldSidebar() {
   // SWR
-  const { contacts } = useContacts();
+  const { customers } = useCustomers();
   const { saleInventory } = useSaleInventory();
   const { logs, mutateLogs } = useLogs();
 
   // Atoms
   const [cart, setCart] = useAtom(newSaleObjectAtom);
   const [, setAlert] = useAtom(alertAtom);
-  const [, setContact] = useAtom(loadedContactObjectAtom);
+  const [, setCustomer] = useAtom(loadedCustomerObjectAtom);
   const [view, setView] = useAtom(viewAtom);
   const [, setSearch] = useAtom(sellSearchBarAtom);
   const [clerk] = useAtom(clerkAtom);
@@ -64,8 +64,8 @@ export default function CreateHoldSidebar() {
               cartItem?.item_id,
               saleInventory
             )} put on hold for ${
-              (contacts || []).filter(
-                (c: ContactObject) => c?.id === cart?.contact_id
+              (customers || []).filter(
+                (c: CustomerObject) => c?.id === cart?.customer_id
               )[0]?.name
             } for ${holdPeriod} day${holdPeriod === 1 ? "" : "s"}.`,
             clerk_id: clerk?.id,
@@ -83,8 +83,8 @@ export default function CreateHoldSidebar() {
       message: `ITEM${
         (cart?.items || []).length === 1 ? "" : "S"
       } PUT ON HOLD FOR ${(
-        (contacts || []).filter(
-          (c: ContactObject) => c?.id === cart?.contact_id
+        (customers || []).filter(
+          (c: CustomerObject) => c?.id === cart?.customer_id
         )[0]?.name || ""
       ).toUpperCase()}.`,
     });
@@ -106,7 +106,7 @@ export default function CreateHoldSidebar() {
       type: "ok",
       onClick: onClickConfirmHold,
       disabled:
-        !cart?.contact_id ||
+        !cart?.customer_id ||
         Object.keys(cart?.items || {}).length === 0 ||
         !holdPeriod,
       text: submitting ? "HOLDING..." : "CONFIRM HOLD",
@@ -128,25 +128,25 @@ export default function CreateHoldSidebar() {
       </div>
       <div>
         <CreateableSelect
-          inputLabel="Select contact"
+          inputLabel="Select customer"
           fieldRequired
-          value={cart?.contact_id}
+          value={cart?.customer_id}
           label={
-            (contacts || []).filter(
-              (c: ContactObject) => c?.id === cart?.contact_id
+            (customers || []).filter(
+              (c: CustomerObject) => c?.id === cart?.customer_id
             )[0]?.name || ""
           }
-          onChange={(contactObject: any) => {
+          onChange={(customerObject: any) => {
             setCart({
               ...cart,
-              contact_id: parseInt(contactObject?.value),
+              customer_id: parseInt(customerObject?.value),
             });
           }}
           onCreateOption={(inputValue: string) => {
-            setContact({ name: inputValue });
-            setView({ ...view, createContact: true });
+            setCustomer({ name: inputValue });
+            setView({ ...view, createCustomer: true });
           }}
-          options={contacts?.map((val: ContactObject) => ({
+          options={customers?.map((val: CustomerObject) => ({
             value: val?.id,
             label: val?.name || "",
           }))}

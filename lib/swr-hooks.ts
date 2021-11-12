@@ -171,9 +171,9 @@ export function useVendorPayments() {
   };
 }
 
-export function useVendorTotalPayments(contact_id: number) {
+export function useVendorTotalPayments(customer_id: number) {
   const { data, error, mutate } = useSWR(
-    `/api/get-vendor-total-payments?contact_id=${contact_id}`,
+    `/api/get-vendor-total-payments?customer_id=${customer_id}`,
     fetcher
   );
   return {
@@ -184,9 +184,9 @@ export function useVendorTotalPayments(contact_id: number) {
   };
 }
 
-export function useVendorTotalSales(contact_id: number) {
+export function useVendorTotalSales(customer_id: number) {
   const { data, error, mutate } = useSWR(
-    `/api/get-vendor-total-sales?contact_id=${contact_id}`,
+    `/api/get-vendor-total-sales?customer_id=${customer_id}`,
     fetcher
   );
 
@@ -228,9 +228,9 @@ export function useVendorFromVendorPayment(vendor_payment_id: number) {
   };
 }
 
-export function useVendorFromContact(contact_id: number) {
+export function useVendorFromCustomer(customer_id: number) {
   const { data, error } = useSWR(
-    `/api/get-vendor-from-contact?contact_id=${contact_id}`,
+    `/api/get-vendor-from-customer?customer_id=${customer_id}`,
     fetcher
   );
   return {
@@ -262,30 +262,30 @@ export function useGiftCard(gift_card_id: number) {
   };
 }
 
-export function useContacts() {
+export function useCustomers() {
   const { data, error } = useSWR(
-    `/api/get-contacts`,
+    `/api/get-customers`,
     fetcher
     //   {
     //   refreshInterval: 5000,
     // }
   );
   return {
-    contacts: data,
-    isContactsLoading: !error && !data,
-    isContactsError: error,
+    customers: data,
+    isCustomersLoading: !error && !data,
+    isCustomersError: error,
   };
 }
 
-export function useContact(contact_id: number) {
+export function useCustomer(customer_id: number) {
   const { data, error } = useSWR(
-    `/api/get-contact?contact_id=${contact_id}`,
+    `/api/get-customer?customer_id=${customer_id}`,
     fetcher
   );
   return {
-    contact: data && data[0],
-    isContactLoading: !error && !data,
-    isContactError: error,
+    customer: data && data[0],
+    isCustomerLoading: !error && !data,
+    isCustomerError: error,
   };
 }
 

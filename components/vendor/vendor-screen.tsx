@@ -9,12 +9,12 @@ import {
   useStockInventory,
   useSalesJoined,
   useVendorPayments,
-  useContacts,
+  useCustomers,
 } from "@/lib/swr-hooks";
 import {
   clerkAtom,
   viewAtom,
-  loadedContactObjectAtom,
+  loadedCustomerObjectAtom,
   loadedVendorIdAtom,
   pageAtom,
 } from "@/lib/atoms";
@@ -23,7 +23,7 @@ import {
   InventoryObject,
   VendorSaleItemObject,
   VendorPaymentObject,
-  ContactObject,
+  CustomerObject,
   ClerkObject,
 } from "@/lib/types";
 
@@ -48,13 +48,13 @@ export default function VendorScreen() {
   const [loadedVendorId, setLoadedVendorId] = useAtom(loadedVendorIdAtom);
   const [view, setView] = useAtom(viewAtom);
   const [page] = useAtom(pageAtom);
-  const [, setContact] = useAtom(loadedContactObjectAtom);
+  const [, setCustomer] = useAtom(loadedCustomerObjectAtom);
   const [clerk] = useAtom(clerkAtom);
 
   // SWR
   const { vendors, isVendorsLoading } = useVendors();
   const { clerks, isClerksLoading } = useClerks();
-  const { contacts, isContactsLoading } = useContacts();
+  const { customers, isCustomersLoading } = useCustomers();
   const { inventory, isInventoryLoading } = useStockInventory();
   const { sales, isSalesLoading } = useSalesJoined();
   const { vendorPayments, isVendorPaymentsLoading } = useVendorPayments();
@@ -127,7 +127,7 @@ export default function VendorScreen() {
         isSalesLoading ||
         isClerksLoading ||
         isVendorsLoading ||
-        isContactsLoading ||
+        isCustomersLoading ||
         isInventoryLoading ||
         isVendorPaymentsLoading
       }
@@ -150,35 +150,35 @@ export default function VendorScreen() {
             dbField="category"
             isCreateDisabled={true}
           />
-          <div className="input-label">Primary Vendor Contact</div>
+          <div className="input-label">Primary Vendor Customer</div>
           <div className="self-center w-full">
             <CreateableSelect
-              inputLabel="Select contact"
+              inputLabel="Select customer"
               fieldRequired
-              value={vendor?.contact_id}
+              value={vendor?.customer_id}
               label={
-                (contacts || []).filter(
-                  (c: ContactObject) => c?.id === vendor?.contact_id
+                (customers || []).filter(
+                  (c: CustomerObject) => c?.id === vendor?.customer_id
                 )[0]?.name || ""
               }
-              onChange={(contactObject: any) => {
+              onChange={(customerObject: any) => {
                 setVendor({
                   ...vendor,
-                  contact_id: parseInt(contactObject?.value),
+                  customer_id: parseInt(customerObject?.value),
                 });
               }}
               onCreateOption={(inputValue: string) => {
-                setContact({ name: inputValue });
-                setView({ ...view, createContact: true });
+                setCustomer({ name: inputValue });
+                setView({ ...view, createCustomer: true });
               }}
-              options={contacts?.map((val: ContactObject) => ({
+              options={customers?.map((val: CustomerObject) => ({
                 value: val?.id,
                 label: val?.name || "",
               }))}
             />
           </div>
 
-          <div className="input-label">Staff Contact</div>
+          <div className="input-label">Staff Customer</div>
           <div className="w-full">
             <Select
               value={{

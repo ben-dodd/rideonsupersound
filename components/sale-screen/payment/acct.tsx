@@ -9,7 +9,7 @@ import {
   useSaleInventory,
   useVendorTotalPayments,
   useVendorTotalSales,
-  useVendorFromContact,
+  useVendorFromCustomer,
   useLogs,
   useRegisterID,
 } from "@/lib/swr-hooks";
@@ -38,10 +38,10 @@ export default function Acct({ isNew }) {
   const [, setAlert] = useAtom(alertAtom);
 
   // SWR
-  const { vendor } = useVendorFromContact(sale?.contact_id);
+  const { vendor } = useVendorFromCustomer(sale?.customer_id);
   const { registerID } = useRegisterID();
-  const { totalPayments } = useVendorTotalPayments(sale?.contact_id);
-  const { totalSales } = useVendorTotalSales(sale?.contact_id);
+  const { totalPayments } = useVendorTotalPayments(sale?.customer_id);
+  const { totalSales } = useVendorTotalSales(sale?.customer_id);
   const { transactions, mutateSaleTransactions } = useSaleTransactionsForSale(
     sale?.id
   );

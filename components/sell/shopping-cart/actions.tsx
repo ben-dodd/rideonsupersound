@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useContacts, useLogs, useSales } from "@/lib/swr-hooks";
+import { useCustomers, useLogs, useSales } from "@/lib/swr-hooks";
 import {
   newSaleObjectAtom,
   clerkAtom,
@@ -11,7 +11,7 @@ import {
   confirmModalAtom,
   alertAtom,
 } from "@/lib/atoms";
-import { ContactObject } from "@/lib/types";
+import { CustomerObject } from "@/lib/types";
 
 // Functions
 import { saveSaleAndItemsToDatabase, saveLog } from "@/lib/db-functions";
@@ -29,7 +29,7 @@ import SaveSaleIcon from "@mui/icons-material/Save";
 
 export default function ShoppingCartActions() {
   // SWR
-  const { contacts } = useContacts();
+  const { customers } = useCustomers();
   const { logs, mutateLogs } = useLogs();
   const { mutateSales } = useSales();
 
@@ -66,10 +66,10 @@ export default function ShoppingCartActions() {
         log: `Sale parked (${cart?.items.length} item${
           cart?.items.length === 1 ? "" : "s"
         }${
-          cart?.contact_id
+          cart?.customer_id
             ? ` for ${
-                (contacts || []).filter(
-                  (c: ContactObject) => c?.id === cart?.contact_id
+                (customers || []).filter(
+                  (c: CustomerObject) => c?.id === cart?.customer_id
                 )[0]?.name
               }.`
             : ""

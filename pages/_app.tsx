@@ -9,7 +9,7 @@ function MyApp({ Component, pageProps }) {
       // you have a short session maxAge time. Shown here with default values.
       options={{
         // Client Max Age controls how often the useSession in the client should
-        // contact the server to sync the session state. Value in seconds.
+        // customer the server to sync the session state. Value in seconds.
         // e.g.
         // * 0  - Disabled (always use cache value)
         // * 60 - Sync session state with server if it's older than 60 seconds

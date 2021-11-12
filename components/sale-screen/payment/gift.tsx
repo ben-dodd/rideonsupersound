@@ -8,7 +8,7 @@ import {
   useSaleItemsForSale,
   useGiftCards,
   useLogs,
-  useContacts,
+  useCustomers,
   useRegisterID,
   useSaleInventory,
 } from "@/lib/swr-hooks";
@@ -22,7 +22,7 @@ import {
 import {
   GiftCardObject,
   ModalButton,
-  ContactObject,
+  CustomerObject,
   SaleTransactionObject,
 } from "@/lib/types";
 
@@ -47,7 +47,7 @@ export default function Gift({ isNew }) {
 
   // SWR
   const { giftCards, mutateGiftCards } = useGiftCards();
-  const { contacts } = useContacts();
+  const { customers } = useCustomers();
   const { transactions, mutateSaleTransactions } = useSaleTransactionsForSale(
     sale?.id
   );
@@ -131,9 +131,9 @@ export default function Gift({ isNew }) {
             log: `$${parseFloat(giftCardPayment)?.toFixed(
               2
             )} gift card payment from ${
-              sale?.contact_id
-                ? contacts?.filter(
-                    (c: ContactObject) => c?.id === sale?.contact_id
+              sale?.customer_id
+                ? customers?.filter(
+                    (c: CustomerObject) => c?.id === sale?.customer_id
                   )[0]?.name
                 : "customer"
             } (sale #${sale?.id}). Gift card #${giftCardCode?.toUpperCase()}. ${

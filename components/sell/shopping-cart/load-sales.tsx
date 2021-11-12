@@ -8,11 +8,11 @@ import {
   useSaleItems,
   useLogs,
   useRegisterID,
-  useContacts,
+  useCustomers,
   useSaleInventory,
 } from "@/lib/swr-hooks";
 import { viewAtom, clerkAtom, alertAtom } from "@/lib/atoms";
-import { SaleObject, SaleItemObject, ContactObject } from "@/lib/types";
+import { SaleObject, SaleItemObject, CustomerObject } from "@/lib/types";
 
 // Functions
 import { fDateTime, nzDate, writeItemList } from "@/lib/data-functions";
@@ -31,7 +31,7 @@ export default function LoadSales() {
   const { mutateLogs } = useLogs();
   const { sales, isSalesLoading } = useSales();
   const { saleItems, isSaleItemsLoading } = useSaleItems();
-  const { contacts, isContactsLoading } = useContacts();
+  const { customers, isCustomersLoading } = useCustomers();
   const { saleInventory, isSaleInventoryLoading } = useSaleInventory();
 
   // State
@@ -52,7 +52,7 @@ export default function LoadSales() {
       open={view?.loadSalesDialog}
       closeFunction={() => setView({ ...view, loadSalesDialog: false })}
       title={"PARKED SALES AND LAYBYS"}
-      loading={isSalesLoading || isSaleItemsLoading || isContactsLoading}
+      loading={isSalesLoading || isSaleItemsLoading || isCustomersLoading}
       width="6xl"
     >
       {parkedSales?.length > 0 ? (
@@ -73,8 +73,8 @@ export default function LoadSales() {
                   {fDateTime(nzDate(s?.date_sale_opened))}
                 </div>
                 <div className="w-3/12">
-                  {(contacts || []).filter(
-                    (c: ContactObject) => c?.id === s?.contact_id
+                  {(customers || []).filter(
+                    (c: CustomerObject) => c?.id === s?.customer_id
                   )[0]?.name || ""}
                 </div>
                 <div className="w-2/6">

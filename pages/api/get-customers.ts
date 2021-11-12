@@ -6,7 +6,7 @@ const handler: NextApiHandler = async (req, res) => {
     const results = await query(
       `
       SELECT id,name
-      FROM contact
+      FROM customer
       `
     );
 

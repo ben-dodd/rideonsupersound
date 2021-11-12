@@ -6,7 +6,7 @@ import { useAtom } from "jotai";
 import {
   useVendors,
   useClerks,
-  useContacts,
+  useCustomers,
   useStockInventory,
   useSalesJoined,
   useVendorPayments,
@@ -15,7 +15,7 @@ import { loadedVendorIdAtom } from "@/lib/atoms";
 import {
   VendorObject,
   ClerkObject,
-  ContactObject,
+  CustomerObject,
   InventoryObject,
 } from "@/lib/types";
 
@@ -36,7 +36,7 @@ export default function VendorsScreen() {
   const { vendorPayments, isVendorPaymentsLoading } = useVendorPayments();
   const { vendors, isVendorsLoading } = useVendors();
   const { clerks, isClerksLoading } = useClerks();
-  const { contacts, isContactsLoading } = useContacts();
+  const { customers, isCustomersLoading } = useCustomers();
 
   // Constants
   const data = useMemo(
@@ -54,11 +54,11 @@ export default function VendorsScreen() {
               return {
                 id: v?.id,
                 name: v?.name || "-",
-                vendorContact:
-                  (contacts || []).filter(
-                    (c: ContactObject) => c?.id === v?.contact_id
+                vendorCustomer:
+                  (customers || []).filter(
+                    (c: CustomerObject) => c?.id === v?.customer_id
                   )[0] || {},
-                storeContact:
+                storeCustomer:
                   (clerks || []).filter(
                     (c: ClerkObject) => c?.id === v?.clerk_id
                   )[0] || {},
@@ -76,7 +76,7 @@ export default function VendorsScreen() {
               };
             })
         : [],
-    [vendors, sales, inventory, vendorPayments, contacts, clerks]
+    [vendors, sales, inventory, vendorPayments, customers, clerks]
   );
 
   const columns = useMemo(() => {
@@ -107,14 +107,14 @@ export default function VendorsScreen() {
         ),
       },
       {
-        Header: "Vendor Contact",
-        accessor: "vendorContact",
+        Header: "Vendor Customer",
+        accessor: "vendorCustomer",
         width: 150,
         Cell: ({ value }) => value?.name || "-",
       },
       {
         Header: "Staff",
-        accessor: "storeContact",
+        accessor: "storeCustomer",
         width: 80,
         Cell: ({ value }) => value?.name || "-",
       },
@@ -160,7 +160,7 @@ export default function VendorsScreen() {
         isSalesLoading ||
         isClerksLoading ||
         isVendorsLoading ||
-        isContactsLoading ||
+        isCustomersLoading ||
         isInventoryLoading ||
         isVendorPaymentsLoading
       }

@@ -8,7 +8,7 @@ import {
   useSaleTransactionsForSale,
   useSaleInventory,
   useLogs,
-  useContacts,
+  useCustomers,
   useRegisterID,
   useCashGiven,
   useCashReceived,
@@ -20,7 +20,7 @@ import {
   clerkAtom,
   alertAtom,
 } from "@/lib/atoms";
-import { ModalButton, ContactObject } from "@/lib/types";
+import { ModalButton, CustomerObject } from "@/lib/types";
 
 // Functions
 import { getSaleVars } from "@/lib/data-functions";
@@ -79,9 +79,9 @@ export default function Cash({ isNew }) {
     //     saveLog(
     //       {
     //         log: `$${parseFloat(refundAmount)?.toFixed(2)} refunded to ${
-    //           sale?.contact_id
-    //             ? contacts?.filter(
-    //                 (c: ContactObject) => c?.id === sale?.contact_id
+    //           sale?.customer_id
+    //             ? customers?.filter(
+    //                 (c: CustomerObject) => c?.id === sale?.customer_id
     //               )[0]?.name
     //             : "customer"
     //         } (sale #${sale?.id}).`,
@@ -135,7 +135,7 @@ export default function Cash({ isNew }) {
           </button>
           <button
             className="square-button"
-            disabled={!sale?.contact_id || totalRemaining === 0}
+            disabled={!sale?.customer_id || totalRemaining === 0}
             onClick={() => setPaymentMethod("acct")}
           >
             ACCT

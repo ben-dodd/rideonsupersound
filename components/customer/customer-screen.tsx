@@ -3,26 +3,26 @@ import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useContacts } from "@/lib/swr-hooks";
+import { useCustomers } from "@/lib/swr-hooks";
 import {
   viewAtom,
   newSaleObjectAtom,
-  loadedContactObjectAtom,
+  loadedCustomerObjectAtom,
 } from "@/lib/atoms";
-import { ContactObject, ModalButton } from "@/lib/types";
+import { CustomerObject, ModalButton } from "@/lib/types";
 
 // Components
 import TextField from "@/components/inputs/text-field";
 import SidebarContainer from "@/components/container/side-bar";
 
-export default function CreateContactScreen() {
+export default function CreateCustomerScreen() {
   // SWR
-  const { contacts } = useContacts();
+  const { customers } = useCustomers();
 
   // Atoms
   const [cart, setCart] = useAtom(newSaleObjectAtom);
   const [view, setView] = useAtom(viewAtom);
-  const [contact, setContact] = useAtom(loadedContactObjectAtom);
+  const [customer, setCustomer] = useAtom(loadedCustomerObjectAtom);
 
   // State
   const [nameConflict, setNameConflict] = useState(false);
@@ -30,35 +30,35 @@ export default function CreateContactScreen() {
 
   // Load
   useEffect(() => {
-    contacts &&
+    customers &&
       setNameConflict(
-        contacts?.map((c: ContactObject) => c?.name).includes(contact?.name)
+        customers?.map((c: CustomerObject) => c?.name).includes(customer?.name)
       );
-  }, [contacts, contact?.name]);
+  }, [customers, customer?.name]);
 
   // Functions
-  async function onClickCreateContact() {
+  async function onClickCreateCustomer() {
     setSubmitting(true);
     try {
-      const res = await fetch("/api/create-contact", {
+      const res = await fetch("/api/create-customer", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: contact?.name || null,
-          email: contact?.email || null,
-          phone: contact?.phone || null,
-          postal_address: contact?.postal_address || null,
-          note: contact?.note || null,
+          name: customer?.name || null,
+          email: customer?.email || null,
+          phone: customer?.phone || null,
+          postal_address: customer?.postal_address || null,
+          note: customer?.note || null,
         }),
       });
       setSubmitting(false);
       const json = await res.json();
       if (!res.ok) throw Error(json.message);
-      setContact(null);
-      setView({ ...view, createContact: false });
-      setCart({ ...cart, contact_id: json?.insertId });
+      setCustomer(null);
+      setView({ ...view, createCustomer: false });
+      setCart({ ...cart, customer_id: json?.insertId });
     } catch (e) {
       throw Error(e.message);
     }
@@ -69,23 +69,23 @@ export default function CreateContactScreen() {
     {
       type: "cancel",
       onClick: () => {
-        setContact(null);
-        setView({ ...view, createContact: false });
+        setCustomer(null);
+        setView({ ...view, createCustomer: false });
       },
       text: "CANCEL",
     },
     {
       type: "ok",
-      onClick: onClickCreateContact,
-      disabled: !contact?.name || nameConflict,
+      onClick: onClickCreateCustomer,
+      disabled: !customer?.name || nameConflict,
       text: submitting ? "CREATING..." : "CREATE",
     },
   ];
 
   return (
     <SidebarContainer
-      show={view?.createContact}
-      title={"Create New Contact"}
+      show={view?.createCustomer}
+      title={"Create New Customer"}
       buttons={buttons}
     >
       <TextField
@@ -93,34 +93,34 @@ export default function CreateContactScreen() {
         fieldRequired
         error={nameConflict}
         errorText="Name already exists."
-        value={contact?.name || ""}
-        onChange={(e: any) => setContact({ ...contact, name: e.target.value })}
+        value={customer?.name || ""}
+        onChange={(e: any) => setCustomer({ ...customer, name: e.target.value })}
       />
       <TextField
         inputLabel="Email"
-        value={contact?.email || ""}
-        onChange={(e: any) => setContact({ ...contact, email: e.target.value })}
+        value={customer?.email || ""}
+        onChange={(e: any) => setCustomer({ ...customer, email: e.target.value })}
       />
       <TextField
         inputLabel="Phone"
-        value={contact?.phone || ""}
-        onChange={(e: any) => setContact({ ...contact, phone: e.target.value })}
+        value={customer?.phone || ""}
+        onChange={(e: any) => setCustomer({ ...customer, phone: e.target.value })}
       />
       <TextField
         inputLabel="Postal Address"
         multiline
         rows={4}
-        value={contact?.postal_address || ""}
+        value={customer?.postal_address || ""}
         onChange={(e: any) =>
-          setContact({ ...contact, postal_address: e.target.value })
+          setCustomer({ ...customer, postal_address: e.target.value })
         }
       />
       <TextField
         inputLabel="Notes"
         multiline
         rows={4}
-        value={contact?.note || ""}
-        onChange={(e: any) => setContact({ ...contact, note: e.target.value })}
+        value={customer?.note || ""}
+        onChange={(e: any) => setCustomer({ ...customer, note: e.target.value })}
       />
     </SidebarContainer>
   );

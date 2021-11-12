@@ -231,7 +231,7 @@ export default function ReceiveStockScreen() {
               });
             }}
             onCreateOption={(inputValue: string) =>
-              // setCreateContactScreen({
+              // setCreateCustomerScreen({
               //   id: 1,
               //   name: inputValue,
               // })

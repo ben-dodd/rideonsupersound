@@ -5,7 +5,7 @@ import { escape } from "sqlstring";
 const handler: NextApiHandler = async (req, res) => {
   const {
     sale_id,
-    contact_id,
+    customer_id,
     state,
     note,
     date_layby_started,
@@ -16,7 +16,7 @@ const handler: NextApiHandler = async (req, res) => {
       `
       UPDATE sale
       SET
-        contact_id = ${contact_id},
+        customer_id = ${customer_id},
         state = ${state ? `"${state}"` : null},
         note = ${escape(note)},
         date_layby_started = ${

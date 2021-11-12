@@ -27,8 +27,8 @@ export default function VendorPage() {
 //   onSwipedRight: () =>
 //     showSaleScreen
 //       ? setShowSaleScreen(false)
-//       : showCreateContact?.id
-//       ? setShowCreateContact({ id: 0 })
+//       : showCreateCustomer?.id
+//       ? setShowCreateCustomer({ id: 0 })
 //       : showHold
 //       ? setShowHold(false)
 //       : showCart

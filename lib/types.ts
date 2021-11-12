@@ -14,7 +14,7 @@ export interface ClerkObject {
   is_deleted?: number;
 }
 
-export interface ContactObject {
+export interface CustomerObject {
   id?: number;
   name?: string;
   email?: string;
@@ -39,7 +39,7 @@ export interface ConfirmModal {
 
 export interface SaleObject {
   id?: number;
-  contact_id?: number;
+  customer_id?: number;
   state?: string;
   date_sale_opened?: string;
   sale_opened_by?: number;
@@ -92,7 +92,7 @@ export interface SaleTransactionObject {
 
 export interface HoldObject {
   id?: number;
-  contact_id?: number;
+  customer_id?: number;
   item_id?: number;
   quantity?: number;
   vendor_discount?: number;
@@ -140,14 +140,14 @@ export interface VendorObject {
   id?: number;
   name?: string;
   category?: string;
-  contact_id?: number;
+  customer_id?: number;
   clerk_id?: number;
   bank_account_number?: string;
   email?: string;
   phone?: string;
   postal_address?: string;
   note?: string;
-  last_contacted?: string;
+  last_customered?: string;
   store_credit_only?: boolean;
   date_created?: string;
   date_modified?: string;

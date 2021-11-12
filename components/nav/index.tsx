@@ -13,7 +13,7 @@ import SellNavActions from "./actions/sell";
 import InventoryNavActions from "./actions/inventory";
 import PaymentNavActions from "./actions/payment";
 import VendorNavActions from "./actions/vendor";
-import ContactNavActions from "./actions/contact";
+import CustomerNavActions from "./actions/customer";
 
 // Icons
 import HelpIcon from "@mui/icons-material/Help";
@@ -42,7 +42,7 @@ export default function Nav() {
     <nav className={`py-2 ${bg[clerk?.name?.toLowerCase()]} text-white h-nav`}>
       <div className="flex justify-between items-center">
         <div className="flex items-center">
-          <div className="w-12">
+          {/*<div className="w-12">
             <div className={`w-12 h-12 rounded-full mx-2 relative`}>
               <Image
                 layout="fill"
@@ -51,8 +51,11 @@ export default function Nav() {
                 alt={clerk?.name}
               />
             </div>
+          </div>*/}
+          <div className="ml-4 text-black text-4xl font-black">
+            {clerk?.name?.toUpperCase()} @
           </div>
-          <div className="ml-8">
+          <div className="ml-4">
             {/*<div className="sm:hidden">{`${clerk?.name?.toUpperCase()} @ R.O.S.S.`}</div>
             <div className="hidden sm:block">{`${clerk?.name?.toUpperCase()} @ RIDE ON SUPER SOUND`}</div>*/}
             <Image
@@ -63,14 +66,11 @@ export default function Nav() {
             />
             {/*<div>{page?.toUpperCase()}</div>*/}
           </div>
-          <div className="ml-4 text-white text-5xl italic font-black justify-self-start drop-shadow-2xl">
-            {clerk?.name}
-          </div>
         </div>
         <div className="flex mr-2">
           {page === "sell" && registerID > 0 && <SellNavActions />}
           {page === "inventory" && <InventoryNavActions />}
-          {page === "contacts" && <ContactNavActions />}
+          {page === "customers" && <CustomerNavActions />}
           {page === "vendors" && <VendorNavActions />}
           {page === "payments" && <PaymentNavActions />}
           <button

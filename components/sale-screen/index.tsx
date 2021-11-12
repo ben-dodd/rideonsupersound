@@ -6,7 +6,7 @@ import { useAtom } from "jotai";
 import {
   useSaleItemsForSale,
   useSaleTransactionsForSale,
-  useContacts,
+  useCustomers,
   useSaleInventory,
   useStockInventory,
   useLogs,
@@ -23,7 +23,7 @@ import {
 } from "@/lib/atoms";
 import {
   ModalButton,
-  ContactObject,
+  CustomerObject,
   SaleItemObject,
   SaleObject,
   InventoryObject,
@@ -64,7 +64,7 @@ export default function SaleScreen({ isNew }) {
   const [view] = useAtom(viewAtom);
 
   // SWR
-  const { contacts } = useContacts();
+  const { customers } = useCustomers();
   const { saleInventory, mutateSaleInventory } = useSaleInventory();
   const { mutateInventory } = useStockInventory();
   const { items, isSaleItemsLoading } = useSaleItemsForSale(sale?.id);
@@ -74,8 +74,8 @@ export default function SaleScreen({ isNew }) {
   } = useSaleTransactionsForSale(sale?.id);
   const { sales, mutateSales } = useSales();
   const { logs, mutateLogs } = useLogs();
-  useVendorTotalPayments(sale?.contact_id);
-  useVendorTotalSales(sale?.contact_id);
+  useVendorTotalPayments(sale?.customer_id);
+  useVendorTotalSales(sale?.customer_id);
 
   // State
   // const [saleLoading, setSaleLoading] = useState(false);
@@ -105,10 +105,10 @@ export default function SaleScreen({ isNew }) {
         log: `Sale parked (${items.length} item${
           items.length === 1 ? "" : "s"
         }${
-          sale?.contact_id
+          sale?.customer_id
             ? ` for ${
-                (contacts || []).filter(
-                  (c: ContactObject) => c?.id === sale?.contact_id
+                (customers || []).filter(
+                  (c: CustomerObject) => c?.id === sale?.customer_id
                 )[0]?.name
               }.`
             : ""
@@ -155,10 +155,10 @@ export default function SaleScreen({ isNew }) {
       saveLog(
         {
           log: `Layby started${
-            sale?.contact_id
+            sale?.customer_id
               ? ` for ${
-                  (contacts || []).filter(
-                    (c: ContactObject) => c?.id === sale?.contact_id
+                  (customers || []).filter(
+                    (c: CustomerObject) => c?.id === sale?.customer_id
                   )[0]?.name
                 }`
               : ""
@@ -274,7 +274,7 @@ export default function SaleScreen({ isNew }) {
     {
       type: "alt1",
       onClick: clickLayby,
-      disabled: laybyLoading || !sale?.contact_id || totalRemaining <= 0,
+      disabled: laybyLoading || !sale?.customer_id || totalRemaining <= 0,
       loading: laybyLoading,
       text: sale?.state === "layby" ? "CONTINUE LAYBY" : "START LAYBY",
     },

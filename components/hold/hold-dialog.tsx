@@ -114,10 +114,10 @@ export default function HoldDialog() {
     //     },
     //   });
     //   if (
-    //     get(cart, "contactId", null) &&
-    //     get(cart, "contactId") !== get(hold, "contactId")
+    //     get(cart, "customerId", null) &&
+    //     get(cart, "customerId") !== get(hold, "customerId")
     //   ) {
-    //     // Shopping cart belongs to different contact, save
+    //     // Shopping cart belongs to different customer, save
     //     cartItems = {};
     //     updateData({
     //       dispatch,
@@ -143,7 +143,7 @@ export default function HoldDialog() {
     //       uid: saleId,
     //       dateSaleOpened: new Date(),
     //       saleOpenedBy: get(currentStaff, "id", null),
-    //       contactId: get(hold, "contactId", null),
+    //       customerId: get(hold, "customerId", null),
     //       notes: `${get(cart, "notes", "")}\n${get(hold, "notes", "")}`,
     //       items: {
     //         ...cartItems,

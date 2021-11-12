@@ -53,7 +53,7 @@ export async function saveSaleToDatabase(sale: SaleObject, clerk: ClerkObject) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        contact_id: sale?.contact_id || null,
+        customer_id: sale?.customer_id || null,
         state: sale?.state || null,
         sale_opened_by: clerk?.id,
         weather: JSON.stringify(sale?.weather) || "",
@@ -336,7 +336,7 @@ export async function saveHoldToDatabase(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        contact_id: sale?.contact_id,
+        customer_id: sale?.customer_id,
         item_id: item?.item_id,
         quantity: item?.quantity,
         vendor_discount: item?.vendor_discount,
@@ -572,7 +572,7 @@ export async function updateSaleInDatabase(sale: SaleObject) {
       },
       body: JSON.stringify({
         sale_id: sale?.id,
-        contact_id: sale?.contact_id || null,
+        customer_id: sale?.customer_id || null,
         state: sale?.state || null,
         note: sale?.note ? sale?.note : null,
         date_layby_started: sale?.date_layby_started || null,

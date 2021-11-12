@@ -5,7 +5,7 @@ import nz from "date-fns/locale/en-NZ";
 
 // DB
 import {
-  useContact,
+  useCustomer,
   useClerks,
   useSaleItemsForSale,
   useSaleTransactionsForSale,
@@ -31,7 +31,7 @@ export default function SaleSummary({ isNew }) {
 
   // SWR
   const { clerks } = useClerks();
-  const { contact } = useContact(sale?.contact_id);
+  const { customer } = useCustomer(sale?.customer_id);
   const { items } = useSaleItemsForSale(sale?.id);
   const { transactions } = useSaleTransactionsForSale(sale?.id);
   const { saleInventory } = useSaleInventory();
@@ -51,10 +51,10 @@ export default function SaleSummary({ isNew }) {
   function SaleHeader() {
     return (
       <div className="p-4 mb-2 bg-blue-100 text-gray-800">
-        {contact && (
+        {customer && (
           <div className="flex">
-            <div className="w-1/3 font-bold">Contact</div>
-            <div>{contact?.name}</div>
+            <div className="w-1/3 font-bold">Customer</div>
+            <div>{customer?.name}</div>
           </div>
         )}
         {[
@@ -211,7 +211,7 @@ export default function SaleSummary({ isNew }) {
             // if (payment.type === "GIFT")
             //   returnMoneyToGiftCard({ payment, giftCards, dispatch });
             // else if (payment.type === "ACCT")
-            //   returnMoneyToAccount({ payment, contactVendor, dispatch });
+            //   returnMoneyToAccount({ payment, customerVendor, dispatch });
             // }}
           />
         ))}

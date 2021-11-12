@@ -6,7 +6,7 @@ import { pageAtom, newSaleObjectAtom, clerkAtom, viewAtom } from "@/lib/atoms";
 import { SaleItemObject } from "@/lib/types";
 
 // Icons
-import ContactsIcon from "@mui/icons-material/LocalLibrary";
+import CustomersIcon from "@mui/icons-material/LocalLibrary";
 import InventoryIcon from "@mui/icons-material/Category";
 import LogoutIcon from "@mui/icons-material/ExitToApp";
 import SalesIcon from "@mui/icons-material/MonetizationOn";
@@ -77,10 +77,10 @@ export default function Menu() {
       },
       {
         type: "link",
-        page: "contacts",
+        page: "customers",
         text: "CONTACTS",
         class: "bg-col4-light hover:bg-col4",
-        icon: <ContactsIcon />,
+        icon: <CustomersIcon />,
       },
       // {
       //   type: "link",

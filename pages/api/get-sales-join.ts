@@ -2,7 +2,7 @@ import { NextApiHandler } from "next";
 import { query } from "../../lib/db";
 
 const handler: NextApiHandler = async (req, res) => {
-  const { contact_id } = req.query;
+  const { customer_id } = req.query;
   try {
     const results = await query(
       `
@@ -26,7 +26,7 @@ const handler: NextApiHandler = async (req, res) => {
       AND sale.is_deleted = 0
       AND sale_item.is_deleted = 0
       `,
-      contact_id
+      customer_id
     );
 
     return res.json(results);

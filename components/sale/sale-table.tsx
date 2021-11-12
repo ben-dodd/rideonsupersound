@@ -6,7 +6,7 @@ import { useAtom } from "jotai";
 import {
   useSales,
   useSaleItems,
-  useContacts,
+  useCustomers,
   useClerks,
   useSaleInventory,
   useGiftCards,
@@ -15,7 +15,7 @@ import { viewAtom, loadedSaleObjectAtom } from "@/lib/atoms";
 import {
   SaleObject,
   SaleItemObject,
-  ContactObject,
+  CustomerObject,
   ClerkObject,
 } from "@/lib/types";
 
@@ -37,7 +37,7 @@ export default function SaleTable() {
   const { sales, isSalesLoading } = useSales();
   const { saleItems, isSaleItemsLoading } = useSaleItems();
   const { saleInventory, isSaleInventoryLoading } = useSaleInventory();
-  const { contacts, isContactsLoading } = useContacts();
+  const { customers, isCustomersLoading } = useCustomers();
   const { clerks, isClerksLoading } = useClerks();
 
   // Atoms
@@ -56,8 +56,8 @@ export default function SaleTable() {
           id: s?.id,
           date: nzDate(s?.date_sale_opened),
           status: s?.state,
-          contact: (contacts || []).filter(
-            (c: ContactObject) => c?.id === s?.contact_id
+          customer: (customers || []).filter(
+            (c: CustomerObject) => c?.id === s?.customer_id
           )[0],
           clerk: (clerks || []).filter(
             (c: ClerkObject) => c?.id === s?.sale_opened_by
@@ -72,7 +72,7 @@ export default function SaleTable() {
           sell: getTotalPrice(items, saleInventory),
         };
       }),
-    [sales, saleItems, contacts, clerks, saleInventory]
+    [sales, saleItems, customers, clerks, saleInventory]
   );
   const columns = useMemo(() => {
     return [
@@ -133,8 +133,8 @@ export default function SaleTable() {
         Cell: ({ value }) => (value ? `$${(value / 100)?.toFixed(2)}` : "N/A"),
       },
       {
-        Header: "Contact",
-        accessor: "contact",
+        Header: "Customer",
+        accessor: "customer",
         Cell: ({ value }) => value?.name || "",
       },
       {
@@ -157,7 +157,7 @@ export default function SaleTable() {
         isClerksLoading ||
         isSaleInventoryLoading ||
         isSaleItemsLoading ||
-        isContactsLoading
+        isCustomersLoading
       }
     >
       <Table
