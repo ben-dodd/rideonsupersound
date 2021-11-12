@@ -116,13 +116,9 @@ export async function saveSaleAndItemsToDatabase(
   // HANDLE SALE OBJECT
   //
   if (!newSaleId) {
-<<<<<<< HEAD
     // Sale is new, save to database and add id to sales
     newSale.state = newSale?.state || SaleStateTypes.InProgress;
     console.log("Getting sale ID");
-=======
-    newSale.state = newSale?.state || SaleStateTypes.InProgress;
->>>>>>> 64ae78bd708daf862196f6650722c4d541bb87d3
     newSaleId = await saveSaleToDatabase(newSale, clerk);
     console.log("Got sale ID");
     newSale = { ...newSale, id: newSaleId };
@@ -133,16 +129,12 @@ export async function saveSaleAndItemsToDatabase(
     let otherSales = sales?.filter((s: SaleObject) => s?.id !== newSaleId);
     mutateSales([...otherSales, sale], false);
   }
-<<<<<<< HEAD
   //
   // HANDLE ITEMS
   //
-=======
->>>>>>> 64ae78bd708daf862196f6650722c4d541bb87d3
   for await (const item of items) {
     console.log(item);
     if (!item?.id) {
-<<<<<<< HEAD
       // Item is new to sale
       const newSaleItemId = await saveSaleItemToDatabase({
         ...item,
@@ -151,11 +143,6 @@ export async function saveSaleAndItemsToDatabase(
       mutateSaleItems([...saleItems, { ...item, id: newSaleItemId }], false);
     } else {
       // Item was already in sale, update in case discount, quantity has changed or item has been deleted
-=======
-      const newSaleItemId = await saveSaleItemToDatabase(item, newSale?.id);
-      mutateSaleItems([...saleItems, { ...item, id: newSaleItemId }], false);
-    } else {
->>>>>>> 64ae78bd708daf862196f6650722c4d541bb87d3
       let updatedSaleItem = { ...item, sale_id: sale?.id };
       updateSaleItemInDatabase(updatedSaleItem);
       let otherSaleItems = saleItems?.filter(
