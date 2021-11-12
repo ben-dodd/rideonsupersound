@@ -16,6 +16,7 @@ import {
   GiftCardObject,
   VendorObject,
   SaleObject,
+  PaymentMethodTypes,
 } from "@/lib/types";
 
 // Functions
@@ -114,18 +115,20 @@ export default function TransactionListItem({
           ${(transaction?.amount / 100 || 0)?.toFixed(2)}
         </div>
         <div className="text-right text-xs">
-          {transaction?.payment_method === "cash"
+          {transaction?.payment_method === PaymentMethodTypes.Cash
             ? transaction?.change_given
               ? `($${(transaction.change_given / 100)?.toFixed(2)} CHANGE)`
               : "(NO CHANGE)"
-            : transaction?.payment_method === "acct"
+            : transaction?.payment_method === PaymentMethodTypes.Account
             ? `[${(vendor?.name || "").toUpperCase()}]`
-            : transaction?.payment_method === "gift"
+            : transaction?.payment_method === PaymentMethodTypes.GiftCard
             ? transaction?.gift_card_taken
               ? transaction?.change_given
-                ? `CARD TAKEN, $${(transaction.gift_card_change / 100)?.toFixed(
-                    2
-                  )} CHANGE [${(giftCard?.gift_card_code || "").toUpperCase()}]`
+                ? `CARD TAKEN, $${(
+                    transaction?.gift_card_change / 100
+                  )?.toFixed(2)} CHANGE [${(
+                    giftCard?.gift_card_code || ""
+                  ).toUpperCase()}]`
                 : `CARD TAKEN [${(
                     giftCard?.gift_card_code || ""
                   ).toUpperCase()}]`

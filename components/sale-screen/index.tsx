@@ -13,6 +13,7 @@ import {
   useVendorTotalSales,
   useVendorTotalPayments,
   useSales,
+  useSaleItems,
 } from "@/lib/swr-hooks";
 import {
   clerkAtom,
@@ -27,12 +28,12 @@ import {
   SaleItemObject,
   SaleObject,
   InventoryObject,
+  SaleStateTypes,
 } from "@/lib/types";
 
 // Functions
 import { getSaleVars, writeItemList } from "@/lib/data-functions";
 import {
-  saveSaleAndItemsToDatabase,
   saveSaleAndPark,
   saveLog,
   saveStockMovementToDatabase,
@@ -59,12 +60,10 @@ export default function SaleScreen({ isNew }) {
   const [sale, setSale] = useAtom(
     isNew ? newSaleObjectAtom : loadedSaleObjectAtom
   );
-  const [cart, setCart] = useAtom(newSaleObjectAtom);
-
-  console.log(sale);
+  const [cart] = useAtom(newSaleObjectAtom);
   const [clerk] = useAtom(clerkAtom);
   const [, setAlert] = useAtom(alertAtom);
-  const [view] = useAtom(viewAtom);
+  const [view, setView] = useAtom(viewAtom);
 
   // SWR
   const { customers } = useCustomers();
@@ -76,6 +75,7 @@ export default function SaleScreen({ isNew }) {
     isSaleTransactionsLoading,
   } = useSaleTransactionsForSale(sale?.id);
   const { sales, mutateSales } = useSales();
+  const { saleItems, mutateSaleItems } = useSaleItems();
   const { logs, mutateLogs } = useLogs();
   useVendorTotalPayments(sale?.customer_id);
   useVendorTotalSales(sale?.customer_id);
@@ -110,6 +110,8 @@ export default function SaleScreen({ isNew }) {
       mutateLogs,
       sales,
       mutateSales,
+      saleItems,
+      mutateSaleItems,
       mutateInventory
     );
     setAlert({
@@ -118,6 +120,7 @@ export default function SaleScreen({ isNew }) {
       message: "SALE PARKED",
     });
     setSale(null);
+    if (isNew) setView({ ...view, saleScreen: false });
     setParkSaleLoading(false);
   }
 
@@ -126,9 +129,9 @@ export default function SaleScreen({ isNew }) {
     // Change quantity for all items if it wasn't a layby previously
     for await (const saleItem of items) {
       // For each item, add quantity on layby, remove quantity in sale
-      saveStockMovementToDatabase(saleItem, clerk, "layby", null);
+      saveStockMovementToDatabase(saleItem, clerk, SaleStateTypes.Layby, null);
     }
-    if (sale?.state !== "layby") {
+    if (sale?.state !== SaleStateTypes.Layby) {
       // If not already a layby in progress...
       // Change sale state to layby
       // date_layby_started
@@ -136,7 +139,7 @@ export default function SaleScreen({ isNew }) {
       let date = new Date();
       let laybySale = {
         ...sale,
-        state: "layby",
+        state: SaleStateTypes.Layby,
         date_layby_started: date.toISOString(),
         layby_started_by: clerk?.id,
       };
@@ -174,6 +177,7 @@ export default function SaleScreen({ isNew }) {
     }
     // close dialog
     setLaybyLoading(false);
+    if (isNew) setView({ ...view, saleScreen: false });
     setSale(null);
   }
 
@@ -207,13 +211,15 @@ export default function SaleScreen({ isNew }) {
         // Do something
         // Add misc item to sale items
       } else {
-        if (saleItem?.id) updateSaleItemInDatabase(saleItem, sale);
+        if (saleItem?.id)
+          updateSaleItemInDatabase({ ...saleItem, sale_id: sale?.id });
         saveStockMovementToDatabase(saleItem, clerk, "sold", null);
       }
     });
-    let completedSale = { ...sale, state: "completed" };
+    let completedSale = { ...sale, state: SaleStateTypes.Completed };
     updateSaleInDatabase(completedSale);
     setSale(null);
+    if (isNew) setView({ ...view, saleScreen: false });
     setCompleteSaleLoading(false);
     saveLog(
       {
@@ -242,22 +248,25 @@ export default function SaleScreen({ isNew }) {
       type: "cancel",
       onClick: () => setSale(null),
       disabled: true || totalRemaining === 0,
-      text: sale?.state === "layby" ? "CANCEL LAYBY" : "DISCARD SALE",
+      text:
+        sale?.state === SaleStateTypes.Layby ? "CANCEL LAYBY" : "DISCARD SALE",
     },
     {
       type: "alt3",
       onClick: clickParkSale,
       disabled:
-        (sale?.state && sale?.state !== "in progress") || totalRemaining === 0,
+        (sale?.state && sale?.state !== SaleStateTypes.InProgress) ||
+        totalRemaining === 0,
       loading: parkSaleLoading,
       text: "PARK SALE",
     },
     {
       type: "alt2",
-      // TODO add more items, load sale into cart
-      onClick: () => setSale(null),
+      onClick: () =>
+        isNew ? setView({ ...view, saleScreen: false }) : setSale(null),
       disabled:
-        (sale?.state && sale?.state !== "in progress") || totalRemaining === 0,
+        (sale?.state && sale?.state !== SaleStateTypes.InProgress) ||
+        totalRemaining === 0,
       text: "ADD MORE ITEMS",
     },
     {
@@ -265,13 +274,16 @@ export default function SaleScreen({ isNew }) {
       onClick: clickLayby,
       disabled: laybyLoading || !sale?.customer_id || totalRemaining <= 0,
       loading: laybyLoading,
-      text: sale?.state === "layby" ? "CONTINUE LAYBY" : "START LAYBY",
+      text:
+        sale?.state === SaleStateTypes.Layby ? "CONTINUE LAYBY" : "START LAYBY",
     },
     {
       type: "ok",
       onClick: clickCompleteSale,
       disabled:
-        completeSaleLoading || totalRemaining > 0 || sale?.state === "complete",
+        completeSaleLoading ||
+        totalRemaining > 0 ||
+        sale?.state === SaleStateTypes.Completed,
       loading: completeSaleLoading,
       text: "COMPLETE SALE",
     },
@@ -280,13 +292,15 @@ export default function SaleScreen({ isNew }) {
   return (
     <>
       <ScreenContainer
-        show={Boolean(sale?.id)}
-        closeFunction={() => setSale(null)}
+        show={isNew ? view?.saleScreen : Boolean(sale?.id)}
+        closeFunction={() =>
+          isNew ? setView({ ...view, saleScreen: false }) : setSale(null)
+        }
         title={`SALE #${sale?.id} [${
           sale?.state ? sale?.state.toUpperCase() : "IN PROGRESS"
         }]`}
         loading={isSaleItemsLoading || isSaleTransactionsLoading}
-        buttons={sale?.state === "completed" ? null : buttons}
+        buttons={sale?.state === SaleStateTypes.Completed ? null : buttons}
       >
         <div className="flex items-start overflow-auto w-full">
           <div className="w-2/3">

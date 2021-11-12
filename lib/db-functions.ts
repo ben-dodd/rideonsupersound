@@ -12,6 +12,7 @@ import {
   TillObject,
   HoldObject,
   CustomerObject,
+  SaleStateTypes,
 } from "@/lib/types";
 
 export async function loadSaleToCart(
@@ -24,7 +25,9 @@ export async function loadSaleToCart(
   logs: LogObject[],
   mutateLogs: Function,
   sales: SaleObject[],
-  mutateSales: Function
+  mutateSales: Function,
+  saleItems: SaleItemObject[],
+  mutateSaleItems: Function
 ) {
   if (cart?.items || cart?.id !== sale?.id) {
     // Cart is loaded with a different sale or
@@ -37,7 +40,9 @@ export async function loadSaleToCart(
       logs,
       mutateLogs,
       sales,
-      mutateSales
+      mutateSales,
+      saleItems,
+      mutateSaleItems
     );
   }
   console.log(cart);
@@ -54,12 +59,18 @@ export async function saveSaleAndPark(
   mutateLogs: Function,
   sales: SaleObject[],
   mutateSales: Function,
+  saleItems: SaleItemObject[],
+  mutateSaleItems: Function,
   mutateInventory?: Function
 ) {
   const saleId = await saveSaleAndItemsToDatabase(
-    { ...cart, state: "parked" },
+    { ...cart, state: SaleStateTypes.Parked },
     items,
-    clerk
+    clerk,
+    sales,
+    mutateSales,
+    saleItems,
+    mutateSaleItems
   );
   saveLog(
     {
@@ -89,32 +100,37 @@ export async function saveSaleAndPark(
 export async function saveSaleAndItemsToDatabase(
   sale: SaleObject,
   items: SaleItemObject[],
-  clerk: ClerkObject
-  // setCart?: Function
+  clerk: ClerkObject,
+  sales: SaleObject[],
+  mutateSales: Function,
+  saleItems: SaleItemObject[],
+  mutateSaleItems: Function
 ) {
   let newSale = { ...sale };
   let newSaleId = newSale?.id;
   if (!newSaleId) {
-    newSale.state = newSale?.state || "in progress";
+    newSale.state = newSale?.state || SaleStateTypes.InProgress;
     newSaleId = await saveSaleToDatabase(newSale, clerk);
     newSale = { ...newSale, id: newSaleId };
-    console.log(newSaleId);
+    mutateSales([...sales, newSale], false);
   } else {
     updateSaleInDatabase(sale);
+    let otherSales = sales?.filter((s: SaleObject) => s?.id !== newSaleId);
+    mutateSales([...otherSales, sale], false);
   }
-  let newItems = [];
   for await (const item of items) {
     if (!item?.id) {
-      let newItem = { ...item };
       const newSaleItemId = await saveSaleItemToDatabase(item, newSale?.id);
-      newItem = { ...newItem, id: newSaleItemId };
-      newItems.push(newItem);
+      mutateSaleItems([...saleItems, { ...item, id: newSaleItemId }], false);
     } else {
-      await updateSaleItemInDatabase(item, sale);
-      newItems.push(item);
+      let updatedSaleItem = { ...item, sale_id: sale?.id };
+      updateSaleItemInDatabase(updatedSaleItem);
+      let otherSaleItems = saleItems?.filter(
+        (s: SaleItemObject) => s?.id !== item?.id
+      );
+      mutateSaleItems([...otherSaleItems, updatedSaleItem]);
     }
   }
-  // setCart && setCart({ ...newSale, items: newItems });
   return newSaleId;
 }
 
@@ -659,12 +675,7 @@ export async function updateSaleInDatabase(sale: SaleObject) {
   }
 }
 
-export async function updateSaleItemInDatabase(
-  saleItem: SaleItemObject,
-  sale: SaleObject
-) {
-  console.log(saleItem);
-  console.log(sale);
+export async function updateSaleItemInDatabase(saleItem: SaleItemObject) {
   try {
     const res = await fetch("/api/update-sale-item", {
       method: "POST",
@@ -673,7 +684,7 @@ export async function updateSaleItemInDatabase(
       },
       body: JSON.stringify({
         sale_item_id: saleItem?.id,
-        sale_id: sale?.id,
+        sale_id: saleItem?.sale_id,
         item_id: saleItem?.item_id,
         quantity: parseInt(saleItem?.quantity),
         vendor_discount: parseInt(saleItem?.vendor_discount),
