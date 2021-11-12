@@ -147,7 +147,7 @@ export default function Pay({ isNew }) {
           </button>
           <button
             className="square-button"
-            disabled={!sale?.customer_id || !vendor}
+            disabled={!sale?.customer_id}
             onClick={() => setView({ ...view, acctPaymentDialog: true })}
           >
             ACCT

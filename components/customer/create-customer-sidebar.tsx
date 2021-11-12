@@ -17,7 +17,7 @@ import SidebarContainer from "@/components/container/side-bar";
 
 export default function CreateCustomerSidebar() {
   // SWR
-  const { customers } = useCustomers();
+  const { customers, mutateCustomers } = useCustomers();
 
   // Atoms
   const [cart, setCart] = useAtom(newSaleObjectAtom);
@@ -39,23 +39,26 @@ export default function CreateCustomerSidebar() {
   // Functions
   async function onClickCreateCustomer() {
     setSubmitting(true);
+    let newCustomer: CustomerObject = {
+      name: customer?.name || null,
+      email: customer?.email || null,
+      phone: customer?.phone || null,
+      postal_address: customer?.postal_address || null,
+      note: customer?.note || null,
+    };
     try {
       const res = await fetch("/api/create-customer", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          name: customer?.name || null,
-          email: customer?.email || null,
-          phone: customer?.phone || null,
-          postal_address: customer?.postal_address || null,
-          note: customer?.note || null,
-        }),
+        body: JSON.stringify(newCustomer),
       });
       setSubmitting(false);
       const json = await res.json();
       if (!res.ok) throw Error(json.message);
+      newCustomer.id = json?.insertId;
+      mutateCustomers([...customers, newCustomer], false);
       setCustomer(null);
       setView({ ...view, createCustomer: false });
       setCart({ ...cart, customer_id: json?.insertId });

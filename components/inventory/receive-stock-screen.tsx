@@ -231,7 +231,7 @@ export default function ReceiveStockScreen() {
               });
             }}
             onCreateOption={(inputValue: string) =>
-              // setCreateCustomerScreen({
+              // setCreateCustomerSidebar({
               //   id: 1,
               //   name: inputValue,
               // })

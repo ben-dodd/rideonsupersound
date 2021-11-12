@@ -88,7 +88,7 @@ export default function ReturnStockScreen() {
             });
           }}
           onCreateOption={(inputValue: string) =>
-            // setCreateCustomerScreen({
+            // setCreateCustomerSidebar({
             //   id: 1,
             //   name: inputValue,
             // })

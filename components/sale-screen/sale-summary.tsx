@@ -36,8 +36,6 @@ export default function SaleSummary({ isNew }) {
   const { transactions } = useSaleTransactionsForSale(sale?.id);
   const { saleInventory } = useSaleInventory();
 
-  console.log(items);
-
   // Constants
   const saleComplete = Boolean(sale?.state === "complete");
   const {

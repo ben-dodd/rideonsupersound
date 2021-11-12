@@ -17,7 +17,7 @@ import SearchBar from "./sell-search-bar";
 import InventoryScroll from "./inventory-scroll";
 import ShoppingCart from "./shopping-cart";
 import CreateHoldSidebar from "@/components/hold/create-hold-sidebar";
-import CreateCustomerScreen from "@/components/customer/customer-screen";
+import CreateCustomerSidebar from "@/components/customer/create-customer-sidebar";
 import SaleScreen from "@/components/sale-screen";
 import InventoryItemScreen from "../inventory/inventory-item-screen";
 import OpenRegisterScreen from "@/components/register";
@@ -68,7 +68,7 @@ export default function SellScreen() {
       </MidScreenContainer>
       <ShoppingCart />
       <CreateHoldSidebar />
-      <CreateCustomerScreen />
+      <CreateCustomerSidebar />
       {sale?.id && <SaleScreen isNew={true} />}
       {view?.giftCardDialog && <GiftCardDialog />}
       {loadedItemId && <InventoryItemScreen page="sell" />}

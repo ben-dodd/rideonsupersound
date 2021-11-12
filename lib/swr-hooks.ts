@@ -263,7 +263,7 @@ export function useGiftCard(gift_card_id: number) {
 }
 
 export function useCustomers() {
-  const { data, error } = useSWR(
+  const { data, error, mutate } = useSWR(
     `/api/get-customers`,
     fetcher
     //   {
@@ -274,6 +274,7 @@ export function useCustomers() {
     customers: data,
     isCustomersLoading: !error && !data,
     isCustomersError: error,
+    mutateCustomers: mutate,
   };
 }
 

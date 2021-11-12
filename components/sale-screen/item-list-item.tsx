@@ -60,7 +60,6 @@ export default function ItemListItem({ saleItem, isNew }: SellListItemProps) {
 
   // Load
   useEffect(() => {
-    console.log(saleInventory);
     setItem(
       saleInventory?.filter(
         (i: InventoryObject) => i.id === saleItem?.item_id

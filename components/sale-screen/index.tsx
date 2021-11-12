@@ -48,6 +48,7 @@ import Card from "./payment/card";
 import Cash from "./payment/cash";
 import Gift from "./payment/gift";
 import ScreenContainer from "@/components/container/screen";
+import CreateCustomerSidebar from "@/components/customer/create-customer-sidebar";
 
 // TODO add returns to sale items
 // TODO refund dialog like PAY, refund with store credit, cash or card
@@ -57,6 +58,7 @@ export default function SaleScreen({ isNew }) {
   const [sale, setSale] = useAtom(
     isNew ? newSaleObjectAtom : loadedSaleObjectAtom
   );
+  const [cart, setCart] = useAtom(newSaleObjectAtom);
 
   console.log(sale);
   const [clerk] = useAtom(clerkAtom);
@@ -96,6 +98,20 @@ export default function SaleScreen({ isNew }) {
   );
 
   // Functions
+  async function checkLoadSaleToCart() {
+    if (cart?.id !== sale?.id) {
+      // Cart is loaded with a different sale
+      // TODO park loaded sale
+    } else if (cart?.items) {
+      // Cart has been started but not loaded into sale
+      // TODO create sale and park it
+    }
+  }
+
+  async function loadSaleToCart() {
+    // TODO load this sale into cart
+  }
+
   async function clickParkSale() {
     setParkSaleLoading(true);
     let parkedSale = { ...sale, state: "parked" };
@@ -313,6 +329,7 @@ export default function SaleScreen({ isNew }) {
       {view?.cardPaymentDialog && <Card isNew={isNew} />}
       {view?.cashPaymentDialog && <Cash isNew={isNew} />}
       {view?.giftPaymentDialog && <Gift isNew={isNew} />}
+      {view?.createCustomer && <CreateCustomerSidebar />}
     </>
   );
 }
