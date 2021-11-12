@@ -85,11 +85,7 @@ export default function ShoppingCart() {
         logs,
         mutateLogs
       );
-<<<<<<< HEAD
       setSale({ ...cart, state: SaleStateTypes.InProgress, id });
-=======
-      setSale({ ...cart, id });
->>>>>>> 64ae78bd708daf862196f6650722c4d541bb87d3
       setView({ ...view, saleScreen: true });
     } catch (e) {
       throw Error(e.message);
