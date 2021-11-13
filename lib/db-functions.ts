@@ -29,9 +29,12 @@ export async function loadSaleToCart(
   saleItems: SaleItemObject[],
   mutateSaleItems: Function
 ) {
+  console.log(cart);
+  console.log(sale);
   if (cart?.items || cart?.id !== sale?.id) {
     // Cart is loaded with a different sale or
     // Cart has been started but not loaded into sale
+    console.log("Park old sale");
     await saveSaleAndPark(
       cart,
       items,
