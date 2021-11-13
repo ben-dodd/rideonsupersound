@@ -64,7 +64,7 @@ export default function SaleTable() {
           )[0],
           numberOfItems: items?.reduce(
             (accumulator: number, item: SaleItemObject) =>
-              accumulator + item?.quantity || 1,
+              accumulator + parseInt(item?.quantity) || 1,
             0
           ),
           items: writeItemList(saleInventory, items),

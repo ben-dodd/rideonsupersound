@@ -99,9 +99,6 @@ export default function ItemListItem({ saleItem, isNew }: SellListItemProps) {
     // setRefresh(refresh + 1);
   }
 
-  console.log(item);
-  console.log(saleItem);
-
   return (
     <div className="flex w-full relative pt mb-2">
       <div className="w-20">

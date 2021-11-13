@@ -12,7 +12,12 @@ import {
   useSaleInventory,
 } from "@/lib/swr-hooks";
 import { viewAtom, clerkAtom, alertAtom, newSaleObjectAtom } from "@/lib/atoms";
-import { SaleObject, SaleItemObject, CustomerObject } from "@/lib/types";
+import {
+  SaleObject,
+  SaleItemObject,
+  CustomerObject,
+  SaleStateTypes,
+} from "@/lib/types";
 
 // Functions
 import { fDateTime, nzDate, writeItemList } from "@/lib/data-functions";
@@ -41,20 +46,21 @@ export default function LoadSales() {
 
   // Constants
   const parkedSales = sales?.filter(
-    (s: SaleObject) => s?.state === "parked" || s?.state === "layby"
+    (s: SaleObject) =>
+      s?.state !== SaleStateTypes.Completed && s?.id !== cart?.id
   );
 
   // Functions
   async function loadSale(sale: SaleObject, items: SaleItemObject[]) {
-    const cartItems = items?.map((i: SaleItemObject) => ({
-      item_id: i?.item_id,
-      quantity: i?.quantity?.toString(),
-    }));
+    // const cartItems = items?.map((i: SaleItemObject) => ({
+    //   item_id: i?.item_id,
+    //   quantity: i?.quantity?.toString(),
+    // }));
     // BUG sale items and cart items getting mixed up, new IDs being made etc.
     setSubmitting(true);
     await loadSaleToCart(
       cart,
-      cartItems,
+      items,
       setCart,
       sale,
       clerk,

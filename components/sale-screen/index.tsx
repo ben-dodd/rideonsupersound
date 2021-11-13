@@ -267,7 +267,7 @@ export default function SaleScreen({ isNew }) {
       disabled:
         (sale?.state && sale?.state !== SaleStateTypes.InProgress) ||
         totalRemaining === 0,
-      text: "ADD MORE ITEMS",
+      text: "CHANGE ITEMS",
     },
     {
       type: "alt1",

@@ -59,7 +59,7 @@ export default function ShoppingCart() {
   async function loadSale() {
     try {
       setLoadingSale(true);
-      const id = await saveSaleAndItemsToDatabase(
+      saveSaleAndItemsToDatabase(
         { ...cart, state: SaleStateTypes.InProgress },
         cart?.items,
         clerk,
@@ -67,26 +67,28 @@ export default function ShoppingCart() {
         mutateSales,
         saleItems,
         mutateSaleItems
-      );
-      setLoadingSale(false);
-      saveLog(
-        {
-          log: `${
-            cart?.id
-              ? cart?.state === SaleStateTypes.Layby
-                ? "Layby"
-                : "Parked sale"
-              : "New sale"
-          } #${id} loaded. ${itemList}.`,
-          clerk_id: clerk?.id,
-          table_id: "sale",
-          row_id: id,
-        },
-        logs,
-        mutateLogs
-      );
-      setSale({ ...cart, state: SaleStateTypes.InProgress, id });
-      setView({ ...view, saleScreen: true });
+      ).then((savedCart) => {
+        saveLog(
+          {
+            log: `${
+              cart?.id
+                ? cart?.state === SaleStateTypes.Layby
+                  ? "Layby"
+                  : "Parked sale"
+                : "New sale"
+            } #${savedCart?.id} loaded. ${itemList}.`,
+            clerk_id: clerk?.id,
+            table_id: "sale",
+            row_id: savedCart?.id,
+          },
+          logs,
+          mutateLogs
+        );
+        console.log(savedCart);
+        setSale({ ...savedCart, state: SaleStateTypes.InProgress });
+        setView({ ...view, saleScreen: true });
+        setLoadingSale(false);
+      });
     } catch (e) {
       throw Error(e.message);
     }

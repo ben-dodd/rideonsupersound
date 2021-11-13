@@ -63,7 +63,7 @@ export async function saveSaleAndPark(
   mutateSaleItems: Function,
   mutateInventory?: Function
 ) {
-  const saleId = await saveSaleAndItemsToDatabase(
+  const { id } = await saveSaleAndItemsToDatabase(
     { ...cart, state: SaleStateTypes.Parked },
     items,
     clerk,
@@ -74,7 +74,7 @@ export async function saveSaleAndPark(
   );
   saveLog(
     {
-      log: `Sale #${saleId} parked (${items?.length} item${
+      log: `Sale #${id} parked (${items?.length} item${
         items?.length === 1 ? "" : "s"
       }${
         cart?.customer_id
@@ -87,14 +87,14 @@ export async function saveSaleAndPark(
       }).`,
       clerk_id: clerk?.id,
       table_id: "sale",
-      row_id: saleId,
+      row_id: id,
     },
     logs,
     mutateLogs
   );
-  let otherSales = sales?.filter((s: SaleObject) => s?.id !== saleId);
+  let otherSales = sales?.filter((s: SaleObject) => s?.id !== id);
   mutateSales(
-    [...otherSales, { ...cart, id: saleId, state: SaleStateTypes.Parked }],
+    [...otherSales, { ...cart, id, state: SaleStateTypes.Parked }],
     false
   );
   mutateInventory && mutateInventory();
@@ -132,15 +132,17 @@ export async function saveSaleAndItemsToDatabase(
   //
   // HANDLE ITEMS
   //
+  let cartItems = [];
   for await (const item of items) {
     console.log(item);
     if (!item?.id) {
       // Item is new to sale
-      const newSaleItemId = await saveSaleItemToDatabase({
-        ...item,
-        sale_id: newSaleId,
-      });
-      mutateSaleItems([...saleItems, { ...item, id: newSaleItemId }], false);
+      console.log("Creating new item in " + newSaleId);
+      let newSaleItem = { ...item, sale_id: newSaleId };
+      const newSaleItemId = await saveSaleItemToDatabase(newSaleItem);
+      newSaleItem.id = newSaleItemId;
+      cartItems.push(newSaleItem);
+      mutateSaleItems([...saleItems, newSaleItem], false);
     } else {
       // Item was already in sale, update in case discount, quantity has changed or item has been deleted
       let updatedSaleItem = { ...item, sale_id: sale?.id };
@@ -148,13 +150,16 @@ export async function saveSaleAndItemsToDatabase(
       let otherSaleItems = saleItems?.filter(
         (s: SaleItemObject) => s?.id !== item?.id
       );
-      mutateSaleItems([...otherSaleItems, updatedSaleItem]);
+      cartItems.push(updatedSaleItem);
+      mutateSaleItems([...otherSaleItems, updatedSaleItem], false);
     }
   }
-  return newSaleId;
+  console.log(cartItems);
+  return { ...newSale, items: cartItems };
 }
 
 export async function saveSaleToDatabase(sale: SaleObject, clerk: ClerkObject) {
+  console.log("Sale being saved");
   try {
     const res = await fetch("/api/create-sale", {
       method: "POST",
