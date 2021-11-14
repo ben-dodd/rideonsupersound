@@ -27,7 +27,7 @@ export default function Modal({
   title,
   buttons,
   loading = false,
-  width = "md",
+  width,
   children,
 }: ModalProps) {
   return (
