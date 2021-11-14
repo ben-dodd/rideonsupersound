@@ -156,7 +156,7 @@ export default function ShoppingCart() {
           {cart?.items?.length > 0 ? (
             cart.items.map((cartItem, i) => (
               <ListItem
-                key={i}
+                key={cartItem?.item_id}
                 index={i}
                 cartItem={cartItem}
                 deleteCartItem={deleteCartItem}
