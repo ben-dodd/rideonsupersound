@@ -46,7 +46,7 @@ export default function HelpDialog() {
       }}
       title={"HELP"}
       loading={isHelpsLoading}
-      width="4xl"
+      width="max-w-4xl"
     >
       <>
         <div className="h-search py-2 px-2">

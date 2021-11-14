@@ -83,7 +83,7 @@ export default function LoadSales() {
         submitting ||
         isSaleInventoryLoading
       }
-      width="6xl"
+      width="max-w-6xl"
     >
       {parkedSales?.length > 0 ? (
         <div className="flex flex-col overflow-y-auto max-h-dialog">
