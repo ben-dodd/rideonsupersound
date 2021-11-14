@@ -21,6 +21,7 @@ import {
   loadedSaleObjectAtom,
   newSaleObjectAtom,
   viewAtom,
+  pageAtom,
 } from "@/lib/atoms";
 import {
   ModalButton,
@@ -40,6 +41,7 @@ import {
   updateSaleInDatabase,
   updateSaleItemInDatabase,
   validateGiftCard,
+  loadSaleToCart,
 } from "@/lib/db-functions";
 
 // Components
@@ -60,10 +62,11 @@ export default function SaleScreen({ isNew }) {
   const [sale, setSale] = useAtom(
     isNew ? newSaleObjectAtom : loadedSaleObjectAtom
   );
-  const [cart] = useAtom(newSaleObjectAtom);
+  const [cart, setCart] = useAtom(newSaleObjectAtom);
   const [clerk] = useAtom(clerkAtom);
   const [, setAlert] = useAtom(alertAtom);
   const [view, setView] = useAtom(viewAtom);
+  const [, setPage] = useAtom(pageAtom);
 
   // SWR
   const { customers } = useCustomers();
@@ -83,6 +86,7 @@ export default function SaleScreen({ isNew }) {
   // State
   // const [saleLoading, setSaleLoading] = useState(false);
   const [laybyLoading, setLaybyLoading] = useState(false);
+  const [addMoreItemsLoading, setAddMoreItemsLoading] = useState(false);
   const [completeSaleLoading, setCompleteSaleLoading] = useState(false);
   const [parkSaleLoading, setParkSaleLoading] = useState(false);
 
@@ -124,6 +128,31 @@ export default function SaleScreen({ isNew }) {
     setParkSaleLoading(false);
   }
 
+  async function clickAddMoreItems() {
+    setAddMoreItemsLoading(true);
+    console.log(cart);
+    console.log(items);
+    console.log(sale);
+    await loadSaleToCart(
+      cart,
+      items,
+      setCart,
+      sale,
+      clerk,
+      customers,
+      logs,
+      mutateLogs,
+      sales,
+      mutateSales,
+      saleItems,
+      mutateSaleItems
+    );
+    setAddMoreItemsLoading(false);
+    setSale(null);
+    setPage("sell");
+    setView({ ...view, saleScreen: false });
+  }
+
   async function clickLayby() {
     setLaybyLoading(true);
     // Change quantity for all items if it wasn't a layby previously
@@ -144,6 +173,10 @@ export default function SaleScreen({ isNew }) {
         layby_started_by: clerk?.id,
       };
       updateSaleInDatabase(laybySale);
+      let numberOfItems = items?.reduce(
+        (acc: number, i: SaleItemObject) => acc + parseInt(i?.quantity),
+        0
+      );
       saveLog(
         {
           log: `Layby started${
@@ -154,8 +187,8 @@ export default function SaleScreen({ isNew }) {
                   )[0]?.name
                 }`
               : ""
-          } (${items.length} item${
-            items.length === 1 ? "" : "s"
+          } (${numberOfItems} item${
+            numberOfItems === 1 ? "" : "s"
           } / $${totalPrice?.toFixed(2)} with $${totalRemaining?.toFixed(
             2
           )} left to pay).`,
@@ -254,19 +287,15 @@ export default function SaleScreen({ isNew }) {
     {
       type: "alt3",
       onClick: clickParkSale,
-      disabled:
-        (sale?.state && sale?.state !== SaleStateTypes.InProgress) ||
-        totalRemaining === 0,
+      disabled: sale?.state === SaleStateTypes.Layby || totalRemaining === 0,
       loading: parkSaleLoading,
       text: "PARK SALE",
     },
     {
       type: "alt2",
       onClick: () =>
-        isNew ? setView({ ...view, saleScreen: false }) : setSale(null),
-      disabled:
-        (sale?.state && sale?.state !== SaleStateTypes.InProgress) ||
-        totalRemaining === 0,
+        isNew ? setView({ ...view, saleScreen: false }) : clickAddMoreItems(),
+      disabled: sale?.state === SaleStateTypes.Layby || totalRemaining === 0,
       text: "CHANGE ITEMS",
     },
     {

@@ -10,7 +10,12 @@ import {
   loadedItemIdAtom,
   alertAtom,
 } from "@/lib/atoms";
-import { useWeather, useStockInventory, useLogs, useVendors } from "@/lib/swr-hooks";
+import {
+  useWeather,
+  useStockInventory,
+  useLogs,
+  useVendors,
+} from "@/lib/swr-hooks";
 import { InventoryObject, VendorObject } from "@/lib/types";
 
 // Components
@@ -126,7 +131,11 @@ export default function ListItem({ item }: ListItemProps) {
   //   onDoubleClick={clickOpenInventoryModal}
   // >
   return (
-    <div className="flex w-full mb-2 bg-blue-100">
+    <div
+      className={`flex w-full mb-2 text-black ${
+        item?.quantity < 1 ? "bg-pink-200" : "bg-gray-200"
+      }`}
+    >
       <div className="w-32">
         <div
           className={`w-32 h-32 relative${
@@ -183,7 +192,7 @@ export default function ListItem({ item }: ListItemProps) {
       <div className="self-center pl-8 hidden sm:inline">
         <Tooltip title="View and edit item details.">
           <button
-            className="icon-button-large text-gray-800 hover:text-gray-600"
+            className="icon-button-large text-black hover:text-blue-500"
             onClick={clickOpenInventoryModal}
           >
             <InfoIcon style={{ fontSize: "40px" }} />
@@ -193,7 +202,7 @@ export default function ListItem({ item }: ListItemProps) {
       <div className="self-center pl-1 pr-2 hidden sm:inline">
         <Tooltip title="Add item to sale.">
           <button
-            className="icon-button-large hover:text-blue-500"
+            className="icon-button-large text-black hover:text-blue-500"
             disabled={!item?.total_sell}
             onClick={clickAddToCart}
           >

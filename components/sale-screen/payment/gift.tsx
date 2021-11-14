@@ -206,7 +206,8 @@ export default function Gift({ isNew }) {
           giftCardCode === "" ||
           giftCardPayment === "" ||
           parseFloat(giftCardPayment) === 0 ||
-          !giftCard ? (
+          !giftCard ||
+          submitting ? (
             <div>...</div>
           ) : isNaN(parseFloat(giftCardPayment)) ? (
             <div>NUMBERS ONLY PLEASE</div>

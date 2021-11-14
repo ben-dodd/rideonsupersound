@@ -29,15 +29,13 @@ export async function loadSaleToCart(
   saleItems: SaleItemObject[],
   mutateSaleItems: Function
 ) {
-  console.log(cart);
-  console.log(sale);
-  if (cart?.items || cart?.id !== sale?.id) {
+  if (cart?.date_sale_opened && (cart?.items || cart?.id !== sale?.id)) {
     // Cart is loaded with a different sale or
     // Cart has been started but not loaded into sale
     console.log("Park old sale");
     await saveSaleAndPark(
       cart,
-      items,
+      cart?.items,
       clerk,
       customers,
       logs,
@@ -48,8 +46,6 @@ export async function loadSaleToCart(
       mutateSaleItems
     );
   }
-  console.log(cart);
-  console.log(sale);
   setCart({ ...sale, items });
 }
 
@@ -95,11 +91,6 @@ export async function saveSaleAndPark(
     logs,
     mutateLogs
   );
-  let otherSales = sales?.filter((s: SaleObject) => s?.id !== id);
-  mutateSales(
-    [...otherSales, { ...cart, id, state: SaleStateTypes.Parked }],
-    false
-  );
   mutateInventory && mutateInventory();
 }
 
@@ -112,6 +103,8 @@ export async function saveSaleAndItemsToDatabase(
   saleItems: SaleItemObject[],
   mutateSaleItems: Function
 ) {
+  console.log(sale);
+  console.log(items);
   let newSale = { ...sale };
   let newSaleId = newSale?.id;
   console.log(items);

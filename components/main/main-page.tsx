@@ -37,7 +37,7 @@ export default function MainPage() {
       <Nav />
       <div className="flex h-menu relative">
         <Menu />
-        <div className="bg-green-500 h-full w-full absolute sm:static">
+        <div className="h-full w-full absolute sm:static">
           <SellScreen />
           <InventoryScreen />
           <VendorScreen />

@@ -138,10 +138,17 @@ export default function ShoppingCart() {
         view?.cart ? "left-0" : "left-full"
       } sm:left-2/3 h-full w-full bg-yellow-200 sm:w-1/3 sm:h-menu`}
     >
-      <div className="flex flex-col h-menu px-2 bg-black text-white">
+      <div className="flex flex-col h-menu px-2 bg-gray-200 text-black">
         <div className="flex justify-between mb-2 relative">
-          <div className="text-lg my-2 tracking-wide self-center">
-            Shopping Cart
+          <div className="text-lg font-bold my-2 tracking-wide self-center">
+            <div>Shopping Cart</div>
+            {cart?.id && (
+              <div className="text-sm font-light">
+                <div>{`Sale #${
+                  cart?.id
+                } // ${cart?.state?.toUpperCase()}`}</div>
+              </div>
+            )}
           </div>
           <Actions />
         </div>
@@ -176,7 +183,7 @@ export default function ShoppingCart() {
                 <div className="self-center">STORE CUT</div>
                 <div
                   className={`self-center text-right ml-7 ${
-                    storeCut < 0 ? "text-red-500" : "text-white"
+                    storeCut < 0 ? "text-red-500" : "text-black"
                   }`}
                 >
                   {storeCut < 0 && "-"}$

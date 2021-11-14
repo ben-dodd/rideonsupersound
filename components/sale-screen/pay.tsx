@@ -4,6 +4,7 @@ import { useAtom } from "jotai";
 
 // DB
 import {
+  useClerks,
   useCustomers,
   useVendorFromCustomer,
   useSaleTransactionsForSale,
@@ -20,6 +21,7 @@ import {
   CustomerObject,
   SaleTransactionObject,
   OpenWeatherObject,
+  SaleItemObject,
 } from "@/lib/types";
 
 // Functions
@@ -27,6 +29,7 @@ import {
   convertMPStoKPH,
   convertDegToCardinal,
   getSaleVars,
+  fDateTime,
 } from "@/lib/data-functions";
 
 // Components
@@ -42,6 +45,7 @@ export default function Pay({ isNew }) {
   const [view, setView] = useAtom(viewAtom);
 
   // SWR
+  const { clerks } = useClerks();
   const { customers } = useCustomers();
   const { vendor } = useVendorFromCustomer(sale?.customer_id);
   const { items } = useSaleItemsForSale(sale?.id);
@@ -52,7 +56,6 @@ export default function Pay({ isNew }) {
   const [note, setNote] = useState("");
   const { totalRemaining } = getSaleVars(items, transactions, saleInventory);
 
-  // Components
   const SaleCompletedDetails = () => {
     const weather: OpenWeatherObject = sale?.weather
       ? JSON.parse(sale?.weather)
@@ -60,6 +63,68 @@ export default function Pay({ isNew }) {
     console.log(weather);
     return (
       <div className="px-2">
+        <div className="p-4 mb-2">
+          {sale?.customer_id && (
+            <div className="flex">
+              <div className="w-1/3 font-bold">Customer</div>
+              <div>
+                {
+                  customers?.filter(
+                    (c: CustomerObject) => c?.id === sale?.customer_id
+                  )[0].name
+                }
+              </div>
+            </div>
+          )}
+          {[
+            {
+              label: "Number of Items",
+              value: items?.reduce(
+                (acc: number, i: SaleItemObject) => acc + parseInt(i?.quantity),
+                0
+              ),
+            },
+            {
+              label: "Sale Opened By",
+              value: clerks
+                ? clerks.filter(
+                    (clerk: any) => clerk?.id === sale?.sale_opened_by
+                  )[0]?.name
+                : "N/A",
+            },
+            {
+              label: "Date Opened",
+              value: sale?.date_sale_opened
+                ? fDateTime(sale?.date_sale_opened)
+                : "N/A",
+            },
+            {
+              label: "Sale Closed By",
+              value: clerks
+                ? clerks.filter(
+                    (clerk: any) => clerk?.id === sale?.sale_closed_by
+                  )[0]?.name
+                : "N/A",
+            },
+            {
+              label: "Date Closed",
+              value: sale?.date_sale_closed
+                ? fDateTime(sale?.date_sale_closed)
+                : "N/A",
+            },
+          ].map((item) => (
+            <div className="flex" key={item?.label}>
+              <div className="w-1/2 font-bold">{item?.label}</div>
+              <div className="w-1/2">{item?.value}</div>
+            </div>
+          ))}
+          {sale?.note && (
+            <div>
+              <div className="font-bold">Notes</div>
+              <div className="italic">{sale?.note}</div>
+            </div>
+          )}
+        </div>
         {weather && (
           <div className="bg-blue-200 p-2 mb-2 rounded-md">
             <div className="font-bold">Weather</div>

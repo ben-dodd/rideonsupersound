@@ -5,7 +5,7 @@ import nz from "date-fns/locale/en-NZ";
 
 // DB
 import {
-  useGiftCard,
+  useGiftCards,
   useVendorFromVendorPayment,
   useSaleTransactionsForSale,
   useLogs,
@@ -31,10 +31,6 @@ type TransactionListItemProps = {
   sale: SaleObject;
 };
 
-type UseGiftCardProps = {
-  giftCard: GiftCardObject;
-};
-
 type UseVendorProps = {
   vendor: VendorObject;
 };
@@ -48,7 +44,7 @@ export default function TransactionListItem({
   const [, setAlert] = useAtom(alertAtom);
 
   // SWR
-  const { giftCard }: UseGiftCardProps = useGiftCard(transaction?.gift_card_id);
+  const { giftCards } = useGiftCards();
   const { vendor }: UseVendorProps = useVendorFromVendorPayment(
     transaction?.vendor_payment_id
   );
@@ -85,6 +81,13 @@ export default function TransactionListItem({
       )} ${transaction?.payment_method?.toUpperCase()} PAYMENT DELETED`,
     });
   };
+
+  const giftCard = giftCards?.filter(
+    (g: GiftCardObject) => g?.id === transaction?.gift_card_id
+  )[0];
+
+  console.log(transaction);
+  console.log(giftCard);
 
   return (
     <div

@@ -11,7 +11,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // black: "#280A0A",
+        black: "#423e3e",
         primary: {
           dark: "#10B981",
           DEFAULT: "#34D399",
@@ -116,6 +116,7 @@ module.exports = {
         menusm: `calc(100vh - 5rem)`,
         search: "4rem",
         inventory: `calc(100vh - 8rem)`,
+        dialoglg: `calc(100vh - 12rem)`,
         dialog: `calc(100vh - 16rem)`,
       },
       maxHeight: {

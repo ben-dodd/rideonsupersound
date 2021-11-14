@@ -98,7 +98,7 @@
 }
 
 .icon-button-small-white {
-  @apply p-2 sm:p-4 text-white hover:text-red-100 disabled:text-gray-500 disabled:pointer-events-none;
+  @apply p-2 sm:p-4 text-black hover:text-blue-500 disabled:text-gray-500 disabled:pointer-events-none;
 }
 
 .square-button {

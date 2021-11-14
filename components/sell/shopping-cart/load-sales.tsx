@@ -52,11 +52,6 @@ export default function LoadSales() {
 
   // Functions
   async function loadSale(sale: SaleObject, items: SaleItemObject[]) {
-    // const cartItems = items?.map((i: SaleItemObject) => ({
-    //   item_id: i?.item_id,
-    //   quantity: i?.quantity?.toString(),
-    // }));
-    // BUG sale items and cart items getting mixed up, new IDs being made etc.
     setSubmitting(true);
     await loadSaleToCart(
       cart,

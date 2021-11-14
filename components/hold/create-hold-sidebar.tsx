@@ -118,7 +118,9 @@ export default function CreateHoldSidebar() {
     >
       <div className="flex-grow overflow-x-hidden overflow-y-scroll">
         {cart?.items?.length > 0 ? (
-          cart?.items?.map((cartItem) => <ListItem cartItem={cartItem} />)
+          cart?.items?.map((cartItem, i) => (
+            <ListItem key={i} cartItem={cartItem} />
+          ))
         ) : (
           <div>No items</div>
         )}

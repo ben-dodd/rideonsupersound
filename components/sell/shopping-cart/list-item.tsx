@@ -86,7 +86,7 @@ export default function SellListItem({
             )}
           </div>
         </div>
-        <div className="flex flex-col w-full p-2 justify-between">
+        <div className="flex flex-col w-full pt-2 px-2 justify-between">
           <div className="text-sm pl-1">{getItemDisplayName(item)}</div>
           <div className="text-red-500 self-end">
             {getCartItemSummary(item, cartItem)}
