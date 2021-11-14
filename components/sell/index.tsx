@@ -55,7 +55,11 @@ export default function SellScreen() {
     preventDefaultTouchmoveEvent: true,
   });
 
-  return (
+  console.log(registerID);
+
+  return registerID === 0 ? (
+    <OpenRegisterScreen />
+  ) : (
     <div
       className={`flex relative overflow-x-hidden ${
         page !== "sell" || registerID < 1 ? "hidden" : ""
@@ -72,7 +76,6 @@ export default function SellScreen() {
       {sale?.id && <SaleScreen isNew={true} />}
       {view?.giftCardDialog && <GiftCardDialog />}
       {loadedItemId && <InventoryItemScreen page="sell" />}
-      {page === "sell" || (registerID === 0 && <OpenRegisterScreen />)}
       {view?.changePriceDialog && <ChangePriceDialog />}
       {view?.closeRegisterScreen && <CloseRegisterScreen />}
       {view?.returnCashDialog && <ReturnCashDialog />}
