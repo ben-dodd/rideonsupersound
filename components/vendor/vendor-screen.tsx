@@ -150,35 +150,8 @@ export default function VendorScreen() {
             dbField="category"
             isCreateDisabled={true}
           />
-          <div className="input-label">Primary Vendor Customer</div>
-          <div className="self-center w-full">
-            <CreateableSelect
-              inputLabel="Select customer"
-              fieldRequired
-              value={vendor?.customer_id}
-              label={
-                customers?.filter(
-                  (c: CustomerObject) => c?.id === vendor?.customer_id
-                )[0]?.name || ""
-              }
-              onChange={(customerObject: any) => {
-                setVendor({
-                  ...vendor,
-                  customer_id: parseInt(customerObject?.value),
-                });
-              }}
-              onCreateOption={(inputValue: string) => {
-                setCustomer({ name: inputValue });
-                setView({ ...view, createCustomer: true });
-              }}
-              options={customers?.map((val: CustomerObject) => ({
-                value: val?.id,
-                label: val?.name || "",
-              }))}
-            />
-          </div>
 
-          <div className="input-label">Staff Customer</div>
+          <div className="input-label">Staff Contact</div>
           <div className="w-full">
             <Select
               value={{
@@ -215,6 +188,13 @@ export default function VendorScreen() {
               }
             />
           </div>
+          <TextField
+            inputLabel="Contact Name"
+            value={vendor?.contact_name || ""}
+            onChange={(e: any) =>
+              setVendor({ ...vendor, contact_name: e.target.value })
+            }
+          />
           <TextField
             inputLabel="Phone"
             value={vendor?.phone || ""}
