@@ -20,8 +20,8 @@ export default function LogScreen() {
     <div
       className={`flex overflow-x-hidden ${page !== "logs" ? "hidden" : ""}`}
     >
-      <div className="h-menu w-full overflow-y-scroll px-2 bg-black">
-        <div className="text-2xl mt-4 mb-2 text-white font-mono">Logs</div>
+      <div className="h-menu w-full overflow-y-scroll px-2 bg-white">
+        <div className="text-2xl mt-4 mb-2 text-black font-mono">Logs</div>
         {isLogsLoading ? (
           <div className="w-full flex h-full">
             <div className="loading-icon" />
