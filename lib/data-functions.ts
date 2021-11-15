@@ -793,7 +793,7 @@ export function writeKiwiBankBatchFile({
 
 export function nzDate(isoDate: string) {
   // return isoDate ? parseISO(isoDate) : null;
-  return isoDate ? add(parseISO(isoDate), { hours: 6 }) : null;
+  return isoDate ? add(parseISO(isoDate), { hours: 7 }) : null;
 }
 
 export function checkDate(date: Date | string) {
