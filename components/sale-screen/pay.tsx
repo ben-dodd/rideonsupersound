@@ -65,26 +65,21 @@ export default function Pay({ isNew }) {
     console.log(weather);
     return (
       <div className="px-2">
-        <div className="p-4 mb-2">
-          {sale?.customer_id && (
-            <div className="flex">
-              <div className="w-1/3 font-bold">Customer</div>
-              <div>
-                {
-                  customers?.filter(
-                    (c: CustomerObject) => c?.id === sale?.customer_id
-                  )[0].name
-                }
-              </div>
-            </div>
-          )}
+        <div className="bg-white rounded border">
           {[
+            // {
+            //   label: "Number of Items",
+            //   value: items?.reduce(
+            //     (acc: number, i: SaleItemObject) => acc + parseInt(i?.quantity),
+            //     0
+            //   ),
+            // },
             {
-              label: "Number of Items",
-              value: items?.reduce(
-                (acc: number, i: SaleItemObject) => acc + parseInt(i?.quantity),
-                0
-              ),
+              label: "Customer",
+              value:
+                customers?.filter(
+                  (c: CustomerObject) => c?.id === sale?.customer_id
+                )[0]?.name || "N/A",
             },
             {
               label: "Sale Opened By",
@@ -114,21 +109,16 @@ export default function Pay({ isNew }) {
                 ? fDateTime(sale?.date_sale_closed)
                 : "N/A",
             },
+            { label: "Notes", value: sale?.note || "N/A" },
           ].map((item) => (
-            <div className="flex" key={item?.label}>
-              <div className="w-1/2 font-bold">{item?.label}</div>
-              <div className="w-1/2">{item?.value}</div>
+            <div key={item?.label} className="flex border p-2 hover:bg-gray-50">
+              <div className="font-bold w-2/5">{item?.label}</div>
+              <div className="w-3/5">{item?.value}</div>
             </div>
           ))}
-          {sale?.note && (
-            <div>
-              <div className="font-bold">Notes</div>
-              <div className="italic">{sale?.note}</div>
-            </div>
-          )}
         </div>
         {weather && (
-          <div className="bg-blue-200 p-2 mb-2 rounded-md">
+          <div className="bg-blue-200 p-2 my-2 rounded-md">
             <div className="font-bold">Weather</div>
             <div className="flex">
               <div>
@@ -199,90 +189,87 @@ export default function Pay({ isNew }) {
         <div className="font-sm">Click complete sale to finish.</div>
       )}
       {sale?.state !== SaleStateTypes.Completed && (
-        <div className="grid grid-cols-2 gap-2 mt-4">
-          <button
-            className="square-button"
-            onClick={() => setView({ ...view, cashPaymentDialog: true })}
-          >
-            CASH
-          </button>
-          <button
-            className="square-button"
-            onClick={() => setView({ ...view, cardPaymentDialog: true })}
-          >
-            CARD
-          </button>
-          <button
-            className="square-button"
-            disabled={!sale?.customer_id}
-            onClick={() => setView({ ...view, acctPaymentDialog: true })}
-          >
-            ACCT
-          </button>
-          <button
-            className="square-button"
-            onClick={() => setView({ ...view, giftPaymentDialog: true })}
-          >
-            GIFT
-          </button>
-        </div>
-      )}
-      {sale?.state === SaleStateTypes.Completed ||
-      sale?.state === SaleStateTypes.Layby ||
-      transactions?.filter(
-        (s: SaleTransactionObject) =>
-          s?.payment_method === PaymentMethodTypes.Account
-      )?.length > 0 ? (
-        <div className="mt-2">
-          {sale?.customer_id ? (
-            <div>
-              <span className="font-bold">Customer: </span>
-              <span>
-                {customers?.filter(
-                  (c: CustomerObject) => c?.id === sale?.customer_id
-                )[0]?.name || ""}
-              </span>
+        <>
+          <div className="grid grid-cols-2 gap-2 mt-4">
+            <button
+              className="square-button"
+              onClick={() => setView({ ...view, cashPaymentDialog: true })}
+            >
+              CASH
+            </button>
+            <button
+              className="square-button"
+              onClick={() => setView({ ...view, cardPaymentDialog: true })}
+            >
+              CARD
+            </button>
+            <button
+              className="square-button"
+              disabled={!sale?.customer_id}
+              onClick={() => setView({ ...view, acctPaymentDialog: true })}
+            >
+              ACCT
+            </button>
+            <button
+              className="square-button"
+              onClick={() => setView({ ...view, giftPaymentDialog: true })}
+            >
+              GIFT
+            </button>
+          </div>
+          {sale?.state === SaleStateTypes.Layby ? (
+            <div className="mt-2">
+              {sale?.customer_id ? (
+                <div>
+                  <div className="font-bold">Customer</div>
+                  <div>
+                    {customers?.filter(
+                      (c: CustomerObject) => c?.id === sale?.customer_id
+                    )[0]?.name || ""}
+                  </div>
+                </div>
+              ) : (
+                <div>No customer set.</div>
+              )}
             </div>
           ) : (
-            <div>No customer set.</div>
+            <>
+              <div className="font-bold mt-2">
+                Select customer to enable laybys and account payments.
+              </div>
+              <CreateableSelect
+                inputLabel="Select customer"
+                value={sale?.customer_id}
+                label={
+                  customers?.filter(
+                    (c: CustomerObject) => c?.id === sale?.customer_id
+                  )[0]?.name || ""
+                }
+                onChange={(customerObject: any) => {
+                  setSale((s) => ({
+                    ...s,
+                    customer_id: parseInt(customerObject?.value),
+                  }));
+                }}
+                onCreateOption={(inputValue: string) => {
+                  setCustomer({ name: inputValue });
+                  setView({ ...view, createCustomer: true });
+                }}
+                options={customers?.map((val: CustomerObject) => ({
+                  value: val?.id,
+                  label: val?.name || "",
+                }))}
+              />
+            </>
           )}
-        </div>
-      ) : (
-        <>
-          <div className="font-bold mt-2">
-            Select customer to enable laybys and account payments.
-          </div>
-          <CreateableSelect
-            inputLabel="Select customer"
-            value={sale?.customer_id}
-            label={
-              customers?.filter(
-                (c: CustomerObject) => c?.id === sale?.customer_id
-              )[0]?.name || ""
-            }
-            onChange={(customerObject: any) => {
-              setSale((s) => ({
-                ...s,
-                customer_id: parseInt(customerObject?.value),
-              }));
-            }}
-            onCreateOption={(inputValue: string) => {
-              setCustomer({ name: inputValue });
-              setView({ ...view, createCustomer: true });
-            }}
-            options={customers?.map((val: CustomerObject) => ({
-              value: val?.id,
-              label: val?.name || "",
-            }))}
+          <TextField
+            inputLabel="Note"
+            multiline
+            value={note}
+            onChange={(e: any) => setNote(e.target.value)}
           />
         </>
       )}
-      <TextField
-        inputLabel="Note"
-        multiline
-        value={note}
-        onChange={(e: any) => setNote(e.target.value)}
-      />
     </div>
   );
 }
