@@ -4,7 +4,7 @@ import { useAtom } from "jotai";
 
 // DB
 import {
-  useSaleInventory,
+  useStockInventory,
   useLogs,
   useSales,
   useSaleItems,
@@ -38,7 +38,7 @@ import HoldIcon from "@mui/icons-material/PanTool";
 
 export default function ShoppingCart() {
   // SWR
-  const { saleInventory } = useSaleInventory();
+  const { inventory } = useStockInventory();
   const { sales, mutateSales } = useSales();
   const { saleItems, mutateSaleItems } = useSaleItems();
   const { logs, mutateLogs } = useLogs();
@@ -53,7 +53,7 @@ export default function ShoppingCart() {
   // State
   const [loadingSale, setLoadingSale] = useState(false);
 
-  const itemList = writeItemList(saleInventory, cart?.items);
+  const itemList = writeItemList(inventory, cart?.items);
 
   // Functions
   async function loadSale() {
@@ -109,7 +109,7 @@ export default function ShoppingCart() {
     saveLog(
       {
         log: `${getItemDisplayName(
-          saleInventory?.filter(
+          inventory?.filter(
             (i: InventoryObject) => i?.id === parseInt(itemId)
           )[0]
         )} removed from cart${id ? ` (sale #${id})` : ""}.`,
@@ -127,8 +127,8 @@ export default function ShoppingCart() {
   }
 
   // Constants
-  const totalPrice = getTotalPrice(cart?.items, saleInventory);
-  const storeCut = getTotalStoreCut(cart?.items, saleInventory);
+  const totalPrice = getTotalPrice(cart?.items, inventory);
+  const storeCut = getTotalStoreCut(cart?.items, inventory);
   const disableButtons =
     loadingSale || !(cart?.items && Object.keys(cart?.items).length > 0);
 

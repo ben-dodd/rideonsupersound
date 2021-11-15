@@ -67,15 +67,15 @@ export function useStockInventory() {
   };
 }
 
-export function useSaleInventory() {
-  const { data, error, mutate } = useSWR(`/api/get-sale-inventory`, fetcher);
-  return {
-    saleInventory: data,
-    isSaleInventoryLoading: !error && !data,
-    isSaleInventoryError: error,
-    mutateSaleInventory: mutate,
-  };
-}
+// export function useStockInventory() {
+//   const { data, error, mutate } = useSWR(`/api/get-sale-inventory`, fetcher);
+//   return {
+//     inventory: data,
+//     isInventoryLoading: !error && !data,
+//     isSaleInventoryError: error,
+//     mutateInventory: mutate,
+//   };
+// }
 
 export function useStockItem(stock_id: number) {
   const { data, error } = useSWR(

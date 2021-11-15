@@ -8,7 +8,7 @@ import {
   useSaleItems,
   useCustomers,
   useClerks,
-  useSaleInventory,
+  useStockInventory,
   useGiftCards,
 } from "@/lib/swr-hooks";
 import { viewAtom, loadedSaleObjectAtom } from "@/lib/atoms";
@@ -36,7 +36,7 @@ export default function SaleTable() {
   // SWR
   const { sales, isSalesLoading } = useSales();
   const { saleItems, isSaleItemsLoading } = useSaleItems();
-  const { saleInventory, isSaleInventoryLoading } = useSaleInventory();
+  const { inventory, isInventoryLoading } = useStockInventory();
   const { customers, isCustomersLoading } = useCustomers();
   const { clerks, isClerksLoading } = useClerks();
 
@@ -67,12 +67,12 @@ export default function SaleTable() {
               accumulator + parseInt(item?.quantity) || 1,
             0
           ),
-          items: writeItemList(saleInventory, items),
-          store: getTotalStoreCut(items, saleInventory),
-          sell: getTotalPrice(items, saleInventory),
+          items: writeItemList(inventory, items),
+          store: getTotalStoreCut(items, inventory),
+          sell: getTotalPrice(items, inventory),
         };
       }),
-    [sales, saleItems, customers, clerks, saleInventory]
+    [sales, saleItems, customers, clerks, inventory]
   );
   const columns = useMemo(() => {
     return [
@@ -148,14 +148,14 @@ export default function SaleTable() {
         width: 400,
       },
     ];
-  }, [sales, saleItems, saleInventory]);
+  }, [sales, saleItems, inventory]);
 
   return (
     <TableContainer
       loading={
         isSalesLoading ||
         isClerksLoading ||
-        isSaleInventoryLoading ||
+        isInventoryLoading ||
         isSaleItemsLoading ||
         isCustomersLoading
       }

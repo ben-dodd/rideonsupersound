@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useSaleInventory, useStockItem, useGiftCards } from "@/lib/swr-hooks";
+import { useStockInventory, useStockItem, useGiftCards } from "@/lib/swr-hooks";
 import { newSaleObjectAtom, confirmModalAtom } from "@/lib/atoms";
 import { InventoryObject, SaleItemObject } from "@/lib/types";
 
@@ -40,7 +40,7 @@ export default function SellListItem({
   deleteCartItem,
 }: SellListItemProps) {
   // SWR
-  const { saleInventory } = useSaleInventory();
+  const { inventory } = useStockInventory();
   const { stockItem } = useStockItem(cartItem?.item_id);
 
   // Atoms
@@ -54,11 +54,11 @@ export default function SellListItem({
   // Load
   useEffect(() => {
     setItem(
-      saleInventory?.filter(
+      inventory?.filter(
         (i: InventoryObject) => i.id === cartItem?.item_id
       )[0]
     );
-  }, [saleInventory]);
+  }, [inventory]);
 
   // Functions
   function onChangeCart(e: any, property: string) {

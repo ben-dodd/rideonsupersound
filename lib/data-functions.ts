@@ -659,13 +659,13 @@ export function andList(list: string[]) {
 }
 
 export function writeItemList(
-  saleInventory: InventoryObject[],
+  inventory: InventoryObject[],
   items: SaleItemObject[]
 ) {
-  if (items && saleInventory) {
+  if (items && inventory) {
     return items
       .map((item: SaleItemObject) => {
-        let stockItem: InventoryObject = saleInventory?.filter(
+        let stockItem: InventoryObject = inventory?.filter(
           (i) => i?.id === item?.item_id
         )[0];
         if (item?.is_gift_card) {

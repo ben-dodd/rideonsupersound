@@ -4,7 +4,7 @@ import { useAtom } from "jotai";
 
 // DB
 import {
-  useSaleInventory,
+  useStockInventory,
   useSaleItemsForSale,
   useLogs,
 } from "@/lib/swr-hooks";
@@ -49,7 +49,7 @@ export default function ItemListItem({ saleItem, isNew }: SellListItemProps) {
   const [clerk] = useAtom(clerkAtom);
 
   // SWR
-  const { saleInventory } = useSaleInventory();
+  const { inventory } = useStockInventory();
   const { items } = useSaleItemsForSale(sale?.id);
   const { logs, mutateLogs } = useLogs();
 
@@ -59,11 +59,9 @@ export default function ItemListItem({ saleItem, isNew }: SellListItemProps) {
   // Load
   useEffect(() => {
     setItem(
-      saleInventory?.filter(
-        (i: InventoryObject) => i.id === saleItem?.item_id
-      )[0]
+      inventory?.filter((i: InventoryObject) => i.id === saleItem?.item_id)[0]
     );
-  }, [saleInventory]);
+  }, [inventory]);
 
   // Functions
   async function deleteOrRefundItem(id: number, is_refund: boolean) {
@@ -82,7 +80,7 @@ export default function ItemListItem({ saleItem, isNew }: SellListItemProps) {
     saveLog(
       {
         log: `${getItemDisplayName(
-          saleInventory?.filter((i: InventoryObject) => i?.id === id)[0]
+          inventory?.filter((i: InventoryObject) => i?.id === id)[0]
         )} ${is_refund ? "refunded" : "removed from sale"}${
           id ? ` (sale #${id})` : ""
         }.`,

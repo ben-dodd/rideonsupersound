@@ -6,7 +6,7 @@ import { useAtom } from "jotai";
 import {
   useSaleTransactionsForSale,
   useSaleItemsForSale,
-  useSaleInventory,
+  useStockInventory,
   useLogs,
   useCustomers,
   useRegisterID,
@@ -47,14 +47,14 @@ export default function Cash({ isNew }) {
     sale?.id
   );
   const { items } = useSaleItemsForSale(sale?.id);
-  const { saleInventory } = useSaleInventory();
+  const { inventory } = useStockInventory();
   const { logs, mutateLogs } = useLogs();
   const { customers } = useCustomers();
   const { registerID } = useRegisterID();
   const { mutateCashGiven } = useCashGiven(registerID || 0);
   const { mutateCashReceived } = useCashReceived(registerID || 0);
 
-  const { totalRemaining } = getSaleVars(items, transactions, saleInventory);
+  const { totalRemaining } = getSaleVars(items, transactions, inventory);
 
   // State
   const [cashReceived, setCashReceived] = useState(`${totalRemaining}`);

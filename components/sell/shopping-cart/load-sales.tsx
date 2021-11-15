@@ -9,7 +9,7 @@ import {
   useLogs,
   useRegisterID,
   useCustomers,
-  useSaleInventory,
+  useStockInventory,
 } from "@/lib/swr-hooks";
 import { viewAtom, clerkAtom, alertAtom, newSaleObjectAtom } from "@/lib/atoms";
 import {
@@ -39,7 +39,7 @@ export default function LoadSales() {
   const { sales, isSalesLoading, mutateSales } = useSales();
   const { saleItems, isSaleItemsLoading, mutateSaleItems } = useSaleItems();
   const { customers, isCustomersLoading } = useCustomers();
-  const { saleInventory, isSaleInventoryLoading } = useSaleInventory();
+  const { inventory, isInventoryLoading } = useStockInventory();
 
   // State
   const [submitting, setSubmitting] = useState(false);
@@ -81,7 +81,7 @@ export default function LoadSales() {
         isSaleItemsLoading ||
         isCustomersLoading ||
         submitting ||
-        isSaleInventoryLoading
+        isInventoryLoading
       }
       width="max-w-6xl"
     >
@@ -107,9 +107,7 @@ export default function LoadSales() {
                     (c: CustomerObject) => c?.id === s?.customer_id
                   )[0]?.name || ""}
                 </div>
-                <div className="w-2/6">
-                  {writeItemList(saleInventory, items)}
-                </div>
+                <div className="w-2/6">{writeItemList(inventory, items)}</div>
               </div>
             );
           })}

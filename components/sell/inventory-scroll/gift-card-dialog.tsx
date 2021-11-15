@@ -5,7 +5,7 @@ import { useAtom } from "jotai";
 // DB
 import {
   useGiftCards,
-  useSaleInventory,
+  useStockInventory,
   useLogs,
   useWeather,
 } from "@/lib/swr-hooks";
@@ -32,7 +32,7 @@ export default function GiftCardDialog() {
   // SWR
   const { giftCards, mutateGiftCards } = useGiftCards();
   const { logs, mutateLogs } = useLogs();
-  const { saleInventory, mutateSaleInventory } = useSaleInventory();
+  const { inventory, mutateInventory } = useStockInventory();
   const geolocation = getGeolocation();
   const { weather } = useWeather();
 
@@ -78,7 +78,7 @@ export default function GiftCardDialog() {
         };
         const id = await saveStockToDatabase(newGiftCard, clerk);
         mutateGiftCards([...giftCards, { ...newGiftCard, id }], false);
-        mutateSaleInventory([...saleInventory, { ...newGiftCard, id }], false);
+        mutateInventory([...inventory, { ...newGiftCard, id }], false);
         setSubmitting(false);
         setGiftCardCode(null);
         setNotes("");

@@ -9,7 +9,7 @@ import {
   useVendorFromCustomer,
   useSaleTransactionsForSale,
   useSaleItemsForSale,
-  useSaleInventory,
+  useStockInventory,
 } from "@/lib/swr-hooks";
 import {
   newSaleObjectAtom,
@@ -52,11 +52,11 @@ export default function Pay({ isNew }) {
   const { vendor } = useVendorFromCustomer(sale?.customer_id);
   const { items } = useSaleItemsForSale(sale?.id);
   const { transactions } = useSaleTransactionsForSale(sale?.id);
-  const { saleInventory } = useSaleInventory();
+  const { inventory } = useStockInventory();
 
   // State
   const [note, setNote] = useState("");
-  const { totalRemaining } = getSaleVars(items, transactions, saleInventory);
+  const { totalRemaining } = getSaleVars(items, transactions, inventory);
 
   const SaleCompletedDetails = () => {
     const weather: OpenWeatherObject = sale?.weather

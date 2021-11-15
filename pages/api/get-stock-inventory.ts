@@ -17,6 +17,15 @@ const handler: NextApiHandler = async (req, res) => {
         s.is_new,
         s.cond,
         s.image_url,
+        s.is_gift_card,
+        s.gift_card_code,
+        s.gift_card_amount,
+        s.gift_card_remaining,
+        s.gift_card_note,
+        s.gift_card_is_valid,
+        s.is_misc_item,
+        s.misc_item_description,
+        s.misc_item_amount,
         p.vendor_cut,
         p.total_sell,
         q.quantity
@@ -26,12 +35,12 @@ const handler: NextApiHandler = async (req, res) => {
       ON q.stock_id = s.id
       LEFT JOIN stock_price AS p ON p.stock_id = s.id
       WHERE
-         p.id = (
+         (p.id = (
             SELECT MAX(id)
             FROM stock_price
             WHERE stock_id = s.id
-         )
-      AND s.is_deleted = 0 AND NOT s.is_gift_card AND NOT s.is_misc_item
+         ) OR s.is_gift_card OR s.is_misc_item)
+      AND s.is_deleted = 0
       `
     );
 

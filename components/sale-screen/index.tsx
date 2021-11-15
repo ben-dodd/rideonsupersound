@@ -8,7 +8,6 @@ import {
   useSaleItemsForSale,
   useSaleTransactionsForSale,
   useCustomers,
-  useSaleInventory,
   useStockInventory,
   useLogs,
   useVendorTotalSales,
@@ -71,8 +70,7 @@ export default function SaleScreen({ isNew }) {
 
   // SWR
   const { customers } = useCustomers();
-  const { saleInventory, mutateSaleInventory } = useSaleInventory();
-  const { mutateInventory } = useStockInventory();
+  const { inventory, mutateInventory } = useStockInventory();
   const { items, isSaleItemsLoading } = useSaleItemsForSale(sale?.id);
   const {
     transactions,
@@ -96,11 +94,11 @@ export default function SaleScreen({ isNew }) {
   // BUG dates are wrong on vercel
   // BUG why are some sales showing items as separate line items, not 2x quantity
 
-  const itemList = writeItemList(saleInventory, items);
+  const itemList = writeItemList(inventory, items);
   const { totalRemaining, totalPrice } = getSaleVars(
     items,
     transactions,
-    saleInventory
+    inventory
   );
 
   // Functions
@@ -231,14 +229,14 @@ export default function SaleScreen({ isNew }) {
       }
       if (saleItem?.is_gift_card) {
         // Add to collection
-        let updatedGiftCard = saleInventory?.filter(
+        let updatedGiftCard = inventory?.filter(
           (s: InventoryObject) => s?.id === saleItem?.item_id
         );
         updatedGiftCard.gift_card_is_valid = true;
-        let otherSaleStock = saleInventory?.filter(
+        let otherSaleStock = inventory?.filter(
           (s: InventoryObject) => s?.id !== saleItem?.item_id
         );
-        mutateSaleInventory([...otherSaleStock, updatedGiftCard]);
+        mutateInventory([...otherSaleStock, updatedGiftCard]);
         validateGiftCard(saleItem?.item_id);
         // Add gift card to sale items
       } else if (saleItem?.is_misc_item) {
