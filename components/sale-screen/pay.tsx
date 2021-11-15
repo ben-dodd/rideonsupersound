@@ -49,7 +49,6 @@ export default function Pay({ isNew }) {
   // SWR
   const { clerks } = useClerks();
   const { customers } = useCustomers();
-  const { vendor } = useVendorFromCustomer(sale?.customer_id);
   const { items } = useSaleItemsForSale(sale?.id);
   const { transactions } = useSaleTransactionsForSale(sale?.id);
   const { inventory } = useStockInventory();
@@ -205,7 +204,6 @@ export default function Pay({ isNew }) {
             </button>
             <button
               className="square-button"
-              disabled={!sale?.customer_id}
               onClick={() => setView({ ...view, acctPaymentDialog: true })}
             >
               ACCT
@@ -235,7 +233,7 @@ export default function Pay({ isNew }) {
           ) : (
             <>
               <div className="font-bold mt-2">
-                Select customer to enable laybys and account payments.
+                Select customer to enable laybys.
               </div>
               <CreateableSelect
                 inputLabel="Select customer"

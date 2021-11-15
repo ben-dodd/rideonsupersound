@@ -171,9 +171,9 @@ export function useVendorPayments() {
   };
 }
 
-export function useVendorTotalPayments(customer_id: number) {
+export function useVendorTotalPayments(vendor_id: number) {
   const { data, error, mutate } = useSWR(
-    `/api/get-vendor-total-payments?customer_id=${customer_id}`,
+    `/api/get-vendor-total-payments?vendor_id=${vendor_id}`,
     fetcher
   );
   return {
@@ -184,9 +184,9 @@ export function useVendorTotalPayments(customer_id: number) {
   };
 }
 
-export function useVendorTotalSales(customer_id: number) {
+export function useVendorTotalSales(vendor_id: number) {
   const { data, error, mutate } = useSWR(
-    `/api/get-vendor-total-sales?customer_id=${customer_id}`,
+    `/api/get-vendor-total-sales?vendor_id=${vendor_id}`,
     fetcher
   );
 
@@ -210,8 +210,8 @@ export function useVendorTotalSales(customer_id: number) {
 
   return {
     totalSales: totalSalesReduced,
-    isLoading: !error && !data,
-    isError: error,
+    isVendorTotalSalesLoading: !error && !data,
+    isVendorTotalSalesError: error,
     mutateVendorTotalSales: mutate,
   };
 }

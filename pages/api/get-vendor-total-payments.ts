@@ -2,18 +2,15 @@ import { NextApiHandler } from "next";
 import { query } from "../../lib/db";
 
 const handler: NextApiHandler = async (req, res) => {
-  const { customer_id } = req.query;
+  const { vendor_id } = req.query;
   try {
     const results = await query(
       `
       SELECT date, amount
       FROM vendor_payment
-      WHERE vendor_id IN
-        (SELECT id
-          FROM vendor
-          WHERE customer_id = ?)
+      WHERE vendor_id = ?
       `,
-      customer_id
+      vendor_id
     );
 
     return res.json(results);

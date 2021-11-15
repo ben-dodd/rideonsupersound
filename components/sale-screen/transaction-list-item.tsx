@@ -86,9 +86,6 @@ export default function TransactionListItem({
     (g: GiftCardObject) => g?.id === transaction?.gift_card_id
   )[0];
 
-  console.log(transaction);
-  console.log(giftCard);
-
   return (
     <div
       className={`flex justify-end items-center mt-2 mb-3 ${

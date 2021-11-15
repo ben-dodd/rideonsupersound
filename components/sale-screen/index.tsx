@@ -10,8 +10,6 @@ import {
   useCustomers,
   useStockInventory,
   useLogs,
-  useVendorTotalSales,
-  useVendorTotalPayments,
   useSales,
   useSaleItems,
 } from "@/lib/swr-hooks";
@@ -79,8 +77,6 @@ export default function SaleScreen({ isNew }) {
   const { sales, mutateSales } = useSales();
   const { saleItems, mutateSaleItems } = useSaleItems();
   const { logs, mutateLogs } = useLogs();
-  useVendorTotalPayments(sale?.customer_id);
-  useVendorTotalSales(sale?.customer_id);
 
   // State
   // const [saleLoading, setSaleLoading] = useState(false);

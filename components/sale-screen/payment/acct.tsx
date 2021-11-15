@@ -7,11 +7,11 @@ import {
   useSaleTransactionsForSale,
   useSaleItemsForSale,
   useStockInventory,
-  useVendorTotalPayments,
-  useVendorTotalSales,
-  useVendorFromCustomer,
   useLogs,
+  useVendors,
   useRegisterID,
+  useVendorPayments,
+  useSalesJoined,
 } from "@/lib/swr-hooks";
 import {
   viewAtom,
@@ -23,16 +23,18 @@ import {
 import {
   ModalButton,
   SaleTransactionObject,
+  VendorObject,
   PaymentMethodTypes,
 } from "@/lib/types";
 
 // Functions
-import { getTotalOwing, getSaleVars } from "@/lib/data-functions";
+import { getPaymentVars, getSaleVars } from "@/lib/data-functions";
 import { saveSaleTransaction, saveLog } from "@/lib/db-functions";
 
 // Components
 import Modal from "@/components/container/modal";
 import TextField from "@/components/inputs/text-field";
+import Select from "react-select";
 
 export default function Acct({ isNew }) {
   // Atoms
@@ -41,17 +43,21 @@ export default function Acct({ isNew }) {
   const [sale] = useAtom(isNew ? newSaleObjectAtom : loadedSaleObjectAtom);
   const [, setAlert] = useAtom(alertAtom);
 
+  // State
+  const [vendorWrapper, setVendorWrapper] = useState(null);
+
   // SWR
-  const { vendor } = useVendorFromCustomer(sale?.customer_id);
   const { registerID } = useRegisterID();
-  const { totalPayments } = useVendorTotalPayments(sale?.customer_id);
-  const { totalSales } = useVendorTotalSales(sale?.customer_id);
+
   const { transactions, mutateSaleTransactions } = useSaleTransactionsForSale(
     sale?.id
   );
   const { items } = useSaleItemsForSale(sale?.id);
   const { inventory } = useStockInventory();
   const { logs, mutateLogs } = useLogs();
+  const { vendors } = useVendors();
+  const { sales } = useSalesJoined();
+  const { vendorPayments } = useVendorPayments();
 
   const { totalRemaining } = getSaleVars(items, transactions, inventory);
 
@@ -60,12 +66,15 @@ export default function Acct({ isNew }) {
   const [submitting, setSubmitting] = useState(false);
 
   // Constants
-  const totalOwing = useMemo(
+  const vendorVars = useMemo(
     () =>
-      totalPayments && totalSales
-        ? getTotalOwing(totalPayments, totalSales) / 100
-        : 0,
-    [totalPayments, totalSales]
+      getPaymentVars(
+        inventory,
+        sales,
+        vendorPayments,
+        vendorWrapper?.value?.id
+      ),
+    [inventory, sales, vendorPayments, vendorWrapper?.value?.id]
   );
 
   const buttons: ModalButton[] = [
@@ -74,7 +83,7 @@ export default function Acct({ isNew }) {
       disabled:
         submitting ||
         parseFloat(acctPayment) > totalRemaining ||
-        totalOwing < parseFloat(acctPayment) ||
+        vendorVars?.totalOwing / 100 < parseFloat(acctPayment) ||
         parseFloat(acctPayment) === 0 ||
         acctPayment <= "" ||
         isNaN(parseFloat(acctPayment)),
@@ -95,7 +104,7 @@ export default function Acct({ isNew }) {
           transaction,
           transactions,
           mutateSaleTransactions,
-          vendor
+          vendorWrapper?.value
         );
         setSubmitting(false);
         setView({ ...view, acctPaymentDialog: false });
@@ -103,9 +112,9 @@ export default function Acct({ isNew }) {
           {
             log: `$${parseFloat(acctPayment)?.toFixed(
               2
-            )} account payment from vendor ${vendor?.name} (sale #${
-              sale?.id
-            }).`,
+            )} account payment from vendor ${
+              vendorWrapper?.value?.name
+            } (sale #${sale?.id}).`,
             clerk_id: clerk?.id,
             table_id: "sale_transaction",
             row_id: id,
@@ -140,11 +149,33 @@ export default function Acct({ isNew }) {
           selectOnFocus
           onChange={(e: any) => setAcctPayment(e.target.value)}
         />
+        <div className="input-label">Select Vendor</div>
+        <div className="pb-32">
+          <Select
+            className="w-full self-stretch"
+            value={vendorWrapper}
+            options={vendors
+              ?.sort((vendorA: VendorObject, vendorB: VendorObject) => {
+                const a = vendorA?.name;
+                const b = vendorB?.name;
+                return a > b ? 1 : b > a ? -1 : 0;
+              })
+              ?.map((vendor: VendorObject) => ({
+                value: vendor,
+                label: vendor?.name,
+              }))}
+            onChange={(v: any) => setVendorWrapper(v)}
+          />
+        </div>
         <div className="text-center">{`Remaining to pay: $${(
           totalRemaining || 0
         )?.toFixed(2)}`}</div>
         <div className="text-center font-bold">
-          {`Remaining in account: $${totalOwing?.toFixed(2)}`}
+          {`Remaining in account: ${
+            false
+              ? `Loading...`
+              : `$${(vendorVars?.totalOwing / 100)?.toFixed(2)}`
+          }`}
         </div>
         <div className="text-center text-xl font-bold my-4">
           {acctPayment === "" || parseFloat(acctPayment) === 0
@@ -153,7 +184,7 @@ export default function Acct({ isNew }) {
             ? "NUMBERS ONLY PLEASE"
             : parseFloat(acctPayment) > totalRemaining
             ? `PAYMENT TOO HIGH`
-            : totalOwing < parseFloat(acctPayment)
+            : vendorVars?.totalOwing / 100 < parseFloat(acctPayment)
             ? `NOT ENOUGH IN ACCOUNT`
             : parseFloat(acctPayment) < totalRemaining
             ? `AMOUNT SHORT BY $${(

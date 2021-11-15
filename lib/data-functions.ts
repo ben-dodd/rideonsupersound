@@ -358,6 +358,7 @@ export function getTotalOwing(
   totalPayments: VendorPaymentObject[],
   totalSales: VendorSaleItemObject[]
 ) {
+  console.log(totalPayments);
   const totalPaid = totalPayments?.reduce(
     (acc: number, payment: VendorPaymentObject) => acc + payment?.amount,
     0

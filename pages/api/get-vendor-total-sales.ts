@@ -2,7 +2,7 @@ import { NextApiHandler } from "next";
 import { query } from "../../lib/db";
 
 const handler: NextApiHandler = async (req, res) => {
-  const { customer_id } = req.query;
+  const { vendor_id } = req.query;
   try {
     const results = await query(
       `
@@ -23,17 +23,14 @@ const handler: NextApiHandler = async (req, res) => {
         ON stock_price.stock_id = sale_item.item_id
       WHERE sale_item.item_id IN
         (SELECT id FROM stock
-          WHERE vendor_id IN
-            (SELECT id FROM vendor
-              WHERE customer_id = ?
-            )
-          )
+          WHERE vendor_id = ?
+        )
       AND stock_price.date_valid_from <= sale.date_sale_opened
       AND sale.state = 'completed'
       AND sale.is_deleted = 0
       AND sale_item.is_deleted = 0
       `,
-      customer_id
+      vendor_id
     );
 
     return res.json(results);
