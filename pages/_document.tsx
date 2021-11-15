@@ -10,8 +10,8 @@ class MyDocument extends Document {
     return (
       <Html>
         <Head>
-          <link rel="shortcut icon" href="/favicon.ico" />
           <title>Ride On Super Sound</title>
+          <meta name="robots" content="noindex,nofollow" />
           <link
             rel="apple-touch-icon"
             sizes="60x60"
