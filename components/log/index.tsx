@@ -5,6 +5,7 @@ import { useAtom } from "jotai";
 import { useLogs } from "@/lib/swr-hooks";
 import { pageAtom } from "@/lib/atoms";
 import { LogObject } from "@/lib/types";
+import { convertToNZTime } from "@/lib/data-functions";
 
 // Components
 import ListLog from "./list-log";
@@ -15,6 +16,8 @@ export default function LogScreen() {
 
   // Atoms
   const [page] = useAtom(pageAtom);
+
+  console.log(convertToNZTime());
 
   return (
     <div
