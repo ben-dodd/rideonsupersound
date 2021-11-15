@@ -793,7 +793,8 @@ export function writeKiwiBankBatchFile({
 
 export function nzDate(isoDate: string) {
   // return isoDate ? parseISO(isoDate) : null;
-  return isoDate ? add(parseISO(isoDate), { hours: 7 }) : null;
+  // return isoDate ? add(parseISO(isoDate), { hours: 7 }) : null;
+  return isoDate ? convertToNZTime(isoDate) : null;
 }
 
 export function checkDate(date: Date | string) {
@@ -842,4 +843,81 @@ export function latestDate(dates: Date[] | string[]) {
         )
       )
     : null;
+}
+
+export function convertToNZTime(date) {
+  const UTCFromMS = (ms) => {
+    return new Date(new Date(ms).toUTCString().replace(" GMT", ""));
+  };
+
+  const addHours = (dte, hrs) => {
+    return new Date(
+      dte.getFullYear(),
+      dte.getMonth(),
+      dte.getDate(),
+      dte.getHours() + hrs,
+      dte.getMinutes(),
+      dte.getMilliseconds()
+    );
+  };
+
+  const toNewZealand = (ms) => {
+    return addNewZealandDaylightSavings(UTCFromMS(ms));
+  };
+
+  const getPreviousSunday = (dte) => {
+    return new Date(
+      dte.getFullYear(),
+      dte.getMonth(),
+      dte.getDate() - dte.getDay(),
+      1,
+      0,
+      0
+    );
+  };
+
+  const getNextSunday = (dte) => {
+    return new Date(
+      dte.getFullYear(),
+      dte.getMonth(),
+      dte.getDay() === 0 ? dte.getDate() : dte.getDate() + (7 - dte.getDay()),
+      1,
+      0,
+      0
+    );
+  };
+
+  const standardHours = 12;
+  const daylightHours = 13;
+  const addNewZealandDaylightSavings = (dte) => {
+    const lastSundaySeptember = getPreviousSunday(
+      new Date(dte.getFullYear(), 8, 30)
+    );
+
+    const firstSundayApril = getNextSunday(new Date(dte.getFullYear(), 3, 1));
+
+    // If its before firstSundayApril, add 13, if we went over 1am, add 12.
+    if (dte <= firstSundayApril) {
+      const daylightNz = addHours(dte, daylightHours);
+      if (daylightNz >= firstSundayApril) {
+        return addHours(dte, standardHours);
+      }
+      return daylightNz;
+    }
+
+    // if its before lastSundaySeptember, add 12 if we went over 1am add 13.
+    if (dte <= lastSundaySeptember) {
+      const standardNz = addHours(dte, standardHours);
+      if (standardNz >= lastSundaySeptember) {
+        return addHours(dte, daylightHours);
+      }
+      return standardNz;
+    }
+    return addHours(dte, daylightHours);
+  };
+
+  return toNewZealand(date);
+  // the above line should always output the current DateTime in New Zealand,
+  // replace the argument with any epoch milliseconds and it should still always
+  // give you the correct time.
 }
