@@ -254,7 +254,7 @@ export default function SaleScreen({ isNew }) {
       ...sale,
       state: SaleStateTypes.Completed,
       sale_closed_by: clerk?.id,
-      date_sale_closed: formatISO(new Date()),
+      date_sale_closed: "CURRENT_TIMESTAMP",
     };
     updateSaleInDatabase(completedSale);
     setSale(null);
@@ -302,6 +302,7 @@ export default function SaleScreen({ isNew }) {
       onClick: () =>
         isNew ? setView({ ...view, saleScreen: false }) : clickAddMoreItems(),
       disabled: sale?.state === SaleStateTypes.Layby || totalRemaining === 0,
+      loading: addMoreItemsLoading,
       text: "CHANGE ITEMS",
     },
     {

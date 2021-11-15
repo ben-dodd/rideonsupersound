@@ -686,6 +686,8 @@ export async function updateSaleInDatabase(sale: SaleObject) {
         note: sale?.note ? sale?.note : null,
         date_layby_started: sale?.date_layby_started || null,
         layby_started_by: sale?.layby_started_by || null,
+        date_sale_closed: sale?.date_sale_closed || null,
+        sale_closed_by: sale?.sale_closed_by || null,
       }),
     });
     const json = await res.json();

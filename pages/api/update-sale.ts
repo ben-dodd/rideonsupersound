@@ -10,6 +10,8 @@ const handler: NextApiHandler = async (req, res) => {
     note,
     date_layby_started,
     layby_started_by,
+    date_sale_closed,
+    sale_closed_by,
   } = req.body;
   try {
     const results = await query(
@@ -22,7 +24,11 @@ const handler: NextApiHandler = async (req, res) => {
         date_layby_started = ${
           date_layby_started ? `"${date_layby_started}"` : null
         },
-        layby_started_by = ${layby_started_by}
+        layby_started_by = ${layby_started_by},
+        date_sale_closed = ${
+          date_sale_closed === "CURRENT_TIMESTAMP" ? `CURRENT_TIMESTAMP` : null
+        },
+        sale_closed_by = ${sale_closed_by}
       WHERE id = ${sale_id}
       `
     );
