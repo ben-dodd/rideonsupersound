@@ -887,8 +887,8 @@ export function convertToNZTime(date) {
     );
   };
 
-  const standardHours = 12;
-  const daylightHours = 13;
+  const standardHours = 18;
+  const daylightHours = 19;
   const addNewZealandDaylightSavings = (dte) => {
     const lastSundaySeptember = getPreviousSunday(
       new Date(dte.getFullYear(), 8, 30)
