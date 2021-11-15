@@ -31,7 +31,6 @@ import InfoIcon from "@mui/icons-material/Info";
 // Functions
 import {
   getItemSku,
-  getGeolocation,
   getItemDisplayName,
   getItemQuantity,
   getImageSrc,
@@ -40,11 +39,11 @@ import { saveLog } from "@/lib/db-functions";
 
 type ListItemProps = {
   item: InventoryObject;
+  geolocation: any;
 };
 
-export default function ListItem({ item }: ListItemProps) {
+export default function ListItem({ item, geolocation }: ListItemProps) {
   // SWR
-  const geolocation = getGeolocation();
   const { weather } = useWeather();
   const { inventory } = useStockInventory();
   const { vendors } = useVendors();

@@ -1,4 +1,5 @@
 // Packages
+import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 
 // DB
@@ -21,6 +22,23 @@ export default function InventoryScroll() {
   // Atoms
   const [search] = useAtom(sellSearchBarAtom);
 
+  // State
+  const [geolocation, setGeolocation] = useState(null);
+
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      console.log("Geolocation is not supported by your browser");
+    } else {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          console.log(position);
+          setGeolocation(position?.coords);
+        },
+        () => console.log("Unable to retrieve location.")
+      );
+    }
+  }, []);
+
   return (
     <div className="h-inventory overflow-y-scroll px-2">
       {isInventoryLoading ? (
@@ -39,7 +57,7 @@ export default function InventoryScroll() {
               return 0;
             })
             .map((item: InventoryObject) => (
-              <ListItem item={item} key={item?.id} />
+              <ListItem item={item} key={item?.id} geolocation={geolocation} />
             ))}
         </>
       ) : (

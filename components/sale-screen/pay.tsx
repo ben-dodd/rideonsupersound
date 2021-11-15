@@ -6,7 +6,6 @@ import { useAtom } from "jotai";
 import {
   useClerks,
   useCustomers,
-  useVendorFromCustomer,
   useSaleTransactionsForSale,
   useSaleItemsForSale,
   useStockInventory,
@@ -17,14 +16,7 @@ import {
   viewAtom,
   loadedCustomerObjectAtom,
 } from "@/lib/atoms";
-import {
-  CustomerObject,
-  SaleTransactionObject,
-  OpenWeatherObject,
-  SaleItemObject,
-  SaleStateTypes,
-  PaymentMethodTypes,
-} from "@/lib/types";
+import { CustomerObject, OpenWeatherObject, SaleStateTypes } from "@/lib/types";
 
 // Functions
 import {
@@ -61,7 +53,6 @@ export default function Pay({ isNew }) {
     const weather: OpenWeatherObject = sale?.weather
       ? JSON.parse(sale?.weather)
       : null;
-    console.log(weather);
     return (
       <div className="px-2">
         <div className="bg-white rounded border">
@@ -144,11 +135,11 @@ export default function Pay({ isNew }) {
         )}
         {sale?.geo_latitude && sale?.geo_longitude && (
           <iframe
-            width="400"
-            height="400"
+            width="380"
+            height="180"
             loading="lazy"
-            src={`https://www.google.com/maps/embed/v1/place?key=${process.env.REACT_APP_GOOGLE_API_KEY}
-      &q=${sale?.geo_latitude},${sale?.geo_longitude}`}
+            src={`https://www.google.com/maps/embed/v1/streetview?key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}
+      &location=${sale?.geo_latitude},${sale?.geo_longitude}`}
           ></iframe>
         )}
       </div>

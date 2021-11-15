@@ -793,8 +793,8 @@ export function writeKiwiBankBatchFile({
 
 export function nzDate(isoDate: string) {
   // return isoDate ? parseISO(isoDate) : null;
-  // return isoDate ? add(parseISO(isoDate), { hours: 7 }) : null;
-  return isoDate ? convertToNZTime(isoDate) : null;
+  return isoDate ? add(parseISO(isoDate), { hours: 20 }) : null;
+  // return isoDate ? convertToNZTime(isoDate) : null;
 }
 
 export function checkDate(date: Date | string) {
@@ -802,7 +802,7 @@ export function checkDate(date: Date | string) {
     if (date instanceof Date) {
       if (isNaN(date.getTime())) {
         return null;
-      } else return nzDate(date?.toString());
+      } else return date;
     } else return nzDate(date);
   } else return null;
 }

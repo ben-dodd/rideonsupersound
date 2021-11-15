@@ -131,7 +131,7 @@ export default function ShoppingCart() {
   const storeCut = getTotalStoreCut(cart?.items, inventory);
   const disableButtons =
     loadingSale || !(cart?.items && Object.keys(cart?.items).length > 0);
-
+  console.log(cart);
   return (
     <div
       className={`absolute top-0 transition-offset duration-300 ${
