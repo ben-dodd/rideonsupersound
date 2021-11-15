@@ -802,9 +802,9 @@ export function checkDate(date: Date | string) {
     if (date instanceof Date) {
       if (isNaN(date.getTime())) {
         return null;
-      } else return date;
+      } else return nzDate(date?.toString());
     } else return nzDate(date);
-  } else return new Date();
+  } else return null;
 }
 
 export function fDate(date?: Date | string) {
