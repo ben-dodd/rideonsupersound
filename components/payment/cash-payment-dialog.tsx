@@ -19,6 +19,7 @@ import {
   InventoryObject,
   VendorObject,
   ModalButton,
+  PaymentMethodTypes,
 } from "@/lib/types";
 
 // Functions
@@ -89,7 +90,7 @@ export default function CashPaymentDialog() {
           clerk_id: clerk?.id,
           vendor_id: vendor?.id,
           register_id: registerID,
-          type: "cash",
+          type: PaymentMethodTypes.Cash,
         };
         saveVendorPaymentToDatabase(vendorPayment).then((id) => {
           mutateVendorPayments([...vendorPayments, { ...vendorPayment, id }]);

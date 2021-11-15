@@ -1,15 +1,30 @@
 export enum SaleStateTypes {
-  InProgress = "in progress",
-  Layby = "layby",
-  Parked = "parked",
-  Completed = "completed",
+  InProgress = "in progress", // sale in cart
+  Layby = "layby", // sale held on layby
+  Parked = "parked", // sale parked
+  Completed = "completed", // sale completed
+}
+
+export enum StockMovementTypes {
+  Received = "received", // received from vendor
+  Returned = "returned", // returned to vendor
+  Lost = "lost", // unknown/lost
+  Found = "found", // unknown/found, back into stock
+  Discarded = "discarded", // damaged/ruined/thrown out
+  Layby = "layby", // held on layby
+  Unlayby = "unlayby", // removed from layby back into stock
+  Hold = "hold", // held for customer
+  Unhold = "unhold", // removed from hold back into stock
+  Sold = "sold", // sold to customer
+  Unsold = "unsold", // customer returned, back into stock
+  Adjustment = "adjustment", // stock level adjustment from stocktake
 }
 
 export enum PaymentMethodTypes {
-  Cash = "cash",
-  Card = "card",
-  Account = "acct",
-  GiftCard = "gift",
+  Cash = "cash", // paid with cash
+  Card = "card", // paid with card, eftpos or credit
+  Account = "acct", // paid with vendor store credit
+  GiftCard = "gift", // paid with gift card
 }
 
 export enum ButtonTypes {

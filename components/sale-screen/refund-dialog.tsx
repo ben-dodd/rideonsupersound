@@ -20,7 +20,7 @@ import {
   clerkAtom,
   alertAtom,
 } from "@/lib/atoms";
-import { ModalButton, CustomerObject } from "@/lib/types";
+import { ModalButton, CustomerObject, PaymentMethodTypes } from "@/lib/types";
 
 // Functions
 import { getSaleVars } from "@/lib/data-functions";
@@ -48,7 +48,7 @@ export default function Cash({ isNew }) {
 
   // State
   const [refundAmount, setRefundAmount] = useState(`${totalRemaining}`);
-  const [paymentMethod, setPaymentMethod] = useState("cash");
+  const [paymentMethod, setPaymentMethod] = useState(PaymentMethodTypes.Cash);
   const [submitting, setSubmitting] = useState(false);
 
   // Constants
@@ -122,21 +122,21 @@ export default function Cash({ isNew }) {
           <button
             className="square-button"
             disabled={totalRemaining === 0}
-            onClick={() => setPaymentMethod("cash")}
+            onClick={() => setPaymentMethod(PaymentMethodTypes.Cash)}
           >
             CASH
           </button>
           <button
             className="square-button"
             disabled={totalRemaining === 0}
-            onClick={() => setPaymentMethod("card")}
+            onClick={() => setPaymentMethod(PaymentMethodTypes.Card)}
           >
             CARD
           </button>
           <button
             className="square-button"
             disabled={!sale?.customer_id || totalRemaining === 0}
-            onClick={() => setPaymentMethod("acct")}
+            onClick={() => setPaymentMethod(PaymentMethodTypes.Account)}
           >
             ACCT
           </button>

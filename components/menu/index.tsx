@@ -78,7 +78,7 @@ export default function Menu() {
     {
       type: "link",
       page: "customers",
-      text: "CONTACTS",
+      text: "CUSTOMERS",
       class: "bg-col4-light hover:bg-col4",
       icon: <CustomersIcon />,
     },

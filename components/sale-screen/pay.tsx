@@ -22,6 +22,8 @@ import {
   SaleTransactionObject,
   OpenWeatherObject,
   SaleItemObject,
+  SaleStateTypes,
+  PaymentMethodTypes,
 } from "@/lib/types";
 
 // Functions
@@ -176,7 +178,7 @@ export default function Pay({ isNew }) {
               : "text-tertiary"
           }`}
         >
-          {sale?.state === "completed"
+          {sale?.state === SaleStateTypes.Completed
             ? "SALE COMPLETED"
             : totalRemaining === 0
             ? "ALL PAID"
@@ -192,11 +194,11 @@ export default function Pay({ isNew }) {
             : `$${(totalRemaining || 0)?.toFixed(2)}`}
         </div>
       </div>
-      {sale?.state === "completed" && <SaleCompletedDetails />}
-      {totalRemaining === 0 && sale?.state !== "completed" && (
+      {sale?.state === SaleStateTypes.Completed && <SaleCompletedDetails />}
+      {totalRemaining === 0 && sale?.state !== SaleStateTypes.Completed && (
         <div className="font-sm">Click complete sale to finish.</div>
       )}
-      {sale?.state !== "completed" && (
+      {sale?.state !== SaleStateTypes.Completed && (
         <div className="grid grid-cols-2 gap-2 mt-4">
           <button
             className="square-button"
@@ -225,10 +227,11 @@ export default function Pay({ isNew }) {
           </button>
         </div>
       )}
-      {sale?.state === "completed" ||
-      sale?.state === "layby" ||
+      {sale?.state === SaleStateTypes.Completed ||
+      sale?.state === SaleStateTypes.Layby ||
       transactions?.filter(
-        (s: SaleTransactionObject) => s?.payment_method === "acct"
+        (s: SaleTransactionObject) =>
+          s?.payment_method === PaymentMethodTypes.Account
       )?.length > 0 ? (
         <div className="mt-2">
           {sale?.customer_id ? (

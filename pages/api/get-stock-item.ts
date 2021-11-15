@@ -1,5 +1,6 @@
 import { NextApiHandler } from "next";
-import { query } from "../../lib/db";
+import { query } from "@/lib/db";
+import { StockMovementTypes } from "@/lib/types";
 
 const handler: NextApiHandler = async (req, res) => {
   const { stock_id } = req.query;
@@ -27,37 +28,37 @@ const handler: NextApiHandler = async (req, res) => {
         (SELECT stock_id, SUM(quantity) AS quantity FROM stock_movement GROUP BY stock_id) AS q
         ON q.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_received FROM stock_movement WHERE act = 'received' GROUP BY stock_id) AS rec
+        (SELECT stock_id, SUM(quantity) AS quantity_received FROM stock_movement WHERE act = '${StockMovementTypes.Received}' GROUP BY stock_id) AS rec
         ON rec.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_returned FROM stock_movement WHERE act = 'returned' GROUP BY stock_id) AS ret
+        (SELECT stock_id, SUM(quantity) AS quantity_returned FROM stock_movement WHERE act = '${StockMovementTypes.Returned}' GROUP BY stock_id) AS ret
         ON ret.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_sold FROM stock_movement WHERE act = 'sold' GROUP BY stock_id) AS sol
+        (SELECT stock_id, SUM(quantity) AS quantity_sold FROM stock_movement WHERE act = '${StockMovementTypes.Sold}' GROUP BY stock_id) AS sol
         ON sol.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_unsold FROM stock_movement WHERE act = 'unsold' GROUP BY stock_id) AS uns
+        (SELECT stock_id, SUM(quantity) AS quantity_unsold FROM stock_movement WHERE act = '${StockMovementTypes.Unsold}' GROUP BY stock_id) AS uns
         ON uns.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_hold FROM stock_movement WHERE act = 'hold' GROUP BY stock_id) AS hol
+        (SELECT stock_id, SUM(quantity) AS quantity_hold FROM stock_movement WHERE act = '${StockMovementTypes.Hold}' GROUP BY stock_id) AS hol
         ON hol.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_unhold FROM stock_movement WHERE act = 'unhold' GROUP BY stock_id) AS unh
+        (SELECT stock_id, SUM(quantity) AS quantity_unhold FROM stock_movement WHERE act = '${StockMovementTypes.Unhold}' GROUP BY stock_id) AS unh
         ON unh.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_layby FROM stock_movement WHERE act = 'layby' GROUP BY stock_id) AS lay
+        (SELECT stock_id, SUM(quantity) AS quantity_layby FROM stock_movement WHERE act = '${StockMovementTypes.Layby}' GROUP BY stock_id) AS lay
         ON lay.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_unlayby FROM stock_movement WHERE act = 'unlayby' GROUP BY stock_id) AS unl
+        (SELECT stock_id, SUM(quantity) AS quantity_unlayby FROM stock_movement WHERE act = '${StockMovementTypes.Unlayby}' GROUP BY stock_id) AS unl
         ON unl.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_lost FROM stock_movement WHERE act = 'lost' GROUP BY stock_id) AS los
+        (SELECT stock_id, SUM(quantity) AS quantity_lost FROM stock_movement WHERE act = '${StockMovementTypes.Lost}' GROUP BY stock_id) AS los
         ON los.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_found FROM stock_movement WHERE act = 'found' GROUP BY stock_id) AS fou
+        (SELECT stock_id, SUM(quantity) AS quantity_found FROM stock_movement WHERE act = '${StockMovementTypes.Found}' GROUP BY stock_id) AS fou
         ON fou.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_discarded FROM stock_movement WHERE act = 'discarded' GROUP BY stock_id) AS dis
+        (SELECT stock_id, SUM(quantity) AS quantity_discarded FROM stock_movement WHERE act = '${StockMovementTypes.Discarded}' GROUP BY stock_id) AS dis
         ON dis.stock_id = s.id
       LEFT JOIN
         stock_price AS p ON p.stock_id = s.id

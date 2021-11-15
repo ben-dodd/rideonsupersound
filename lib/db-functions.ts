@@ -13,6 +13,8 @@ import {
   HoldObject,
   CustomerObject,
   SaleStateTypes,
+  PaymentMethodTypes,
+  StockMovementTypes,
 } from "@/lib/types";
 
 export async function loadSaleToCart(
@@ -212,7 +214,7 @@ export async function saveSaleTransaction(
   mutate?: Function,
   vendor?: VendorObject
 ) {
-  if (transaction?.payment_method === "acct") {
+  if (transaction?.payment_method === PaymentMethodTypes.Account) {
     // Add account payment as a store payment to the vendor
     let vendorPaymentId = null;
     const vendorPayment = {
@@ -598,11 +600,11 @@ export async function saveStockMovementToDatabase(
         stock_id: item?.item_id,
         clerk_id: clerk?.id,
         quantity:
-          act === "receive" ||
-          act === "unhold" ||
-          act === "unlayby" ||
-          act === "found" ||
-          act === "unsold"
+          act === StockMovementTypes.Received ||
+          act === StockMovementTypes.Unhold ||
+          act === StockMovementTypes.Unlayby ||
+          act === StockMovementTypes.Found ||
+          act === StockMovementTypes.Unsold
             ? parseInt(item?.quantity)
             : -parseInt(item?.quantity),
         act,

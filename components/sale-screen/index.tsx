@@ -1,6 +1,7 @@
 // Packages
 import { useState } from "react";
 import { useAtom } from "jotai";
+import formatISO from "date-fns/formatISO";
 
 // DB
 import {
@@ -222,10 +223,10 @@ export default function SaleScreen({ isNew }) {
     //    If gift card, add to the collection
     //    If misc item, ignore
     //    If other item, change quantity sold
-    // Update sale to 'complete', add date_sale_completed, sale_completed_by
+    // Update sale to 'complete', add date_sale_closed, sale_closed_by
     items?.forEach((saleItem: SaleItemObject) => {
       console.log(saleItem);
-      if (sale?.state === "layby" && !saleItem?.is_gift_card) {
+      if (sale?.state === SaleStateTypes.Layby && !saleItem?.is_gift_card) {
         saveStockMovementToDatabase(saleItem, clerk, "unlayby", null);
       }
       if (saleItem?.is_gift_card) {
@@ -249,7 +250,12 @@ export default function SaleScreen({ isNew }) {
         saveStockMovementToDatabase(saleItem, clerk, "sold", null);
       }
     });
-    let completedSale = { ...sale, state: SaleStateTypes.Completed };
+    let completedSale = {
+      ...sale,
+      state: SaleStateTypes.Completed,
+      sale_closed_by: clerk?.id,
+      date_sale_closed: formatISO(new Date()),
+    };
     updateSaleInDatabase(completedSale);
     setSale(null);
     if (isNew) setView({ ...view, saleScreen: false });

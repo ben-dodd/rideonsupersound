@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react";
 
+import { SaleStateTypes, PaymentMethodTypes } from "@/lib/types";
+
 // Material UI Components
 import {
   useTable,
@@ -194,15 +196,15 @@ function Table({
                 <tr
                   {...rowProps}
                   className={`${
-                    row?.cells[1]?.value === "complete" ||
+                    row?.cells[1]?.value === SaleStateTypes.Completed ||
                     row?.cells[5]?.value === "Audio" ||
                     row?.cells[4]?.value === "Band"
                       ? "bg-gray-100"
-                      : row?.cells[1]?.value === "layby" ||
+                      : row?.cells[1]?.value === SaleStateTypes.Layby ||
                         row?.cells[5]?.value === "Literature" ||
                         row?.cells[4]?.value === "Label"
                       ? "bg-yellow-100"
-                      : row?.cells[1]?.value === "parked"
+                      : row?.cells[1]?.value === SaleStateTypes.Parked
                       ? "bg-green-100"
                       : "bg-blue-100"
                   } ${
