@@ -54,11 +54,8 @@ export default function VendorsScreen() {
               return {
                 id: v?.id,
                 name: v?.name || "-",
-                vendorCustomer:
-                  customers?.filter(
-                    (c: CustomerObject) => c?.id === v?.customer_id
-                  )[0] || {},
-                storeCustomer:
+                contactName: v?.contact_name || "-",
+                storeContact:
                   clerks?.filter(
                     (c: ClerkObject) => c?.id === v?.clerk_id
                   )[0] || {},
@@ -107,14 +104,14 @@ export default function VendorsScreen() {
         ),
       },
       {
-        Header: "Vendor Customer",
-        accessor: "vendorCustomer",
+        Header: "Contact Name",
+        accessor: "contactName",
         width: 150,
         Cell: ({ value }) => value?.name || "-",
       },
       {
         Header: "Staff",
-        accessor: "storeCustomer",
+        accessor: "storeContact",
         width: 80,
         Cell: ({ value }) => value?.name || "-",
       },

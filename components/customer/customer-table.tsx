@@ -47,9 +47,6 @@ export default function CustomerTable() {
         .map((c: CustomerObject) => ({
           id: c?.id,
           name: c?.name,
-          vendor:
-            vendors?.filter((v: VendorObject) => v?.customer_id === c?.id)[0] ||
-            null,
           email: c?.email,
           phone: c?.phone,
           postalAddress: c?.postal_address,
@@ -91,18 +88,6 @@ export default function CustomerTable() {
         Cell: (item: any) => (
           <span className="cursor-pointer underline" onClick={() => null}>
             {item?.value}
-          </span>
-        ),
-      },
-      {
-        Header: "Vendor",
-        accessor: "vendor",
-        Cell: ({ value }) => (
-          <span
-            className="cursor-pointer underline"
-            onClick={() => openVendorDialog(value)}
-          >
-            {value?.name || ""}
           </span>
         ),
       },

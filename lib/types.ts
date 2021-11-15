@@ -170,9 +170,9 @@ export interface VendorObject {
   id?: number;
   name?: string;
   category?: string;
-  customer_id?: number;
   clerk_id?: number;
   bank_account_number?: string;
+  contact_name?: string;
   email?: string;
   phone?: string;
   postal_address?: string;
