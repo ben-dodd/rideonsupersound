@@ -135,11 +135,12 @@ export default function Pay({ isNew }) {
         )}
         {sale?.geo_latitude && sale?.geo_longitude && (
           <iframe
+            className="p-2"
             width="380"
             height="180"
             loading="lazy"
             src={`https://www.google.com/maps/embed/v1/streetview?key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}
-      &location=${sale?.geo_latitude},${sale?.geo_longitude}`}
+      &location=${sale?.geo_latitude},${sale?.geo_longitude}&fov=70`}
           ></iframe>
         )}
       </div>
