@@ -87,7 +87,7 @@ function EditableTable({
   return (
     <div className="ml-1">
       <div
-        className={`flex justify-between items-center px-2 mb-1 shadow-lg ${
+        className={`flex justify-between items-center px-2 mb-1 ${
           color ? `bg-${color}` : ""
         }`}
       >
@@ -108,7 +108,7 @@ function EditableTable({
                       color
                         ? `bg-${color} hover:bg-${color}-dark`
                         : "bg-gray-500 hover:bg-gray-800"
-                    } hover:shadow text-left px-2 truncate`}
+                    } text-left px-2 truncate`}
                     {...column.getHeaderProps(column.getSortByToggleProps())}
                   >
                     {column.render("Header")}

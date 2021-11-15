@@ -642,7 +642,7 @@ export function writeIntegerAsWord(number: number) {
     if (Math.floor(tempNumber / (100 * Math.pow(1000, i))) !== 0)
       word =
         first[Math.floor(tempNumber / (100 * Math.pow(1000, i)))] +
-        "hunderd " +
+        "hundred " +
         word;
   }
   return word;

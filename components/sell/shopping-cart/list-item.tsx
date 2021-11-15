@@ -3,8 +3,8 @@ import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useSaleInventory, useGiftCards } from "@/lib/swr-hooks";
-import { newSaleObjectAtom } from "@/lib/atoms";
+import { useSaleInventory, useStockItem, useGiftCards } from "@/lib/swr-hooks";
+import { newSaleObjectAtom, confirmModalAtom } from "@/lib/atoms";
 import { InventoryObject, SaleItemObject } from "@/lib/types";
 
 // Functions
@@ -15,6 +15,8 @@ import {
   writeCartItemPriceTotal,
   writeCartItemPriceBreakdown,
   getImageSrc,
+  getItemQuantity,
+  writeIntegerAsWord,
 } from "@/lib/data-functions";
 
 // Components
@@ -39,10 +41,11 @@ export default function SellListItem({
 }: SellListItemProps) {
   // SWR
   const { saleInventory } = useSaleInventory();
-  const { giftCards } = useGiftCards();
+  const { stockItem } = useStockItem(cartItem?.item_id);
 
   // Atoms
   const [cart, setCart] = useAtom(newSaleObjectAtom);
+  const [, setConfirmModal] = useAtom(confirmModalAtom);
 
   // State
   const [item, setItem] = useState(null);
@@ -59,10 +62,32 @@ export default function SellListItem({
 
   // Functions
   function onChangeCart(e: any, property: string) {
+    console.log(e?.target?.value);
     let newCart = { ...cart };
     if (newCart?.items && newCart?.items[index])
       newCart.items[index][property] = e.target.value;
     setCart(newCart);
+  }
+
+  function onChangeQuantity(e: any) {
+    console.log(e?.target?.value);
+    if (stockItem?.quantity < parseInt(e?.target?.value)) {
+      console.log(e?.target?.value);
+      const newQuantity = e?.target?.value;
+      setConfirmModal({
+        open: true,
+        title: "Are you sure you want to add to cart?",
+        styledMessage: (
+          <span>
+            There is not enough of <b>{getItemDisplayName(item)}</b> in stock.
+            Are you sure you want to change the quantity to {e?.target?.value}?
+          </span>
+        ),
+        yesText: "YES, I'M SURE",
+        action: () =>
+          onChangeCart({ target: { value: newQuantity } }, "quantity"),
+      });
+    } else onChangeCart(e, "quantity");
   }
 
   return (
@@ -121,7 +146,7 @@ export default function SellListItem({
                 min={1}
                 inputType="number"
                 valueNum={parseInt(cartItem?.quantity)}
-                onChange={(e: any) => onChangeCart(e, "quantity")}
+                onChange={(e: any) => onChangeQuantity(e)}
               />
               <TextField
                 className="mx-2 w-1/3"

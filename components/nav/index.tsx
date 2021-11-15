@@ -42,16 +42,6 @@ export default function Nav() {
     <nav className={`py-2 ${bg[clerk?.name?.toLowerCase()]} text-white h-nav`}>
       <div className="flex justify-between items-center">
         <div className="flex items-center">
-          {/*<div className="w-12">
-            <div className={`w-12 h-12 rounded-full mx-2 relative`}>
-              <Image
-                layout="fill"
-                objectFit="cover"
-                src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/clerk/${clerk?.name}.png`}
-                alt={clerk?.name}
-              />
-            </div>
-          </div>*/}
           <div className="ml-4 text-black text-4xl font-black">
             {clerk?.name?.toUpperCase()} @
           </div>

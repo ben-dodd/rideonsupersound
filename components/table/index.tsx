@@ -135,9 +135,7 @@ function Table({
   return (
     <div className="ml-1">
       <div
-        className={`flex justify-between items-center px-2 mb-1 shadow-lg ${
-          color || ""
-        }`}
+        className={`flex justify-between items-center px-2 mb-1 ${color || ""}`}
       >
         {heading ? (
           <div className={`text-4xl font-bold uppercase`}>{heading}</div>
@@ -165,7 +163,7 @@ function Table({
                       color
                         ? `${color} hover:${colorDark}`
                         : "bg-gray-500 hover:bg-gray-800"
-                    } hover:shadow text-left px-2 truncate`}
+                    } text-left px-2 truncate`}
                     {...column.getHeaderProps()}
                   >
                     <div {...column.getSortByToggleProps()}>
