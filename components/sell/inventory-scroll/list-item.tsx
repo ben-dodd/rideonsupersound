@@ -129,6 +129,8 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
   //   onClick={clickAddToCart}
   //   onDoubleClick={clickOpenInventoryModal}
   // >
+
+  console.log(item);
   return (
     <div
       className={`flex w-full mb-2 text-black ${
@@ -179,7 +181,13 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
           <Tooltip title="Go to the INVENTORY screen to receive or return items.">
             <div
               className={`text-md ${itemQuantity < 1 && "text-red-500"}`}
-            >{`${itemQuantity} in stock`}</div>
+            >{`${itemQuantity} in stock${
+              item?.quantity_hold ? `, ${item?.quantity_hold * -1} on hold` : ""
+            }${
+              item?.quantity_layby
+                ? `, ${item?.quantity_layby * -1} on layby`
+                : ""
+            }`}</div>
           </Tooltip>
           <Tooltip title="You can change the price in the item details screen.">
             <div className="text-xl">{`$${(

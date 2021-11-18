@@ -1,5 +1,6 @@
 import { NextApiHandler } from "next";
 import { query } from "../../lib/db";
+import { StockMovementTypes } from "@/lib/types";
 
 const handler: NextApiHandler = async (req, res) => {
   try {
@@ -28,11 +29,19 @@ const handler: NextApiHandler = async (req, res) => {
         s.misc_item_amount,
         p.vendor_cut,
         p.total_sell,
-        q.quantity
+        q.quantity,
+        hol.quantity_hold,
+        lay.quantity_layby
       FROM stock AS s
       LEFT JOIN
-      (SELECT stock_id, SUM(quantity) AS quantity FROM stock_movement GROUP BY stock_id) AS q
-      ON q.stock_id = s.id
+        (SELECT stock_id, SUM(quantity) AS quantity FROM stock_movement GROUP BY stock_id) AS q
+        ON q.stock_id = s.id
+      LEFT JOIN
+        (SELECT stock_id, SUM(quantity) AS quantity_hold FROM stock_movement WHERE act = '${StockMovementTypes.Hold}' GROUP BY stock_id) AS hol
+        ON hol.stock_id = s.id
+      LEFT JOIN
+        (SELECT stock_id, SUM(quantity) AS quantity_layby FROM stock_movement WHERE act = '${StockMovementTypes.Layby}' GROUP BY stock_id) AS lay
+        ON lay.stock_id = s.id
       LEFT JOIN stock_price AS p ON p.stock_id = s.id
       WHERE
          (p.id = (
