@@ -100,14 +100,15 @@ function Table({
     headerGroups,
     footerGroups,
     prepareRow,
-    page,
-    canPreviousPage,
-    canNextPage,
-    pageOptions,
-    pageCount,
-    gotoPage,
-    nextPage,
-    previousPage,
+    rows,
+    // page,
+    // canPreviousPage,
+    // canNextPage,
+    // pageOptions,
+    // pageCount,
+    // gotoPage,
+    // nextPage,
+    // previousPage,
     // setPageSize,
     allColumns,
     preGlobalFilteredRows,
@@ -125,13 +126,15 @@ function Table({
         pageSize: pageSize || 15,
         sortBy: sortOptions || [],
       },
+      // pagination: false,
+      // showPagination: false,
     },
     useBlockLayout,
     useResizeColumns,
     useFilters,
     useGlobalFilter,
-    useSortBy,
-    usePagination
+    useSortBy
+    // usePagination
   );
 
   return (
@@ -188,7 +191,8 @@ function Table({
             ))}
           </thead>
           <tbody {...getTableBodyProps()}>
-            {page.map((row) => {
+            {rows.map((row) => {
+              // {page.map((row) => {
               prepareRow(row);
               let rowProps = row.getRowProps();
               // console.log(row);
@@ -209,7 +213,7 @@ function Table({
                       : "bg-blue-100"
                   } ${
                     row?.cells[9]?.value === 0 && "text-gray-600"
-                  } opacity-70 hover:opacity-100`}
+                  } opacity-70 hover:opacity-100 mt-1`}
                 >
                   {row.cells.map((cell: any) => {
                     return (
@@ -241,7 +245,7 @@ function Table({
           )}
         </table>
       </div>
-      <div className="flex justify-end items-center py-2">
+      {/*<div className="flex justify-end items-center py-2">
         <span>
           Page{" "}
           <strong>
@@ -276,7 +280,7 @@ function Table({
         >
           <MdLastPage />
         </button>
-      </div>
+      </div>*/}
     </div>
   );
 }
