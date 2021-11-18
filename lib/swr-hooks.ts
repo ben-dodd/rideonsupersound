@@ -78,7 +78,7 @@ export function useStockInventory() {
 // }
 
 export function useStockItem(stock_id: number) {
-  const { data, error } = useSWR(
+  const { data, error, mutate } = useSWR(
     `/api/get-stock-item?stock_id=${stock_id}`,
     fetcher
   );
@@ -86,6 +86,7 @@ export function useStockItem(stock_id: number) {
     stockItem: data && data[0],
     isStockItemLoading: !error && !data,
     isStockItemError: error,
+    mutateStockItem: mutate,
   };
 }
 

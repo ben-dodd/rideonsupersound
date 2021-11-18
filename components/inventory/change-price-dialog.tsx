@@ -1,9 +1,9 @@
 // Packages
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useLogs, useStockItem } from "@/lib/swr-hooks";
+import { useLogs, useStockInventory, useStockItem } from "@/lib/swr-hooks";
 import {
   viewAtom,
   clerkAtom,
@@ -11,7 +11,7 @@ import {
   loadedItemIdAtom,
   pageAtom,
 } from "@/lib/atoms";
-import { ModalButton } from "@/lib/types";
+import { ModalButton, InventoryObject } from "@/lib/types";
 
 // Functions
 import { getItemDisplayName } from "@/lib/data-functions";
@@ -30,18 +30,22 @@ export default function ChangePriceDialog() {
   const [, setAlert] = useAtom(alertAtom);
 
   // SWR
-  const { stockItem, isStockItemLoading } = useStockItem(loadedItemId[page]);
+  const { inventory, mutateInventory } = useStockInventory();
+  const { stockItem, isStockItemLoading, mutateStockItem } = useStockItem(
+    loadedItemId[page]
+  );
   const { logs, mutateLogs } = useLogs();
 
   // State
-  const [totalSell, setTotalSell] = useState(
-    `${(stockItem?.total_sell / 100)?.toFixed(2)}`
-  );
-  const [vendorCut, setVendorCut] = useState(
-    `${(stockItem?.vendor_cut / 100)?.toFixed(2)}`
-  );
+  const [totalSell, setTotalSell] = useState("");
+  const [vendorCut, setVendorCut] = useState("");
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    setTotalSell(`${(stockItem?.total_sell / 100)?.toFixed(2)}`);
+    setVendorCut(`${(stockItem?.vendor_cut / 100)?.toFixed(2)}`);
+  }, [stockItem]);
 
   const buttons: ModalButton[] = [
     {
@@ -52,14 +56,41 @@ export default function ChangePriceDialog() {
       loading: submitting,
       onClick: async () => {
         setSubmitting(true);
+        const totalSellNum = parseFloat(totalSell) * 100;
+        const vendorCutNum = parseFloat(vendorCut) * 100;
+        const otherInventoryItems = inventory?.filter(
+          (i: InventoryObject) => i?.id !== stockItem?.id
+        );
+        let inventoryItem = inventory?.filter(
+          (i: InventoryObject) => i?.id === stockItem?.id
+        )[0];
+        inventoryItem = {
+          ...inventoryItem,
+          total_sell: totalSellNum,
+          vendor_cut: vendorCutNum,
+        };
+        console.log(inventoryItem);
+        mutateInventory([...otherInventoryItems, inventoryItem], false);
+        console.log(stockItem);
+        mutateStockItem(
+          [
+            {
+              ...stockItem,
+              total_sell: totalSellNum,
+              vendor_cut: vendorCutNum,
+            },
+          ],
+          false
+        );
         const id = await saveStockPriceToDatabase(
           stockItem?.id,
           clerk,
-          parseFloat(totalSell) * 100,
-          parseFloat(vendorCut) * 100,
+          totalSellNum,
+          vendorCutNum,
           notes
         );
-        setView({ ...view, giftCardDialog: false, cart: true });
+        setSubmitting(false);
+        setView({ ...view, changePriceDialog: false });
         saveLog(
           {
             log: `Price for ${getItemDisplayName(stockItem)} changed from $${(
@@ -95,24 +126,51 @@ export default function ChangePriceDialog() {
       loading={isStockItemLoading}
     >
       <>
-        <TextField
-          className="mt-8"
-          divClass="text-8xl"
-          startAdornment="$"
-          inputClass="text-center"
-          value={totalSell}
-          error={isNaN(parseFloat(totalSell))}
-          onChange={(e: any) => setTotalSell(e.target.value)}
-        />
-        <TextField
-          className="mt-8"
-          divClass="text-8xl"
-          startAdornment="$"
-          inputClass="text-center"
-          value={vendorCut}
-          error={isNaN(parseFloat(vendorCut))}
-          onChange={(e: any) => setVendorCut(e.target.value)}
-        />
+        <div className="grid grid-cols-2 gap-4">
+          <TextField
+            inputLabel="Total Sell"
+            divClass="text-4xl"
+            startAdornment="$"
+            inputClass="text-center"
+            value={totalSell}
+            error={isNaN(parseFloat(totalSell))}
+            onChange={(e: any) => setTotalSell(e.target.value)}
+          />
+          <TextField
+            inputLabel="Vendor Cut"
+            divClass="text-4xl w-full"
+            startAdornment="$"
+            inputClass="text-center"
+            value={vendorCut}
+            error={isNaN(parseFloat(vendorCut))}
+            onChange={(e: any) => setVendorCut(e.target.value)}
+          />
+          <TextField
+            inputLabel="Margin"
+            divClass="text-4xl"
+            endAdornment="%"
+            inputClass="text-center"
+            displayOnly
+            value={
+              (
+                ((parseFloat(totalSell) - parseFloat(vendorCut)) /
+                  parseFloat(totalSell)) *
+                100
+              )?.toFixed(1) || "N/A"
+            }
+          />
+          <TextField
+            inputLabel="Store Cut"
+            divClass="text-4xl"
+            startAdornment="$"
+            inputClass="text-center"
+            displayOnly
+            value={
+              (parseFloat(totalSell) - parseFloat(vendorCut)).toFixed(2) ||
+              "N/A"
+            }
+          />
+        </div>
         <TextField
           inputLabel="Notes"
           value={notes}

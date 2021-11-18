@@ -82,7 +82,7 @@ export default function TextField({
           </div>
         )}
         {displayOnly ? (
-          <div className="w-full py-1 px-2 outline-none bg-transparent">
+          <div className="cursor-default appearance-none w-full py-1 px-2 outline-none bg-transparent">
             {value ?? ""}
           </div>
         ) : multiline ? (

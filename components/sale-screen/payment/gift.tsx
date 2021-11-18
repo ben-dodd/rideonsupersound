@@ -76,7 +76,6 @@ export default function Gift({ isNew }) {
   const remainingOnGiftCard = giftCard?.gift_card_remaining / 100;
   const leftOver: number = remainingOnGiftCard - parseFloat(giftCardPayment);
 
-  // TODO handle take gift card and give change
   const buttons: ModalButton[] = [
     {
       type: "ok",
@@ -104,8 +103,6 @@ export default function Gift({ isNew }) {
           (g: GiftCardObject) => g?.id !== giftCard?.id
         );
         mutateGiftCards([...otherGiftCards, giftCardUpdate], false);
-        // TODO gift card taken and gift card change given should be in transaction object
-        // TODO make save sale transaction a cleaner function, bundle transaction into object
         let transaction: SaleTransactionObject = {
           sale_id: sale?.id,
           clerk_id: clerk?.id,

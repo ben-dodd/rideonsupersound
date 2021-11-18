@@ -45,7 +45,7 @@ import SettingsSelect from "@/components/inputs/settings-select";
 
 export default function VendorScreen() {
   // Atoms
-  const [loadedVendorId, setLoadedVendorId] = useAtom(loadedVendorIdAtom);
+  const [loadedVendorIds, setLoadedVendorId] = useAtom(loadedVendorIdAtom);
   const [view, setView] = useAtom(viewAtom);
   const [page] = useAtom(pageAtom);
   const [, setCustomer] = useAtom(loadedCustomerObjectAtom);
@@ -65,9 +65,9 @@ export default function VendorScreen() {
   // Load
   useEffect(() => {
     setVendor(
-      vendors?.filter((v: VendorObject) => v?.id === loadedVendorId)[0]
+      vendors?.filter((v: VendorObject) => v?.id === loadedVendorIds[page])[0]
     );
-  }, [loadedVendorId]);
+  }, [loadedVendorIds[page]]);
 
   // Functions
   function StockItem({ item }) {
@@ -91,8 +91,8 @@ export default function VendorScreen() {
   // Constants
   const v = useMemo(
     () =>
-      getPaymentVars(inventory, sales, vendorPayments, loadedVendorId[page]),
-    [inventory, sales, vendorPayments, loadedVendorId]
+      getPaymentVars(inventory, sales, vendorPayments, loadedVendorIds[page]),
+    [inventory, sales, vendorPayments, loadedVendorIds[page]]
   );
 
   const bankAccountMask = [
@@ -120,8 +120,8 @@ export default function VendorScreen() {
 
   return (
     <ScreenContainer
-      show={loadedVendorId[page]}
-      closeFunction={() => setLoadedVendorId({ ...loadedVendorId, [page]: 0 })}
+      show={loadedVendorIds[page]}
+      closeFunction={() => setLoadedVendorId({ ...loadedVendorIds, [page]: 0 })}
       title={vendor?.name}
       loading={
         isSalesLoading ||

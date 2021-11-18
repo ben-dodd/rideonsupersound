@@ -62,7 +62,13 @@ const handler: NextApiHandler = async (req, res) => {
         ON dis.stock_id = s.id
       LEFT JOIN
         stock_price AS p ON p.stock_id = s.id
-      WHERE s.id = ?
+        WHERE
+           p.id = (
+              SELECT MAX(id)
+              FROM stock_price
+              WHERE stock_id = s.id
+            )
+      AND s.id = ?
       `,
       stock_id
     );

@@ -100,17 +100,17 @@ function Table({
     headerGroups,
     footerGroups,
     prepareRow,
-    rows,
-    // page,
-    // canPreviousPage,
-    // canNextPage,
-    // pageOptions,
-    // pageCount,
-    // gotoPage,
-    // nextPage,
-    // previousPage,
+    // rows,
+    page,
+    canPreviousPage,
+    canNextPage,
+    pageOptions,
+    pageCount,
+    gotoPage,
+    nextPage,
+    previousPage,
     // setPageSize,
-    allColumns,
+    // allColumns,
     preGlobalFilteredRows,
     setGlobalFilter,
     state,
@@ -126,15 +126,13 @@ function Table({
         pageSize: pageSize || 15,
         sortBy: sortOptions || [],
       },
-      // pagination: false,
-      // showPagination: false,
     },
     useBlockLayout,
     useResizeColumns,
     useFilters,
     useGlobalFilter,
-    useSortBy
-    // usePagination
+    useSortBy,
+    usePagination
   );
 
   return (
@@ -143,7 +141,7 @@ function Table({
         className={`flex justify-between items-center px-2 mb-1 ${color || ""}`}
       >
         {heading ? (
-          <div className={`text-4xl font-bold uppercase`}>{heading}</div>
+          <div className={`text-4xl font-bold uppercase sticky`}>{heading}</div>
         ) : (
           <div />
         )}
@@ -191,8 +189,8 @@ function Table({
             ))}
           </thead>
           <tbody {...getTableBodyProps()}>
-            {rows.map((row) => {
-              // {page.map((row) => {
+            {page.map((row) => {
+              // {rows.map((row) => {
               prepareRow(row);
               let rowProps = row.getRowProps();
               // console.log(row);
@@ -245,7 +243,7 @@ function Table({
           )}
         </table>
       </div>
-      {/*<div className="flex justify-end items-center py-2">
+      <div className="flex justify-end items-center py-2">
         <span>
           Page{" "}
           <strong>
@@ -280,7 +278,7 @@ function Table({
         >
           <MdLastPage />
         </button>
-      </div>*/}
+      </div>
     </div>
   );
 }

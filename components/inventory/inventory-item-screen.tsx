@@ -26,6 +26,7 @@ import DiscogsPanel from "./discogs-panel";
 import GoogleBooksPanel from "./google-books-panel";
 import ChangePriceIcon from "@mui/icons-material/AutoFixNormal";
 import ScreenContainer from "@/components/container/screen";
+import Tooltip from "@mui/material/Tooltip";
 
 export default function InventoryItemScreen({ page }) {
   // Atoms
@@ -166,13 +167,15 @@ export default function InventoryItemScreen({ page }) {
           </div>
           {/* PRICE DETAILS */}
           <div className="grid grid-cols-6 gap-2 mt-4 mb-4">
-            <div className="flex justify-center items-center text-xl hover:text-primary">
-              <button
-                onClick={() => setView({ ...view, changePriceDialog: true })}
-              >
-                <ChangePriceIcon />
-              </button>
-            </div>
+            <Tooltip title="Click to change the price on this item.">
+              <div className="flex justify-center items-center text-xl hover:text-primary">
+                <button
+                  onClick={() => setView({ ...view, changePriceDialog: true })}
+                >
+                  <ChangePriceIcon />
+                </button>
+              </div>
+            </Tooltip>
             <div>
               <div className="px-1 text-xs mt-2 mb-2">COST PRICE</div>
               <div className="font-bold text-xl">
@@ -362,7 +365,6 @@ export default function InventoryItemScreen({ page }) {
 // REVIEW delay removing inventory item
 // REVIEW update inventory quicker
 // REVIEW add logs etc. if modified
-// TODO add change price dialog
 // TODO add lost/discarded items etc. add change stock levels dialog
 
 // ONCLICKSAVE
