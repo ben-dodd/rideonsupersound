@@ -25,11 +25,11 @@ export default function InventoryScreen() {
     >
       {page === "inventory" && <InventoryTable />}
       <InventoryItemScreen page="inventory" />
-      <ChangePriceDialog />
-      <ChangeStockQuantityDialog />
-      <ReceiveStockScreen />
-      <ReturnStockScreen />
-      <LabelPrintDialog />
+      {view?.changePriceDialog && <ChangePriceDialog />}
+      {view?.changeStockQuantityDialog && <ChangeStockQuantityDialog />}
+      {view?.receiveStockScreen && <ReceiveStockScreen />}
+      {view?.returnStockScreen && <ReturnStockScreen />}
+      {view?.labelPrintDialog && <LabelPrintDialog />}
     </div>
   );
 }

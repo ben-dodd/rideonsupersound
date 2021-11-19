@@ -30,7 +30,7 @@ export default function LabelPrintDialog() {
   const { logs, mutateLogs } = useLogs();
 
   // State
-  const [items, setItems] = useState({
+  const initItems = {
     0: { item: {}, printQuantity: 1 },
     1: { item: {}, printQuantity: 1 },
     2: { item: {}, printQuantity: 1 },
@@ -41,13 +41,19 @@ export default function LabelPrintDialog() {
     7: { item: {}, printQuantity: 1 },
     8: { item: {}, printQuantity: 1 },
     9: { item: {}, printQuantity: 1 },
-  });
+  };
+  const [items, setItems] = useState(initItems);
+
+  function closeDialog() {
+    setItems(initItems);
+    setView({ ...view, labelPrintDialog: false });
+  }
 
   // Constants
   const buttons: ModalButton[] = [
     {
       type: "cancel",
-      onClick: () => setView({ ...view, labelPrintDialog: false }),
+      onClick: closeDialog,
       text: "CANCEL",
     },
     {
@@ -56,7 +62,7 @@ export default function LabelPrintDialog() {
       headers: ["SKU", "ARTIST", "TITLE", "NEW/USED", "SELL PRICE", "GENRE"],
       fileName: `label-print-${fFileDate()}.csv`,
       text: "PRINT LABELS",
-      onClick: () =>
+      onClick: () => {
         saveLog(
           {
             log: "Labels printed from label print dialog.",
@@ -64,21 +70,29 @@ export default function LabelPrintDialog() {
           },
           logs,
           mutateLogs
-        ),
+        );
+        closeDialog();
+      },
     },
   ];
 
   return (
     <Modal
       open={view?.labelPrintDialog}
-      closeFunction={() => setView({ ...view, labelPrintDialog: false })}
+      closeFunction={closeDialog}
       title={"LABEL PRINT"}
       buttons={buttons}
+      width={"max-w-lg"}
     >
       <>
+        <div className="help-text">
+          Select item from dropdown list and enter the quantity of labels you
+          wish to print. Then click print to download the CSV file for the label
+          printer.
+        </div>
         <div className="input-label">Add Items</div>
         {Array.from(Array(10).keys()).map((key) => (
-          <div key={key} className="flex mb-1 items-center">
+          <div key={`${key}`} className="flex mb-1 items-center">
             <div className="w-full mr-2">
               <Select
                 className="w-full self-stretch"
@@ -92,11 +106,11 @@ export default function LabelPrintDialog() {
                 }
               />
             </div>
-            <div className="w-1/6">
+            <div className="w-2/6">
               <TextField
                 inputType="number"
                 min={0}
-                value={items[key]?.printQuantity || 1}
+                valueNum={items[key]?.printQuantity || 1}
                 onChange={(e: any) =>
                   setItems({
                     ...items,

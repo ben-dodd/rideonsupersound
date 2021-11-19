@@ -2,6 +2,7 @@
 import ModalBase from "@/components/container/modal/base";
 import CircularProgress from "@mui/material/CircularProgress";
 import CloseButton from "@/components/button/close-button";
+import { CSVLink } from "react-csv";
 
 // Types
 import { MouseEventHandler } from "react";
@@ -50,25 +51,36 @@ export default function Modal({
       </div>
       {buttons && (
         <div className={`modal__button-div`}>
-          {buttons.map((button: ModalButton, i: number) => (
-            <button
-              key={i}
-              className={`modal__button--${button?.type} ${
-                button?.hidden ? " hidden" : ""
-              }`}
-              onClick={() => button?.onClick()}
-              disabled={button?.disabled || button?.loading}
-            >
-              {button?.loading ? (
-                <span className="pr-4">
-                  <CircularProgress color="inherit" thickness={5} size={18} />
-                </span>
-              ) : (
-                <span />
-              )}
-              {button?.text}
-            </button>
-          ))}
+          {buttons.map((button: ModalButton, i: number) =>
+            button?.data && !button?.disabled ? (
+              <CSVLink
+                key={i}
+                className={`modal__button--${button?.type}`}
+                data={button?.data}
+                headers={button?.headers}
+                filename={button?.fileName}
+                onClick={() => button?.onClick()}
+              >
+                {button?.text}
+              </CSVLink>
+            ) : (
+              <button
+                key={i}
+                className={`modal__button--${button?.type}`}
+                onClick={() => button?.onClick()}
+                disabled={button?.disabled}
+              >
+                {button?.loading ? (
+                  <span className="pr-4">
+                    <CircularProgress color="inherit" thickness={5} size={18} />
+                  </span>
+                ) : (
+                  <span />
+                )}
+                {button?.text}
+              </button>
+            )
+          )}
         </div>
       )}
     </ModalBase>

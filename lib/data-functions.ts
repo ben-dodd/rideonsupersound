@@ -689,20 +689,25 @@ export function writeItemList(
 
 export function getCSVData(items, inventory: InventoryObject[]) {
   let csv = [];
-  Object.values(items || {}).forEach((row: any) => {
-    Array.from(Array(parseInt(row?.printQuantity || 1)).keys()).forEach(() => {
-      // let item:InventoryObject = inventory?.filter()?.row?.item?.value || {}), {});
-      // if (Object.keys(item).length > 0)
-      //   csv.push([
-      //     item?.sku,
-      //     item?.artist,
-      //     item.title,
-      //     get(item, "newUsed", "USED"),
-      //     item.sell,
-      //     "",
-      //   ]);
+  Object.values(items || {})
+    .filter((row: any) => row?.printQuantity > 1 && row?.item?.value)
+    .forEach((row: any) => {
+      Array.from(Array(parseInt(row?.printQuantity || 1)).keys()).forEach(
+        () => {
+          const stockItem: InventoryObject = inventory?.filter(
+            (i: InventoryObject) => i?.id === row?.item?.value
+          )[0];
+          csv.push([
+            getItemSku(stockItem),
+            stockItem?.artist,
+            stockItem?.title,
+            stockItem?.is_new ? "NEW" : "USED",
+            `$${(stockItem?.total_sell / 100)?.toFixed(2)}`,
+            stockItem?.genre,
+          ]);
+        }
+      );
     });
-  });
   return csv;
 }
 
@@ -804,7 +809,7 @@ export function checkDate(date: Date | string) {
         return null;
       } else return date;
     } else return nzDate(date);
-  } else return null;
+  } else return new Date();
 }
 
 export function fDate(date?: Date | string) {
