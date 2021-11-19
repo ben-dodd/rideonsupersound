@@ -233,3 +233,7 @@
 .screen__button--alt3 {
   @apply screen__button bg-primary hover:bg-primary-dark;
 }
+
+.help-text {
+  @apply text-sm text-brown italic my-2;
+}

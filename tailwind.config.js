@@ -118,6 +118,7 @@ module.exports = {
         inventory: `calc(100vh - 8rem)`,
         dialoglg: `calc(100vh - 12rem)`,
         dialog: `calc(100vh - 16rem)`,
+        dialogsm: `calc(100vh - 24rem)`,
       },
       maxHeight: {
         dialog: `calc(100vh - 16rem)`,

@@ -3,8 +3,8 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useStockInventory, useVendors } from "@/lib/swr-hooks";
-import { viewAtom, clerkAtom } from "@/lib/atoms";
+import { useStockInventory, useVendors, useLogs } from "@/lib/swr-hooks";
+import { viewAtom, clerkAtom, alertAtom } from "@/lib/atoms";
 import { InventoryObject, VendorObject, ModalButton } from "@/lib/types";
 
 // Functions
@@ -14,7 +14,6 @@ import { getItemDisplayName } from "@/lib/data-functions";
 // Components
 import TextField from "@/components/inputs/text-field";
 import Modal from "@/components/container/modal";
-import CreateableSelect from "@/components/inputs/createable-select";
 import Select from "react-select";
 
 // Icons
@@ -22,41 +21,68 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function ReturnStockScreen() {
   // SWR
-  const { inventory } = useStockInventory();
+  const { inventory, mutateInventory } = useStockInventory();
+  const { logs, mutateLogs } = useLogs();
   const { vendors } = useVendors();
 
   // Atoms
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
+  const [, setAlert] = useAtom(alertAtom);
 
   // State
-  const [doc, setDoc]: [any, Function] = useState({});
+  const [vendorWrapper, setVendorWrapper] = useState(null);
+  const [items, setItems] = useState({});
+  const [notes, setNotes] = useState("");
+
   const [submitting, setSubmitting] = useState(false);
+
+  function closeFunction() {
+    setView({ ...view, returnStockScreen: false });
+    setVendorWrapper(null);
+    setItems({});
+    setNotes("");
+  }
 
   const buttons: ModalButton[] = [
     {
       type: "cancel",
-      onClick: () => setView({ ...view, returnStockScreen: false }),
+      onClick: closeFunction,
       text: "CANCEL",
     },
     {
       type: "ok",
-      onClick: () => () => {
+      onClick: () => {
         setSubmitting(true);
-        returnStock(doc, clerk);
+        returnStock(
+          vendorWrapper?.value,
+          items,
+          notes,
+          clerk,
+          inventory,
+          mutateInventory,
+          logs,
+          mutateLogs
+        );
         setSubmitting(false);
-        setView({ ...view, returnStockScreen: false });
+        setAlert({
+          open: true,
+          type: "success",
+          message: `ITEMS RETURNED TO VENDOR`,
+        });
+        closeFunction();
       },
+      loading: submitting,
       disabled:
         submitting ||
-        !doc?.vendor_id ||
-        Object.keys(doc?.items || {}).length === 0 ||
-        Object.entries(doc?.items || {}).filter(
-          ([id, itemQuantity]) =>
-            isNaN(parseFloat(`${itemQuantity}`)) ||
+        !vendorWrapper?.value ||
+        Object.keys(items)?.length === 0 ||
+        Object.entries(items)?.filter(
+          ([id, itemQuantity]: [string, number]) =>
+            isNaN(itemQuantity) ||
             inventory?.filter((i: InventoryObject) => i?.id === parseInt(id))[0]
-              ?.quantity < parseFloat(`${itemQuantity}`) ||
-            parseFloat(`${itemQuantity}`) < 0
+              ?.quantity < itemQuantity ||
+            itemQuantity < 0
         ).length > 0,
       text: "RETURN STOCK",
     },
@@ -65,82 +91,77 @@ export default function ReturnStockScreen() {
   return (
     <Modal
       open={view?.returnStockScreen}
-      closeFunction={() => setView({ ...view, returnStockScreen: false })}
+      closeFunction={closeFunction}
       title={"RETURN STOCK"}
       buttons={buttons}
+      width="max-w-xl"
     >
-      <>
+      <div className="h-dialogsm">
+        <div className="help-text">
+          Select the vendor that you are returning stock to, then select the
+          items and add how many of each they are taking.
+        </div>
         <div className="font-bold text-xl mt-4">Select Vendor</div>
-        <CreateableSelect
-          inputLabel="Select vendor"
+        <Select
           fieldRequired
-          value={doc?.vendor_id}
-          label={
-            vendors?.filter((v: VendorObject) => v?.id === doc?.vendor_id)[0]
-              ?.name || ""
-          }
+          value={vendorWrapper}
           onChange={(vendorObject: any) => {
-            setDoc({
-              ...doc,
-              vendor_id: parseInt(vendorObject?.value),
-            });
+            setVendorWrapper(vendorObject);
+            setItems({});
           }}
-          onCreateOption={(inputValue: string) =>
-            // setCreateCustomerSidebar({
-            //   id: 1,
-            //   name: inputValue,
-            // })
-            null
-          }
           options={vendors?.map((val: VendorObject) => ({
             value: val?.id,
             label: val?.name || "",
           }))}
         />
         <div className="font-bold text-xl mt-4">Add Items</div>
-        <div className="flex justify-between">
-          <Select
-            className="w-full text-xs"
-            isDisabled={!doc?.vendor_id}
-            value={null}
-            options={inventory
-              ?.filter(
-                (item: InventoryObject) =>
-                  item?.vendor_id === doc?.vendor_id &&
-                  !(doc?.items && doc?.items[item?.id])
-              )
-              .map((item: InventoryObject) => ({
-                value: item?.id,
-                label: getItemDisplayName(item),
-              }))}
-            onChange={(item: any) => {
-              setDoc({
-                ...doc,
-                items: {
-                  ...(doc?.items || {}),
-                  [item?.value]:
-                    inventory?.filter(
-                      (i: InventoryObject) => i?.id === parseInt(item?.value)
-                    )[0]?.quantity || 1,
-                },
-              });
-            }}
-          />
-        </div>
+        <Select
+          className="w-full text-xs"
+          isDisabled={!vendorWrapper?.value}
+          value={null}
+          options={inventory
+            ?.filter(
+              (item: InventoryObject) =>
+                item?.vendor_id === vendorWrapper?.value &&
+                !items[item?.id] &&
+                item?.quantity > 0
+            )
+            .map((item: InventoryObject) => ({
+              value: item?.id,
+              label: getItemDisplayName(item),
+            }))}
+          onChange={(item: any) =>
+            setItems({
+              ...(items || {}),
+              [item?.value]:
+                inventory?.filter(
+                  (i: InventoryObject) => i?.id === parseInt(item?.value)
+                )[0]?.quantity || 1,
+            })
+          }
+        />
+        <TextField
+          inputLabel="Notes"
+          value={notes}
+          onChange={(e: any) => setNotes(e.target.value)}
+          multiline
+          rows={3}
+        />
         <div>
-          {(doc?.items || {}).length > 0 ? (
+          {Object.keys(items)?.length > 0 ? (
             <div className="mt-6 mb-2">
-              <div className="flex justify-between">
-                <div className="font-bold text-xl">Current Items</div>
-                <div className="font-bold mr-12">Quantity Returned</div>
-              </div>
-              {Object.entries(doc?.items || {}).map(
-                ([itemId, itemQuantity]) => {
+              <div className="font-bold text-xl">Current Items</div>
+              {Object.entries(items)?.map(
+                ([itemId, itemQuantity]: [string, number]) => {
+                  console.log(items);
                   const item = inventory?.filter(
                     (i: InventoryObject) => i?.id === parseInt(itemId)
                   )[0];
                   return (
-                    <div className="flex justify-between my-2 border-b">
+                    <div
+                      className="flex justify-between my-2 border-b w-full"
+                      key={itemId}
+                    >
                       <div className="flex">
                         <div className="ml-2">
                           {getItemDisplayName(item)}
@@ -153,29 +174,27 @@ export default function ReturnStockScreen() {
                           >{`${item?.quantity || 0} in stock.`}</div>
                         </div>
                       </div>
-                      <div className="self-center flex items-center">
+                      <div className="flex items-center justify-end">
                         <TextField
-                          className="w-12 mr-6"
+                          className="w-16 mr-6"
                           inputType="number"
+                          error={!itemQuantity}
                           max={item?.quantity || 0}
                           min={0}
-                          value={`${itemQuantity}`}
+                          valueNum={itemQuantity}
                           onChange={(e: any) =>
-                            setDoc({
-                              ...doc,
-                              items: {
-                                ...(doc?.items || {}),
-                                [itemId]: e.target.value,
-                              },
+                            setItems({
+                              ...(items || {}),
+                              [itemId]: e.target.value,
                             })
                           }
                         />
                         <button
                           className="bg-gray-200 hover:bg-gray-300 p-1 w-10 h-10 rounded-full mr-8"
                           onClick={() => {
-                            let newItems = doc?.items || {};
+                            let newItems = { ...items };
                             delete newItems[itemId];
-                            setDoc({ ...doc, newItems });
+                            setItems(newItems);
                           }}
                         >
                           <DeleteIcon />
@@ -186,11 +205,13 @@ export default function ReturnStockScreen() {
                 }
               )}
             </div>
+          ) : vendorWrapper?.value ? (
+            <div />
           ) : (
             <div>Select vendor to add items to return.</div>
           )}
         </div>
-      </>
+      </div>
     </Modal>
   );
 }

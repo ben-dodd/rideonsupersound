@@ -125,7 +125,7 @@ export default function ChangePriceDialog() {
                     stockItem
                   )} marked as ${movement}.`,
             clerk_id: clerk?.id,
-            table_id: "stock_price",
+            table_id: "stock_movement",
             row_id: id,
           },
           logs,
@@ -170,7 +170,7 @@ export default function ChangePriceDialog() {
           }))}
           onChange={(item: any) => setMovement(item?.value)}
         />
-        <div className="text-sm text-brown italic my-2">
+        <div className="help-text">
           {movement === StockMovementTypes?.Adjustment
             ? "Enter the quantity of items currently in stock. Use this option for stock taking."
             : movement === StockMovementTypes?.Discarded

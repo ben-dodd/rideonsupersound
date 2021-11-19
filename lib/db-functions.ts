@@ -17,6 +17,8 @@ import {
   StockMovementTypes,
 } from "@/lib/types";
 
+import { getItemDisplayName } from "./data-functions";
+
 export async function loadSaleToCart(
   cart: SaleObject,
   items: SaleItemObject[],
@@ -870,7 +872,7 @@ export async function receiveStock(
         quantity: row?.quantityReceived,
       },
       clerk,
-      "receive",
+      StockMovementTypes?.Received,
       "New stock received."
     );
   });
@@ -885,29 +887,66 @@ export async function receiveStock(
             quantity: `${receiveQuantity}`,
           },
           clerk,
-          "receive",
+          StockMovementTypes?.Received,
           "Existing stock received."
         );
       });
   }
 }
 
-export function returnStock(obj: any, clerk: ClerkObject) {
-  let items = obj?.items || {};
-  let vendorId = obj?.vendor_id;
+export function returnStock(
+  vendorId: number,
+  items: any,
+  notes: string,
+  clerk: ClerkObject,
+  inventory: InventoryObject[],
+  mutateInventory: Function,
+  logs: LogObject[],
+  mutateLogs: Function
+) {
   if (vendorId && Object.keys(items).length > 0) {
+    const itemIds = Object.entries(items)?.map(([id]) => parseInt(id));
+    const otherInventoryItems = inventory?.filter(
+      (i: InventoryObject) => !itemIds?.includes(i?.id)
+    );
+    let updatedInventoryItems = [];
     Object.entries(items)
-      .filter(([id, returnQuantity]) => parseInt(`${returnQuantity}`) > 0)
-      .forEach(([id, returnQuantity]) => {
+      .filter(
+        ([id, returnQuantity]: [string, string]) =>
+          parseInt(`${returnQuantity}`) > 0
+      )
+      .forEach(([id, returnQuantity]: [string, string]) => {
+        const stockItem = inventory?.filter(
+          (i: InventoryObject) => i?.id === parseInt(id)
+        )[0];
+        updatedInventoryItems.push({
+          ...stockItem,
+          quantity_returned:
+            (stockItem?.quantity_returned || 0) + parseInt(returnQuantity),
+          quantity: (stockItem?.quantity || 0) - parseInt(returnQuantity),
+        });
         saveStockMovementToDatabase(
           {
             item_id: parseInt(id),
             quantity: `${returnQuantity}`,
           },
           clerk,
-          "return",
-          "Stock returned."
+          StockMovementTypes?.Returned,
+          notes || "Stock returned to vendor."
+        );
+        saveLog(
+          {
+            log: `${getItemDisplayName(
+              stockItem
+            )} (x${returnQuantity}) returned to vendor.`,
+            clerk_id: clerk?.id,
+            table_id: "stock_movement",
+            row_id: null,
+          },
+          logs,
+          mutateLogs
         );
       });
+    mutateInventory([...otherInventoryItems, ...updatedInventoryItems], false);
   }
 }
