@@ -250,6 +250,7 @@ export interface InventoryObject {
   quantity_unhold?: number;
   quantity_sold?: number;
   quantity_unsold?: number;
+  quantity_adjustment?: number;
   section?: string;
   tags?: string[];
   is_gift_card?: boolean;

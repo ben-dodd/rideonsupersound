@@ -28,6 +28,7 @@ interface ViewProps {
   receiveStockScreen?: boolean;
   returnStockScreen?: boolean;
   changePriceDialog?: boolean;
+  changeStockQuantityDialog?: boolean;
   helpDialog?: boolean;
   returnCashDialog?: boolean;
   takeCashDialog?: boolean;

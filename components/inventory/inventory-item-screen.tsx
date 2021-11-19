@@ -236,6 +236,26 @@ export default function InventoryItemScreen({ page }) {
                 item?.quantity_found) *
                 -1}
             </div>
+            <div className="stock-indicator__container">ADJUSTMENT</div>
+            <div
+              className={`stock-indicator__number ${
+                item?.quantity_adjustment < 0
+                  ? "bg-tertiary-light"
+                  : "bg-secondary-light"
+              }`}
+            >
+              {item?.quantity_adjustment || 0}
+            </div>
+            <div className="col-span-2">
+              <button
+                onClick={() =>
+                  setView({ ...view, changeStockQuantityDialog: true })
+                }
+                className="text-sm border rounded p-2 self-center bg-white text-brown-dark w-100 hover:bg-gray-100"
+              >
+                CHANGE STOCK LEVEL
+              </button>
+            </div>
           </div>
           {/* OTHER DETAILS */}
           <TextField

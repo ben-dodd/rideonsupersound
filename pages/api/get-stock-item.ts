@@ -61,6 +61,9 @@ const handler: NextApiHandler = async (req, res) => {
         (SELECT stock_id, SUM(quantity) AS quantity_discarded FROM stock_movement WHERE act = '${StockMovementTypes.Discarded}' GROUP BY stock_id) AS dis
         ON dis.stock_id = s.id
       LEFT JOIN
+        (SELECT stock_id, SUM(quantity) AS quantity_adjustment FROM stock_movement WHERE act = '${StockMovementTypes.Adjustment}' GROUP BY stock_id) AS adj
+        ON adj.stock_id = s.id
+      LEFT JOIN
         stock_price AS p ON p.stock_id = s.id
         WHERE
            p.id = (

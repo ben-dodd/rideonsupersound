@@ -8,6 +8,7 @@ import { pageAtom, viewAtom } from "@/lib/atoms";
 import InventoryTable from "./inventory-table";
 import InventoryItemScreen from "./inventory-item-screen";
 import ChangePriceDialog from "./change-price-dialog";
+import ChangeStockQuantityDialog from "./change-stock-quantity-dialog";
 import ReceiveStockScreen from "./receive-stock-screen";
 import ReturnStockScreen from "./return-stock-screen";
 import LabelPrintDialog from "./label-print-dialog";
@@ -25,6 +26,7 @@ export default function InventoryScreen() {
       {page === "inventory" && <InventoryTable />}
       <InventoryItemScreen page="inventory" />
       <ChangePriceDialog />
+      <ChangeStockQuantityDialog />
       <ReceiveStockScreen />
       <ReturnStockScreen />
       <LabelPrintDialog />

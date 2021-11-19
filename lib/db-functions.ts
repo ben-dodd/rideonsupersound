@@ -613,6 +613,7 @@ export async function saveStockMovementToDatabase(
     });
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
+    return json?.insertId;
   } catch (e) {
     throw Error(e.message);
   }
