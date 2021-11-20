@@ -3,14 +3,9 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import {
-  useGiftCards,
-  useStockInventory,
-  useLogs,
-  useWeather,
-} from "@/lib/swr-hooks";
+import { useStockInventory, useLogs, useWeather } from "@/lib/swr-hooks";
 import { viewAtom, newSaleObjectAtom, clerkAtom, alertAtom } from "@/lib/atoms";
-import { GiftCardObject, ModalButton } from "@/lib/types";
+import { ModalButton, InventoryObject } from "@/lib/types";
 
 // Functions
 import { getGeolocation } from "@/lib/data-functions";
@@ -20,9 +15,7 @@ import { saveLog, saveStockToDatabase } from "@/lib/db-functions";
 import Modal from "@/components/container/modal";
 import TextField from "@/components/inputs/text-field";
 
-import SyncIcon from "@mui/icons-material/Sync";
-
-export default function GiftCardDialog() {
+export default function MiscItemDialog() {
   // Atoms
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
@@ -30,35 +23,21 @@ export default function GiftCardDialog() {
   const [cart, setCart] = useAtom(newSaleObjectAtom);
 
   // SWR
-  const { giftCards, mutateGiftCards } = useGiftCards();
   const { logs, mutateLogs } = useLogs();
   const { inventory, mutateInventory } = useStockInventory();
   const geolocation = getGeolocation();
   const { weather } = useWeather();
 
   // State
-  const [giftCardCode, setGiftCardCode] = useState(makeGiftCardCode());
-  const [amount, setAmount] = useState("20");
+  const [description, setDescription] = useState("");
+  const [amount, setAmount] = useState("");
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  // Functions
-  function makeGiftCardCode() {
-    var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    var charactersLength = characters.length;
-    let result = "";
-    while (
-      result === "" ||
-      giftCards?.map((g: GiftCardObject) => g?.gift_card_code).includes(result)
-    ) {
-      result = "";
-      for (var i = 0; i < 6; i++) {
-        result += characters.charAt(
-          Math.floor(Math.random() * charactersLength)
-        );
-      }
-    }
-    return result;
+  function clearDialog() {
+    setDescription("");
+    setAmount("");
+    setNotes("");
   }
 
   const buttons: ModalButton[] = [
@@ -68,30 +47,23 @@ export default function GiftCardDialog() {
       loading: submitting,
       onClick: async () => {
         setSubmitting(true);
-        let newGiftCard: GiftCardObject = {
-          is_gift_card: true,
-          gift_card_code: giftCardCode,
-          gift_card_amount: parseFloat(amount) * 100,
-          gift_card_remaining: parseFloat(amount) * 100,
+        let newMiscItem: InventoryObject = {
+          is_misc_item: true,
+          misc_item_description: description,
+          misc_item_amount: parseFloat(amount) * 100,
           note: notes,
-          gift_card_is_valid: false,
         };
-        const id = await saveStockToDatabase(newGiftCard, clerk);
-        giftCards &&
-          mutateGiftCards([...giftCards, { ...newGiftCard, id }], false);
-        inventory &&
-          mutateInventory([...inventory, { ...newGiftCard, id }], false);
+        const id = await saveStockToDatabase(newMiscItem, clerk);
+        mutateInventory([...inventory, { ...newMiscItem, id }], false);
         setSubmitting(false);
-        setGiftCardCode(null);
-        setNotes("");
-        setAmount("");
+        clearDialog();
 
         // Add to cart
         let newItems = cart?.items || [];
         newItems.push({
           item_id: id,
           quantity: "1",
-          is_gift_card: true,
+          is_misc_item: true,
         });
         setCart({
           id: cart?.id || null,
@@ -103,10 +75,10 @@ export default function GiftCardDialog() {
           geo_latitude: cart?.geo_latitude || geolocation?.latitude,
           geo_longitude: cart?.geo_longitude || geolocation?.longitude,
         });
-        setView({ ...view, giftCardDialog: false, cart: true });
+        setView({ ...view, miscItemDialog: false, cart: true });
         saveLog(
           {
-            log: `New gift card (#${newGiftCard?.gift_card_code?.toUpperCase()}) created and added to cart.`,
+            log: `New misc item (${description}) created and added to cart.`,
             clerk_id: clerk?.id,
             table_id: "stock",
             row_id: id,
@@ -117,38 +89,38 @@ export default function GiftCardDialog() {
         setAlert({
           open: true,
           type: "success",
-          message: `NEW GIFT CARD CREATED`,
+          message: `NEW MISC ITEM CREATED`,
         });
       },
-      text: "CREATE GIFT CARD",
+      text: "CREATE MISC ITEM",
     },
   ];
 
   return (
     <Modal
-      open={view?.giftCardDialog}
-      closeFunction={() => setView({ ...view, giftCardDialog: false })}
-      title={"CREATE GIFT CARD"}
+      open={view?.miscItemDialog}
+      closeFunction={() => {
+        clearDialog();
+        setView({ ...view, miscItemDialog: false });
+      }}
+      title={"CREATE MISC ITEM"}
       buttons={buttons}
     >
       <>
-        <div className="flex justify-between items-center">
-          <div className="text-8xl text-red-800 font-mono">{giftCardCode}</div>
-          <button
-            className="icon-button-small-mid"
-            onClick={() => setGiftCardCode(makeGiftCardCode())}
-          >
-            <SyncIcon />
-          </button>
-        </div>
         <TextField
           className="mt-8"
           divClass="text-8xl"
           startAdornment="$"
           inputClass="text-center"
+          inputLabel="Total Cost"
           value={amount}
           error={isNaN(parseFloat(amount))}
           onChange={(e: any) => setAmount(e.target.value)}
+        />
+        <TextField
+          inputLabel="Description"
+          value={description}
+          onChange={(e: any) => setDescription(e.target.value)}
         />
         <TextField
           inputLabel="Notes"

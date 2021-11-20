@@ -88,6 +88,8 @@ export default function VendorScreen() {
     );
   }
 
+  // TODO DISPLAY VENDORS NICER
+
   // Constants
   const v = useMemo(
     () =>

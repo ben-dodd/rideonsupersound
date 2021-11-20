@@ -29,6 +29,7 @@ import ReturnCashDialog from "@/components/register/return-cash";
 import TakeCashDialog from "@/components/register/take-cash";
 import LoadSalesDialog from "@/components/sell/shopping-cart/load-sales";
 import GiftCardDialog from "@/components/sell/inventory-scroll/gift-card-dialog";
+import MiscItemDialog from "@/components/sell/inventory-scroll/misc-item-dialog";
 
 export default function SellScreen() {
   // SWR
@@ -74,6 +75,7 @@ export default function SellScreen() {
       <CreateHoldSidebar />
       <CreateCustomerSidebar />
       {sale?.id && <SaleScreen isNew={true} />}
+      {view?.miscItemDialog && <MiscItemDialog />}
       {view?.giftCardDialog && <GiftCardDialog />}
       {loadedItemId && <InventoryItemScreen page="sell" />}
       {view?.changePriceDialog && <ChangePriceDialog />}

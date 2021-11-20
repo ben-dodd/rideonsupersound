@@ -60,7 +60,6 @@ export default function Nav() {
         <div className="flex mr-2">
           {page === "sell" && registerID > 0 && <SellNavActions />}
           {page === "inventory" && <InventoryNavActions />}
-          {page === "customers" && <CustomerNavActions />}
           {page === "vendors" && <VendorNavActions />}
           {page === "payments" && <PaymentNavActions />}
           <button

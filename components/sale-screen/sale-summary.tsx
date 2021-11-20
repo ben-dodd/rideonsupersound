@@ -49,10 +49,12 @@ export default function SaleSummary({ isNew }) {
     totalPrice,
   } = getSaleVars(items, transactions, inventory);
 
+  console.log(items);
+
   // Functions
   function SaleItems() {
     return (
-      <div className="h-1/3 overflow-y-scroll">
+      <div className="h-2/5 overflow-y-scroll">
         {items?.length > 0 ? (
           items?.map((saleItem: SaleItemObject) => (
             <ItemListItem
@@ -70,7 +72,7 @@ export default function SaleSummary({ isNew }) {
 
   function SaleDetails() {
     return (
-      <div className="h-1/3">
+      <div className="h-2/5">
         <div className="flex justify-end mt-2 pt-2 border-t border-gray-500">
           <div>VENDOR CUT</div>
           <div
@@ -115,7 +117,7 @@ export default function SaleSummary({ isNew }) {
 
   function TransactionItems() {
     return (
-      <div className="h-1/3 mt-1 pt-1 border-t border-gray-500 overflow-y-scroll">
+      <div className="h-1/5 mt-1 pt-1 border-t border-gray-500 overflow-y-scroll">
         {transactions?.map((transaction: SaleTransactionObject) => (
           <TransactionListItem
             key={transaction?.id}

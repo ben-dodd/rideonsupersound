@@ -7,6 +7,8 @@ import { useStockInventory, useVendors, useLogs } from "@/lib/swr-hooks";
 import { viewAtom, clerkAtom } from "@/lib/atoms";
 import { VendorObject, InventoryObject, ModalButton } from "@/lib/types";
 
+// TODO FIX RECIEVE STOCK
+
 // Functions
 import {
   getProfitMargin,

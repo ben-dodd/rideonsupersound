@@ -54,9 +54,7 @@ export default function SellListItem({
   // Load
   useEffect(() => {
     setItem(
-      inventory?.filter(
-        (i: InventoryObject) => i.id === cartItem?.item_id
-      )[0]
+      inventory?.filter((i: InventoryObject) => i.id === cartItem?.item_id)[0]
     );
   }, [inventory]);
 
@@ -155,6 +153,7 @@ export default function SellListItem({
                 max={100}
                 inputType="number"
                 endAdornment="%"
+                error={parseInt(cartItem?.vendor_discount) > 100}
                 valueNum={parseInt(cartItem?.vendor_discount)}
                 onChange={(e: any) => onChangeCart(e, "vendor_discount")}
               />
@@ -165,6 +164,7 @@ export default function SellListItem({
                 max={100}
                 inputType="number"
                 endAdornment="%"
+                error={parseInt(cartItem?.store_discount) > 100}
                 valueNum={parseInt(cartItem?.store_discount)}
                 onChange={(e: any) => onChangeCart(e, "store_discount")}
               />

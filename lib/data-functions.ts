@@ -33,6 +33,7 @@ export function getItemDisplayName(item: InventoryObject | GiftCardObject) {
   if (item?.is_gift_card)
     return `Gift Card [${item?.gift_card_code?.toUpperCase()}]`;
   let inventoryItem: any = item;
+  if (inventoryItem?.is_misc_item) return inventoryItem?.misc_item_description;
   if (inventoryItem?.display_as) return inventoryItem?.display_as;
   if (!inventoryItem || !(inventoryItem?.artist || inventoryItem?.title))
     return "Untitled";
@@ -74,7 +75,7 @@ export function getCartItemSummary(
   return item?.is_gift_card
     ? `$${(item?.gift_card_amount / 100)?.toFixed(2)} GIFT CARD`
     : item?.is_misc_item
-    ? item?.misc_item_description
+    ? `${cartItem?.quantity} x $${(item?.misc_item_amount / 100).toFixed(2)}`
     : `${cartItem?.quantity}${
         parseInt(cartItem?.vendor_discount) > 0
           ? ` x V${cartItem?.vendor_discount}%`
@@ -330,6 +331,7 @@ export function getTotalPrice(
       (i: InventoryObject) => i?.id === saleItem?.item_id
     )[0];
     if (item?.is_gift_card) return acc + item?.gift_card_amount;
+    if (item?.is_misc_item) return acc + item?.misc_item_amount;
     return (acc += getItemPrice(item, saleItem));
   }, 0);
 }
@@ -343,6 +345,7 @@ export function getTotalStoreCut(
       (i: InventoryObject) => i?.id === saleItem?.item_id
     )[0];
     if (item?.is_gift_card) return acc + item?.gift_card_amount;
+    if (item?.is_misc_item) return acc + item?.misc_item_amount;
     return acc + getItemStoreCut(item, saleItem);
   }, 0);
 }

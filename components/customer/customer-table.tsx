@@ -43,7 +43,16 @@ export default function CustomerTable() {
   const data = useMemo(
     () =>
       customers
-        ?.filter((c: CustomerObject) => !c?.is_deleted)
+        ?.filter(
+          (c: CustomerObject) =>
+            !c?.is_deleted &&
+            (holds?.filter(
+              (h: HoldObject) => h?.customer_id === c?.id && !h?.is_deleted
+            )?.length > 0 ||
+              laybys?.filter(
+                (l: SaleObject) => l?.customer_id === c?.id && !l?.is_deleted
+              )?.length > 0)
+        )
         .map((c: CustomerObject) => ({
           id: c?.id,
           name: c?.name,
@@ -111,9 +120,7 @@ export default function CustomerTable() {
                 <div
                   key={i}
                   className={`pb-2 cursor-pointer underline ${
-                    hold?.overdue
-                      ? "text-red-600 font-bold animate-bounce"
-                      : "text-black"
+                    hold?.overdue ? "text-red-600 font-bold" : "text-black"
                   }`}
                   onClick={() => null}
                 >

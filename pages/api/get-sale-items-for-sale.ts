@@ -28,7 +28,7 @@ const handler: NextApiHandler = async (req, res) => {
       LEFT JOIN stock_price
         ON stock_price.stock_id = sale_item.item_id
       WHERE sale.id = ?
-      AND (sale_item.is_gift_card OR stock_price.date_valid_from <= sale.date_sale_opened)
+      AND (sale_item.is_gift_card OR sale_item.is_misc_item OR stock_price.date_valid_from <= sale.date_sale_opened)
       AND sale.is_deleted = 0
       AND sale_item.is_deleted = 0
       `,

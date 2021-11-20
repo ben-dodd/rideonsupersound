@@ -32,11 +32,8 @@ const handler: NextApiHandler = async (req, res) => {
     has_no_quantity,
     is_gift_card,
     gift_card_code,
-    gift_card_taken,
-    gift_card_change_given,
     gift_card_amount,
     gift_card_remaining,
-    gift_card_note,
     gift_card_is_valid,
     is_misc_item,
     misc_item_description,
@@ -76,18 +73,15 @@ const handler: NextApiHandler = async (req, res) => {
         has_no_quantity,
         is_gift_card,
         gift_card_code,
-        gift_card_taken,
-        gift_card_change_given,
         gift_card_amount,
         gift_card_remaining,
-        gift_card_note,
         gift_card_is_valid,
         is_misc_item,
         misc_item_description,
         misc_item_amount,
         created_by_id
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
       [
         vendor_id,
@@ -119,11 +113,8 @@ const handler: NextApiHandler = async (req, res) => {
         has_no_quantity || 0,
         is_gift_card,
         gift_card_code,
-        gift_card_taken,
-        gift_card_change_given,
         gift_card_amount,
         gift_card_remaining,
-        gift_card_note,
         gift_card_is_valid,
         is_misc_item,
         misc_item_description,

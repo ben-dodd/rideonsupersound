@@ -10,7 +10,7 @@ import {
   useSaleItems,
 } from "@/lib/swr-hooks";
 import { newSaleObjectAtom, viewAtom, clerkAtom, alertAtom } from "@/lib/atoms";
-import { InventoryObject, SaleStateTypes } from "@/lib/types";
+import { InventoryObject, SaleItemObject, SaleStateTypes } from "@/lib/types";
 
 // Functions
 import {
@@ -130,7 +130,12 @@ export default function ShoppingCart() {
   const totalPrice = getTotalPrice(cart?.items, inventory);
   const storeCut = getTotalStoreCut(cart?.items, inventory);
   const disableButtons =
-    loadingSale || !(cart?.items && Object.keys(cart?.items).length > 0);
+    loadingSale ||
+    !(cart?.items && Object.keys(cart?.items)?.length > 0) ||
+    Object.values(cart?.items)?.filter(
+      (i: SaleItemObject) =>
+        parseInt(i?.store_discount) > 100 || parseInt(i?.vendor_discount) > 100
+    )?.length > 0;
   console.log(cart);
   return (
     <div
@@ -221,5 +226,3 @@ export default function ShoppingCart() {
     </div>
   );
 }
-
-// TODO button should be disabled if any fields on the shopping items are invalid (e.g. discount is over 100 etc.)

@@ -53,6 +53,8 @@ export default function BatchPaymentDialog() {
   const [filterLastPay, setFilterLastPay] = useState("4");
   const [filterLastSold, setFilterLastSold] = useState("26");
 
+  // TODO FIX BATCH PAYMENTS
+
   // Constants
   const payVendors = useMemo(
     () =>

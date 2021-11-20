@@ -385,7 +385,6 @@ export default function InventoryItemScreen({ page }) {
 // REVIEW delay removing inventory item
 // REVIEW update inventory quicker
 // REVIEW add logs etc. if modified
-// TODO add lost/discarded items etc. add change stock levels dialog
 
 // ONCLICKSAVE
 // () => {

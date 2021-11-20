@@ -29,6 +29,8 @@ import {
 // Components
 import CreateableSelect from "@/components/inputs/createable-select";
 import TextField from "@/components/inputs/text-field";
+import Switch from "@mui/material/Switch";
+import Tooltip from "@mui/material/Tooltip";
 
 export default function Pay({ isNew }) {
   // Atoms
@@ -48,6 +50,7 @@ export default function Pay({ isNew }) {
   // State
   const [note, setNote] = useState("");
   const { totalRemaining } = getSaleVars(items, transactions, inventory);
+  const [isRefund, setIsRefund] = useState(false);
 
   const SaleCompletedDetails = () => {
     const weather: OpenWeatherObject = sale?.weather
@@ -258,6 +261,11 @@ export default function Pay({ isNew }) {
             value={note}
             onChange={(e: any) => setNote(e.target.value)}
           />
+          <div className="grid grid-cols-3">
+            <button className="icon-text-button">Refund Items</button>
+            <button className="icon-text-button">Refund Payment</button>
+            <button className="icon-text-button">Split Sale</button>
+          </div>
         </>
       )}
     </div>
