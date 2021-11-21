@@ -51,6 +51,8 @@ import Cash from "./payment/cash";
 import Gift from "./payment/gift";
 import ScreenContainer from "@/components/container/screen";
 import CreateCustomerSidebar from "@/components/customer/create-customer-sidebar";
+import RefundPaymentDialog from "./refund-payment-dialog";
+import ReturnItemDialog from "./return-item-dialog";
 
 // TODO add returns to sale items
 // TODO refund dialog like PAY, refund with store credit, cash or card
@@ -273,13 +275,13 @@ export default function SaleScreen({ isNew }) {
   // Constants
   const buttons: ModalButton[] = [
     // REVIEW discard sale, do confirm dialog
-    {
-      type: "cancel",
-      onClick: () => setSale(null),
-      disabled: true || totalRemaining === 0,
-      text:
-        sale?.state === SaleStateTypes.Layby ? "CANCEL LAYBY" : "DISCARD SALE",
-    },
+    // {
+    //   type: "cancel",
+    //   onClick: () => setSale(null),
+    //   disabled: true || totalRemaining === 0,
+    //   text:
+    //     sale?.state === SaleStateTypes.Layby ? "CANCEL LAYBY" : "DISCARD SALE",
+    // },
     {
       type: "alt3",
       onClick: clickParkSale,
@@ -343,6 +345,8 @@ export default function SaleScreen({ isNew }) {
       {view?.cashPaymentDialog && <Cash isNew={isNew} />}
       {view?.giftPaymentDialog && <Gift isNew={isNew} />}
       {view?.createCustomer && <CreateCustomerSidebar />}
+      {view?.refundPaymentDialog && <RefundPaymentDialog isNew={isNew} />}
+      {view?.returnItemDialog && <ReturnItemDialog isNew={isNew} />}
     </>
   );
 }

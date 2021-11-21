@@ -90,9 +90,9 @@ export default function TransactionListItem({
     <div
       className={`flex justify-end items-center mt-2 mb-3 ${
         transaction?.is_deleted && "line-through text-gray-400"
-      }`}
+      } ${transaction?.is_refund && "text-red-500"}`}
     >
-      <div className="w-2/12">
+      {/*<div className="w-2/12">
         {transaction?.is_deleted ? (
           <div />
         ) : (
@@ -103,16 +103,24 @@ export default function TransactionListItem({
             <DeleteIcon />
           </button>
         )}
-      </div>
-      <div className="w-4/12">
+      </div>*/}
+      <div className="w-1/2">
         {format(parseISO(transaction?.date), "d MMMM yyyy, p", { locale: nz })}
       </div>
-      <div className="w-3/12 text-right">
-        {(transaction?.payment_method || "OTHER").toUpperCase()}
+      <div className="w-1/4">
+        {(
+          `${transaction?.payment_method}${
+            transaction?.is_refund ? " REFUND" : ""
+          }` || "OTHER"
+        ).toUpperCase()}
       </div>
-      <div className="w-3/12">
+      <div className="w-1/4">
         <div className="text-right">
-          ${(transaction?.amount / 100 || 0)?.toFixed(2)}
+          $
+          {(transaction?.is_refund
+            ? transaction?.amount / -100
+            : transaction?.amount / 100 || 0
+          )?.toFixed(2)}
         </div>
         <div className="text-right text-xs">
           {transaction?.payment_method === PaymentMethodTypes.Cash
@@ -139,61 +147,3 @@ export default function TransactionListItem({
     </div>
   );
 }
-
-// dispatch(
-//   openDialog("confirm", {
-//     title: `Delete Transaction`,
-//     message: `Are you sure you want to delete this transaction? This action cannot be reversed.`,
-//     yesText: "YES",
-//     action: () => {
-//       addLog(
-//         `Transaction [${payment.id}] deleted.`,
-//         "sales",
-//         sale.uid,
-//         currentStaff
-//       );
-//       updateData({
-//         dispatch,
-//         collection: "sale",
-//         doc: `${sale.uid}`,
-//         update: {
-//           ...sale,
-//           transactions: {
-//             ...get(sale, "transactions", {}),
-//             [payment.id]: { ...payment, deleted: true },
-//           },
-//         },
-//       });
-//       onDelete && onDelete(true);
-//       dispatch(closeDialog("confirm"));
-//       dispatch(
-//         setAlert({
-//           type: "warning",
-//           message: `TRANSACTION DELETED`,
-//           undo: () => {
-//             addLog(
-//               `Undo transaction [${payment.id}] delete.`,
-//               "sales",
-//               sale.uid,
-//               currentStaff
-//             );
-//             updateData({
-//               dispatch,
-//               collection: "sale",
-//               doc: `${sale.uid}`,
-//               update: {
-//                 ...sale,
-//                 transactions: {
-//                   ...get(sale, "transactions", {}),
-//                   [payment.id]: { ...payment, deleted: true },
-//                 },
-//               },
-//             });
-//             onDelete && onDelete(false);
-//             dispatch(closeAlert());
-//           },
-//         })
-//       );
-//     },
-//   })
-// )

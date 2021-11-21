@@ -32,6 +32,11 @@ import TextField from "@/components/inputs/text-field";
 import Switch from "@mui/material/Switch";
 import Tooltip from "@mui/material/Tooltip";
 
+import DeleteIcon from "@mui/icons-material/Delete";
+import RefundIcon from "@mui/icons-material/Payment";
+import ReturnIcon from "@mui/icons-material/KeyboardReturn";
+import SplitIcon from "@mui/icons-material/CallSplit";
+
 export default function Pay({ isNew }) {
   // Atoms
   const [sale, setSale] = useAtom(
@@ -49,7 +54,11 @@ export default function Pay({ isNew }) {
 
   // State
   const [note, setNote] = useState("");
-  const { totalRemaining } = getSaleVars(items, transactions, inventory);
+  const { totalRemaining, totalPaid } = getSaleVars(
+    items,
+    transactions,
+    inventory
+  );
   const [isRefund, setIsRefund] = useState(false);
 
   const SaleCompletedDetails = () => {
@@ -261,10 +270,29 @@ export default function Pay({ isNew }) {
             value={note}
             onChange={(e: any) => setNote(e.target.value)}
           />
-          <div className="grid grid-cols-3">
-            <button className="icon-text-button">Refund Items</button>
-            <button className="icon-text-button">Refund Payment</button>
-            <button className="icon-text-button">Split Sale</button>
+          <div className="grid grid-cols-2">
+            <button
+              className="icon-text-button"
+              onClick={() => setView({ ...view, returnItemDialog: true })}
+            >
+              <ReturnIcon className="mr-1" /> Refund Items
+            </button>
+            <button
+              className="icon-text-button"
+              onClick={() => setView({ ...view, refundPaymentDialog: true })}
+              disabled={totalPaid <= 0}
+            >
+              <RefundIcon className="mr-1" /> Refund Payment
+            </button>
+            <button
+              className="icon-text-button"
+              onClick={() => setView({ ...view, splitSaleDialog: true })}
+            >
+              <SplitIcon className="mr-1" /> Split Sale
+            </button>
+            <button className="icon-text-button">
+              <DeleteIcon className="mr-1" /> Delete Sale
+            </button>
           </div>
         </>
       )}

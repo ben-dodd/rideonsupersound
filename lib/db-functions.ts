@@ -239,7 +239,9 @@ export async function saveSaleTransaction(
     // Add account payment as a store payment to the vendor
     let vendorPaymentId = null;
     const vendorPayment = {
-      amount: transaction?.amount,
+      amount: transaction?.is_refund
+        ? transaction?.amount * -1
+        : transaction?.amount,
       clerk_id: transaction?.clerk_id,
       vendor_id: vendor?.id,
       type: "sale",
@@ -836,6 +838,7 @@ export async function updateSaleItemInDatabase(saleItem: SaleItemObject) {
         store_discount: parseInt(saleItem?.store_discount),
         note: saleItem?.note,
         is_refunded: saleItem?.is_refunded,
+        refund_note: saleItem?.refund_note,
         is_deleted: saleItem?.is_deleted,
       }),
     });

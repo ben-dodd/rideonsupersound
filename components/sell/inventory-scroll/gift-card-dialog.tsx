@@ -13,7 +13,7 @@ import { viewAtom, newSaleObjectAtom, clerkAtom, alertAtom } from "@/lib/atoms";
 import { GiftCardObject, ModalButton } from "@/lib/types";
 
 // Functions
-import { getGeolocation } from "@/lib/data-functions";
+import { getGeolocation, makeGiftCardCode } from "@/lib/data-functions";
 import { saveLog, saveStockToDatabase } from "@/lib/db-functions";
 
 // Components
@@ -37,29 +37,12 @@ export default function GiftCardDialog() {
   const { weather } = useWeather();
 
   // State
-  const [giftCardCode, setGiftCardCode] = useState(makeGiftCardCode());
+  const [giftCardCode, setGiftCardCode] = useState(makeGiftCardCode(giftCards));
   const [amount, setAmount] = useState("20");
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   // Functions
-  function makeGiftCardCode() {
-    var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    var charactersLength = characters.length;
-    let result = "";
-    while (
-      result === "" ||
-      giftCards?.map((g: GiftCardObject) => g?.gift_card_code).includes(result)
-    ) {
-      result = "";
-      for (var i = 0; i < 6; i++) {
-        result += characters.charAt(
-          Math.floor(Math.random() * charactersLength)
-        );
-      }
-    }
-    return result;
-  }
 
   const buttons: ModalButton[] = [
     {
@@ -136,7 +119,7 @@ export default function GiftCardDialog() {
           <div className="text-8xl text-red-800 font-mono">{giftCardCode}</div>
           <button
             className="icon-button-small-mid"
-            onClick={() => setGiftCardCode(makeGiftCardCode())}
+            onClick={() => setGiftCardCode(makeGiftCardCode(giftCards))}
           >
             <SyncIcon />
           </button>

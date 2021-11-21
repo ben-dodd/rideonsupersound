@@ -326,6 +326,7 @@ export function getTotalPrice(
   inventory: InventoryObject[]
 ) {
   return saleItems?.reduce((acc, saleItem) => {
+    if (saleItem?.is_refunded) return acc;
     // Misc Items and Gift Cards in inventory
     let item: InventoryObject = inventory?.filter(
       (i: InventoryObject) => i?.id === saleItem?.item_id
@@ -341,6 +342,7 @@ export function getTotalStoreCut(
   inventory: InventoryObject[]
 ) {
   return saleItems?.reduce((acc, saleItem: SaleItemObject) => {
+    if (saleItem?.is_refunded) return acc;
     let item: InventoryObject = inventory?.filter(
       (i: InventoryObject) => i?.id === saleItem?.item_id
     )[0];
@@ -684,6 +686,22 @@ export function writeItemList(
       })
       .join(", ");
   } else return "";
+}
+
+export function makeGiftCardCode(giftCards: GiftCardObject[]) {
+  var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  var charactersLength = characters.length;
+  let result = "";
+  while (
+    result === "" ||
+    giftCards?.map((g: GiftCardObject) => g?.gift_card_code).includes(result)
+  ) {
+    result = "";
+    for (var i = 0; i < 6; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+  }
+  return result;
 }
 
 //               //

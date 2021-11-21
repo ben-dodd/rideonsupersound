@@ -45,14 +45,17 @@ export default function ListTask({ task }: ListItemProps) {
                 const otherTasks = tasks?.filter(
                   (t: TaskObject) => t?.id !== task?.id
                 );
-                mutateTasks([
-                  ...otherTasks,
-                  {
-                    ...task,
-                    completed_by_clerk_id: clerk?.id,
-                    is_completed: true,
-                  },
-                ]);
+                mutateTasks(
+                  [
+                    ...otherTasks,
+                    {
+                      ...task,
+                      completed_by_clerk_id: clerk?.id,
+                      is_completed: true,
+                    },
+                  ],
+                  false
+                );
                 completeTask(task, clerk);
               }}
             />

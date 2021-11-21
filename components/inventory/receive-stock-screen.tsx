@@ -207,6 +207,18 @@ export default function ReceiveStockScreen() {
     },
   ];
 
+  // TODO make stepper receive
+  // Step 1 - select vendor or create new
+  // Step 2 - select items, either
+  //    from vendor items
+  //    from csv
+  //    write into table
+  //    barcode -> discogs / googlebooks
+  // Step 3 - select discogs/googlebooks
+  // Step 4 - enter PRICE
+  // Step 5 - enter quantity
+  // Step 6 - print labels
+
   return (
     <ScreenContainer
       show={view?.receiveStockScreen}

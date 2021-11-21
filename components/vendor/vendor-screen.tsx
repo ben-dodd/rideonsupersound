@@ -42,6 +42,8 @@ import MaskedInput from "react-text-mask";
 import TextField from "@/components/inputs/text-field";
 import CreateableSelect from "@/components/inputs/createable-select";
 import SettingsSelect from "@/components/inputs/settings-select";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
 
 export default function VendorScreen() {
   // Atoms
@@ -61,6 +63,7 @@ export default function VendorScreen() {
 
   // State
   const [vendor, setVendor]: [VendorObject, Function] = useState({});
+  const [tab, setTab] = useState(0);
 
   // Load
   useEffect(() => {
@@ -88,7 +91,7 @@ export default function VendorScreen() {
     );
   }
 
-  // TODO DISPLAY VENDORS NICER
+  // TODO DISPLAY VENDORS as tab screen - General, sales summary, in stock, out of stock
 
   // Constants
   const v = useMemo(
@@ -119,6 +122,8 @@ export default function VendorScreen() {
     /\d/,
   ];
   const isNew = !vendor?.id;
+  // TODO make tabs component
+  // TODO make stepper component
 
   return (
     <ScreenContainer
@@ -135,9 +140,16 @@ export default function VendorScreen() {
       }
       buttons={[]}
     >
-      <div className="flex">
-        <div className={`flex flex-col mr-8 ${isNew ? "w-full" : "w-1/5"}`}>
-          <div className="text-xl font-bold bg-col1 px-1">General Details</div>
+      <>
+        <div className="flex flex-col">
+          <Tabs value={tab} onChange={(e, newValue) => setTab(newValue)}>
+            <Tab label="General Details" />
+            <Tab label="Sales" />
+            <Tab label="Items" />
+            <Tab label="Payments" />
+          </Tabs>
+        </div>
+        <div hidden={tab !== 0}>
           <TextField
             inputLabel="Name"
             value={vendor?.name || ""}
@@ -221,132 +233,108 @@ export default function VendorScreen() {
             rows={3}
           />
         </div>
-        {!isNew && (
-          <div className="w-4/5 flex">
-            {v && (
-              <div className="w-1/3 px-4 border-l">
-                <div className="text-xl font-bold bg-col2 px-1">
-                  Sales Summary
-                </div>
-                {[
-                  {
-                    label: "Total Sales",
-                    value: v?.totalSales?.length,
-                  },
-                  {
-                    label: "Last Sale",
-                    value: v?.lastSold ? fDate(v?.lastSold) : "N/A",
-                  },
-                  {
-                    label: "Last Paid",
-                    value: v?.lastPaid ? fDate(v?.lastPaid) : "N/A",
-                  },
-                  {
-                    label: "Total Take",
-                    value: `$${(v?.totalSell || 0)?.toFixed(2)}`,
-                    className: "text-primary",
-                  },
-                  {
-                    label: "Total Paid",
-                    value: `$${(v?.totalPaid || 0)?.toFixed(2)}`,
-                    className: "text-secondary",
-                  },
-                  {
-                    label: "Total Owed",
-                    value: `$${(v?.totalOwing || 0)?.toFixed(2)}`,
-                    className: "text-tertiary",
-                  },
-                ].map((item) => (
-                  <div className="flex" key={item.label}>
-                    <div className="w-36 font-bold">{item.label}</div>
-                    <div className={`${item.className || ""}`}>
-                      {item.value}
+        <div hidden={tab !== 1}>
+          {[
+            {
+              label: "Total Sales",
+              value: v?.totalSales?.length,
+            },
+            {
+              label: "Last Sale",
+              value: v?.lastSold ? fDate(v?.lastSold) : "N/A",
+            },
+            {
+              label: "Last Paid",
+              value: v?.lastPaid ? fDate(v?.lastPaid) : "N/A",
+            },
+            {
+              label: "Total Take",
+              value: `$${(v?.totalSell || 0)?.toFixed(2)}`,
+              className: "text-primary",
+            },
+            {
+              label: "Total Paid",
+              value: `$${(v?.totalPaid || 0)?.toFixed(2)}`,
+              className: "text-secondary",
+            },
+            {
+              label: "Total Owed",
+              value: `$${(v?.totalOwing || 0)?.toFixed(2)}`,
+              className: "text-tertiary",
+            },
+          ].map((item) => (
+            <div className="flex" key={item.label}>
+              <div className="w-36 font-bold">{item.label}</div>
+              <div className={`${item.className || ""}`}>{item.value}</div>
+            </div>
+          ))}
+          {v?.totalSales?.length > 0 && (
+            <div className="mt-4">
+              <div className="font-bold text-xl">Latest Sales</div>
+              {v?.totalSales
+                ?.sort(
+                  (
+                    saleA: VendorSaleItemObject,
+                    saleB: VendorSaleItemObject
+                  ) => {
+                    const a = nzDate(saleA?.date_sale_closed);
+                    const b = nzDate(saleB?.date_sale_closed);
+                    return a < b ? 1 : b < a ? -1 : 0;
+                  }
+                )
+                ?.slice(0, 5)
+                ?.map((sale: VendorSaleItemObject) => (
+                  <div className="border-b mt-2">
+                    <div className="font-bold text-sm">
+                      {fDate(sale?.date_sale_closed)}
                     </div>
+                    <div>{`${getItemDisplayName(
+                      inventory?.filter(
+                        (i: InventoryObject) => i?.id === sale?.item_id
+                      )[0]
+                    )} (${sale?.quantity})`}</div>
                   </div>
-                ))}
-                {v?.totalSales?.length > 0 && (
-                  <div className="mt-4">
-                    <div className="font-bold text-xl">Latest Sales</div>
-                    {v?.totalSales
-                      ?.sort(
-                        (
-                          saleA: VendorSaleItemObject,
-                          saleB: VendorSaleItemObject
-                        ) => {
-                          const a = nzDate(saleA?.date_sale_closed);
-                          const b = nzDate(saleB?.date_sale_closed);
-                          return a < b ? 1 : b < a ? -1 : 0;
-                        }
-                      )
-                      .slice(0, 5)
-                      .map((sale: VendorSaleItemObject) => (
-                        <div className="border-b mt-2">
-                          <div className="font-bold text-sm">
-                            {fDate(sale?.date_sale_closed)}
-                          </div>
-                          <div>{`${getItemDisplayName(
-                            inventory?.filter(
-                              (i: InventoryObject) => i?.id === sale?.item_id
-                            )[0]
-                          )} (${sale?.quantity})`}</div>
-                        </div>
-                      ))}
-                  </div>
-                )}
-
-                {v?.totalPayments?.length > 0 && (
-                  <div className="mt-4">
-                    <div className="font-bold text-xl">Latest Payments</div>
-                    {v?.totalPayments
-                      .sort(
-                        (
-                          debitA: VendorPaymentObject,
-                          debitB: VendorPaymentObject
-                        ) => {
-                          const a = nzDate(debitA?.date);
-                          const b = nzDate(debitB?.date);
-                          return a < b ? 1 : b < a ? -1 : 0;
-                        }
-                      )
-                      .slice(0, 5)
-                      .map((debit: VendorPaymentObject) => (
-                        <div className="border-b mt-2">
-                          <div className="font-bold text-sm">
-                            {fDate(debit?.date)}
-                          </div>
-                          <div>{`$${(debit?.amount / 100)?.toFixed(2)} (${
-                            debit?.type
-                          })`}</div>
-                        </div>
-                      ))}
-                  </div>
-                )}
-              </div>
-            )}
-            <div className="w-1/3 px-4 border-l">
-              <div className="text-xl font-bold bg-col3 px-1">
-                In Stock Items
-              </div>
-              {v?.totalItems
-                .filter((item: InventoryObject) => item?.quantity > 0)
-                .map((item: InventoryObject) => (
-                  <StockItem key={item.id} item={item} />
                 ))}
             </div>
-
-            <div className="w-1/3 px-4 border-l">
-              <div className="text-xl font-bold bg-col4 px-1">
-                Out of Stock Items
-              </div>
-              {v?.totalItems
-                .filter((item: InventoryObject) => (item?.quantity || 0) <= 0)
-                .map((item: InventoryObject) => (
-                  <StockItem item={item} />
-                ))}
-            </div>
+          )}
+        </div>
+        <div hidden={tab !== 2}>
+          <div className="text-xl font-bold bg-col3 px-1">In Stock Items</div>
+          {v?.totalItems
+            ?.filter((item: InventoryObject) => item?.quantity > 0)
+            ?.map((item: InventoryObject) => (
+              <StockItem key={item.id} item={item} />
+            ))}
+          <div className="text-xl font-bold bg-col4 px-1">
+            Out of Stock Items
           </div>
-        )}
-      </div>
+          {v?.totalItems
+            ?.filter((item: InventoryObject) => (item?.quantity || 0) <= 0)
+            ?.map((item: InventoryObject) => (
+              <StockItem item={item} />
+            ))}
+        </div>
+        <div hidden={tab !== 3}>
+          <div className="font-bold text-xl">Latest Payments</div>
+          {v?.totalPayments
+            ?.sort(
+              (debitA: VendorPaymentObject, debitB: VendorPaymentObject) => {
+                const a = nzDate(debitA?.date);
+                const b = nzDate(debitB?.date);
+                return a < b ? 1 : b < a ? -1 : 0;
+              }
+            )
+            ?.slice(0, 5)
+            ?.map((debit: VendorPaymentObject) => (
+              <div className="border-b mt-2">
+                <div className="font-bold text-sm">{fDate(debit?.date)}</div>
+                <div>{`$${(debit?.amount / 100)?.toFixed(2)} (${
+                  debit?.type
+                })`}</div>
+              </div>
+            ))}
+        </div>
+      </>
     </ScreenContainer>
   );
 }

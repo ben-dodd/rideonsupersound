@@ -213,7 +213,7 @@ export default function ShoppingCart() {
               ) : (
                 <PayIcon className="mr-2" />
               )}
-              MAKE THEM PAY
+              {cart?.id ? "CONTINUE SALE" : "MAKE THEM PAY"}
             </button>
           </div>
         </div>

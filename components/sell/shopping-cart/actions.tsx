@@ -30,8 +30,6 @@ import DiscardSaleIcon from "@mui/icons-material/Close";
 import RetrieveSaleIcon from "@mui/icons-material/FolderOpen";
 import SaveSaleIcon from "@mui/icons-material/Save";
 
-// REVIEW add mutate logs to all logs
-
 export default function ShoppingCartActions() {
   // SWR
   const { customers } = useCustomers();
@@ -146,15 +144,17 @@ export default function ShoppingCartActions() {
           )}
         </button>
       </Tooltip>
-      <Tooltip title="Discard sale">
-        <button
-          className="icon-button-small-white"
-          onClick={onClickDiscardSale}
-          disabled={Boolean(!cart || !cart?.items || cart?.items?.length < 1)}
-        >
-          <DiscardSaleIcon />
-        </button>
-      </Tooltip>
+      {!cart?.id && (
+        <Tooltip title="Discard sale">
+          <button
+            className="icon-button-small-white"
+            onClick={onClickDiscardSale}
+            disabled={Boolean(!cart || !cart?.items || cart?.items?.length < 1)}
+          >
+            <DiscardSaleIcon />
+          </button>
+        </Tooltip>
+      )}
     </div>
   );
 }

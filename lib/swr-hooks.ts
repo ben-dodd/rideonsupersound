@@ -251,18 +251,6 @@ export function useGiftCards() {
   };
 }
 
-export function useGiftCard(gift_card_id: number) {
-  const { data, error } = useSWR(
-    `/api/get-gift-card?gift_card_id=${gift_card_id}`,
-    fetcher
-  );
-  return {
-    giftCard: data && data[0],
-    isLoading: !error && !data,
-    isError: error,
-  };
-}
-
 export function useCustomers() {
   const { data, error, mutate } = useSWR(
     `/api/get-customers`,

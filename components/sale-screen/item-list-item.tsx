@@ -3,11 +3,7 @@ import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import {
-  useInventory,
-  useSaleItemsForSale,
-  useLogs,
-} from "@/lib/swr-hooks";
+import { useInventory, useSaleItemsForSale, useLogs } from "@/lib/swr-hooks";
 import {
   newSaleObjectAtom,
   loadedSaleObjectAtom,
@@ -15,6 +11,7 @@ import {
   clerkAtom,
 } from "@/lib/atoms";
 import { InventoryObject, SaleItemObject } from "@/lib/types";
+import { MouseEventHandler } from "react";
 
 // Functions
 import {
@@ -31,27 +28,25 @@ import {
 
 // Components
 import Image from "next/image";
-import Tooltip from "@mui/material/Tooltip";
-
-// Icons
-import DeleteIcon from "@mui/icons-material/Delete";
-import RefundIcon from "@mui/icons-material/Rotate90DegreesCcw";
 
 type SellListItemProps = {
   saleItem: SaleItemObject;
   isNew: boolean;
+  selected?: boolean;
+  onClick?: MouseEventHandler;
 };
 
-export default function ItemListItem({ saleItem, isNew }: SellListItemProps) {
+export default function ItemListItem({
+  saleItem,
+  isNew,
+  selected,
+  onClick,
+}: SellListItemProps) {
   // Atoms
   const [sale] = useAtom(isNew ? newSaleObjectAtom : loadedSaleObjectAtom);
-  const [, setAlert] = useAtom(alertAtom);
-  const [clerk] = useAtom(clerkAtom);
 
   // SWR
   const { inventory } = useInventory();
-  const { items } = useSaleItemsForSale(sale?.id);
-  const { logs, mutateLogs } = useLogs();
 
   // State
   const [item, setItem] = useState(null);
@@ -64,41 +59,14 @@ export default function ItemListItem({ saleItem, isNew }: SellListItemProps) {
   }, [inventory]);
 
   // Functions
-  async function deleteOrRefundItem(id: number, is_refund: boolean) {
-    let saleItem: SaleItemObject =
-      items?.filter((i: SaleItemObject) => i?.id === id)[0] || {};
-    saleItem.is_refunded = true;
-    is_refund
-      ? updateSaleItemInDatabase({ ...saleItem, sale_id: sale?.id })
-      : deleteSaleItemFromDatabase(id);
-    // if (cart?.items?.length < 1) {
-    //   // No items left, delete cart
-    //   setView({ ...view, cart: false });
-    //   // TODO Any transactions need to be refunded.
-    //   deleteSaleFromDatabase(cart?.id);
-    // }
-    saveLog(
-      {
-        log: `${getItemDisplayName(
-          inventory?.filter((i: InventoryObject) => i?.id === id)[0]
-        )} ${is_refund ? "refunded" : "removed from sale"}${
-          id ? ` (sale #${id})` : ""
-        }.`,
-        clerk_id: clerk?.id,
-      },
-      logs,
-      mutateLogs
-    );
-    setAlert({
-      open: true,
-      type: "success",
-      message: is_refund ? `ITEM REFUNDED` : `ITEM REMOVED FROM SALE`,
-    });
-    // setRefresh(refresh + 1);
-  }
 
   return (
-    <div className="flex w-full relative pt mb-2">
+    <div
+      className={`flex w-full relative pt mb-2${
+        saleItem?.is_refunded ? " opacity-50" : ""
+      }${onClick ? " cursor-pointer" : ""}${selected ? " bg-red-100" : ""}`}
+      onClick={onClick || null}
+    >
       <div className="w-20">
         <div className="w-20 h-20 relative">
           <Image
@@ -115,24 +83,19 @@ export default function ItemListItem({ saleItem, isNew }: SellListItemProps) {
         </div>
       </div>
       <div className="flex flex-col w-full p-2 justify-between">
-        <div className="text-sm pl-1">{getItemDisplayName(item)}</div>
-        <div className="text-red-500 self-end">
+        <div className="text-sm pl-1">
+          <div>{getItemDisplayName(item)}</div>
+          {saleItem?.is_refunded && (
+            <div className={"text-red-500"}>REFUNDED</div>
+          )}
+        </div>
+        <div
+          className={`text-red-500 self-end${
+            saleItem?.is_refunded ? " line-through" : ""
+          }`}
+        >
           <div>{getCartItemSummary(item, saleItem)}</div>
         </div>
-        {/*<div className="text-red-500 self-end flex flex-col">
-          <Tooltip
-            title={sale?.state === "completed" ? "Refund item" : "Delete item"}
-          >
-            <button
-              className="py-2 text-tertiary hover:text-tertiary-dark self-end"
-              onClick={() =>
-                deleteOrRefundItem(item, sale?.state === "completed")
-              }
-            >
-              {sale?.state === "completed" ? <RefundIcon /> : <DeleteIcon />}
-            </button>
-          </Tooltip>
-        </div>*/}
       </div>
     </div>
   );

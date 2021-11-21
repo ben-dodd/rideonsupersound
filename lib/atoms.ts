@@ -43,7 +43,9 @@ interface ViewProps {
   holdDialog?: boolean;
   labelPrintDialog?: boolean;
   loadSalesDialog?: boolean;
-  refundDialog?: boolean;
+  refundPaymentDialog?: boolean;
+  returnItemDialog?: boolean;
+  splitSaleDialog?: boolean;
   saleScreen?: boolean;
   taskDialog?: boolean;
 }
