@@ -837,9 +837,11 @@ export function fFileDate(date?: Date | string) {
     : "Invalid Date";
 }
 
-export function daysFrom(date: Date | string) {
+export function daysFrom(date: Date | string, unit?: any) {
   return date
-    ? formatDistanceToNowStrict(date instanceof Date ? date : nzDate(date))
+    ? formatDistanceToNowStrict(date instanceof Date ? date : nzDate(date), {
+        unit: unit || null,
+      })
     : null;
 }
 

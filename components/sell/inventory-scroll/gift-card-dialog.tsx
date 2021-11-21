@@ -5,7 +5,7 @@ import { useAtom } from "jotai";
 // DB
 import {
   useGiftCards,
-  useStockInventory,
+  useInventory,
   useLogs,
   useWeather,
 } from "@/lib/swr-hooks";
@@ -32,7 +32,7 @@ export default function GiftCardDialog() {
   // SWR
   const { giftCards, mutateGiftCards } = useGiftCards();
   const { logs, mutateLogs } = useLogs();
-  const { inventory, mutateInventory } = useStockInventory();
+  const { inventory, mutateInventory } = useInventory();
   const geolocation = getGeolocation();
   const { weather } = useWeather();
 

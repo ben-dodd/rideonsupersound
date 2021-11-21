@@ -7,7 +7,7 @@ import {
   useVendors,
   useClerks,
   useCustomers,
-  useStockInventory,
+  useInventory,
   useSalesJoined,
   useVendorPayments,
 } from "@/lib/swr-hooks";
@@ -31,7 +31,7 @@ export default function VendorsScreen() {
   const [loadedVendorId, setLoadedVendorId] = useAtom(loadedVendorIdAtom);
 
   // SWR
-  const { inventory, isInventoryLoading } = useStockInventory();
+  const { inventory, isInventoryLoading } = useInventory();
   const { sales, isSalesLoading } = useSalesJoined();
   const { vendorPayments, isVendorPaymentsLoading } = useVendorPayments();
   const { vendors, isVendorsLoading } = useVendors();

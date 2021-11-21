@@ -70,9 +70,9 @@ export default function PaymentTable() {
       loading={isVendorsLoading || isVendorPaymentsLoading || isClerksLoading}
     >
       <Table
-        color="bg-col8"
-        colorLight="bg-col8-light"
-        colorDark="bg-col8-dark"
+        color="bg-col4"
+        colorLight="bg-col4-light"
+        colorDark="bg-col4-dark"
         data={data}
         columns={columns}
         heading={"Vendor Payments"}

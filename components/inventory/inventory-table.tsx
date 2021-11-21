@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useStockInventory, useVendors } from "@/lib/swr-hooks";
+import { useInventory, useVendors } from "@/lib/swr-hooks";
 import { loadedItemIdAtom } from "@/lib/atoms";
 import { InventoryObject, VendorObject } from "@/lib/types";
 
@@ -20,7 +20,7 @@ interface NumberProps {
 
 export default function InventoryTable() {
   // SWR
-  const { inventory, isInventoryLoading } = useStockInventory();
+  const { inventory, isInventoryLoading } = useInventory();
   const { vendors, isVendorsLoading } = useVendors();
 
   // Atoms

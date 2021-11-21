@@ -6,7 +6,7 @@ const handler: NextApiHandler = async (req, res) => {
     const results = await query(
       `
       SELECT *
-      FROM log
+      FROM task
       WHERE NOT is_deleted
       ORDER BY date_created desc
       `

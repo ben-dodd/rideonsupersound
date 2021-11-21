@@ -4,7 +4,7 @@ import { useAtom } from "jotai";
 
 // DB
 import {
-  useStockInventory,
+  useInventory,
   useSaleItemsForSale,
   useLogs,
 } from "@/lib/swr-hooks";
@@ -49,7 +49,7 @@ export default function ItemListItem({ saleItem, isNew }: SellListItemProps) {
   const [clerk] = useAtom(clerkAtom);
 
   // SWR
-  const { inventory } = useStockInventory();
+  const { inventory } = useInventory();
   const { items } = useSaleItemsForSale(sale?.id);
   const { logs, mutateLogs } = useLogs();
 

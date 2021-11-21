@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useStockInventory, useLogs, useWeather } from "@/lib/swr-hooks";
+import { useInventory, useLogs, useWeather } from "@/lib/swr-hooks";
 import { viewAtom, newSaleObjectAtom, clerkAtom, alertAtom } from "@/lib/atoms";
 import { ModalButton, InventoryObject } from "@/lib/types";
 
@@ -24,7 +24,7 @@ export default function MiscItemDialog() {
 
   // SWR
   const { logs, mutateLogs } = useLogs();
-  const { inventory, mutateInventory } = useStockInventory();
+  const { inventory, mutateInventory } = useInventory();
   const geolocation = getGeolocation();
   const { weather } = useWeather();
 

@@ -3,7 +3,7 @@ import { useAtom } from "jotai";
 
 // DB
 import { alertAtom, pageAtom } from "@/lib/atoms";
-import { useStockInventory } from "@/lib/swr-hooks";
+import { useInventory } from "@/lib/swr-hooks";
 
 // Components
 import Snackbar from "@mui/material/Snackbar";
@@ -20,6 +20,7 @@ import GiftCardsScreen from "@/components/gift-card";
 import PaymentsScreen from "@/components/payment";
 import SalesScreen from "@/components/sale";
 import LogScreen from "@/components/log";
+import TaskScreen from "@/components/task";
 import ConfirmModal from "@/components/container/modal/confirm-modal";
 import HelpDialog from "@/components/help";
 
@@ -29,7 +30,7 @@ export default function MainPage() {
   const [page] = useAtom(pageAtom);
 
   // Load necessary data
-  useStockInventory();
+  useInventory();
   // BUG fix bug where inventory doesn't load. make all pages load until all data there, e.g. in tables
 
   return (
@@ -45,6 +46,7 @@ export default function MainPage() {
           <GiftCardsScreen />
           <SalesScreen />
           {page === "logs" && <LogScreen />}
+          {page === "tasks" && <TaskScreen />}
           <PaymentsScreen />
         </div>
         <HelpDialog />

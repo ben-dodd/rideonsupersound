@@ -8,7 +8,7 @@ import {
   useCustomers,
   useSaleTransactionsForSale,
   useSaleItemsForSale,
-  useStockInventory,
+  useInventory,
 } from "@/lib/swr-hooks";
 import {
   newSaleObjectAtom,
@@ -45,7 +45,7 @@ export default function Pay({ isNew }) {
   const { customers } = useCustomers();
   const { items } = useSaleItemsForSale(sale?.id);
   const { transactions } = useSaleTransactionsForSale(sale?.id);
-  const { inventory } = useStockInventory();
+  const { inventory } = useInventory();
 
   // State
   const [note, setNote] = useState("");
@@ -271,3 +271,6 @@ export default function Pay({ isNew }) {
     </div>
   );
 }
+
+// TODO Add refund items/ refund transactions
+// TODO Add split sale for when person wants to take one layby item etc.

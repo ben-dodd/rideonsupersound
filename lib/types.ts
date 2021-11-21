@@ -298,6 +298,19 @@ export interface LogObject {
   is_deleted?: boolean;
 }
 
+export interface TaskObject {
+  id?: number;
+  description?: string;
+  date_created?: string;
+  created_by_clerk_id?: number;
+  assigned_to_clerk_id?: number;
+  is_completed?: boolean;
+  is_priority?: boolean;
+  date_completed?: string;
+  completed_by_clerk_id?: number;
+  is_deleted?: boolean;
+}
+
 export interface DiscogsItem {
   artists?: DiscogsArtist[];
   barcode?: string[];

@@ -3,12 +3,7 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import {
-  useStockInventory,
-  useLogs,
-  useSales,
-  useSaleItems,
-} from "@/lib/swr-hooks";
+import { useInventory, useLogs, useSales, useSaleItems } from "@/lib/swr-hooks";
 import { newSaleObjectAtom, viewAtom, clerkAtom, alertAtom } from "@/lib/atoms";
 import { InventoryObject, SaleItemObject, SaleStateTypes } from "@/lib/types";
 
@@ -38,7 +33,7 @@ import HoldIcon from "@mui/icons-material/PanTool";
 
 export default function ShoppingCart() {
   // SWR
-  const { inventory } = useStockInventory();
+  const { inventory } = useInventory();
   const { sales, mutateSales } = useSales();
   const { saleItems, mutateSaleItems } = useSaleItems();
   const { logs, mutateLogs } = useLogs();
@@ -66,7 +61,8 @@ export default function ShoppingCart() {
         sales,
         mutateSales,
         saleItems,
-        mutateSaleItems
+        mutateSaleItems,
+        inventory
       ).then((savedCart) => {
         saveLog(
           {
@@ -84,7 +80,6 @@ export default function ShoppingCart() {
           logs,
           mutateLogs
         );
-        console.log(savedCart);
         setSale({ ...savedCart, state: SaleStateTypes.InProgress });
         setView({ ...view, saleScreen: true });
         setLoadingSale(false);

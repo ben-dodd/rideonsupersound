@@ -12,12 +12,17 @@ import {
   TillObject,
   HoldObject,
   CustomerObject,
+  TaskObject,
   SaleStateTypes,
   PaymentMethodTypes,
   StockMovementTypes,
 } from "@/lib/types";
 
-import { getItemDisplayName } from "./data-functions";
+import {
+  getItemDisplayName,
+  getItemSku,
+  getItemQuantity,
+} from "./data-functions";
 
 export async function loadSaleToCart(
   cart: SaleObject,
@@ -105,13 +110,11 @@ export async function saveSaleAndItemsToDatabase(
   sales: SaleObject[],
   mutateSales: Function,
   saleItems: SaleItemObject[],
-  mutateSaleItems: Function
+  mutateSaleItems: Function,
+  inventory?: InventoryObject[]
 ) {
-  console.log(sale);
-  console.log(items);
   let newSale = { ...sale };
   let newSaleId = newSale?.id;
-  console.log(items);
   //
   // HANDLE SALE OBJECT
   //
@@ -135,6 +138,22 @@ export async function saveSaleAndItemsToDatabase(
   let cartItems = [];
   for await (const item of items) {
     console.log(item);
+    const invItem = inventory?.filter(
+      (i: InventoryObject) => i?.id === item?.item_id
+    )[0];
+    const itemQuantity = getItemQuantity(invItem, items);
+    console.log(itemQuantity);
+    console.log(invItem);
+    if (itemQuantity > 0) {
+      saveTaskToDatabase(
+        {
+          description: `Restock ${getItemDisplayName(invItem)} [${getItemSku(
+            invItem
+          )}]`,
+        },
+        clerk
+      );
+    }
     if (!item?.id) {
       // Item is new to sale
       console.log("Creating new item in " + newSaleId);
@@ -466,7 +485,62 @@ export async function saveHoldToDatabase(
   }
 }
 
-export async function returnHoldToStock(hold: HoldObject, clerk: ClerkObject) {
+export async function saveCustomerToDatabase(
+  customer: CustomerObject,
+  clerk: ClerkObject,
+  customers: CustomerObject[],
+  mutateCustomers: Function
+) {
+  try {
+    const res = await fetch("/api/create-customer", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ ...customer, created_by_clerk_id: clerk?.id }),
+    });
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+    mutateCustomers([...customers, customer], false);
+    return json?.insertId;
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
+
+export async function updateCustomerInDatabase(
+  customer: CustomerObject,
+  customers: CustomerObject[],
+  mutateCustomers: Function
+) {
+  try {
+    const res = await fetch("/api/update-customer", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(customer),
+    });
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+    const otherCustomers = customers?.filter(
+      (c: CustomerObject) => c?.id !== customer?.id
+    );
+    mutateCustomers([...otherCustomers, customer], false);
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
+
+export async function returnHoldToStock(
+  hold: HoldObject,
+  clerk: ClerkObject,
+  holds: HoldObject[],
+  mutateHolds: Function,
+  inventory: InventoryObject[],
+  mutateInventory: Function
+) {
+  // TODO Return Hold to Stock
   // setLog(
   //   `Hold returned to stock.`,
   //   "holds",
@@ -552,6 +626,52 @@ export async function saveLog(
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
     if (logs) mutateLogs([...logs, { ...logObj, id: json?.insertId }], false);
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
+
+export async function addRestockTask(
+  item: InventoryObject,
+  clerk: ClerkObject
+) {}
+
+export async function saveTaskToDatabase(task: TaskObject, clerk: ClerkObject) {
+  try {
+    const res = await fetch("/api/create-task", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        description: task?.description,
+        created_by_clerk_id: clerk?.id,
+        assigned_to_clerk_id: task?.assigned_to_clerk_id || null,
+        is_priority: task?.is_priority || 0,
+      }),
+    });
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+    return json?.insertId;
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
+
+export async function completeTask(task: TaskObject, clerk: ClerkObject) {
+  try {
+    const res = await fetch("/api/complete-task", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: task?.id,
+        completed_by_clerk_id: clerk?.id,
+      }),
+    });
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
   } catch (e) {
     throw Error(e.message);
   }

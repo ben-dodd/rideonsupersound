@@ -180,8 +180,16 @@
   @apply modal__button text-primary ring-primary hover:text-primary-dark hover:ring-primary-dark;
 }
 
-.modal__button--alt {
+.modal__button--alt1 {
   @apply modal__button text-secondary ring-secondary hover:text-secondary-dark hover:ring-secondary-dark;
+}
+
+.modal__button--alt2 {
+  @apply modal__button text-quarternary ring-quarternary hover:text-quarternary-dark hover:ring-quarternary-dark;
+}
+
+.modal__button--alt3 {
+  @apply modal__button text-primary ring-primary hover:text-primary-dark hover:ring-primary-dark;
 }
 
 .modal__button--cancel {

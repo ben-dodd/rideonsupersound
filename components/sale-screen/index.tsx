@@ -8,7 +8,7 @@ import {
   useSaleItemsForSale,
   useSaleTransactionsForSale,
   useCustomers,
-  useStockInventory,
+  useInventory,
   useLogs,
   useSales,
   useSaleItems,
@@ -68,7 +68,7 @@ export default function SaleScreen({ isNew }) {
 
   // SWR
   const { customers } = useCustomers();
-  const { inventory, mutateInventory } = useStockInventory();
+  const { inventory, mutateInventory } = useInventory();
   const { items, isSaleItemsLoading } = useSaleItemsForSale(sale?.id);
   const {
     transactions,
@@ -125,9 +125,6 @@ export default function SaleScreen({ isNew }) {
 
   async function clickAddMoreItems() {
     setAddMoreItemsLoading(true);
-    console.log(cart);
-    console.log(items);
-    console.log(sale);
     await loadSaleToCart(
       cart,
       items,
@@ -219,7 +216,6 @@ export default function SaleScreen({ isNew }) {
     //    If other item, change quantity sold
     // Update sale to 'complete', add date_sale_closed, sale_closed_by
     items?.forEach((saleItem: SaleItemObject) => {
-      console.log(saleItem);
       if (sale?.state === SaleStateTypes.Layby && !saleItem?.is_gift_card) {
         saveStockMovementToDatabase(saleItem, clerk, "unlayby", null);
       }
@@ -350,6 +346,8 @@ export default function SaleScreen({ isNew }) {
     </>
   );
 }
+
+// TODO fix parked sale bug, make it easier to delete parked sales
 
 // hidden sm:flex items-start overflow-auto
 

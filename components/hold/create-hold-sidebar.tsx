@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useCustomers, useStockInventory, useLogs } from "@/lib/swr-hooks";
+import { useCustomers, useInventory, useLogs } from "@/lib/swr-hooks";
 import {
   newSaleObjectAtom,
   clerkAtom,
@@ -12,11 +12,20 @@ import {
   sellSearchBarAtom,
   loadedCustomerObjectAtom,
 } from "@/lib/atoms";
-import { CustomerObject, ModalButton } from "@/lib/types";
+import { CustomerObject, InventoryObject, ModalButton } from "@/lib/types";
 
 // Functions
-import { getItemSkuDisplayName } from "@/lib/data-functions";
-import { saveHoldToDatabase, saveLog } from "@/lib/db-functions";
+import {
+  getItemSkuDisplayName,
+  getItemQuantity,
+  getItemDisplayName,
+  getItemSku,
+} from "@/lib/data-functions";
+import {
+  saveHoldToDatabase,
+  saveLog,
+  saveTaskToDatabase,
+} from "@/lib/db-functions";
 
 // Components
 import TextField from "@/components/inputs/text-field";
@@ -27,7 +36,7 @@ import SidebarContainer from "@/components/container/side-bar";
 export default function CreateHoldSidebar() {
   // SWR
   const { customers } = useCustomers();
-  const { inventory } = useStockInventory();
+  const { inventory } = useInventory();
   const { logs, mutateLogs } = useLogs();
 
   // Atoms
@@ -51,6 +60,20 @@ export default function CreateHoldSidebar() {
     cart?.items.forEach(
       // Create hold for each item
       async (cartItem) => {
+        const item = inventory?.filter(
+          (i: InventoryObject) => i?.id === cartItem?.item_id
+        )[0];
+        const itemQuantity = getItemQuantity(item, cart?.items);
+        if (itemQuantity > 0) {
+          saveTaskToDatabase(
+            {
+              description: `Restock ${getItemDisplayName(item)} [${getItemSku(
+                item
+              )}]`,
+            },
+            clerk
+          );
+        }
         const rowId = await saveHoldToDatabase(
           cart,
           cartItem,

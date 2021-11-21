@@ -45,6 +45,7 @@ interface ViewProps {
   loadSalesDialog?: boolean;
   refundDialog?: boolean;
   saleScreen?: boolean;
+  taskDialog?: boolean;
 }
 
 interface PageProps {

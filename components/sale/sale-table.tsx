@@ -8,7 +8,7 @@ import {
   useSaleItems,
   useCustomers,
   useClerks,
-  useStockInventory,
+  useInventory,
   useGiftCards,
 } from "@/lib/swr-hooks";
 import { viewAtom, loadedSaleObjectAtom } from "@/lib/atoms";
@@ -36,7 +36,7 @@ export default function SaleTable() {
   // SWR
   const { sales, isSalesLoading } = useSales();
   const { saleItems, isSaleItemsLoading } = useSaleItems();
-  const { inventory, isInventoryLoading } = useStockInventory();
+  const { inventory, isInventoryLoading } = useInventory();
   const { customers, isCustomersLoading } = useCustomers();
   const { clerks, isClerksLoading } = useClerks();
 
@@ -161,9 +161,9 @@ export default function SaleTable() {
       }
     >
       <Table
-        color="bg-col7"
-        colorLight="bg-col7-light"
-        colorDark="bg-col7-dark"
+        color="bg-col5"
+        colorLight="bg-col5-light"
+        colorDark="bg-col5-dark"
         data={data}
         columns={columns}
         heading={"Sales"}

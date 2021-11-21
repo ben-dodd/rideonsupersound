@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useLogs, useStockInventory, useStockItem } from "@/lib/swr-hooks";
+import { useLogs, useInventory, useStockItem } from "@/lib/swr-hooks";
 import {
   viewAtom,
   clerkAtom,
@@ -30,7 +30,7 @@ export default function ChangePriceDialog() {
   const [, setAlert] = useAtom(alertAtom);
 
   // SWR
-  const { inventory, mutateInventory } = useStockInventory();
+  const { inventory, mutateInventory } = useInventory();
   const { stockItem, isStockItemLoading, mutateStockItem } = useStockItem(
     loadedItemId[page]
   );

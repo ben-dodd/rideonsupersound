@@ -13,7 +13,7 @@ import SellNavActions from "./actions/sell";
 import InventoryNavActions from "./actions/inventory";
 import PaymentNavActions from "./actions/payment";
 import VendorNavActions from "./actions/vendor";
-import CustomerNavActions from "./actions/customer";
+import TaskNavActions from "./actions/task";
 
 // Icons
 import HelpIcon from "@mui/icons-material/Help";
@@ -62,6 +62,7 @@ export default function Nav() {
           {page === "inventory" && <InventoryNavActions />}
           {page === "vendors" && <VendorNavActions />}
           {page === "payments" && <PaymentNavActions />}
+          {page === "tasks" && <TaskNavActions />}
           <button
             onClick={() => setView({ ...view, helpDialog: true })}
             className="text-brown-dark hover:text-brown"

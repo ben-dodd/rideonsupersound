@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useStockInventory, useStockItem, useGiftCards } from "@/lib/swr-hooks";
+import { useInventory, useStockItem, useGiftCards } from "@/lib/swr-hooks";
 import { newSaleObjectAtom, confirmModalAtom } from "@/lib/atoms";
 import { InventoryObject, SaleItemObject } from "@/lib/types";
 
@@ -40,7 +40,7 @@ export default function SellListItem({
   deleteCartItem,
 }: SellListItemProps) {
   // SWR
-  const { inventory } = useStockInventory();
+  const { inventory } = useInventory();
   const { stockItem } = useStockItem(cartItem?.item_id);
 
   // Atoms

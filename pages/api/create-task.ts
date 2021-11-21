@@ -2,17 +2,20 @@ import { NextApiHandler } from "next";
 import { query } from "../../lib/db";
 
 const handler: NextApiHandler = async (req, res) => {
-  const { hold_id } = req.query;
+  const {
+    description,
+    created_by_clerk_id,
+    assigned_to_clerk_id,
+    is_priority,
+  } = req.body;
   try {
     const results = await query(
       `
-      SELECT *
-      FROM hold
-      WHERE id = ?
+      INSERT INTO task (description, created_by_clerk_id, assigned_to_clerk_id, is_priority)
+      VALUES (?, ?, ?, ?)
       `,
-      hold_id
+      [description, created_by_clerk_id, assigned_to_clerk_id, is_priority]
     );
-
     return res.json(results);
   } catch (e) {
     res.status(500).json({ message: e.message });

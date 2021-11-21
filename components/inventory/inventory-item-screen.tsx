@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useVendors, useStockItem, useStockInventory } from "@/lib/swr-hooks";
+import { useVendors, useStockItem, useInventory } from "@/lib/swr-hooks";
 import { clerkAtom, loadedItemIdAtom, viewAtom } from "@/lib/atoms";
 import { VendorObject, InventoryObject, ModalButton } from "@/lib/types";
 
@@ -36,7 +36,7 @@ export default function InventoryItemScreen({ page }) {
 
   // SWR
   const { stockItem, isStockItemLoading } = useStockItem(loadedItemId[page]);
-  const { inventory, mutateInventory } = useStockInventory();
+  const { inventory, mutateInventory } = useInventory();
   const { vendors } = useVendors();
 
   // State

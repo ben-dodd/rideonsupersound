@@ -7,6 +7,7 @@ const handler: NextApiHandler = async (req, res) => {
       `
       SELECT *
       FROM help
+      WHERE NOT is_deleted
       `
     );
 

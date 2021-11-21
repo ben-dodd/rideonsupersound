@@ -10,12 +10,7 @@ import {
   loadedItemIdAtom,
   alertAtom,
 } from "@/lib/atoms";
-import {
-  useWeather,
-  useStockInventory,
-  useLogs,
-  useVendors,
-} from "@/lib/swr-hooks";
+import { useWeather, useInventory, useLogs, useVendors } from "@/lib/swr-hooks";
 import { InventoryObject, VendorObject } from "@/lib/types";
 
 // Components
@@ -45,7 +40,7 @@ type ListItemProps = {
 export default function ListItem({ item, geolocation }: ListItemProps) {
   // SWR
   const { weather } = useWeather();
-  const { inventory } = useStockInventory();
+  const { inventory } = useInventory();
   const { vendors } = useVendors();
   const { logs, mutateLogs } = useLogs();
 
@@ -130,7 +125,6 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
   //   onDoubleClick={clickOpenInventoryModal}
   // >
 
-  console.log(item);
   return (
     <div
       className={`flex w-full mb-2 text-black ${

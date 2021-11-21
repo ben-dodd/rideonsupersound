@@ -57,7 +57,7 @@ export function useClerkImage(clerk_image_id: number) {
   };
 }
 
-export function useStockInventory() {
+export function useInventory() {
   const { data, error, mutate } = useSWR(`/api/get-stock-inventory`, fetcher);
   return {
     inventory: data,
@@ -67,7 +67,7 @@ export function useStockInventory() {
   };
 }
 
-// export function useStockInventory() {
+// export function useInventory() {
 //   const { data, error, mutate } = useSWR(`/api/get-sale-inventory`, fetcher);
 //   return {
 //     inventory: data,
@@ -370,15 +370,6 @@ export function useHolds() {
   };
 }
 
-export function useHold(hold_id: number) {
-  const { data, error } = useSWR(`/api/get-hold?hold_id=${hold_id}`, fetcher);
-  return {
-    hold: data && data[0],
-    isHoldLoading: !error && !data,
-    isHoldError: error,
-  };
-}
-
 export function useLogs() {
   const { data, error, mutate } = useSWR(`/api/get-logs`, fetcher);
   return {
@@ -386,6 +377,16 @@ export function useLogs() {
     isLogsLoading: !error && !data,
     isLogsError: error,
     mutateLogs: mutate,
+  };
+}
+
+export function useTasks() {
+  const { data, error, mutate } = useSWR(`/api/get-tasks`, fetcher);
+  return {
+    tasks: data,
+    isTasksLoading: !error && !data,
+    isTasksError: error,
+    mutateTasks: mutate,
   };
 }
 

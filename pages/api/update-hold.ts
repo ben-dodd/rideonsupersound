@@ -1,5 +1,6 @@
 import { NextApiHandler } from "next";
 import { query } from "../../lib/db";
+import { escape } from "sqlstring";
 
 const handler: NextApiHandler = async (req, res) => {
   const { id, hold_period, note } = req.body;
@@ -9,7 +10,7 @@ const handler: NextApiHandler = async (req, res) => {
         UPDATE hold
         SET
           hold_period=${hold_period || null},
-          note=${note || null}
+          note=${escape(note)}
         WHERE id = ${id}
       `
     );

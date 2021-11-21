@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useStockInventory } from "@/lib/swr-hooks";
+import { useInventory } from "@/lib/swr-hooks";
 
 import { InventoryObject, SaleItemObject } from "@/lib/types";
 import {
@@ -12,7 +12,7 @@ type HoldListItemProps = {
   cartItem: SaleItemObject;
 };
 export default function HoldListItem({ cartItem }: HoldListItemProps) {
-  const { inventory } = useStockInventory();
+  const { inventory } = useInventory();
   const [item, setItem] = useState(null);
   useEffect(() => {
     setItem(

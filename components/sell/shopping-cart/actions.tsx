@@ -8,7 +8,7 @@ import {
   useLogs,
   useSales,
   useSaleItems,
-  useStockInventory,
+  useInventory,
 } from "@/lib/swr-hooks";
 import {
   newSaleObjectAtom,
@@ -38,7 +38,7 @@ export default function ShoppingCartActions() {
   const { logs, mutateLogs } = useLogs();
   const { sales, mutateSales } = useSales();
   const { saleItems, mutateSaleItems } = useSaleItems();
-  const { mutateInventory } = useStockInventory();
+  const { mutateInventory } = useInventory();
 
   // Atoms
   const [clerk] = useAtom(clerkAtom);

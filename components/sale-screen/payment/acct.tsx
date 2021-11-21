@@ -6,7 +6,7 @@ import { useAtom } from "jotai";
 import {
   useSaleTransactionsForSale,
   useSaleItemsForSale,
-  useStockInventory,
+  useInventory,
   useLogs,
   useVendors,
   useRegisterID,
@@ -53,7 +53,7 @@ export default function Acct({ isNew }) {
     sale?.id
   );
   const { items } = useSaleItemsForSale(sale?.id);
-  const { inventory } = useStockInventory();
+  const { inventory } = useInventory();
   const { logs, mutateLogs } = useLogs();
   const { vendors } = useVendors();
   const { sales } = useSalesJoined();

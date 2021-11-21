@@ -72,9 +72,9 @@ export default function GiftCardTable() {
   return (
     <TableContainer loading={isGiftCardsLoading}>
       <Table
-        color="bg-col5"
-        colorLight="bg-col5-light"
-        colorDark="bg-col5-dark"
+        color="bg-col7"
+        colorLight="bg-col7-light"
+        colorDark="bg-col7-dark"
         data={data}
         columns={columns}
         heading={"Gift Cards"}

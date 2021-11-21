@@ -6,10 +6,17 @@ import { useAtom } from "jotai";
 import { useCustomers } from "@/lib/swr-hooks";
 import {
   viewAtom,
+  clerkAtom,
   newSaleObjectAtom,
   loadedCustomerObjectAtom,
 } from "@/lib/atoms";
 import { CustomerObject, ModalButton } from "@/lib/types";
+
+// Functions
+import {
+  saveCustomerToDatabase,
+  updateCustomerInDatabase,
+} from "@/lib/db-functions";
 
 // Components
 import TextField from "@/components/inputs/text-field";
@@ -22,6 +29,7 @@ export default function CreateCustomerSidebar() {
   // Atoms
   const [cart, setCart] = useAtom(newSaleObjectAtom);
   const [view, setView] = useAtom(viewAtom);
+  const [clerk] = useAtom(clerkAtom);
   const [customer, setCustomer] = useAtom(loadedCustomerObjectAtom);
 
   // State
@@ -31,64 +39,56 @@ export default function CreateCustomerSidebar() {
   // Load
   useEffect(() => {
     customers &&
+      !customer?.id &&
       setNameConflict(
         customers?.map((c: CustomerObject) => c?.name).includes(customer?.name)
       );
   }, [customers, customer?.name]);
 
   // Functions
+  function closeSidebar() {
+    setCustomer(null);
+    setView({ ...view, createCustomer: false });
+  }
+
   async function onClickCreateCustomer() {
     setSubmitting(true);
-    let newCustomer: CustomerObject = {
-      name: customer?.name || null,
-      email: customer?.email || null,
-      phone: customer?.phone || null,
-      postal_address: customer?.postal_address || null,
-      note: customer?.note || null,
-    };
-    try {
-      const res = await fetch("/api/create-customer", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newCustomer),
-      });
-      setSubmitting(false);
-      const json = await res.json();
-      if (!res.ok) throw Error(json.message);
-      newCustomer.id = json?.insertId;
-      mutateCustomers([...customers, newCustomer], false);
-      setCustomer(null);
-      setView({ ...view, createCustomer: false });
-      setCart({ ...cart, customer_id: json?.insertId });
-    } catch (e) {
-      throw Error(e.message);
-    }
+    const id = await saveCustomerToDatabase(
+      customer,
+      clerk,
+      customers,
+      mutateCustomers
+    );
+    setCart({ ...cart, customer_id: id });
+    closeSidebar();
+    setSubmitting(false);
+  }
+
+  async function onClickUpdateCustomer() {
+    setSubmitting(true);
+    updateCustomerInDatabase(customer, customers, mutateCustomers);
+    closeSidebar();
   }
 
   // Constants
   const buttons: ModalButton[] = [
     {
       type: "cancel",
-      onClick: () => {
-        setCustomer(null);
-        setView({ ...view, createCustomer: false });
-      },
+      onClick: closeSidebar,
       text: "CANCEL",
     },
     {
       type: "ok",
-      onClick: onClickCreateCustomer,
+      onClick: customer?.id ? onClickUpdateCustomer : onClickCreateCustomer,
       disabled: !customer?.name || nameConflict,
-      text: submitting ? "CREATING..." : "CREATE",
+      text: customer?.id ? "UPDATE" : submitting ? "CREATING..." : "CREATE",
     },
   ];
 
   return (
     <SidebarContainer
       show={view?.createCustomer}
-      title={"Create New Customer"}
+      title={customer?.id ? "Edit Customer" : "Create New Customer"}
       buttons={buttons}
     >
       <TextField
@@ -96,6 +96,7 @@ export default function CreateCustomerSidebar() {
         fieldRequired
         error={nameConflict}
         errorText="Name already exists."
+        displayOnly={Boolean(customer?.id)}
         value={customer?.name || ""}
         onChange={(e: any) =>
           setCustomer({ ...customer, name: e.target.value })

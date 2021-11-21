@@ -3,11 +3,13 @@ import { useAtom } from "jotai";
 import Image from "next/image";
 
 // DB
+import { useTasks } from "@/lib/swr-hooks";
 import { pageAtom, newSaleObjectAtom, clerkAtom, viewAtom } from "@/lib/atoms";
-import { SaleItemObject } from "@/lib/types";
+import { SaleItemObject, TaskObject } from "@/lib/types";
 
 // Icons
-import CustomersIcon from "@mui/icons-material/LocalLibrary";
+// import CustomersIcon from "@mui/icons-material/LocalLibrary";
+import HoldsIcon from "@mui/icons-material/PanTool";
 import InventoryIcon from "@mui/icons-material/Category";
 import LogoutIcon from "@mui/icons-material/ExitToApp";
 import SalesIcon from "@mui/icons-material/MonetizationOn";
@@ -16,6 +18,8 @@ import LogsIcon from "@mui/icons-material/GridOn";
 import VendorsIcon from "@mui/icons-material/Store";
 import PaymentsIcon from "@mui/icons-material/Receipt";
 import GiftCardsIcon from "@mui/icons-material/Redeem";
+import TasksIcon from "@mui/icons-material/Task";
+import StatsIcon from "@mui/icons-material/QueryStats";
 
 // Types
 type MenuType = {
@@ -35,12 +39,19 @@ export default function Menu() {
   const [view, setView] = useAtom(viewAtom);
   const [clerk, setClerk] = useAtom(clerkAtom);
 
+  // SWR
+  const { tasks } = useTasks();
+
   // Constants
   const cartItems = cart?.items?.reduce(
     (accumulator: number, item: SaleItemObject) =>
       accumulator + (parseInt(item?.quantity) || 1),
     0
   );
+
+  const tasksToDo = tasks?.filter(
+    (t: TaskObject) => !t?.is_deleted && !t?.is_completed
+  )?.length;
 
   const topMenu = [
     {
@@ -60,14 +71,6 @@ export default function Menu() {
       class: "bg-col2-light hover:bg-col2",
       icon: <InventoryIcon />,
     },
-    // {
-    //   type: "link",
-    //   page: "laybys",
-    //   text: "LAYBYS and HOLDS",
-    //   icon: <LaybyIcon />,
-    // },
-    // { type: "link", page: "holds", text: "HOLDS", icon: <HoldsIcon /> },
-    // { type: "divider" },
     {
       type: "link",
       page: "vendors",
@@ -77,10 +80,31 @@ export default function Menu() {
     },
     {
       type: "link",
-      page: "customers",
-      text: "CUSTOMERS",
+      page: "payments",
+      text: "PAYMENTS",
       class: "bg-col4-light hover:bg-col4",
-      icon: <CustomersIcon />,
+      icon: <PaymentsIcon />,
+    },
+    {
+      type: "link",
+      page: "sales",
+      text: "SALES/LAYBYS",
+      class: "bg-col5-light hover:bg-col5",
+      icon: <SalesIcon />,
+    },
+    {
+      type: "link",
+      page: "customers",
+      text: "HOLDS",
+      class: "bg-col6-light hover:bg-col6",
+      icon: <HoldsIcon />,
+    },
+    {
+      type: "link",
+      page: "giftCards",
+      text: "GIFT CARDS",
+      class: "bg-col7-light hover:bg-col7",
+      icon: <GiftCardsIcon />,
     },
     // {
     //   type: "link",
@@ -89,13 +113,6 @@ export default function Menu() {
     //   color: "col5",
     //   icon: <OrdersIcon />,
     // },
-    {
-      type: "link",
-      page: "giftCards",
-      text: "GIFT CARDS",
-      class: "bg-col5-light hover:bg-col5",
-      icon: <GiftCardsIcon />,
-    },
     // {
     //   type: "link",
     //   page: "suppliers",
@@ -111,27 +128,6 @@ export default function Menu() {
     //   icon: <StaffIcon />,
     // },
     // { type: "divider" },
-    {
-      type: "link",
-      page: "sales",
-      text: "SALES",
-      class: "bg-col7-light hover:bg-col7",
-      icon: <SalesIcon />,
-    },
-    {
-      type: "link",
-      page: "payments",
-      text: "PAYMENTS",
-      class: "bg-col8-light hover:bg-col8",
-      icon: <PaymentsIcon />,
-    },
-    // {
-    //   type: "link",
-    //   page: "tasks",
-    //   text: "TASKS",
-    //   badge: tasksToDo,
-    //   icon: <TasksIcon />,
-    // },
   ];
   const bottomMenu = [
     {
@@ -141,13 +137,21 @@ export default function Menu() {
       class: "bg-col8-light hover:bg-col8",
       icon: <LogsIcon />,
     },
-    // {
-    //   type: "link",
-    //   page: "importExport",
-    //   text: "IMPORT/EXPORT",
-    //   class: "bg-col9-light hover:bg-col9",
-    //   icon: <ImportExportIcon />,
-    // },
+    {
+      type: "link",
+      page: "tasks",
+      text: "TASKS",
+      badge: tasksToDo,
+      class: "bg-col9-light hover:bg-col9",
+      icon: <TasksIcon />,
+    },
+    {
+      type: "link",
+      page: "stats",
+      text: "STATS",
+      class: "bg-col10-light hover:bg-col10",
+      icon: <StatsIcon />,
+    },
     // {
     //   type: "link",
     //   page: "settings",
@@ -160,7 +164,7 @@ export default function Menu() {
       page: null,
       onClick: () => setClerk(null),
       text: "SWITCH CLERK",
-      class: "bg-col10-light hover:bg-col10",
+      class: "bg-col1-light hover:bg-col1",
       icon: <LogoutIcon />,
     },
   ];

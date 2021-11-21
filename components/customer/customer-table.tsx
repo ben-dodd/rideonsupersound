@@ -9,12 +9,16 @@ import {
   useVendors,
   useHolds,
   useLaybys,
-  useStockInventory,
+  useInventory,
 } from "@/lib/swr-hooks";
-import { loadedVendorIdAtom } from "@/lib/atoms";
+import {
+  viewAtom,
+  loadedVendorIdAtom,
+  loadedHoldIdAtom,
+  loadedCustomerObjectAtom,
+} from "@/lib/atoms";
 import {
   CustomerObject,
-  VendorObject,
   SaleObject,
   HoldObject,
   InventoryObject,
@@ -33,11 +37,13 @@ export default function CustomerTable() {
   const { vendors, isVendorsLoading } = useVendors();
   const { laybys, isLaybysLoading } = useLaybys();
   const { holds, isHoldsLoading } = useHolds();
-  const { inventory, isInventoryLoading } = useStockInventory();
+  const { inventory, isInventoryLoading } = useInventory();
 
   // Atoms
-  // const [view, setView] = useAtom(viewAtom);
+  const [view, setView] = useAtom(viewAtom);
   const [loadedVendorId, setLoadedVendorId] = useAtom(loadedVendorIdAtom);
+  const [loadedHoldId, setLoadedHoldId] = useAtom(loadedHoldIdAtom);
+  const [customer, setCustomer] = useAtom(loadedCustomerObjectAtom);
 
   // Constants
   const data = useMemo(
@@ -58,7 +64,7 @@ export default function CustomerTable() {
           name: c?.name,
           email: c?.email,
           phone: c?.phone,
-          postalAddress: c?.postal_address,
+          postal_address: c?.postal_address,
           notes: c?.note,
           holds: holds
             ?.filter(
@@ -79,23 +85,19 @@ export default function CustomerTable() {
     [customers, laybys, holds, vendors]
   );
   const columns = useMemo(() => {
-    const openVendorDialog = (vendor: VendorObject) =>
-      setLoadedVendorId({ ...loadedVendorId, customers: vendor?.id });
-
-    // const openLaybyDialog = (layby) => {
-    //   dispatch(
-    //     openDialog("sale", {
-    //       // vendorId: vendor,
-    //     })
-    //   );
-    // };
-
     return [
       {
         Header: "Name",
         accessor: "name",
+        width: 200,
         Cell: (item: any) => (
-          <span className="cursor-pointer underline" onClick={() => null}>
+          <span
+            className="cursor-pointer underline"
+            onClick={() => {
+              setCustomer(item?.row?.original);
+              setView({ ...view, createCustomer: true });
+            }}
+          >
             {item?.value}
           </span>
         ),
@@ -103,26 +105,30 @@ export default function CustomerTable() {
       {
         Header: "Email",
         accessor: "email",
+        width: 200,
         Cell: ({ value }) => <a href={`mailto:${value}`}>{value}</a>,
       },
       {
         Header: "Phone",
         accessor: "phone",
+        width: 150,
       },
-      { Header: "Postal Address", accessor: "postalAddress" },
+      { Header: "Postal Address", accessor: "postal_address" },
       {
         Header: "Holds",
         accessor: "holds",
-        width: 220,
+        width: 400,
         Cell: ({ value }) => {
           return value && value.length > 0
             ? value.map((hold: HoldObject, i: number) => (
                 <div
-                  key={i}
-                  className={`pb-2 cursor-pointer underline ${
+                  key={hold?.id}
+                  className={`mb-2 cursor-pointer underline ${
                     hold?.overdue ? "text-red-600 font-bold" : "text-black"
                   }`}
-                  onClick={() => null}
+                  onClick={() =>
+                    setLoadedHoldId({ ...loadedHoldId, customers: hold?.id })
+                  }
                 >
                   {`${hold?.quantity || 1} x ${getItemDisplayName(
                     inventory?.filter(
@@ -134,7 +140,6 @@ export default function CustomerTable() {
             : "";
         },
         sortType: (rowA: any, rowB: any) => {
-          console.log(rowA);
           const a = rowA.original?.holds?.length || 0;
           const b = rowB.original?.holds?.length || 0;
           return a > b ? 1 : b > a ? -1 : 0;
@@ -147,8 +152,8 @@ export default function CustomerTable() {
         Cell: ({ value }) =>
           value && value.length > 0
             ? value.map((layby: SaleObject, i: number) => (
-                <div key={i} className="pb-2" onClick={() => null}>
-                  #{layby?.id}
+                <div key={i} className="pb-2">
+                  Go to Sale #{layby?.id}
                 </div>
               ))
             : "",
@@ -185,12 +190,12 @@ export default function CustomerTable() {
       }
     >
       <Table
-        color="bg-col4"
-        colorLight="bg-col4-light"
-        colorDark="bg-col4-dark"
+        color="bg-col6"
+        colorLight="bg-col6-light"
+        colorDark="bg-col6-dark"
         data={data}
         columns={columns}
-        heading={"Customers"}
+        heading={"Holds"}
         pageSize={20}
         sortOptions={[{ id: "name", desc: false }]}
       />

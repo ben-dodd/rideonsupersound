@@ -6,7 +6,7 @@ import { useAtom } from "jotai";
 import {
   useSaleItemsForSale,
   useSaleTransactionsForSale,
-  useStockInventory,
+  useInventory,
   useLogs,
   useCustomers,
   useRegisterID,
@@ -42,7 +42,7 @@ export default function Cash({ isNew }) {
   // SWR
   const { transactions } = useSaleTransactionsForSale(sale?.id);
   const { items } = useSaleItemsForSale(sale?.id);
-  const { inventory } = useStockInventory();
+  const { inventory } = useInventory();
 
   const { totalRemaining } = getSaleVars(items, transactions, inventory);
 

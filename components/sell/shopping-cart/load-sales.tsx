@@ -9,7 +9,7 @@ import {
   useLogs,
   useRegisterID,
   useCustomers,
-  useStockInventory,
+  useInventory,
 } from "@/lib/swr-hooks";
 import { viewAtom, clerkAtom, alertAtom, newSaleObjectAtom } from "@/lib/atoms";
 import {
@@ -39,7 +39,7 @@ export default function LoadSales() {
   const { sales, isSalesLoading, mutateSales } = useSales();
   const { saleItems, isSaleItemsLoading, mutateSaleItems } = useSaleItems();
   const { customers, isCustomersLoading } = useCustomers();
-  const { inventory, isInventoryLoading } = useStockInventory();
+  const { inventory, isInventoryLoading } = useInventory();
 
   // State
   const [submitting, setSubmitting] = useState(false);

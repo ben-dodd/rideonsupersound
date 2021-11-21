@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useStockInventory } from "@/lib/swr-hooks";
+import { useInventory } from "@/lib/swr-hooks";
 import { sellSearchBarAtom } from "@/lib/atoms";
 import { InventoryObject } from "@/lib/types";
 
@@ -17,7 +17,7 @@ import MiscItem from "./misc-item";
 
 export default function InventoryScroll() {
   // SWR
-  const { inventory, isInventoryLoading } = useStockInventory();
+  const { inventory, isInventoryLoading } = useInventory();
 
   // Atoms
   const [search] = useAtom(sellSearchBarAtom);
