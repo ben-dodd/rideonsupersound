@@ -62,7 +62,7 @@ export default function Nav() {
           {page === "inventory" && <InventoryNavActions />}
           {page === "vendors" && <VendorNavActions />}
           {page === "payments" && <PaymentNavActions />}
-          {page === "tasks" && <TaskNavActions />}
+          {page === "jobs" && <TaskNavActions />}
           <button
             onClick={() => setView({ ...view, helpDialog: true })}
             className="text-brown-dark hover:text-brown"

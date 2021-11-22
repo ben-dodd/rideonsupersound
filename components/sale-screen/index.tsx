@@ -86,7 +86,7 @@ export default function SaleScreen({ isNew }) {
   const [addMoreItemsLoading, setAddMoreItemsLoading] = useState(false);
   const [completeSaleLoading, setCompleteSaleLoading] = useState(false);
   const [parkSaleLoading, setParkSaleLoading] = useState(false);
-
+  // TODO make sale info screen for LAYBY and SALES screen that needs to be activated to go to the SELL screen. So only one active sale will be present at a time.
   // BUG fix bug where close register screen appears (pressing TAB) - have fixed by just hiding sidebars and screens
   // BUG fix bug where bottom of dialog is visible
   // BUG dates are wrong on vercel

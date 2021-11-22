@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useTasks, useLogs, useClerks } from "@/lib/swr-hooks";
+import { useJobs, useLogs, useClerks } from "@/lib/swr-hooks";
 import { viewAtom, clerkAtom, alertAtom } from "@/lib/atoms";
 import { ModalButton, TaskObject, ClerkObject } from "@/lib/types";
 
@@ -24,7 +24,7 @@ export default function TaskDialog() {
   // SWR
   const { clerks } = useClerks();
   const { logs, mutateLogs } = useLogs();
-  const { tasks, mutateTasks } = useTasks();
+  const { jobs, mutateJobs } = useJobs();
 
   // State
   const [description, setDescription] = useState("");
@@ -52,7 +52,7 @@ export default function TaskDialog() {
           is_priority: isPriority || false,
         };
         const id = await saveTaskToDatabase(newTask, clerk);
-        mutateTasks([...tasks, { ...newTask, id }], false);
+        mutateJobs([...jobs, { ...newTask, id }], false);
         setSubmitting(false);
         clearDialog();
         saveLog(

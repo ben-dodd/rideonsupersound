@@ -3,7 +3,7 @@ import { useAtom } from "jotai";
 import Image from "next/image";
 
 // DB
-import { useTasks } from "@/lib/swr-hooks";
+import { useJobs } from "@/lib/swr-hooks";
 import { pageAtom, newSaleObjectAtom, clerkAtom, viewAtom } from "@/lib/atoms";
 import { SaleItemObject, TaskObject } from "@/lib/types";
 
@@ -18,7 +18,7 @@ import LogsIcon from "@mui/icons-material/GridOn";
 import VendorsIcon from "@mui/icons-material/Store";
 import PaymentsIcon from "@mui/icons-material/Receipt";
 import GiftCardsIcon from "@mui/icons-material/Redeem";
-import TasksIcon from "@mui/icons-material/Task";
+import JobsIcon from "@mui/icons-material/Task";
 import StatsIcon from "@mui/icons-material/QueryStats";
 
 // Types
@@ -40,7 +40,7 @@ export default function Menu() {
   const [clerk, setClerk] = useAtom(clerkAtom);
 
   // SWR
-  const { tasks } = useTasks();
+  const { jobs } = useJobs();
 
   // Constants
   const cartItems = cart?.items?.reduce(
@@ -49,7 +49,7 @@ export default function Menu() {
     0
   );
 
-  const tasksToDo = tasks?.filter(
+  const jobsToDo = jobs?.filter(
     (t: TaskObject) => !t?.is_deleted && !t?.is_completed
   )?.length;
 
@@ -139,11 +139,11 @@ export default function Menu() {
     },
     {
       type: "link",
-      page: "tasks",
-      text: "TASKS",
-      badge: tasksToDo,
+      page: "jobs",
+      text: "JOBS",
+      badge: jobsToDo,
       class: "bg-col9-light hover:bg-col9",
-      icon: <TasksIcon />,
+      icon: <JobsIcon />,
     },
     {
       type: "link",
@@ -225,7 +225,7 @@ export default function Menu() {
           )
         )}
       </ul>
-      <div className="hover:animate-ping">
+      <div className="hover:animate-wiggle">
         <Image
           src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/clerk/${clerk?.name}.png`}
           alt={clerk?.name}

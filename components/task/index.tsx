@@ -2,7 +2,7 @@
 import { useAtom } from "jotai";
 
 // DB
-import { useTasks } from "@/lib/swr-hooks";
+import { useJobs } from "@/lib/swr-hooks";
 import { pageAtom } from "@/lib/atoms";
 import { TaskObject } from "@/lib/types";
 
@@ -12,7 +12,7 @@ import TaskDialog from "./task-dialog";
 
 export default function TaskScreen() {
   // SWR
-  const { tasks, isTasksLoading } = useTasks();
+  const { jobs, isJobsLoading } = useJobs();
 
   // Atoms
   const [page] = useAtom(pageAtom);
@@ -20,16 +20,16 @@ export default function TaskScreen() {
   return (
     <>
       <div
-        className={`flex overflow-x-hidden ${page !== "tasks" ? "hidden" : ""}`}
+        className={`flex overflow-x-hidden ${page !== "jobs" ? "hidden" : ""}`}
       >
         <div className="h-menu w-full overflow-y-scroll px-2 bg-white">
-          <div className="text-2xl mt-4 mb-2 text-black font-mono">Tasks</div>
-          {isTasksLoading ? (
+          <div className="text-2xl mt-4 mb-2 text-black font-mono">Jobs</div>
+          {isJobsLoading ? (
             <div className="w-full flex h-full">
               <div className="loading-icon" />
             </div>
           ) : (
-            tasks?.map((task: TaskObject) => (
+            jobs?.map((task: TaskObject) => (
               <ListTask task={task} key={task?.id} />
             ))
           )}

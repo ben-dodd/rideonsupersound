@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useClerks, useTasks } from "@/lib/swr-hooks";
+import { useClerks, useJobs } from "@/lib/swr-hooks";
 import { TaskObject, ClerkObject } from "@/lib/types";
 import { clerkAtom } from "@/lib/atoms";
 import { fDateTime } from "@/lib/data-functions";
@@ -15,7 +15,7 @@ type ListItemProps = {
 export default function ListTask({ task }: ListItemProps) {
   // SWR
   const { clerks } = useClerks();
-  const { tasks, mutateTasks } = useTasks();
+  const { jobs, mutateJobs } = useJobs();
 
   // Atoms
   const [clerk] = useAtom(clerkAtom);
@@ -42,12 +42,12 @@ export default function ListTask({ task }: ListItemProps) {
               disabled={checked}
               onChange={() => {
                 setChecked(!checked);
-                const otherTasks = tasks?.filter(
+                const otherJobs = jobs?.filter(
                   (t: TaskObject) => t?.id !== task?.id
                 );
-                mutateTasks(
+                mutateJobs(
                   [
-                    ...otherTasks,
+                    ...otherJobs,
                     {
                       ...task,
                       completed_by_clerk_id: clerk?.id,

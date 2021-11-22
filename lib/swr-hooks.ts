@@ -368,13 +368,13 @@ export function useLogs() {
   };
 }
 
-export function useTasks() {
-  const { data, error, mutate } = useSWR(`/api/get-tasks`, fetcher);
+export function useJobs() {
+  const { data, error, mutate } = useSWR(`/api/get-jobs`, fetcher);
   return {
-    tasks: data,
-    isTasksLoading: !error && !data,
-    isTasksError: error,
-    mutateTasks: mutate,
+    jobs: data,
+    isJobsLoading: !error && !data,
+    isJobsError: error,
+    mutateJobs: mutate,
   };
 }
 

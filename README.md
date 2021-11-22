@@ -8,7 +8,7 @@ The main functions are to:
  - Record and process vendor payments
  - Record stock movement
  - Track sales and stock statistics
- - Manage tasks
+ - Manage jobs
 
 ## Template
 This project was started using the next-msyql template.

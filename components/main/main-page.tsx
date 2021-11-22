@@ -46,7 +46,7 @@ export default function MainPage() {
           <GiftCardsScreen />
           <SalesScreen />
           {page === "logs" && <LogScreen />}
-          {page === "tasks" && <TaskScreen />}
+          {page === "jobs" && <TaskScreen />}
           <PaymentsScreen />
         </div>
         <HelpDialog />
