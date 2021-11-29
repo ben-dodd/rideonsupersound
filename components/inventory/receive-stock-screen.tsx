@@ -19,6 +19,8 @@ import {
 import { receiveStock, saveLog } from "@/lib/db-functions";
 
 // Components
+import { CSVLink } from "react-csv";
+import Stepper from "@/components/_components/navigation/stepper";
 import CreateableSelect from "@/components/_components/inputs/createable-select";
 import ScreenContainer from "@/components/_components/container/screen";
 import TextField from "@/components/_components/inputs/text-field";
@@ -69,6 +71,19 @@ export default function ReceiveStockScreen() {
   const [obj, setObj]: [any, Function] = useState({});
   const [newStockData, setNewStockData] = useState(() => makeNewStockData(5));
   const [skipPageReset, setSkipPageReset] = useState(false);
+  const [step, setStep] = useState(0);
+
+  const csvData = useMemo(
+    () =>
+      getCSVData(
+        Object.entries(obj?.items || {}).map(([id, quantity]) => ({
+          printQuantity: parseFloat(`${quantity}`),
+          item: { value: id },
+        })),
+        inventory
+      ),
+    [inventory, obj?.items]
+  );
 
   // Constants
   const columns = useMemo(
@@ -226,8 +241,20 @@ export default function ReceiveStockScreen() {
       title={"RECEIVE STOCK"}
       buttons={buttons}
     >
-      <div className="flex">
-        <div className="w-2/3">
+      <div className="flex flex-col">
+        <Stepper
+          steps={[
+            "Select vendor",
+            "Select items",
+            "Set item info",
+            "Enter prices",
+            "Enter quantities",
+            "Print labels",
+          ]}
+          value={step}
+          onChange={setStep}
+        />
+        <div hidden={step !== 0}>
           <div className="font-bold text-xl mt-4">Select Vendor</div>
           <CreateableSelect
             inputLabel="Select vendor"
@@ -255,6 +282,8 @@ export default function ReceiveStockScreen() {
               label: val?.name || "",
             }))}
           />
+        </div>
+        <div hidden={step !== 1}>
           <div className="font-bold text-xl mt-4">Add Items</div>
           <div className="flex justify-between items-center">
             <Select
@@ -337,68 +366,95 @@ export default function ReceiveStockScreen() {
             </div>*/}
           </div>
         </div>
-        <div className="w-1/3 ml-4">
-          <div className="mt-6 mb-2">
-            <div className="flex justify-between">
-              <div className="font-bold text-xl">Current Items</div>
-              <div className="font-bold mr-12">Quantity Received</div>
-            </div>
-            {Object.keys(obj?.items || {}).length > 0 ? (
-              Object.entries(obj?.items || {}).map(([itemId, itemQuantity]) => {
-                const item: InventoryObject = inventory?.filter(
-                  (i: InventoryObject) => i?.id === parseInt(itemId)
-                )[0];
-                return (
-                  <div className="flex justify-between my-2 border-b">
-                    <div className="flex">
-                      <img
-                        src={item?.image_url}
-                        alt={item?.title}
-                        className="inventory-item-image-small"
-                      />
-                      <div className="ml-2">
-                        {getItemDisplayName(item)}
-                        <div
-                          className={`mt-2 text-sm font-bold ${
-                            item?.quantity <= 0 ? "text-tertiary" : "text-black"
-                          }`}
-                        >{`${item?.quantity} in stock.`}</div>
-                      </div>
-                    </div>
-                    <div className="self-center flex items-center">
-                      <TextField
-                        className="w-12 mr-6"
-                        inputType="number"
-                        min={0}
-                        value={`${itemQuantity}`}
-                        onChange={(e: any) =>
-                          setObj({
-                            ...obj,
-                            items: {
-                              ...(obj?.items || []),
-                              [itemId]: e.target.value,
-                            },
-                          })
-                        }
-                      />
-                      <button
-                        className="bg-gray-200 hover:bg-gray-300 p-1 w-10 h-10 rounded-full mr-8"
-                        onClick={() => {
-                          let newItems = obj?.items || {};
-                          delete newItems[itemId];
-                          setObj({ ...obj, newItems });
-                        }}
-                      >
-                        <DeleteIcon />
-                      </button>
+        <div hidden={step !== 2}>
+          <div className="flex justify-between">
+            <div className="font-bold text-xl">Current Items</div>
+            <div className="font-bold mr-12">Quantity Received</div>
+          </div>
+          {Object.keys(obj?.items || {}).length > 0 ? (
+            Object.entries(obj?.items || {}).map(([itemId, itemQuantity]) => {
+              const item: InventoryObject = inventory?.filter(
+                (i: InventoryObject) => i?.id === parseInt(itemId)
+              )[0];
+              return (
+                <div className="flex justify-between my-2 border-b">
+                  <div className="flex">
+                    <img
+                      src={item?.image_url}
+                      alt={item?.title}
+                      className="inventory-item-image-small"
+                    />
+                    <div className="ml-2">
+                      {getItemDisplayName(item)}
+                      <div
+                        className={`mt-2 text-sm font-bold ${
+                          item?.quantity <= 0 ? "text-tertiary" : "text-black"
+                        }`}
+                      >{`${item?.quantity} in stock.`}</div>
                     </div>
                   </div>
-                );
-              })
-            ) : (
-              <div>Select vendor to start adding items.</div>
-            )}
-          </div>
+                  <div className="self-center flex items-center">
+                    <TextField
+                      className="w-12 mr-6"
+                      inputType="number"
+                      min={0}
+                      value={`${itemQuantity}`}
+                      onChange={(e: any) =>
+                        setObj({
+                          ...obj,
+                          items: {
+                            ...(obj?.items || []),
+                            [itemId]: e.target.value,
+                          },
+                        })
+                      }
+                    />
+                    <button
+                      className="bg-gray-200 hover:bg-gray-300 p-1 w-10 h-10 rounded-full mr-8"
+                      onClick={() => {
+                        let newItems = obj?.items || {};
+                        delete newItems[itemId];
+                        setObj({ ...obj, newItems });
+                      }}
+                    >
+                      <DeleteIcon />
+                    </button>
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <div>Select vendor to start adding items.</div>
+          )}
+        </div>
+        <div hidden={step !== 3}></div>
+        <div hidden={step !== 4}></div>
+        <div hidden={step !== 5}>
+          <CSVLink
+            className={`modal__button--alt`}
+            data={csvData}
+            headers={[
+              "SKU",
+              "ARTIST",
+              "TITLE",
+              "NEW/USED",
+              "SELL PRICE",
+              "GENRE",
+            ]}
+            filename={`label-print-${fFileDate()}.csv`}
+            onClick={() =>
+              saveLog(
+                {
+                  log: "Labels printed from receive stock dialog.",
+                  clerk_id: clerk?.id,
+                },
+                logs,
+                mutateLogs
+              )
+            }
+          >
+            PRINT LABELS
+          </CSVLink>
         </div>
       </div>
     </ScreenContainer>

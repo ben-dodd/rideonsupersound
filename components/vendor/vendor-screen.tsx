@@ -37,13 +37,12 @@ import {
 
 // Components
 import ScreenContainer from "@/components/_components/container/screen";
+import Tabs from "@/components/_components/navigation/tabs";
 import Select from "react-select";
 import MaskedInput from "react-text-mask";
 import TextField from "@/components/_components/inputs/text-field";
 import CreateableSelect from "@/components/_components/inputs/createable-select";
 import SettingsSelect from "@/components/_components/inputs/settings-select";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
 
 export default function VendorScreen() {
   // Atoms
@@ -140,16 +139,13 @@ export default function VendorScreen() {
       }
       buttons={[]}
     >
-      <>
-        <div className="flex flex-col">
-          <Tabs value={tab} onChange={(e, newValue) => setTab(newValue)}>
-            <Tab label="General Details" />
-            <Tab label="Sales" />
-            <Tab label="Items" />
-            <Tab label="Payments" />
-          </Tabs>
-        </div>
-        <div hidden={tab !== 0}>
+      <div className="flex flex-col w-full">
+        <Tabs
+          tabs={["General Details", "Sales", "Items", "Payments"]}
+          value={tab}
+          onChange={setTab}
+        />
+        <div hidden={tab !== 0} className="max-w-sm">
           <TextField
             inputLabel="Name"
             value={vendor?.name || ""}
@@ -334,7 +330,7 @@ export default function VendorScreen() {
               </div>
             ))}
         </div>
-      </>
+      </div>
     </ScreenContainer>
   );
 }
