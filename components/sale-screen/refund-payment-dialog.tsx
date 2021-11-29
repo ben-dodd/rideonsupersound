@@ -14,13 +14,7 @@ import {
   useGiftCards,
   useRegisterID,
 } from "@/lib/swr-hooks";
-import {
-  viewAtom,
-  newSaleObjectAtom,
-  loadedSaleObjectAtom,
-  clerkAtom,
-  alertAtom,
-} from "@/lib/atoms";
+import { viewAtom, clerkAtom, alertAtom } from "@/lib/atoms";
 import {
   ModalButton,
   CustomerObject,
@@ -46,13 +40,10 @@ import Select from "react-select";
 
 import SyncIcon from "@mui/icons-material/Sync";
 
-export default function RefundPaymentDialog({ isNew }) {
+export default function RefundPaymentDialog({ sale }) {
   // Atoms
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
-  const [sale, setSale] = useAtom(
-    isNew ? newSaleObjectAtom : loadedSaleObjectAtom
-  );
   const [, setAlert] = useAtom(alertAtom);
 
   // SWR

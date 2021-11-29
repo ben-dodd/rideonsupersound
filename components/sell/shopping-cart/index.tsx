@@ -4,7 +4,7 @@ import { useAtom } from "jotai";
 
 // DB
 import { useInventory, useLogs, useSales, useSaleItems } from "@/lib/swr-hooks";
-import { newSaleObjectAtom, viewAtom, clerkAtom, alertAtom } from "@/lib/atoms";
+import { saleObjectAtom, viewAtom, clerkAtom, alertAtom } from "@/lib/atoms";
 import { InventoryObject, SaleItemObject, SaleStateTypes } from "@/lib/types";
 
 // Functions
@@ -33,7 +33,7 @@ import HoldIcon from "@mui/icons-material/PanTool";
 
 export default function ShoppingCart() {
   // SWR
-  const { inventory } = useInventory();
+  const { inventory, mutateInventory } = useInventory();
   const { sales, mutateSales } = useSales();
   const { saleItems, mutateSaleItems } = useSaleItems();
   const { logs, mutateLogs } = useLogs();
@@ -41,9 +41,9 @@ export default function ShoppingCart() {
   // Atoms
   const [view, setView] = useAtom(viewAtom);
   const [clerk] = useAtom(clerkAtom);
-  const [cart, setCart] = useAtom(newSaleObjectAtom);
+  const [cart, setCart] = useAtom(saleObjectAtom);
   const [, setAlert] = useAtom(alertAtom);
-  const [, setSale] = useAtom(newSaleObjectAtom);
+  const [, setSale] = useAtom(saleObjectAtom);
 
   // State
   const [loadingSale, setLoadingSale] = useState(false);
@@ -62,7 +62,8 @@ export default function ShoppingCart() {
         mutateSales,
         saleItems,
         mutateSaleItems,
-        inventory
+        inventory,
+        mutateInventory
       ).then((savedCart) => {
         saveLog(
           {

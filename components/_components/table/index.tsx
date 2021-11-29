@@ -20,6 +20,8 @@ import MdFirstPage from "@mui/icons-material/FirstPage";
 import MdNavigateBefore from "@mui/icons-material/NavigateBefore";
 import MdNavigateNext from "@mui/icons-material/NavigateNext";
 import MdLastPage from "@mui/icons-material/LastPage";
+import ArrowDown from "@mui/icons-material/ArrowDropDown";
+import ArrowUp from "@mui/icons-material/ArrowDropUp";
 
 function GlobalFilter({
   preGlobalFilteredRows,
@@ -169,15 +171,26 @@ function Table({
                     } text-left px-2 truncate`}
                     {...column.getHeaderProps()}
                   >
-                    <div {...column.getSortByToggleProps()}>
-                      {column.render("Header")}
-                      <span>
-                        {column.isSorted
-                          ? column.isSortedDesc
-                            ? " ↓"
-                            : " ↑"
-                          : ""}
-                      </span>
+                    <div
+                      {...column.getSortByToggleProps()}
+                      className="flex justify-between"
+                    >
+                      <div>{column.render("Header")}</div>
+                      <div>
+                        {column.isSorted ? (
+                          column.isSortedDesc ? (
+                            <div className="ml-1">
+                              <ArrowDown />
+                            </div>
+                          ) : (
+                            <div className="ml-1">
+                              <ArrowUp />
+                            </div>
+                          )
+                        ) : (
+                          <div />
+                        )}
+                      </div>
                     </div>
                     <div
                       className={`inline-block w-1 z-10 h-full absolute right-0 top-0 translate-x-1/2 cursor-resize bg-white`}
@@ -198,17 +211,17 @@ function Table({
                 <tr
                   {...rowProps}
                   className={`${
-                    row?.cells[1]?.value === SaleStateTypes.Completed ||
+                    row?.cells[2]?.value === SaleStateTypes.Completed ||
                     row?.cells[5]?.value === "Audio" ||
-                    row?.cells[4]?.value === "Band"
-                      ? "bg-gray-100"
-                      : row?.cells[1]?.value === SaleStateTypes.Layby ||
+                    row?.cells[4]?.value === "BAND"
+                      ? "bg-blue-100"
+                      : row?.cells[2]?.value === SaleStateTypes.Layby ||
                         row?.cells[5]?.value === "Literature" ||
-                        row?.cells[4]?.value === "Label"
+                        row?.cells[4]?.value === "LABEL"
                       ? "bg-yellow-100"
-                      : row?.cells[1]?.value === SaleStateTypes.Parked
+                      : row?.cells[2]?.value === SaleStateTypes.Parked
                       ? "bg-green-100"
-                      : "bg-blue-100"
+                      : "bg-gray-100"
                   } ${
                     row?.cells[9]?.value === 0 && "text-gray-600"
                   } opacity-70 hover:opacity-100 mt-1`}

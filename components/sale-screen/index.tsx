@@ -16,8 +16,7 @@ import {
 import {
   clerkAtom,
   alertAtom,
-  loadedSaleObjectAtom,
-  newSaleObjectAtom,
+  saleObjectAtom,
   viewAtom,
   pageAtom,
 } from "@/lib/atoms";
@@ -57,12 +56,9 @@ import ReturnItemDialog from "./return-item-dialog";
 // TODO add returns to sale items
 // TODO refund dialog like PAY, refund with store credit, cash or card
 
-export default function SaleScreen({ isNew }) {
+export default function SaleScreen() {
   // Atoms
-  const [sale, setSale] = useAtom(
-    isNew ? newSaleObjectAtom : loadedSaleObjectAtom
-  );
-  const [cart, setCart] = useAtom(newSaleObjectAtom);
+  const [cart, setCart] = useAtom(saleObjectAtom);
   const [clerk] = useAtom(clerkAtom);
   const [, setAlert] = useAtom(alertAtom);
   const [view, setView] = useAtom(viewAtom);
@@ -71,11 +67,11 @@ export default function SaleScreen({ isNew }) {
   // SWR
   const { customers } = useCustomers();
   const { inventory, mutateInventory } = useInventory();
-  const { items, isSaleItemsLoading } = useSaleItemsForSale(sale?.id);
+  const { items, isSaleItemsLoading } = useSaleItemsForSale(cart?.id);
   const {
     transactions,
     isSaleTransactionsLoading,
-  } = useSaleTransactionsForSale(sale?.id);
+  } = useSaleTransactionsForSale(cart?.id);
   const { sales, mutateSales } = useSales();
   const { saleItems, mutateSaleItems } = useSaleItems();
   const { logs, mutateLogs } = useLogs();
@@ -120,29 +116,12 @@ export default function SaleScreen({ isNew }) {
       type: "success",
       message: "SALE PARKED",
     });
-    setSale(null);
-    if (isNew) setView({ ...view, saleScreen: false });
+    setCart(null);
+    setView({ ...view, saleScreen: false });
     setParkSaleLoading(false);
   }
 
   async function clickAddMoreItems() {
-    setAddMoreItemsLoading(true);
-    await loadSaleToCart(
-      cart,
-      items,
-      setCart,
-      sale,
-      clerk,
-      customers,
-      logs,
-      mutateLogs,
-      sales,
-      mutateSales,
-      saleItems,
-      mutateSaleItems
-    );
-    setAddMoreItemsLoading(false);
-    setSale(null);
     setPage("sell");
     setView({ ...view, saleScreen: false });
   }
@@ -154,14 +133,14 @@ export default function SaleScreen({ isNew }) {
       // For each item, add quantity on layby, remove quantity in sale
       saveStockMovementToDatabase(saleItem, clerk, SaleStateTypes.Layby, null);
     }
-    if (sale?.state !== SaleStateTypes.Layby) {
+    if (cart?.state !== SaleStateTypes.Layby) {
       // If not already a layby in progress...
-      // Change sale state to layby
+      // Change cart state to layby
       // date_layby_started
       // layby_started_by
       let date = new Date();
       let laybySale = {
-        ...sale,
+        ...cart,
         state: SaleStateTypes.Layby,
         date_layby_started: date.toISOString(),
         layby_started_by: clerk?.id,
@@ -174,10 +153,10 @@ export default function SaleScreen({ isNew }) {
       saveLog(
         {
           log: `Layby started${
-            sale?.customer_id
+            cart?.customer_id
               ? ` for ${
                   customers?.filter(
-                    (c: CustomerObject) => c?.id === sale?.customer_id
+                    (c: CustomerObject) => c?.id === cart?.customer_id
                   )[0]?.name
                 }`
               : ""
@@ -188,7 +167,7 @@ export default function SaleScreen({ isNew }) {
           )} left to pay).`,
           clerk_id: clerk?.id,
           table_id: "sale",
-          row_id: sale?.id,
+          row_id: cart?.id,
         },
         logs,
         mutateLogs
@@ -198,14 +177,14 @@ export default function SaleScreen({ isNew }) {
         type: "success",
         message: "LAYBY STARTED.",
       });
-      let otherSales = sales?.filter((s: SaleObject) => s?.id !== sale?.id);
+      let otherSales = sales?.filter((s: SaleObject) => s?.id !== cart?.id);
       mutateSales([...otherSales, laybySale], false);
       mutateInventory();
     }
     // close dialog
     setLaybyLoading(false);
-    if (isNew) setView({ ...view, saleScreen: false });
-    setSale(null);
+    setView({ ...view, saleScreen: false });
+    setCart(null);
   }
 
   async function clickCompleteSale() {
@@ -218,7 +197,7 @@ export default function SaleScreen({ isNew }) {
     //    If other item, change quantity sold
     // Update sale to 'complete', add date_sale_closed, sale_closed_by
     items?.forEach((saleItem: SaleItemObject) => {
-      if (sale?.state === SaleStateTypes.Layby && !saleItem?.is_gift_card) {
+      if (cart?.state === SaleStateTypes.Layby && !saleItem?.is_gift_card) {
         saveStockMovementToDatabase(saleItem, clerk, "unlayby", null);
       }
       if (saleItem?.is_gift_card) {
@@ -238,26 +217,26 @@ export default function SaleScreen({ isNew }) {
         // Add misc item to sale items
       } else {
         if (saleItem?.id)
-          updateSaleItemInDatabase({ ...saleItem, sale_id: sale?.id });
+          updateSaleItemInDatabase({ ...saleItem, sale_id: cart?.id });
         saveStockMovementToDatabase(saleItem, clerk, "sold", null);
       }
     });
     let completedSale = {
-      ...sale,
+      ...cart,
       state: SaleStateTypes.Completed,
       sale_closed_by: clerk?.id,
       date_sale_closed: "CURRENT_TIMESTAMP",
     };
     updateSaleInDatabase(completedSale);
-    setSale(null);
-    if (isNew) setView({ ...view, saleScreen: false });
+    setCart(null);
+    setView({ ...view, saleScreen: false });
     setCompleteSaleLoading(false);
     saveLog(
       {
-        log: `Sale #${sale?.id} completed. ${itemList}.`,
+        log: `Sale #${cart?.id} completed. ${itemList}.`,
         clerk_id: clerk?.id,
         table_id: "sale",
-        row_id: sale?.id,
+        row_id: cart?.id,
       },
       logs,
       mutateLogs
@@ -267,7 +246,7 @@ export default function SaleScreen({ isNew }) {
       type: "success",
       message: "SALE COMPLETED.",
     });
-    let otherSales = sales?.filter((s: SaleObject) => s?.id !== sale?.id);
+    let otherSales = sales?.filter((s: SaleObject) => s?.id !== cart?.id);
     mutateSales([...otherSales, completedSale], false);
     mutateInventory();
   }
@@ -285,25 +264,24 @@ export default function SaleScreen({ isNew }) {
     {
       type: "alt3",
       onClick: clickParkSale,
-      disabled: sale?.state === SaleStateTypes.Layby || totalRemaining === 0,
+      disabled: cart?.state === SaleStateTypes.Layby || totalRemaining === 0,
       loading: parkSaleLoading,
       text: "PARK SALE",
     },
     {
       type: "alt2",
-      onClick: () =>
-        isNew ? setView({ ...view, saleScreen: false }) : clickAddMoreItems(),
-      disabled: sale?.state === SaleStateTypes.Layby || totalRemaining === 0,
+      onClick: () => setView({ ...view, saleScreen: false }),
+      disabled: cart?.state === SaleStateTypes.Layby || totalRemaining === 0,
       loading: addMoreItemsLoading,
       text: "CHANGE ITEMS",
     },
     {
       type: "alt1",
       onClick: clickLayby,
-      disabled: laybyLoading || !sale?.customer_id || totalRemaining <= 0,
+      disabled: laybyLoading || !cart?.customer_id || totalRemaining <= 0,
       loading: laybyLoading,
       text:
-        sale?.state === SaleStateTypes.Layby ? "CONTINUE LAYBY" : "START LAYBY",
+        cart?.state === SaleStateTypes.Layby ? "CONTINUE LAYBY" : "START LAYBY",
     },
     {
       type: "ok",
@@ -311,7 +289,7 @@ export default function SaleScreen({ isNew }) {
       disabled:
         completeSaleLoading ||
         totalRemaining > 0 ||
-        sale?.state === SaleStateTypes.Completed,
+        cart?.state === SaleStateTypes.Completed,
       loading: completeSaleLoading,
       text: "COMPLETE SALE",
     },
@@ -320,33 +298,31 @@ export default function SaleScreen({ isNew }) {
   return (
     <>
       <ScreenContainer
-        show={isNew ? view?.saleScreen : Boolean(sale?.id)}
-        closeFunction={() =>
-          isNew ? setView({ ...view, saleScreen: false }) : setSale(null)
-        }
-        title={`SALE #${sale?.id} [${
-          sale?.state ? sale?.state.toUpperCase() : "IN PROGRESS"
+        show={view?.saleScreen}
+        closeFunction={() => setView({ ...view, saleScreen: false })}
+        title={`SALE #${cart?.id} [${
+          cart?.state ? cart?.state.toUpperCase() : "IN PROGRESS"
         }]`}
         loading={isSaleItemsLoading || isSaleTransactionsLoading}
-        buttons={sale?.state === SaleStateTypes.Completed ? null : buttons}
+        buttons={cart?.state === SaleStateTypes.Completed ? null : buttons}
       >
         <div className="flex items-start overflow-auto w-full">
           <div className="w-2/3">
-            <SaleSummary isNew={isNew} />
+            <SaleSummary sale={cart} />
           </div>
           <div className="w-1/3 p-2 flex flex-col justify-between">
-            <Pay isNew={isNew} />
+            <Pay />
             {/*<Action />*/}
           </div>
         </div>
       </ScreenContainer>
-      {view?.acctPaymentDialog && <Acct isNew={isNew} />}
-      {view?.cardPaymentDialog && <Card isNew={isNew} />}
-      {view?.cashPaymentDialog && <Cash isNew={isNew} />}
-      {view?.giftPaymentDialog && <Gift isNew={isNew} />}
+      {view?.acctPaymentDialog && <Acct />}
+      {view?.cardPaymentDialog && <Card />}
+      {view?.cashPaymentDialog && <Cash />}
+      {view?.giftPaymentDialog && <Gift />}
       {view?.createCustomer && <CreateCustomerSidebar />}
-      {view?.refundPaymentDialog && <RefundPaymentDialog isNew={isNew} />}
-      {view?.returnItemDialog && <ReturnItemDialog isNew={isNew} />}
+      {view?.refundPaymentDialog && <RefundPaymentDialog sale={cart} />}
+      {view?.returnItemDialog && <ReturnItemDialog sale={cart} />}
     </>
   );
 }

@@ -34,9 +34,10 @@ export default function ListTask({ task }: ListItemProps) {
       }`}
     >
       <div className="flex flex-col sm:flex-row w-full justify-between">
-        <div className="flex flex-col sm:flex-row w-3/5">
-          <div className="mx-2 cursor-pointer">
+        <div className="flex w-3/12">
+          <div className="mx-2 w-1/12">
             <input
+              className="cursor-pointer"
               type="checkbox"
               checked={checked}
               disabled={checked}
@@ -60,14 +61,14 @@ export default function ListTask({ task }: ListItemProps) {
               }}
             />
           </div>
-          <div className="font-bold pr-4 text-pink-600 w-60">
+          <div className="font-bold pr-4 text-pink-600">
             {fDateTime(task?.date_created)}
           </div>
-          <div className={checked ? "line-through" : ""}>
-            {task?.description}
-          </div>
         </div>
-        <div className="grid grid-cols-3 w-2/5">
+        <div className={`w-7/12 ${checked ? "line-through" : ""}`}>
+          {task?.description}
+        </div>
+        {/*<div className="grid grid-cols-3 w-2/5">
           <div className="text-blue-800">{`Created by ${
             clerks?.filter(
               (c: ClerkObject) => c?.id === task?.created_by_clerk_id
@@ -82,15 +83,15 @@ export default function ListTask({ task }: ListItemProps) {
           ) : (
             <div />
           )}
-          {task?.completed_by_clerk_id ? (
-            <div>{`Completed by ${
-              clerks?.filter(
-                (c: ClerkObject) => c?.id === task?.completed_by_clerk_id
-              )[0]?.name
-            } (${fDateTime(task?.date_completed)})`}</div>
-          ) : (
-            <div />
-          )}
+          </div>*/}
+        <div className="w-4/12 text-right">
+          {task?.completed_by_clerk_id
+            ? `Completed by ${
+                clerks?.filter(
+                  (c: ClerkObject) => c?.id === task?.completed_by_clerk_id
+                )[0]?.name
+              } (${fDateTime(task?.date_completed)})`
+            : ""}
         </div>
       </div>
     </div>

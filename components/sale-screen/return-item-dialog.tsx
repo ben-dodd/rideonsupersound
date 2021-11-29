@@ -9,13 +9,7 @@ import {
   useInventory,
   useLogs,
 } from "@/lib/swr-hooks";
-import {
-  viewAtom,
-  newSaleObjectAtom,
-  loadedSaleObjectAtom,
-  clerkAtom,
-  alertAtom,
-} from "@/lib/atoms";
+import { viewAtom, clerkAtom, alertAtom } from "@/lib/atoms";
 import {
   ModalButton,
   CustomerObject,
@@ -36,13 +30,10 @@ import Modal from "@/components/_components/container/modal";
 import TextField from "@/components/_components/inputs/text-field";
 import ItemListItem from "./item-list-item";
 
-export default function RefundPaymentDialog({ isNew }) {
+export default function RefundPaymentDialog({ sale }) {
   // Atoms
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
-  const [sale, setSale] = useAtom(
-    isNew ? newSaleObjectAtom : loadedSaleObjectAtom
-  );
   const [, setAlert] = useAtom(alertAtom);
 
   // SWR
@@ -129,7 +120,7 @@ export default function RefundPaymentDialog({ isNew }) {
             <div className="flex" key={item?.id}>
               <ItemListItem
                 saleItem={item}
-                isNew={isNew}
+                sale={sale}
                 selected={refundItems.includes(item?.id)}
                 onClick={() => {
                   let newRefundItems = [...refundItems];

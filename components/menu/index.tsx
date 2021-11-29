@@ -3,9 +3,9 @@ import { useAtom } from "jotai";
 import Image from "next/image";
 
 // DB
-import { useJobs } from "@/lib/swr-hooks";
-import { pageAtom, newSaleObjectAtom, clerkAtom, viewAtom } from "@/lib/atoms";
-import { SaleItemObject, TaskObject } from "@/lib/types";
+import { useJobs, useInventory } from "@/lib/swr-hooks";
+import { pageAtom, saleObjectAtom, clerkAtom, viewAtom } from "@/lib/atoms";
+import { SaleItemObject, TaskObject, InventoryObject } from "@/lib/types";
 
 // Icons
 // import CustomersIcon from "@mui/icons-material/LocalLibrary";
@@ -34,13 +34,14 @@ type MenuType = {
 
 export default function Menu() {
   // Atoms
-  const [cart] = useAtom(newSaleObjectAtom);
+  const [cart] = useAtom(saleObjectAtom);
   const [page, setPage] = useAtom(pageAtom);
   const [view, setView] = useAtom(viewAtom);
   const [clerk, setClerk] = useAtom(clerkAtom);
 
   // SWR
   const { jobs } = useJobs();
+  const { inventory } = useInventory();
 
   // Constants
   const cartItems = cart?.items?.reduce(
@@ -49,9 +50,10 @@ export default function Menu() {
     0
   );
 
-  const jobsToDo = jobs?.filter(
-    (t: TaskObject) => !t?.is_deleted && !t?.is_completed
-  )?.length;
+  const jobsToDo =
+    (jobs?.filter((t: TaskObject) => !t?.is_deleted && !t?.is_completed)
+      ?.length || 0) +
+    (inventory?.filter((i: InventoryObject) => i?.needs_restock)?.length || 0);
 
   const topMenu = [
     {
@@ -225,14 +227,16 @@ export default function Menu() {
           )
         )}
       </ul>
-      <div className="hover:animate-wiggle">
-        {/*src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/clerk/${clerk?.name}.png`}*/}
-        <Image
-          src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/pyramid.png`}
-          alt="Ride On Super Sound"
-          width={500}
-          height={530}
-        />
+      <div className="px-8">
+        <div className="hover:animate-wiggle">
+          {/*src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/clerk/${clerk?.name}.png`}*/}
+          <Image
+            src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/pyramid.png`}
+            alt="Ride On Super Sound"
+            width={500}
+            height={530}
+          />
+        </div>
       </div>
       <ul>
         {bottomMenu?.map((item: MenuType, i: number) =>

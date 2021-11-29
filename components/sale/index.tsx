@@ -2,10 +2,10 @@
 import { useAtom } from "jotai";
 
 // DB
-import { pageAtom, loadedSaleObjectAtom } from "@/lib/atoms";
+import { pageAtom, loadedSaleIdAtom } from "@/lib/atoms";
 
 // Components
-import SaleScreen from "@/components/sale-screen";
+import SaleItemScreen from "@/components/sale-screen/sale-item-screen";
 import SaleTable from "@/components/sale/sale-table";
 
 // REVIEW add filter buttons to table for laybys etc.
@@ -13,7 +13,7 @@ import SaleTable from "@/components/sale/sale-table";
 export default function SalesScreen() {
   // Atoms
   const [page] = useAtom(pageAtom);
-  const [loadedSale] = useAtom(loadedSaleObjectAtom);
+  const [loadedSaleId] = useAtom(loadedSaleIdAtom);
 
   // SWR
   return (
@@ -24,7 +24,7 @@ export default function SalesScreen() {
     >
       {" "}
       {page === "sales" && <SaleTable />}
-      {loadedSale?.id && <SaleScreen isNew={false} />}
+      {loadedSaleId[page] && <SaleItemScreen />}
     </div>
   );
 }

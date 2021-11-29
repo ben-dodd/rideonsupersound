@@ -13,13 +13,7 @@ import {
   useVendorPayments,
   useSalesJoined,
 } from "@/lib/swr-hooks";
-import {
-  viewAtom,
-  newSaleObjectAtom,
-  loadedSaleObjectAtom,
-  clerkAtom,
-  alertAtom,
-} from "@/lib/atoms";
+import { viewAtom, saleObjectAtom, clerkAtom, alertAtom } from "@/lib/atoms";
 import {
   ModalButton,
   SaleTransactionObject,
@@ -36,11 +30,11 @@ import Modal from "@/components/_components/container/modal";
 import TextField from "@/components/_components/inputs/text-field";
 import Select from "react-select";
 
-export default function Acct({ isNew }) {
+export default function Acct() {
   // Atoms
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
-  const [sale] = useAtom(isNew ? newSaleObjectAtom : loadedSaleObjectAtom);
+  const [sale] = useAtom(saleObjectAtom);
   const [, setAlert] = useAtom(alertAtom);
 
   // State

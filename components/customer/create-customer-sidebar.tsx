@@ -7,7 +7,7 @@ import { useCustomers } from "@/lib/swr-hooks";
 import {
   viewAtom,
   clerkAtom,
-  newSaleObjectAtom,
+  saleObjectAtom,
   loadedCustomerObjectAtom,
 } from "@/lib/atoms";
 import { CustomerObject, ModalButton } from "@/lib/types";
@@ -27,7 +27,7 @@ export default function CreateCustomerSidebar() {
   const { customers, mutateCustomers } = useCustomers();
 
   // Atoms
-  const [cart, setCart] = useAtom(newSaleObjectAtom);
+  const [cart, setCart] = useAtom(saleObjectAtom);
   const [view, setView] = useAtom(viewAtom);
   const [clerk] = useAtom(clerkAtom);
   const [customer, setCustomer] = useAtom(loadedCustomerObjectAtom);

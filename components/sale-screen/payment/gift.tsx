@@ -12,13 +12,7 @@ import {
   useRegisterID,
   useInventory,
 } from "@/lib/swr-hooks";
-import {
-  viewAtom,
-  newSaleObjectAtom,
-  loadedSaleObjectAtom,
-  clerkAtom,
-  alertAtom,
-} from "@/lib/atoms";
+import { viewAtom, saleObjectAtom, clerkAtom, alertAtom } from "@/lib/atoms";
 import {
   GiftCardObject,
   ModalButton,
@@ -39,11 +33,11 @@ import {
 import Modal from "@/components/_components/container/modal";
 import TextField from "@/components/_components/inputs/text-field";
 
-export default function Gift({ isNew }) {
+export default function Gift() {
   // Atoms
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
-  const [sale] = useAtom(isNew ? newSaleObjectAtom : loadedSaleObjectAtom);
+  const [sale] = useAtom(saleObjectAtom);
   const [, setAlert] = useAtom(alertAtom);
 
   // SWR

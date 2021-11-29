@@ -11,7 +11,6 @@ import {
   useSaleTransactionsForSale,
   useInventory,
 } from "@/lib/swr-hooks";
-import { newSaleObjectAtom, loadedSaleObjectAtom } from "@/lib/atoms";
 import {
   SaleTransactionObject,
   SaleItemObject,
@@ -29,10 +28,7 @@ import {
 import ItemListItem from "./item-list-item";
 import TransactionListItem from "./transaction-list-item";
 
-export default function SaleSummary({ isNew }) {
-  // Atoms
-  const [sale] = useAtom(isNew ? newSaleObjectAtom : loadedSaleObjectAtom);
-
+export default function SaleSummary({ sale }) {
   // SWR
   const { clerks } = useClerks();
   const { customer } = useCustomer(sale?.customer_id);
@@ -60,7 +56,7 @@ export default function SaleSummary({ isNew }) {
             <ItemListItem
               key={saleItem?.item_id}
               saleItem={saleItem}
-              isNew={isNew}
+              sale={sale}
             />
           ))
         ) : (

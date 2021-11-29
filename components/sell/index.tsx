@@ -6,7 +6,7 @@ import { useSwipeable } from "react-swipeable";
 import {
   viewAtom,
   pageAtom,
-  newSaleObjectAtom,
+  saleObjectAtom,
   loadedItemIdAtom,
 } from "@/lib/atoms";
 import { useRegisterID } from "@/lib/swr-hooks";
@@ -40,7 +40,7 @@ export default function SellScreen() {
   // Atoms
   const [view, setView] = useAtom(viewAtom);
   const [page] = useAtom(pageAtom);
-  const [sale, setSale] = useAtom(newSaleObjectAtom);
+  const [sale, setSale] = useAtom(saleObjectAtom);
 
   const handlers = useSwipeable({
     onSwipedRight: () =>
@@ -75,7 +75,7 @@ export default function SellScreen() {
       <ShoppingCart />
       <CreateHoldSidebar />
       <CreateCustomerSidebar />
-      {sale?.id && <SaleScreen isNew={true} />}
+      {sale?.id && <SaleScreen />}
       {view?.miscItemDialog && <MiscItemDialog />}
       {view?.giftCardDialog && <GiftCardDialog />}
       {loadedItemId && <InventoryItemScreen page="sell" />}

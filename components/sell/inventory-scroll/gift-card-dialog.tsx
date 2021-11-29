@@ -9,7 +9,7 @@ import {
   useLogs,
   useWeather,
 } from "@/lib/swr-hooks";
-import { viewAtom, newSaleObjectAtom, clerkAtom, alertAtom } from "@/lib/atoms";
+import { viewAtom, saleObjectAtom, clerkAtom, alertAtom } from "@/lib/atoms";
 import { GiftCardObject, ModalButton } from "@/lib/types";
 
 // Functions
@@ -27,7 +27,7 @@ export default function GiftCardDialog() {
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
   const [, setAlert] = useAtom(alertAtom);
-  const [cart, setCart] = useAtom(newSaleObjectAtom);
+  const [cart, setCart] = useAtom(saleObjectAtom);
 
   // SWR
   const { giftCards, mutateGiftCards } = useGiftCards();

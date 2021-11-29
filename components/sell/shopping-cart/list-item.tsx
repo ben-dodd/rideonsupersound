@@ -4,7 +4,7 @@ import { useAtom } from "jotai";
 
 // DB
 import { useInventory, useStockItem, useGiftCards } from "@/lib/swr-hooks";
-import { newSaleObjectAtom, confirmModalAtom } from "@/lib/atoms";
+import { saleObjectAtom, confirmModalAtom } from "@/lib/atoms";
 import { InventoryObject, SaleItemObject } from "@/lib/types";
 
 // Functions
@@ -44,7 +44,7 @@ export default function SellListItem({
   const { stockItem } = useStockItem(cartItem?.item_id);
 
   // Atoms
-  const [cart, setCart] = useAtom(newSaleObjectAtom);
+  const [cart, setCart] = useAtom(saleObjectAtom);
   const [, setConfirmModal] = useAtom(confirmModalAtom);
 
   // State
@@ -187,12 +187,16 @@ export default function SellListItem({
                 {writeCartItemPriceTotal(item, cartItem)}
               </div>
               <div className="w-50 text-right">
-                <button
-                  className="py-2 text-tertiary hover:text-tertiary-dark"
-                  onClick={() => deleteCartItem(cartItem?.item_id)}
-                >
-                  <DeleteIcon />
-                </button>
+                {cart?.id ? (
+                  <div />
+                ) : (
+                  <button
+                    className="py-2 text-tertiary hover:text-tertiary-dark"
+                    onClick={() => deleteCartItem(cartItem?.item_id)}
+                  >
+                    <DeleteIcon />
+                  </button>
+                )}
               </div>
             </div>
           </div>

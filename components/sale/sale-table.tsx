@@ -11,7 +11,7 @@ import {
   useInventory,
   useGiftCards,
 } from "@/lib/swr-hooks";
-import { viewAtom, loadedSaleObjectAtom } from "@/lib/atoms";
+import { viewAtom, loadedSaleIdAtom, pageAtom } from "@/lib/atoms";
 import {
   SaleObject,
   SaleItemObject,
@@ -42,7 +42,8 @@ export default function SaleTable() {
 
   // Atoms
   const [view, setView] = useAtom(viewAtom);
-  const [, setLoadedSale] = useAtom(loadedSaleObjectAtom);
+  const [page] = useAtom(pageAtom);
+  const [loadedSaleId, setLoadedSaleId] = useAtom(loadedSaleIdAtom);
 
   // Constants
   const data = useMemo(
@@ -89,13 +90,12 @@ export default function SaleTable() {
                 cursor: "pointer",
                 textDecoration: "underline",
               }}
-              onClick={() => {
-                setLoadedSale(
-                  sales?.filter(
-                    (s: SaleObject) => s?.id === item?.row?.original?.id
-                  )[0]
-                );
-              }}
+              onClick={() =>
+                setLoadedSaleId({
+                  ...loadedSaleId,
+                  [page]: item?.row?.original?.id,
+                })
+              }
             >
               {fDateTime(item?.value)}
             </div>

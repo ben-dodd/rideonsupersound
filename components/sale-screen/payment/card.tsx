@@ -11,13 +11,7 @@ import {
   useLogs,
   useRegisterID,
 } from "@/lib/swr-hooks";
-import {
-  viewAtom,
-  newSaleObjectAtom,
-  loadedSaleObjectAtom,
-  clerkAtom,
-  alertAtom,
-} from "@/lib/atoms";
+import { viewAtom, saleObjectAtom, clerkAtom, alertAtom } from "@/lib/atoms";
 import {
   ModalButton,
   CustomerObject,
@@ -33,11 +27,11 @@ import { saveSaleTransaction, saveLog } from "@/lib/db-functions";
 import Modal from "@/components/_components/container/modal";
 import TextField from "@/components/_components/inputs/text-field";
 
-export default function Cash({ isNew }) {
+export default function Cash() {
   // Atoms
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
-  const [sale] = useAtom(isNew ? newSaleObjectAtom : loadedSaleObjectAtom);
+  const [sale] = useAtom(saleObjectAtom);
   const [, setAlert] = useAtom(alertAtom);
 
   // SWR

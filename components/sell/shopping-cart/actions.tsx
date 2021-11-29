@@ -11,7 +11,7 @@ import {
   useInventory,
 } from "@/lib/swr-hooks";
 import {
-  newSaleObjectAtom,
+  saleObjectAtom,
   clerkAtom,
   viewAtom,
   confirmModalAtom,
@@ -40,7 +40,7 @@ export default function ShoppingCartActions() {
 
   // Atoms
   const [clerk] = useAtom(clerkAtom);
-  const [cart, setCart] = useAtom(newSaleObjectAtom);
+  const [cart, setCart] = useAtom(saleObjectAtom);
   const [, setAlert] = useAtom(alertAtom);
   const [, setConfirmModal] = useAtom(confirmModalAtom);
   const [view, setView] = useAtom(viewAtom);

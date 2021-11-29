@@ -9,6 +9,7 @@ import {
   useVendors,
   useHolds,
   useLaybys,
+  useSaleItems,
   useInventory,
 } from "@/lib/swr-hooks";
 import {
@@ -16,16 +17,18 @@ import {
   loadedVendorIdAtom,
   loadedHoldIdAtom,
   loadedCustomerObjectAtom,
+  loadedSaleIdAtom,
 } from "@/lib/atoms";
 import {
   CustomerObject,
   SaleObject,
   HoldObject,
   InventoryObject,
+  SaleItemObject,
 } from "@/lib/types";
 
 // Functions
-import { getItemDisplayName } from "@/lib/data-functions";
+import { getItemDisplayName, writeItemList } from "@/lib/data-functions";
 
 // Components
 import Table from "@/components/_components/table";
@@ -38,10 +41,12 @@ export default function CustomerTable() {
   const { laybys, isLaybysLoading } = useLaybys();
   const { holds, isHoldsLoading } = useHolds();
   const { inventory, isInventoryLoading } = useInventory();
+  const { saleItems } = useSaleItems();
 
   // Atoms
   const [view, setView] = useAtom(viewAtom);
   const [loadedVendorId, setLoadedVendorId] = useAtom(loadedVendorIdAtom);
+  const [loadedSaleId, setLoadedSaleId] = useAtom(loadedSaleIdAtom);
   const [loadedHoldId, setLoadedHoldId] = useAtom(loadedHoldIdAtom);
   const [customer, setCustomer] = useAtom(loadedCustomerObjectAtom);
 
@@ -103,18 +108,6 @@ export default function CustomerTable() {
         ),
       },
       {
-        Header: "Email",
-        accessor: "email",
-        width: 200,
-        Cell: ({ value }) => <a href={`mailto:${value}`}>{value}</a>,
-      },
-      {
-        Header: "Phone",
-        accessor: "phone",
-        width: 150,
-      },
-      { Header: "Postal Address", accessor: "postal_address" },
-      {
         Header: "Holds",
         accessor: "holds",
         width: 400,
@@ -123,7 +116,7 @@ export default function CustomerTable() {
             ? value.map((hold: HoldObject, i: number) => (
                 <div
                   key={hold?.id}
-                  className={`mb-2 cursor-pointer underline ${
+                  className={`mb-2 cursor-pointer underline whitespace-normal ${
                     hold?.overdue ? "text-red-600 font-bold" : "text-black"
                   }`}
                   onClick={() =>
@@ -149,21 +142,44 @@ export default function CustomerTable() {
         Header: "Laybys",
         accessor: "laybys",
         width: 220,
-        Cell: ({ value }) =>
-          value && value.length > 0
+        Cell: ({ value }) => {
+          return value && value.length > 0
             ? value.map((layby: SaleObject, i: number) => (
-                <div key={i} className="pb-2">
-                  Go to Sale #{layby?.id}
+                <div
+                  key={layby?.id}
+                  className={`mb-2 cursor-pointer underline whitespace-normal`}
+                  onClick={() =>
+                    setLoadedSaleId({ ...loadedSaleId, customers: layby?.id })
+                  }
+                >
+                  {`Layby #${layby?.id} - ${writeItemList(
+                    inventory,
+                    saleItems?.filter(
+                      (i: SaleItemObject) => i?.sale_id === layby?.id
+                    )
+                  )}`}
                 </div>
               ))
-            : "",
+            : "";
+        },
         sortType: (rowA: any, rowB: any, columnId: any) => {
-          console.log(columnId);
           const a = rowA.original?.laybys?.length || 0;
           const b = rowB.original?.laybys?.length || 0;
           return a > b ? 1 : b > a ? -1 : 0;
         },
       },
+      {
+        Header: "Email",
+        accessor: "email",
+        width: 200,
+        Cell: ({ value }) => <a href={`mailto:${value}`}>{value}</a>,
+      },
+      {
+        Header: "Phone",
+        accessor: "phone",
+        width: 150,
+      },
+      { Header: "Postal Address", accessor: "postal_address" },
       // {
       //   Header: "Orders",
       //   accessor: "orders",

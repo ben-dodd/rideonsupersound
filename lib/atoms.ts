@@ -65,12 +65,12 @@ export const viewAtom = atom<ViewProps>({});
 export const clerkAtom = atom<ClerkObject>({ id: null });
 export const pageAtom = atom<string>("sell");
 
-export const newSaleObjectAtom = atom<SaleObject>({});
-export const loadedSaleObjectAtom = atom<SaleObject>({});
+export const saleObjectAtom = atom<SaleObject>({});
 
 export const loadedItemIdAtom = atom<PageProps>({});
 export const loadedVendorIdAtom = atom<PageProps>({});
 export const loadedHoldIdAtom = atom<PageProps>({});
+export const loadedSaleIdAtom = atom<PageProps>({});
 
 export const loadedCustomerObjectAtom = atom<CustomerObject>({});
 

@@ -111,7 +111,8 @@ export async function saveSaleAndItemsToDatabase(
   mutateSales: Function,
   saleItems: SaleItemObject[],
   mutateSaleItems: Function,
-  inventory?: InventoryObject[]
+  inventory?: InventoryObject[],
+  mutateInventory?: Function
 ) {
   let newSale = { ...sale };
   let newSaleId = newSale?.id;
@@ -137,22 +138,22 @@ export async function saveSaleAndItemsToDatabase(
   //
   let cartItems = [];
   for await (const item of items) {
-    console.log(item);
     const invItem = inventory?.filter(
       (i: InventoryObject) => i?.id === item?.item_id
     )[0];
     const itemQuantity = getItemQuantity(invItem, items);
-    console.log(itemQuantity);
     console.log(invItem);
+    console.log(itemQuantity);
     if (itemQuantity > 0) {
-      saveTaskToDatabase(
-        {
-          description: `Restock ${getItemDisplayName(invItem)} [${getItemSku(
-            invItem
-          )}]`,
-        },
-        clerk
+      const otherInventoryItems = inventory?.filter(
+        (i: InventoryObject) => i?.id !== invItem?.id
       );
+      mutateInventory &&
+        mutateInventory([
+          ...otherInventoryItems,
+          { ...invItem, needs_restock: true },
+        ]);
+      addRestockTask(invItem?.id);
     }
     if (!item?.id) {
       // Item is new to sale
@@ -633,10 +634,22 @@ export async function saveLog(
   }
 }
 
-export async function addRestockTask(
-  item: InventoryObject,
-  clerk: ClerkObject
-) {}
+export async function addRestockTask(id: number) {
+  console.log("Adding restock task");
+  try {
+    const res = await fetch("/api/restock-task", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id, needs_restock: true }),
+    });
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
 
 export async function saveTaskToDatabase(task: TaskObject, clerk: ClerkObject) {
   try {
@@ -679,6 +692,21 @@ export async function completeTask(task: TaskObject, clerk: ClerkObject) {
   }
 }
 
+export async function completeRestockTask(id: number) {
+  try {
+    const res = await fetch("/api/restock-task", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id, needs_restock: false }),
+    });
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
 export async function saveStockPriceToDatabase(
   stock_id: number,
   clerk: ClerkObject,

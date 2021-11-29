@@ -4,13 +4,8 @@ import { useAtom } from "jotai";
 
 // DB
 import { useInventory, useSaleItemsForSale, useLogs } from "@/lib/swr-hooks";
-import {
-  newSaleObjectAtom,
-  loadedSaleObjectAtom,
-  alertAtom,
-  clerkAtom,
-} from "@/lib/atoms";
-import { InventoryObject, SaleItemObject } from "@/lib/types";
+import { saleObjectAtom, alertAtom, clerkAtom } from "@/lib/atoms";
+import { InventoryObject, SaleObject, SaleItemObject } from "@/lib/types";
 import { MouseEventHandler } from "react";
 
 // Functions
@@ -31,20 +26,17 @@ import Image from "next/image";
 
 type SellListItemProps = {
   saleItem: SaleItemObject;
-  isNew: boolean;
+  sale: SaleObject;
   selected?: boolean;
   onClick?: MouseEventHandler;
 };
 
 export default function ItemListItem({
   saleItem,
-  isNew,
+  sale,
   selected,
   onClick,
 }: SellListItemProps) {
-  // Atoms
-  const [sale] = useAtom(isNew ? newSaleObjectAtom : loadedSaleObjectAtom);
-
   // SWR
   const { inventory } = useInventory();
 

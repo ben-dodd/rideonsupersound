@@ -3,7 +3,7 @@ import { useAtom } from "jotai";
 
 // DB
 import {
-  newSaleObjectAtom,
+  saleObjectAtom,
   viewAtom,
   clerkAtom,
   confirmModalAtom,
@@ -45,7 +45,7 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
   const { logs, mutateLogs } = useLogs();
 
   // Atoms
-  const [cart, setCart] = useAtom(newSaleObjectAtom);
+  const [cart, setCart] = useAtom(saleObjectAtom);
   const [view, setView] = useAtom(viewAtom);
   const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom);
   const [, setConfirmModal] = useAtom(confirmModalAtom);
