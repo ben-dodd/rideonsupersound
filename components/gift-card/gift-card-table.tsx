@@ -7,8 +7,8 @@ import { useGiftCards } from "@/lib/swr-hooks";
 import { InventoryObject } from "@/lib/types";
 
 // Components
-import Table from "@/components/table";
-import TableContainer from "@/components/container/table";
+import Table from "@/components/_components/table";
+import TableContainer from "@/components/_components/container/table";
 
 export default function GiftCardTable() {
   // SWR

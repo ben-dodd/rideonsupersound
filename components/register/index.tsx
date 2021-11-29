@@ -12,7 +12,7 @@ import { getAmountFromCashMap } from "@/lib/data-functions";
 import { saveAndOpenRegister, saveLog } from "@/lib/db-functions";
 
 // Components
-import TextField from "@/components/inputs/text-field";
+import TextField from "@/components/_components/inputs/text-field";
 import CircularProgress from "@mui/material/CircularProgress";
 import OpenIcon from "@mui/icons-material/ShoppingCart";
 import CashMap from "./cash-map";

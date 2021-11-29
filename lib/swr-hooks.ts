@@ -57,6 +57,7 @@ export function useClerkImage(clerk_image_id: number) {
   };
 }
 
+// TODO gift cards and misc items should probably be in separate table to other stock
 export function useInventory() {
   const { data, error, mutate } = useSWR(`/api/get-stock-inventory`, fetcher);
   return {
@@ -66,16 +67,6 @@ export function useInventory() {
     mutateInventory: mutate,
   };
 }
-
-// export function useInventory() {
-//   const { data, error, mutate } = useSWR(`/api/get-sale-inventory`, fetcher);
-//   return {
-//     inventory: data,
-//     isInventoryLoading: !error && !data,
-//     isSaleInventoryError: error,
-//     mutateInventory: mutate,
-//   };
-// }
 
 export function useStockItem(stock_id: number) {
   const { data, error, mutate } = useSWR(

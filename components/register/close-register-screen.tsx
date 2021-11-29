@@ -21,8 +21,8 @@ import { fTimeDate, getAmountFromCashMap } from "@/lib/data-functions";
 import { saveClosedRegisterToDatabase, saveLog } from "@/lib/db-functions";
 
 // Components
-import TextField from "@/components/inputs/text-field";
-import ScreenContainer from "@/components/container/screen";
+import TextField from "@/components/_components/inputs/text-field";
+import ScreenContainer from "@/components/_components/container/screen";
 import CashItem from "./cash-item";
 import CashMap from "./cash-map";
 

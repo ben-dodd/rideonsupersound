@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/client";
 import Image from "next/image";
 
-import SignInButton from "@/components/button/sign-in-button";
+import SignInButton from "@/components/_components/button/sign-in-button";
 
 export default function SignIn() {
   const [session] = useSession();

@@ -264,6 +264,7 @@ export interface InventoryObject {
   misc_item_amount?: number;
   googleBooksItem?: any;
   discogsItem?: any;
+  needs_restock?: boolean;
 }
 
 export interface StockPriceObject {

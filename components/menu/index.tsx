@@ -226,11 +226,12 @@ export default function Menu() {
         )}
       </ul>
       <div className="hover:animate-wiggle">
+        {/*src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/clerk/${clerk?.name}.png`}*/}
         <Image
-          src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/clerk/${clerk?.name}.png`}
-          alt={clerk?.name}
-          width={200}
-          height={200}
+          src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/pyramid.png`}
+          alt="Ride On Super Sound"
+          width={500}
+          height={530}
         />
       </div>
       <ul>

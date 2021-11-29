@@ -49,7 +49,7 @@ import Acct from "./payment/acct";
 import Card from "./payment/card";
 import Cash from "./payment/cash";
 import Gift from "./payment/gift";
-import ScreenContainer from "@/components/container/screen";
+import ScreenContainer from "@/components/_components/container/screen";
 import CreateCustomerSidebar from "@/components/customer/create-customer-sidebar";
 import RefundPaymentDialog from "./refund-payment-dialog";
 import ReturnItemDialog from "./return-item-dialog";

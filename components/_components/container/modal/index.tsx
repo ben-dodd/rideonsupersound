@@ -1,7 +1,7 @@
 // Components
-import ModalBase from "@/components/container/modal/base";
+import ModalBase from "@/components/_components/container/modal/base";
 import CircularProgress from "@mui/material/CircularProgress";
-import CloseButton from "@/components/button/close-button";
+import CloseButton from "@/components/_components/button/close-button";
 import { CSVLink } from "react-csv";
 
 // Types

@@ -153,12 +153,15 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
       </div>
       <div className="flex flex-col justify-between pl-2 w-full">
         <div>
-          <div className="flex justify-between border-b border-gray-400">
+          <div className="flex justify-between border-b items-center border-gray-400">
             <div>
               <div className="font-bold text-md">{`${
                 item?.title || "Untitled"
               }`}</div>
               <div className="text-md">{`${item?.artist || "Untitled"}`}</div>
+            </div>
+            <div className="text-yellow-400 font-bold text-3xl">
+              {item?.needs_restock ? "PLEASE RESTOCK!" : ""}
             </div>
           </div>
           <div className="text-sm text-green-800">{`${

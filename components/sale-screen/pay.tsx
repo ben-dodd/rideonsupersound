@@ -27,8 +27,8 @@ import {
 } from "@/lib/data-functions";
 
 // Components
-import CreateableSelect from "@/components/inputs/createable-select";
-import TextField from "@/components/inputs/text-field";
+import CreateableSelect from "@/components/_components/inputs/createable-select";
+import TextField from "@/components/_components/inputs/text-field";
 import Switch from "@mui/material/Switch";
 import Tooltip from "@mui/material/Tooltip";
 

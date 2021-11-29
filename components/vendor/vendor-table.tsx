@@ -23,8 +23,8 @@ import {
 import { getPaymentVars } from "@/lib/data-functions";
 
 // Components
-import Table from "@/components/table";
-import TableContainer from "@/components/container/table";
+import Table from "@/components/_components/table";
+import TableContainer from "@/components/_components/container/table";
 
 export default function VendorsScreen() {
   // Atoms

@@ -28,8 +28,8 @@ import {
 } from "@/lib/data-functions";
 
 // Components
-import TextField from "@/components/inputs/text-field";
-import Modal from "@/components/container/modal";
+import TextField from "@/components/_components/inputs/text-field";
+import Modal from "@/components/_components/container/modal";
 
 export default function BatchPaymentDialog() {
   // SWR

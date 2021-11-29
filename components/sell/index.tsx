@@ -12,7 +12,7 @@ import {
 import { useRegisterID } from "@/lib/swr-hooks";
 
 // Components
-import MidScreenContainer from "@/components/container/mid-screen";
+import MidScreenContainer from "@/components/_components/container/mid-screen";
 import SearchBar from "./sell-search-bar";
 import InventoryScroll from "./inventory-scroll";
 import ShoppingCart from "./shopping-cart";

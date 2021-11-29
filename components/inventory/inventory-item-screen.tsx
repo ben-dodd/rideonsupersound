@@ -19,13 +19,13 @@ import { updateStockItemInDatabase } from "@/lib/db-functions";
 
 // Components
 import Image from "next/image";
-import TextField from "@/components/inputs/text-field";
-import SettingsSelect from "@/components/inputs/settings-select";
-import RadioButton from "@/components/inputs/radio-button";
+import TextField from "@/components/_components/inputs/text-field";
+import SettingsSelect from "@/components/_components/inputs/settings-select";
+import RadioButton from "@/components/_components/inputs/radio-button";
 import DiscogsPanel from "./discogs-panel";
 import GoogleBooksPanel from "./google-books-panel";
 import ChangePriceIcon from "@mui/icons-material/AutoFixNormal";
-import ScreenContainer from "@/components/container/screen";
+import ScreenContainer from "@/components/_components/container/screen";
 import Tooltip from "@mui/material/Tooltip";
 
 export default function InventoryItemScreen({ page }) {

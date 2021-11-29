@@ -28,10 +28,10 @@ import {
 } from "@/lib/db-functions";
 
 // Components
-import TextField from "@/components/inputs/text-field";
-import CreateableSelect from "@/components/inputs/createable-select";
+import TextField from "@/components/_components/inputs/text-field";
+import CreateableSelect from "@/components/_components/inputs/createable-select";
 import ListItem from "./list-item";
-import SidebarContainer from "@/components/container/side-bar";
+import SidebarContainer from "@/components/_components/container/side-bar";
 
 export default function CreateHoldSidebar() {
   // SWR

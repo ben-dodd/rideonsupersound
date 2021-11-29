@@ -7,7 +7,7 @@ import { clerkAtom, pageAtom, viewAtom } from "@/lib/atoms";
 
 // Components
 import Image from "next/image";
-import Hamburger from "@/components/icon/hamburger";
+import Hamburger from "@/components/_components/icon/hamburger";
 
 import SellNavActions from "./actions/sell";
 import InventoryNavActions from "./actions/inventory";

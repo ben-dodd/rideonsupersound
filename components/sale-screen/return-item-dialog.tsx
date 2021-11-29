@@ -32,8 +32,8 @@ import {
 import { updateSaleItemInDatabase, saveLog } from "@/lib/db-functions";
 
 // Components
-import Modal from "@/components/container/modal";
-import TextField from "@/components/inputs/text-field";
+import Modal from "@/components/_components/container/modal";
+import TextField from "@/components/_components/inputs/text-field";
 import ItemListItem from "./item-list-item";
 
 export default function RefundPaymentDialog({ isNew }) {

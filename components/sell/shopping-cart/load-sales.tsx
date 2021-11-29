@@ -24,7 +24,7 @@ import { fDateTime, nzDate, writeItemList } from "@/lib/data-functions";
 import { loadSaleToCart } from "@/lib/db-functions";
 
 // Components
-import Modal from "@/components/container/modal";
+import Modal from "@/components/_components/container/modal";
 
 export default function LoadSales() {
   // Atoms

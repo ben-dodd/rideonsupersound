@@ -8,7 +8,7 @@ import { viewAtom, pageAtom } from "@/lib/atoms";
 import { HelpObject } from "@/lib/types";
 
 // Components
-import Modal from "@/components/container/modal";
+import Modal from "@/components/_components/container/modal";
 import HelpListItem from "./help-list-item";
 import HelpItem from "./help-item";
 

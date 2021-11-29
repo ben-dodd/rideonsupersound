@@ -32,8 +32,8 @@ import {
 } from "@/lib/db-functions";
 
 // Components
-import Modal from "@/components/container/modal";
-import TextField from "@/components/inputs/text-field";
+import Modal from "@/components/_components/container/modal";
+import TextField from "@/components/_components/inputs/text-field";
 import HoldListItem from "./list-item";
 
 export default function HoldDialog() {

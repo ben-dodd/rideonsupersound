@@ -11,8 +11,8 @@ import { ModalButton, TaskObject, ClerkObject } from "@/lib/types";
 import { saveLog, saveTaskToDatabase } from "@/lib/db-functions";
 
 // Components
-import Modal from "@/components/container/modal";
-import TextField from "@/components/inputs/text-field";
+import Modal from "@/components/_components/container/modal";
+import TextField from "@/components/_components/inputs/text-field";
 import Select from "react-select";
 
 export default function TaskDialog() {
@@ -57,7 +57,7 @@ export default function TaskDialog() {
         clearDialog();
         saveLog(
           {
-            log: `New task (${description}) created.`,
+            log: `New job (${description}) created.`,
             clerk_id: clerk?.id,
             table_id: "stock",
             row_id: id,
@@ -68,7 +68,7 @@ export default function TaskDialog() {
         setAlert({
           open: true,
           type: "success",
-          message: `NEW TASK CREATED`,
+          message: `NEW JOB CREATED`,
         });
       },
       text: "CREATE TASK",

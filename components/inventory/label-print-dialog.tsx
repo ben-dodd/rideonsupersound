@@ -16,8 +16,8 @@ import {
 import { saveLog } from "@/lib/db-functions";
 
 // Components
-import Modal from "@/components/container/modal";
-import TextField from "@/components/inputs/text-field";
+import Modal from "@/components/_components/container/modal";
+import TextField from "@/components/_components/inputs/text-field";
 import Select from "react-select";
 
 export default function LabelPrintDialog() {

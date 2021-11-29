@@ -26,6 +26,7 @@ const handler: NextApiHandler = async (req, res) => {
         s.is_misc_item,
         s.misc_item_description,
         s.misc_item_amount,
+        s.needs_restock,
         p.vendor_cut,
         p.total_sell,
         q.quantity,

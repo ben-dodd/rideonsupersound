@@ -12,8 +12,8 @@ import {
 import { CustomerObject, ModalButton } from "@/lib/types";
 
 // Components
-import TextField from "@/components/inputs/text-field";
-import SidebarContainer from "@/components/container/side-bar";
+import TextField from "@/components/_components/inputs/text-field";
+import SidebarContainer from "@/components/_components/container/side-bar";
 
 export default function CustomerScreen() {
   // SWR

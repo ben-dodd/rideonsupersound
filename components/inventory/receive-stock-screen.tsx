@@ -19,11 +19,11 @@ import {
 import { receiveStock, saveLog } from "@/lib/db-functions";
 
 // Components
-import CreateableSelect from "@/components/inputs/createable-select";
-import ScreenContainer from "@/components/container/screen";
-import TextField from "@/components/inputs/text-field";
+import CreateableSelect from "@/components/_components/inputs/createable-select";
+import ScreenContainer from "@/components/_components/container/screen";
+import TextField from "@/components/_components/inputs/text-field";
 import Select from "react-select";
-import EditableTable from "@/components/table/editable";
+import EditableTable from "@/components/_components/table/editable";
 
 // Icons
 import AddIcon from "@mui/icons-material/Add";

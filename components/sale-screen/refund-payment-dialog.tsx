@@ -39,9 +39,9 @@ import {
 } from "@/lib/db-functions";
 
 // Components
-import Modal from "@/components/container/modal";
-import TextField from "@/components/inputs/text-field";
-import RadioButton from "@/components/inputs/radio-button";
+import Modal from "@/components/_components/container/modal";
+import TextField from "@/components/_components/inputs/text-field";
+import RadioButton from "@/components/_components/inputs/radio-button";
 import Select from "react-select";
 
 import SyncIcon from "@mui/icons-material/Sync";

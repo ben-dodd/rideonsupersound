@@ -21,7 +21,7 @@ import {
 
 // Components
 import Image from "next/image";
-import TextField from "@/components/inputs/text-field";
+import TextField from "@/components/_components/inputs/text-field";
 
 // Icons
 import DeleteIcon from "@mui/icons-material/Delete";

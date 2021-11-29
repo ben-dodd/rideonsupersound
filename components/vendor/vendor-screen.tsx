@@ -36,12 +36,12 @@ import {
 } from "@/lib/data-functions";
 
 // Components
-import ScreenContainer from "@/components/container/screen";
+import ScreenContainer from "@/components/_components/container/screen";
 import Select from "react-select";
 import MaskedInput from "react-text-mask";
-import TextField from "@/components/inputs/text-field";
-import CreateableSelect from "@/components/inputs/createable-select";
-import SettingsSelect from "@/components/inputs/settings-select";
+import TextField from "@/components/_components/inputs/text-field";
+import CreateableSelect from "@/components/_components/inputs/createable-select";
+import SettingsSelect from "@/components/_components/inputs/settings-select";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 

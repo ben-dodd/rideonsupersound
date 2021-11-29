@@ -1,5 +1,5 @@
 import Clerk from "@/components/clerk";
-import SignOutButton from "@/components/button/sign-out-button";
+import SignOutButton from "@/components/_components/button/sign-out-button";
 
 import { ClerkObject } from "@/lib/types";
 

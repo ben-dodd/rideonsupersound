@@ -5,7 +5,7 @@ import { useAtom } from "jotai";
 import { confirmModalAtom } from "@/lib/atoms";
 
 // Components
-import Modal from "@/components/container/modal";
+import Modal from "@/components/_components/container/modal";
 
 // Types
 import { ModalButton } from "@/lib/types";

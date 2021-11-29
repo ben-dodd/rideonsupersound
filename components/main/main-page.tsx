@@ -21,7 +21,7 @@ import PaymentsScreen from "@/components/payment";
 import SalesScreen from "@/components/sale";
 import LogScreen from "@/components/log";
 import TaskScreen from "@/components/task";
-import ConfirmModal from "@/components/container/modal/confirm-modal";
+import ConfirmModal from "@/components/_components/container/modal/confirm-modal";
 import HelpDialog from "@/components/help";
 
 export default function MainPage() {

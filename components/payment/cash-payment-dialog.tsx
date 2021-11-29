@@ -27,9 +27,9 @@ import { saveLog, saveVendorPaymentToDatabase } from "@/lib/db-functions";
 import { getTotalOwing } from "@/lib/data-functions";
 
 // Components
-import TextField from "@/components/inputs/text-field";
-import Modal from "@/components/container/modal";
-import CreateableSelect from "@/components/inputs/createable-select";
+import TextField from "@/components/_components/inputs/text-field";
+import Modal from "@/components/_components/container/modal";
+import CreateableSelect from "@/components/_components/inputs/createable-select";
 
 export default function CashPaymentDialog() {
   // SWR

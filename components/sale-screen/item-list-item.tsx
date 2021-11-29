@@ -85,8 +85,10 @@ export default function ItemListItem({
       <div className="flex flex-col w-full p-2 justify-between">
         <div className="text-sm pl-1">
           <div>{getItemDisplayName(item)}</div>
-          {saleItem?.is_refunded && (
+          {saleItem?.is_refunded ? (
             <div className={"text-red-500"}>REFUNDED</div>
+          ) : (
+            <div />
           )}
         </div>
         <div

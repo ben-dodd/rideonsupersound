@@ -9,8 +9,8 @@ import { ClerkObject, VendorPaymentObject, VendorObject } from "@/lib/types";
 import { nzDate, fDateTime } from "@/lib/data-functions";
 
 // Components
-import TableContainer from "@/components/container/table";
-import Table from "@/components/table";
+import TableContainer from "@/components/_components/container/table";
+import Table from "@/components/_components/table";
 
 export default function PaymentTable() {
   // SWR

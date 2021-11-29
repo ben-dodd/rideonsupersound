@@ -13,7 +13,7 @@ export default function TaskNavActions() {
         onClick={() => setView({ ...view, taskDialog: true })}
       >
         <NewIcon className="mr-1" />
-        New Task
+        New Job
       </button>
     </div>
   );
