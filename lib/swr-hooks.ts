@@ -1,10 +1,9 @@
 import useSWR from "swr";
-import { getGeolocation } from "@/lib/data-functions";
+import { authoriseUrl } from "@/lib/data-functions";
 import { VendorSaleItemObject } from "@/lib/types";
 
-function fetcher(url: string) {
-  return window.fetch(url).then((res) => {
-    // console.log(res.json());
+async function fetcher(url: string) {
+  return window.fetch(authoriseUrl(url)).then((res) => {
     return res.json();
   });
 }
@@ -461,24 +460,18 @@ export function useSelect(setting_select: string) {
 
 export function useWeather() {
   let loc = "id=2192362";
-  // let geolocation = null;
-  // if (navigator?.geolocation) {
-  //   navigator?.geolocation?.getCurrentPosition((position) => {
-  //     geolocation = {
-  //       latitude: position.coords.latitude,
-  //       longitude: position.coords.longitude,
-  //     };
-  //     loc = `lat=${position.coords.latitude}, lon=${position.coords.longitude}`;
-  //     console.log(loc);
-  //   });
-  // }
+  if (navigator?.geolocation) {
+    navigator?.geolocation?.getCurrentPosition((position) => {
+      loc = `lat=${position.coords.latitude}, lon=${position.coords.longitude}`;
+      console.log(loc);
+    });
+  }
   const { data, error } = useSWR(
     `https://api.openweathermap.org/data/2.5/weather?${loc}&appid=${process.env.NEXT_PUBLIC_OPEN_WEATHER_API}&units=metric`,
     fetcher
   );
   return {
     weather: data,
-    // geo: geolocation,
     isLoading: !error && !data,
     isError: error,
   };

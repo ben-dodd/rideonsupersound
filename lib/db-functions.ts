@@ -181,21 +181,24 @@ export async function saveSaleAndItemsToDatabase(
 export async function saveSaleToDatabase(sale: SaleObject, clerk: ClerkObject) {
   console.log("Sale being saved");
   try {
-    const res = await fetch("/api/create-sale", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        customer_id: sale?.customer_id || null,
-        state: sale?.state || null,
-        sale_opened_by: clerk?.id,
-        weather: JSON.stringify(sale?.weather) || "",
-        geo_latitude: sale?.geo_latitude || null,
-        geo_longitude: sale?.geo_longitude || null,
-        note: sale?.note || null,
-      }),
-    });
+    const res = await fetch(
+      `/api/create-sale?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          customer_id: sale?.customer_id || null,
+          state: sale?.state || null,
+          sale_opened_by: clerk?.id,
+          weather: JSON.stringify(sale?.weather) || "",
+          geo_latitude: sale?.geo_latitude || null,
+          geo_longitude: sale?.geo_longitude || null,
+          note: sale?.note || null,
+        }),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
     return json?.insertId;
@@ -206,22 +209,25 @@ export async function saveSaleToDatabase(sale: SaleObject, clerk: ClerkObject) {
 
 export async function saveSaleItemToDatabase(item: SaleItemObject) {
   try {
-    const res = await fetch("/api/create-sale-item", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        sale_id: item?.sale_id,
-        item_id: item?.item_id,
-        quantity: item?.quantity,
-        vendor_discount: item?.vendor_discount || null,
-        store_discount: item?.store_discount || null,
-        is_gift_card: item?.is_gift_card || null,
-        is_misc_item: item?.is_misc_item || null,
-        note: item?.note || null,
-      }),
-    });
+    const res = await fetch(
+      `/api/create-sale-item?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          sale_id: item?.sale_id,
+          item_id: item?.item_id,
+          quantity: item?.quantity,
+          vendor_discount: item?.vendor_discount || null,
+          store_discount: item?.store_discount || null,
+          is_gift_card: item?.is_gift_card || null,
+          is_misc_item: item?.is_misc_item || null,
+          note: item?.note || null,
+        }),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
     return json?.insertId;
@@ -265,13 +271,16 @@ export async function saveSaleTransactionToDatabase(
   transaction: SaleTransactionObject
 ) {
   try {
-    const res = await fetch("/api/create-sale-transaction", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(transaction),
-    });
+    const res = await fetch(
+      `/api/create-sale-transaction?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(transaction),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
     return json?.insertId;
@@ -289,17 +298,20 @@ export async function saveClosedRegisterToDatabase(
 ) {
   try {
     const tillID = await saveTillToDatabase(till);
-    const res = await fetch(`/api/update-register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        ...register,
-        id: register_id,
-        close_till_id: tillID,
-      }),
-    });
+    const res = await fetch(
+      `/api/update-register?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...register,
+          id: register_id,
+          close_till_id: tillID,
+        }),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
     saveLog(
@@ -327,13 +339,16 @@ export async function saveAndOpenRegister(
 ) {
   try {
     const tillID = await saveTillToDatabase(till);
-    const res = await fetch("/api/create-register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ ...register, open_till_id: tillID }),
-    });
+    const res = await fetch(
+      `/api/create-register?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ...register, open_till_id: tillID }),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
     saveLog(
@@ -365,19 +380,22 @@ export async function savePettyCashToRegister(
   try {
     let numberAmount = parseFloat(amount) * 100;
     if (isTake) numberAmount = numberAmount * -1;
-    const res = await fetch("/api/create-petty-cash", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        register_id: registerID,
-        clerk_id: clerkID,
-        amount: numberAmount,
-        is_take: isTake,
-        note,
-      }),
-    });
+    const res = await fetch(
+      `/api/create-petty-cash?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          register_id: registerID,
+          clerk_id: clerkID,
+          amount: numberAmount,
+          is_take: isTake,
+          note,
+        }),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
     saveLog(
@@ -399,13 +417,16 @@ export async function savePettyCashToRegister(
 
 export async function saveTillToDatabase(till: TillObject) {
   try {
-    const res = await fetch("/api/create-till", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(till),
-    });
+    const res = await fetch(
+      `/api/create-till?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(till),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
     return json?.insertId;
@@ -418,13 +439,16 @@ export async function saveVendorPaymentToDatabase(
   vendorPayment: VendorPaymentObject
 ) {
   try {
-    const res = await fetch("/api/create-vendor-payment", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(vendorPayment),
-    });
+    const res = await fetch(
+      `/api/create-vendor-payment?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(vendorPayment),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
     return json.insertId;
@@ -439,13 +463,16 @@ export async function saveSelectToDatabase(
   mutate: Function
 ) {
   try {
-    const res = await fetch("/api/create-setting-select", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ label, setting_select }),
-    });
+    const res = await fetch(
+      `/api/create-setting-select?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ label, setting_select }),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
     mutate();
@@ -463,22 +490,25 @@ export async function saveHoldToDatabase(
   clerk: ClerkObject
 ) {
   try {
-    const res = await fetch("/api/create-hold", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        customer_id: sale?.customer_id,
-        item_id: item?.item_id,
-        quantity: item?.quantity,
-        vendor_discount: item?.vendor_discount,
-        store_discount: item?.store_discount,
-        hold_period: holdPeriod,
-        started_by: clerk?.id,
-        note: note,
-      }),
-    });
+    const res = await fetch(
+      `/api/create-hold?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          customer_id: sale?.customer_id,
+          item_id: item?.item_id,
+          quantity: item?.quantity,
+          vendor_discount: item?.vendor_discount,
+          store_discount: item?.store_discount,
+          hold_period: holdPeriod,
+          started_by: clerk?.id,
+          note: note,
+        }),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
     saveStockMovementToDatabase(item, clerk, "hold", null);
@@ -495,13 +525,16 @@ export async function saveCustomerToDatabase(
   mutateCustomers: Function
 ) {
   try {
-    const res = await fetch("/api/create-customer", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ ...customer, created_by_clerk_id: clerk?.id }),
-    });
+    const res = await fetch(
+      `/api/create-customer?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ...customer, created_by_clerk_id: clerk?.id }),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
     mutateCustomers([...customers, customer], false);
@@ -517,13 +550,16 @@ export async function updateCustomerInDatabase(
   mutateCustomers: Function
 ) {
   try {
-    const res = await fetch("/api/update-customer", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(customer),
-    });
+    const res = await fetch(
+      `/api/update-customer?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(customer),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
     const otherCustomers = customers?.filter(
@@ -577,13 +613,16 @@ export async function returnHoldToStock(
 
 export async function updateHoldInDatabase(item) {
   try {
-    const res = await fetch("/api/update-hold", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(item),
-    });
+    const res = await fetch(
+      `/api/update-hold?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(item),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
   } catch (e) {
@@ -593,13 +632,16 @@ export async function updateHoldInDatabase(item) {
 
 export async function saveGiftCardToDatabase() {
   try {
-    const res = await fetch("/api/create-hold", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({}),
-    });
+    const res = await fetch(
+      `/api/create-hold?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({}),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
   } catch (e) {
@@ -619,13 +661,16 @@ export async function saveLog(
     clerk_id: log?.clerk_id || null,
   };
   try {
-    const res = await fetch("/api/create-log", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(logObj),
-    });
+    const res = await fetch(
+      `/api/create-log?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(logObj),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
     if (logs) mutateLogs([...logs, { ...logObj, id: json?.insertId }], false);
@@ -637,13 +682,16 @@ export async function saveLog(
 export async function addRestockTask(id: number) {
   console.log("Adding restock task");
   try {
-    const res = await fetch("/api/restock-task", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ id, needs_restock: true }),
-    });
+    const res = await fetch(
+      `/api/restock-task?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, needs_restock: true }),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
   } catch (e) {
@@ -653,18 +701,21 @@ export async function addRestockTask(id: number) {
 
 export async function saveTaskToDatabase(task: TaskObject, clerk: ClerkObject) {
   try {
-    const res = await fetch("/api/create-task", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        description: task?.description,
-        created_by_clerk_id: clerk?.id,
-        assigned_to_clerk_id: task?.assigned_to_clerk_id || null,
-        is_priority: task?.is_priority || 0,
-      }),
-    });
+    const res = await fetch(
+      `/api/create-task?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          description: task?.description,
+          created_by_clerk_id: clerk?.id,
+          assigned_to_clerk_id: task?.assigned_to_clerk_id || null,
+          is_priority: task?.is_priority || 0,
+        }),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
     return json?.insertId;
@@ -675,16 +726,19 @@ export async function saveTaskToDatabase(task: TaskObject, clerk: ClerkObject) {
 
 export async function completeTask(task: TaskObject, clerk: ClerkObject) {
   try {
-    const res = await fetch("/api/complete-task", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id: task?.id,
-        completed_by_clerk_id: clerk?.id,
-      }),
-    });
+    const res = await fetch(
+      `/api/complete-task?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: task?.id,
+          completed_by_clerk_id: clerk?.id,
+        }),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
   } catch (e) {
@@ -694,19 +748,23 @@ export async function completeTask(task: TaskObject, clerk: ClerkObject) {
 
 export async function completeRestockTask(id: number) {
   try {
-    const res = await fetch("/api/restock-task", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ id, needs_restock: false }),
-    });
+    const res = await fetch(
+      `/api/restock-task?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, needs_restock: false }),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
   } catch (e) {
     throw Error(e.message);
   }
 }
+
 export async function saveStockPriceToDatabase(
   stock_id: number,
   clerk: ClerkObject,
@@ -715,19 +773,22 @@ export async function saveStockPriceToDatabase(
   note: string
 ) {
   try {
-    const res = await fetch("/api/create-stock-price", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        stock_id,
-        clerk_id: clerk?.id,
-        vendor_cut,
-        total_sell,
-        note,
-      }),
-    });
+    const res = await fetch(
+      `/api/create-stock-price?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          stock_id,
+          clerk_id: clerk?.id,
+          vendor_cut,
+          total_sell,
+          note,
+        }),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
     return json?.insertId;
@@ -743,26 +804,29 @@ export async function saveStockMovementToDatabase(
   note: string
 ) {
   try {
-    const res = await fetch("/api/create-stock-movement", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        stock_id: item?.item_id,
-        clerk_id: clerk?.id,
-        quantity:
-          act === StockMovementTypes.Received ||
-          act === StockMovementTypes.Unhold ||
-          act === StockMovementTypes.Unlayby ||
-          act === StockMovementTypes.Found ||
-          act === StockMovementTypes.Unsold
-            ? parseInt(item?.quantity)
-            : -parseInt(item?.quantity),
-        act,
-        note,
-      }),
-    });
+    const res = await fetch(
+      `/api/create-stock-movement?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          stock_id: item?.item_id,
+          clerk_id: clerk?.id,
+          quantity:
+            act === StockMovementTypes.Received ||
+            act === StockMovementTypes.Unhold ||
+            act === StockMovementTypes.Unlayby ||
+            act === StockMovementTypes.Found ||
+            act === StockMovementTypes.Unsold
+              ? parseInt(item?.quantity)
+              : -parseInt(item?.quantity),
+          act,
+          note,
+        }),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
     return json?.insertId;
@@ -776,13 +840,16 @@ export async function saveStockToDatabase(
   clerk: ClerkObject
 ) {
   try {
-    const res = await fetch("/api/create-stock-item", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ ...item, created_by_id: clerk?.id || null }),
-    });
+    const res = await fetch(
+      `/api/create-stock-item?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ...item, created_by_id: clerk?.id || null }),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
     return json?.insertId;
@@ -795,13 +862,16 @@ export async function updateStockItemInDatabase(
   item: InventoryObject | GiftCardObject
 ) {
   try {
-    const res = await fetch("/api/update-stock-item", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(item),
-    });
+    const res = await fetch(
+      `/api/update-stock-item?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(item),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
   } catch (e) {
@@ -811,13 +881,16 @@ export async function updateStockItemInDatabase(
 
 export async function updateGiftCard(giftCard: GiftCardObject) {
   try {
-    const res = await fetch("/api/update-gift-card", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(giftCard),
-    });
+    const res = await fetch(
+      `/api/update-gift-card?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(giftCard),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
   } catch (e) {
@@ -827,22 +900,25 @@ export async function updateGiftCard(giftCard: GiftCardObject) {
 
 export async function updateSaleInDatabase(sale: SaleObject) {
   try {
-    const res = await fetch("/api/update-sale", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        sale_id: sale?.id,
-        customer_id: sale?.customer_id || null,
-        state: sale?.state || null,
-        note: sale?.note ? sale?.note : null,
-        date_layby_started: sale?.date_layby_started || null,
-        layby_started_by: sale?.layby_started_by || null,
-        date_sale_closed: sale?.date_sale_closed || null,
-        sale_closed_by: sale?.sale_closed_by || null,
-      }),
-    });
+    const res = await fetch(
+      `/api/update-sale?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          sale_id: sale?.id,
+          customer_id: sale?.customer_id || null,
+          state: sale?.state || null,
+          note: sale?.note ? sale?.note : null,
+          date_layby_started: sale?.date_layby_started || null,
+          layby_started_by: sale?.layby_started_by || null,
+          date_sale_closed: sale?.date_sale_closed || null,
+          sale_closed_by: sale?.sale_closed_by || null,
+        }),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
   } catch (e) {
@@ -852,24 +928,27 @@ export async function updateSaleInDatabase(sale: SaleObject) {
 
 export async function updateSaleItemInDatabase(saleItem: SaleItemObject) {
   try {
-    const res = await fetch("/api/update-sale-item", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        sale_item_id: saleItem?.id,
-        sale_id: saleItem?.sale_id,
-        item_id: saleItem?.item_id,
-        quantity: parseInt(saleItem?.quantity),
-        vendor_discount: parseInt(saleItem?.vendor_discount),
-        store_discount: parseInt(saleItem?.store_discount),
-        note: saleItem?.note,
-        is_refunded: saleItem?.is_refunded,
-        refund_note: saleItem?.refund_note,
-        is_deleted: saleItem?.is_deleted,
-      }),
-    });
+    const res = await fetch(
+      `/api/update-sale-item?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          sale_item_id: saleItem?.id,
+          sale_id: saleItem?.sale_id,
+          item_id: saleItem?.item_id,
+          quantity: parseInt(saleItem?.quantity),
+          vendor_discount: parseInt(saleItem?.vendor_discount),
+          store_discount: parseInt(saleItem?.store_discount),
+          note: saleItem?.note,
+          is_refunded: saleItem?.is_refunded,
+          refund_note: saleItem?.refund_note,
+          is_deleted: saleItem?.is_deleted,
+        }),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
   } catch (e) {
@@ -880,15 +959,18 @@ export async function updateSaleItemInDatabase(saleItem: SaleItemObject) {
 export async function setRegister(register_id: number) {
   console.log("Set Register");
   try {
-    const res = await fetch("/api/set-register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        register_id: register_id,
-      }),
-    });
+    const res = await fetch(
+      `/api/set-register?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          register_id: register_id,
+        }),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
   } catch (e) {
@@ -898,13 +980,16 @@ export async function setRegister(register_id: number) {
 
 export async function validateGiftCard(id: number) {
   try {
-    const res = await fetch("/api/validate-gift-card", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ id }),
-    });
+    const res = await fetch(
+      `/api/validate-gift-card?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id }),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
   } catch (e) {
@@ -941,15 +1026,18 @@ export async function validateGiftCard(id: number) {
 
 export async function deleteSaleItemFromDatabase(sale_item_id: number) {
   try {
-    const res = await fetch("/api/delete-sale-item", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        sale_item_id,
-      }),
-    });
+    const res = await fetch(
+      `/api/delete-sale-item?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          sale_item_id,
+        }),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
   } catch (e) {
@@ -963,15 +1051,18 @@ export async function deleteSaleTransactionFromDatabase(
   mutate: Function
 ) {
   try {
-    const res = await fetch("/api/delete-sale-transaction", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        transaction_id,
-      }),
-    });
+    const res = await fetch(
+      `/api/delete-sale-transaction?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          transaction_id,
+        }),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
     let deletedTransaction = transactions?.filter(
@@ -991,15 +1082,18 @@ export async function deleteSaleTransactionFromDatabase(
 
 export async function deleteSaleFromDatabase(sale_id: number) {
   try {
-    const res = await fetch("/api/delete-sale", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        sale_id,
-      }),
-    });
+    const res = await fetch(
+      `/api/delete-sale?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          sale_id,
+        }),
+      }
+    );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
   } catch (e) {
@@ -1099,5 +1193,25 @@ export function returnStock(
         );
       });
     mutateInventory([...otherInventoryItems, ...updatedInventoryItems], false);
+  }
+}
+
+export function uploadFiles(files) {
+  // const body = new FormData();
+  // body.append("file", files);
+  // console.log(body);
+  // console.log(files);
+  try {
+    fetch(`/api/upload-file?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      body: files,
+    })
+      .then((res) => res.json())
+      .then((data) => console.log(data));
+  } catch (e) {
+    throw Error(e.message);
   }
 }

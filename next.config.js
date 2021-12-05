@@ -7,4 +7,12 @@ module.exports = {
       "books.google.com",
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: "/file/:path*",
+        destination: "https://hmn.exu.mybluehost.me/:path*",
+      },
+    ];
+  },
 };

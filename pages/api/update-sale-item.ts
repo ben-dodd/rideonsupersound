@@ -15,7 +15,10 @@ const handler: NextApiHandler = async (req, res) => {
     refund_note,
     is_deleted,
   } = req.body;
+  const { k } = req.query;
   try {
+    if (!k || k !== process.env.NEXT_PUBLIC_SWR_API_KEY)
+      return res.status(401).json({ message: "Resource Denied." });
     const results = await query(
       `
       UPDATE sale_item

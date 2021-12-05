@@ -11,12 +11,9 @@ import {
 
 // Components
 import CustomerTable from "./customer-table";
-import CustomerScreen from "./customer-screen";
 import SaleItemScreen from "@/components/sale-screen/sale-item-screen";
 import CreateCustomerSidebar from "./create-customer-sidebar";
 import HoldDialog from "@/components/hold/hold-dialog";
-
-// REVIEW add customer-screen
 
 export default function CustomersScreen() {
   // Atoms

@@ -949,3 +949,10 @@ export function convertToNZTime(date) {
   // replace the argument with any epoch milliseconds and it should still always
   // give you the correct time.
 }
+
+export function authoriseUrl(url: string) {
+  let k = process.env.NEXT_PUBLIC_SWR_API_KEY;
+  if (!url || !k) return null;
+  if (url?.includes("?")) return `${url}&k=${k}`;
+  else return `${url}?k=${k}`;
+}

@@ -82,14 +82,16 @@ export default function TaskDialog() {
       title={"CREATE TASK"}
       buttons={buttons}
     >
-      <div className="h-dialogsm">
+      <div>
         <TextField
           inputLabel="Description"
           value={description}
           onChange={(e: any) => setDescription(e.target.value)}
+          multiline
+          rows={3}
         />
         <div className="text-sm mt-2">Task assigned to</div>
-        <Select
+        {/*<Select
           className="w-full self-stretch"
           value={assignedTo}
           options={clerks?.map((clerk: ClerkObject) => ({
@@ -97,7 +99,7 @@ export default function TaskDialog() {
             label: clerk?.name,
           }))}
           onChange={(clerkWrapper) => setAssignedTo(clerkWrapper)}
-        />
+        />*/}
         <div className="flex cursor-pointer mt-2">
           <input
             type="checkbox"
