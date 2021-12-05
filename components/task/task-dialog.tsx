@@ -13,7 +13,7 @@ import { saveLog, saveTaskToDatabase } from "@/lib/db-functions";
 // Components
 import Modal from "@/components/_components/container/modal";
 import TextField from "@/components/_components/inputs/text-field";
-import Select from "react-select";
+// import Select from "react-select";
 
 export default function TaskDialog() {
   // Atoms
@@ -22,7 +22,7 @@ export default function TaskDialog() {
   const [, setAlert] = useAtom(alertAtom);
 
   // SWR
-  const { clerks } = useClerks();
+  // const { clerks } = useClerks();
   const { logs, mutateLogs } = useLogs();
   const { jobs, mutateJobs } = useJobs();
 
