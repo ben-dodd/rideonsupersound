@@ -8,6 +8,12 @@ async function fetcher(url: string) {
   });
 }
 
+async function nakedFetcher(url: string) {
+  return window.fetch(url).then((res) => {
+    return res.json();
+  });
+}
+
 export function useAccount(email: string) {
   // if (!email)
   //   return {
@@ -15,7 +21,10 @@ export function useAccount(email: string) {
   //     isLoading: false,
   //     isError: "No email.",
   //   };
-  const { data, error } = useSWR(`/api/get-account?email=${email}`, fetcher);
+  const { data, error } = useSWR(
+    `/api/get-account?email=${email}`,
+    nakedFetcher
+  );
   return {
     account: data && data[0],
     isAccountLoading: !error && !data,
@@ -369,7 +378,7 @@ export function useJobs() {
 }
 
 export function useRegisterID() {
-  const { data, error, mutate } = useSWR(`/api/get-register-id`, fetcher, {
+  const { data, error, mutate } = useSWR(`/api/get-register-id`, nakedFetcher, {
     revalidateIfStale: false,
   });
   return {
