@@ -90,6 +90,8 @@ export default function ShoppingCart() {
     }
   }
 
+  // TODO Can you do a hold after a sale has been started?
+
   async function deleteCartItem(itemId: string, id: number) {
     let newItems = cart?.items.filter((i) => i?.item_id !== parseInt(itemId));
     if (id)

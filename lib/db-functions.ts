@@ -711,6 +711,7 @@ export async function saveTaskToDatabase(task: TaskObject, clerk: ClerkObject) {
         body: JSON.stringify({
           description: task?.description,
           created_by_clerk_id: clerk?.id,
+          assigned_to: task?.assigned_to || null,
           assigned_to_clerk_id: task?.assigned_to_clerk_id || null,
           is_priority: task?.is_priority || 0,
         }),

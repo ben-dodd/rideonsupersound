@@ -1,6 +1,7 @@
 import "../styles/index.css";
 import { Provider as NextAuthProvider } from "next-auth/client";
 import { Provider as JotaiProvider } from "jotai";
+import { SessionProvider } from "next-auth/react";
 
 function MyApp({ Component, pageProps }) {
   return (

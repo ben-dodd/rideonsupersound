@@ -43,6 +43,18 @@ export enum DiscogsConditionTypes {
   P = "Poor (P)",
 }
 
+export enum RoleTypes {
+  CO = "Communication Officer",
+  RC = "Record Chief",
+  PMC = "Printed Matter Captain",
+  VLG = "Vendor Liaison General",
+  MC = "Mailorder Czar",
+  CL = "Cash Lord",
+  PM = "Pay Master",
+  DW = "Data Wrangler",
+  RS = "Retail Samurai",
+}
+
 export interface ClerkObject {
   id: number;
   name?: string;
@@ -305,6 +317,7 @@ export interface TaskObject {
   description?: string;
   date_created?: string;
   created_by_clerk_id?: number;
+  assigned_to?: string;
   assigned_to_clerk_id?: number;
   is_completed?: boolean;
   is_priority?: boolean;

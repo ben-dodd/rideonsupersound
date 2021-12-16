@@ -6,6 +6,7 @@ const handler: NextApiHandler = async (req, res) => {
   const {
     description,
     created_by_clerk_id,
+    assigned_to,
     assigned_to_clerk_id,
     is_priority,
   } = req.body;
@@ -14,10 +15,16 @@ const handler: NextApiHandler = async (req, res) => {
       return res.status(401).json({ message: "Resource Denied." });
     const results = await query(
       `
-      INSERT INTO task (description, created_by_clerk_id, assigned_to_clerk_id, is_priority)
-      VALUES (?, ?, ?, ?)
+      INSERT INTO task (description, created_by_clerk_id, assigned_to, assigned_to_clerk_id, is_priority)
+      VALUES (?, ?, ?, ?, ?)
       `,
-      [description, created_by_clerk_id, assigned_to_clerk_id, is_priority]
+      [
+        description,
+        created_by_clerk_id,
+        assigned_to,
+        assigned_to_clerk_id,
+        is_priority,
+      ]
     );
     return res.json(results);
   } catch (e) {

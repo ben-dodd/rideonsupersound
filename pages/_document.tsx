@@ -10,7 +10,6 @@ class MyDocument extends Document {
     return (
       <Html>
         <Head>
-          <title>Ride On Super Sound</title>
           <meta name="robots" content="noindex,nofollow" />
           <link
             rel="apple-touch-icon"

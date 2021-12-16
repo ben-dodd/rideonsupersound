@@ -10,6 +10,7 @@ import Snackbar from "@mui/material/Snackbar";
 import Slide from "@mui/material/Slide";
 import Alert from "@mui/material/Alert";
 
+import Head from "next/head";
 import Nav from "@/components/nav";
 import Menu from "@/components/menu";
 import SellScreen from "@/components/sell";
@@ -35,6 +36,9 @@ export default function MainPage() {
 
   return (
     <>
+      <Head>
+        <title>Ride On Super Sound</title>
+      </Head>
       <Nav />
       <div className="flex h-menu relative">
         <Menu />

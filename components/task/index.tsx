@@ -87,7 +87,7 @@ export default function TaskScreen() {
               ))
             )}
           </div>
-          <div hidden={tab !== 2}>
+          {/*<div hidden={tab !== 2}>
             <div {...getRootProps()}>
               <input {...getInputProps()} />
               {isDragActive ? (
@@ -96,7 +96,7 @@ export default function TaskScreen() {
                 <p>Drag 'n' drop some files here, or click to select files</p>
               )}
             </div>
-          </div>
+          </div>*/}
         </div>
       </div>
       <TaskDialog />

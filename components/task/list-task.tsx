@@ -73,17 +73,12 @@ export default function ListTask({ task }: ListItemProps) {
             clerks?.filter(
               (c: ClerkObject) => c?.id === task?.created_by_clerk_id
             )[0]?.name
-          }`}</div>
-          {task?.assigned_to_clerk_id ? (
-            <div>{`Assigned to ${
-              clerks?.filter(
-                (c: ClerkObject) => c?.id === task?.assigned_to_clerk_id
-              )[0]?.name
-            }`}</div>
-          ) : (
-            <div />
-          )}
-          </div>*/}
+          }`}</div>*/}
+        {task?.assigned_to ? (
+          <div>{`Assigned to ${task?.assigned_to}`}</div>
+        ) : (
+          <div />
+        )}
         <div className="w-4/12 text-right">
           {task?.completed_by_clerk_id
             ? `Completed by ${

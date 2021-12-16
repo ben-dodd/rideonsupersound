@@ -5,7 +5,7 @@ import { useAtom } from "jotai";
 // DB
 import { useJobs, useLogs, useClerks } from "@/lib/swr-hooks";
 import { viewAtom, clerkAtom, alertAtom } from "@/lib/atoms";
-import { ModalButton, TaskObject, ClerkObject } from "@/lib/types";
+import { ModalButton, TaskObject, ClerkObject, RoleTypes } from "@/lib/types";
 
 // Functions
 import { saveLog, saveTaskToDatabase } from "@/lib/db-functions";
@@ -13,7 +13,7 @@ import { saveLog, saveTaskToDatabase } from "@/lib/db-functions";
 // Components
 import Modal from "@/components/_components/container/modal";
 import TextField from "@/components/_components/inputs/text-field";
-// import Select from "react-select";
+import Select from "react-select";
 
 export default function TaskDialog() {
   // Atoms
@@ -39,6 +39,18 @@ export default function TaskDialog() {
     setView({ ...view, taskDialog: false });
   }
 
+  const roles = [
+    RoleTypes.CL,
+    RoleTypes.CO,
+    RoleTypes.DW,
+    RoleTypes.MC,
+    RoleTypes.PM,
+    RoleTypes.PMC,
+    RoleTypes.RC,
+    RoleTypes.RS,
+    RoleTypes.VLG,
+  ];
+
   const buttons: ModalButton[] = [
     {
       type: "ok",
@@ -48,7 +60,7 @@ export default function TaskDialog() {
         setSubmitting(true);
         let newTask: TaskObject = {
           description,
-          assigned_to_clerk_id: assignedTo?.value,
+          assigned_to: assignedTo?.value,
           is_priority: isPriority || false,
         };
         const id = await saveTaskToDatabase(newTask, clerk);
@@ -91,15 +103,15 @@ export default function TaskDialog() {
           rows={3}
         />
         <div className="text-sm mt-2">Task assigned to</div>
-        {/*<Select
+        <Select
           className="w-full self-stretch"
           value={assignedTo}
-          options={clerks?.map((clerk: ClerkObject) => ({
-            value: clerk?.id,
-            label: clerk?.name,
+          options={roles?.map((role: string) => ({
+            value: role,
+            label: role,
           }))}
-          onChange={(clerkWrapper) => setAssignedTo(clerkWrapper)}
-        />*/}
+          onChange={(roleWrapper: any) => setAssignedTo(roleWrapper)}
+        />
         <div className="flex cursor-pointer mt-2">
           <input
             type="checkbox"
