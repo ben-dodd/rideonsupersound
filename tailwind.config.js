@@ -125,7 +125,6 @@ module.exports = {
       },
       width: { icons: "3rem", menu: `12rem`, board: `calc(100vw - 12rem)` },
       transitionProperty: { width: "width", height: "height" },
-      // fontFamily: { sans: ["Varela Round", "sans-serif"] },
       gridTemplateColumns: {
         right: "auto 200px 200px",
       },

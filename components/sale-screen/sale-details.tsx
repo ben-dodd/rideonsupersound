@@ -1,17 +1,11 @@
-// Packages
-import { useState } from "react";
-import { useAtom } from "jotai";
-
 // DB
+import { useClerks, useCustomers, useInventory } from "@/lib/swr-hooks";
 import {
-  useClerks,
-  useCustomers,
-  useSaleTransactionsForSale,
-  useSaleItemsForSale,
-  useInventory,
-} from "@/lib/swr-hooks";
-import { viewAtom, loadedCustomerObjectAtom } from "@/lib/atoms";
-import { CustomerObject, OpenWeatherObject, SaleStateTypes } from "@/lib/types";
+  CustomerObject,
+  OpenWeatherObject,
+  SaleItemObject,
+  SaleStateTypes,
+} from "@/lib/types";
 
 // Functions
 import {
@@ -20,38 +14,19 @@ import {
   getSaleVars,
   fDateTime,
 } from "@/lib/data-functions";
-
-// Components
-import CreateableSelect from "@/components/_components/inputs/createable-select";
-import TextField from "@/components/_components/inputs/text-field";
-import Switch from "@mui/material/Switch";
-import Tooltip from "@mui/material/Tooltip";
-
-import DeleteIcon from "@mui/icons-material/Delete";
-import RefundIcon from "@mui/icons-material/Payment";
+import { useAtom } from "jotai";
+import { viewAtom } from "@/lib/atoms";
 import ReturnIcon from "@mui/icons-material/KeyboardReturn";
-import SplitIcon from "@mui/icons-material/CallSplit";
 
-export default function Pay({ sale }) {
-  // Atoms
-  const [, setCustomer] = useAtom(loadedCustomerObjectAtom);
+export default function SaleDetails({ sale }) {
   const [view, setView] = useAtom(viewAtom);
-
   // SWR
   const { clerks } = useClerks();
   const { customers } = useCustomers();
-  const { items } = useSaleItemsForSale(sale?.id);
-  const { transactions } = useSaleTransactionsForSale(sale?.id);
   const { inventory } = useInventory();
 
   // State
-  const [note, setNote] = useState("");
-  const { totalRemaining, totalPaid } = getSaleVars(
-    items,
-    transactions,
-    inventory
-  );
-  const [isRefund, setIsRefund] = useState(false);
+  const { totalRemaining } = getSaleVars(sale, inventory);
 
   // Constants
   const weather: OpenWeatherObject = sale?.weather
@@ -87,59 +62,51 @@ export default function Pay({ sale }) {
         </div>
       </div>
       <div className="px-2">
-        <div className="bg-white rounded border">
-          {[
-            // {
-            //   label: "Number of Items",
-            //   value: items?.reduce(
-            //     (acc: number, i: SaleItemObject) => acc + parseInt(i?.quantity),
-            //     0
-            //   ),
-            // },
-            {
-              label: "Customer",
-              value:
-                customers?.filter(
-                  (c: CustomerObject) => c?.id === sale?.customer_id
-                )[0]?.name || "N/A",
-            },
-            {
-              label: "Sale Opened By",
-              value: clerks
-                ? clerks.filter(
-                    (clerk: any) => clerk?.id === sale?.sale_opened_by
-                  )[0]?.name
-                : "N/A",
-            },
-            {
-              label: "Date Opened",
-              value: sale?.date_sale_opened
-                ? fDateTime(sale?.date_sale_opened)
-                : "N/A",
-            },
-            {
-              label: "Sale Closed By",
-              value: clerks
-                ? clerks.filter(
-                    (clerk: any) => clerk?.id === sale?.sale_closed_by
-                  )[0]?.name
-                : "N/A",
-            },
-            {
-              label: "Date Closed",
-              value: sale?.date_sale_closed
-                ? fDateTime(sale?.date_sale_closed)
-                : "N/A",
-            },
-            { label: "Notes", value: sale?.note || "N/A" },
-          ].map((item) => (
-            <div key={item?.label} className="flex border p-2 hover:bg-gray-50">
-              <div className="font-bold w-2/5">{item?.label}</div>
-              <div className="w-3/5">{item?.value}</div>
-            </div>
-          ))}
+        <div className="font-bold">Customer</div>
+        <div className="mb-4">
+          {customers?.filter(
+            (c: CustomerObject) => c?.id === sale?.customer_id
+          )[0]?.name || "Customer not set"}
         </div>
-        {weather && (
+        <div className="font-bold">Sale Open</div>
+        <div className="mb-4">
+          {sale?.date_sale_opened
+            ? `${fDateTime(sale?.date_sale_opened)} (opened by ${
+                clerks
+                  ? clerks.filter(
+                      (clerk: any) => clerk?.id === sale?.sale_opened_by
+                    )[0]?.name
+                  : "unknown clerk"
+              })`
+            : "Sale not opened"}
+        </div>
+        <div className="font-bold">Sale Close</div>
+        <div className="mb-4">
+          {sale?.date_sale_closed
+            ? `${fDateTime(sale?.date_sale_closed)} (opened by ${
+                clerks
+                  ? clerks.filter(
+                      (clerk: any) => clerk?.id === sale?.sale_closed_by
+                    )[0]?.name
+                  : "unknown clerk"
+              })`
+            : "Sale not closed"}
+        </div>
+        <div className="font-bold">Notes</div>
+        <div className="mb-4">{sale?.note || "N/A"}</div>
+        {sale?.items?.filter(
+          (item: SaleItemObject) => !item?.is_deleted && !item?.is_refunded
+        )?.length > 0 && (
+          <div>
+            <button
+              className="icon-text-button ml-0"
+              onClick={() => setView({ ...view, returnItemDialog: true })}
+            >
+              <ReturnIcon className="mr-1" /> Return Items
+            </button>
+          </div>
+        )}
+        {/*weather && (
           <div className="bg-blue-200 p-2 my-2 rounded-md">
             <div className="font-bold">Weather</div>
             <div className="flex">
@@ -164,8 +131,8 @@ export default function Pay({ sale }) {
               </div>
             </div>
           </div>
-        )}
-        {sale?.geo_latitude && sale?.geo_longitude && (
+                )*/}
+        {/*sale?.geo_latitude && sale?.geo_longitude && (
           <iframe
             className="p-2"
             width="380"
@@ -174,41 +141,10 @@ export default function Pay({ sale }) {
             src={`https://www.google.com/maps/embed/v1/streetview?key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}
         &location=${sale?.geo_latitude},${sale?.geo_longitude}&fov=70`}
           ></iframe>
-        )}
-      </div>
-      <TextField
-        inputLabel="Note"
-        multiline
-        value={note}
-        onChange={(e: any) => setNote(e.target.value)}
-      />
-      <div className="grid grid-cols-2">
-        <button
-          className="icon-text-button"
-          onClick={() => setView({ ...view, returnItemDialog: true })}
-        >
-          <ReturnIcon className="mr-1" /> Refund Items
-        </button>
-        <button
-          className="icon-text-button"
-          onClick={() => setView({ ...view, refundPaymentDialog: true })}
-          disabled={totalPaid <= 0}
-        >
-          <RefundIcon className="mr-1" /> Refund Payment
-        </button>
-        <button
-          className="icon-text-button"
-          onClick={() => setView({ ...view, splitSaleDialog: true })}
-        >
-          <SplitIcon className="mr-1" /> Split Sale
-        </button>
-        <button className="icon-text-button">
-          <DeleteIcon className="mr-1" /> Delete Sale
-        </button>
+        )*/}
       </div>
     </div>
   );
 }
-
 // TODO Add refund items/ refund transactions
 // TODO Add split sale for when person wants to take one layby item etc.

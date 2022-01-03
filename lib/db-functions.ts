@@ -20,13 +20,12 @@ import {
 
 import {
   getItemDisplayName,
-  getItemSku,
   getItemQuantity,
+  getSaleVars,
 } from "./data-functions";
 
 export async function loadSaleToCart(
   cart: SaleObject,
-  items: SaleItemObject[],
   setCart: Function,
   sale: SaleObject,
   clerk: ClerkObject,
@@ -35,8 +34,10 @@ export async function loadSaleToCart(
   mutateLogs: Function,
   sales: SaleObject[],
   mutateSales: Function,
-  saleItems: SaleItemObject[],
-  mutateSaleItems: Function
+  inventory: InventoryObject[],
+  mutateInventory: Function,
+  giftCards: GiftCardObject[],
+  mutateGiftCards: Function
 ) {
   if (cart?.date_sale_opened && (cart?.items || cart?.id !== sale?.id)) {
     // Cart is loaded with a different sale or
@@ -44,46 +45,48 @@ export async function loadSaleToCart(
     console.log("Park old sale");
     await saveSaleAndPark(
       cart,
-      cart?.items,
       clerk,
       customers,
       logs,
       mutateLogs,
       sales,
       mutateSales,
-      saleItems,
-      mutateSaleItems
+      inventory,
+      mutateInventory,
+      giftCards,
+      mutateGiftCards
     );
   }
-  setCart({ ...sale, items });
+  setCart(sale);
 }
 
 export async function saveSaleAndPark(
   cart: SaleObject,
-  items: SaleItemObject[],
   clerk: ClerkObject,
   customers: CustomerObject[],
   logs: LogObject[],
   mutateLogs: Function,
   sales: SaleObject[],
   mutateSales: Function,
-  saleItems: SaleItemObject[],
-  mutateSaleItems: Function,
-  mutateInventory?: Function
+  inventory: InventoryObject[],
+  mutateInventory: Function,
+  giftCards: GiftCardObject[],
+  mutateGiftCards: Function
 ) {
-  const { id } = await saveSaleAndItemsToDatabase(
+  const id = await saveSaleItemsTransactionsToDatabase(
     { ...cart, state: SaleStateTypes.Parked },
-    items,
     clerk,
     sales,
     mutateSales,
-    saleItems,
-    mutateSaleItems
+    inventory,
+    mutateInventory,
+    giftCards,
+    mutateGiftCards
   );
   saveLog(
     {
-      log: `Sale #${id} parked (${items?.length} item${
-        items?.length === 1 ? "" : "s"
+      log: `Sale #${id} parked (${cart?.items?.length} item${
+        cart?.items?.length === 1 ? "" : "s"
       }${
         cart?.customer_id
           ? ` for ${
@@ -103,22 +106,33 @@ export async function saveSaleAndPark(
   mutateInventory && mutateInventory();
 }
 
-export async function saveSaleAndItemsToDatabase(
-  sale: SaleObject,
-  items: SaleItemObject[],
+export async function saveSaleItemsTransactionsToDatabase(
+  cart: SaleObject,
   clerk: ClerkObject,
   sales: SaleObject[],
   mutateSales: Function,
-  saleItems: SaleItemObject[],
-  mutateSaleItems: Function,
-  inventory?: InventoryObject[],
-  mutateInventory?: Function
+  inventory: InventoryObject[],
+  mutateInventory: Function,
+  giftCards: GiftCardObject[],
+  mutateGiftCards: Function,
+  prevState?: string
 ) {
-  let newSale = { ...sale };
+  let { totalStoreCut, totalPrice, numberOfItems, itemList } = getSaleVars(
+    cart,
+    inventory
+  );
+  let newSale = {
+    ...cart,
+    store_cut: totalStoreCut * 100,
+    total_price: totalPrice * 100,
+    number_of_items: numberOfItems,
+    item_list: itemList,
+  };
   let newSaleId = newSale?.id;
   //
   // HANDLE SALE OBJECT
   //
+  // console.log(newSale);
   if (!newSaleId) {
     // Sale is new, save to database and add id to sales
     newSale.state = newSale?.state || SaleStateTypes.InProgress;
@@ -129,57 +143,140 @@ export async function saveSaleAndItemsToDatabase(
     mutateSales([...sales, newSale], false);
   } else {
     // Sale already has id, update
-    updateSaleInDatabase(sale);
+    updateSaleInDatabase(newSale);
     let otherSales = sales?.filter((s: SaleObject) => s?.id !== newSaleId);
-    mutateSales([...otherSales, sale], false);
+    mutateSales([...otherSales, newSale], false);
   }
   //
   // HANDLE ITEMS
   //
-  let cartItems = [];
-  for await (const item of items) {
-    const invItem = inventory?.filter(
+  for (const item of cart?.items) {
+    let invItem = inventory?.filter(
       (i: InventoryObject) => i?.id === item?.item_id
     )[0];
-    const itemQuantity = getItemQuantity(invItem, items);
     console.log(invItem);
-    console.log(itemQuantity);
-    if (itemQuantity > 0) {
-      const otherInventoryItems = inventory?.filter(
-        (i: InventoryObject) => i?.id !== invItem?.id
-      );
-      mutateInventory &&
-        mutateInventory([
-          ...otherInventoryItems,
-          { ...invItem, needs_restock: true },
-        ]);
+    // Check whether inventory item needs restocking
+    const quantity = getItemQuantity(invItem, cart?.items);
+    let quantity_layby = invItem?.quantity_layby || 0;
+    // let quantity_sold = invItem?.quantity_sold || 0;
+    if (quantity > 0) {
+      invItem.needs_restock = true;
       addRestockTask(invItem?.id);
     }
+
+    // If sale is complete, validate gift card
+    if (cart?.state === SaleStateTypes.Completed && item?.is_gift_card) {
+      // Add to collection
+      invItem.gift_card_is_valid = true;
+      const otherGiftCards = giftCards?.filter(
+        (g: GiftCardObject) => g?.id !== invItem?.id
+      );
+      mutateGiftCards([...otherGiftCards, invItem], false);
+      validateGiftCard(item?.item_id);
+    }
+
+    // Add or update Sale Item
     if (!item?.id) {
       // Item is new to sale
       console.log("Creating new item in " + newSaleId);
       let newSaleItem = { ...item, sale_id: newSaleId };
-      const newSaleItemId = await saveSaleItemToDatabase(newSaleItem);
-      newSaleItem.id = newSaleItemId;
-      cartItems.push(newSaleItem);
-      mutateSaleItems([...saleItems, newSaleItem], false);
+      saveSaleItemToDatabase(newSaleItem);
     } else {
       // Item was already in sale, update in case discount, quantity has changed or item has been deleted
-      let updatedSaleItem = { ...item, sale_id: sale?.id };
-      updateSaleItemInDatabase(updatedSaleItem);
-      let otherSaleItems = saleItems?.filter(
-        (s: SaleItemObject) => s?.id !== item?.id
+      updateSaleItemInDatabase(item);
+    }
+
+    // Add stock movement if it's a regular stock item
+    if (!item?.is_gift_card && !item?.is_misc_item) {
+      if (cart?.state === SaleStateTypes.Completed) {
+        // If it was a layby, unlayby it before marking as sold
+        if (prevState === SaleStateTypes.Layby && !item?.is_gift_card) {
+          saveStockMovementToDatabase(
+            item,
+            clerk,
+            StockMovementTypes.Unlayby,
+            null
+          );
+          quantity_layby -= 1;
+          console.log("Removed layby quantity");
+        }
+        // Mark stock as sold
+        saveStockMovementToDatabase(item, clerk, StockMovementTypes.Sold, null);
+        // Sold quantity is not in main inventory
+        // quantity_sold += 1;
+        // console.log("Added sold quantity");
+
+        // Add layby stock movement if it's a new layby
+      } else if (
+        cart?.state === SaleStateTypes.Layby &&
+        prevState !== SaleStateTypes.Layby
+      ) {
+        saveStockMovementToDatabase(
+          item,
+          clerk,
+          StockMovementTypes.Layby,
+          null
+        );
+        quantity_layby += 1;
+        console.log("Added layby quantity");
+      }
+
+      // Update inventory item if it's a regular stock item
+      const otherInventoryItems = inventory?.filter(
+        (i: InventoryObject) => i?.id !== invItem?.id
       );
-      cartItems.push(updatedSaleItem);
-      mutateSaleItems([...otherSaleItems, updatedSaleItem], false);
+      mutateInventory &&
+        mutateInventory(
+          [...otherInventoryItems, { ...invItem, quantity, quantity_layby }],
+          false
+        );
+      console.log({ ...invItem, quantity, quantity_layby });
     }
   }
-  console.log(cartItems);
-  return { ...newSale, items: cartItems };
+
+  //
+  // HANDLE TRANSACTIONS
+  //
+  for await (const trans of cart?.transactions) {
+    if (!trans?.id) {
+      // Transaction is new to sale
+      console.log("Creating new transaction in " + newSaleId);
+      let newSaleTransaction = { ...trans, sale_id: newSaleId };
+      saveSaleTransaction(
+        newSaleTransaction,
+        clerk,
+        giftCards,
+        mutateGiftCards
+      );
+    }
+  }
+  // console.log(cartTransactions);
+  // // TODO does this need a return
+  // return { ...newSale, items: cartItems, transactions: cartTransactions };
+  return newSaleId;
 }
 
 export async function saveSaleToDatabase(sale: SaleObject, clerk: ClerkObject) {
   console.log("Sale being saved");
+  console.log(
+    JSON.stringify({
+      customer_id: sale?.customer_id || null,
+      state: sale?.state || null,
+      sale_opened_by: clerk?.id,
+      weather: JSON.stringify(sale?.weather) || "",
+      geo_latitude: sale?.geo_latitude || null,
+      geo_longitude: sale?.geo_longitude || null,
+      note: sale?.note || null,
+      layby_started_by: sale?.layby_started_by || null,
+      date_layby_started: sale?.date_layby_started || null,
+      sale_closed_by: sale?.sale_closed_by || null,
+      date_sale_closed: sale?.date_sale_closed || null,
+      store_cut: sale?.store_cut || null,
+      total_price: sale?.total_price || null,
+      number_of_items: sale?.number_of_items || null,
+      item_list: sale?.item_list || null,
+    })
+  );
   try {
     const res = await fetch(
       `/api/create-sale?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
@@ -196,6 +293,14 @@ export async function saveSaleToDatabase(sale: SaleObject, clerk: ClerkObject) {
           geo_latitude: sale?.geo_latitude || null,
           geo_longitude: sale?.geo_longitude || null,
           note: sale?.note || null,
+          layby_started_by: sale?.layby_started_by || null,
+          date_layby_started: sale?.date_layby_started || null,
+          sale_closed_by: sale?.sale_closed_by || null,
+          date_sale_closed: sale?.date_sale_closed || null,
+          store_cut: sale?.store_cut || null,
+          total_price: sale?.total_price || null,
+          number_of_items: sale?.number_of_items || null,
+          item_list: sale?.item_list || null,
         }),
       }
     );
@@ -238,9 +343,9 @@ export async function saveSaleItemToDatabase(item: SaleItemObject) {
 
 export async function saveSaleTransaction(
   transaction: SaleTransactionObject,
-  transactions?: SaleTransactionObject[],
-  mutate?: Function,
-  vendor?: VendorObject
+  clerk: ClerkObject,
+  giftCards: GiftCardObject[],
+  mutateGiftCards: Function
 ) {
   if (transaction?.payment_method === PaymentMethodTypes.Account) {
     // Add account payment as a store payment to the vendor
@@ -250,21 +355,26 @@ export async function saveSaleTransaction(
         ? transaction?.amount * -1
         : transaction?.amount,
       clerk_id: transaction?.clerk_id,
-      vendor_id: vendor?.id,
+      vendor_id: transaction?.vendor?.id,
       type: "sale",
     };
     vendorPaymentId = await saveVendorPaymentToDatabase(vendorPayment);
     transaction = { ...transaction, vendor_payment_id: vendorPaymentId };
   }
-  const transactionId = await saveSaleTransactionToDatabase(transaction);
-  let date = new Date();
-  transaction = {
-    ...transaction,
-    id: transactionId,
-    date: date.toISOString(),
-  };
-  mutate([...transactions, transaction], false);
-  return transactionId;
+  if (transaction?.payment_method === PaymentMethodTypes.GiftCard) {
+    if (transaction?.is_refund) {
+      // Gift card is new, create new one
+      saveStockToDatabase(transaction?.gift_card_update, clerk);
+    } else {
+      // Update gift card
+      updateStockItemInDatabase(transaction?.gift_card_update);
+    }
+    const otherGiftCards = giftCards?.filter(
+      (g: GiftCardObject) => g?.id !== transaction?.gift_card_update?.id
+    );
+    mutateGiftCards([...otherGiftCards, transaction?.gift_card_update], false);
+  }
+  saveSaleTransactionToDatabase(transaction);
 }
 
 export async function saveSaleTransactionToDatabase(
@@ -917,6 +1027,10 @@ export async function updateSaleInDatabase(sale: SaleObject) {
           layby_started_by: sale?.layby_started_by || null,
           date_sale_closed: sale?.date_sale_closed || null,
           sale_closed_by: sale?.sale_closed_by || null,
+          store_cut: sale?.store_cut || null,
+          total_price: sale?.total_price || null,
+          number_of_items: sale?.number_of_items || null,
+          item_list: sale?.item_list || null,
         }),
       }
     );

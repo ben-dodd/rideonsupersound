@@ -13,7 +13,7 @@ import {
   useVendorPayments,
   useSalesJoined,
 } from "@/lib/swr-hooks";
-import { viewAtom, saleObjectAtom, clerkAtom, alertAtom } from "@/lib/atoms";
+import { viewAtom, cartAtom, clerkAtom, alertAtom } from "@/lib/atoms";
 import {
   ModalButton,
   SaleTransactionObject,
@@ -23,18 +23,18 @@ import {
 
 // Functions
 import { getPaymentVars, getSaleVars } from "@/lib/data-functions";
-import { saveSaleTransaction, saveLog } from "@/lib/db-functions";
 
 // Components
 import Modal from "@/components/_components/container/modal";
 import TextField from "@/components/_components/inputs/text-field";
 import Select from "react-select";
+import { saveLog } from "@/lib/db-functions";
 
 export default function Acct() {
   // Atoms
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
-  const [sale] = useAtom(saleObjectAtom);
+  const [cart, setCart] = useAtom(cartAtom);
   const [, setAlert] = useAtom(alertAtom);
 
   // State
@@ -42,21 +42,19 @@ export default function Acct() {
 
   // SWR
   const { registerID } = useRegisterID();
-
-  const { transactions, mutateSaleTransactions } = useSaleTransactionsForSale(
-    sale?.id
-  );
-  const { items } = useSaleItemsForSale(sale?.id);
   const { inventory } = useInventory();
-  const { logs, mutateLogs } = useLogs();
   const { vendors } = useVendors();
   const { sales } = useSalesJoined();
   const { vendorPayments } = useVendorPayments();
+  const { logs, mutateLogs } = useLogs();
 
-  const { totalRemaining } = getSaleVars(items, transactions, inventory);
+  const { totalRemaining } = getSaleVars(cart, inventory);
 
   // State
-  const [acctPayment, setAcctPayment] = useState(`${totalRemaining}`);
+  const isRefund = totalRemaining < 0;
+  const [acctPayment, setAcctPayment] = useState(
+    `${Math.abs(totalRemaining)?.toFixed(2)}`
+  );
   const [submitting, setSubmitting] = useState(false);
 
   // Constants
@@ -66,7 +64,8 @@ export default function Acct() {
         inventory,
         sales,
         vendorPayments,
-        vendorWrapper?.value?.id
+        vendorWrapper?.value?.id,
+        cart
       ),
     [inventory, sales, vendorPayments, vendorWrapper?.value?.id]
   );
@@ -82,36 +81,36 @@ export default function Acct() {
         acctPayment <= "" ||
         isNaN(parseFloat(acctPayment)),
       loading: submitting,
-      onClick: async () => {
+      onClick: () => {
         setSubmitting(true);
+        // TODO check transaction date
+        let date = new Date();
         let transaction: SaleTransactionObject = {
-          sale_id: sale?.id,
+          date: date.toISOString(),
+          sale_id: cart?.id,
           clerk_id: clerk?.id,
           payment_method: PaymentMethodTypes.Account,
-          amount:
-            parseFloat(acctPayment) >= totalRemaining
-              ? totalRemaining * 100
-              : parseFloat(acctPayment) * 100,
+          amount: isRefund
+            ? parseFloat(acctPayment) * -100
+            : parseFloat(acctPayment) * 100,
           register_id: registerID,
+          vendor: vendorWrapper?.value,
+          is_refund: isRefund,
         };
-        const id = await saveSaleTransaction(
-          transaction,
-          transactions,
-          mutateSaleTransactions,
-          vendorWrapper?.value
-        );
+        let transactions = cart?.transactions || [];
+        transactions.push(transaction);
+        setCart({ ...cart, transactions });
         setSubmitting(false);
         setView({ ...view, acctPaymentDialog: false });
         saveLog(
           {
-            log: `$${parseFloat(acctPayment)?.toFixed(
-              2
-            )} account payment from vendor ${
-              vendorWrapper?.value?.name
-            } (sale #${sale?.id}).`,
-            clerk_id: clerk?.id,
-            table_id: "sale_transaction",
-            row_id: id,
+            log: `$${parseFloat(acctPayment)?.toFixed(2)} ${
+              isRefund
+                ? `refunded on ${vendorWrapper?.value?.name} account`
+                : `account payment from vendor ${vendorWrapper?.value?.name}${
+                    cart?.id ? ` (sale #${cart?.id}).` : ""
+                  }`
+            }.`,
           },
           logs,
           mutateLogs
@@ -119,7 +118,9 @@ export default function Acct() {
         setAlert({
           open: true,
           type: "success",
-          message: `$${parseFloat(acctPayment)?.toFixed(2)} ACCOUNT PAYMENT`,
+          message: `$${parseFloat(acctPayment)?.toFixed(2)} ACCOUNT ${
+            isRefund ? `REFUND` : `PAYMENT`
+          }`,
         });
       },
       text: "COMPLETE",
@@ -130,7 +131,7 @@ export default function Acct() {
     <Modal
       open={view?.acctPaymentDialog}
       closeFunction={() => setView({ ...view, acctPaymentDialog: false })}
-      title={"ACCOUNT PAYMENT"}
+      title={isRefund ? `ACCOUNT REFUND` : `ACCOUNT PAYMENT`}
       buttons={buttons}
     >
       <>
@@ -161,31 +162,40 @@ export default function Acct() {
             onChange={(v: any) => setVendorWrapper(v)}
           />
         </div>
-        <div className="text-center">{`Remaining to pay: $${(
-          totalRemaining || 0
-        )?.toFixed(2)}`}</div>
-        <div className="text-center font-bold">
-          {`Remaining in account: ${
-            false
-              ? `Loading...`
-              : `$${(vendorVars?.totalOwing / 100)?.toFixed(2)}`
-          }`}
-        </div>
-        <div className="text-center text-xl font-bold my-4">
-          {acctPayment === "" || parseFloat(acctPayment) === 0
-            ? "..."
-            : isNaN(parseFloat(acctPayment))
-            ? "NUMBERS ONLY PLEASE"
-            : parseFloat(acctPayment) > totalRemaining
-            ? `PAYMENT TOO HIGH`
-            : vendorVars?.totalOwing / 100 < parseFloat(acctPayment)
-            ? `NOT ENOUGH IN ACCOUNT`
-            : parseFloat(acctPayment) < totalRemaining
-            ? `AMOUNT SHORT BY $${(
-                totalRemaining - parseFloat(acctPayment)
-              )?.toFixed(2)}`
-            : "ALL GOOD!"}
-        </div>
+        <div className="text-center">{`Remaining to ${
+          isRefund ? "refund" : "pay"
+        }: $${Math.abs(totalRemaining)?.toFixed(2)}`}</div>
+        {vendorWrapper ? (
+          <>
+            <div className="text-center font-bold">
+              {`${isRefund ? `Currently` : `Remaining`} in account: ${
+                false
+                  ? `Loading...`
+                  : `$${(vendorVars?.totalOwing / 100)?.toFixed(2)}`
+              }`}
+            </div>
+            <div className="text-center text-xl font-bold my-4">
+              {acctPayment === "" || parseFloat(acctPayment) === 0
+                ? "..."
+                : isNaN(parseFloat(acctPayment))
+                ? "NUMBERS ONLY PLEASE"
+                : parseFloat(acctPayment) > Math.abs(totalRemaining)
+                ? `${isRefund ? "REFUND AMOUNT" : "PAYMENT"} TOO HIGH`
+                : !isRefund &&
+                  vendorVars?.totalOwing / 100 < parseFloat(acctPayment)
+                ? `NOT ENOUGH IN ACCOUNT`
+                : parseFloat(acctPayment) < Math.abs(totalRemaining)
+                ? `AMOUNT SHORT BY $${(
+                    totalRemaining - parseFloat(acctPayment)
+                  )?.toFixed(2)}`
+                : "ALL GOOD!"}
+            </div>
+          </>
+        ) : (
+          <div className="text-center text-xl font-bold my-4">
+            SELECT VENDOR ACCOUNT TO USE
+          </div>
+        )}
       </>
     </Modal>
   );

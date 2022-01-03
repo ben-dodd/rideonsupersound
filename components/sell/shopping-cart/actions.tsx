@@ -9,9 +9,10 @@ import {
   useSales,
   useSaleItems,
   useInventory,
+  useGiftCards,
 } from "@/lib/swr-hooks";
 import {
-  saleObjectAtom,
+  cartAtom,
   clerkAtom,
   viewAtom,
   confirmModalAtom,
@@ -29,18 +30,19 @@ import Tooltip from "@mui/material/Tooltip";
 import DiscardSaleIcon from "@mui/icons-material/Close";
 import RetrieveSaleIcon from "@mui/icons-material/FolderOpen";
 import SaveSaleIcon from "@mui/icons-material/Save";
+import { SaleStateTypes } from "@/lib/types";
 
 export default function ShoppingCartActions() {
   // SWR
   const { customers } = useCustomers();
   const { logs, mutateLogs } = useLogs();
   const { sales, mutateSales } = useSales();
-  const { saleItems, mutateSaleItems } = useSaleItems();
-  const { mutateInventory } = useInventory();
+  const { inventory, mutateInventory } = useInventory();
+  const { giftCards, mutateGiftCards } = useGiftCards();
 
   // Atoms
   const [clerk] = useAtom(clerkAtom);
-  const [cart, setCart] = useAtom(saleObjectAtom);
+  const [cart, setCart] = useAtom(cartAtom);
   const [, setAlert] = useAtom(alertAtom);
   const [, setConfirmModal] = useAtom(confirmModalAtom);
   const [view, setView] = useAtom(viewAtom);
@@ -62,16 +64,16 @@ export default function ShoppingCartActions() {
     setSaveSaleLoading(true);
     await saveSaleAndPark(
       cart,
-      cart?.items,
       clerk,
       customers,
       logs,
       mutateLogs,
       sales,
       mutateSales,
-      saleItems,
-      mutateSaleItems,
-      mutateInventory
+      inventory,
+      mutateInventory,
+      giftCards,
+      mutateGiftCards
     );
     setAlert({
       open: true,
@@ -80,6 +82,10 @@ export default function ShoppingCartActions() {
     });
     clearCart();
     setSaveSaleLoading(false);
+  }
+
+  async function onClickContinueLayby() {
+    // TODO continue layby
   }
 
   async function onClickDiscardSale() {
@@ -129,10 +135,18 @@ export default function ShoppingCartActions() {
           <RetrieveSaleIcon />
         </button>
       </Tooltip>
-      <Tooltip title="Park sale">
+      <Tooltip
+        title={
+          cart?.state === SaleStateTypes.Layby ? "Continue Layby" : "Park sale"
+        }
+      >
         <button
           className="icon-button-small-white"
-          onClick={onClickSaveSale}
+          onClick={
+            cart?.state === SaleStateTypes.Layby
+              ? onClickContinueLayby
+              : onClickSaveSale
+          }
           disabled={Boolean(
             saveSaleLoading || !cart || !cart?.items || cart?.items?.length < 1
           )}

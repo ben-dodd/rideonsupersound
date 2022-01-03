@@ -4,7 +4,7 @@ import { useAtom } from "jotai";
 
 // DB
 import { useInventory, useSaleItemsForSale, useLogs } from "@/lib/swr-hooks";
-import { saleObjectAtom, alertAtom, clerkAtom } from "@/lib/atoms";
+import { cartAtom, alertAtom, clerkAtom } from "@/lib/atoms";
 import { InventoryObject, SaleObject, SaleItemObject } from "@/lib/types";
 import { MouseEventHandler } from "react";
 

@@ -4,57 +4,53 @@ import { useAtom } from "jotai";
 
 // DB
 import {
-  useSaleTransactionsForSale,
-  useSaleItemsForSale,
   useGiftCards,
-  useLogs,
-  useCustomers,
   useRegisterID,
   useInventory,
+  useLogs,
+  useCustomer,
+  useCustomers,
 } from "@/lib/swr-hooks";
-import { viewAtom, saleObjectAtom, clerkAtom, alertAtom } from "@/lib/atoms";
+import { viewAtom, cartAtom, clerkAtom, alertAtom } from "@/lib/atoms";
 import {
   GiftCardObject,
   ModalButton,
-  CustomerObject,
   SaleTransactionObject,
   PaymentMethodTypes,
+  CustomerObject,
 } from "@/lib/types";
 
+import SyncIcon from "@mui/icons-material/Sync";
+
 // Functions
-import { getSaleVars } from "@/lib/data-functions";
-import {
-  saveSaleTransaction,
-  saveLog,
-  updateStockItemInDatabase,
-} from "@/lib/db-functions";
+import { getSaleVars, makeGiftCardCode } from "@/lib/data-functions";
 
 // Components
 import Modal from "@/components/_components/container/modal";
 import TextField from "@/components/_components/inputs/text-field";
+import { saveLog } from "@/lib/db-functions";
 
 export default function Gift() {
   // Atoms
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
-  const [sale] = useAtom(saleObjectAtom);
+  const [cart, setCart] = useAtom(cartAtom);
   const [, setAlert] = useAtom(alertAtom);
 
   // SWR
   const { giftCards, mutateGiftCards } = useGiftCards();
-  const { customers } = useCustomers();
-  const { transactions, mutateSaleTransactions } = useSaleTransactionsForSale(
-    sale?.id
-  );
-  const { items } = useSaleItemsForSale(sale?.id);
-  const { logs, mutateLogs } = useLogs();
   const { registerID } = useRegisterID();
   const { inventory } = useInventory();
+  const { customers } = useCustomers();
+  const { logs, mutateLogs } = useLogs();
 
-  const { totalRemaining } = getSaleVars(items, transactions, inventory);
+  const { totalRemaining } = getSaleVars(cart, inventory);
 
   // State
-  const [giftCardPayment, setGiftCardPayment] = useState(`${totalRemaining}`);
+  const isRefund = totalRemaining < 0;
+  const [giftCardPayment, setGiftCardPayment] = useState(
+    `${Math.abs(totalRemaining).toFixed(2)}`
+  );
   const [giftCardCode, setGiftCardCode] = useState("");
   const giftCard: GiftCardObject = useMemo(
     () =>
@@ -63,6 +59,10 @@ export default function Gift() {
           giftCard?.gift_card_code === giftCardCode.toUpperCase()
       )[0],
     [giftCardCode, giftCards]
+  );
+
+  const [newGiftCardCode, setNewGiftCardCode] = useState(
+    makeGiftCardCode(giftCards)
   );
   const [submitting, setSubmitting] = useState(false);
 
@@ -75,73 +75,90 @@ export default function Gift() {
       type: "ok",
       disabled:
         submitting ||
-        parseFloat(giftCardPayment) > totalRemaining ||
-        totalRemaining < parseFloat(giftCardPayment) ||
+        parseFloat(giftCardPayment) > Math.abs(totalRemaining) ||
         parseFloat(giftCardPayment) === 0 ||
-        giftCardPayment <= "" ||
+        giftCardPayment === "" ||
         isNaN(parseFloat(giftCardPayment)) ||
-        !giftCard ||
-        !giftCard?.gift_card_is_valid ||
-        leftOver < 0,
+        (!isRefund &&
+          (!giftCard || !giftCard?.gift_card_is_valid || leftOver < 0)),
       loading: submitting,
-      onClick: async () => {
+      onClick: () => {
         setSubmitting(true);
-        let giftCardUpdate: GiftCardObject = { ...giftCard };
-        giftCardUpdate.gift_card_remaining = leftOver * 100;
-        if (leftOver < 10) {
-          giftCardUpdate.gift_card_is_valid = false;
-          giftCardUpdate.gift_card_remaining = 0;
+        let giftCardUpdate: GiftCardObject = {};
+        if (isRefund) {
+          giftCardUpdate = {
+            is_gift_card: true,
+            gift_card_code: giftCardCode,
+            gift_card_amount: parseFloat(giftCardPayment) * 100,
+            gift_card_remaining: parseFloat(giftCardPayment) * 100,
+            note: `Gift card created as refund payment${
+              cart?.id ? ` for sale #${cart?.id}` : ""
+            }.`,
+            gift_card_is_valid: true,
+          };
+        } else {
+          giftCardUpdate = { ...giftCard };
+          giftCardUpdate.gift_card_remaining = leftOver * 100;
+          if (leftOver < 10) {
+            giftCardUpdate.gift_card_is_valid = false;
+            giftCardUpdate.gift_card_remaining = 0;
+          }
         }
-        updateStockItemInDatabase(giftCardUpdate);
-        const otherGiftCards = giftCards?.filter(
-          (g: GiftCardObject) => g?.id !== giftCard?.id
-        );
-        mutateGiftCards([...otherGiftCards, giftCardUpdate], false);
+        let date = new Date();
         let transaction: SaleTransactionObject = {
-          sale_id: sale?.id,
+          date: date.toISOString(),
+          sale_id: cart?.id,
           clerk_id: clerk?.id,
           payment_method: PaymentMethodTypes.GiftCard,
-          amount:
-            parseFloat(giftCardPayment) >= totalRemaining
-              ? totalRemaining * 100
-              : parseFloat(giftCardPayment) * 100,
+          amount: isRefund
+            ? parseFloat(giftCardPayment) * -100
+            : parseFloat(giftCardPayment) * 100,
           register_id: registerID,
-          gift_card_id: giftCardUpdate?.id,
-          gift_card_taken: giftCardUpdate?.gift_card_is_valid,
-          gift_card_remaining: giftCardUpdate?.gift_card_remaining,
-          gift_card_change: leftOver < 10 ? leftOver * 100 : 0,
+          gift_card_update: giftCardUpdate,
+          is_refund: isRefund,
         };
-        const id = await saveSaleTransaction(
-          transaction,
-          transactions,
-          mutateSaleTransactions
-        );
+        if (!isRefund) {
+          transaction = {
+            ...transaction,
+            gift_card_id: giftCardUpdate?.id,
+            gift_card_taken: giftCardUpdate?.gift_card_is_valid,
+            gift_card_remaining: giftCardUpdate?.gift_card_remaining,
+            gift_card_change: leftOver < 10 ? leftOver * 100 : 0,
+          };
+        }
+        let transactions = cart?.transactions || [];
+        transactions.push(transaction);
+        setCart({ ...cart, transactions });
         setSubmitting(false);
         setView({ ...view, giftPaymentDialog: false });
         saveLog(
           {
-            log: `$${parseFloat(giftCardPayment)?.toFixed(
-              2
-            )} gift card payment from ${
-              sale?.customer_id
+            log: `$${parseFloat(giftCardPayment)?.toFixed(2)} ${
+              isRefund
+                ? `refunded with new gift card #${newGiftCardCode} to`
+                : `gift card payment from`
+            } ${
+              cart?.customer_id
                 ? customers?.filter(
-                    (c: CustomerObject) => c?.id === sale?.customer_id
+                    (c: CustomerObject) => c?.id === cart?.customer_id
                   )[0]?.name
                 : "customer"
-            } (sale #${sale?.id}). Gift card #${giftCardCode?.toUpperCase()}. ${
-              leftOver < 10
-                ? `Card taken.${
-                    leftOver > 0
-                      ? ` $${leftOver?.toFixed(
-                          2
-                        )} change given for remainder on card.`
-                      : ""
+            }${cart?.id ? ` (sale #${cart?.id}).` : ""}.${
+              isRefund
+                ? ""
+                : ` Gift card #${giftCardCode?.toUpperCase()}. ${
+                    leftOver < 10
+                      ? `Card taken.${
+                          leftOver > 0
+                            ? ` $${leftOver?.toFixed(
+                                2
+                              )} change given for remainder on card.`
+                            : ""
+                        }`
+                      : `$${remainingOnGiftCard?.toFixed(2)} remaining on card.`
                   }`
-                : `$${remainingOnGiftCard?.toFixed(2)} remaining on card.`
             }`,
             clerk_id: clerk?.id,
-            table_id: "sale_transaction",
-            row_id: id,
           },
           logs,
           mutateLogs
@@ -149,9 +166,9 @@ export default function Gift() {
         setAlert({
           open: true,
           type: "success",
-          message: `$${parseFloat(giftCardPayment)?.toFixed(
-            2
-          )} GIFT CARD PAYMENT`,
+          message: `$${parseFloat(giftCardPayment)?.toFixed(2)} GIFT CARD  ${
+            isRefund ? "REFUND" : "PAYMENT"
+          }`,
         });
       },
       text: "COMPLETE",
@@ -163,17 +180,31 @@ export default function Gift() {
     <Modal
       open={view?.giftPaymentDialog}
       closeFunction={() => setView({ ...view, giftPaymentDialog: false })}
-      title={"GIFT CARD PAYMENT"}
+      title={isRefund ? `GIFT CARD REFUND` : `GIFT CARD PAYMENT`}
       buttons={buttons}
     >
       <>
-        <TextField
-          divClass="text-8xl"
-          inputClass="text-center text-red-800 font-mono uppercase"
-          value={giftCardCode}
-          autoFocus={true}
-          onChange={(e: any) => setGiftCardCode(e.target.value)}
-        />
+        {isRefund ? (
+          <div className="flex justify-between items-center">
+            <div className="text-8xl text-red-800 font-mono">
+              {newGiftCardCode}
+            </div>
+            <button
+              className="icon-button-small-mid"
+              onClick={() => setNewGiftCardCode(makeGiftCardCode(giftCards))}
+            >
+              <SyncIcon />
+            </button>
+          </div>
+        ) : (
+          <TextField
+            divClass="text-8xl"
+            inputClass="text-center text-red-800 font-mono uppercase"
+            value={giftCardCode}
+            autoFocus={true}
+            onChange={(e: any) => setGiftCardCode(e.target.value)}
+          />
+        )}
         <TextField
           divClass="text-8xl"
           startAdornment="$"
@@ -182,38 +213,43 @@ export default function Gift() {
           selectOnFocus
           onChange={(e: any) => setGiftCardPayment(e.target.value)}
         />
-        <div className="text-center">{`Remaining to pay: $${(
-          totalRemaining || 0
-        )?.toFixed(2)}`}</div>
-        <div className="text-center font-bold">
-          {!giftCardCode || giftCardCode === ""
-            ? "ENTER GIFT CARD CODE"
-            : !giftCard
-            ? "INVALID GIFT CARD CODE"
-            : `$${remainingOnGiftCard?.toFixed(2)} LEFT ON CARD`}
-        </div>
+        <div className="text-center">{`Remaining to ${
+          isRefund ? "refund" : "pay"
+        }: $${Math.abs(totalRemaining)?.toFixed(2)}`}</div>
+        {!isRefund && (
+          <div className="text-center font-bold">
+            {!giftCardCode || giftCardCode === ""
+              ? "ENTER GIFT CARD CODE"
+              : !giftCard
+              ? "INVALID GIFT CARD CODE"
+              : `$${remainingOnGiftCard?.toFixed(2)} LEFT ON CARD`}
+          </div>
+        )}
         <div className="text-center text-xl font-bold my-4">
-          {!giftCardCode ||
-          giftCardCode === "" ||
-          giftCardPayment === "" ||
+          {(!isRefund &&
+            (!giftCardCode ||
+              giftCardCode === "" ||
+              giftCardPayment === "" ||
+              !giftCard)) ||
           parseFloat(giftCardPayment) === 0 ||
-          !giftCard ||
           submitting ? (
-            <div>...</div>
+            `...`
           ) : isNaN(parseFloat(giftCardPayment)) ? (
-            <div>NUMBERS ONLY PLEASE</div>
-          ) : parseFloat(giftCardPayment) > totalRemaining ? (
-            <div>PAYMENT TOO HIGH</div>
+            `NUMBERS ONLY PLEASE`
+          ) : parseFloat(giftCardPayment) > Math.abs(totalRemaining) ? (
+            `${isRefund ? "REFUND AMOUNT" : "PAYMENT"} TOO HIGH`
+          ) : isRefund ? (
+            `ALL GOOD!`
           ) : !giftCard?.gift_card_is_valid ? (
-            <div>GIFT CARD IS NOT VALID</div>
+            `GIFT CARD IS NOT VALID`
           ) : remainingOnGiftCard < parseFloat(giftCardPayment) ? (
-            <div>NOT ENOUGH ON CARD</div>
+            `NOT ENOUGH ON CARD`
           ) : leftOver >= 10 ? (
-            <div>{`$${leftOver.toFixed(2)} REMAINING ON CARD`}</div>
+            `$${leftOver.toFixed(2)} REMAINING ON CARD`
           ) : leftOver === 0 ? (
-            <div>CARD USED UP, TAKE CARD</div>
+            `CARD USED UP, TAKE CARD`
           ) : leftOver < 10 ? (
-            <div>{`TAKE CARD AND GIVE $${leftOver.toFixed(2)} IN CHANGE`}</div>
+            `TAKE CARD AND GIVE $${leftOver.toFixed(2)} IN CHANGE`
           ) : (
             <div />
           )}

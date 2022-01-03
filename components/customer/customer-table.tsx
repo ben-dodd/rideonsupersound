@@ -149,7 +149,10 @@ export default function CustomerTable() {
                   key={layby?.id}
                   className={`mb-2 cursor-pointer underline whitespace-normal`}
                   onClick={() =>
-                    setLoadedSaleId({ ...loadedSaleId, customers: layby?.id })
+                    setLoadedSaleId({
+                      ...loadedSaleId,
+                      customers: layby?.id,
+                    })
                   }
                 >
                   {`Layby #${layby?.id} - ${writeItemList(

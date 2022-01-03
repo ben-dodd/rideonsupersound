@@ -59,11 +59,7 @@ export default function RefundPaymentDialog({ sale }) {
   const { giftCards, mutateGiftCards } = useGiftCards();
   const { mutateCashReceived } = useCashReceived(registerID);
 
-  const { totalRemaining, totalPaid } = getSaleVars(
-    items,
-    transactions,
-    inventory
-  );
+  const { totalRemaining, totalPaid } = getSaleVars(sale, inventory);
 
   // State
   const [refundAmount, setRefundAmount] = useState(`${totalPaid}`);
@@ -92,8 +88,9 @@ export default function RefundPaymentDialog({ sale }) {
       onClick: async () => {
         setSubmitting(true);
         let giftCardId = null;
+        let giftCardUpdate: GiftCardObject = {};
         if (paymentMethod === PaymentMethodTypes.GiftCard) {
-          let newGiftCard: GiftCardObject = {
+          giftCardUpdate = {
             is_gift_card: true,
             gift_card_code: giftCardCode,
             gift_card_amount: parseFloat(refundAmount) * 100,
@@ -101,17 +98,17 @@ export default function RefundPaymentDialog({ sale }) {
             note: `Gift card created as refund payment for sale #${sale?.id}.`,
             gift_card_is_valid: true,
           };
-          giftCardId = await saveStockToDatabase(newGiftCard, clerk);
-          giftCards &&
-            mutateGiftCards(
-              [...giftCards, { ...newGiftCard, giftCardId }],
-              false
-            );
-          inventory &&
-            mutateInventory(
-              [...inventory, { ...newGiftCard, giftCardId }],
-              false
-            );
+          // giftCardId = await saveStockToDatabase(giftCardUpdate, clerk);
+          // giftCards &&
+          //   mutateGiftCards(
+          //     [...giftCards, { ...giftCardUpdate, giftCardId }],
+          //     false
+          //   );
+          // inventory &&
+          //   mutateInventory(
+          //     [...inventory, { ...giftCardUpdate, giftCardId }],
+          //     false
+          //   );
         }
         let transaction: SaleTransactionObject = {
           sale_id: sale?.id,
@@ -125,18 +122,14 @@ export default function RefundPaymentDialog({ sale }) {
           gift_card_id: giftCardId,
           is_refund: true,
           register_id: registerID,
+          vendor:
+            paymentMethod === PaymentMethodTypes.Account
+              ? vendorWrapper?.value
+              : null,
+          gift_card_update: giftCardUpdate,
         };
-        const id = await saveSaleTransaction(
-          transaction,
-          transactions,
-          mutateSaleTransactions,
-          paymentMethod === PaymentMethodTypes.Account
-            ? vendorWrapper?.value
-            : null
-        );
         setSubmitting(false);
         closeDialog();
-        mutateCashReceived();
         let method = "in cash";
         if (paymentMethod === PaymentMethodTypes.Card) method = "on card";
         else if (paymentMethod === PaymentMethodTypes.GiftCard)
@@ -157,8 +150,6 @@ export default function RefundPaymentDialog({ sale }) {
                 : "customer"
             } ${method} (sale #${sale?.id}).`,
             clerk_id: clerk?.id,
-            table_id: "sale_transaction",
-            row_id: id,
           },
           logs,
           mutateLogs

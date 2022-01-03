@@ -65,7 +65,7 @@ export const viewAtom = atom<ViewProps>({});
 export const clerkAtom = atom<ClerkObject>({ id: null });
 export const pageAtom = atom<string>("sell");
 
-export const saleObjectAtom = atom<SaleObject>({});
+export const cartAtom = atom<SaleObject>({});
 
 export const loadedItemIdAtom = atom<PageProps>({});
 export const loadedVendorIdAtom = atom<PageProps>({});

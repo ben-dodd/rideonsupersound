@@ -27,7 +27,7 @@ export default function SellSearchBar() {
             <SearchIcon />
           </div>
           <input
-            className="w-full py-1 px-2 outline-none bg-transparent text-4xl"
+            className="w-full py-1 px-2 outline-none bg-transparent text-2xl"
             value={search || ""}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="SEARCH…"

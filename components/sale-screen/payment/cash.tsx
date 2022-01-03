@@ -4,54 +4,47 @@ import { useAtom } from "jotai";
 
 // DB
 import {
-  useSaleTransactionsForSale,
-  useSaleItemsForSale,
+  useCustomers,
   useInventory,
   useLogs,
-  useCustomers,
   useRegisterID,
-  useCashGiven,
-  useCashReceived,
 } from "@/lib/swr-hooks";
-import { viewAtom, saleObjectAtom, clerkAtom, alertAtom } from "@/lib/atoms";
+import { viewAtom, cartAtom, clerkAtom, alertAtom } from "@/lib/atoms";
 import {
   ModalButton,
-  CustomerObject,
   SaleTransactionObject,
   PaymentMethodTypes,
+  CustomerObject,
 } from "@/lib/types";
 
 // Functions
 import { getSaleVars } from "@/lib/data-functions";
-import { saveSaleTransaction, saveLog } from "@/lib/db-functions";
 
 // Components
 import Modal from "@/components/_components/container/modal";
 import TextField from "@/components/_components/inputs/text-field";
+import { saveLog } from "@/lib/db-functions";
 
 export default function Cash() {
   // Atoms
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
-  const [sale] = useAtom(saleObjectAtom);
+  const [cart, setCart] = useAtom(cartAtom);
   const [, setAlert] = useAtom(alertAtom);
 
   // SWR
-  const { transactions, mutateSaleTransactions } = useSaleTransactionsForSale(
-    sale?.id
-  );
-  const { items } = useSaleItemsForSale(sale?.id);
   const { inventory } = useInventory();
-  const { logs, mutateLogs } = useLogs();
   const { customers } = useCustomers();
   const { registerID } = useRegisterID();
-  const { mutateCashGiven } = useCashGiven(registerID || 0);
-  const { mutateCashReceived } = useCashReceived(registerID || 0);
+  const { logs, mutateLogs } = useLogs();
 
-  const { totalRemaining } = getSaleVars(items, transactions, inventory);
+  const { totalRemaining } = getSaleVars(cart, inventory);
 
   // State
-  const [cashReceived, setCashReceived] = useState(`${totalRemaining}`);
+  const isRefund = totalRemaining < 0;
+  const [cashReceived, setCashReceived] = useState(
+    `${Math.abs(totalRemaining).toFixed(2)}`
+  );
   const [submitting, setSubmitting] = useState(false);
 
   // Constants
@@ -62,61 +55,66 @@ export default function Cash() {
       disabled:
         submitting ||
         parseFloat(cashReceived) === 0 ||
-        cashReceived <= "" ||
+        (isRefund && parseFloat(cashReceived) > Math.abs(totalRemaining)) ||
+        cashReceived === "" ||
         isNaN(parseFloat(cashReceived)),
       loading: submitting,
-      onClick: async () => {
+      onClick: () => {
         setSubmitting(true);
+        // TODO check transaction date
+        let date = new Date();
         let transaction: SaleTransactionObject = {
-          sale_id: sale?.id,
+          date: date.toISOString(),
+          sale_id: cart?.id,
           clerk_id: clerk?.id,
           payment_method: PaymentMethodTypes.Cash,
-          amount:
-            parseFloat(cashReceived) >= totalRemaining
-              ? totalRemaining * 100
-              : parseFloat(cashReceived) * 100,
+          amount: isRefund
+            ? parseFloat(cashReceived) * -100
+            : parseFloat(cashReceived) >= totalRemaining
+            ? totalRemaining * 100
+            : parseFloat(cashReceived) * 100,
           cash_received: parseFloat(cashReceived) * 100,
-          change_given:
-            parseFloat(cashReceived) > totalRemaining
-              ? (parseFloat(cashReceived) - totalRemaining) * 100
-              : null,
+          change_given: isRefund
+            ? null
+            : parseFloat(cashReceived) > totalRemaining
+            ? (parseFloat(cashReceived) - totalRemaining) * 100
+            : null,
           register_id: registerID,
+          is_refund: isRefund,
         };
-        const id = await saveSaleTransaction(
-          transaction,
-          transactions,
-          mutateSaleTransactions
-        );
+        let transactions = cart?.transactions || [];
+        transactions.push(transaction);
+        setCart({ ...cart, transactions });
         setSubmitting(false);
-        setView({ ...view, cashPaymentDialog: false });
-        mutateCashGiven();
-        mutateCashReceived();
         saveLog(
           {
-            log: `$${parseFloat(cashReceived)?.toFixed(2)} cash taken from ${
-              sale?.customer_id
+            log: `$${parseFloat(cashReceived)?.toFixed(2)} ${
+              isRefund ? `cash refunded to` : `cash taken from`
+            } ${
+              cart?.customer_id
                 ? customers?.filter(
-                    (c: CustomerObject) => c?.id === sale?.customer_id
+                    (c: CustomerObject) => c?.id === cart?.customer_id
                   )[0]?.name
                 : "customer"
-            } (sale #${sale?.id}).${
+            }${cart?.id ? ` (sale #${cart?.id}).` : ""}.${
               parseFloat(changeToGive) > 0
                 ? ` $${changeToGive} change given.`
                 : ""
             }`,
             clerk_id: clerk?.id,
-            table_id: "sale_transaction",
-            row_id: id,
           },
           logs,
           mutateLogs
         );
+        setView({ ...view, cashPaymentDialog: false });
         setAlert({
           open: true,
           type: "success",
-          message: `$${parseFloat(cashReceived)?.toFixed(
-            2
-          )} CASH TAKEN. $${changeToGive} CHANGE GIVEN.`,
+          message: `$${parseFloat(cashReceived)?.toFixed(2)} ${
+            isRefund
+              ? `CASH REFUNDED.`
+              : `CASH TAKEN. $${changeToGive} CHANGE GIVEN.`
+          }`,
         });
       },
       text: "COMPLETE",
@@ -127,7 +125,7 @@ export default function Cash() {
     <Modal
       open={view?.cashPaymentDialog}
       closeFunction={() => setView({ ...view, cashPaymentDialog: false })}
-      title={"CASH PAYMENT"}
+      title={isRefund ? `CASH REFUND` : `CASH PAYMENT`}
       buttons={buttons}
     >
       <>
@@ -140,17 +138,19 @@ export default function Cash() {
           selectOnFocus
           onChange={(e: any) => setCashReceived(e.target.value)}
         />
-        <div className="text-center">{`Remaining to pay: $${(
-          totalRemaining || 0
-        )?.toFixed(2)}`}</div>
+        <div className="text-center">{`Remaining to ${
+          isRefund ? "refund" : "pay"
+        }: $${Math.abs(totalRemaining)?.toFixed(2)}`}</div>
         <div className="text-center text-xl font-bold my-4">
           {cashReceived === "" || parseFloat(cashReceived) === 0
             ? "..."
             : isNaN(parseFloat(cashReceived))
             ? "NUMBERS ONLY PLEASE"
+            : isRefund && parseFloat(cashReceived) > Math.abs(totalRemaining)
+            ? "TOO MUCH CASH REFUNDED"
             : parseFloat(cashReceived) > totalRemaining
             ? `GIVE $${changeToGive} IN CHANGE`
-            : parseFloat(cashReceived) < totalRemaining
+            : parseFloat(cashReceived) < Math.abs(totalRemaining)
             ? `AMOUNT SHORT BY $${(
                 totalRemaining - parseFloat(cashReceived)
               )?.toFixed(2)}`

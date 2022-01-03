@@ -13,7 +13,11 @@ const handler: NextApiHandler = async (req, res) => {
         customer_id,
         state,
         date_sale_opened,
-        sale_opened_by
+        sale_opened_by,
+        store_cut,
+        total_price,
+        number_of_items,
+        item_list
       FROM sale
       WHERE NOT is_deleted
       `

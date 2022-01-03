@@ -40,7 +40,7 @@ export default function MainPage() {
         <title>Ride On Super Sound</title>
       </Head>
       <Nav />
-      <div className="flex h-menu relative">
+      <div className="flex h-menu relative overflow-y-hidden">
         <Menu />
         <div className="h-full w-full absolute sm:static">
           <SellScreen />

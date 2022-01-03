@@ -25,7 +25,7 @@ export default function ListTask({ task }: ListItemProps) {
 
   return (
     <div
-      className={`flex w-full border-b border-yellow-100 py-1 font-mono text-xs${
+      className={`flex w-full border-b border-yellow-100 py-1 text-sm${
         task?.is_completed
           ? " bg-gray-200 text-gray-600"
           : task?.is_priority

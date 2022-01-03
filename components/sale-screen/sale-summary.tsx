@@ -1,16 +1,5 @@
-// Packages
-import { useAtom } from "jotai";
-import { format, parseISO } from "date-fns";
-import nz from "date-fns/locale/en-NZ";
-
 // DB
-import {
-  useCustomer,
-  useClerks,
-  useSaleItemsForSale,
-  useSaleTransactionsForSale,
-  useInventory,
-} from "@/lib/swr-hooks";
+import { useInventory } from "@/lib/swr-hooks";
 import {
   SaleTransactionObject,
   SaleItemObject,
@@ -18,11 +7,7 @@ import {
 } from "@/lib/types";
 
 // Functions
-import {
-  convertMPStoKPH,
-  convertDegToCardinal,
-  getSaleVars,
-} from "@/lib/data-functions";
+import { getSaleVars } from "@/lib/data-functions";
 
 // Components
 import ItemListItem from "./item-list-item";
@@ -30,29 +15,18 @@ import TransactionListItem from "./transaction-list-item";
 
 export default function SaleSummary({ sale }) {
   // SWR
-  const { clerks } = useClerks();
-  const { customer } = useCustomer(sale?.customer_id);
-  const { items } = useSaleItemsForSale(sale?.id);
-  const { transactions } = useSaleTransactionsForSale(sale?.id);
   const { inventory } = useInventory();
 
   // Constants
-  const saleComplete = Boolean(sale?.state === SaleStateTypes.Completed);
-  const {
-    totalRemaining,
-    totalStoreCut,
-    totalVendorCut,
-    totalPrice,
-  } = getSaleVars(items, transactions, inventory);
-
-  console.log(items);
+  const { totalRemaining, totalStoreCut, totalVendorCut, totalPrice } =
+    getSaleVars(sale, inventory);
 
   // Functions
   function SaleItems() {
     return (
       <div className="h-2/5 overflow-y-scroll">
-        {items?.length > 0 ? (
-          items?.map((saleItem: SaleItemObject) => (
+        {sale?.items?.length > 0 ? (
+          sale?.items?.map((saleItem: SaleItemObject) => (
             <ItemListItem
               key={saleItem?.item_id}
               saleItem={saleItem}
@@ -114,7 +88,7 @@ export default function SaleSummary({ sale }) {
   function TransactionItems() {
     return (
       <div className="h-1/5 mt-1 pt-1 border-t border-gray-500 overflow-y-scroll">
-        {transactions?.map((transaction: SaleTransactionObject) => (
+        {sale?.transactions?.map((transaction: SaleTransactionObject) => (
           <TransactionListItem
             key={transaction?.id}
             sale={sale}

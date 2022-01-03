@@ -24,9 +24,7 @@ export default function ListTask({ item }: ListItemProps) {
   // State
 
   return (
-    <div
-      className={`flex w-full border-b border-yellow-100 py-1 font-mono text-xs`}
-    >
+    <div className={`flex w-full border-b border-yellow-100 py-1 text-sm`}>
       <div className="flex flex-col sm:flex-row w-full justify-between">
         <div className="flex flex-col sm:flex-row w-3/5">
           <div className="mx-2">

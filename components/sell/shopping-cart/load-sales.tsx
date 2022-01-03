@@ -11,7 +11,7 @@ import {
   useCustomers,
   useInventory,
 } from "@/lib/swr-hooks";
-import { viewAtom, clerkAtom, alertAtom, saleObjectAtom } from "@/lib/atoms";
+import { viewAtom, clerkAtom, alertAtom, cartAtom } from "@/lib/atoms";
 import {
   SaleObject,
   SaleItemObject,
@@ -30,7 +30,7 @@ export default function LoadSales() {
   // Atoms
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
-  const [cart, setCart] = useAtom(saleObjectAtom);
+  const [cart, setCart] = useAtom(cartAtom);
   const [, setAlert] = useAtom(alertAtom);
 
   // SWR

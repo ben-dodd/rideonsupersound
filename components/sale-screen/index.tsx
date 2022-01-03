@@ -1,5 +1,5 @@
 // Packages
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 import formatISO from "date-fns/formatISO";
 
@@ -12,11 +12,12 @@ import {
   useLogs,
   useSales,
   useSaleItems,
+  useGiftCards,
 } from "@/lib/swr-hooks";
 import {
   clerkAtom,
   alertAtom,
-  saleObjectAtom,
+  cartAtom,
   viewAtom,
   pageAtom,
 } from "@/lib/atoms";
@@ -39,6 +40,7 @@ import {
   updateSaleItemInDatabase,
   validateGiftCard,
   loadSaleToCart,
+  saveSaleItemsTransactionsToDatabase,
 } from "@/lib/db-functions";
 
 // Components
@@ -52,13 +54,14 @@ import ScreenContainer from "@/components/_components/container/screen";
 import CreateCustomerSidebar from "@/components/customer/create-customer-sidebar";
 import RefundPaymentDialog from "./refund-payment-dialog";
 import ReturnItemDialog from "./return-item-dialog";
+import { format } from "date-fns";
 
 // TODO add returns to sale items
 // TODO refund dialog like PAY, refund with store credit, cash or card
 
 export default function SaleScreen() {
   // Atoms
-  const [cart, setCart] = useAtom(saleObjectAtom);
+  const [cart, setCart] = useAtom(cartAtom);
   const [clerk] = useAtom(clerkAtom);
   const [, setAlert] = useAtom(alertAtom);
   const [view, setView] = useAtom(viewAtom);
@@ -68,12 +71,9 @@ export default function SaleScreen() {
   const { customers } = useCustomers();
   const { inventory, mutateInventory } = useInventory();
   const { items, isSaleItemsLoading } = useSaleItemsForSale(cart?.id);
-  const {
-    transactions,
-    isSaleTransactionsLoading,
-  } = useSaleTransactionsForSale(cart?.id);
+  const { isSaleTransactionsLoading } = useSaleTransactionsForSale(cart?.id);
   const { sales, mutateSales } = useSales();
-  const { saleItems, mutateSaleItems } = useSaleItems();
+  const { giftCards, mutateGiftCards } = useGiftCards();
   const { logs, mutateLogs } = useLogs();
 
   // State
@@ -82,16 +82,14 @@ export default function SaleScreen() {
   const [addMoreItemsLoading, setAddMoreItemsLoading] = useState(false);
   const [completeSaleLoading, setCompleteSaleLoading] = useState(false);
   const [parkSaleLoading, setParkSaleLoading] = useState(false);
-  // TODO make sale info screen for LAYBY and SALES screen that needs to be activated to go to the SELL screen. So only one active sale will be present at a time.
   // BUG fix bug where close register screen appears (pressing TAB) - have fixed by just hiding sidebars and screens
   // BUG fix bug where bottom of dialog is visible
   // BUG dates are wrong on vercel
   // BUG why are some sales showing items as separate line items, not 2x quantity
 
   const itemList = writeItemList(inventory, items);
-  const { totalRemaining, totalPrice } = getSaleVars(
-    items,
-    transactions,
+  const { totalRemaining, totalPrice, numberOfItems } = getSaleVars(
+    cart,
     inventory
   );
 
@@ -100,16 +98,16 @@ export default function SaleScreen() {
     setParkSaleLoading(true);
     saveSaleAndPark(
       cart,
-      items,
       clerk,
       customers,
       logs,
       mutateLogs,
       sales,
       mutateSales,
-      saleItems,
-      mutateSaleItems,
-      mutateInventory
+      inventory,
+      mutateInventory,
+      giftCards,
+      mutateGiftCards
     );
     setAlert({
       open: true,
@@ -121,35 +119,20 @@ export default function SaleScreen() {
     setParkSaleLoading(false);
   }
 
-  async function clickAddMoreItems() {
-    setPage("sell");
-    setView({ ...view, saleScreen: false });
-  }
-
   async function clickLayby() {
     setLaybyLoading(true);
-    // Change quantity for all items if it wasn't a layby previously
-    for await (const saleItem of items) {
-      // For each item, add quantity on layby, remove quantity in sale
-      saveStockMovementToDatabase(saleItem, clerk, SaleStateTypes.Layby, null);
-    }
+    let laybySale = { ...cart };
     if (cart?.state !== SaleStateTypes.Layby) {
       // If not already a layby in progress...
       // Change cart state to layby
       // date_layby_started
       // layby_started_by
-      let date = new Date();
-      let laybySale = {
-        ...cart,
+      laybySale = {
+        ...laybySale,
         state: SaleStateTypes.Layby,
-        date_layby_started: date.toISOString(),
+        date_layby_started: "CURRENT_TIMESTAMP",
         layby_started_by: clerk?.id,
       };
-      updateSaleInDatabase(laybySale);
-      let numberOfItems = items?.reduce(
-        (acc: number, i: SaleItemObject) => acc + parseInt(i?.quantity),
-        0
-      );
       saveLog(
         {
           log: `Layby started${
@@ -166,8 +149,6 @@ export default function SaleScreen() {
             2
           )} left to pay).`,
           clerk_id: clerk?.id,
-          table_id: "sale",
-          row_id: cart?.id,
         },
         logs,
         mutateLogs
@@ -177,10 +158,18 @@ export default function SaleScreen() {
         type: "success",
         message: "LAYBY STARTED.",
       });
-      let otherSales = sales?.filter((s: SaleObject) => s?.id !== cart?.id);
-      mutateSales([...otherSales, laybySale], false);
-      mutateInventory();
     }
+    saveSaleItemsTransactionsToDatabase(
+      laybySale,
+      clerk,
+      sales,
+      mutateSales,
+      inventory,
+      mutateInventory,
+      giftCards,
+      mutateGiftCards,
+      cart?.state
+    );
     // close dialog
     setLaybyLoading(false);
     setView({ ...view, saleScreen: false });
@@ -189,45 +178,24 @@ export default function SaleScreen() {
 
   async function clickCompleteSale() {
     setCompleteSaleLoading(true);
-    // If was a layby, complete layby
-    //    For all items, remove from layby
-    // For all items,
-    //    If gift card, add to the collection
-    //    If misc item, ignore
-    //    If other item, change quantity sold
     // Update sale to 'complete', add date_sale_closed, sale_closed_by
-    items?.forEach((saleItem: SaleItemObject) => {
-      if (cart?.state === SaleStateTypes.Layby && !saleItem?.is_gift_card) {
-        saveStockMovementToDatabase(saleItem, clerk, "unlayby", null);
-      }
-      if (saleItem?.is_gift_card) {
-        // Add to collection
-        let updatedGiftCard = inventory?.filter(
-          (s: InventoryObject) => s?.id === saleItem?.item_id
-        );
-        updatedGiftCard.gift_card_is_valid = true;
-        let otherSaleStock = inventory?.filter(
-          (s: InventoryObject) => s?.id !== saleItem?.item_id
-        );
-        mutateInventory([...otherSaleStock, updatedGiftCard]);
-        validateGiftCard(saleItem?.item_id);
-        // Add gift card to sale items
-      } else if (saleItem?.is_misc_item) {
-        // Do something
-        // Add misc item to sale items
-      } else {
-        if (saleItem?.id)
-          updateSaleItemInDatabase({ ...saleItem, sale_id: cart?.id });
-        saveStockMovementToDatabase(saleItem, clerk, "sold", null);
-      }
-    });
     let completedSale = {
       ...cart,
       state: SaleStateTypes.Completed,
       sale_closed_by: clerk?.id,
       date_sale_closed: "CURRENT_TIMESTAMP",
     };
-    updateSaleInDatabase(completedSale);
+    saveSaleItemsTransactionsToDatabase(
+      completedSale,
+      clerk,
+      sales,
+      mutateSales,
+      inventory,
+      mutateInventory,
+      giftCards,
+      mutateGiftCards,
+      cart?.state
+    );
     setCart(null);
     setView({ ...view, saleScreen: false });
     setCompleteSaleLoading(false);
@@ -246,34 +214,34 @@ export default function SaleScreen() {
       type: "success",
       message: "SALE COMPLETED.",
     });
-    let otherSales = sales?.filter((s: SaleObject) => s?.id !== cart?.id);
-    mutateSales([...otherSales, completedSale], false);
-    mutateInventory();
   }
 
   // Constants
   const buttons: ModalButton[] = [
     // REVIEW discard sale, do confirm dialog
-    // {
-    //   type: "cancel",
-    //   onClick: () => setSale(null),
-    //   disabled: true || totalRemaining === 0,
-    //   text:
-    //     sale?.state === SaleStateTypes.Layby ? "CANCEL LAYBY" : "DISCARD SALE",
-    // },
+    {
+      type: "cancel",
+      onClick: () => {
+        setCart(null);
+        setView({ ...view, saleScreen: false });
+      },
+      disabled: Boolean(cart?.transactions) || totalRemaining === 0,
+      text:
+        cart?.state === SaleStateTypes.Layby ? "CANCEL LAYBY" : "DISCARD SALE",
+    },
+    {
+      type: "alt2",
+      onClick: () => setView({ ...view, saleScreen: false }),
+      disabled: totalRemaining === 0,
+      loading: addMoreItemsLoading,
+      text: "CHANGE ITEMS",
+    },
     {
       type: "alt3",
       onClick: clickParkSale,
       disabled: cart?.state === SaleStateTypes.Layby || totalRemaining === 0,
       loading: parkSaleLoading,
       text: "PARK SALE",
-    },
-    {
-      type: "alt2",
-      onClick: () => setView({ ...view, saleScreen: false }),
-      disabled: cart?.state === SaleStateTypes.Layby || totalRemaining === 0,
-      loading: addMoreItemsLoading,
-      text: "CHANGE ITEMS",
     },
     {
       type: "alt1",
@@ -288,7 +256,7 @@ export default function SaleScreen() {
       onClick: clickCompleteSale,
       disabled:
         completeSaleLoading ||
-        totalRemaining > 0 ||
+        totalRemaining !== 0 ||
         cart?.state === SaleStateTypes.Completed,
       loading: completeSaleLoading,
       text: "COMPLETE SALE",
@@ -300,7 +268,7 @@ export default function SaleScreen() {
       <ScreenContainer
         show={view?.saleScreen}
         closeFunction={() => setView({ ...view, saleScreen: false })}
-        title={`SALE #${cart?.id} [${
+        title={`${cart?.id ? `SALE #${cart?.id}` : `NEW SALE`} [${
           cart?.state ? cart?.state.toUpperCase() : "IN PROGRESS"
         }]`}
         loading={isSaleItemsLoading || isSaleTransactionsLoading}

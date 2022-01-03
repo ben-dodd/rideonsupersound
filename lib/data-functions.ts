@@ -11,6 +11,7 @@ import {
   GoogleBooksItem,
   HelpObject,
   GiftCardObject,
+  SaleObject,
 } from "@/lib/types";
 
 import {
@@ -221,20 +222,20 @@ export function getItemStoreCut(
   );
 }
 
-export function getSaleVars(
-  saleItems: SaleItemObject[],
-  saleTransactions: SaleTransactionObject[],
-  inventory: InventoryObject[]
-) {
-  const totalPrice = getTotalPrice(saleItems, inventory) / 100;
-  const totalPaid = getTotalPaid(saleTransactions) / 100;
-  const totalStoreCut = getTotalStoreCut(saleItems, inventory) / 100;
+export function getSaleVars(sale: SaleObject, inventory: InventoryObject[]) {
+  const totalPrice = getTotalPrice(sale?.items, inventory) / 100;
+  const totalPaid = getTotalPaid(sale?.transactions) / 100;
+  const totalStoreCut = getTotalStoreCut(sale?.items, inventory) / 100;
   return {
     totalPrice,
     totalPaid,
     totalStoreCut,
     totalVendorCut: totalPrice - totalStoreCut,
     totalRemaining: totalPrice - totalPaid,
+    numberOfItems: sale?.items
+      ?.filter((item) => !item.is_refunded && !item?.is_deleted)
+      ?.reduce((acc, item) => acc + parseInt(item?.quantity), 0),
+    itemList: writeItemList(inventory, sale?.items),
   };
 }
 
@@ -242,7 +243,8 @@ export function getPaymentVars(
   inventory: InventoryObject[],
   vendorSales: VendorSaleItemObject[],
   vendorPayments: VendorPaymentObject[],
-  vendor_id: number
+  vendor_id: number,
+  cart?: SaleObject
 ) {
   let totalItems = inventory?.filter(
     (i: InventoryObject) => i?.vendor_id === vendor_id
@@ -255,6 +257,14 @@ export function getPaymentVars(
   let totalPayments = vendorPayments?.filter(
     (v: VendorPaymentObject) => v?.vendor_id === vendor_id
   );
+
+  if (cart) {
+    let cartPayments: VendorPaymentObject[] =
+      cart?.transactions
+        ?.filter((t: SaleTransactionObject) => t?.vendor?.id === vendor_id)
+        ?.map((t: SaleTransactionObject) => ({ amount: t?.amount })) || [];
+    totalPayments = [...totalPayments, ...cartPayments];
+  }
 
   const totalPaid = totalPayments?.reduce(
     (acc: number, payment: VendorPaymentObject) => acc + payment?.amount,
@@ -325,6 +335,7 @@ export function getTotalPrice(
   saleItems: SaleItemObject[],
   inventory: InventoryObject[]
 ) {
+  if (!saleItems) return 0;
   return saleItems?.reduce((acc, saleItem) => {
     if (saleItem?.is_refunded) return acc;
     // Misc Items and Gift Cards in inventory
@@ -353,7 +364,7 @@ export function getTotalStoreCut(
 }
 
 export function getTotalPaid(saleTransactions: SaleTransactionObject[]) {
-  // console.log(transactions);
+  if (!saleTransactions) return 0;
   return saleTransactions
     ?.filter((transaction) => !transaction.is_deleted)
     ?.reduce((acc, transaction) => acc + transaction?.amount, 0);
@@ -363,7 +374,6 @@ export function getTotalOwing(
   totalPayments: VendorPaymentObject[],
   totalSales: VendorSaleItemObject[]
 ) {
-  console.log(totalPayments);
   const totalPaid = totalPayments?.reduce(
     (acc: number, payment: VendorPaymentObject) => acc + payment?.amount,
     0

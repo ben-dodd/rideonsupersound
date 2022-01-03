@@ -4,7 +4,7 @@ import { useAtom } from "jotai";
 
 // DB
 import { useInventory, useStockItem, useGiftCards } from "@/lib/swr-hooks";
-import { saleObjectAtom, confirmModalAtom } from "@/lib/atoms";
+import { cartAtom, confirmModalAtom } from "@/lib/atoms";
 import { InventoryObject, SaleItemObject } from "@/lib/types";
 
 // Functions
@@ -44,7 +44,7 @@ export default function SellListItem({
   const { stockItem } = useStockItem(cartItem?.item_id);
 
   // Atoms
-  const [cart, setCart] = useAtom(saleObjectAtom);
+  const [cart, setCart] = useAtom(cartAtom);
   const [, setConfirmModal] = useAtom(confirmModalAtom);
 
   // State
@@ -68,9 +68,7 @@ export default function SellListItem({
   }
 
   function onChangeQuantity(e: any) {
-    console.log(e?.target?.value);
     if (stockItem?.quantity < parseInt(e?.target?.value)) {
-      console.log(e?.target?.value);
       const newQuantity = e?.target?.value;
       setConfirmModal({
         open: true,
@@ -187,16 +185,12 @@ export default function SellListItem({
                 {writeCartItemPriceTotal(item, cartItem)}
               </div>
               <div className="w-50 text-right">
-                {cart?.id ? (
-                  <div />
-                ) : (
-                  <button
-                    className="py-2 text-tertiary hover:text-tertiary-dark"
-                    onClick={() => deleteCartItem(cartItem?.item_id)}
-                  >
-                    <DeleteIcon />
-                  </button>
-                )}
+                <button
+                  className="py-2 text-tertiary hover:text-tertiary-dark"
+                  onClick={() => deleteCartItem(cartItem?.item_id)}
+                >
+                  <DeleteIcon />
+                </button>
               </div>
             </div>
           </div>

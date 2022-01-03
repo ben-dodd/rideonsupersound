@@ -1,5 +1,5 @@
 // Packages
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAtom } from "jotai";
 import formatISO from "date-fns/formatISO";
 
@@ -12,11 +12,12 @@ import {
   useLogs,
   useSales,
   useSaleItems,
+  useGiftCards,
 } from "@/lib/swr-hooks";
 import {
   clerkAtom,
   alertAtom,
-  saleObjectAtom,
+  cartAtom,
   loadedSaleIdAtom,
   viewAtom,
   pageAtom,
@@ -53,7 +54,7 @@ export default function SaleItemScreen() {
   // Atoms
   const [loadedSaleId, setLoadedSaleId] = useAtom(loadedSaleIdAtom);
   const [clerk] = useAtom(clerkAtom);
-  const [cart, setCart] = useAtom(saleObjectAtom);
+  const [cart, setCart] = useAtom(cartAtom);
   const [, setAlert] = useAtom(alertAtom);
   const [view, setView] = useAtom(viewAtom);
   const [page, setPage] = useAtom(pageAtom);
@@ -61,31 +62,34 @@ export default function SaleItemScreen() {
   // SWR
   const { customers } = useCustomers();
   const { inventory, mutateInventory } = useInventory();
+  const { giftCards, mutateGiftCards } = useGiftCards();
   const { items, isSaleItemsLoading } = useSaleItemsForSale(loadedSaleId[page]);
-  const {
-    transactions,
-    isSaleTransactionsLoading,
-  } = useSaleTransactionsForSale(loadedSaleId[page]);
+  const { transactions, isSaleTransactionsLoading } =
+    useSaleTransactionsForSale(loadedSaleId[page]);
   const { sales, mutateSales } = useSales();
-  const { saleItems, mutateSaleItems } = useSaleItems();
   const { logs, mutateLogs } = useLogs();
 
   // State
-  // const [saleLoading, setSaleLoading] = useState(false);
-  const [laybyLoading, setLaybyLoading] = useState(false);
-  const [addMoreItemsLoading, setAddMoreItemsLoading] = useState(false);
-  const [completeSaleLoading, setCompleteSaleLoading] = useState(false);
-  const [parkSaleLoading, setParkSaleLoading] = useState(false);
+  const [saleLoading, setSaleLoading] = useState(false);
+  const [loadToCartLoading, setLoadToCartLoading] = useState(false);
 
   // State
   const [sale, setSale]: [SaleObject, Function] = useState({});
-  const [tab, setTab] = useState(0);
 
   // Load
   useEffect(() => {
-    console.log(loadedSaleId[page]);
-    setSale(sales?.filter((s: SaleObject) => s?.id === loadedSaleId[page])[0]);
-  }, [loadedSaleId[page], sales]);
+    setSaleLoading(true);
+    if (!isSaleItemsLoading && !isSaleTransactionsLoading) {
+      let loadedSale = sales?.filter(
+        (s: SaleObject) => s?.id === loadedSaleId[page]
+      )[0];
+      loadedSale.items = items;
+      loadedSale.transactions = transactions;
+      console.log(loadedSale);
+      setSale(loadedSale);
+      setSaleLoading(false);
+    }
+  }, [loadedSaleId[page], isSaleItemsLoading, isSaleTransactionsLoading]);
 
   // TODO make sale info screen for LAYBY and SALES screen that needs to be activated to go to the SELL screen. So only one active sale will be present at a time.
   // BUG fix bug where close register screen appears (pressing TAB) - have fixed by just hiding sidebars and screens
@@ -93,19 +97,13 @@ export default function SaleItemScreen() {
   // BUG dates are wrong on vercel
   // BUG why are some sales showing items as separate line items, not 2x quantity
 
-  const itemList = writeItemList(inventory, items);
-  const { totalRemaining, totalPrice } = getSaleVars(
-    items,
-    transactions,
-    inventory
-  );
+  const { totalRemaining } = getSaleVars(sale, inventory);
 
   // Functions
-  async function clickAddMoreItems() {
-    setAddMoreItemsLoading(true);
+  async function loadSale() {
+    setLoadToCartLoading(true);
     await loadSaleToCart(
       cart,
-      items,
       setCart,
       sale,
       clerk,
@@ -114,29 +112,25 @@ export default function SaleItemScreen() {
       mutateLogs,
       sales,
       mutateSales,
-      saleItems,
-      mutateSaleItems
+      inventory,
+      mutateInventory,
+      giftCards,
+      mutateGiftCards
     );
-    setAddMoreItemsLoading(false);
+    setLoadToCartLoading(false);
     setSale(null);
     setLoadedSaleId({ ...loadedSaleId, [page]: null });
-    setView({ ...view, saleScreen: false });
+    setView({ ...view, saleScreen: true });
     setPage("sell");
   }
 
   // Constants
   const buttons: ModalButton[] = [
     {
-      type: "cancel",
-      onClick: () => setSale(null),
-      disabled: true || totalRemaining === 0,
-      text: "CLOSE",
-    },
-    {
       type: "ok",
-      onClick: clickAddMoreItems,
-      disabled: sale?.state === SaleStateTypes.Layby || totalRemaining === 0,
-      loading: addMoreItemsLoading,
+      onClick: loadSale,
+      disabled: totalRemaining === 0,
+      loading: loadToCartLoading,
       text: "LOAD SALE TO CART",
     },
   ];
@@ -149,7 +143,7 @@ export default function SaleItemScreen() {
         title={`SALE #${sale?.id} [${
           sale?.state ? sale?.state.toUpperCase() : "IN PROGRESS"
         }]`}
-        loading={isSaleItemsLoading || isSaleTransactionsLoading}
+        loading={saleLoading}
         buttons={sale?.state === SaleStateTypes.Completed ? null : buttons}
       >
         <div className="flex items-start overflow-auto w-full">
@@ -161,10 +155,6 @@ export default function SaleItemScreen() {
           </div>
         </div>
       </ScreenContainer>
-      {view?.refundPaymentDialog && <RefundPaymentDialog sale={sale} />}
-      {view?.returnItemDialog && <ReturnItemDialog sale={sale} />}
     </>
   );
 }
-
-// TODO fix parked sale bug, make it easier to delete parked sales

@@ -1,3 +1,7 @@
+@import url("https://fonts.googleapis.com/css2?family=Varela+Round&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
 @tailwind base;
 
 /* Write your own custom base styles here */
@@ -12,11 +16,7 @@
 @tailwind utilities;
 /* Stop purging. */
 
-@import url("https://fonts.googleapis.com/css2?family=Varela+Round&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap");
-
-@font-face {
+/* @font-face {
   font-family: "OpenDyslexic";
   font-style: normal;
   src: local("OpenDyslexic"),
@@ -44,7 +44,7 @@
   font-style: italic;
   src: local("OpenDyslexic"),
     url("/font/OpenDyslexic-Italic.otf") format("opentype");
-}
+} */
 
 /* Your own custom utilities */
 .loading-screen {
@@ -223,23 +223,23 @@
 }
 
 .screen__button--ok {
-  @apply screen__button bg-primary hover:bg-primary-dark;
+  @apply screen__button bg-primary hover:bg-primary-dark disabled:bg-gray-200;
 }
 
 .screen__button--cancel {
-  @apply screen__button bg-tertiary hover:bg-tertiary-dark;
+  @apply screen__button bg-tertiary hover:bg-tertiary-dark disabled:bg-gray-200;
 }
 
 .screen__button--alt1 {
-  @apply screen__button bg-secondary hover:bg-secondary-dark;
+  @apply screen__button bg-secondary hover:bg-secondary-dark disabled:bg-gray-200;
 }
 
 .screen__button--alt2 {
-  @apply screen__button bg-quarternary hover:bg-quarternary-dark;
+  @apply screen__button bg-quarternary hover:bg-quarternary-dark disabled:bg-gray-200;
 }
 
 .screen__button--alt3 {
-  @apply screen__button bg-primary hover:bg-primary-dark;
+  @apply screen__button bg-primary hover:bg-primary-dark disabled:bg-gray-200;
 }
 
 .help-text {

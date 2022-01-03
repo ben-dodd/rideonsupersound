@@ -3,12 +3,7 @@ import { useAtom } from "jotai";
 import { useSwipeable } from "react-swipeable";
 
 // DB
-import {
-  viewAtom,
-  pageAtom,
-  saleObjectAtom,
-  loadedItemIdAtom,
-} from "@/lib/atoms";
+import { viewAtom, pageAtom, cartAtom, loadedItemIdAtom } from "@/lib/atoms";
 import { useRegisterID } from "@/lib/swr-hooks";
 
 // Components
@@ -40,12 +35,11 @@ export default function SellScreen() {
   // Atoms
   const [view, setView] = useAtom(viewAtom);
   const [page] = useAtom(pageAtom);
-  const [sale, setSale] = useAtom(saleObjectAtom);
 
   const handlers = useSwipeable({
     onSwipedRight: () =>
-      Boolean(sale?.id)
-        ? setSale(null)
+      view?.saleScreen
+        ? setView({ ...view, saleScreen: false })
         : view?.createCustomer
         ? setView({ ...view, createCustomer: false })
         : view?.createHold
@@ -75,7 +69,7 @@ export default function SellScreen() {
       <ShoppingCart />
       <CreateHoldSidebar />
       <CreateCustomerSidebar />
-      {sale?.id && <SaleScreen />}
+      {view?.saleScreen && <SaleScreen />}
       {view?.miscItemDialog && <MiscItemDialog />}
       {view?.giftCardDialog && <GiftCardDialog />}
       {loadedItemId && <InventoryItemScreen page="sell" />}

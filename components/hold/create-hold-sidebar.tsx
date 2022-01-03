@@ -5,7 +5,7 @@ import { useAtom } from "jotai";
 // DB
 import { useCustomers, useInventory, useLogs } from "@/lib/swr-hooks";
 import {
-  saleObjectAtom,
+  cartAtom,
   clerkAtom,
   viewAtom,
   alertAtom,
@@ -40,7 +40,7 @@ export default function CreateHoldSidebar() {
   const { logs, mutateLogs } = useLogs();
 
   // Atoms
-  const [cart, setCart] = useAtom(saleObjectAtom);
+  const [cart, setCart] = useAtom(cartAtom);
   const [, setAlert] = useAtom(alertAtom);
   const [, setCustomer] = useAtom(loadedCustomerObjectAtom);
   const [view, setView] = useAtom(viewAtom);

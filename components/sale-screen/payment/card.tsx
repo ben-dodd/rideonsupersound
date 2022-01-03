@@ -4,51 +4,48 @@ import { useAtom } from "jotai";
 
 // DB
 import {
-  useSaleTransactionsForSale,
-  useSaleItemsForSale,
-  useInventory,
   useCustomers,
+  useInventory,
   useLogs,
   useRegisterID,
 } from "@/lib/swr-hooks";
-import { viewAtom, saleObjectAtom, clerkAtom, alertAtom } from "@/lib/atoms";
+import { viewAtom, cartAtom, clerkAtom, alertAtom } from "@/lib/atoms";
 import {
   ModalButton,
-  CustomerObject,
   SaleTransactionObject,
   PaymentMethodTypes,
+  CustomerObject,
 } from "@/lib/types";
 
 // Functions
 import { getSaleVars } from "@/lib/data-functions";
-import { saveSaleTransaction, saveLog } from "@/lib/db-functions";
 
 // Components
 import Modal from "@/components/_components/container/modal";
 import TextField from "@/components/_components/inputs/text-field";
+import { saveLog } from "@/lib/db-functions";
 
 export default function Cash() {
   // Atoms
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
-  const [sale] = useAtom(saleObjectAtom);
+  const [cart, setCart] = useAtom(cartAtom);
   const [, setAlert] = useAtom(alertAtom);
 
   // SWR
-  const { customers } = useCustomers();
   const { registerID } = useRegisterID();
-  const { transactions, mutateSaleTransactions } = useSaleTransactionsForSale(
-    sale?.id
-  );
-  const { items } = useSaleItemsForSale(sale?.id);
   const { inventory } = useInventory();
   const { logs, mutateLogs } = useLogs();
+  const { customers } = useCustomers();
 
-  const { totalRemaining } = getSaleVars(items, transactions, inventory);
+  const { totalRemaining } = getSaleVars(cart, inventory);
 
   // State
   const [submitting, setSubmitting] = useState(false);
-  const [cardPayment, setCardPayment] = useState(`${totalRemaining}`);
+  const isRefund = totalRemaining < 0;
+  const [cardPayment, setCardPayment] = useState(
+    `${Math.abs(totalRemaining).toFixed(2)}`
+  );
 
   // Constants
   const buttons: ModalButton[] = [
@@ -56,42 +53,44 @@ export default function Cash() {
       type: "ok",
       disabled:
         submitting ||
-        parseFloat(cardPayment) > totalRemaining ||
+        (!isRefund && parseFloat(cardPayment) > totalRemaining) ||
+        (isRefund && parseFloat(cardPayment) < totalRemaining) ||
         parseFloat(cardPayment) === 0 ||
-        cardPayment <= "" ||
+        cardPayment === "" ||
         isNaN(parseFloat(cardPayment)),
       loading: submitting,
-      onClick: async () => {
+      onClick: () => {
         setSubmitting(true);
+        // TODO check dates are correct
+        let date = new Date();
         let transaction: SaleTransactionObject = {
-          sale_id: sale?.id,
+          date: date.toISOString(),
+          sale_id: cart?.id,
           clerk_id: clerk?.id,
           payment_method: PaymentMethodTypes.Card,
-          amount:
-            parseFloat(cardPayment) >= totalRemaining
-              ? totalRemaining * 100
-              : parseFloat(cardPayment) * 100,
+          amount: isRefund
+            ? parseFloat(cardPayment) * -100
+            : parseFloat(cardPayment) * 100,
           register_id: registerID,
+          is_refund: isRefund,
         };
-        const id = await saveSaleTransaction(
-          transaction,
-          transactions,
-          mutateSaleTransactions
-        );
+        let transactions = cart?.transactions || [];
+        transactions.push(transaction);
+        setCart({ ...cart, transactions });
         setSubmitting(false);
         setView({ ...view, cardPaymentDialog: false });
         saveLog(
           {
-            log: `$${parseFloat(cardPayment)?.toFixed(2)} card payment from ${
-              sale?.customer_id
+            log: `$${parseFloat(cardPayment)?.toFixed(2)} ${
+              isRefund ? "refunded on card to" : "card payment from"
+            } ${
+              cart?.customer_id
                 ? customers?.filter(
-                    (c: CustomerObject) => c?.id === sale?.customer_id
+                    (c: CustomerObject) => c?.id === cart?.customer_id
                   )[0]?.name
                 : "customer"
-            } (sale #${sale?.id}).`,
+            }${cart?.id ? ` (sale #${cart?.id}).` : ""}.`,
             clerk_id: clerk?.id,
-            table_id: "sale_transaction",
-            row_id: id,
           },
           logs,
           mutateLogs
@@ -99,7 +98,9 @@ export default function Cash() {
         setAlert({
           open: true,
           type: "success",
-          message: `$${parseFloat(cardPayment)?.toFixed(2)} CARD PAYMENT`,
+          message: `$${parseFloat(cardPayment)?.toFixed(2)} CARD ${
+            isRefund ? "REFUND" : "PAYMENT"
+          }`,
         });
       },
       text: "COMPLETE",
@@ -110,7 +111,7 @@ export default function Cash() {
     <Modal
       open={view?.cardPaymentDialog}
       closeFunction={() => setView({ ...view, cardPaymentDialog: false })}
-      title={"CARD PAYMENT"}
+      title={isRefund ? `CARD REFUND` : `CARD PAYMENT`}
       buttons={buttons}
     >
       <>
@@ -123,17 +124,17 @@ export default function Cash() {
           selectOnFocus
           onChange={(e: any) => setCardPayment(e.target.value)}
         />
-        <div className="text-center">{`Remaining to pay: $${(
-          totalRemaining || 0
-        )?.toFixed(2)}`}</div>
+        <div className="text-center">{`Remaining to ${
+          isRefund ? "refund" : "pay"
+        }: $${Math.abs(totalRemaining)?.toFixed(2)}`}</div>
         <div className="text-center text-xl font-bold my-4">
           {cardPayment === "" || parseFloat(cardPayment) === 0
             ? "..."
             : isNaN(parseFloat(cardPayment))
             ? "NUMBERS ONLY PLEASE"
-            : parseFloat(cardPayment) > totalRemaining
-            ? `PAYMENT TOO HIGH`
-            : parseFloat(cardPayment) < totalRemaining
+            : parseFloat(cardPayment) > Math.abs(totalRemaining)
+            ? `${isRefund ? "REFUND AMOUNT" : "PAYMENT"} TOO HIGH`
+            : parseFloat(cardPayment) < Math.abs(totalRemaining)
             ? `AMOUNT SHORT BY $${(
                 totalRemaining - parseFloat(cardPayment)
               )?.toFixed(2)}`

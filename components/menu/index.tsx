@@ -4,7 +4,7 @@ import Image from "next/image";
 
 // DB
 import { useJobs, useInventory } from "@/lib/swr-hooks";
-import { pageAtom, saleObjectAtom, clerkAtom, viewAtom } from "@/lib/atoms";
+import { pageAtom, cartAtom, clerkAtom, viewAtom } from "@/lib/atoms";
 import { SaleItemObject, TaskObject, InventoryObject } from "@/lib/types";
 
 // Icons
@@ -34,7 +34,7 @@ type MenuType = {
 
 export default function Menu() {
   // Atoms
-  const [cart] = useAtom(saleObjectAtom);
+  const [cart] = useAtom(cartAtom);
   const [page, setPage] = useAtom(pageAtom);
   const [view, setView] = useAtom(viewAtom);
   const [clerk, setClerk] = useAtom(clerkAtom);

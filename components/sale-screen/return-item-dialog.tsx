@@ -9,7 +9,7 @@ import {
   useInventory,
   useLogs,
 } from "@/lib/swr-hooks";
-import { viewAtom, clerkAtom, alertAtom } from "@/lib/atoms";
+import { viewAtom, clerkAtom, alertAtom, cartAtom } from "@/lib/atoms";
 import {
   ModalButton,
   CustomerObject,
@@ -30,19 +30,17 @@ import Modal from "@/components/_components/container/modal";
 import TextField from "@/components/_components/inputs/text-field";
 import ItemListItem from "./item-list-item";
 
-export default function RefundPaymentDialog({ sale }) {
+export default function ReturnItemsDialog({ sale }) {
   // Atoms
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
   const [, setAlert] = useAtom(alertAtom);
+  const [cart, setCart] = useAtom(cartAtom);
 
   // SWR
-  const { transactions } = useSaleTransactionsForSale(sale?.id);
   const { items, mutateSaleItems } = useSaleItemsForSale(sale?.id);
   const { logs, mutateLogs } = useLogs();
   const { inventory } = useInventory();
-
-  const { totalRemaining } = getSaleVars(items, transactions, inventory);
 
   // State
   const [refundItems, setRefundItems] = useState([]);
@@ -60,24 +58,13 @@ export default function RefundPaymentDialog({ sale }) {
     {
       type: "ok",
       loading: submitting,
-      onClick: async () => {
-        const otherSaleItems = items?.filter(
-          (item: SaleItemObject) => !refundItems.includes(item?.id)
+      onClick: () => {
+        const updatedCartItems = cart?.items?.map((item: SaleItemObject) =>
+          refundItems.includes(item?.id)
+            ? { ...item, is_refunded: true, refund_note: notes }
+            : item
         );
-        const refundedItems = [];
-        refundItems?.forEach((x: number) => {
-          let saleItem: SaleItemObject =
-            items?.filter((i: SaleItemObject) => i?.id === x)[0] || {};
-          saleItem = {
-            ...saleItem,
-            is_refunded: true,
-            refund_note: notes,
-            sale_id: sale?.id,
-          };
-          updateSaleItemInDatabase(saleItem);
-          refundedItems.push(saleItem);
-        });
-        mutateSaleItems([...otherSaleItems, ...refundedItems], false);
+        setCart({ ...cart, items: updatedCartItems });
         closeDialog();
         saveLog(
           {

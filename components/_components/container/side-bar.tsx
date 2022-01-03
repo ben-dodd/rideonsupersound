@@ -18,11 +18,11 @@ export default function SidebarContainer({ show, title, buttons, children }) {
           {children}
         </div>
         {buttons ? (
-          <div className="flex px-2 -mr-4">
+          <div className="flex px-2 -mr-4 mb-4">
             {buttons?.map((button: ModalButton, i: number) => (
               <button
                 key={i}
-                className="fab-button w-full my-4 mr-4"
+                className={`modal__button--${button?.type}`}
                 disabled={button?.disabled}
                 onClick={() => button?.onClick()}
               >

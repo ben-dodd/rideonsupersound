@@ -3,19 +3,13 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useInventory, useLogs, useSales, useSaleItems } from "@/lib/swr-hooks";
-import { saleObjectAtom, viewAtom, clerkAtom, alertAtom } from "@/lib/atoms";
-import { InventoryObject, SaleItemObject, SaleStateTypes } from "@/lib/types";
+import { useInventory, useLogs } from "@/lib/swr-hooks";
+import { cartAtom, viewAtom, clerkAtom, alertAtom } from "@/lib/atoms";
+import { InventoryObject, SaleItemObject } from "@/lib/types";
 
 // Functions
+import { getItemDisplayName, getSaleVars } from "@/lib/data-functions";
 import {
-  getTotalPrice,
-  getTotalStoreCut,
-  writeItemList,
-  getItemDisplayName,
-} from "@/lib/data-functions";
-import {
-  saveSaleAndItemsToDatabase,
   deleteSaleFromDatabase,
   deleteSaleItemFromDatabase,
   saveLog,
@@ -33,77 +27,34 @@ import HoldIcon from "@mui/icons-material/PanTool";
 
 export default function ShoppingCart() {
   // SWR
-  const { inventory, mutateInventory } = useInventory();
-  const { sales, mutateSales } = useSales();
-  const { saleItems, mutateSaleItems } = useSaleItems();
+  const { inventory } = useInventory();
   const { logs, mutateLogs } = useLogs();
 
   // Atoms
   const [view, setView] = useAtom(viewAtom);
   const [clerk] = useAtom(clerkAtom);
-  const [cart, setCart] = useAtom(saleObjectAtom);
+  const [cart, setCart] = useAtom(cartAtom);
   const [, setAlert] = useAtom(alertAtom);
-  const [, setSale] = useAtom(saleObjectAtom);
 
   // State
   const [loadingSale, setLoadingSale] = useState(false);
 
-  const itemList = writeItemList(inventory, cart?.items);
-
-  // Functions
-  async function loadSale() {
-    try {
-      setLoadingSale(true);
-      saveSaleAndItemsToDatabase(
-        { ...cart, state: SaleStateTypes.InProgress },
-        cart?.items,
-        clerk,
-        sales,
-        mutateSales,
-        saleItems,
-        mutateSaleItems,
-        inventory,
-        mutateInventory
-      ).then((savedCart) => {
-        saveLog(
-          {
-            log: `${
-              cart?.id
-                ? cart?.state === SaleStateTypes.Layby
-                  ? "Layby"
-                  : "Parked sale"
-                : "New sale"
-            } #${savedCart?.id} loaded. ${itemList}.`,
-            clerk_id: clerk?.id,
-            table_id: "sale",
-            row_id: savedCart?.id,
-          },
-          logs,
-          mutateLogs
-        );
-        setSale({ ...savedCart, state: SaleStateTypes.InProgress });
-        setView({ ...view, saleScreen: true });
-        setLoadingSale(false);
-      });
-    } catch (e) {
-      throw Error(e.message);
-    }
-  }
-
-  // TODO Can you do a hold after a sale has been started?
-
   async function deleteCartItem(itemId: string, id: number) {
-    let newItems = cart?.items.filter((i) => i?.item_id !== parseInt(itemId));
+    let updatedCartItems = cart?.items?.map((i: SaleItemObject) =>
+      i?.item_id === parseInt(itemId) ? { ...i, is_deleted: true } : i
+    );
     if (id)
       // Cart has been saved to the database, delete sale_item
       deleteSaleItemFromDatabase(id);
-    if (cart?.items?.length < 1) {
-      // No items left, delete cart
+    if (cart?.items?.length < 1 && cart?.transactions?.length < 1) {
+      // No items left and no transactions, delete cart
       setView({ ...view, cart: false });
-      // TODO Any transactions need to be refunded.
       deleteSaleFromDatabase(cart?.id);
     }
-    setCart({ ...cart, items: newItems });
+    setCart({
+      ...cart,
+      items: updatedCartItems,
+    });
     saveLog(
       {
         log: `${getItemDisplayName(
@@ -124,17 +75,13 @@ export default function ShoppingCart() {
     // setRefresh(refresh + 1);
   }
 
-  // Constants
-  const totalPrice = getTotalPrice(cart?.items, inventory);
-  const storeCut = getTotalStoreCut(cart?.items, inventory);
-  const disableButtons =
-    loadingSale ||
-    !(cart?.items && Object.keys(cart?.items)?.length > 0) ||
-    Object.values(cart?.items)?.filter(
-      (i: SaleItemObject) =>
-        parseInt(i?.store_discount) > 100 || parseInt(i?.vendor_discount) > 100
-    )?.length > 0;
   console.log(cart);
+
+  // Constants
+  const { totalPrice, totalStoreCut, totalRemaining, totalPaid } = getSaleVars(
+    cart,
+    inventory
+  );
   return (
     <div
       className={`absolute top-0 transition-offset duration-300 ${
@@ -157,25 +104,45 @@ export default function ShoppingCart() {
         </div>
         <div className="flex-grow overflow-x-hidden overflow-y-scroll">
           {cart?.items?.length > 0 ? (
-            cart.items.map((cartItem, i) => (
-              <ListItem
-                key={cartItem?.item_id}
-                index={i}
-                cartItem={cartItem}
-                deleteCartItem={deleteCartItem}
-              />
-            ))
+            cart.items
+              .filter((cartItem: SaleItemObject) => !cartItem?.is_deleted)
+              .map((cartItem, i) => (
+                <ListItem
+                  key={cartItem?.item_id}
+                  index={i}
+                  cartItem={cartItem}
+                  deleteCartItem={deleteCartItem}
+                />
+              ))
           ) : (
             <Tooltip title="To add items to the cart. Use the search bar and then add items with the (+) icon.">
               <div>No items in cart...</div>
             </Tooltip>
           )}
         </div>
+        {Boolean(cart?.transactions) ? (
+          <div className="flex justify-end mt-2">
+            <div className="self-center">TOTAL PAID</div>
+            <div
+              className={`self-center text-right ml-7 ${
+                totalPaid < 0 ? "text-red-500" : "text-black"
+              }`}
+            >
+              {totalPaid < 0 && "-"}${Math.abs(totalPaid)?.toFixed(2)}
+            </div>
+          </div>
+        ) : (
+          <div />
+        )}
         <div className="pt-4">
           <div className="flex justify-between">
             <button
-              className="fab-button__secondary w-1/3"
-              disabled={disableButtons}
+              className="fab-button__secondary w-1/3 mb-4"
+              disabled={
+                Boolean(cart?.transactions) ||
+                loadingSale ||
+                totalRemaining === 0
+              }
               onClick={() => setView({ ...view, createHold: true })}
             >
               <HoldIcon className="mr-2" />
@@ -186,28 +153,30 @@ export default function ShoppingCart() {
                 <div className="self-center">STORE CUT</div>
                 <div
                   className={`self-center text-right ml-7 ${
-                    storeCut < 0 ? "text-red-500" : "text-black"
+                    totalStoreCut < 0 ? "text-red-500" : "text-black"
                   }`}
                 >
-                  {storeCut < 0 && "-"}$
+                  {totalStoreCut < 0 && "-"}$
                   {cart?.items?.length > 0
-                    ? Math.abs(storeCut / 100)?.toFixed(2)
+                    ? Math.abs(totalStoreCut)?.toFixed(2)
                     : "0.00"}
                 </div>
               </div>
               <div className="flex justify-end mt-1">
                 <div className="self-center">TOTAL</div>
                 <div className="self-center text-right ml-4">
-                  ${((totalPrice || 0) / 100)?.toFixed(2)}
+                  ${totalPrice?.toFixed(2)}
                 </div>
               </div>
             </div>
           </div>
           <div>
             <button
-              className="fab-button w-full my-4"
-              disabled={disableButtons}
-              onClick={() => loadSale()}
+              className={`w-full my-4 modal__button--${
+                totalRemaining < 0 ? "cancel" : "ok"
+              }`}
+              disabled={loadingSale || totalRemaining === 0}
+              onClick={() => setView({ ...view, saleScreen: true })}
             >
               {loadingSale ? (
                 <span className="pr-4">
@@ -216,7 +185,9 @@ export default function ShoppingCart() {
               ) : (
                 <PayIcon className="mr-2" />
               )}
-              {cart?.id ? "CONTINUE SALE" : "MAKE THEM PAY"}
+              {totalRemaining < 0
+                ? `REFUND $${Math.abs(totalRemaining)?.toFixed(2)}`
+                : `PAY $${totalRemaining?.toFixed(2)}`}
             </button>
           </div>
         </div>

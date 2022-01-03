@@ -4,7 +4,7 @@ import { useAtom } from "jotai";
 
 // DB
 import { useInventory, useLogs, useWeather } from "@/lib/swr-hooks";
-import { viewAtom, saleObjectAtom, clerkAtom, alertAtom } from "@/lib/atoms";
+import { viewAtom, cartAtom, clerkAtom, alertAtom } from "@/lib/atoms";
 import { ModalButton, InventoryObject } from "@/lib/types";
 
 // Functions
@@ -20,7 +20,7 @@ export default function MiscItemDialog() {
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
   const [, setAlert] = useAtom(alertAtom);
-  const [cart, setCart] = useAtom(saleObjectAtom);
+  const [cart, setCart] = useAtom(cartAtom);
 
   // SWR
   const { logs, mutateLogs } = useLogs();

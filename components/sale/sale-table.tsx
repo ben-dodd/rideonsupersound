@@ -35,13 +35,13 @@ import TableContainer from "@/components/_components/container/table";
 export default function SaleTable() {
   // SWR
   const { sales, isSalesLoading } = useSales();
-  const { saleItems, isSaleItemsLoading } = useSaleItems();
+  // const { saleItems, isSaleItemsLoading } = useSaleItems();
   const { inventory, isInventoryLoading } = useInventory();
   const { customers, isCustomersLoading } = useCustomers();
   const { clerks, isClerksLoading } = useClerks();
 
   // Atoms
-  const [view, setView] = useAtom(viewAtom);
+  // const [view, setView] = useAtom(viewAtom);
   const [page] = useAtom(pageAtom);
   const [loadedSaleId, setLoadedSaleId] = useAtom(loadedSaleIdAtom);
 
@@ -49,10 +49,10 @@ export default function SaleTable() {
   const data = useMemo(
     () =>
       sales?.map((s: SaleObject) => {
-        const items = saleItems?.filter(
-          (i: SaleItemObject) => i?.sale_id === s?.id
-        );
-        s = { ...s, items };
+        // const items = saleItems?.filter(
+        //   (i: SaleItemObject) => i?.sale_id === s?.id
+        // );
+        // s = { ...s, items };
         return {
           id: s?.id,
           date: nzDate(s?.date_sale_opened),
@@ -63,17 +63,21 @@ export default function SaleTable() {
           clerk: clerks?.filter(
             (c: ClerkObject) => c?.id === s?.sale_opened_by
           )[0],
-          numberOfItems: items?.reduce(
-            (accumulator: number, item: SaleItemObject) =>
-              accumulator + parseInt(item?.quantity) || 1,
-            0
-          ),
-          items: writeItemList(inventory, items),
-          store: getTotalStoreCut(items, inventory),
-          sell: getTotalPrice(items, inventory),
+          numberOfItems: s?.number_of_items,
+          items: s?.item_list,
+          store: s?.store_cut,
+          sell: s?.total_price,
+          // numberOfItems: items?.reduce(
+          //   (accumulator: number, item: SaleItemObject) =>
+          //     accumulator + parseInt(item?.quantity) || 1,
+          //   0
+          // ),
+          // items: writeItemList(inventory, items),
+          // store: getTotalStoreCut(items, inventory),
+          // sell: getTotalPrice(items, inventory),
         };
       }),
-    [sales, saleItems, customers, clerks, inventory]
+    [sales, customers, clerks, inventory]
   );
   const columns = useMemo(() => {
     return [
@@ -148,7 +152,7 @@ export default function SaleTable() {
         width: 400,
       },
     ];
-  }, [sales, saleItems, inventory]);
+  }, [sales, inventory]);
 
   return (
     <TableContainer
@@ -156,7 +160,6 @@ export default function SaleTable() {
         isSalesLoading ||
         isClerksLoading ||
         isInventoryLoading ||
-        isSaleItemsLoading ||
         isCustomersLoading
       }
     >

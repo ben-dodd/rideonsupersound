@@ -10,26 +10,15 @@ import {
   useSaleItemsForSale,
   useInventory,
 } from "@/lib/swr-hooks";
-import {
-  saleObjectAtom,
-  viewAtom,
-  loadedCustomerObjectAtom,
-} from "@/lib/atoms";
-import { CustomerObject, OpenWeatherObject, SaleStateTypes } from "@/lib/types";
+import { cartAtom, viewAtom, loadedCustomerObjectAtom } from "@/lib/atoms";
+import { CustomerObject, SaleStateTypes } from "@/lib/types";
 
 // Functions
-import {
-  convertMPStoKPH,
-  convertDegToCardinal,
-  getSaleVars,
-  fDateTime,
-} from "@/lib/data-functions";
+import { getSaleVars } from "@/lib/data-functions";
 
 // Components
 import CreateableSelect from "@/components/_components/inputs/createable-select";
 import TextField from "@/components/_components/inputs/text-field";
-import Switch from "@mui/material/Switch";
-import Tooltip from "@mui/material/Tooltip";
 
 import DeleteIcon from "@mui/icons-material/Delete";
 import RefundIcon from "@mui/icons-material/Payment";
@@ -38,24 +27,17 @@ import SplitIcon from "@mui/icons-material/CallSplit";
 
 export default function Pay() {
   // Atoms
-  const [sale, setSale] = useAtom(saleObjectAtom);
+  const [cart, setCart] = useAtom(cartAtom);
   const [, setCustomer] = useAtom(loadedCustomerObjectAtom);
   const [view, setView] = useAtom(viewAtom);
 
   // SWR
-  const { clerks } = useClerks();
   const { customers } = useCustomers();
-  const { items } = useSaleItemsForSale(sale?.id);
-  const { transactions } = useSaleTransactionsForSale(sale?.id);
   const { inventory } = useInventory();
 
   // State
   const [note, setNote] = useState("");
-  const { totalRemaining, totalPaid } = getSaleVars(
-    items,
-    transactions,
-    inventory
-  );
+  const { totalRemaining, totalPaid } = getSaleVars(cart, inventory);
   const [isRefund, setIsRefund] = useState(false);
 
   return (
@@ -70,7 +52,7 @@ export default function Pay() {
               : "text-tertiary"
           }`}
         >
-          {sale?.state === SaleStateTypes.Completed
+          {cart?.state === SaleStateTypes.Completed
             ? "SALE COMPLETED"
             : totalRemaining === 0
             ? "ALL PAID"
@@ -93,36 +75,40 @@ export default function Pay() {
         <button
           className="square-button"
           onClick={() => setView({ ...view, cashPaymentDialog: true })}
+          disabled={totalRemaining === 0}
         >
           CASH
         </button>
         <button
           className="square-button"
           onClick={() => setView({ ...view, cardPaymentDialog: true })}
+          disabled={totalRemaining === 0}
         >
           CARD
         </button>
         <button
           className="square-button"
           onClick={() => setView({ ...view, acctPaymentDialog: true })}
+          disabled={totalRemaining === 0}
         >
           ACCT
         </button>
         <button
           className="square-button"
           onClick={() => setView({ ...view, giftPaymentDialog: true })}
+          disabled={totalRemaining === 0}
         >
           GIFT
         </button>
       </div>
-      {sale?.state === SaleStateTypes.Layby ? (
+      {cart?.state === SaleStateTypes.Layby ? (
         <div className="mt-2">
-          {sale?.customer_id ? (
+          {cart?.customer_id ? (
             <div>
               <div className="font-bold">Customer</div>
               <div>
                 {customers?.filter(
-                  (c: CustomerObject) => c?.id === sale?.customer_id
+                  (c: CustomerObject) => c?.id === cart?.customer_id
                 )[0]?.name || ""}
               </div>
             </div>
@@ -137,14 +123,14 @@ export default function Pay() {
           </div>
           <CreateableSelect
             inputLabel="Select customer"
-            value={sale?.customer_id}
+            value={cart?.customer_id}
             label={
               customers?.filter(
-                (c: CustomerObject) => c?.id === sale?.customer_id
+                (c: CustomerObject) => c?.id === cart?.customer_id
               )[0]?.name || ""
             }
             onChange={(customerObject: any) => {
-              setSale((s) => ({
+              setCart((s) => ({
                 ...s,
                 customer_id: parseInt(customerObject?.value),
               }));
@@ -164,32 +150,19 @@ export default function Pay() {
         inputLabel="Note"
         multiline
         value={note}
-        onChange={(e: any) => setNote(e.target.value)}
+        onChange={(e: any) => setCart({ ...cart, note: e.target.value })}
       />
-      <div className="grid grid-cols-2">
-        <button
-          className="icon-text-button"
-          onClick={() => setView({ ...view, returnItemDialog: true })}
-        >
-          <ReturnIcon className="mr-1" /> Refund Items
-        </button>
-        <button
-          className="icon-text-button"
-          onClick={() => setView({ ...view, refundPaymentDialog: true })}
-          disabled={totalPaid <= 0}
-        >
-          <RefundIcon className="mr-1" /> Refund Payment
-        </button>
-        <button
-          className="icon-text-button"
-          onClick={() => setView({ ...view, splitSaleDialog: true })}
-        >
-          <SplitIcon className="mr-1" /> Split Sale
-        </button>
-        <button className="icon-text-button">
-          <DeleteIcon className="mr-1" /> Delete Sale
-        </button>
-      </div>
+      {cart?.id && (
+        <div>
+          <button
+            className="icon-text-button ml-0"
+            onClick={() => setView({ ...view, returnItemDialog: true })}
+            disabled={cart?.items?.length < 1}
+          >
+            <ReturnIcon className="mr-1" /> Return Items
+          </button>
+        </div>
+      )}
     </div>
   );
 }

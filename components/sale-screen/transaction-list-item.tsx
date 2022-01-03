@@ -22,9 +22,6 @@ import {
 // Functions
 import { deleteSaleTransactionFromDatabase, saveLog } from "@/lib/db-functions";
 
-// Icons
-import DeleteIcon from "@mui/icons-material/Delete";
-
 // Types
 type TransactionListItemProps = {
   transaction: SaleTransactionObject;
@@ -37,50 +34,12 @@ type UseVendorProps = {
 
 export default function TransactionListItem({
   transaction,
-  sale,
 }: TransactionListItemProps) {
-  // Atoms
-  const [clerk] = useAtom(clerkAtom);
-  const [, setAlert] = useAtom(alertAtom);
-
   // SWR
   const { giftCards } = useGiftCards();
   const { vendor }: UseVendorProps = useVendorFromVendorPayment(
     transaction?.vendor_payment_id
   );
-  const { transactions, mutateSaleTransactions } = useSaleTransactionsForSale(
-    sale?.id
-  );
-  const { logs, mutateLogs } = useLogs();
-
-  // Functions
-  const onClickDelete = () => {
-    // Delete transaction item from cart
-    deleteSaleTransactionFromDatabase(
-      transaction?.id,
-      transactions,
-      mutateSaleTransactions
-    );
-    saveLog(
-      {
-        log: `$${(transaction?.amount / 100)?.toFixed(2)} ${
-          transaction?.payment_method
-        } transaction deleted.`,
-        clerk_id: clerk?.id,
-        table_id: "sale_transaction",
-        row_id: transaction?.id,
-      },
-      logs,
-      mutateLogs
-    );
-    setAlert({
-      open: true,
-      type: "success",
-      message: `$${(transaction?.amount / 100)?.toFixed(
-        2
-      )} ${transaction?.payment_method?.toUpperCase()} PAYMENT DELETED`,
-    });
-  };
 
   const giftCard = giftCards?.filter(
     (g: GiftCardObject) => g?.id === transaction?.gift_card_id
@@ -92,18 +51,6 @@ export default function TransactionListItem({
         transaction?.is_deleted && "line-through text-gray-400"
       } ${transaction?.is_refund && "text-red-500"}`}
     >
-      {/*<div className="w-2/12">
-        {transaction?.is_deleted ? (
-          <div />
-        ) : (
-          <button
-            className="bg-gray-200 hover:bg-gray-300 p-1 w-10 h-10 rounded-full mr-8"
-            onClick={onClickDelete}
-          >
-            <DeleteIcon />
-          </button>
-        )}
-      </div>*/}
       <div className="w-1/2">
         {format(parseISO(transaction?.date), "d MMMM yyyy, p", { locale: nz })}
       </div>
@@ -128,7 +75,11 @@ export default function TransactionListItem({
               ? `($${(transaction.change_given / 100)?.toFixed(2)} CHANGE)`
               : "(NO CHANGE)"
             : transaction?.payment_method === PaymentMethodTypes.Account
-            ? `[${(vendor?.name || "").toUpperCase()}]`
+            ? `[${(
+                vendor?.name ||
+                transaction?.vendor?.name ||
+                ""
+              ).toUpperCase()}]`
             : transaction?.payment_method === PaymentMethodTypes.GiftCard
             ? transaction?.gift_card_taken
               ? transaction?.change_given

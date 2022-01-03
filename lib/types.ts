@@ -98,12 +98,16 @@ export interface SaleObject {
   id?: number;
   customer_id?: number;
   state?: SaleStateTypes;
-  date_sale_opened?: string;
+  date_sale_opened?: any;
   sale_opened_by?: number;
-  date_sale_closed?: string;
+  date_sale_closed?: any;
   sale_closed_by?: number;
-  date_layby_started?: string;
+  date_layby_started?: any;
   layby_started_by?: number;
+  store_cut?: number;
+  total_price?: number;
+  number_of_items?: number;
+  item_list?: string;
   cash_note?: string;
   note?: string;
   weather?: any;
@@ -111,6 +115,7 @@ export interface SaleObject {
   geo_longitude?: number;
   is_deleted?: boolean;
   items?: SaleItemObject[];
+  transactions?: SaleTransactionObject[];
 }
 
 export interface SaleItemObject {
@@ -146,6 +151,8 @@ export interface SaleTransactionObject {
   register_id?: number;
   is_refund?: boolean;
   is_deleted?: boolean;
+  vendor?: VendorObject;
+  gift_card_update?: GiftCardObject;
 }
 
 export interface HoldObject {

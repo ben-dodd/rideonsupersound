@@ -3,7 +3,7 @@ import { useAtom } from "jotai";
 
 // DB
 import {
-  saleObjectAtom,
+  cartAtom,
   viewAtom,
   clerkAtom,
   confirmModalAtom,
@@ -45,7 +45,7 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
   const { logs, mutateLogs } = useLogs();
 
   // Atoms
-  const [cart, setCart] = useAtom(saleObjectAtom);
+  const [cart, setCart] = useAtom(cartAtom);
   const [view, setView] = useAtom(viewAtom);
   const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom);
   const [, setConfirmModal] = useAtom(confirmModalAtom);
@@ -89,9 +89,14 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
     setCart({
       id: cart?.id || null,
       // REVIEW check the date to string thing works ok
-      date_sale_opened: cart?.date_sale_opened || new Date().toString(),
+      date_sale_opened: cart?.date_sale_opened || "CURRENT_TIMESTAMP",
       sale_opened_by: cart?.sale_opened_by || clerk?.id,
       items: newItems,
+      transactions: cart?.transactions || [],
+      state: cart?.state || null,
+      customer_id: cart?.customer_id || null,
+      layby_started_by: cart?.layby_started_by || null,
+      date_layby_started: cart?.date_layby_started || null,
       weather: cart?.weather || weather,
       geo_latitude: cart?.geo_latitude || geolocation?.latitude,
       geo_longitude: cart?.geo_longitude || geolocation?.longitude,
