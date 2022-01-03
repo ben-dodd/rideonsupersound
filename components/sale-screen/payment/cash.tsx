@@ -113,7 +113,11 @@ export default function Cash() {
           message: `$${parseFloat(cashReceived)?.toFixed(2)} ${
             isRefund
               ? `CASH REFUNDED.`
-              : `CASH TAKEN. $${changeToGive} CHANGE GIVEN.`
+              : `CASH TAKEN.${
+                  parseFloat(changeToGive) > 0
+                    ? ` $${changeToGive} CHANGE GIVEN.`
+                    : ""
+                }`
           }`,
         });
       },

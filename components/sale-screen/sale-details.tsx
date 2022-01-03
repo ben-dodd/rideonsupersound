@@ -30,7 +30,9 @@ export default function SaleDetails({ sale }) {
 
   // Constants
   const weather: OpenWeatherObject = sale?.weather
-    ? JSON.parse(sale?.weather)
+    ? sale?.weather instanceof String
+      ? JSON.parse(sale?.weather)
+      : sale?.weather
     : null;
 
   return (

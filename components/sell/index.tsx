@@ -23,7 +23,7 @@ import ChangePriceDialog from "@/components/inventory/change-price-dialog";
 import ChangeStockQuantityDialog from "@/components/inventory/change-stock-quantity-dialog";
 import ReturnCashDialog from "@/components/register/return-cash";
 import TakeCashDialog from "@/components/register/take-cash";
-import LoadSalesDialog from "@/components/sell/shopping-cart/load-sales";
+// import LoadSalesDialog from "@/components/sell/shopping-cart/load-sales";
 import GiftCardDialog from "@/components/sell/inventory-scroll/gift-card-dialog";
 import MiscItemDialog from "@/components/sell/inventory-scroll/misc-item-dialog";
 
@@ -78,7 +78,7 @@ export default function SellScreen() {
       {view?.closeRegisterScreen && <CloseRegisterScreen />}
       {view?.returnCashDialog && <ReturnCashDialog />}
       {view?.takeCashDialog && <TakeCashDialog />}
-      {view?.loadSalesDialog && <LoadSalesDialog />}
+      {/*view?.loadSalesDialog && <LoadSalesDialog />*/}
     </div>
   );
 }

@@ -127,14 +127,14 @@ export default function ShoppingCartActions() {
   }
   return (
     <div>
-      <Tooltip title="Load parked sales and laybys">
+      {/*<Tooltip title="Load parked sales and laybys">
         <button
           className={"icon-button-small-white relative"}
           onClick={onClickLoadSales}
         >
           <RetrieveSaleIcon />
         </button>
-      </Tooltip>
+  </Tooltip>*/}
       <Tooltip
         title={
           cart?.state === SaleStateTypes.Layby ? "Continue Layby" : "Park sale"
