@@ -217,15 +217,27 @@ export function getItemStoreCut(
 }
 
 export function getSaleVars(sale: SaleObject, inventory: InventoryObject[]) {
-  const totalPrice = getTotalPrice(sale?.items, inventory) / 100;
-  const totalPaid = getTotalPaid(sale?.transactions) / 100;
-  const totalStoreCut = getTotalStoreCut(sale?.items, inventory) / 100;
+  const totalPrice =
+    Math.round(
+      (getTotalPrice(sale?.items, inventory) / 100 + Number.EPSILON) * 10
+    ) / 10;
+  const totalPaid =
+    Math.round((getTotalPaid(sale?.transactions) / 100 + Number.EPSILON) * 10) /
+    10;
+  const totalStoreCut =
+    Math.round(
+      (getTotalStoreCut(sale?.items, inventory) / 100 + Number.EPSILON) * 10
+    ) / 10;
+  const totalVendorCut =
+    Math.round((totalPrice - totalStoreCut + Number.EPSILON) * 10) / 10;
+  const totalRemaining =
+    Math.round((totalPrice - totalPaid + Number.EPSILON) * 10) / 10;
   return {
     totalPrice,
     totalPaid,
     totalStoreCut,
-    totalVendorCut: totalPrice - totalStoreCut,
-    totalRemaining: totalPrice - totalPaid,
+    totalVendorCut,
+    totalRemaining,
     numberOfItems: sale?.items
       ?.filter((item) => !item.is_refunded && !item?.is_deleted)
       ?.reduce((acc, item) => acc + parseInt(item?.quantity), 0),
@@ -674,6 +686,7 @@ export function writeItemList(
 ) {
   if (items && inventory) {
     return items
+      .filter((item: SaleItemObject) => !item?.is_deleted)
       .map((item: SaleItemObject) => {
         let stockItem: InventoryObject = inventory?.filter(
           (i) => i?.id === item?.item_id
@@ -685,6 +698,7 @@ export function writeItemList(
           let str = "";
           if (cartQuantity > 1) str = `${cartQuantity} x `;
           str = str + getItemDisplayName(stockItem);
+          if (item?.is_refunded) str = str + " [REFUNDED]";
           return str;
         }
       })

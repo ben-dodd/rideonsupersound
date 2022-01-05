@@ -10,7 +10,6 @@ import {
   useInventory,
   useLogs,
   useSales,
-  useSaleItems,
   useGiftCards,
 } from "@/lib/swr-hooks";
 import {
@@ -23,28 +22,20 @@ import {
 } from "@/lib/atoms";
 import {
   ModalButton,
-  CustomerObject,
   SaleItemObject,
   SaleObject,
-  InventoryObject,
   SaleStateTypes,
 } from "@/lib/types";
 
 // Functions
-import { getSaleVars, writeItemList } from "@/lib/data-functions";
-import {
-  saveLog,
-  saveStockMovementToDatabase,
-  updateSaleInDatabase,
-  loadSaleToCart,
-} from "@/lib/db-functions";
+import { getSaleVars } from "@/lib/data-functions";
+import { loadSaleToCart } from "@/lib/db-functions";
 
 // Components
 import SaleDetails from "./sale-details";
 import SaleSummary from "./sale-summary";
 import ScreenContainer from "@/components/_components/container/screen";
-import RefundPaymentDialog from "./refund-payment-dialog";
-import ReturnItemDialog from "./return-item-dialog";
+import ReturnItemsDialog from "./return-item-dialog";
 
 // TODO add returns to sale items
 // TODO refund dialog like PAY, refund with store credit, cash or card
@@ -128,9 +119,8 @@ export default function SaleItemScreen() {
     {
       type: "ok",
       onClick: loadSale,
-      disabled: totalRemaining === 0,
       loading: loadToCartLoading,
-      text: "LOAD SALE TO CART",
+      text: totalRemaining === 0 ? "RETURN ITEMS" : "LOAD SALE TO CART",
     },
   ];
 
@@ -143,7 +133,13 @@ export default function SaleItemScreen() {
           sale?.state ? sale?.state.toUpperCase() : "IN PROGRESS"
         }]`}
         loading={saleLoading}
-        buttons={sale?.state === SaleStateTypes.Completed ? null : buttons}
+        buttons={
+          sale?.items?.filter(
+            (s: SaleItemObject) => !s?.is_refunded && !s?.is_deleted
+          )?.length > 0
+            ? buttons
+            : null
+        }
       >
         <div className="flex items-start overflow-auto w-full">
           <div className="w-2/3">

@@ -255,10 +255,7 @@ export default function SaleScreen() {
     {
       type: "ok",
       onClick: clickCompleteSale,
-      disabled:
-        completeSaleLoading ||
-        totalRemaining !== 0 ||
-        cart?.state === SaleStateTypes.Completed,
+      disabled: completeSaleLoading || totalRemaining !== 0,
       loading: completeSaleLoading,
       text: "COMPLETE SALE",
     },
@@ -275,7 +272,7 @@ export default function SaleScreen() {
           cart?.state ? cart?.state.toUpperCase() : "IN PROGRESS"
         }]`}
         loading={isSaleItemsLoading || isSaleTransactionsLoading}
-        buttons={cart?.state === SaleStateTypes.Completed ? null : buttons}
+        buttons={buttons}
       >
         <div className="flex items-start overflow-auto w-full">
           <div className="w-2/3">
@@ -292,7 +289,6 @@ export default function SaleScreen() {
       {view?.cashPaymentDialog && <Cash />}
       {view?.giftPaymentDialog && <Gift />}
       {view?.createCustomer && <CreateCustomerSidebar />}
-      {view?.refundPaymentDialog && <RefundPaymentDialog sale={cart} />}
       {view?.returnItemDialog && <ReturnItemDialog sale={cart} />}
     </>
   );

@@ -12,6 +12,7 @@ import { getSaleVars } from "@/lib/data-functions";
 // Components
 import ItemListItem from "./item-list-item";
 import TransactionListItem from "./transaction-list-item";
+import dayjs from "dayjs";
 
 export default function SaleSummary({ sale }) {
   // SWR
@@ -24,7 +25,7 @@ export default function SaleSummary({ sale }) {
   // Functions
   function SaleItems() {
     return (
-      <div className="grow-0 overflow-y-scroll">
+      <div>
         {sale?.items?.length > 0 ? (
           sale?.items?.map((saleItem: SaleItemObject) => (
             <ItemListItem
@@ -40,6 +41,31 @@ export default function SaleSummary({ sale }) {
     );
   }
 
+  function TransactionItems() {
+    return (
+      <div
+        className={`flex-1 overflow-y-scroll mt-1 pt-1 border-t border-gray-500 ${
+          !sale?.transactions || (sale?.transactions?.length === 0 && " hidden")
+        }`}
+      >
+        {sale?.transactions
+          ?.sort(
+            (transA: SaleTransactionObject, transB: SaleTransactionObject) => {
+              const a = dayjs(transA?.date);
+              const b = dayjs(transB?.date);
+              return a > b ? 1 : b > a ? -1 : 0;
+            }
+          )
+          ?.map((transaction: SaleTransactionObject) => (
+            <TransactionListItem
+              key={transaction?.id}
+              sale={sale}
+              transaction={transaction}
+            />
+          ))}
+      </div>
+    );
+  }
   function SaleDetails() {
     return (
       <div>
@@ -85,33 +111,13 @@ export default function SaleSummary({ sale }) {
     );
   }
 
-  function TransactionItems() {
-    return (
-      <div
-        className={`mt-1 pt-1 border-t border-gray-500 overflow-y-scroll${
-          !sale?.transactions || (sale?.transactions?.length === 0 && " hidden")
-        }`}
-      >
-        {sale?.transactions?.map((transaction: SaleTransactionObject) => (
-          <TransactionListItem
-            key={transaction?.id}
-            sale={sale}
-            transaction={transaction}
-          />
-        ))}
-      </div>
-    );
-  }
-
   return (
     <div
       className={`flex flex-col justify-start h-dialoglg bg-gray-100 p-4 rounded-md`}
     >
       <SaleItems />
-      <div className="grow">
-        <TransactionItems />
-        <SaleDetails />
-      </div>
+      <TransactionItems />
+      <SaleDetails />
     </div>
   );
 }

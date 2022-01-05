@@ -3,27 +3,13 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import {
-  useSaleItemsForSale,
-  useSaleTransactionsForSale,
-  useInventory,
-  useLogs,
-} from "@/lib/swr-hooks";
+import { useSaleItemsForSale, useInventory, useLogs } from "@/lib/swr-hooks";
 import { viewAtom, clerkAtom, alertAtom, cartAtom } from "@/lib/atoms";
-import {
-  ModalButton,
-  CustomerObject,
-  SaleItemObject,
-  PaymentMethodTypes,
-} from "@/lib/types";
+import { ModalButton, SaleItemObject, SaleStateTypes } from "@/lib/types";
 
 // Functions
-import {
-  getSaleVars,
-  getItemDisplayName,
-  writeItemList,
-} from "@/lib/data-functions";
-import { updateSaleItemInDatabase, saveLog } from "@/lib/db-functions";
+import { writeItemList } from "@/lib/data-functions";
+import { saveLog } from "@/lib/db-functions";
 
 // Components
 import Modal from "@/components/_components/container/modal";
@@ -64,7 +50,14 @@ export default function ReturnItemsDialog({ sale }) {
             ? { ...item, is_refunded: true, refund_note: notes }
             : item
         );
-        setCart({ ...cart, items: updatedCartItems });
+        setCart({
+          ...cart,
+          items: updatedCartItems,
+          state:
+            cart?.state === SaleStateTypes.Completed
+              ? SaleStateTypes.InProgress
+              : cart?.state,
+        });
         closeDialog();
         saveLog(
           {

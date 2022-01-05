@@ -98,18 +98,6 @@ export default function SaleDetails({ sale }) {
         </div>
         <div className="font-bold">Notes</div>
         <div className="mb-4">{sale?.note || "N/A"}</div>
-        {sale?.items?.filter(
-          (item: SaleItemObject) => !item?.is_deleted && !item?.is_refunded
-        )?.length > 0 && (
-          <div>
-            <button
-              className="icon-text-button ml-0"
-              onClick={() => setView({ ...view, returnItemDialog: true })}
-            >
-              <ReturnIcon className="mr-1" /> Return Items
-            </button>
-          </div>
-        )}
         {/*weather && (
           <div className="bg-blue-200 p-2 my-2 rounded-md">
             <div className="font-bold">Weather</div>

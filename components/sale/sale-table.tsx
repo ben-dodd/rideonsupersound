@@ -20,7 +20,7 @@ import {
 } from "@/lib/types";
 
 // Components
-import Table from "@/components/_components/table";
+import DataTable from "@/components/_components/table/data-table";
 import TableContainer from "@/components/_components/container/table";
 import dayjs from "dayjs";
 
@@ -40,46 +40,53 @@ export default function SaleTable() {
   // Constants
   const data = useMemo(
     () =>
-      sales?.map((s: SaleObject) => {
-        // const items = saleItems?.filter(
-        //   (i: SaleItemObject) => i?.sale_id === s?.id
-        // );
-        // s = { ...s, items };
-        return {
-          id: s?.id,
-          date: s?.date_sale_opened,
-          status: s?.state,
-          customer: customers?.filter(
-            (c: CustomerObject) => c?.id === s?.customer_id
-          )[0],
-          clerk: clerks?.filter(
-            (c: ClerkObject) => c?.id === s?.sale_opened_by
-          )[0],
-          numberOfItems: s?.number_of_items,
-          items: s?.item_list,
-          store: s?.store_cut,
-          sell: s?.total_price,
-          // numberOfItems: items?.reduce(
-          //   (accumulator: number, item: SaleItemObject) =>
-          //     accumulator + parseInt(item?.quantity) || 1,
-          //   0
-          // ),
-          // items: writeItemList(inventory, items),
-          // store: getTotalStoreCut(items, inventory),
-          // sell: getTotalPrice(items, inventory),
-        };
-      }),
+      sales
+        ?.sort((saleA: SaleObject, saleB: SaleObject) => {
+          const a = dayjs(saleA?.date_sale_closed);
+          const b = dayjs(saleB?.date_sale_closed);
+          return a > b ? 1 : b > a ? -1 : 0;
+        })
+        ?.map((s: SaleObject) => {
+          // const items = saleItems?.filter(
+          //   (i: SaleItemObject) => i?.sale_id === s?.id
+          // );
+          // s = { ...s, items };
+          return {
+            id: s?.id,
+            date: s?.date_sale_opened,
+            status: s?.state,
+            customer: customers?.filter(
+              (c: CustomerObject) => c?.id === s?.customer_id
+            )[0],
+            clerk: clerks?.filter(
+              (c: ClerkObject) => c?.id === s?.sale_opened_by
+            )[0],
+            numberOfItems: s?.number_of_items,
+            items: s?.item_list,
+            store: s?.store_cut,
+            sell: s?.total_price,
+            // numberOfItems: items?.reduce(
+            //   (accumulator: number, item: SaleItemObject) =>
+            //     accumulator + parseInt(item?.quantity) || 1,
+            //   0
+            // ),
+            // items: writeItemList(inventory, items),
+            // store: getTotalStoreCut(items, inventory),
+            // sell: getTotalPrice(items, inventory),
+          };
+        }),
     [sales, customers, clerks, inventory]
   );
   const columns = useMemo(() => {
     return [
-      { Header: "ID", accessor: "id", width: 70 },
+      { header: "ID", field: "id", sortable: true, style: { width: "10%" } },
       {
-        Header: "Date",
-        accessor: "date",
-        width: 280,
-        Cell: (item: any) =>
-          item ? (
+        header: "Date",
+        field: "date",
+        sortable: true,
+        style: { width: "20%" },
+        body: (rowData: any) =>
+          rowData?.date ? (
             <div
               style={{
                 paddingBottom: 8,
@@ -89,11 +96,11 @@ export default function SaleTable() {
               onClick={() =>
                 setLoadedSaleId({
                   ...loadedSaleId,
-                  [page]: item?.row?.original?.id,
+                  [page]: rowData?.id,
                 })
               }
             >
-              {dayjs(item?.value).format("D MMMM YYYY, h:mm A")}
+              {dayjs(rowData?.date).format("D MMMM YYYY, h:mm A")}
             </div>
           ) : (
             ""
@@ -105,43 +112,50 @@ export default function SaleTable() {
         },
       },
       {
-        Header: "Status",
-        accessor: "status",
-        width: 120,
+        header: "Status",
+        field: "status",
+        sortable: true,
+        style: { width: "10%" },
       },
       {
-        Header: "Clerk",
-        accessor: "clerk",
-        Cell: ({ value }) => value?.name || "",
-        width: 90,
+        header: "Clerk",
+        field: "clerk",
+        body: ({ clerk }) => clerk?.name || "",
+        sortable: true,
+        style: { width: "10%" },
       },
       {
-        Header: "Store Cut",
-        accessor: "store",
-        width: 120,
-        Cell: ({ value }) =>
-          value && !isNaN(value) ? `$${(value / 100)?.toFixed(2)}` : "N/A",
+        header: "Store Cut",
+        field: "store",
+        sortable: true,
+        style: { width: "5%" },
+        body: ({ store }) =>
+          store && !isNaN(store) ? `$${(store / 100)?.toFixed(2)}` : "N/A",
       },
       {
-        Header: "Total Price",
-        accessor: "sell",
-        width: 120,
-        Cell: ({ value }) => (value ? `$${(value / 100)?.toFixed(2)}` : "N/A"),
+        header: "Total Price",
+        field: "sell",
+        sortable: true,
+        style: { width: "5%" },
+        body: ({ sell }) => (sell ? `$${(sell / 100)?.toFixed(2)}` : "N/A"),
       },
       {
-        Header: "Customer",
-        accessor: "customer",
-        Cell: ({ value }) => value?.name || "",
+        header: "Customer",
+        field: "customer",
+        sortable: true,
+        style: { width: "10%" },
+        body: ({ customer }) => customer?.name || "",
       },
       {
-        Header: "#",
-        accessor: "numberOfItems",
-        width: 30,
+        header: "#",
+        field: "numberOfItems",
+        sortable: true,
+        style: { width: "5%" },
       },
       {
-        Header: "Items",
-        accessor: "items",
-        width: 400,
+        header: "Items",
+        field: "items",
+        style: { width: "25%" },
       },
     ];
   }, [sales, inventory]);
@@ -155,15 +169,15 @@ export default function SaleTable() {
         isCustomersLoading
       }
     >
-      <Table
-        color="bg-col5"
-        colorLight="bg-col5-light"
-        colorDark="bg-col5-dark"
+      <DataTable
+        // color="bg-col5"
+        // colorLight="bg-col5-light"
+        // colorDark="bg-col5-dark"
         data={data}
         columns={columns}
-        heading={"Sales"}
-        pageSize={20}
-        sortOptions={[{ id: "date", desc: true }]}
+        // heading={"Sales"}
+        // pageSize={20}
+        // sortOptions={[{ id: "date", desc: true }]}
       />
     </TableContainer>
   );

@@ -13,6 +13,7 @@ const handler: NextApiHandler = async (req, res) => {
     note,
     is_refunded,
     refund_note,
+    date_refunded,
     is_deleted,
   } = req.body;
   const { k } = req.query;
@@ -31,7 +32,7 @@ const handler: NextApiHandler = async (req, res) => {
         note = ${escape(note)},
         is_refunded = ${is_refunded || 0},
         refund_note = ${escape(refund_note)},
-        date_refunded = ${is_refunded ? "CURRENT_TIMESTAMP" : null},
+        date_refunded = ${date_refunded || null},
         is_deleted = ${is_deleted || 0}
       WHERE id = ${sale_item_id}
       `

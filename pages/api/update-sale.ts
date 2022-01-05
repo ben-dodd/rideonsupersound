@@ -28,17 +28,9 @@ const handler: NextApiHandler = async (req, res) => {
         customer_id = ${customer_id},
         state = ${state ? `"${state}"` : null},
         note = ${escape(note)},
-        date_layby_started = ${
-          date_layby_started === "CURRENT_TIMESTAMP"
-            ? `CURRENT_TIMESTAMP`
-            : date_layby_started
-        },
+        date_layby_started = ${escape(date_layby_started)},
         layby_started_by = ${layby_started_by},
-        date_sale_closed = ${
-          date_sale_closed === "CURRENT_TIMESTAMP"
-            ? `CURRENT_TIMESTAMP`
-            : date_sale_closed
-        },
+        date_sale_closed = ${escape(date_sale_closed)},
         sale_closed_by = ${sale_closed_by},
         store_cut = ${store_cut},
         total_price = ${total_price},

@@ -109,6 +109,7 @@ module.exports = {
       // fontFamily: { sans: ["OpenDyslexic", "sans-serif"] },
       // fontFamily: { sans: ["Varela Round", "sans-serif"] },
       // fontFamily: { sans: ["Atkinson Hyperlegible", "sans-serif"] },
+      // fontFamily: { sans: ["Courier New"] },
       fontFamily: { sans: ["Nunito", "sans-serif"] },
       height: {
         nav: "4rem",
