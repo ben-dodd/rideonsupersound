@@ -17,7 +17,7 @@ import {
 import { ClerkObject, ModalButton, SaleTransactionObject } from "@/lib/types";
 
 // Functions
-import { fTimeDate, getAmountFromCashMap } from "@/lib/data-functions";
+import { getAmountFromCashMap } from "@/lib/data-functions";
 import { saveClosedRegisterToDatabase, saveLog } from "@/lib/db-functions";
 
 // Components
@@ -25,6 +25,7 @@ import TextField from "@/components/_components/inputs/text-field";
 import ScreenContainer from "@/components/_components/container/screen";
 import CashItem from "./cash-item";
 import CashMap from "./cash-map";
+import dayjs from "dayjs";
 
 export default function CloseRegisterScreen() {
   // SWR
@@ -38,16 +39,10 @@ export default function CloseRegisterScreen() {
   const { cashGiven, isCashGivenLoading, mutateCashGiven } = useCashGiven(
     register?.id || 0
   );
-  const {
-    cashReceived,
-    isCashReceivedLoading,
-    mutateCashReceived,
-  } = useCashReceived(register?.id || 0);
-  const {
-    manualPayments,
-    isManualPaymentsLoading,
-    mutateManualPayments,
-  } = useManualPayments(register?.id || 0);
+  const { cashReceived, isCashReceivedLoading, mutateCashReceived } =
+    useCashReceived(register?.id || 0);
+  const { manualPayments, isManualPaymentsLoading, mutateManualPayments } =
+    useManualPayments(register?.id || 0);
 
   // Atoms
   const [clerk] = useAtom(clerkAtom);
@@ -76,7 +71,7 @@ export default function CloseRegisterScreen() {
   const openedBy = clerks?.filter(
     (c: ClerkObject) => c?.id === register?.opened_by_id
   )[0]?.name;
-  const openedOn = fTimeDate(register?.open_date);
+  const openedOn = dayjs(register?.open_date).format("H:mm A, D MMMM YYYY");
 
   // Cash Balances
   const closePettyBalance =

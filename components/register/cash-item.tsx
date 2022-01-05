@@ -1,9 +1,7 @@
 // DB
 import { useClerks } from "@/lib/swr-hooks";
 import { SaleTransactionObject, ClerkObject } from "@/lib/types";
-
-// Functions
-import { fTimeDate } from "@/lib/data-functions";
+import dayjs from "dayjs";
 
 // Types
 interface CashItemProps {
@@ -24,7 +22,7 @@ export default function CashItem({
   const transactionBy = clerks?.filter(
     (c: ClerkObject) => c?.id === transaction?.clerk_id
   )[0]?.name;
-  const date = fTimeDate(transaction?.date);
+  const date = dayjs(transaction?.date).format("H:mm A, D MMMM YYYY");
 
   // REVIEW Add more info to cash items, possibly add receipt pop up info dialog
   const value = transaction[field || "amount"];
