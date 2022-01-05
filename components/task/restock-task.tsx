@@ -1,11 +1,10 @@
-import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
 import { useClerks, useJobs, useInventory } from "@/lib/swr-hooks";
-import { InventoryObject, ClerkObject } from "@/lib/types";
+import { InventoryObject } from "@/lib/types";
 import { clerkAtom } from "@/lib/atoms";
-import { fDateTime, getItemSkuDisplayName } from "@/lib/data-functions";
+import { getItemSkuDisplayName } from "@/lib/data-functions";
 import { completeRestockTask } from "@/lib/db-functions";
 
 type ListItemProps = {

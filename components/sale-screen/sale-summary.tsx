@@ -24,7 +24,7 @@ export default function SaleSummary({ sale }) {
   // Functions
   function SaleItems() {
     return (
-      <div className="h-2/5 overflow-y-scroll">
+      <div className="grow-0 overflow-y-scroll">
         {sale?.items?.length > 0 ? (
           sale?.items?.map((saleItem: SaleItemObject) => (
             <ItemListItem
@@ -42,7 +42,7 @@ export default function SaleSummary({ sale }) {
 
   function SaleDetails() {
     return (
-      <div className="h-2/5">
+      <div>
         <div className="flex justify-end mt-2 pt-2 border-t border-gray-500">
           <div>VENDOR CUT</div>
           <div
@@ -87,7 +87,11 @@ export default function SaleSummary({ sale }) {
 
   function TransactionItems() {
     return (
-      <div className="h-1/5 mt-1 pt-1 border-t border-gray-500 overflow-y-scroll">
+      <div
+        className={`mt-1 pt-1 border-t border-gray-500 overflow-y-scroll${
+          !sale?.transactions || (sale?.transactions?.length === 0 && " hidden")
+        }`}
+      >
         {sale?.transactions?.map((transaction: SaleTransactionObject) => (
           <TransactionListItem
             key={transaction?.id}
@@ -104,8 +108,10 @@ export default function SaleSummary({ sale }) {
       className={`flex flex-col justify-start h-dialoglg bg-gray-100 p-4 rounded-md`}
     >
       <SaleItems />
-      <SaleDetails />
-      <TransactionItems />
+      <div className="grow">
+        <TransactionItems />
+        <SaleDetails />
+      </div>
     </div>
   );
 }

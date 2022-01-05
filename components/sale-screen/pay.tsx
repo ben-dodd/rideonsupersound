@@ -3,13 +3,7 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import {
-  useClerks,
-  useCustomers,
-  useSaleTransactionsForSale,
-  useSaleItemsForSale,
-  useInventory,
-} from "@/lib/swr-hooks";
+import { useCustomers, useInventory } from "@/lib/swr-hooks";
 import { cartAtom, viewAtom, loadedCustomerObjectAtom } from "@/lib/atoms";
 import { CustomerObject, SaleStateTypes } from "@/lib/types";
 
@@ -20,10 +14,7 @@ import { getSaleVars } from "@/lib/data-functions";
 import CreateableSelect from "@/components/_components/inputs/createable-select";
 import TextField from "@/components/_components/inputs/text-field";
 
-import DeleteIcon from "@mui/icons-material/Delete";
-import RefundIcon from "@mui/icons-material/Payment";
 import ReturnIcon from "@mui/icons-material/KeyboardReturn";
-import SplitIcon from "@mui/icons-material/CallSplit";
 
 export default function Pay() {
   // Atoms
@@ -38,7 +29,6 @@ export default function Pay() {
   // State
   const [note, setNote] = useState("");
   const { totalRemaining, totalPaid } = getSaleVars(cart, inventory);
-  const [isRefund, setIsRefund] = useState(false);
 
   return (
     <div className="flex flex-col justify-between">

@@ -1,7 +1,5 @@
 // Packages
 import { useState, useEffect } from "react";
-import { format, parseISO } from "date-fns";
-import nz from "date-fns/locale/en-NZ";
 
 // Functions
 import {
@@ -15,6 +13,7 @@ import Image from "next/image";
 
 // Icons
 import SyncIcon from "@mui/icons-material/Sync";
+import dayjs from "dayjs";
 
 export default function GoogleBooksPanel({ item, setItem }) {
   // State
@@ -89,10 +88,8 @@ export default function GoogleBooksPanel({ item, setItem }) {
             </div>
             {googleBooksItem?.volumeInfo?.publishedDate && (
               <div>
-                {format(
-                  parseISO(googleBooksItem?.volumeInfo?.publishedDate),
-                  "d MMMM yyyy",
-                  { locale: nz }
+                {dayjs(googleBooksItem?.volumeInfo?.publishedDate).format(
+                  "D MMMM YYYY"
                 )}
               </div>
             )}
@@ -176,10 +173,8 @@ export default function GoogleBooksPanel({ item, setItem }) {
                   </div>
                   {opt?.volumeInfo?.publishedDate && (
                     <div>
-                      {format(
-                        parseISO(opt?.volumeInfo?.publishedDate),
-                        "d MMMM yyyy",
-                        { locale: nz }
+                      {dayjs(opt?.volumeInfo?.publishedDate).format(
+                        "D MMMM YYYY"
                       )}
                     </div>
                   )}

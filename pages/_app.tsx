@@ -3,7 +3,24 @@ import { Provider as NextAuthProvider } from "next-auth/client";
 import { Provider as JotaiProvider } from "jotai";
 // import { SessionProvider } from "next-auth/react";
 
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import duration from "dayjs/plugin/duration";
+import minMax from "dayjs/plugin/minMax";
+import isLeapYear from "dayjs/plugin/isLeapYear";
+import tz from "dayjs/plugin/timezone";
+import relative from "dayjs/plugin/relativeTime";
+import "dayjs/locale/en-nz";
+
 function MyApp({ Component, pageProps }) {
+  dayjs.extend(utc);
+  // dayjs.extend(duration);
+  dayjs.extend(isLeapYear);
+  dayjs.extend(tz);
+  dayjs.extend(relative);
+  dayjs.extend(minMax);
+  dayjs.locale("en-nz");
+
   return (
     <NextAuthProvider
       // Provider options are not required but can be useful in situations where

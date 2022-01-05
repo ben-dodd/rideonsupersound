@@ -1,7 +1,6 @@
 // Packages
 import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
-import formatISO from "date-fns/formatISO";
 
 // DB
 import {
@@ -54,7 +53,7 @@ import ScreenContainer from "@/components/_components/container/screen";
 import CreateCustomerSidebar from "@/components/customer/create-customer-sidebar";
 import RefundPaymentDialog from "./refund-payment-dialog";
 import ReturnItemDialog from "./return-item-dialog";
-import { format } from "date-fns";
+import dayjs from "dayjs";
 
 // TODO add returns to sale items
 // TODO refund dialog like PAY, refund with store credit, cash or card
@@ -183,8 +182,10 @@ export default function SaleScreen() {
       ...cart,
       state: SaleStateTypes.Completed,
       sale_closed_by: clerk?.id,
-      date_sale_closed: "CURRENT_TIMESTAMP",
+      date_sale_closed: dayjs().format(),
     };
+
+    console.log(completedSale);
     saveSaleItemsTransactionsToDatabase(
       completedSale,
       clerk,
@@ -262,6 +263,8 @@ export default function SaleScreen() {
       text: "COMPLETE SALE",
     },
   ];
+
+  console.log(cart);
 
   return (
     <>

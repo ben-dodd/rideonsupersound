@@ -27,6 +27,13 @@ export enum PaymentMethodTypes {
   GiftCard = "gift", // paid with gift card
 }
 
+export enum VendorPaymentTypes {
+  Sale = "sale", // vendor bought something with account
+  SaleRefund = "sale refund", // vendor refunded something onto their account
+  Cash = "cash", // vendor was given cash in store
+  DD = "direct deposit", // vendor paid with internet banking
+}
+
 export enum ButtonTypes {
   Ok = "ok",
   Cancel = "cancel",

@@ -1,7 +1,6 @@
 // Packages
 import { useState, useMemo } from "react";
 import { useAtom } from "jotai";
-import { sub } from "date-fns";
 // import { CSVLink } from "react-csv";
 
 // DB
@@ -24,12 +23,12 @@ import {
   getVendorQuantityInStock,
   writeKiwiBankBatchFile,
   fFileDate,
-  nzDate,
 } from "@/lib/data-functions";
 
 // Components
 import TextField from "@/components/_components/inputs/text-field";
 import Modal from "@/components/_components/container/modal";
+import dayjs from "dayjs";
 
 export default function BatchPaymentDialog() {
   // SWR
@@ -80,10 +79,10 @@ export default function BatchPaymentDialog() {
           (v: VendorObject) =>
             (v?.totalOwing > 0 && v?.totalOwing > parseFloat(filterMinOwing)) ||
             v?.totalItemsInStock <= parseFloat(filterMinStock) ||
-            nzDate(v?.lastSold) <=
-              sub(new Date(), { weeks: parseInt(filterLastSold) }) ||
-            nzDate(v?.lastPaid) <=
-              sub(new Date(), { weeks: parseInt(filterLastPay) })
+            dayjs(v?.lastSold) <=
+              dayjs().subtract(parseInt(filterLastSold), "week") ||
+            dayjs(v?.lastPaid) <=
+              dayjs().subtract(parseInt(filterLastPay), "week")
         ),
     [inventory, vendors]
   );

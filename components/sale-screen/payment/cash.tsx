@@ -1,6 +1,8 @@
 // Packages
 import { useState } from "react";
 import { useAtom } from "jotai";
+import dayjs from "dayjs";
+import UTC from "dayjs/plugin/utc";
 
 // DB
 import {
@@ -26,6 +28,7 @@ import TextField from "@/components/_components/inputs/text-field";
 import { saveLog } from "@/lib/db-functions";
 
 export default function Cash() {
+  dayjs.extend(UTC);
   // Atoms
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
@@ -61,10 +64,8 @@ export default function Cash() {
       loading: submitting,
       onClick: () => {
         setSubmitting(true);
-        // TODO check transaction date
-        let date = new Date();
         let transaction: SaleTransactionObject = {
-          date: date.toISOString(),
+          date: dayjs().format(),
           sale_id: cart?.id,
           clerk_id: clerk?.id,
           payment_method: PaymentMethodTypes.Cash,
@@ -152,6 +153,8 @@ export default function Cash() {
             ? "NUMBERS ONLY PLEASE"
             : isRefund && parseFloat(cashReceived) > Math.abs(totalRemaining)
             ? "TOO MUCH CASH REFUNDED"
+            : isRefund
+            ? "ALL GOOD!"
             : parseFloat(cashReceived) > totalRemaining
             ? `GIVE $${changeToGive} IN CHANGE`
             : parseFloat(cashReceived) < Math.abs(totalRemaining)

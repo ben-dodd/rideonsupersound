@@ -1,6 +1,8 @@
 // Packages
 import { useState, useMemo } from "react";
 import { useAtom } from "jotai";
+import dayjs from "dayjs";
+import UTC from "dayjs/plugin/utc";
 
 // DB
 import {
@@ -31,6 +33,7 @@ import TextField from "@/components/_components/inputs/text-field";
 import { saveLog } from "@/lib/db-functions";
 
 export default function Gift() {
+  dayjs.extend(UTC);
   // Atoms
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
@@ -88,7 +91,7 @@ export default function Gift() {
         if (isRefund) {
           giftCardUpdate = {
             is_gift_card: true,
-            gift_card_code: giftCardCode,
+            gift_card_code: newGiftCardCode,
             gift_card_amount: parseFloat(giftCardPayment) * 100,
             gift_card_remaining: parseFloat(giftCardPayment) * 100,
             note: `Gift card created as refund payment${
@@ -104,9 +107,8 @@ export default function Gift() {
             giftCardUpdate.gift_card_remaining = 0;
           }
         }
-        let date = new Date();
         let transaction: SaleTransactionObject = {
-          date: date.toISOString(),
+          date: dayjs().format(),
           sale_id: cart?.id,
           clerk_id: clerk?.id,
           payment_method: PaymentMethodTypes.GiftCard,

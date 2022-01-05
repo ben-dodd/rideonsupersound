@@ -1,7 +1,6 @@
 // Packages
 import { useMemo } from "react";
 import { useAtom } from "jotai";
-import { parseISO, add } from "date-fns";
 
 // DB
 import {
@@ -33,6 +32,7 @@ import { getItemDisplayName, writeItemList } from "@/lib/data-functions";
 // Components
 import Table from "@/components/_components/table";
 import TableContainer from "@/components/_components/container/table";
+import dayjs from "dayjs";
 
 export default function CustomerTable() {
   // SWR
@@ -78,9 +78,9 @@ export default function CustomerTable() {
             .map((h: HoldObject) => {
               return {
                 ...h,
-                overdue:
-                  add(parseISO(h?.date_from), { days: h?.hold_period }) <
-                  new Date(),
+                overdue: dayjs().isAfter(
+                  dayjs(h?.date_from).add(h?.hold_period, "day")
+                ),
               };
             }),
           laybys: laybys?.filter(

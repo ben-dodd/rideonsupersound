@@ -16,7 +16,9 @@ import {
   SaleStateTypes,
   PaymentMethodTypes,
   StockMovementTypes,
+  VendorPaymentTypes,
 } from "@/lib/types";
+import dayjs from "dayjs";
 
 import {
   getItemDisplayName,
@@ -140,6 +142,7 @@ export async function saveSaleItemsTransactionsToDatabase(
     newSaleId = await saveSaleToDatabase(newSale, clerk);
     console.log("Got sale ID");
     newSale = { ...newSale, id: newSaleId };
+    console.log(newSale);
     mutateSales([...sales, newSale], false);
   } else {
     // Sale already has id, update
@@ -257,26 +260,6 @@ export async function saveSaleItemsTransactionsToDatabase(
 }
 
 export async function saveSaleToDatabase(sale: SaleObject, clerk: ClerkObject) {
-  console.log("Sale being saved");
-  console.log(
-    JSON.stringify({
-      customer_id: sale?.customer_id || null,
-      state: sale?.state || null,
-      sale_opened_by: clerk?.id,
-      weather: JSON.stringify(sale?.weather) || "",
-      geo_latitude: sale?.geo_latitude || null,
-      geo_longitude: sale?.geo_longitude || null,
-      note: sale?.note || null,
-      layby_started_by: sale?.layby_started_by || null,
-      date_layby_started: sale?.date_layby_started || null,
-      sale_closed_by: sale?.sale_closed_by || null,
-      date_sale_closed: sale?.date_sale_closed || null,
-      store_cut: sale?.store_cut || null,
-      total_price: sale?.total_price || null,
-      number_of_items: sale?.number_of_items || null,
-      item_list: sale?.item_list || null,
-    })
-  );
   try {
     const res = await fetch(
       `/api/create-sale?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
@@ -289,6 +272,7 @@ export async function saveSaleToDatabase(sale: SaleObject, clerk: ClerkObject) {
           customer_id: sale?.customer_id || null,
           state: sale?.state || null,
           sale_opened_by: clerk?.id,
+          date_sale_opened: sale?.date_sale_opened || null,
           weather: JSON.stringify(sale?.weather) || "",
           geo_latitude: sale?.geo_latitude || null,
           geo_longitude: sale?.geo_longitude || null,
@@ -356,15 +340,22 @@ export async function saveSaleTransaction(
         : transaction?.amount,
       clerk_id: transaction?.clerk_id,
       vendor_id: transaction?.vendor?.id,
-      type: "sale",
+      type: transaction?.is_refund
+        ? VendorPaymentTypes.SaleRefund
+        : VendorPaymentTypes.Sale,
+      date: dayjs().format(),
     };
     vendorPaymentId = await saveVendorPaymentToDatabase(vendorPayment);
     transaction = { ...transaction, vendor_payment_id: vendorPaymentId };
   }
+  let giftCardId = null;
   if (transaction?.payment_method === PaymentMethodTypes.GiftCard) {
     if (transaction?.is_refund) {
       // Gift card is new, create new one
-      saveStockToDatabase(transaction?.gift_card_update, clerk);
+      giftCardId = await saveStockToDatabase(
+        transaction?.gift_card_update,
+        clerk
+      );
     } else {
       // Update gift card
       updateStockItemInDatabase(transaction?.gift_card_update);
@@ -374,6 +365,7 @@ export async function saveSaleTransaction(
     );
     mutateGiftCards([...otherGiftCards, transaction?.gift_card_update], false);
   }
+  if (giftCardId) transaction = { ...transaction, gift_card_id: giftCardId };
   saveSaleTransactionToDatabase(transaction);
 }
 
@@ -419,6 +411,7 @@ export async function saveClosedRegisterToDatabase(
           ...register,
           id: register_id,
           close_till_id: tillID,
+          close_date: dayjs().format(),
         }),
       }
     );
@@ -456,7 +449,11 @@ export async function saveAndOpenRegister(
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ ...register, open_till_id: tillID }),
+        body: JSON.stringify({
+          ...register,
+          open_till_id: tillID,
+          open_date: dayjs().format(),
+        }),
       }
     );
     const json = await res.json();
@@ -503,6 +500,7 @@ export async function savePettyCashToRegister(
           amount: numberAmount,
           is_take: isTake,
           note,
+          date: dayjs().format(),
         }),
       }
     );
@@ -765,6 +763,7 @@ export async function saveLog(
   mutateLogs: Function
 ) {
   let logObj = {
+    date_created: dayjs().format(),
     log: log?.log,
     table_id: log?.table_id || null,
     row_id: log?.row_id || null,

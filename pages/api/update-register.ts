@@ -14,6 +14,7 @@ const handler: NextApiHandler = async (req, res) => {
     close_discrepancy,
     close_note,
     close_till_id,
+    close_date,
   } = req.body;
   const { k } = req.query;
   try {
@@ -32,6 +33,7 @@ const handler: NextApiHandler = async (req, res) => {
           close_discrepancy=${close_discrepancy || null},
           close_note=${escape(close_note)},
           close_till_id=${close_till_id || null}
+          close_date=${close_date || null}
         WHERE id = ${id}
       `
     );

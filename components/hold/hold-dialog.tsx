@@ -24,7 +24,6 @@ import {
 } from "@/lib/types";
 
 // Functions
-import { daysFrom } from "@/lib/data-functions";
 import {
   returnHoldToStock,
   updateHoldInDatabase,
@@ -35,6 +34,7 @@ import {
 import Modal from "@/components/_components/container/modal";
 import TextField from "@/components/_components/inputs/text-field";
 import HoldListItem from "./list-item";
+import dayjs from "dayjs";
 
 export default function HoldDialog() {
   // Atoms
@@ -126,7 +126,7 @@ export default function HoldDialog() {
       <>
         <HoldListItem cartItem={hold} />
         <div>{`Item held for ${customerName} (started by ${clerkName})`}</div>
-        <div>{`Item held for ${daysFrom(hold?.date_from, "day")} of ${
+        <div>{`Item held for ${dayjs(hold?.date_from).fromNow(true)} of ${
           hold?.hold_period || 30
         } days.`}</div>
         <TextField

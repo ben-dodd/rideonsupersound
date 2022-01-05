@@ -14,6 +14,8 @@ const handler: NextApiHandler = async (req, res) => {
         state,
         date_sale_opened,
         sale_opened_by,
+        date_sale_closed,
+        sale_closed_by,
         store_cut,
         total_price,
         number_of_items,

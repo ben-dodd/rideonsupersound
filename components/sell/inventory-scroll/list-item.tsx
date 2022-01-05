@@ -31,6 +31,7 @@ import {
   getImageSrc,
 } from "@/lib/data-functions";
 import { saveLog } from "@/lib/db-functions";
+import dayjs from "dayjs";
 
 type ListItemProps = {
   item: InventoryObject;
@@ -88,8 +89,7 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
     else newItems[index].quantity = `${parseInt(newItems[index].quantity) + 1}`;
     setCart({
       id: cart?.id || null,
-      // REVIEW check the date to string thing works ok
-      date_sale_opened: cart?.date_sale_opened || "CURRENT_TIMESTAMP",
+      date_sale_opened: cart?.date_sale_opened || dayjs().format(),
       sale_opened_by: cart?.sale_opened_by || clerk?.id,
       items: newItems,
       transactions: cart?.transactions || [],

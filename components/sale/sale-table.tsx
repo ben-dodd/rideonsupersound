@@ -19,18 +19,10 @@ import {
   ClerkObject,
 } from "@/lib/types";
 
-// Functions
-import {
-  writeItemList,
-  getTotalStoreCut,
-  getTotalPrice,
-  nzDate,
-  fDateTime,
-} from "@/lib/data-functions";
-
 // Components
 import Table from "@/components/_components/table";
 import TableContainer from "@/components/_components/container/table";
+import dayjs from "dayjs";
 
 export default function SaleTable() {
   // SWR
@@ -55,7 +47,7 @@ export default function SaleTable() {
         // s = { ...s, items };
         return {
           id: s?.id,
-          date: nzDate(s?.date_sale_opened),
+          date: s?.date_sale_opened,
           status: s?.state,
           customer: customers?.filter(
             (c: CustomerObject) => c?.id === s?.customer_id
@@ -101,7 +93,7 @@ export default function SaleTable() {
                 })
               }
             >
-              {fDateTime(item?.value)}
+              {dayjs(item?.value).format("D MMMM YYYY, h:mm A")}
             </div>
           ) : (
             ""

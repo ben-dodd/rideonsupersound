@@ -5,8 +5,8 @@ import { useAtom } from "jotai";
 import { useClerks, useJobs } from "@/lib/swr-hooks";
 import { TaskObject, ClerkObject } from "@/lib/types";
 import { clerkAtom } from "@/lib/atoms";
-import { fDateTime } from "@/lib/data-functions";
 import { completeTask } from "@/lib/db-functions";
+import dayjs from "dayjs";
 
 type ListItemProps = {
   task: TaskObject;
@@ -62,7 +62,7 @@ export default function ListTask({ task }: ListItemProps) {
             />
           </div>
           <div className="font-bold pr-4 text-pink-600">
-            {fDateTime(task?.date_created)}
+            {dayjs(task?.date_created).format("D MMMM YYYY, h:mm A")}
           </div>
         </div>
         <div className={`w-7/12 ${checked ? "line-through" : ""}`}>
@@ -85,7 +85,7 @@ export default function ListTask({ task }: ListItemProps) {
                 clerks?.filter(
                   (c: ClerkObject) => c?.id === task?.completed_by_clerk_id
                 )[0]?.name
-              } (${fDateTime(task?.date_completed)})`
+              } (${dayjs(task?.date_completed).format("D MMMM YYYY, h:mm A")})`
             : ""}
         </div>
       </div>

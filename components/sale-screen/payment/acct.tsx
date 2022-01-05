@@ -1,11 +1,11 @@
 // Packages
 import { useState, useMemo } from "react";
 import { useAtom } from "jotai";
+import dayjs from "dayjs";
+import UTC from "dayjs/plugin/utc";
 
 // DB
 import {
-  useSaleTransactionsForSale,
-  useSaleItemsForSale,
   useInventory,
   useLogs,
   useVendors,
@@ -31,6 +31,7 @@ import Select from "react-select";
 import { saveLog } from "@/lib/db-functions";
 
 export default function Acct() {
+  dayjs.extend(UTC);
   // Atoms
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
@@ -75,18 +76,16 @@ export default function Acct() {
       type: "ok",
       disabled:
         submitting ||
-        parseFloat(acctPayment) > totalRemaining ||
-        vendorVars?.totalOwing / 100 < parseFloat(acctPayment) ||
+        parseFloat(acctPayment) > Math.abs(totalRemaining) ||
         parseFloat(acctPayment) === 0 ||
         acctPayment <= "" ||
+        (!isRefund && vendorVars?.totalOwing / 100 < parseFloat(acctPayment)) ||
         isNaN(parseFloat(acctPayment)),
       loading: submitting,
       onClick: () => {
         setSubmitting(true);
-        // TODO check transaction date
-        let date = new Date();
         let transaction: SaleTransactionObject = {
-          date: date.toISOString(),
+          date: dayjs().format(),
           sale_id: cart?.id,
           clerk_id: clerk?.id,
           payment_method: PaymentMethodTypes.Account,
@@ -181,10 +180,11 @@ export default function Acct() {
                 ? "NUMBERS ONLY PLEASE"
                 : parseFloat(acctPayment) > Math.abs(totalRemaining)
                 ? `${isRefund ? "REFUND AMOUNT" : "PAYMENT"} TOO HIGH`
-                : !isRefund &&
-                  vendorVars?.totalOwing / 100 < parseFloat(acctPayment)
+                : isRefund
+                ? "ALL GOOD!"
+                : vendorVars?.totalOwing / 100 < parseFloat(acctPayment)
                 ? `NOT ENOUGH IN ACCOUNT`
-                : parseFloat(acctPayment) < Math.abs(totalRemaining)
+                : parseFloat(acctPayment) < totalRemaining
                 ? `AMOUNT SHORT BY $${(
                     totalRemaining - parseFloat(acctPayment)
                   )?.toFixed(2)}`

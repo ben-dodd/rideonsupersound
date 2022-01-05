@@ -5,12 +5,10 @@ import { useMemo } from "react";
 import { useClerks, useVendors, useVendorPayments } from "@/lib/swr-hooks";
 import { ClerkObject, VendorPaymentObject, VendorObject } from "@/lib/types";
 
-// Functions
-import { nzDate, fDateTime } from "@/lib/data-functions";
-
 // Components
 import TableContainer from "@/components/_components/container/table";
 import Table from "@/components/_components/table";
+import dayjs from "dayjs";
 
 export default function PaymentTable() {
   // SWR
@@ -39,10 +37,14 @@ export default function PaymentTable() {
         accessor: "date",
         width: 270,
         Cell: (item: any) =>
-          item ? <div>{fDateTime(item?.value)}</div> : <div />,
+          item ? (
+            <div>{dayjs(item?.value).format("D MMMM YYYY, H:mm A")}</div>
+          ) : (
+            <div />
+          ),
         sortType: (rowA: VendorPaymentObject, rowB: VendorPaymentObject) => {
-          const a = nzDate(rowA?.date);
-          const b = nzDate(rowB?.date);
+          const a = dayjs(rowA?.date);
+          const b = dayjs(rowB?.date);
           return a > b ? 1 : b > a ? -1 : 0;
         },
       },

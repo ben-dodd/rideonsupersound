@@ -1,16 +1,8 @@
 // Packages
-import { useAtom } from "jotai";
-import { format, parseISO } from "date-fns";
-import nz from "date-fns/locale/en-NZ";
+import dayjs from "dayjs";
 
 // DB
-import {
-  useGiftCards,
-  useVendorFromVendorPayment,
-  useSaleTransactionsForSale,
-  useLogs,
-} from "@/lib/swr-hooks";
-import { alertAtom, clerkAtom } from "@/lib/atoms";
+import { useGiftCards, useVendorFromVendorPayment } from "@/lib/swr-hooks";
 import {
   SaleTransactionObject,
   GiftCardObject,
@@ -20,7 +12,6 @@ import {
 } from "@/lib/types";
 
 // Functions
-import { deleteSaleTransactionFromDatabase, saveLog } from "@/lib/db-functions";
 
 // Types
 type TransactionListItemProps = {
@@ -48,11 +39,15 @@ export default function TransactionListItem({
   return (
     <div
       className={`flex justify-end items-center mt-2 mb-3 ${
-        transaction?.is_deleted && "line-through text-gray-400"
-      } ${transaction?.is_refund && "text-red-500"}`}
+        transaction?.is_deleted
+          ? "line-through text-gray-400"
+          : transaction?.is_refund
+          ? "text-red-500"
+          : "text-blue-500"
+      }`}
     >
       <div className="w-1/2">
-        {format(parseISO(transaction?.date), "d MMMM yyyy, p", { locale: nz })}
+        {dayjs(transaction?.date).format("D MMMM YYYY, h:mm A")}
       </div>
       <div className="w-1/4">
         {(
@@ -71,7 +66,9 @@ export default function TransactionListItem({
         </div>
         <div className="text-right text-xs">
           {transaction?.payment_method === PaymentMethodTypes.Cash
-            ? transaction?.change_given
+            ? transaction?.is_refund
+              ? ""
+              : transaction?.change_given
               ? `($${(transaction.change_given / 100)?.toFixed(2)} CHANGE)`
               : "(NO CHANGE)"
             : transaction?.payment_method === PaymentMethodTypes.Account
@@ -91,7 +88,11 @@ export default function TransactionListItem({
                 : `CARD TAKEN [${(
                     giftCard?.gift_card_code || ""
                   ).toUpperCase()}]`
-              : `[${(giftCard?.gift_card_code || "").toUpperCase()}]`
+              : `[${(
+                  giftCard?.gift_card_code ||
+                  transaction?.gift_card_update?.gift_card_code ||
+                  ""
+                ).toUpperCase()}]`
             : ""}
         </div>
       </div>

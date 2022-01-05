@@ -7,6 +7,7 @@ const handler: NextApiHandler = async (req, res) => {
     customer_id,
     state,
     sale_opened_by,
+    date_sale_opened,
     weather,
     geo_latitude,
     geo_longitude,
@@ -29,43 +30,35 @@ const handler: NextApiHandler = async (req, res) => {
         customer_id,
         state,
         sale_opened_by,
+        date_sale_opened,
         weather,
         geo_latitude,
         geo_longitude,
         note,
         layby_started_by,
+        date_layby_started,
         sale_closed_by,
+        date_sale_closed,
         store_cut,
         total_price,
         number_of_items,
-        item_list,
-        date_layby_started,
-        date_sale_closed
+        item_list
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ${
-        date_layby_started === "CURRENT_TIMESTAMP"
-          ? "CURRENT_TIMESTAMP"
-          : date_layby_started
-          ? `"${date_layby_started}"`
-          : null
-      }, ${
-        date_sale_closed === "CURRENT_TIMESTAMP"
-          ? "CURRENT_TIMESTAMP"
-          : date_sale_closed
-          ? `"${date_sale_closed}"`
-          : null
-      })
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
       [
         customer_id,
         state,
         sale_opened_by,
+        date_sale_opened,
         weather,
         geo_latitude,
         geo_longitude,
         note,
         layby_started_by,
+        date_layby_started,
         sale_closed_by,
+        date_sale_closed,
         store_cut,
         total_price,
         number_of_items,

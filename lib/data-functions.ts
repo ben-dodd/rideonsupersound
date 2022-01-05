@@ -14,13 +14,7 @@ import {
   SaleObject,
 } from "@/lib/types";
 
-import {
-  format,
-  add,
-  parseISO,
-  formatDistanceToNowStrict,
-  max,
-} from "date-fns";
+import dayjs from "dayjs";
 
 export function getItemSku(item: InventoryObject) {
   return `${("000" + item?.vendor_id || "").slice(-3)}/${(
@@ -770,8 +764,8 @@ export function writeKiwiBankBatchFile({
       sequenceNumber || "",
       storeAccountNumber,
       7,
-      parseInt(format(new Date(), "yyMMdd")),
-      parseInt(format(new Date(), "yyMMdd")),
+      parseInt(dayjs().format("YYMMDD")),
+      parseInt(dayjs().format("YYMMDD")),
       "",
     ],
   ];
@@ -827,137 +821,14 @@ export function writeKiwiBankBatchFile({
 // DATE FUNCTIONS //
 //                //
 
-export function nzDate(isoDate: string) {
-  // return isoDate ? parseISO(isoDate) : null;
-  return isoDate ? add(parseISO(isoDate), { hours: 20 }) : null;
-  // return isoDate ? convertToNZTime(isoDate) : null;
-}
-
-export function checkDate(date: Date | string) {
-  if (date) {
-    if (date instanceof Date) {
-      if (isNaN(date.getTime())) {
-        return null;
-      } else return date;
-    } else return nzDate(date);
-  } else return new Date();
-}
-
-export function fDate(date?: Date | string) {
-  let checkedDate = checkDate(date);
-  return checkedDate ? format(checkedDate, "d MMMM yyyy") : "Invalid Date";
-}
-
-export function fDateTime(date?: Date | string) {
-  let checkedDate = checkDate(date);
-  return checkedDate ? format(checkedDate, "d MMMM yyyy, p") : "Invalid Date";
-}
-
-export function fTimeDate(date?: Date | string) {
-  let checkedDate = checkDate(date);
-  return checkedDate ? format(checkedDate, "p, d MMMM yyyy") : "Invalid Date";
-}
-
 export function fFileDate(date?: Date | string) {
-  let checkedDate = checkDate(date);
-  return checkedDate
-    ? format(checkedDate, "yyyy-MM-dd-HH-mm-ss")
-    : "Invalid Date";
-}
-
-export function daysFrom(date: Date | string, unit?: any) {
-  return date
-    ? formatDistanceToNowStrict(date instanceof Date ? date : nzDate(date), {
-        unit: unit || null,
-      })
-    : null;
+  return date ? dayjs(date).format("YYYY-MM-DD-HH-mm-ss") : "Invalid Date";
 }
 
 export function latestDate(dates: Date[] | string[]) {
   return dates?.length > 0
-    ? max(
-        dates?.map((date: Date | string) =>
-          date instanceof Date ? date : nzDate(date)
-        )
-      )
+    ? dayjs.max(dates?.map((date: Date | string) => dayjs(date)))
     : null;
-}
-
-export function convertToNZTime(date) {
-  const UTCFromMS = (ms) => {
-    return new Date(new Date(ms).toUTCString().replace(" GMT", ""));
-  };
-
-  const addHours = (dte, hrs) => {
-    return new Date(
-      dte.getFullYear(),
-      dte.getMonth(),
-      dte.getDate(),
-      dte.getHours() + hrs,
-      dte.getMinutes(),
-      dte.getMilliseconds()
-    );
-  };
-
-  const toNewZealand = (ms) => {
-    return addNewZealandDaylightSavings(UTCFromMS(ms));
-  };
-
-  const getPreviousSunday = (dte) => {
-    return new Date(
-      dte.getFullYear(),
-      dte.getMonth(),
-      dte.getDate() - dte.getDay(),
-      1,
-      0,
-      0
-    );
-  };
-
-  const getNextSunday = (dte) => {
-    return new Date(
-      dte.getFullYear(),
-      dte.getMonth(),
-      dte.getDay() === 0 ? dte.getDate() : dte.getDate() + (7 - dte.getDay()),
-      1,
-      0,
-      0
-    );
-  };
-
-  const standardHours = 18;
-  const daylightHours = 19;
-  const addNewZealandDaylightSavings = (dte) => {
-    const lastSundaySeptember = getPreviousSunday(
-      new Date(dte.getFullYear(), 8, 30)
-    );
-
-    const firstSundayApril = getNextSunday(new Date(dte.getFullYear(), 3, 1));
-
-    // If its before firstSundayApril, add 13, if we went over 1am, add 12.
-    if (dte <= firstSundayApril) {
-      const daylightNz = addHours(dte, daylightHours);
-      if (daylightNz >= firstSundayApril) {
-        return addHours(dte, standardHours);
-      }
-      return daylightNz;
-    }
-
-    // if its before lastSundaySeptember, add 12 if we went over 1am add 13.
-    if (dte <= lastSundaySeptember) {
-      const standardNz = addHours(dte, standardHours);
-      if (standardNz >= lastSundaySeptember) {
-        return addHours(dte, daylightHours);
-      }
-      return standardNz;
-    }
-    return addHours(dte, daylightHours);
-  };
-
-  return toNewZealand(date);
-  // the above line should always output the current DateTime in New Zealand,
-  // replace the argument with any epoch milliseconds and it should still always
-  // give you the correct time.
 }
 
 export function authoriseUrl(url: string) {

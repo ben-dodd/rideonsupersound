@@ -28,12 +28,7 @@ import {
 } from "@/lib/types";
 
 // Functions
-import {
-  getItemDisplayName,
-  getPaymentVars,
-  fDate,
-  nzDate,
-} from "@/lib/data-functions";
+import { getItemDisplayName, getPaymentVars } from "@/lib/data-functions";
 
 // Components
 import ScreenContainer from "@/components/_components/container/screen";
@@ -43,6 +38,7 @@ import MaskedInput from "react-text-mask";
 import TextField from "@/components/_components/inputs/text-field";
 import CreateableSelect from "@/components/_components/inputs/createable-select";
 import SettingsSelect from "@/components/_components/inputs/settings-select";
+import dayjs from "dayjs";
 
 export default function VendorScreen() {
   // Atoms
@@ -237,11 +233,15 @@ export default function VendorScreen() {
             },
             {
               label: "Last Sale",
-              value: v?.lastSold ? fDate(v?.lastSold) : "N/A",
+              value: v?.lastSold
+                ? dayjs(v?.lastSold).format("D MMMM YYYY")
+                : "N/A",
             },
             {
               label: "Last Paid",
-              value: v?.lastPaid ? fDate(v?.lastPaid) : "N/A",
+              value: v?.lastPaid
+                ? dayjs(v?.lastPaid).format("D MMMM YYYY")
+                : "N/A",
             },
             {
               label: "Total Take",
@@ -273,8 +273,8 @@ export default function VendorScreen() {
                     saleA: VendorSaleItemObject,
                     saleB: VendorSaleItemObject
                   ) => {
-                    const a = nzDate(saleA?.date_sale_closed);
-                    const b = nzDate(saleB?.date_sale_closed);
+                    const a = dayjs(saleA?.date_sale_closed);
+                    const b = dayjs(saleB?.date_sale_closed);
                     return a < b ? 1 : b < a ? -1 : 0;
                   }
                 )
@@ -282,7 +282,7 @@ export default function VendorScreen() {
                 ?.map((sale: VendorSaleItemObject) => (
                   <div className="border-b mt-2">
                     <div className="font-bold text-sm">
-                      {fDate(sale?.date_sale_closed)}
+                      {dayjs(sale?.date_sale_closed).format("D MMMM YYYY")}
                     </div>
                     <div>{`${getItemDisplayName(
                       inventory?.filter(
@@ -315,15 +315,17 @@ export default function VendorScreen() {
           {v?.totalPayments
             ?.sort(
               (debitA: VendorPaymentObject, debitB: VendorPaymentObject) => {
-                const a = nzDate(debitA?.date);
-                const b = nzDate(debitB?.date);
+                const a = dayjs(debitA?.date);
+                const b = dayjs(debitB?.date);
                 return a < b ? 1 : b < a ? -1 : 0;
               }
             )
             ?.slice(0, 5)
             ?.map((debit: VendorPaymentObject) => (
               <div className="border-b mt-2">
-                <div className="font-bold text-sm">{fDate(debit?.date)}</div>
+                <div className="font-bold text-sm">
+                  {dayjs(debit?.date).format("D MMMM YYYY")}
+                </div>
                 <div>{`$${(debit?.amount / 100)?.toFixed(2)} (${
                   debit?.type
                 })`}</div>

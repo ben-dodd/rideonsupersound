@@ -1,6 +1,5 @@
 // Packages
 import { useMemo } from "react";
-import { format, parseISO } from "date-fns";
 
 // DB
 import { useGiftCards } from "@/lib/swr-hooks";
@@ -9,6 +8,7 @@ import { InventoryObject } from "@/lib/types";
 // Components
 import Table from "@/components/_components/table";
 import TableContainer from "@/components/_components/container/table";
+import dayjs from "dayjs";
 
 export default function GiftCardTable() {
   // SWR
@@ -21,7 +21,7 @@ export default function GiftCardTable() {
       giftCards?.map((g: InventoryObject) => ({
         id: g?.id,
         code: g?.gift_card_code,
-        date: parseISO(g?.date_created),
+        date: g?.date_created,
         initial: g?.gift_card_amount,
         remaining: g?.gift_card_remaining,
         valid: g?.gift_card_is_valid,
@@ -37,7 +37,7 @@ export default function GiftCardTable() {
         accessor: "date",
         width: 280,
         Cell: (item: any) =>
-          item ? <div>{format(item?.value, "d MMMM yyyy")}</div> : "",
+          item ? <div>{dayjs(item?.value).format("D MMMM YYYY")}</div> : "",
         sortType: (rowA: any, rowB: any, columnId: any) => {
           const a = rowA?.original[columnId];
           const b = rowB?.original[columnId];

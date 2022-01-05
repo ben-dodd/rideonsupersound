@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 // DB
 import { useClerks, useCustomers, useInventory } from "@/lib/swr-hooks";
 import {
@@ -8,17 +10,13 @@ import {
 } from "@/lib/types";
 
 // Functions
-import {
-  convertMPStoKPH,
-  convertDegToCardinal,
-  getSaleVars,
-  fDateTime,
-} from "@/lib/data-functions";
+import { getSaleVars } from "@/lib/data-functions";
 import { useAtom } from "jotai";
 import { viewAtom } from "@/lib/atoms";
 import ReturnIcon from "@mui/icons-material/KeyboardReturn";
 
 export default function SaleDetails({ sale }) {
+  dayjs.extend(utc);
   const [view, setView] = useAtom(viewAtom);
   // SWR
   const { clerks } = useClerks();
@@ -73,7 +71,9 @@ export default function SaleDetails({ sale }) {
         <div className="font-bold">Sale Open</div>
         <div className="mb-4">
           {sale?.date_sale_opened
-            ? `${fDateTime(sale?.date_sale_opened)} (opened by ${
+            ? `${dayjs(sale?.date_sale_opened).format(
+                "D MMMM YYYY, h:mm A"
+              )} (opened by ${
                 clerks
                   ? clerks.filter(
                       (clerk: any) => clerk?.id === sale?.sale_opened_by
@@ -85,7 +85,9 @@ export default function SaleDetails({ sale }) {
         <div className="font-bold">Sale Close</div>
         <div className="mb-4">
           {sale?.date_sale_closed
-            ? `${fDateTime(sale?.date_sale_closed)} (opened by ${
+            ? `${dayjs(sale?.date_sale_closed).format(
+                "D MMMM YYYY, h:mm A"
+              )} (opened by ${
                 clerks
                   ? clerks.filter(
                       (clerk: any) => clerk?.id === sale?.sale_closed_by

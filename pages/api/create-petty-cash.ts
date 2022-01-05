@@ -3,16 +3,16 @@ import { query } from "../../lib/db";
 
 const handler: NextApiHandler = async (req, res) => {
   const { k } = req.query;
-  const { register_id, clerk_id, amount, is_take, note } = req.body;
+  const { register_id, clerk_id, amount, is_take, note, date } = req.body;
   try {
     if (!k || k !== process.env.NEXT_PUBLIC_SWR_API_KEY)
       return res.status(401).json({ message: "Resource Denied." });
     const results = await query(
       `
-      INSERT INTO register_petty_cash (register_id, clerk_id, amount, is_take, note)
-      VALUES (?, ?, ?, ?, ?)
+      INSERT INTO register_petty_cash (register_id, clerk_id, amount, is_take, note, date)
+      VALUES (?, ?, ?, ?, ?, ?)
       `,
-      [register_id, clerk_id, amount, is_take, note]
+      [register_id, clerk_id, amount, is_take, note, date]
     );
     return res.json(results);
   } catch (e) {

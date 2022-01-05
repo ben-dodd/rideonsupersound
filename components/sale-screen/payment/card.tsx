@@ -1,6 +1,7 @@
 // Packages
 import { useState } from "react";
 import { useAtom } from "jotai";
+import dayjs from "dayjs";
 
 // DB
 import {
@@ -61,10 +62,8 @@ export default function Cash() {
       loading: submitting,
       onClick: () => {
         setSubmitting(true);
-        // TODO check dates are correct
-        let date = new Date();
         let transaction: SaleTransactionObject = {
-          date: date.toISOString(),
+          date: dayjs().format(),
           sale_id: cart?.id,
           clerk_id: clerk?.id,
           payment_method: PaymentMethodTypes.Card,

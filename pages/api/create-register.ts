@@ -3,7 +3,8 @@ import { query } from "../../lib/db";
 
 const handler: NextApiHandler = async (req, res) => {
   const { k } = req.query;
-  const { opened_by_id, open_amount, open_note, open_till_id } = req.body;
+  const { opened_by_id, open_amount, open_note, open_till_id, open_date } =
+    req.body;
   try {
     if (!k || k !== process.env.NEXT_PUBLIC_SWR_API_KEY)
       return res.status(401).json({ message: "Resource Denied." });
@@ -13,11 +14,12 @@ const handler: NextApiHandler = async (req, res) => {
         opened_by_id,
         open_amount,
         open_note,
-        open_till_id
+        open_till_id,
+        open_date
       )
-      VALUES (?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?)
       `,
-      [opened_by_id, open_amount, open_note, open_till_id]
+      [opened_by_id, open_amount, open_note, open_till_id, open_date]
     );
     return res.json(results);
   } catch (e) {

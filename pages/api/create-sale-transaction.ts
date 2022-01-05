@@ -6,6 +6,7 @@ const handler: NextApiHandler = async (req, res) => {
   const {
     sale_id,
     clerk_id,
+    date,
     payment_method,
     amount,
     cash_received,
@@ -25,6 +26,7 @@ const handler: NextApiHandler = async (req, res) => {
       INSERT INTO sale_transaction (
         sale_id,
         clerk_id,
+        date,
         payment_method,
         amount,
         cash_received,
@@ -36,11 +38,12 @@ const handler: NextApiHandler = async (req, res) => {
         gift_card_change,
         is_refund
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
       [
         sale_id,
         clerk_id,
+        date,
         payment_method,
         amount,
         cash_received,
