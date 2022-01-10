@@ -13,7 +13,7 @@ import minMax from "dayjs/plugin/minMax";
 import isLeapYear from "dayjs/plugin/isLeapYear";
 import tz from "dayjs/plugin/timezone";
 import relative from "dayjs/plugin/relativeTime";
-import "dayjs/locale/en-nz";
+// import "dayjs/locale/en-nz";
 
 function MyApp({ Component, pageProps }) {
   dayjs.extend(utc);
@@ -22,7 +22,7 @@ function MyApp({ Component, pageProps }) {
   dayjs.extend(tz);
   dayjs.extend(relative);
   dayjs.extend(minMax);
-  dayjs.locale("en-nz");
+  // dayjs.locale("en-nz");
 
   return (
     <NextAuthProvider

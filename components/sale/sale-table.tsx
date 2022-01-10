@@ -86,7 +86,7 @@ export default function SaleTable() {
                 })
               }
             >
-              {dayjs(item?.value).format("D MMMM YYYY, H:mm A")}
+              {dayjs(item?.value).format("D MMMM YYYY, h:mm A")}
             </div>
           ) : (
             ""
