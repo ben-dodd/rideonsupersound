@@ -778,8 +778,8 @@ export function writeKiwiBankBatchFile({
       sequenceNumber || "",
       storeAccountNumber,
       7,
-      parseInt(dayjs().format("YYMMDD")),
-      parseInt(dayjs().format("YYMMDD")),
+      parseInt(dayjs.utc().format("YYMMDD")),
+      parseInt(dayjs.utc().format("YYMMDD")),
       "",
     ],
   ];

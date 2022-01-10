@@ -19,6 +19,7 @@ import {
   VendorPaymentTypes,
 } from "@/lib/types";
 import dayjs from "dayjs";
+// Change to DayJS utc
 
 import {
   getItemDisplayName,
@@ -343,7 +344,7 @@ export async function saveSaleTransaction(
       type: transaction?.is_refund
         ? VendorPaymentTypes.SaleRefund
         : VendorPaymentTypes.Sale,
-      date: dayjs().format(),
+      date: dayjs.utc().format(),
     };
     vendorPaymentId = await saveVendorPaymentToDatabase(vendorPayment);
     transaction = { ...transaction, vendor_payment_id: vendorPaymentId };
@@ -411,7 +412,7 @@ export async function saveClosedRegisterToDatabase(
           ...register,
           id: register_id,
           close_till_id: tillID,
-          close_date: dayjs().format(),
+          close_date: dayjs.utc().format(),
         }),
       }
     );
@@ -452,7 +453,7 @@ export async function saveAndOpenRegister(
         body: JSON.stringify({
           ...register,
           open_till_id: tillID,
-          open_date: dayjs().format(),
+          open_date: dayjs.utc().format(),
         }),
       }
     );
@@ -500,7 +501,7 @@ export async function savePettyCashToRegister(
           amount: numberAmount,
           is_take: isTake,
           note,
-          date: dayjs().format(),
+          date: dayjs.utc().format(),
         }),
       }
     );
@@ -763,7 +764,7 @@ export async function saveLog(
   mutateLogs: Function
 ) {
   let logObj = {
-    date_created: dayjs().format(),
+    date_created: dayjs.utc().format(),
     log: log?.log,
     table_id: log?.table_id || null,
     row_id: log?.row_id || null,

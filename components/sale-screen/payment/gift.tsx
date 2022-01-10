@@ -108,7 +108,7 @@ export default function Gift() {
           }
         }
         let transaction: SaleTransactionObject = {
-          date: dayjs().format(),
+          date: dayjs.utc().format(),
           sale_id: cart?.id,
           clerk_id: clerk?.id,
           payment_method: PaymentMethodTypes.GiftCard,

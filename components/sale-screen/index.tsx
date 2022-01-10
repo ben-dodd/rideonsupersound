@@ -182,7 +182,7 @@ export default function SaleScreen() {
       ...cart,
       state: SaleStateTypes.Completed,
       sale_closed_by: clerk?.id,
-      date_sale_closed: dayjs().format(),
+      date_sale_closed: dayjs.utc().format(),
     };
 
     console.log(completedSale);
