@@ -87,6 +87,7 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
         quantity: "1",
       });
     else newItems[index].quantity = `${parseInt(newItems[index].quantity) + 1}`;
+    console.log(cart?.date_sale_opened);
     setCart({
       id: cart?.id || null,
       date_sale_opened: cart?.date_sale_opened || dayjs.utc().format(),
