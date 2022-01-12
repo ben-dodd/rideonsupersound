@@ -14,6 +14,7 @@ import { saveLog, saveTaskToDatabase } from "@/lib/db-functions";
 import Modal from "@/components/_components/container/modal";
 import TextField from "@/components/_components/inputs/text-field";
 import Select from "react-select";
+import dayjs from "dayjs";
 
 export default function TaskDialog() {
   // Atoms
@@ -62,8 +63,10 @@ export default function TaskDialog() {
           description,
           assigned_to: assignedTo?.value,
           is_priority: isPriority || false,
+          created_by_clerk_id: clerk?.id,
+          date_created: dayjs.utc().format(),
         };
-        const id = await saveTaskToDatabase(newTask, clerk);
+        const id = await saveTaskToDatabase(newTask);
         mutateJobs([...jobs, { ...newTask, id }], false);
         setSubmitting(false);
         clearDialog();
@@ -83,7 +86,7 @@ export default function TaskDialog() {
           message: `NEW JOB CREATED`,
         });
       },
-      text: "CREATE TASK",
+      text: "CREATE JOB",
     },
   ];
 
@@ -91,10 +94,10 @@ export default function TaskDialog() {
     <Modal
       open={view?.taskDialog}
       closeFunction={clearDialog}
-      title={"CREATE TASK"}
+      title={"NEW JOB"}
       buttons={buttons}
     >
-      <div>
+      <div className="h-dialogsm">
         <TextField
           inputLabel="Description"
           value={description}
@@ -102,7 +105,7 @@ export default function TaskDialog() {
           multiline
           rows={3}
         />
-        <div className="text-sm mt-2">Task assigned to</div>
+        <div className="text-sm mt-2">Job assigned to</div>
         <Select
           className="w-full self-stretch"
           value={assignedTo}
@@ -118,7 +121,7 @@ export default function TaskDialog() {
             checked={isPriority}
             onChange={() => setIsPriority(!isPriority)}
           />
-          <div className="ml-2">Priority task</div>
+          <div className="ml-2">Priority job</div>
         </div>
       </div>
     </Modal>

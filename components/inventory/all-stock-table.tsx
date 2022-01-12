@@ -166,7 +166,7 @@ export default function InventoryTable() {
         colorDark="bg-col2-dark"
         data={data}
         columns={columns}
-        heading={"Inventory List"}
+        heading={"All Stock"}
         pageSize={20}
         sortOptions={[{ id: "title", desc: false }]}
       />

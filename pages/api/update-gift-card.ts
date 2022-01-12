@@ -11,10 +11,11 @@ const handler: NextApiHandler = async (req, res) => {
       `
         UPDATE stock
         SET
-        gift_card_remaining = ${gift_card_remaining || 0},
-        gift_card_is_valid = ${gift_card_is_valid || 1}
-        WHERE id = ${id}
-      `
+          gift_card_remaining = ?,
+          gift_card_is_valid = ?
+        WHERE id = ?
+      `,
+      [gift_card_remaining, gift_card_is_valid || 1, id]
     );
     return res.json(results);
   } catch (e) {

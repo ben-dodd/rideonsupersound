@@ -24,18 +24,31 @@ const handler: NextApiHandler = async (req, res) => {
       `
         UPDATE register
         SET
-          close_amount=${close_amount || null},
-          closed_by_id=${closed_by_id || null},
-          close_petty_balance=${close_petty_balance || null},
-          close_cash_given=${close_cash_given || null},
-          close_manual_payments=${close_manual_payments || null},
-          close_expected_amount=${close_expected_amount || null},
-          close_discrepancy=${close_discrepancy || null},
-          close_note=${escape(close_note)},
-          close_till_id=${close_till_id || null}
-          close_date=${close_date || null}
-        WHERE id = ${id}
-      `
+          close_amount = ?,
+          closed_by_id = ?,
+          close_petty_balance = ?,
+          close_cash_given = ?,
+          close_manual_payments = ?,
+          close_expected_amount = ?,
+          close_discrepancy = ?,
+          close_note = ?,
+          close_till_id = ?,
+          close_date = ?
+        WHERE id = ?
+      `,
+      [
+        close_amount,
+        closed_by_id,
+        close_petty_balance,
+        close_cash_given,
+        close_manual_payments,
+        close_expected_amount,
+        close_discrepancy,
+        close_note,
+        close_till_id,
+        close_date,
+        id,
+      ]
     );
     return res.json(results);
   } catch (e) {

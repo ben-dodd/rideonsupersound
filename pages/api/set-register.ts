@@ -11,9 +11,10 @@ const handler: NextApiHandler = async (req, res) => {
       `
       UPDATE global
       SET
-        num = ${register_id}
+        num = ?
       WHERE id = 'current_register'
-      `
+      `,
+      [register_id]
     );
     return res.json(results);
   } catch (e) {

@@ -70,6 +70,7 @@ interface TableProps {
   pageSize?: number;
   onClickRow?: Function;
   sortOptions?: any;
+  hiddenColumns?: string[];
 }
 
 function Table({
@@ -83,6 +84,7 @@ function Table({
   pageSize,
   onClickRow,
   sortOptions,
+  hiddenColumns,
 }: TableProps) {
   const defaultColumn = useMemo(
     () => ({
@@ -127,6 +129,7 @@ function Table({
       initialState: {
         pageSize: pageSize || 15,
         sortBy: sortOptions || [],
+        hiddenColumns: hiddenColumns || [],
       },
     },
     useBlockLayout,

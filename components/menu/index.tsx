@@ -18,6 +18,7 @@ import LogsIcon from "@mui/icons-material/GridOn";
 import VendorsIcon from "@mui/icons-material/Store";
 import PaymentsIcon from "@mui/icons-material/Receipt";
 import GiftCardsIcon from "@mui/icons-material/Redeem";
+import LaybyIcon from "@mui/icons-material/DryCleaning";
 import JobsIcon from "@mui/icons-material/Task";
 import StatsIcon from "@mui/icons-material/QueryStats";
 
@@ -90,22 +91,29 @@ export default function Menu() {
     {
       type: "link",
       page: "sales",
-      text: "SALES/LAYBYS",
+      text: "SALES",
       class: "bg-col5-light hover:bg-col5",
       icon: <SalesIcon />,
     },
     {
       type: "link",
-      page: "customers",
-      text: "HOLDS",
+      page: "laybys",
+      text: "LAYBYS",
       class: "bg-col6-light hover:bg-col6",
+      icon: <LaybyIcon />,
+    },
+    {
+      type: "link",
+      page: "holds",
+      text: "HOLDS",
+      class: "bg-col7-light hover:bg-col7",
       icon: <HoldsIcon />,
     },
     {
       type: "link",
       page: "giftCards",
       text: "GIFT CARDS",
-      class: "bg-col7-light hover:bg-col7",
+      class: "bg-col8-light hover:bg-col8",
       icon: <GiftCardsIcon />,
     },
     // {
@@ -136,7 +144,7 @@ export default function Menu() {
       type: "link",
       page: "logs",
       text: "LOGS",
-      class: "bg-col8-light hover:bg-col8",
+      class: "bg-col9-light hover:bg-col9",
       icon: <LogsIcon />,
     },
     {
@@ -144,14 +152,14 @@ export default function Menu() {
       page: "jobs",
       text: "JOBS",
       badge: jobsToDo,
-      class: "bg-col9-light hover:bg-col9",
+      class: "bg-col10-light hover:bg-col10",
       icon: <JobsIcon />,
     },
     {
       type: "link",
       page: "stats",
       text: "STATS",
-      class: "bg-col10-light hover:bg-col10",
+      class: "bg-col1-light hover:bg-col1",
       icon: <StatsIcon />,
     },
     // {
@@ -166,7 +174,7 @@ export default function Menu() {
       page: null,
       onClick: () => setClerk(null),
       text: "SWITCH CLERK",
-      class: "bg-col1-light hover:bg-col1",
+      class: "bg-col2-light hover:bg-col2",
       icon: <LogoutIcon />,
     },
   ];

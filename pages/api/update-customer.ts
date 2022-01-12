@@ -1,6 +1,5 @@
 import { NextApiHandler } from "next";
 import { query } from "../../lib/db";
-import { escape } from "sqlstring";
 
 const handler: NextApiHandler = async (req, res) => {
   const { id, name, email, phone, postal_address, note, is_deleted } = req.body;
@@ -12,14 +11,15 @@ const handler: NextApiHandler = async (req, res) => {
       `
       UPDATE customer
       SET
-        name = ${name ? `"${name}"` : null},
-        email = ${email ? `"${email}"` : null},
-        phone = ${phone ? `"${phone}"` : null},
-        postal_address = ${postal_address ? `"${postal_address}"` : null},
-        note = ${escape(note)},
-        is_deleted = ${is_deleted || null}
-      WHERE id = ${id}
-      `
+        name = ?,
+        email = ?,
+        phone = ?,
+        postal_address = ?,
+        note = ?,
+        is_deleted = ?
+      WHERE id = ?
+      `,
+      [name, email, phone, postal_address, note, is_deleted, id]
     );
     return res.json(results);
   } catch (e) {

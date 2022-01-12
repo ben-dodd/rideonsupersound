@@ -38,7 +38,7 @@ export default function PaymentTable() {
         width: 270,
         Cell: (item: any) =>
           item ? (
-            <div>{dayjs(item?.value).format("D MMMM YYYY, H:mm A")}</div>
+            <div>{dayjs(item?.value).format("D MMMM YYYY, h:mm A")}</div>
           ) : (
             <div />
           ),
@@ -58,8 +58,15 @@ export default function PaymentTable() {
         Header: "Amount",
         accessor: "amount",
         width: 100,
-        Cell: ({ value }) =>
-          value && !isNaN(value) ? `$${(value / 100)?.toFixed(2)}` : "N/A",
+        Cell: ({ value }) => (
+          <div className={value < 0 ? "text-red-500" : "text-black"}>
+            {value && !isNaN(value)
+              ? value < 0
+                ? `($${(Math.abs(value) / 100)?.toFixed(2)})`
+                : `$${(value / 100)?.toFixed(2)}`
+              : "N/A"}
+          </div>
+        ),
       },
       { Header: "Clerk", accessor: "clerk" },
       { Header: "Type", accessor: "type" },

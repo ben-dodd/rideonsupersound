@@ -16,7 +16,7 @@ import Menu from "@/components/menu";
 import SellScreen from "@/components/sell";
 import InventoryScreen from "@/components/inventory";
 import VendorScreen from "@/components/vendor";
-import CustomersScreen from "@/components/customer";
+import HoldsScreen from "@/components/hold";
 import GiftCardsScreen from "@/components/gift-card";
 import PaymentsScreen from "@/components/payment";
 import SalesScreen from "@/components/sale";
@@ -24,6 +24,7 @@ import LogScreen from "@/components/log";
 import TaskScreen from "@/components/task";
 import ConfirmModal from "@/components/_components/container/modal/confirm-modal";
 import HelpDialog from "@/components/help";
+import LaybyScreen from "../layby";
 
 export default function MainPage() {
   // Atoms
@@ -46,7 +47,8 @@ export default function MainPage() {
           <SellScreen />
           <InventoryScreen />
           <VendorScreen />
-          <CustomersScreen />
+          <HoldsScreen />
+          <LaybyScreen />
           <GiftCardsScreen />
           <SalesScreen />
           {page === "logs" && <LogScreen />}

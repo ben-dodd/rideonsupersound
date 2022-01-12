@@ -30,6 +30,7 @@ import { getTotalOwing } from "@/lib/data-functions";
 import TextField from "@/components/_components/inputs/text-field";
 import Modal from "@/components/_components/container/modal";
 import CreateableSelect from "@/components/_components/inputs/createable-select";
+import dayjs from "dayjs";
 
 export default function CashPaymentDialog() {
   // SWR
@@ -83,10 +84,8 @@ export default function CashPaymentDialog() {
       onClick: async () => {
         setSubmitting(true);
         let vendorPayment = {
+          date: dayjs.utc().format(),
           amount: Math.round(parseFloat(payment) * 100),
-          bank_account_number: vendor?.bank_account_number,
-          batch_number: `${registerID}`,
-          sequence_number: "Test",
           clerk_id: clerk?.id,
           vendor_id: vendor?.id,
           register_id: registerID,

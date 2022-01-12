@@ -327,16 +327,6 @@ export function useSaleItems() {
   };
 }
 
-export function useLaybys() {
-  const { data, error, mutate } = useSWR(`/api/get-laybys`, fetcher);
-  return {
-    laybys: data,
-    isLaybysLoading: !error && !data,
-    isLaybysError: error,
-    mutateLaybys: mutate,
-  };
-}
-
 export function useHelps() {
   const { data, error, mutate } = useSWR(`/api/get-helps`, fetcher);
   return {

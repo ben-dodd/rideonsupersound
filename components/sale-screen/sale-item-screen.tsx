@@ -70,9 +70,8 @@ export default function SaleItemScreen() {
   useEffect(() => {
     setSaleLoading(true);
     if (!isSaleItemsLoading && !isSaleTransactionsLoading) {
-      let loadedSale = sales?.filter(
-        (s: SaleObject) => s?.id === loadedSaleId[page]
-      )[0];
+      let loadedSale =
+        sales?.filter((s: SaleObject) => s?.id === loadedSaleId[page])[0] || {};
       loadedSale.items = items;
       loadedSale.transactions = transactions;
       console.log(loadedSale);

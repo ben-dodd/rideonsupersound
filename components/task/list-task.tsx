@@ -46,18 +46,14 @@ export default function ListTask({ task }: ListItemProps) {
                 const otherJobs = jobs?.filter(
                   (t: TaskObject) => t?.id !== task?.id
                 );
-                mutateJobs(
-                  [
-                    ...otherJobs,
-                    {
-                      ...task,
-                      completed_by_clerk_id: clerk?.id,
-                      is_completed: true,
-                    },
-                  ],
-                  false
-                );
-                completeTask(task, clerk);
+                const completedTask = {
+                  ...task,
+                  date_completed: dayjs.utc().format(),
+                  completed_by_clerk_id: clerk?.id,
+                  is_completed: true,
+                };
+                mutateJobs([...otherJobs, completedTask], false);
+                completeTask(completedTask);
               }}
             />
           </div>

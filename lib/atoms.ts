@@ -54,9 +54,10 @@ interface PageProps {
   sell?: number;
   inventory?: number;
   vendors?: number;
-  customers?: number;
+  holds?: number;
   giftCards?: number;
   sales?: number;
+  laybys?: number;
   payments?: number;
   logs?: number;
 }

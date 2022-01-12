@@ -10,12 +10,12 @@ import {
 } from "@/lib/atoms";
 
 // Components
-import CustomerTable from "./customer-table";
+import HoldsTable from "./hold-table";
 import SaleItemScreen from "@/components/sale-screen/sale-item-screen";
-import CreateCustomerSidebar from "./create-customer-sidebar";
+import CreateCustomerSidebar from "../customer/create-customer-sidebar";
 import HoldDialog from "@/components/hold/hold-dialog";
 
-export default function CustomersScreen() {
+export default function HoldsScreen() {
   // Atoms
   const [page] = useAtom(pageAtom);
   const [view] = useAtom(viewAtom);
@@ -24,12 +24,12 @@ export default function CustomersScreen() {
   return (
     <div
       className={`flex relative overflow-x-hidden ${
-        page !== "customers" ? "hidden" : ""
+        page !== "holds" ? "hidden" : ""
       }`}
     >
-      {page === "customers" && <CustomerTable />}
-      {loadedHoldId?.customers && <HoldDialog />}
-      {loadedSaleId?.customers && <SaleItemScreen />}
+      {page === "holds" && <HoldsTable />}
+      {loadedHoldId?.holds && <HoldDialog />}
+      {loadedSaleId?.holds && <SaleItemScreen />}
       <CreateCustomerSidebar />
     </div>
   );

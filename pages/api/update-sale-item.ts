@@ -24,18 +24,31 @@ const handler: NextApiHandler = async (req, res) => {
       `
       UPDATE sale_item
       SET
-        sale_id = ${sale_id || null},
-        item_id = ${item_id || null},
-        quantity = ${quantity || null},
-        vendor_discount = ${vendor_discount || null},
-        store_discount = ${store_discount || null},
-        note = ${escape(note)},
-        is_refunded = ${is_refunded || 0},
-        refund_note = ${escape(refund_note)},
-        date_refunded = ${date_refunded || null},
-        is_deleted = ${is_deleted || 0}
-      WHERE id = ${sale_item_id}
-      `
+        sale_id = ?,
+        item_id = ?,
+        quantity = ?,
+        vendor_discount = ?,
+        store_discount = ?,
+        note = ?,
+        is_refunded = ?,
+        refund_note = ?,
+        date_refunded = ?,
+        is_deleted = ?
+      WHERE id = ?
+      `,
+      [
+        sale_id,
+        item_id,
+        quantity,
+        vendor_discount,
+        store_discount,
+        note,
+        is_refunded,
+        refund_note,
+        date_refunded,
+        is_deleted,
+        sale_item_id,
+      ]
     );
     return res.json(results);
   } catch (e) {

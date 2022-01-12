@@ -10,7 +10,12 @@ import {
   useInventory,
 } from "@/lib/swr-hooks";
 import { loadedSaleIdAtom, pageAtom } from "@/lib/atoms";
-import { SaleObject, CustomerObject, ClerkObject } from "@/lib/types";
+import {
+  SaleObject,
+  CustomerObject,
+  ClerkObject,
+  SaleStateTypes,
+} from "@/lib/types";
 
 // Components
 import Table from "@/components/_components/table";
@@ -33,35 +38,37 @@ export default function SaleTable() {
   // Constants
   const data = useMemo(
     () =>
-      sales?.map((s: SaleObject) => {
-        // const items = saleItems?.filter(
-        //   (i: SaleItemObject) => i?.sale_id === s?.id
-        // );
-        // s = { ...s, items };
-        return {
-          id: s?.id,
-          date: s?.date_sale_opened,
-          status: s?.state,
-          customer: customers?.filter(
-            (c: CustomerObject) => c?.id === s?.customer_id
-          )[0],
-          clerk: clerks?.filter(
-            (c: ClerkObject) => c?.id === s?.sale_opened_by
-          )[0],
-          numberOfItems: s?.number_of_items,
-          items: s?.item_list,
-          store: s?.store_cut,
-          sell: s?.total_price,
-          // numberOfItems: items?.reduce(
-          //   (accumulator: number, item: SaleItemObject) =>
-          //     accumulator + parseInt(item?.quantity) || 1,
-          //   0
-          // ),
-          // items: writeItemList(inventory, items),
-          // store: getTotalStoreCut(items, inventory),
-          // sell: getTotalPrice(items, inventory),
-        };
-      }),
+      sales
+        ?.filter((s: SaleObject) => s?.state !== SaleStateTypes.Layby)
+        ?.map((s: SaleObject) => {
+          // const items = saleItems?.filter(
+          //   (i: SaleItemObject) => i?.sale_id === s?.id
+          // );
+          // s = { ...s, items };
+          return {
+            id: s?.id,
+            date: s?.date_sale_opened,
+            status: s?.state,
+            customer: customers?.filter(
+              (c: CustomerObject) => c?.id === s?.customer_id
+            )[0],
+            clerk: clerks?.filter(
+              (c: ClerkObject) => c?.id === s?.sale_opened_by
+            )[0],
+            numberOfItems: s?.number_of_items,
+            items: s?.item_list,
+            store: s?.store_cut,
+            sell: s?.total_price,
+            // numberOfItems: items?.reduce(
+            //   (accumulator: number, item: SaleItemObject) =>
+            //     accumulator + parseInt(item?.quantity) || 1,
+            //   0
+            // ),
+            // items: writeItemList(inventory, items),
+            // store: getTotalStoreCut(items, inventory),
+            // sell: getTotalPrice(items, inventory),
+          };
+        }),
     [sales, customers, clerks, inventory]
   );
   const columns = useMemo(() => {

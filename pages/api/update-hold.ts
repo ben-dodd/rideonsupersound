@@ -12,10 +12,11 @@ const handler: NextApiHandler = async (req, res) => {
       `
         UPDATE hold
         SET
-          hold_period=${hold_period || null},
-          note=${escape(note)}
-        WHERE id = ${id}
-      `
+          hold_period = ?,
+          note = ?
+        WHERE id = ?
+      `,
+      [hold_period, note, id]
     );
     return res.json(results);
   } catch (e) {

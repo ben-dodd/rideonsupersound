@@ -18,10 +18,14 @@ export default function LogScreen() {
 
   return (
     <div
-      className={`flex overflow-x-hidden ${page !== "logs" ? "hidden" : ""}`}
+      className={`flex flex-col overflow-x-hidden ${
+        page !== "logs" ? "hidden" : ""
+      }`}
     >
+      <div className="bg-col9 text-4xl font-bold uppercase text-white p-2 mb-1">
+        Logs
+      </div>
       <div className="h-menu w-full overflow-y-scroll px-2 bg-white">
-        <div className="text-2xl mt-4 mb-2 text-black font-mono">Logs</div>
         {isLogsLoading ? (
           <div className="w-full flex h-full">
             <div className="loading-icon" />

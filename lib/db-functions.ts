@@ -334,17 +334,17 @@ export async function saveSaleTransaction(
 ) {
   if (transaction?.payment_method === PaymentMethodTypes.Account) {
     // Add account payment as a store payment to the vendor
+    console.log(transaction);
     let vendorPaymentId = null;
     const vendorPayment = {
-      amount: transaction?.is_refund
-        ? transaction?.amount * -1
-        : transaction?.amount,
+      amount: transaction?.amount,
       clerk_id: transaction?.clerk_id,
       vendor_id: transaction?.vendor?.id,
       type: transaction?.is_refund
         ? VendorPaymentTypes.SaleRefund
         : VendorPaymentTypes.Sale,
       date: dayjs.utc().format(),
+      register_id: transaction?.register_id,
     };
     vendorPaymentId = await saveVendorPaymentToDatabase(vendorPayment);
     transaction = { ...transaction, vendor_payment_id: vendorPaymentId };
@@ -658,6 +658,7 @@ export async function updateCustomerInDatabase(
   customers: CustomerObject[],
   mutateCustomers: Function
 ) {
+  console.log(customer);
   try {
     const res = await fetch(
       `/api/update-customer?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
@@ -809,7 +810,7 @@ export async function addRestockTask(id: number) {
   }
 }
 
-export async function saveTaskToDatabase(task: TaskObject, clerk: ClerkObject) {
+export async function saveTaskToDatabase(task: TaskObject) {
   try {
     const res = await fetch(
       `/api/create-task?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
@@ -818,13 +819,7 @@ export async function saveTaskToDatabase(task: TaskObject, clerk: ClerkObject) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          description: task?.description,
-          created_by_clerk_id: clerk?.id,
-          assigned_to: task?.assigned_to || null,
-          assigned_to_clerk_id: task?.assigned_to_clerk_id || null,
-          is_priority: task?.is_priority || 0,
-        }),
+        body: JSON.stringify(task),
       }
     );
     const json = await res.json();
@@ -835,7 +830,7 @@ export async function saveTaskToDatabase(task: TaskObject, clerk: ClerkObject) {
   }
 }
 
-export async function completeTask(task: TaskObject, clerk: ClerkObject) {
+export async function completeTask(task: TaskObject) {
   try {
     const res = await fetch(
       `/api/complete-task?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
@@ -844,10 +839,7 @@ export async function completeTask(task: TaskObject, clerk: ClerkObject) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          id: task?.id,
-          completed_by_clerk_id: clerk?.id,
-        }),
+        body: JSON.stringify(task),
       }
     );
     const json = await res.json();

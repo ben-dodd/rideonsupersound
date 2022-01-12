@@ -11,9 +11,10 @@ const handler: NextApiHandler = async (req, res) => {
       `
         UPDATE stock
         SET
-          needs_restock = ${needs_restock ? 1 : 0}
-        WHERE id = ${id}
-      `
+          needs_restock = ?
+        WHERE id = ?
+      `,
+      [needs_restock ? 1 : 0, id]
     );
     return res.json(results);
   } catch (e) {
