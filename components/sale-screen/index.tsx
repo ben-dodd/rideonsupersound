@@ -12,6 +12,7 @@ import {
   useSales,
   useSaleItems,
   useGiftCards,
+  useRegisterID,
 } from "@/lib/swr-hooks";
 import {
   clerkAtom,
@@ -20,25 +21,13 @@ import {
   viewAtom,
   pageAtom,
 } from "@/lib/atoms";
-import {
-  ModalButton,
-  CustomerObject,
-  SaleItemObject,
-  SaleObject,
-  InventoryObject,
-  SaleStateTypes,
-} from "@/lib/types";
+import { ModalButton, CustomerObject, SaleStateTypes } from "@/lib/types";
 
 // Functions
 import { getSaleVars, writeItemList } from "@/lib/data-functions";
 import {
   saveSaleAndPark,
   saveLog,
-  saveStockMovementToDatabase,
-  updateSaleInDatabase,
-  updateSaleItemInDatabase,
-  validateGiftCard,
-  loadSaleToCart,
   saveSaleItemsTransactionsToDatabase,
 } from "@/lib/db-functions";
 
@@ -51,7 +40,6 @@ import Cash from "./payment/cash";
 import Gift from "./payment/gift";
 import ScreenContainer from "@/components/_components/container/screen";
 import CreateCustomerSidebar from "@/components/customer/create-customer-sidebar";
-import RefundPaymentDialog from "./refund-payment-dialog";
 import ReturnItemDialog from "./return-item-dialog";
 import dayjs from "dayjs";
 
@@ -74,6 +62,7 @@ export default function SaleScreen() {
   const { sales, mutateSales } = useSales();
   const { giftCards, mutateGiftCards } = useGiftCards();
   const { logs, mutateLogs } = useLogs();
+  const { registerID } = useRegisterID();
 
   // State
   // const [saleLoading, setSaleLoading] = useState(false);
@@ -98,6 +87,7 @@ export default function SaleScreen() {
     saveSaleAndPark(
       cart,
       clerk,
+      registerID,
       customers,
       logs,
       mutateLogs,
@@ -161,6 +151,7 @@ export default function SaleScreen() {
     saveSaleItemsTransactionsToDatabase(
       laybySale,
       clerk,
+      registerID,
       sales,
       mutateSales,
       inventory,
@@ -189,6 +180,7 @@ export default function SaleScreen() {
     saveSaleItemsTransactionsToDatabase(
       completedSale,
       clerk,
+      registerID,
       sales,
       mutateSales,
       inventory,

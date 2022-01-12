@@ -11,9 +11,9 @@ import { TaskObject, InventoryObject } from "@/lib/types";
 import { uploadFiles } from "@/lib/db-functions";
 
 // Components
-import ListTask from "./list-task";
-import TaskDialog from "./task-dialog";
-import RestockTask from "./restock-task";
+import ListTask from "./list-job";
+import TaskDialog from "./job-dialog";
+import RestockTask from "./restock-job";
 import Tabs from "@/components/_components/navigation/tabs";
 import dayjs from "dayjs";
 

@@ -1,9 +1,6 @@
-import { useAtom } from "jotai";
-
 // DB
-import { useClerks, useJobs, useInventory } from "@/lib/swr-hooks";
+import { useInventory } from "@/lib/swr-hooks";
 import { InventoryObject } from "@/lib/types";
-import { clerkAtom } from "@/lib/atoms";
 import { getItemSkuDisplayName } from "@/lib/data-functions";
 import { completeRestockTask } from "@/lib/db-functions";
 
@@ -11,16 +8,9 @@ type ListItemProps = {
   item: InventoryObject;
 };
 
-export default function ListTask({ item }: ListItemProps) {
+export default function RestockJob({ item }: ListItemProps) {
   // SWR
-  const { clerks } = useClerks();
-  const { jobs, mutateJobs } = useJobs();
   const { inventory, mutateInventory } = useInventory();
-
-  // Atoms
-  const [clerk] = useAtom(clerkAtom);
-
-  // State
 
   return (
     <div className={`flex w-full border-b border-yellow-100 py-1 text-sm`}>

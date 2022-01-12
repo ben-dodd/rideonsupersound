@@ -12,7 +12,7 @@ type ListItemProps = {
   task: TaskObject;
 };
 
-export default function ListTask({ task }: ListItemProps) {
+export default function ListJob({ task }: ListItemProps) {
   // SWR
   const { clerks } = useClerks();
   const { jobs, mutateJobs } = useJobs();

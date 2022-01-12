@@ -11,6 +11,7 @@ import {
   useLogs,
   useSales,
   useGiftCards,
+  useRegisterID,
 } from "@/lib/swr-hooks";
 import {
   clerkAtom,
@@ -58,6 +59,7 @@ export default function SaleItemScreen() {
     useSaleTransactionsForSale(loadedSaleId[page]);
   const { sales, mutateSales } = useSales();
   const { logs, mutateLogs } = useLogs();
+  const { registerID } = useRegisterID();
 
   // State
   const [saleLoading, setSaleLoading] = useState(false);
@@ -96,6 +98,7 @@ export default function SaleItemScreen() {
       setCart,
       sale,
       clerk,
+      registerID,
       customers,
       logs,
       mutateLogs,

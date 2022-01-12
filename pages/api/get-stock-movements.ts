@@ -9,11 +9,8 @@ const handler: NextApiHandler = async (req, res) => {
     const results = await query(
       `
       SELECT *
-      FROM task
-      WHERE NOT is_deleted
-      AND NOT is_completed
-      OR date_completed > date_sub(now(), interval 1 week)
-      ORDER BY date_created desc
+      FROM stock_movement
+      ORDER BY date_moved desc
       LIMIT 200
       `
     );

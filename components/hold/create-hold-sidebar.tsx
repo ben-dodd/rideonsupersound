@@ -3,7 +3,13 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useCustomers, useInventory, useLogs } from "@/lib/swr-hooks";
+import {
+  useCustomers,
+  useInventory,
+  useLogs,
+  useRegister,
+  useRegisterID,
+} from "@/lib/swr-hooks";
 import {
   cartAtom,
   clerkAtom,
@@ -38,6 +44,7 @@ export default function CreateHoldSidebar() {
   const { customers } = useCustomers();
   const { inventory } = useInventory();
   const { logs, mutateLogs } = useLogs();
+  const { registerID } = useRegisterID();
 
   // Atoms
   const [cart, setCart] = useAtom(cartAtom);
@@ -65,21 +72,19 @@ export default function CreateHoldSidebar() {
         )[0];
         const itemQuantity = getItemQuantity(item, cart?.items);
         if (itemQuantity > 0) {
-          saveTaskToDatabase(
-            {
-              description: `Restock ${getItemDisplayName(item)} [${getItemSku(
-                item
-              )}]`,
-            },
-            clerk
-          );
+          saveTaskToDatabase({
+            description: `Restock ${getItemDisplayName(item)} [${getItemSku(
+              item
+            )}]`,
+          });
         }
         const rowId = await saveHoldToDatabase(
           cart,
           cartItem,
           holdPeriod,
           note,
-          clerk
+          clerk,
+          registerID
         );
         saveLog(
           {

@@ -21,7 +21,7 @@ import GiftCardsScreen from "@/components/gift-card";
 import PaymentsScreen from "@/components/payment";
 import SalesScreen from "@/components/sale";
 import LogScreen from "@/components/log";
-import TaskScreen from "@/components/task";
+import TaskScreen from "@/components/jobs";
 import ConfirmModal from "@/components/_components/container/modal/confirm-modal";
 import HelpDialog from "@/components/help";
 import LaybyScreen from "../layby";

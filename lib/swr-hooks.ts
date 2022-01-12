@@ -357,6 +357,16 @@ export function useLogs() {
   };
 }
 
+export function useStockMovements() {
+  const { data, error, mutate } = useSWR(`/api/get-stock-movements`, fetcher);
+  return {
+    stockMovements: data,
+    isStockMovementsLoading: !error && !data,
+    isStockMovementsError: error,
+    mutateStockMovements: mutate,
+  };
+}
+
 export function useJobs() {
   const { data, error, mutate } = useSWR(`/api/get-jobs`, fetcher);
   return {

@@ -326,6 +326,17 @@ export interface LogObject {
   is_deleted?: boolean;
 }
 
+export interface StockMovementObject {
+  id?: number;
+  stock_id?: number;
+  clerk_id?: number;
+  quantity?: number;
+  register_id?: number;
+  act?: string;
+  note?: string;
+  date_moved?: string;
+}
+
 export interface TaskObject {
   id?: number;
   description?: string;

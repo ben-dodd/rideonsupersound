@@ -16,7 +16,7 @@ import TextField from "@/components/_components/inputs/text-field";
 import Select from "react-select";
 import dayjs from "dayjs";
 
-export default function TaskDialog() {
+export default function JobDialog() {
   // Atoms
   const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);

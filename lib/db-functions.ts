@@ -32,6 +32,7 @@ export async function loadSaleToCart(
   setCart: Function,
   sale: SaleObject,
   clerk: ClerkObject,
+  registerID: number,
   customers: CustomerObject[],
   logs: LogObject[],
   mutateLogs: Function,
@@ -49,6 +50,7 @@ export async function loadSaleToCart(
     await saveSaleAndPark(
       cart,
       clerk,
+      registerID,
       customers,
       logs,
       mutateLogs,
@@ -66,6 +68,7 @@ export async function loadSaleToCart(
 export async function saveSaleAndPark(
   cart: SaleObject,
   clerk: ClerkObject,
+  registerID: number,
   customers: CustomerObject[],
   logs: LogObject[],
   mutateLogs: Function,
@@ -79,6 +82,7 @@ export async function saveSaleAndPark(
   const id = await saveSaleItemsTransactionsToDatabase(
     { ...cart, state: SaleStateTypes.Parked },
     clerk,
+    registerID,
     sales,
     mutateSales,
     inventory,
@@ -112,6 +116,7 @@ export async function saveSaleAndPark(
 export async function saveSaleItemsTransactionsToDatabase(
   cart: SaleObject,
   clerk: ClerkObject,
+  registerID: number,
   sales: SaleObject[],
   mutateSales: Function,
   inventory: InventoryObject[],
@@ -198,6 +203,7 @@ export async function saveSaleItemsTransactionsToDatabase(
           saveStockMovementToDatabase(
             item,
             clerk,
+            registerID,
             StockMovementTypes.Unlayby,
             null
           );
@@ -205,7 +211,13 @@ export async function saveSaleItemsTransactionsToDatabase(
           console.log("Removed layby quantity");
         }
         // Mark stock as sold
-        saveStockMovementToDatabase(item, clerk, StockMovementTypes.Sold, null);
+        saveStockMovementToDatabase(
+          item,
+          clerk,
+          registerID,
+          StockMovementTypes.Sold,
+          null
+        );
         // Sold quantity is not in main inventory
         // quantity_sold += 1;
         // console.log("Added sold quantity");
@@ -218,6 +230,7 @@ export async function saveSaleItemsTransactionsToDatabase(
         saveStockMovementToDatabase(
           item,
           clerk,
+          registerID,
           StockMovementTypes.Layby,
           null
         );
@@ -596,7 +609,8 @@ export async function saveHoldToDatabase(
   item: SaleItemObject,
   holdPeriod: number,
   note: string,
-  clerk: ClerkObject
+  clerk: ClerkObject,
+  registerID: number
 ) {
   try {
     const res = await fetch(
@@ -620,7 +634,13 @@ export async function saveHoldToDatabase(
     );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
-    saveStockMovementToDatabase(item, clerk, "hold", null);
+    saveStockMovementToDatabase(
+      item,
+      clerk,
+      registerID,
+      StockMovementTypes.Hold,
+      null
+    );
     return json?.insertId;
   } catch (e) {
     throw Error(e.message);
@@ -903,6 +923,7 @@ export async function saveStockPriceToDatabase(
 export async function saveStockMovementToDatabase(
   item: SaleItemObject,
   clerk: ClerkObject,
+  registerID: number,
   act: string,
   note: string
 ) {
@@ -917,6 +938,7 @@ export async function saveStockMovementToDatabase(
         body: JSON.stringify({
           stock_id: item?.item_id,
           clerk_id: clerk?.id,
+          register_id: registerID,
           quantity:
             act === StockMovementTypes.Received ||
             act === StockMovementTypes.Unhold ||
@@ -1211,7 +1233,8 @@ export async function deleteSaleFromDatabase(sale_id: number) {
 export async function receiveStock(
   newStockData: any,
   obj: any,
-  clerk: ClerkObject
+  clerk: ClerkObject,
+  registerID: number
 ) {
   let items = obj?.items || {};
   let vendorId = obj?.vendor_id;
@@ -1224,6 +1247,7 @@ export async function receiveStock(
         quantity: row?.quantityReceived,
       },
       clerk,
+      registerID,
       StockMovementTypes?.Received,
       "New stock received."
     );
@@ -1239,6 +1263,7 @@ export async function receiveStock(
             quantity: `${receiveQuantity}`,
           },
           clerk,
+          registerID,
           StockMovementTypes?.Received,
           "Existing stock received."
         );
@@ -1251,6 +1276,7 @@ export function returnStock(
   items: any,
   notes: string,
   clerk: ClerkObject,
+  registerID: number,
   inventory: InventoryObject[],
   mutateInventory: Function,
   logs: LogObject[],
@@ -1283,6 +1309,7 @@ export function returnStock(
             quantity: `${returnQuantity}`,
           },
           clerk,
+          registerID,
           StockMovementTypes?.Returned,
           notes || "Stock returned to vendor."
         );
