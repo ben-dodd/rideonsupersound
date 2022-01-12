@@ -10,6 +10,7 @@ import {
   useSaleItems,
   useInventory,
   useGiftCards,
+  useRegisterID,
 } from "@/lib/swr-hooks";
 import {
   cartAtom,
@@ -39,6 +40,7 @@ export default function ShoppingCartActions() {
   const { sales, mutateSales } = useSales();
   const { inventory, mutateInventory } = useInventory();
   const { giftCards, mutateGiftCards } = useGiftCards();
+  const { registerID } = useRegisterID();
 
   // Atoms
   const [clerk] = useAtom(clerkAtom);
@@ -65,6 +67,7 @@ export default function ShoppingCartActions() {
     await saveSaleAndPark(
       cart,
       clerk,
+      registerID,
       customers,
       logs,
       mutateLogs,
