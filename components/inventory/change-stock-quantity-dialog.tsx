@@ -3,7 +3,12 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useLogs, useInventory, useStockItem } from "@/lib/swr-hooks";
+import {
+  useLogs,
+  useInventory,
+  useStockItem,
+  useRegisterID,
+} from "@/lib/swr-hooks";
 import {
   viewAtom,
   clerkAtom,
@@ -36,6 +41,7 @@ export default function ChangePriceDialog() {
     loadedItemId[page]
   );
   const { logs, mutateLogs } = useLogs();
+  const { registerID } = useRegisterID();
 
   // State
   const [movement, setMovement] = useState(null);
@@ -100,6 +106,7 @@ export default function ChangePriceDialog() {
                 : quantity,
           },
           clerk,
+          registerID,
           movement,
           notes
         );

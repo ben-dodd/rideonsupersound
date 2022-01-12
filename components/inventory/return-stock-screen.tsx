@@ -3,7 +3,12 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useInventory, useVendors, useLogs } from "@/lib/swr-hooks";
+import {
+  useInventory,
+  useVendors,
+  useLogs,
+  useRegisterID,
+} from "@/lib/swr-hooks";
 import { viewAtom, clerkAtom, alertAtom } from "@/lib/atoms";
 import { InventoryObject, VendorObject, ModalButton } from "@/lib/types";
 
@@ -24,6 +29,7 @@ export default function ReturnStockScreen() {
   const { inventory, mutateInventory } = useInventory();
   const { logs, mutateLogs } = useLogs();
   const { vendors } = useVendors();
+  const { registerID } = useRegisterID();
 
   // Atoms
   const [clerk] = useAtom(clerkAtom);
@@ -59,6 +65,7 @@ export default function ReturnStockScreen() {
           items,
           notes,
           clerk,
+          registerID,
           inventory,
           mutateInventory,
           logs,

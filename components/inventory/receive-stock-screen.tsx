@@ -3,7 +3,12 @@ import { useState, useMemo, useEffect } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useInventory, useVendors, useLogs } from "@/lib/swr-hooks";
+import {
+  useInventory,
+  useVendors,
+  useLogs,
+  useRegisterID,
+} from "@/lib/swr-hooks";
 import { viewAtom, clerkAtom } from "@/lib/atoms";
 import { VendorObject, InventoryObject, ModalButton } from "@/lib/types";
 
@@ -40,6 +45,7 @@ export default function ReceiveStockScreen() {
   const { inventory } = useInventory();
   const { vendors } = useVendors();
   const { logs, mutateLogs } = useLogs();
+  const { registerID } = useRegisterID();
 
   // Functions
   function makeNewStockData(num: number) {
@@ -216,7 +222,7 @@ export default function ReceiveStockScreen() {
       disabled: isDisabled(),
       text: "RECEIVE ITEMS",
       onClick: async () => {
-        await receiveStock(newStockData, obj, clerk);
+        await receiveStock(newStockData, obj, clerk, registerID);
         setView({ ...view, receiveStockScreen: false });
       },
     },
