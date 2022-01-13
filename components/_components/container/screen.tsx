@@ -15,6 +15,7 @@ interface ScreenProps {
   title?: string;
   loading?: boolean;
   buttons?: ModalButton[];
+  titleClass?: string;
   children: JSX.Element;
 }
 
@@ -24,6 +25,7 @@ export default function ScreenContainer({
   title,
   loading,
   buttons,
+  titleClass,
   children,
 }: ScreenProps) {
   return (
@@ -38,7 +40,11 @@ export default function ScreenContainer({
         </div>
       ) : (
         <div className="screen__content">
-          <div className="screen__title">
+          <div
+            className={`screen__title ${
+              titleClass ? titleClass : "bg-primary-light"
+            }`}
+          >
             <button className="screen__back-button" onClick={closeFunction}>
               <ArrowLeft />
             </button>

@@ -1,21 +1,43 @@
 interface StepperProps {
   steps: string[];
   value: number;
-  onChange: Function;
+  onChange?: Function;
+  disabled?: Boolean;
+  selectedBg?: string;
+  notSelectedBg?: string;
+  selectedText?: string;
+  notSelectedText?: string;
+  selectedTextHover?: string;
+  notSelectedTextHover?: string;
 }
 
-export default function Stepper({ steps, value, onChange }: StepperProps) {
+export default function Stepper({
+  steps,
+  value,
+  onChange,
+  disabled,
+  selectedBg,
+  notSelectedBg,
+  selectedText,
+  notSelectedText,
+  selectedTextHover,
+  notSelectedTextHover,
+}: StepperProps) {
   return (
     <div className="flex">
       <div className="flex justify-between pb-2">
         {steps?.map((val, index) => (
           <div
-            className="flex items-center cursor-pointer px-2 py-1"
-            onClick={() => onChange(index)}
+            className={`flex items-center px-2 py-1${
+              !disabled && " cursor-pointer"
+            }`}
+            onClick={() => (disabled ? null : onChange(index))}
           >
             <div
               className={`stock-indicator__number ${
-                value === index ? "bg-primary-light" : "bg-secondary-light"
+                value === index
+                  ? selectedBg || "bg-primary-light"
+                  : notSelectedBg || "bg-secondary-light"
               }`}
             >
               {index + 1}
@@ -23,8 +45,12 @@ export default function Stepper({ steps, value, onChange }: StepperProps) {
             <div
               className={`pl-2 ${
                 value === index
-                  ? "text-primary hover:text-primary-dark"
-                  : "text-secondary hover:text-secondary-dark"
+                  ? `${selectedText || "text-primary"} hover:${
+                      selectedTextHover || "text-primary-dark"
+                    }`
+                  : `${notSelectedText || "text-secondary"} hover:${
+                      notSelectedTextHover || "text-secondary-dark"
+                    }`
               }`}
             >
               {val}

@@ -203,7 +203,7 @@
 }
 
 .screen__title {
-  @apply flex items-center text-lg font-bold py-1 px-2 bg-primary-light;
+  @apply flex items-center text-lg font-bold py-1 px-2;
 }
 
 .screen__back-button {

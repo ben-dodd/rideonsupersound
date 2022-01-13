@@ -101,6 +101,7 @@ export default function ReturnStockScreen() {
       closeFunction={closeFunction}
       title={"RETURN STOCK"}
       buttons={buttons}
+      titleClass="bg-col2"
     >
       <div className="w-full">
         <div className="help-text">

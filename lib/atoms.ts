@@ -80,3 +80,5 @@ export const createableCustomerName = atom<string>("");
 export const sellSearchBarAtom = atom<string>("");
 export const confirmModalAtom = atom<ConfirmModal>({ open: false });
 export const alertAtom = atom<AlertProps>({ open: false });
+
+export const receiveStockAtom = atom<any>({});
