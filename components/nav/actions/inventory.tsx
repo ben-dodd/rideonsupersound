@@ -11,14 +11,26 @@ export default function InventoryNavActions() {
     <div className="flex">
       <button
         className="icon-text-button"
-        onClick={() => setView({ ...view, receiveStockScreen: true })}
+        onClick={() =>
+          setView({
+            ...view,
+            receiveStockScreen: true,
+            returnStockScreen: false,
+          })
+        }
       >
         <ReceiveIcon className="mr-1" />
         Receive Items
       </button>
       <button
         className="icon-text-button"
-        onClick={() => setView({ ...view, returnStockScreen: true })}
+        onClick={() =>
+          setView({
+            ...view,
+            returnStockScreen: true,
+            receiveStockScreen: false,
+          })
+        }
       >
         <ReturnIcon className="mr-1" />
         Return Items

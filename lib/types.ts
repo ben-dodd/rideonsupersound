@@ -369,6 +369,7 @@ export interface DiscogsItem {
   genres?: string[]; // Dupliate of style
   id?: number;
   images?: DiscogsImage[];
+  identifiers?: DiscogsIdentifiers[];
   label?: string[];
   lowest_price?: number;
   main_release?: number;
@@ -446,6 +447,12 @@ export interface DiscogsVideo {
   embed?: boolean;
   title?: string; // Video title
   uri?: string; // Video url
+}
+
+export interface DiscogsIdentifiers {
+  value?: string;
+  type?: string;
+  description?: string;
 }
 
 export interface GoogleBooksItem {

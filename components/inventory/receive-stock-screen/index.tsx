@@ -19,6 +19,7 @@ import SelectVendor from "./select-vendor";
 import SelectItems from "./select-items";
 import EditItems from "./edit-items";
 import PrintLabel from "./print-label";
+import CheckDetails from "./check-details";
 
 export default function ReceiveStockScreen() {
   // Atoms
@@ -56,14 +57,25 @@ export default function ReceiveStockScreen() {
       { type: "ok", text: "NEXT", onClick: () => setStep(2) },
     ],
     [
-      { type: "cancel", onClick: () => setStep(0), text: "BACK" },
+      { type: "cancel", onClick: () => setStep(1), text: "BACK" },
+      {
+        type: "ok",
+        disabled: isDisabled(),
+        text: "NEXT",
+        onClick: () => {
+          setStep(3);
+        },
+      },
+    ],
+    [
+      { type: "cancel", onClick: () => setStep(2), text: "BACK" },
       {
         type: "ok",
         disabled: isDisabled(),
         text: "RECEIVE ITEMS",
         onClick: async () => {
           await receiveStock(basket, clerk, registerID);
-          setStep(3);
+          setStep(4);
         },
       },
     ],
@@ -103,8 +115,9 @@ export default function ReceiveStockScreen() {
         <Stepper
           steps={[
             "Select vendor",
-            "Select items",
-            "Set item info",
+            "Add items",
+            "Check details",
+            "Set price and quantities",
             "Print labels",
           ]}
           value={step}
@@ -124,9 +137,12 @@ export default function ReceiveStockScreen() {
           <SelectItems />
         </div>
         <div hidden={step !== 2}>
-          <EditItems />
+          <CheckDetails />
         </div>
         <div hidden={step !== 3}>
+          <EditItems />
+        </div>
+        <div hidden={step !== 4}>
           <PrintLabel />
         </div>
       </div>

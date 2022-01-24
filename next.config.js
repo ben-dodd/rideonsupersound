@@ -4,6 +4,7 @@ module.exports = {
       "localhost",
       "hmn.exu.mybluehost.me",
       "img.discogs.com",
+      "i.discogs.com",
       "books.google.com",
     ],
   },

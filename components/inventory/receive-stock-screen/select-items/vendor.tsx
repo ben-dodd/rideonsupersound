@@ -1,5 +1,8 @@
 import { receiveStockAtom } from "@/lib/atoms";
-import { getItemDisplayName } from "@/lib/data-functions";
+import {
+  getItemDisplayName,
+  getItemSkuDisplayName,
+} from "@/lib/data-functions";
 import { useInventory } from "@/lib/swr-hooks";
 import { InventoryObject } from "@/lib/types";
 import { Box } from "@mui/material";
@@ -20,7 +23,7 @@ export default function Vendor() {
   };
   return (
     <div>
-      <div className="helper-text">
+      <div className="helper-text mb-2">
         Add items already in the vendor's inventory.
       </div>
       <div className="h-dialog overflow-y-scroll">
@@ -35,7 +38,7 @@ export default function Vendor() {
             )
             ?.map((item: InventoryObject) => ({
               value: item,
-              label: getItemDisplayName(item),
+              label: getItemSkuDisplayName(item?.id, inventory),
             }))}
           onChange={addItem}
         />

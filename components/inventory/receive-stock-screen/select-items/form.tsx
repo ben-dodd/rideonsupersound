@@ -10,7 +10,7 @@ import { useAtom } from "jotai";
 import { useEffect, useMemo, useState } from "react";
 import { v4 as uuid } from "uuid";
 
-export default function Table() {
+export default function Form() {
   // State
   const [basket, setBasket] = useAtom(receiveStockAtom);
   const [item, setItem] = useState<InventoryObject>({});

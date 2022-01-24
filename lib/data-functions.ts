@@ -483,6 +483,24 @@ export function convertMPStoKPH(mps: number) {
   return mps * 3.6;
 }
 
+export function getDiscogsByBarcode(
+  barcode: string,
+  setDiscogsOptions: Function
+) {
+  fetch(
+    `https://api.discogs.com/database/search?type=release&barcode=${barcode}&key=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_KEY}&secret=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_SECRET}`
+  ).then((results) => {
+    // console.log(results);
+    if (results.ok)
+      results.json().then((json) => {
+        if (json.results && json.results.length > 0) {
+          setDiscogsOptions(json.results);
+        } else setDiscogsOptions([]);
+      });
+    else setDiscogsOptions([]);
+  });
+}
+
 export function getDiscogsOptions(
   item: InventoryObject,
   setDiscogsOptions: Function

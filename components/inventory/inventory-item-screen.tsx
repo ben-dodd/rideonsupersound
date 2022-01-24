@@ -41,7 +41,6 @@ export default function InventoryItemScreen({ page }) {
   const { vendors } = useVendors();
 
   // State
-  const [exchangeRate, setExchangeRate] = useState(1);
   const [item, setItem]: [InventoryObject, Function] = useState(null);
   const [tab, setTab] = useState(0);
 
@@ -60,19 +59,6 @@ export default function InventoryItemScreen({ page }) {
   const syncInfo = Boolean(
     item?.media === "Audio" || item?.media === "Literature"
   );
-
-  useEffect(() => {
-    fetch(`https://api.exchangeratesapi.io/latest?symbols=USD,NZD`).then(
-      (results) => {
-        results.json().then((json) => {
-          if (json.rates) {
-            // console.log(json.rates.NZD / json.rates.USD);
-            setExchangeRate(json.rates.NZD / json.rates.USD);
-          }
-        });
-      }
-    );
-  }, []);
 
   const vendor = useMemo(
     () =>
@@ -383,11 +369,7 @@ export default function InventoryItemScreen({ page }) {
                 {(item?.media === "Audio" ||
                   item?.media === "Video" ||
                   item?.media === "Mixed") && (
-                  <DiscogsPanel
-                    item={item}
-                    setItem={setItem}
-                    exchangeRate={exchangeRate}
-                  />
+                  <DiscogsPanel item={item} setItem={setItem} />
                 )}
                 {item?.media === "Literature" && (
                   <GoogleBooksPanel item={item} setItem={setItem} />

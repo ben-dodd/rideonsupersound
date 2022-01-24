@@ -1,10 +1,15 @@
 import { receiveStockAtom } from "@/lib/atoms";
-import { getItemDisplayName } from "@/lib/data-functions";
+import {
+  getItemDisplayName,
+  getItemSkuDisplayName,
+} from "@/lib/data-functions";
 import { useAtom } from "jotai";
 import CloseIcon from "@mui/icons-material/Close";
+import { useInventory } from "@/lib/swr-hooks";
 
 export default function Items() {
   const [basket, setBasket] = useAtom(receiveStockAtom);
+  const { inventory } = useInventory();
   const removeItem = (removeItem) => {
     const items = basket?.items?.filter(
       (item) => item?.key !== removeItem?.key
@@ -20,7 +25,9 @@ export default function Items() {
             <button className="p-2" onClick={() => removeItem(item)}>
               <CloseIcon />
             </button>
-            {getItemDisplayName(item?.item)}{" "}
+            {item?.item?.id
+              ? getItemSkuDisplayName(item?.item?.id, inventory)
+              : getItemDisplayName(item?.item)}
           </div>
         ))
       ) : (

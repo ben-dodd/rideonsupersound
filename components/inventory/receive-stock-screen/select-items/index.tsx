@@ -5,14 +5,12 @@ import { useState } from "react";
 import Tabs from "@/components/_components/navigation/tabs";
 import Discogs from "./discogs";
 import Csv from "./csv";
-import Table from "./table";
+import Form from "./form";
 import Vendor from "./vendor";
 import Items from "./items";
 
 export default function SelectItems() {
-  const { inventory } = useInventory();
   const [mode, setMode] = useState(0);
-  const [basket, setBasket] = useAtom(receiveStockAtom);
 
   return (
     <div className="w-full">
@@ -32,7 +30,7 @@ export default function SelectItems() {
             <Vendor />
           </div>
           <div hidden={mode !== 1}>
-            <Table />
+            <Form />
           </div>
           <div hidden={mode !== 2}>
             <Csv />
