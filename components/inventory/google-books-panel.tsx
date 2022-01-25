@@ -2,11 +2,7 @@
 import { useState, useEffect } from "react";
 
 // Functions
-import {
-  andList,
-  getGoogleBooksOptions,
-  getGoogleBooksItem,
-} from "@/lib/data-functions";
+import { andList, getGoogleBooksOptionsByItem } from "@/lib/data-functions";
 
 // Components
 import Image from "next/image";
@@ -29,8 +25,21 @@ export default function GoogleBooksPanel({ item, setItem }) {
       !Boolean(item?.googleBooksItem) &&
       (Boolean(item?.artist) || Boolean(item?.title))
     )
-      getGoogleBooksOptions(item, setGoogleBooksOptions);
+      handleGetGoogleBooksOptions();
   }, [item]);
+
+  const handleGetGoogleBooksOptions = async () => {
+    const options = await getGoogleBooksOptionsByItem(item);
+    setGoogleBooksOptions(options);
+  };
+
+  const handleGoogleBooksOptionClick = (googleBooksItem) => {
+    setItem({
+      ...item,
+      image_url: googleBooksItem?.volumeInfo?.imageLinks?.thumbnail || null,
+      googleBooksItem,
+    });
+  };
 
   return (
     <div className="flex flex-col h-inventory">
@@ -45,7 +54,7 @@ export default function GoogleBooksPanel({ item, setItem }) {
           className="icon-text-button hover:bg-blue-100"
           onClick={() => {
             setItem({ ...item, googleBooksItem: null });
-            getGoogleBooksOptions(item, setGoogleBooksOptions);
+            handleGetGoogleBooksOptions();
           }}
         >
           <SyncIcon /> Refresh GoogleBooks Search
@@ -140,7 +149,7 @@ export default function GoogleBooksPanel({ item, setItem }) {
                   alignContent: "flex-start",
                   justifyContent: "flex-start",
                 }}
-                onClick={() => getGoogleBooksItem(opt, item, setItem)}
+                onClick={() => handleGoogleBooksOptionClick(opt)}
               >
                 <div className="w-32">
                   <div className="w-32 h-32 relative">

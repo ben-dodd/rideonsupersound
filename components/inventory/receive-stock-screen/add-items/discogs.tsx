@@ -1,30 +1,41 @@
 import TextField from "@/components/_components/inputs/text-field";
 import { receiveStockAtom } from "@/lib/atoms";
-import { getDiscogsByBarcode } from "@/lib/data-functions";
+import {
+  getDiscogsOptionsByBarcode,
+  getDiscogsItem,
+  getDiscogsOptionsByKeyword,
+} from "@/lib/data-functions";
 import { useAtom } from "jotai";
-import { createRef, useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import DiscogsOption from "../../discogs-option";
 import { v4 as uuid } from "uuid";
 import { DiscogsItem, InventoryObject } from "@/lib/types";
+import { ChevronRight } from "@mui/icons-material";
 
 export default function Discogs() {
   const [barcode, setBarcode] = useState("");
+  const [keyword, setKeyword] = useState("");
   const [discogsOptions, setDiscogsOptions] = useState([]);
   const [key, setKey] = useState(uuid());
-  const handleChange = (e) => {
+  const handleChange = async (e) => {
     setBarcode(e.target.value);
-    if (e.target.value !== "")
-      getDiscogsByBarcode(e.target.value, setDiscogsOptions);
+    if (e.target.value !== "") {
+      const results: any = await getDiscogsOptionsByBarcode(e.target.value);
+      console.log(results);
+      if (results && results?.length > 0) setDiscogsOptions(results);
+    }
   };
   const [basket, setBasket] = useAtom(receiveStockAtom);
-  const addItem = (discogsItem: DiscogsItem) => {
+  const addItem = async (discogsItem: DiscogsItem) => {
     let item: InventoryObject = {
       artist: discogsItem?.artists?.join(", "),
-      barcode: barcode,
+      barcode: discogsItem?.barcode?.join(", "),
       country: discogsItem?.country,
       format: discogsItem?.format?.join(", "),
       media: "Audio",
-      genre: discogsItem?.format?.join(", "),
+      genre: `${discogsItem?.genre?.join("/")}/${discogsItem?.style?.join(
+        "/"
+      )}`,
       image_url: discogsItem?.cover_image,
       title: discogsItem?.title,
       thumb_url: discogsItem?.thumb,
@@ -40,6 +51,10 @@ export default function Discogs() {
     setBarcode("");
     setKey(uuid());
     setDiscogsOptions([]);
+  };
+  const searchDiscogs = async () => {
+    const results = await getDiscogsOptionsByKeyword(keyword);
+    if (results && results?.length > 0) setDiscogsOptions(results);
   };
   console.log(key);
   return (
@@ -57,6 +72,22 @@ export default function Discogs() {
         autoFocus
         selectOnFocus
       />
+      <div className="flex">
+        <TextField
+          className="grow"
+          id="keyword"
+          value={keyword || ""}
+          onChange={(e) => setKeyword(e.target.value)}
+          inputLabel="Search Keyword"
+        />
+        <button
+          onClick={searchDiscogs}
+          disabled={keyword === ""}
+          className="bg-col2-dark hover:bg-col2 disabled:bg-gray-200 ml-2 rounded"
+        >
+          Search
+        </button>
+      </div>
       {discogsOptions?.length > 0 ? (
         discogsOptions?.map((opt, k) => (
           <DiscogsOption opt={opt} key={k} onClick={() => addItem(opt)} />
@@ -69,9 +100,3 @@ export default function Discogs() {
     </div>
   );
 }
-
-const focusInput = (inputRef) => {
-  console.log(inputRef);
-  console.log(inputRef?.current);
-  inputRef?.current && inputRef?.current?.focus();
-};

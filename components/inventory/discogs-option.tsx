@@ -1,19 +1,10 @@
 // Packages
-import { useState, useEffect, MouseEventHandler } from "react";
-
-// Functions
-import {
-  getDiscogsOptions,
-  getDiscogsItem,
-  andList,
-} from "@/lib/data-functions";
+import { MouseEventHandler } from "react";
 
 // Components
 import Image from "next/image";
-import ReactPlayer from "react-player";
 
 // Icons
-import SyncIcon from "@mui/icons-material/Sync";
 import { DiscogsItem } from "@/lib/types";
 
 interface discogsProps {

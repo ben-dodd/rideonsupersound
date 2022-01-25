@@ -6,7 +6,7 @@ import { useAtom } from "jotai";
 import TextField from "@/components/_components/inputs/text-field";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-export default function EditItems() {
+export default function SetPriceAndQuantities() {
   const [bucket, setBucket] = useAtom(receiveStockAtom);
   const { inventory } = useInventory();
   return (

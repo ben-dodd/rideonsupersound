@@ -16,8 +16,8 @@ import ScreenContainer from "@/components/_components/container/screen";
 
 // Icons
 import SelectVendor from "./select-vendor";
-import SelectItems from "./select-items";
-import EditItems from "./edit-items";
+import SelectItems from "./add-items";
+import EditItems from "./set-price-and-quantities";
 import PrintLabel from "./print-label";
 import CheckDetails from "./check-details";
 

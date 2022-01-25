@@ -5,7 +5,6 @@ import {
 } from "@/lib/data-functions";
 import { useInventory } from "@/lib/swr-hooks";
 import { InventoryObject } from "@/lib/types";
-import { Box } from "@mui/material";
 import { useAtom } from "jotai";
 import Select from "react-select";
 import { v4 as uuid } from "uuid";

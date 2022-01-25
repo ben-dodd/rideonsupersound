@@ -483,133 +483,106 @@ export function convertMPStoKPH(mps: number) {
   return mps * 3.6;
 }
 
-export function getDiscogsByBarcode(
-  barcode: string,
-  setDiscogsOptions: Function
-) {
-  fetch(
-    `https://api.discogs.com/database/search?type=release&barcode=${barcode}&key=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_KEY}&secret=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_SECRET}`
-  ).then((results) => {
-    // console.log(results);
-    if (results.ok)
-      results.json().then((json) => {
-        if (json.results && json.results.length > 0) {
-          setDiscogsOptions(json.results);
-        } else setDiscogsOptions([]);
-      });
-    else setDiscogsOptions([]);
-  });
+export async function getDiscogsOptionsByBarcode(barcode: string) {
+  try {
+    const res = await fetch(
+      `https://api.discogs.com/database/search?type=release&barcode=${barcode}&key=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_KEY}&secret=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_SECRET}`
+    );
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+    return json.results;
+  } catch (e) {
+    throw Error(e.message);
+  }
 }
 
-export function getDiscogsOptions(
-  item: InventoryObject,
-  setDiscogsOptions: Function
-) {
-  fetch(
-    `https://api.discogs.com/database/search?type=release&artist=${
-      item?.artist || ""
-    }&title=${item?.title || ""}&key=${
-      process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_KEY
-    }&secret=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_SECRET}`
-  ).then((results) => {
-    // console.log(results);
-    if (results.ok)
-      results.json().then((json) => {
-        if (json.results && json.results.length > 0) {
-          setDiscogsOptions(json.results);
-        } else setDiscogsOptions([]);
-      });
-    else setDiscogsOptions([]);
-  });
+export async function getDiscogsOptionsByItem(item: InventoryObject) {
+  try {
+    const res = await fetch(
+      `https://api.discogs.com/database/search?type=release&artist=${
+        item?.artist || ""
+      }&title=${item?.title || ""}&key=${
+        process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_KEY
+      }&secret=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_SECRET}`
+    );
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+    return json.results;
+  } catch (e) {
+    throw Error(e.message);
+  }
 }
 
-export async function getDiscogsItem(
-  discogsItem: DiscogsItem,
-  item: InventoryObject,
-  setItem: Function
-) {
-  let detailedDiscogsItem = {};
-  let priceSuggestions = {};
-
-  fetch(
-    `https://api.discogs.com/marketplace/price_suggestions/${
-      discogsItem?.id || ""
-    }?token=${process.env.NEXT_PUBLIC_DISCOGS_PERSONAL_ACCESS_TOKEN}`
-  ).then((results) => {
-    if (results.ok)
-      results.json().then((json) => {
-        priceSuggestions = json;
-        let url = `https://api.discogs.com/masters/${
-          discogsItem?.master_id || ""
-        }`;
-        if (discogsItem?.master_id === 0 || !discogsItem?.master_id)
-          url = discogsItem?.resource_url;
-        fetch(url).then((results) => {
-          results.json().then((json) => {
-            detailedDiscogsItem = json;
-            setItem({
-              ...item,
-              thumb_url: discogsItem?.thumb || null,
-              image_url: discogsItem?.cover_image || null,
-              discogsItem: {
-                ...discogsItem,
-                ...detailedDiscogsItem,
-                priceSuggestions,
-              },
-            });
-            //
-            // MORE ARTIST INFORMATION CAN BE GATHERED
-            // THIS TENDS TO PUT DISCOGS QUERIES OVER THE LIMIT
-            // WHICH EFFECTS OTHER REQUESTS
-            //
-
-            // let artists = get(detailedDiscogsItem, "artists", []);
-            // detailedDiscogsItem.artists = [];
-            // for (const discogsArtist of artists) {
-            //   fetch(get(discogsArtist, "resource_url", "")).then((results) => {
-            //     results.json().then((artist) => {
-            //       detailedDiscogsItem.artists = [
-            //         ...detailedDiscogsItem.artists,
-            //         { ...artist, name: discogsArtist.name },
-            //       ];
-            //     });
-            //   });
-            // }
-          });
-        });
-      });
-  });
+export async function getDiscogsOptionsByKeyword(keyword: string) {
+  try {
+    const res = await fetch(
+      `https://api.discogs.com/database/search?type=release&query=${keyword}&key=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_KEY}&secret=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_SECRET}`
+    );
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+    return json.results;
+  } catch (e) {
+    throw Error(e.message);
+  }
 }
 
-export function getGoogleBooksOptions(
-  item: InventoryObject,
-  setGoogleBooksOptions: Function
-) {
-  // Move this to a helper function
-  // Add for books too
-  fetch(
-    `https://www.googleapis.com/books/v1/volumes?q=${item?.artist || ""}${
-      item?.title || ""
-    }&key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`
-  )
-    .then((results) => results.text())
-    .then((data) => {
-      let json = JSON.parse(data);
-      setGoogleBooksOptions(json?.items || []);
-    });
+export async function getDiscogsItem(discogsItem: DiscogsItem) {
+  try {
+    let url = `https://api.discogs.com/masters/${discogsItem?.master_id || ""}`;
+    if (discogsItem?.master_id === 0 || !discogsItem?.master_id)
+      url = discogsItem?.resource_url;
+    const res = await fetch(url);
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+    return json;
+  } catch (e) {
+    throw Error(e.message);
+  }
 }
 
-export function getGoogleBooksItem(
-  googleBooksItem: GoogleBooksItem,
-  item: InventoryObject,
-  setItem: Function
-) {
-  // No new information in volume fetch
-  setItem({
-    ...item,
-    image_url: googleBooksItem?.volumeInfo?.imageLinks?.thumbnail || null,
-    googleBooksItem,
-  });
+export async function getDiscogsPriceSuggestions(discogsItem: DiscogsItem) {
+  try {
+    const res = await fetch(
+      `https://api.discogs.com/marketplace/price_suggestions/${
+        discogsItem?.id || ""
+      }?token=${process.env.NEXT_PUBLIC_DISCOGS_PERSONAL_ACCESS_TOKEN}`
+    );
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+    return json;
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
+
+export async function getDiscogsItemArtistDetails(discogsItem: DiscogsItem) {
+  const artists = [];
+  for (const discogsArtist of discogsItem?.artists) {
+    try {
+      const res = await fetch(discogsArtist?.resource_url);
+      const json = await res.json();
+      if (!res.ok) throw Error(json.message);
+      artists?.push({ ...json, name: discogsArtist?.name });
+    } catch (e) {
+      throw Error(e.message);
+    }
+  }
+}
+
+export async function getGoogleBooksOptionsByItem(item: InventoryObject) {
+  try {
+    const res = await fetch(
+      `https://www.googleapis.com/books/v1/volumes?q=${item?.artist || ""}${
+        item?.title || ""
+      }&key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`
+    );
+    const data = await res.text();
+    if (!res.ok) throw Error();
+    let json = JSON.parse(data);
+    return json?.items || [];
+  } catch (e) {
+    throw Error(e.message);
+  }
 }
 
 export function isMoneyFormat(value: string) {

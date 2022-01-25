@@ -1,0 +1,36 @@
+import { receiveStockAtom } from "@/lib/atoms";
+import { InventoryObject } from "@/lib/types";
+import { ChevronRight } from "@mui/icons-material";
+import { useAtom } from "jotai";
+import { useState } from "react";
+import { v4 as uuid } from "uuid";
+import InventoryItemForm from "../inventory-item-form";
+
+export default function Form() {
+  // State
+  const [basket, setBasket] = useAtom(receiveStockAtom);
+  const [item, setItem] = useState<InventoryObject>({});
+  const addItem = () => {
+    setBasket({
+      ...basket,
+      items: basket?.items
+        ? [...basket?.items, { key: uuid(), item }]
+        : [{ key: uuid(), item }],
+    });
+    setItem({});
+  };
+  return (
+    <div>
+      <div className="flex justify-end">
+        <button
+          onClick={addItem}
+          disabled={Object.keys(item)?.length === 0}
+          className="bg-col2-dark hover:bg-col2 disabled:bg-gray-200 p-2 rounded"
+        >
+          Add Item <ChevronRight />
+        </button>
+      </div>
+      <InventoryItemForm item={item} setItem={setItem} />
+    </div>
+  );
+}

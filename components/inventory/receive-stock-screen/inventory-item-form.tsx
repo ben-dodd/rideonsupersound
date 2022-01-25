@@ -1,62 +1,79 @@
 import RadioButton from "@/components/_components/inputs/radio-button";
+import Image from "next/image";
 import SettingsSelect from "@/components/_components/inputs/settings-select";
 import TextField from "@/components/_components/inputs/text-field";
-import EditableTable from "@/components/_components/table/editable";
-import { receiveStockAtom } from "@/lib/atoms";
-import { getItemDisplayName, getProfitMargin } from "@/lib/data-functions";
-import { InventoryObject } from "@/lib/types";
-import { ChevronRight } from "@mui/icons-material";
-import { useAtom } from "jotai";
-import { useEffect, useMemo, useState } from "react";
-import { v4 as uuid } from "uuid";
+import {
+  getImageSrc,
+  getItemDisplayName,
+  getItemSku,
+} from "@/lib/data-functions";
+import { InventoryObject, VendorObject } from "@/lib/types";
+import { useMemo } from "react";
+import { useVendors } from "@/lib/swr-hooks";
 
-export default function Form() {
-  // State
-  const [basket, setBasket] = useAtom(receiveStockAtom);
-  const [item, setItem] = useState<InventoryObject>({});
+interface inventoryProps {
+  item: InventoryObject;
+  setItem: Function;
+}
+
+export default function InventoryItemForm({ item, setItem }: inventoryProps) {
   const handleChange = (e) =>
     setItem({ ...item, [e.target.name]: e.target.value });
-  const addItem = () => {
-    setBasket({
-      ...basket,
-      items: basket?.items
-        ? [...basket?.items, { key: uuid(), item }]
-        : [{ key: uuid(), item }],
-    });
-    setItem({});
-  };
+  const { vendors } = useVendors();
+
+  const vendor = useMemo(
+    () =>
+      (vendors &&
+        vendors.filter(
+          (vendor: VendorObject) => vendor?.id === item?.vendor_id
+        )[0]) ||
+      null,
+    [item]
+  );
   return (
     <div>
-      <div className="flex justify-end">
-        <button
-          onClick={addItem}
-          disabled={Object.keys(item)?.length === 0}
-          className="bg-col2-dark hover:bg-col2 disabled:bg-gray-200 p-2 rounded"
-        >
-          Add Item <ChevronRight />
-        </button>
+      <div className="flex justify-start w-full">
+        {/* IMAGE */}
+        <div className="pr-2 w-52 mr-2">
+          <div className="w-52 h-52 relative">
+            <Image
+              layout="fill"
+              objectFit="contain"
+              src={getImageSrc(item)}
+              alt={item?.title || "Inventory image"}
+            />
+            {item?.id && (
+              <div className="absolute w-52 h-8 bg-opacity-50 bg-black text-white flex justify-center items-center">
+                {getItemSku(item)}
+              </div>
+            )}
+          </div>
+        </div>
+        {/* MAIN DETAILS */}
+        <div className="w-full">
+          <TextField
+            value={item?.artist || ""}
+            onChange={(e: any) => setItem({ ...item, artist: e.target.value })}
+            inputLabel="ARTIST"
+          />
+          <TextField
+            value={item?.title || ""}
+            onChange={(e: any) => setItem({ ...item, title: e.target.value })}
+            inputLabel="TITLE"
+          />
+          <TextField
+            value={item?.display_as || getItemDisplayName(item)}
+            onChange={(e: any) =>
+              setItem({ ...item, display_as: e.target.value })
+            }
+            inputLabel="DISPLAY NAME"
+          />
+          {vendor && (
+            <div className="font-bold text-sm">{`Selling for ${vendor?.name}`}</div>
+          )}
+        </div>
       </div>
-      <div className="grid grid-cols-2 gap-2 mb-2">
-        <TextField
-          id="artist"
-          inputLabel="Artist"
-          value={item?.artist || ""}
-          onChange={handleChange}
-        />
-        <TextField
-          id="title"
-          inputLabel="Title"
-          value={item?.title || ""}
-          onChange={handleChange}
-        />
-      </div>
-      <div className="grid grid-cols-2 gap-2 mb-2">
-        <TextField
-          id="display_as"
-          value={item?.display_as || getItemDisplayName(item)}
-          onChange={handleChange}
-          inputLabel="Display Name"
-        />
+      <div className="mb-2">
         <TextField
           id="barcode"
           inputLabel="BARCODE"

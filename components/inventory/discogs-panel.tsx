@@ -3,9 +3,10 @@ import { useState, useEffect } from "react";
 
 // Functions
 import {
-  getDiscogsOptions,
+  getDiscogsOptionsByItem,
   getDiscogsItem,
   andList,
+  getDiscogsPriceSuggestions,
 } from "@/lib/data-functions";
 
 // Components
@@ -32,8 +33,30 @@ export default function DiscogsPanel({ item, setItem }) {
         Boolean(item?.artist)) ||
       Boolean(item?.title)
     )
-      getDiscogsOptions(item, setDiscogsOptions);
+      handleGetDiscogsOptions();
   }, []);
+
+  const handleGetDiscogsOptions = async () => {
+    const options = await getDiscogsOptionsByItem(item);
+    setDiscogsOptions(options);
+  };
+
+  const handleDiscogsOptionClick = async (opt) => {
+    const detailedDiscogsItem = await getDiscogsItem(opt);
+    const priceSuggestions = await getDiscogsPriceSuggestions(opt);
+    console.log(priceSuggestions);
+    setItem({
+      ...item,
+      thumb_url: opt?.thumb || null,
+      image_url: opt?.cover_image || null,
+      discogsItem: {
+        ...opt,
+        ...detailedDiscogsItem,
+        priceSuggestions,
+      },
+    });
+  };
+
   console.log(item);
   return (
     <div className="flex flex-col h-inventory">
@@ -48,7 +71,7 @@ export default function DiscogsPanel({ item, setItem }) {
           className="icon-text-button hover:text-blue-600"
           onClick={() => {
             setItem({ ...item, discogsItem: null });
-            getDiscogsOptions(item, setDiscogsOptions);
+            handleGetDiscogsOptions();
           }}
         >
           <SyncIcon /> Refresh Discogs Search
@@ -64,9 +87,7 @@ export default function DiscogsPanel({ item, setItem }) {
                 <DiscogsOption
                   key={i}
                   opt={opt}
-                  onClick={() => {
-                    getDiscogsItem(opt, item, setItem);
-                  }}
+                  onClick={() => handleDiscogsOptionClick(opt)}
                 />
               ))}
             </div>
