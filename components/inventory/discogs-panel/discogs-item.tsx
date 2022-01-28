@@ -36,11 +36,7 @@ export default function DiscogsItemScreen({ discogsItem, item }: discogsProps) {
         </div>
         <div className="font-bold italic">
           {`${discogsItem?.title}
-                              ${
-                                discogsItem?.year
-                                  ? ` (${discogsItem?.year})`
-                                  : ""
-                              }`}
+            ${discogsItem?.year ? ` (${discogsItem?.year})` : ""}`}
         </div>
       </div>
       <div className="text-md">{discogsItem?.format?.join(", ")}</div>

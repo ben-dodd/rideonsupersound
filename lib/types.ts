@@ -479,6 +479,14 @@ export interface GoogleBooksItem {
     country: string;
     isEbook: boolean;
     saleability: string;
+    listPrice?: {
+      amount: number;
+      currencyCode: string;
+    };
+    retailPrice?: {
+      amount: number;
+      currencyCode: string;
+    };
   };
   searchInfo: {
     textSnippet: string;

@@ -5,7 +5,7 @@ interface RadioButtonProps {
   inputLabel: string;
   options: OptionProps[];
   group: string;
-  displayOnly?: boolean;
+  disabled?: boolean;
 }
 
 interface OptionProps {
@@ -22,7 +22,7 @@ function RadioButton({
   inputLabel,
   options,
   group,
-  displayOnly,
+  disabled,
 }: RadioButtonProps) {
   return (
     <div>
@@ -37,6 +37,7 @@ function RadioButton({
               type="radio"
               checked={value === e.value}
               onChange={() => onChange(e.value)}
+              disabled={disabled}
             />
             {e.label}
           </label>

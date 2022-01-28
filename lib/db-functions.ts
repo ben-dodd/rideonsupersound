@@ -1235,8 +1235,9 @@ export async function receiveStock(
   clerk: ClerkObject,
   registerID: number
 ) {
-  let items = basket?.items || {};
+  let items = basket?.items || [];
   let vendorId = basket?.vendor_id;
+  // TODO fix this function for the new system
   // Save new stock items
   basket?.newItems?.forEach(async (row: any) => {
     const newStockID = await saveStockToDatabase(row, clerk);

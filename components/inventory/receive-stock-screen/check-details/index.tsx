@@ -6,6 +6,7 @@ import { useState } from "react";
 import Tabs from "@/components/_components/navigation/tabs";
 import DiscogsPanel from "../../discogs-panel";
 import Items from "./items";
+import GoogleBooksPanel from "../../google-books-panel";
 
 export default function CheckDetails() {
   const [basket, setBasket] = useAtom(receiveStockAtom);
@@ -40,10 +41,21 @@ export default function CheckDetails() {
       <div className="flex w-full">
         <div className="w-3/5 mr-4">
           <div hidden={mode !== 0}>
-            <InventoryItemForm item={item} setItem={setItem} />
+            <InventoryItemForm
+              item={item}
+              setItem={setItem}
+              disabled={item?.id}
+            />
           </div>
-          <div hidden={mode !== 1}>
-            <DiscogsPanel item={item} setItem={setItem} />
+          <div hidden={!(mode === 1 && item?.media === "Audio")}>
+            <DiscogsPanel item={item} setItem={setItem} disabled={item?.id} />
+          </div>
+          <div hidden={!(mode === 1 && item?.media === "Literature")}>
+            <GoogleBooksPanel
+              item={item}
+              setItem={setItem}
+              disabled={item?.id}
+            />
           </div>
         </div>
         <div className="w-2/5">

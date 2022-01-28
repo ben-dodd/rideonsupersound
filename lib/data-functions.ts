@@ -216,6 +216,10 @@ export function getItemStoreCut(
   );
 }
 
+export function getStoreCut(item: InventoryObject) {
+  return item?.total_sell - item?.vendor_cut;
+}
+
 export function getSaleVars(sale: SaleObject, inventory: InventoryObject[]) {
   const totalPrice =
     Math.round(
@@ -303,6 +307,27 @@ export function getPaymentVars(
     totalOwing,
     lastSold,
   };
+}
+
+export function getPriceSuggestion(item: InventoryObject) {
+  console.log(item);
+  if (item?.discogsItem?.priceSuggestions) {
+    const priceSuggestions = item?.discogsItem?.priceSuggestions;
+    console.log(priceSuggestions);
+    const priceSuggestion = priceSuggestions[
+      item?.is_new ? "Mint (M)" : item?.cond || "Good (G)"
+    ]?.value
+      ? `$${parseFloat(
+          priceSuggestions[item?.is_new ? "Mint (M)" : item?.cond || "Good (G)"]
+            ?.value
+        )?.toFixed(2)} NZD (${
+          item?.is_new ? "Mint (M)" : item?.cond || "Good (G)"
+        } condition)`
+      : null;
+    console.log(priceSuggestion);
+    return priceSuggestion;
+  }
+  return null;
 }
 
 export function getVendorQuantityInStock(

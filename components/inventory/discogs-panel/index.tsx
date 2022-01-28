@@ -7,6 +7,7 @@ import {
   getDiscogsItem,
   andList,
   getDiscogsPriceSuggestions,
+  getDiscogsItemArtistDetails,
 } from "@/lib/data-functions";
 
 // Components
@@ -17,8 +18,19 @@ import ReactPlayer from "react-player";
 import SyncIcon from "@mui/icons-material/Sync";
 import DiscogsOption from "./discogs-option";
 import DiscogsItem from "./discogs-item";
+import { InventoryObject } from "@/lib/types";
 
-export default function DiscogsPanel({ item, setItem }) {
+interface inventoryProps {
+  item: InventoryObject;
+  setItem: Function;
+  disabled?: boolean;
+}
+
+export default function DiscogsPanel({
+  item,
+  setItem,
+  disabled,
+}: inventoryProps) {
   // State
   const [discogsOptions, setDiscogsOptions] = useState(null);
 
@@ -43,8 +55,8 @@ export default function DiscogsPanel({ item, setItem }) {
 
   const handleDiscogsOptionClick = async (opt) => {
     const detailedDiscogsItem = await getDiscogsItem(opt);
-    const priceSuggestions = await getDiscogsPriceSuggestions(opt);
-    console.log(priceSuggestions);
+    const price_suggestions = await getDiscogsPriceSuggestions(opt);
+    // const artist = await getDiscogsItemArtistDetails(opt);
     setItem({
       ...item,
       thumb_url: opt?.thumb || null,
@@ -52,12 +64,12 @@ export default function DiscogsPanel({ item, setItem }) {
       discogsItem: {
         ...opt,
         ...detailedDiscogsItem,
-        priceSuggestions,
+        price_suggestions,
       },
     });
   };
 
-  console.log(item);
+  // console.log(item);
   return (
     <div className="flex flex-col h-inventory">
       <div className="flex justify-between px-2">
@@ -69,6 +81,7 @@ export default function DiscogsPanel({ item, setItem }) {
         />
         <button
           className="icon-text-button hover:text-blue-600"
+          disabled={disabled}
           onClick={() => {
             setItem({ ...item, discogsItem: null });
             handleGetDiscogsOptions();
@@ -87,7 +100,9 @@ export default function DiscogsPanel({ item, setItem }) {
                 <DiscogsOption
                   key={i}
                   opt={opt}
-                  onClick={() => handleDiscogsOptionClick(opt)}
+                  onClick={() =>
+                    disabled ? null : handleDiscogsOptionClick(opt)
+                  }
                 />
               ))}
             </div>

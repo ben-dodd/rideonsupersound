@@ -14,9 +14,14 @@ import { useVendors } from "@/lib/swr-hooks";
 interface inventoryProps {
   item: InventoryObject;
   setItem: Function;
+  disabled?: boolean;
 }
 
-export default function InventoryItemForm({ item, setItem }: inventoryProps) {
+export default function InventoryItemForm({
+  item,
+  setItem,
+  disabled,
+}: inventoryProps) {
   const handleChange = (e) =>
     setItem({ ...item, [e.target.name]: e.target.value });
   const { vendors } = useVendors();
@@ -55,11 +60,13 @@ export default function InventoryItemForm({ item, setItem }: inventoryProps) {
             value={item?.artist || ""}
             onChange={(e: any) => setItem({ ...item, artist: e.target.value })}
             inputLabel="ARTIST"
+            disabled={disabled}
           />
           <TextField
             value={item?.title || ""}
             onChange={(e: any) => setItem({ ...item, title: e.target.value })}
             inputLabel="TITLE"
+            disabled={disabled}
           />
           <TextField
             value={item?.display_as || getItemDisplayName(item)}
@@ -67,6 +74,7 @@ export default function InventoryItemForm({ item, setItem }: inventoryProps) {
               setItem({ ...item, display_as: e.target.value })
             }
             inputLabel="DISPLAY NAME"
+            disabled={disabled}
           />
           {vendor && (
             <div className="font-bold text-sm">{`Selling for ${vendor?.name}`}</div>
@@ -76,9 +84,11 @@ export default function InventoryItemForm({ item, setItem }: inventoryProps) {
       <div className="mb-2">
         <TextField
           id="barcode"
+          multiline
           inputLabel="BARCODE"
           value={item?.barcode || ""}
           onChange={handleChange}
+          disabled={disabled}
         />
       </div>
       <div className="grid grid-cols-2 gap-2 mb-2">
@@ -88,12 +98,14 @@ export default function InventoryItemForm({ item, setItem }: inventoryProps) {
           inputLabel="TYPE"
           dbField="media"
           isCreateDisabled={true}
+          isDisabled={disabled}
         />
         <SettingsSelect
           object={item}
           onEdit={setItem}
           inputLabel="FORMAT"
           dbField="format"
+          isDisabled={disabled}
         />
       </div>
       {item?.format == "Shirt" ? (
@@ -103,17 +115,20 @@ export default function InventoryItemForm({ item, setItem }: inventoryProps) {
             onEdit={setItem}
             inputLabel="COLOUR"
             dbField="colour"
+            isDisabled={disabled}
           />
           <SettingsSelect
             object={item}
             onEdit={setItem}
             inputLabel="SIZE"
             dbField="size"
+            isDisabled={disabled}
           />
         </div>
       ) : (
         <div className="flex items-end">
           <RadioButton
+            key={`isNew${item?.is_new}`}
             inputLabel="CONDITION"
             group="isNew"
             value={item?.is_new ? "true" : "false"}
@@ -124,6 +139,7 @@ export default function InventoryItemForm({ item, setItem }: inventoryProps) {
               { id: "new", value: "true", label: "New" },
               { id: "used", value: "false", label: "Used" },
             ]}
+            disabled={disabled}
           />
           <SettingsSelect
             className="w-full"
@@ -131,6 +147,7 @@ export default function InventoryItemForm({ item, setItem }: inventoryProps) {
             onEdit={setItem}
             dbField="cond"
             isCreateDisabled={true}
+            isDisabled={disabled}
           />
         </div>
       )}
@@ -140,12 +157,14 @@ export default function InventoryItemForm({ item, setItem }: inventoryProps) {
           onEdit={setItem}
           inputLabel="COUNTRY"
           dbField="country"
+          isDisabled={disabled}
         />
         <SettingsSelect
           object={item}
           onEdit={setItem}
           inputLabel="GENRE"
           dbField="genre"
+          isDisabled={disabled}
         />
       </div>
       <SettingsSelect
@@ -154,6 +173,7 @@ export default function InventoryItemForm({ item, setItem }: inventoryProps) {
         isMulti
         inputLabel="TAGS"
         dbField="tag"
+        isDisabled={disabled}
       />
       <TextField
         id="description"
@@ -161,6 +181,7 @@ export default function InventoryItemForm({ item, setItem }: inventoryProps) {
         value={item?.description || ""}
         onChange={handleChange}
         multiline
+        disabled={disabled}
       />
       <TextField
         id="note"
@@ -168,6 +189,7 @@ export default function InventoryItemForm({ item, setItem }: inventoryProps) {
         value={item?.note || ""}
         onChange={handleChange}
         multiline
+        disabled={disabled}
       />
     </div>
   );

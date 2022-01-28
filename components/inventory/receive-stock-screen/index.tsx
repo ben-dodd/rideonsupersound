@@ -20,6 +20,7 @@ import SelectItems from "./add-items";
 import EditItems from "./set-price-and-quantities";
 import PrintLabel from "./print-label";
 import CheckDetails from "./check-details";
+import SetPriceAndQuantities from "./set-price-and-quantities";
 
 export default function ReceiveStockScreen() {
   // Atoms
@@ -60,7 +61,6 @@ export default function ReceiveStockScreen() {
       { type: "cancel", onClick: () => setStep(1), text: "BACK" },
       {
         type: "ok",
-        disabled: isDisabled(),
         text: "NEXT",
         onClick: () => {
           setStep(3);
@@ -140,7 +140,7 @@ export default function ReceiveStockScreen() {
           <CheckDetails />
         </div>
         <div hidden={step !== 3}>
-          <EditItems />
+          <SetPriceAndQuantities />
         </div>
         <div hidden={step !== 4}>
           <PrintLabel />
@@ -150,11 +150,18 @@ export default function ReceiveStockScreen() {
   );
 
   function isDisabled() {
+    console.log(basket?.items);
     return (
       !basket?.vendor_id ||
-      Object.keys(basket?.items || {}).length === 0 ||
-      Object.values(basket?.items || {}).filter(
-        (itemQuantity) => !Number.isInteger(parseInt(`${itemQuantity}`))
+      basket?.items?.length === 0 ||
+      basket?.items?.filter(
+        (item) =>
+          !Number.isInteger(parseInt(`${item?.quantity}`)) ||
+          !(
+            (Number.isInteger(parseInt(`${item?.vendor_cut}`)) &&
+              Number.isInteger(parseInt(`${item?.total_sell}`))) ||
+            item?.item?.id
+          )
       ).length > 0
     );
   }

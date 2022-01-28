@@ -7,7 +7,7 @@ import {
 } from "@/lib/data-functions";
 import { useAtom } from "jotai";
 import { useState } from "react";
-import DiscogsOption from "../../discogs-option";
+import DiscogsOption from "../../discogs-panel/discogs-option";
 import { v4 as uuid } from "uuid";
 import { DiscogsItem, InventoryObject } from "@/lib/types";
 import { ChevronRight } from "@mui/icons-material";
@@ -29,7 +29,7 @@ export default function Discogs() {
   const addItem = async (discogsItem: DiscogsItem) => {
     let item: InventoryObject = {
       artist: discogsItem?.artists?.join(", "),
-      barcode: discogsItem?.barcode?.join(", "),
+      barcode: discogsItem?.barcode?.join("\n"),
       country: discogsItem?.country,
       format: discogsItem?.format?.join(", "),
       media: "Audio",

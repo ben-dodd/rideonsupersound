@@ -40,7 +40,6 @@ export default function SettingsSelect({
 }: SettingsSelectProps) {
   // SWR
   const { selects, isSelectsLoading, mutateSelects } = useSelect(dbField);
-
   // State
   const [isLoading, setLoading] = useState(false);
   return (
