@@ -53,22 +53,6 @@ export default function DiscogsPanel({
     setDiscogsOptions(options);
   };
 
-  const handleDiscogsOptionClick = async (opt) => {
-    const detailedDiscogsItem = await getDiscogsItem(opt);
-    const price_suggestions = await getDiscogsPriceSuggestions(opt);
-    // const artist = await getDiscogsItemArtistDetails(opt);
-    setItem({
-      ...item,
-      thumb_url: opt?.thumb || null,
-      image_url: opt?.cover_image || null,
-      discogsItem: {
-        ...opt,
-        ...detailedDiscogsItem,
-        price_suggestions,
-      },
-    });
-  };
-
   // console.log(item);
   return (
     <div className="flex flex-col h-inventory">
@@ -80,7 +64,7 @@ export default function DiscogsPanel({
           height="50px"
         />
         <button
-          className="icon-text-button hover:text-blue-600"
+          className="icon-text-button"
           disabled={disabled}
           onClick={() => {
             setItem({ ...item, discogsItem: null });
@@ -100,9 +84,9 @@ export default function DiscogsPanel({
                 <DiscogsOption
                   key={i}
                   opt={opt}
-                  onClick={() =>
-                    disabled ? null : handleDiscogsOptionClick(opt)
-                  }
+                  item={item}
+                  setItem={setItem}
+                  override={false}
                 />
               ))}
             </div>

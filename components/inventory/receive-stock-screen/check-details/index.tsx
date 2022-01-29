@@ -1,5 +1,4 @@
 import { receiveStockAtom } from "@/lib/atoms";
-import { InventoryObject } from "@/lib/types";
 import { useAtom } from "jotai";
 import InventoryItemForm from "../inventory-item-form";
 import { useState } from "react";
@@ -10,8 +9,12 @@ import GoogleBooksPanel from "../../google-books-panel";
 
 export default function CheckDetails() {
   const [basket, setBasket] = useAtom(receiveStockAtom);
-  const [item, setItem] = useState(null);
-  const [itemKey, setItemKey] = useState(null);
+  const [item, setItem] = useState(
+    basket?.items ? basket?.items[0]?.item : null
+  );
+  const [itemKey, setItemKey] = useState(
+    basket?.items ? basket?.items[0]?.key : null
+  );
   const [mode, setMode] = useState(0);
   const onItemClick = (newItem) => {
     if (item) {
@@ -23,6 +26,14 @@ export default function CheckDetails() {
     }
     setItem(newItem?.item);
     setItemKey(newItem?.key);
+  };
+  const setItemAndBasket = (item) => {
+    setItem(item);
+    const items = basket?.items?.map((i) => {
+      if (i?.key === itemKey) return { ...i, item };
+      else return i;
+    });
+    setBasket({ ...basket, items });
   };
   return (
     <div className="w-full">
@@ -43,17 +54,21 @@ export default function CheckDetails() {
           <div hidden={mode !== 0}>
             <InventoryItemForm
               item={item}
-              setItem={setItem}
+              setItem={setItemAndBasket}
               disabled={item?.id}
             />
           </div>
           <div hidden={!(mode === 1 && item?.media === "Audio")}>
-            <DiscogsPanel item={item} setItem={setItem} disabled={item?.id} />
+            <DiscogsPanel
+              item={item}
+              setItem={setItemAndBasket}
+              disabled={item?.id}
+            />
           </div>
           <div hidden={!(mode === 1 && item?.media === "Literature")}>
             <GoogleBooksPanel
               item={item}
-              setItem={setItem}
+              setItem={setItemAndBasket}
               disabled={item?.id}
             />
           </div>

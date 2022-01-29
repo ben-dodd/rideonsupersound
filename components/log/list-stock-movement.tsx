@@ -1,5 +1,5 @@
 // DB
-import { getItemSkuDisplayName } from "@/lib/data-functions";
+import { getItemSkuDisplayNameById } from "@/lib/data-functions";
 import { useClerks, useInventory } from "@/lib/swr-hooks";
 import { LogObject, ClerkObject, StockMovementObject } from "@/lib/types";
 
@@ -24,7 +24,8 @@ export default function ListStockMovement({ sm }: ListItemProps) {
             }
           </div>
           <div className="uppercase pr-4">{sm?.act}</div>
-          <div>{getItemSkuDisplayName(sm?.stock_id, inventory)}</div>
+          <div className="font-bold pr-4">{sm?.quantity} x</div>
+          <div>{getItemSkuDisplayNameById(sm?.stock_id, inventory)}</div>
         </div>
       </div>
     </div>

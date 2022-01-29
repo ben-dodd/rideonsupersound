@@ -28,6 +28,7 @@ export default function Stepper({
       <div className="flex justify-between pb-2">
         {steps?.map((val, index) => (
           <div
+            key={index}
             className={`flex items-center px-2 py-1${
               !disabled && " cursor-pointer"
             }`}

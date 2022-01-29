@@ -5,18 +5,62 @@ import { MouseEventHandler } from "react";
 import Image from "next/image";
 
 // Icons
-import { DiscogsItem } from "@/lib/types";
+import { DiscogsItem, InventoryObject } from "@/lib/types";
+import {
+  getDiscogsItem,
+  getDiscogsItemArtistDetails,
+  getDiscogsPriceSuggestions,
+} from "@/lib/data-functions";
 
 interface discogsProps {
   opt: DiscogsItem;
-  onClick: MouseEventHandler<HTMLDivElement>;
+  item: InventoryObject;
+  setItem: Function;
+  override: boolean;
 }
 
-export default function DiscogsOption({ opt, onClick }: discogsProps) {
+export default function DiscogsOption({
+  opt,
+  item,
+  setItem,
+  override,
+}: discogsProps) {
+  const handleDiscogsOptionClick = async () => {
+    const detailedDiscogsItem = await getDiscogsItem(opt);
+    const priceSuggestions = await getDiscogsPriceSuggestions(opt);
+    const artist = await getDiscogsItemArtistDetails(detailedDiscogsItem);
+    console.log(artist);
+    const discogsItem = {
+      ...opt,
+      ...detailedDiscogsItem,
+      priceSuggestions,
+    };
+    if (override)
+      item = {
+        ...item,
+        artist: discogsItem?.artists?.join(", "),
+        barcode: discogsItem?.barcode?.join("\n"),
+        country: discogsItem?.country,
+        format: discogsItem?.format?.join(", "),
+        media: "Audio",
+        genre: `${discogsItem?.genre?.join("/")}/${discogsItem?.style?.join(
+          "/"
+        )}`,
+        title: discogsItem?.title,
+        release_year: discogsItem?.year?.toString(),
+      };
+    setItem({
+      ...item,
+      thumb_url: opt?.thumb || null,
+      image_url: opt?.cover_image || null,
+      discogsItem,
+    });
+  };
+
   return (
     <div
       className="flex item-start cursor-pointer p-2 mb-8 hover:bg-gray-300"
-      onClick={onClick}
+      onClick={handleDiscogsOptionClick}
     >
       <div className="w-32">
         <div className="w-32 h-32 relative">
@@ -44,8 +88,8 @@ export default function DiscogsOption({ opt, onClick }: discogsProps) {
           <div>
             <div className="pt-2 pb-1 font-bold">Barcodes</div>
             <div className="text-sm">
-              {opt?.barcode?.map((barcode: string) => (
-                <div key={barcode}>{barcode}</div>
+              {opt?.barcode?.map((barcode: string, i: number) => (
+                <div key={i}>{barcode}</div>
               ))}
             </div>
           </div>

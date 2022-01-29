@@ -1235,40 +1235,58 @@ export async function receiveStock(
   clerk: ClerkObject,
   registerID: number
 ) {
-  let items = basket?.items || [];
-  let vendorId = basket?.vendor_id;
-  // TODO fix this function for the new system
-  // Save new stock items
-  basket?.newItems?.forEach(async (row: any) => {
-    const newStockID = await saveStockToDatabase(row, clerk);
-    saveStockMovementToDatabase(
-      {
-        item_id: newStockID,
-        quantity: row?.quantityReceived,
-      },
-      clerk,
-      registerID,
-      StockMovementTypes?.Received,
-      "New stock received."
-    );
-  });
-  // Save added items
-  if (vendorId && Object.keys(items).length > 0) {
-    Object.entries(items)
-      .filter(([id, receiveQuantity]) => parseInt(`${receiveQuantity}`) > 0)
-      .forEach(([id, receiveQuantity]) => {
+  const receivedStock = [];
+  await Promise.all(
+    basket?.items?.map(async (receiveItem: any) => {
+      if (receiveItem?.item?.id) {
         saveStockMovementToDatabase(
           {
-            item_id: parseInt(id),
-            quantity: `${receiveQuantity}`,
+            item_id: receiveItem?.item?.id,
+            quantity: receiveItem?.quantity,
           },
           clerk,
           registerID,
           StockMovementTypes?.Received,
           "Existing stock received."
         );
-      });
-  }
+        receivedStock.push({
+          item: receiveItem?.item,
+          quantity: receiveItem?.quantity,
+        });
+      } else {
+        const newStockID = await saveStockToDatabase(
+          { ...receiveItem?.item, vendor_id: basket?.vendor_id },
+          clerk
+        );
+        saveStockPriceToDatabase(
+          newStockID,
+          clerk,
+          parseFloat(receiveItem?.total_sell) * 100,
+          parseFloat(receiveItem?.vendor_cut) * 100,
+          "New stock priced."
+        );
+        saveStockMovementToDatabase(
+          {
+            item_id: newStockID,
+            quantity: receiveItem?.quantity,
+          },
+          clerk,
+          registerID,
+          StockMovementTypes?.Received,
+          "New stock received."
+        );
+        receivedStock.push({
+          item: {
+            ...receiveItem?.item,
+            vendor_id: basket?.vendor_id,
+            id: newStockID,
+          },
+          quantity: receiveItem?.quantity,
+        });
+      }
+    })
+  );
+  return receivedStock;
 }
 
 export function returnStock(

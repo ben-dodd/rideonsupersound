@@ -24,6 +24,16 @@ export default function Csv() {
       parsedItems.push({
         key: uuid(),
         quantity: d?.Quantity ? parseInt(d?.Quantity) : 1,
+        total_sell: d["Sale Price"]
+          ? parseInt(
+              `${parseFloat(d["Sale Price"]?.replace(/\$|["],/g, "")) * 100}`
+            )
+          : null,
+        vendor_cut: d["Vendor Cut"]
+          ? parseInt(
+              `${parseFloat(d["Vendor Cut"]?.replace(/\$|["],/g, "")) * 100}`
+            )
+          : null,
         item: {
           artist: d?.Artist,
           barcode: d?.Barcode,
@@ -34,15 +44,9 @@ export default function Csv() {
           genre: d?.Genre,
           is_new: d["Is New?"] === "TRUE" ? true : false,
           note: d?.Notes,
-          total_sell: d["Sale Price"]
-            ? parseFloat(d["Sale Price"]?.replace(/\$|["],/g, ""))
-            : null,
           size: d?.Size,
           title: d?.Title,
           media: d?.Type,
-          vendor_cut: d["Vendor Cut"]
-            ? parseFloat(d["Vendor Cut"]?.replace(/\$|["],/g, ""))
-            : null,
         },
       });
     }

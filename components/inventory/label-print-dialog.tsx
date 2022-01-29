@@ -8,17 +8,14 @@ import { viewAtom, clerkAtom } from "@/lib/atoms";
 import { InventoryObject, ModalButton } from "@/lib/types";
 
 // Functions
-import {
-  getItemDisplayName,
-  getCSVData,
-  fFileDate,
-} from "@/lib/data-functions";
+import { getCSVData, getItemSkuDisplayName } from "@/lib/data-functions";
 import { saveLog } from "@/lib/db-functions";
 
 // Components
 import Modal from "@/components/_components/container/modal";
 import TextField from "@/components/_components/inputs/text-field";
 import Select from "react-select";
+import dayjs from "dayjs";
 
 export default function LabelPrintDialog() {
   // Atoms
@@ -44,6 +41,8 @@ export default function LabelPrintDialog() {
   };
   const [items, setItems] = useState(initItems);
 
+  console.log(items);
+
   function closeDialog() {
     setItems(initItems);
     setView({ ...view, labelPrintDialog: false });
@@ -58,9 +57,9 @@ export default function LabelPrintDialog() {
     },
     {
       type: "ok",
-      data: getCSVData(items, inventory),
+      data: getCSVData(items),
       headers: ["SKU", "ARTIST", "TITLE", "NEW/USED", "SELL PRICE", "GENRE"],
-      fileName: `label-print-${fFileDate()}.csv`,
+      fileName: `label-print-${dayjs().format("YYYY-MM-DD")}.csv`,
       text: "PRINT LABELS",
       onClick: () => {
         saveLog(
@@ -82,7 +81,7 @@ export default function LabelPrintDialog() {
       closeFunction={closeDialog}
       title={"LABEL PRINT"}
       buttons={buttons}
-      width={"max-w-lg"}
+      width={"max-w-xl"}
     >
       <>
         <div className="help-text">
@@ -98,19 +97,19 @@ export default function LabelPrintDialog() {
                 className="w-full self-stretch"
                 value={items[key]?.item}
                 options={inventory?.map((item: InventoryObject) => ({
-                  value: item?.id,
-                  label: getItemDisplayName(item),
+                  value: item,
+                  label: getItemSkuDisplayName(item),
                 }))}
                 onChange={(item) =>
                   setItems({ ...items, [key]: { ...items[key], item } })
                 }
               />
             </div>
-            <div className="w-2/6">
+            <div className="w-1/3">
               <TextField
                 inputType="number"
                 min={0}
-                valueNum={items[key]?.printQuantity || 1}
+                valueNum={items[key]?.printQuantity}
                 onChange={(e: any) =>
                   setItems({
                     ...items,

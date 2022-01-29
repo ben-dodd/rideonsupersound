@@ -1,7 +1,7 @@
 // DB
 import { useInventory } from "@/lib/swr-hooks";
 import { InventoryObject } from "@/lib/types";
-import { getItemSkuDisplayName } from "@/lib/data-functions";
+import { getItemSkuDisplayNameById } from "@/lib/data-functions";
 import { completeRestockTask } from "@/lib/db-functions";
 
 type ListItemProps = {
@@ -32,7 +32,7 @@ export default function RestockJob({ item }: ListItemProps) {
               }}
             />
           </div>
-          <div>{getItemSkuDisplayName(item?.id, inventory)}</div>
+          <div>{getItemSkuDisplayNameById(item?.id, inventory)}</div>
         </div>
       </div>
     </div>

@@ -2,6 +2,7 @@ import { receiveStockAtom } from "@/lib/atoms";
 import {
   getItemDisplayName,
   getItemSkuDisplayName,
+  getItemSkuDisplayNameById,
 } from "@/lib/data-functions";
 import { useAtom } from "jotai";
 import { useInventory } from "@/lib/swr-hooks";
@@ -19,7 +20,7 @@ export default function Items({ onClick }) {
             onClick={() => onClick(item)}
           >
             {item?.item?.id
-              ? getItemSkuDisplayName(item?.item?.id, inventory)
+              ? getItemSkuDisplayName(item?.item)
               : getItemDisplayName(item?.item)}
           </div>
         ))

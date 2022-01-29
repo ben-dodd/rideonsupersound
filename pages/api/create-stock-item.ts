@@ -1,5 +1,6 @@
 import { NextApiHandler } from "next";
 import { query } from "../../lib/db";
+import { escape } from "sqlstring";
 
 const handler: NextApiHandler = async (req, res) => {
   const { k } = req.query;
@@ -109,9 +110,9 @@ const handler: NextApiHandler = async (req, res) => {
         image_url,
         thumb_url,
         google_books_item_id,
-        googleBooksItem,
+        JSON.stringify(googleBooksItem),
         discogs_item_id,
-        discogsItem,
+        JSON.stringify(discogsItem),
         do_list_on_website || 1,
         has_no_quantity || 0,
         is_gift_card,

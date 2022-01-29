@@ -138,7 +138,7 @@ export default function BatchPaymentDialog() {
             });
           });
       },
-      fileName: `batch-payment-${fFileDate()}.csv`,
+      fileName: `batch-payment-${dayjs().format("YYYY-MM-DD")}.csv`,
       data: writeKiwiBankBatchFile({
         transactions: payVendors
           .filter(

@@ -22,7 +22,7 @@ import { CustomerObject, InventoryObject, ModalButton } from "@/lib/types";
 
 // Functions
 import {
-  getItemSkuDisplayName,
+  getItemSkuDisplayNameById,
   getItemQuantity,
   getItemDisplayName,
   getItemSku,
@@ -88,7 +88,7 @@ export default function CreateHoldSidebar() {
         );
         saveLog(
           {
-            log: `${getItemSkuDisplayName(
+            log: `${getItemSkuDisplayNameById(
               cartItem?.item_id,
               inventory
             )} put on hold for ${

@@ -6,11 +6,12 @@ import {
   getDiscogsOptionsByKeyword,
 } from "@/lib/data-functions";
 import { useAtom } from "jotai";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import DiscogsOption from "../../discogs-panel/discogs-option";
 import { v4 as uuid } from "uuid";
 import { DiscogsItem, InventoryObject } from "@/lib/types";
 import { ChevronRight } from "@mui/icons-material";
+import debounce from "lodash/debounce";
 
 export default function Discogs() {
   const [barcode, setBarcode] = useState("");
@@ -26,22 +27,7 @@ export default function Discogs() {
     }
   };
   const [basket, setBasket] = useAtom(receiveStockAtom);
-  const addItem = async (discogsItem: DiscogsItem) => {
-    let item: InventoryObject = {
-      artist: discogsItem?.artists?.join(", "),
-      barcode: discogsItem?.barcode?.join("\n"),
-      country: discogsItem?.country,
-      format: discogsItem?.format?.join(", "),
-      media: "Audio",
-      genre: `${discogsItem?.genre?.join("/")}/${discogsItem?.style?.join(
-        "/"
-      )}`,
-      image_url: discogsItem?.cover_image,
-      title: discogsItem?.title,
-      thumb_url: discogsItem?.thumb,
-      discogsItem: discogsItem,
-      release_year: discogsItem?.year?.toString(),
-    };
+  const addItem = (item) => {
     setBasket({
       ...basket,
       items: basket?.items
@@ -52,11 +38,12 @@ export default function Discogs() {
     setKey(uuid());
     setDiscogsOptions([]);
   };
-  const searchDiscogs = async () => {
-    const results = await getDiscogsOptionsByKeyword(keyword);
+  const searchDiscogs = async (k) => {
+    const results = await getDiscogsOptionsByKeyword(k);
     if (results && results?.length > 0) setDiscogsOptions(results);
   };
-  console.log(key);
+  const debouncedSearch = useCallback(debounce(searchDiscogs, 2000), []);
+
   return (
     <div>
       <div className="helper-text mb-2">
@@ -72,25 +59,24 @@ export default function Discogs() {
         autoFocus
         selectOnFocus
       />
-      <div className="flex">
-        <TextField
-          className="grow"
-          id="keyword"
-          value={keyword || ""}
-          onChange={(e) => setKeyword(e.target.value)}
-          inputLabel="Search Keyword"
-        />
-        <button
-          onClick={searchDiscogs}
-          disabled={keyword === ""}
-          className="bg-col2-dark hover:bg-col2 disabled:bg-gray-200 ml-2 rounded"
-        >
-          Search
-        </button>
-      </div>
+      <TextField
+        id="keyword"
+        value={keyword || ""}
+        onChange={(e) => {
+          setKeyword(e.target.value);
+          debouncedSearch(e.target.value);
+        }}
+        inputLabel="Search Keywords (e.g. 'palace of wisdom common threads cdr')"
+      />
       {discogsOptions?.length > 0 ? (
         discogsOptions?.map((opt, k) => (
-          <DiscogsOption opt={opt} key={k} onClick={() => addItem(opt)} />
+          <DiscogsOption
+            opt={opt}
+            key={k}
+            item={{ vendor_id: basket?.vendor_id }}
+            setItem={addItem}
+            override={true}
+          />
         ))
       ) : barcode === "" ? (
         <div />

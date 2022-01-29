@@ -14,7 +14,7 @@ import { CustomerObject, HoldObject, InventoryObject } from "@/lib/types";
 // Functions
 import {
   getItemDisplayName,
-  getItemSkuDisplayName,
+  getItemSkuDisplayNameById,
 } from "@/lib/data-functions";
 
 // Components
@@ -45,7 +45,7 @@ export default function CustomerTable() {
           return {
             id: h?.id,
             hold: h,
-            holdName: getItemSkuDisplayName(h?.item_id, inventory),
+            holdName: getItemSkuDisplayNameById(h?.item_id, inventory),
             expiryDate: dayjs(h?.date_from).add(h?.hold_period, "day"),
             customer: c,
             name: c?.name,

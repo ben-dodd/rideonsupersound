@@ -10,6 +10,7 @@ export default function Tabs({ tabs, value, onChange }: TabProps) {
       <div className="flex justify-between pb-2">
         {tabs?.map((val, index) => (
           <div
+            key={index}
             onClick={() => onChange(index)}
             className={`uppercase px-4 py-1 cursor-pointer ${
               value === index

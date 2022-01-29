@@ -37,11 +37,15 @@ export function getItemDisplayName(item: InventoryObject | GiftCardObject) {
   }${inventoryItem?.artist || ""}`;
 }
 
-export function getItemSkuDisplayName(
+export function getItemSkuDisplayNameById(
   item_id: number,
   inventory: InventoryObject[]
 ) {
   let item = inventory?.filter((i) => i?.id === item_id)[0];
+  return `[${getItemSku(item)}] ${getItemDisplayName(item)}`;
+}
+
+export function getItemSkuDisplayName(item: InventoryObject) {
   return `[${getItemSku(item)}] ${getItemDisplayName(item)}`;
 }
 
@@ -217,6 +221,7 @@ export function getItemStoreCut(
 }
 
 export function getStoreCut(item: InventoryObject) {
+  if (!item?.total_sell || !item?.vendor_cut) return 0;
   return item?.total_sell - item?.vendor_cut;
 }
 
@@ -742,16 +747,16 @@ export function makeGiftCardCode(giftCards: GiftCardObject[]) {
 // CSV FUNCTIONS //
 //               //
 
-export function getCSVData(items, inventory: InventoryObject[]) {
+export function getCSVData(items) {
   let csv = [];
+  console.log(items);
   Object.values(items || {})
-    .filter((row: any) => row?.printQuantity > 1 && row?.item?.value)
+    .filter((row: any) => Boolean(row?.item?.value))
     .forEach((row: any) => {
-      Array.from(Array(parseInt(row?.printQuantity || 1)).keys()).forEach(
+      Array.from(Array(parseInt(row?.printQuantity || "1")).keys()).forEach(
         () => {
-          const stockItem: InventoryObject = inventory?.filter(
-            (i: InventoryObject) => i?.id === row?.item?.value
-          )[0];
+          let stockItem: InventoryObject = row?.item?.value;
+          console.log(stockItem);
           csv.push([
             getItemSku(stockItem),
             stockItem?.artist,

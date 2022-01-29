@@ -2,6 +2,7 @@ import { receiveStockAtom } from "@/lib/atoms";
 import {
   getItemDisplayName,
   getItemSkuDisplayName,
+  getItemSkuDisplayNameById,
 } from "@/lib/data-functions";
 import { useAtom } from "jotai";
 import CloseIcon from "@mui/icons-material/Close";
@@ -29,7 +30,7 @@ export default function Items() {
               <CloseIcon />
             </button>
             {item?.item?.id
-              ? getItemSkuDisplayName(item?.item?.id, inventory)
+              ? getItemSkuDisplayName(item?.item)
               : getItemDisplayName(item?.item)}
           </div>
         ))

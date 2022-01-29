@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useRegisterID } from "@/lib/swr-hooks";
+import { useInventory, useRegisterID } from "@/lib/swr-hooks";
 import { viewAtom, clerkAtom, receiveStockAtom } from "@/lib/atoms";
 import { ModalButton } from "@/lib/types";
 
@@ -17,7 +17,6 @@ import ScreenContainer from "@/components/_components/container/screen";
 // Icons
 import SelectVendor from "./select-vendor";
 import SelectItems from "./add-items";
-import EditItems from "./set-price-and-quantities";
 import PrintLabel from "./print-label";
 import CheckDetails from "./check-details";
 import SetPriceAndQuantities from "./set-price-and-quantities";
@@ -25,9 +24,11 @@ import SetPriceAndQuantities from "./set-price-and-quantities";
 export default function ReceiveStockScreen() {
   // Atoms
   const [basket, setBasket] = useAtom(receiveStockAtom);
+  const { inventory, mutateInventory } = useInventory();
   const [view, setView] = useAtom(viewAtom);
   const [clerk] = useAtom(clerkAtom);
   const [step, setStep] = useState(0);
+  const [receivedStock, setReceivedStock] = useState(null);
 
   // SWR
   const { registerID } = useRegisterID();
@@ -74,7 +75,9 @@ export default function ReceiveStockScreen() {
         disabled: isDisabled(),
         text: "RECEIVE ITEMS",
         onClick: async () => {
-          await receiveStock(basket, clerk, registerID);
+          const receivedStock = await receiveStock(basket, clerk, registerID);
+          mutateInventory();
+          setReceivedStock(receivedStock);
           setStep(4);
         },
       },
@@ -85,6 +88,7 @@ export default function ReceiveStockScreen() {
         disabled: isDisabled(),
         text: "DONE",
         onClick: () => {
+          setBasket({});
           setView({ ...view, receiveStockScreen: false });
         },
       },
@@ -143,7 +147,7 @@ export default function ReceiveStockScreen() {
           <SetPriceAndQuantities />
         </div>
         <div hidden={step !== 4}>
-          <PrintLabel />
+          <PrintLabel receivedStock={receivedStock} />
         </div>
       </div>
     </ScreenContainer>

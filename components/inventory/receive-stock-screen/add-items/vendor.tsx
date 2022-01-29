@@ -37,7 +37,7 @@ export default function Vendor() {
             )
             ?.map((item: InventoryObject) => ({
               value: item,
-              label: getItemSkuDisplayName(item?.id, inventory),
+              label: getItemSkuDisplayName(item),
             }))}
           onChange={addItem}
         />
