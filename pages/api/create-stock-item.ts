@@ -41,6 +41,7 @@ const handler: NextApiHandler = async (req, res) => {
     misc_item_description,
     misc_item_amount,
     created_by_id,
+    date_last_stocktake,
   } = req.body;
   try {
     if (!k || k !== process.env.NEXT_PUBLIC_SWR_API_KEY)
@@ -83,9 +84,10 @@ const handler: NextApiHandler = async (req, res) => {
         is_misc_item,
         misc_item_description,
         misc_item_amount,
-        created_by_id
+        created_by_id,
+        date_last_stocktake
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
       [
         vendor_id,
@@ -124,6 +126,7 @@ const handler: NextApiHandler = async (req, res) => {
         misc_item_description,
         misc_item_amount,
         created_by_id,
+        date_last_stocktake,
       ]
     );
     return res.json(results);

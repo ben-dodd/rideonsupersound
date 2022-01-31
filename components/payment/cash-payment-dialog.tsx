@@ -1,6 +1,7 @@
 // Packages
 import { useState, useMemo } from "react";
 import { useAtom } from "jotai";
+import Select from "react-select";
 
 // DB
 import {
@@ -16,10 +17,11 @@ import { viewAtom, clerkAtom } from "@/lib/atoms";
 import {
   VendorSaleItemObject,
   VendorPaymentObject,
-  InventoryObject,
+  StockObject,
   VendorObject,
   ModalButton,
   PaymentMethodTypes,
+  VendorPaymentTypes,
 } from "@/lib/types";
 
 // Functions
@@ -51,6 +53,8 @@ export default function CashPaymentDialog() {
   const [vendor_id, setVendor]: [number, Function] = useState(0);
   const [payment, setPayment] = useState("0");
   const [notes, setNotes] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [paymentType, setPaymentType] = useState(VendorPaymentTypes.Cash);
 
   // Constants
   const totalOwing = useMemo(
@@ -61,7 +65,7 @@ export default function CashPaymentDialog() {
         ),
         sales?.filter(
           (v: VendorSaleItemObject) =>
-            inventory?.filter((i: InventoryObject) => i?.id === v?.item_id)[0]
+            inventory?.filter((i: StockObject) => i?.id === v?.item_id)[0]
               ?.vendor_id === vendor_id
         )
       ),
@@ -89,14 +93,18 @@ export default function CashPaymentDialog() {
           clerk_id: clerk?.id,
           vendor_id: vendor?.id,
           register_id: registerID,
-          type: PaymentMethodTypes.Cash,
+          type: paymentType,
         };
         saveVendorPaymentToDatabase(vendorPayment).then((id) => {
           mutateVendorPayments([...vendorPayments, { ...vendorPayment, id }]);
-          mutateCashGiven();
+          if (paymentType === VendorPaymentTypes.Cash) mutateCashGiven();
           saveLog(
             {
-              log: `Cash payment made to Vendor (${vendor?.id || ""}).`,
+              log: `${
+                paymentType === VendorPaymentTypes.Cash
+                  ? "Cash"
+                  : "Direct deposit"
+              } payment made to Vendor (${vendor?.id || ""}).`,
               clerk_id: clerk?.id,
               table_id: "vendor_payment",
               row_id: id,
@@ -126,31 +134,38 @@ export default function CashPaymentDialog() {
     <Modal
       open={view?.cashVendorPaymentDialog}
       closeFunction={() => setView({ ...view, cashVendorPaymentDialog: false })}
-      title={"CASH PAYMENT"}
+      title={`VENDOR PAYMENT`}
       buttons={buttons}
     >
       <>
-        <CreateableSelect
-          inputLabel="Select vendor"
-          fieldRequired
-          value={vendor_id}
-          label={
-            vendors?.filter((v: VendorObject) => v?.id === vendor_id)[0]
-              ?.name || ""
+        <div className="text-sm mt-2">Select Payment Method</div>
+        <Select
+          className="w-full"
+          value={{ value: paymentType, label: paymentType?.toUpperCase() }}
+          options={[VendorPaymentTypes.Cash, VendorPaymentTypes.DD]?.map(
+            (type) => ({
+              value: type,
+              label: type?.toUpperCase(),
+            })
+          )}
+          onChange={(paymentObject: any) =>
+            setPaymentType(paymentObject?.value)
           }
-          onChange={(vendorObject: any) => setVendor(vendorObject?.value)}
-          onCreateOption={(inputValue: string) =>
-            // REVIEW create vendor from select
-            // setCreateCustomerSidebar({
-            //   id: 1,
-            //   name: inputValue,
-            // })
-            null
-          }
+        />
+        <div className="text-sm mt-2">Select Vendor</div>
+        <Select
+          className="w-full"
+          value={{
+            value: vendor_id,
+            label:
+              vendors?.filter((v: VendorObject) => v?.id === vendor_id)[0]
+                ?.name || "",
+          }}
           options={vendors?.map((val: VendorObject) => ({
             value: val?.id,
             label: val?.name || "",
           }))}
+          onChange={(vendorObject: any) => setVendor(vendorObject?.value)}
         />
         <TextField
           className="mt-4"

@@ -5,7 +5,7 @@ import { useAtom } from "jotai";
 // DB
 import { useInventory } from "@/lib/swr-hooks";
 import { sellSearchBarAtom } from "@/lib/atoms";
-import { InventoryObject } from "@/lib/types";
+import { StockObject } from "@/lib/types";
 
 // Functions
 import { filterInventory } from "@/lib/data-functions";
@@ -50,13 +50,13 @@ export default function InventoryScroll() {
           {"gift card".includes(search) && <GiftCardItem />}
           {"misc item".includes(search) && <MiscItem />}
           {filterInventory({ inventory, search })
-            .sort((a: InventoryObject, b: InventoryObject) => {
+            .sort((a: StockObject, b: StockObject) => {
               if (a?.quantity === b?.quantity) return 0;
               if (a?.quantity < 1) return 1;
               if (b?.quantity < 1) return -1;
               return 0;
             })
-            .map((item: InventoryObject) => (
+            .map((item: StockObject) => (
               <ListItem item={item} key={item?.id} geolocation={geolocation} />
             ))}
         </>

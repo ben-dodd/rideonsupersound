@@ -5,7 +5,7 @@ import { useAtom } from "jotai";
 // DB
 import { useInventory, useStockItem, useGiftCards } from "@/lib/swr-hooks";
 import { cartAtom, confirmModalAtom } from "@/lib/atoms";
-import { InventoryObject, SaleItemObject } from "@/lib/types";
+import { StockObject, SaleItemObject } from "@/lib/types";
 
 // Functions
 import {
@@ -54,7 +54,7 @@ export default function SellListItem({
   // Load
   useEffect(() => {
     setItem(
-      inventory?.filter((i: InventoryObject) => i.id === cartItem?.item_id)[0]
+      inventory?.filter((i: StockObject) => i.id === cartItem?.item_id)[0]
     );
   }, [inventory]);
 

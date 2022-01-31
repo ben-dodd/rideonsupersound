@@ -4,7 +4,7 @@ import {
   getItemSkuDisplayName,
 } from "@/lib/data-functions";
 import { useInventory } from "@/lib/swr-hooks";
-import { InventoryObject } from "@/lib/types";
+import { StockObject } from "@/lib/types";
 import { useAtom } from "jotai";
 import Select from "react-select";
 import { v4 as uuid } from "uuid";
@@ -31,11 +31,11 @@ export default function Vendor() {
           value={null}
           options={inventory
             ?.filter(
-              (item: InventoryObject) =>
+              (item: StockObject) =>
                 item?.vendor_id === basket?.vendor_id &&
                 !basket?.items?.map((item) => item?.item?.id).includes(item?.id)
             )
-            ?.map((item: InventoryObject) => ({
+            ?.map((item: StockObject) => ({
               value: item,
               label: getItemSkuDisplayName(item),
             }))}

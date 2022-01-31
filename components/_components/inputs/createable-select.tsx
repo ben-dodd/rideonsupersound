@@ -42,7 +42,7 @@ export default function CreateableSelect({
   labelClass,
 }: TextFieldProps) {
   // State
-  const [isLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   return (
     <div
       className={className || ""}
@@ -75,9 +75,10 @@ export default function CreateableSelect({
             label: isLoading ? "Loading..." : label,
           }}
           onChange={onChange}
-          onCreateOption={(inputValue: string) => {
-            // setLoading(true);
-            onCreateOption(inputValue);
+          onCreateOption={async (inputValue: string) => {
+            setIsLoading(true);
+            await onCreateOption(inputValue);
+            setIsLoading(false);
           }}
           options={options}
         />

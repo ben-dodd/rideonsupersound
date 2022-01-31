@@ -10,7 +10,7 @@ const handler: NextApiHandler = async (req, res) => {
       `
       SELECT *
       FROM hold
-      WHERE NOT is_deleted
+      WHERE NOT is_deleted AND date_removed_from_hold IS NULL
       `
     );
 

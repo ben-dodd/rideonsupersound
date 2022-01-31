@@ -5,7 +5,7 @@ import Image from "next/image";
 // DB
 import { useJobs, useInventory } from "@/lib/swr-hooks";
 import { pageAtom, cartAtom, clerkAtom, viewAtom } from "@/lib/atoms";
-import { SaleItemObject, TaskObject, InventoryObject } from "@/lib/types";
+import { SaleItemObject, TaskObject, StockObject } from "@/lib/types";
 
 // Icons
 // import CustomersIcon from "@mui/icons-material/LocalLibrary";
@@ -54,7 +54,7 @@ export default function Menu() {
   const jobsToDo =
     (jobs?.filter((t: TaskObject) => !t?.is_deleted && !t?.is_completed)
       ?.length || 0) +
-    (inventory?.filter((i: InventoryObject) => i?.needs_restock)?.length || 0);
+    (inventory?.filter((i: StockObject) => i?.needs_restock)?.length || 0);
 
   const topMenu = [
     {

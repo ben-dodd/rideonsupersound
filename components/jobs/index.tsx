@@ -6,7 +6,7 @@ import { useDropzone } from "react-dropzone";
 // DB
 import { useJobs, useInventory } from "@/lib/swr-hooks";
 import { pageAtom } from "@/lib/atoms";
-import { TaskObject, InventoryObject } from "@/lib/types";
+import { TaskObject, StockObject } from "@/lib/types";
 
 import { uploadFiles } from "@/lib/db-functions";
 
@@ -75,8 +75,8 @@ export default function TaskScreen() {
               </div>
             ) : (
               inventory
-                ?.filter((item: InventoryObject) => item?.needs_restock)
-                .map((item: InventoryObject) => (
+                ?.filter((item: StockObject) => item?.needs_restock)
+                .map((item: StockObject) => (
                   <RestockTask item={item} key={item?.id} />
                 ))
             )}

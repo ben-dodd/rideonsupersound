@@ -16,7 +16,7 @@ import {
   VendorObject,
   ClerkObject,
   CustomerObject,
-  InventoryObject,
+  StockObject,
 } from "@/lib/types";
 
 // Functions
@@ -66,7 +66,7 @@ export default function VendorsScreen() {
                 totalDebitAmount: vendorVars?.totalPaid || 0,
                 uniqueItemsInStock: vendorVars?.totalItems?.length,
                 totalItemsInStock: vendorVars?.totalItems?.reduce(
-                  (sum: number, item: InventoryObject) =>
+                  (sum: number, item: StockObject) =>
                     (item?.quantity || 0) + sum,
                   0
                 ),

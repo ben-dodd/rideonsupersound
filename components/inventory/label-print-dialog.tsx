@@ -5,7 +5,7 @@ import { useAtom } from "jotai";
 // DB
 import { useInventory, useLogs } from "@/lib/swr-hooks";
 import { viewAtom, clerkAtom } from "@/lib/atoms";
-import { InventoryObject, ModalButton } from "@/lib/types";
+import { StockObject, ModalButton } from "@/lib/types";
 
 // Functions
 import { getCSVData, getItemSkuDisplayName } from "@/lib/data-functions";
@@ -96,7 +96,7 @@ export default function LabelPrintDialog() {
               <Select
                 className="w-full self-stretch"
                 value={items[key]?.item}
-                options={inventory?.map((item: InventoryObject) => ({
+                options={inventory?.map((item: StockObject) => ({
                   value: item,
                   label: getItemSkuDisplayName(item),
                 }))}

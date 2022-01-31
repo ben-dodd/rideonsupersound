@@ -35,7 +35,7 @@ export default function Items() {
           </div>
         ))
       ) : (
-        <div>No items currently selected.</div>
+        <div>No items added.</div>
       )}
     </div>
   );

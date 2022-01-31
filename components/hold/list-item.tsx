@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useInventory } from "@/lib/swr-hooks";
 
-import { InventoryObject, SaleItemObject } from "@/lib/types";
+import { StockObject, SaleItemObject } from "@/lib/types";
 import {
   getItemSku,
   getItemDisplayName,
@@ -16,7 +16,7 @@ export default function HoldListItem({ cartItem }: HoldListItemProps) {
   const [item, setItem] = useState(null);
   useEffect(() => {
     setItem(
-      inventory?.filter((i: InventoryObject) => i.id === cartItem?.item_id)[0]
+      inventory?.filter((i: StockObject) => i.id === cartItem?.item_id)[0]
     );
   }, [inventory]);
 
@@ -36,7 +36,7 @@ export default function HoldListItem({ cartItem }: HoldListItemProps) {
         {getItemSku(item)}
       </div>
       <div className="flex flex-col w-full p-2 justify-between">
-        <div className="text-xs pl-1">{getItemDisplayName(item)}</div>
+        <div className="text-sm pl-1">{getItemDisplayName(item)}</div>
         <div className="text-red-500 self-end">
           {getCartItemSummary(item, cartItem)}
         </div>

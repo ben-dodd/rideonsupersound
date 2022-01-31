@@ -16,7 +16,7 @@ import {
   loadedItemIdAtom,
   pageAtom,
 } from "@/lib/atoms";
-import { ModalButton, InventoryObject, StockMovementTypes } from "@/lib/types";
+import { ModalButton, StockObject, StockMovementTypes } from "@/lib/types";
 
 // Functions
 import { getItemDisplayName } from "@/lib/data-functions";
@@ -44,7 +44,7 @@ export default function ChangePriceDialog() {
   const { registerID } = useRegisterID();
 
   // State
-  const [movement, setMovement] = useState(null);
+  const [movement, setMovement] = useState(StockMovementTypes?.Adjustment);
   const [quantity, setQuantity] = useState("");
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -70,16 +70,15 @@ export default function ChangePriceDialog() {
           movement === StockMovementTypes?.Discarded ||
           movement === StockMovementTypes?.Lost
         ) {
-          adjustment = adjustment * -1;
-          newQuantity += adjustment;
+          newQuantity -= adjustment;
         } else {
           newQuantity += adjustment;
         }
         const otherInventoryItems = inventory?.filter(
-          (i: InventoryObject) => i?.id !== stockItem?.id
+          (i: StockObject) => i?.id !== stockItem?.id
         );
         let inventoryItem = inventory?.filter(
-          (i: InventoryObject) => i?.id === stockItem?.id
+          (i: StockObject) => i?.id === stockItem?.id
         )[0];
         inventoryItem = {
           ...inventoryItem,

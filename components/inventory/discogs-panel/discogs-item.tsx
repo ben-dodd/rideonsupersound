@@ -1,6 +1,6 @@
 // Functions
 import { andList } from "@/lib/data-functions";
-import { DiscogsItem, InventoryObject } from "@/lib/types";
+import { DiscogsItem, StockObject } from "@/lib/types";
 import { useEffect, useState } from "react";
 
 // Components
@@ -8,7 +8,7 @@ import ReactPlayer from "react-player";
 
 interface discogsProps {
   discogsItem: DiscogsItem;
-  item: InventoryObject;
+  item: StockObject;
 }
 
 export default function DiscogsItemScreen({ discogsItem, item }: discogsProps) {

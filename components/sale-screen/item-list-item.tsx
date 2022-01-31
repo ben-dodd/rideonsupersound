@@ -5,7 +5,7 @@ import { useAtom } from "jotai";
 // DB
 import { useInventory, useSaleItemsForSale, useLogs } from "@/lib/swr-hooks";
 import { cartAtom, alertAtom, clerkAtom } from "@/lib/atoms";
-import { InventoryObject, SaleObject, SaleItemObject } from "@/lib/types";
+import { StockObject, SaleObject, SaleItemObject } from "@/lib/types";
 import { MouseEventHandler } from "react";
 
 // Functions
@@ -46,7 +46,7 @@ export default function ItemListItem({
   // Load
   useEffect(() => {
     setItem(
-      inventory?.filter((i: InventoryObject) => i.id === saleItem?.item_id)[0]
+      inventory?.filter((i: StockObject) => i.id === saleItem?.item_id)[0]
     );
   }, [inventory]);
 

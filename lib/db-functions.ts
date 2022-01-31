@@ -6,7 +6,7 @@ import {
   GiftCardObject,
   VendorObject,
   VendorPaymentObject,
-  InventoryObject,
+  StockObject,
   RegisterObject,
   LogObject,
   TillObject,
@@ -38,7 +38,7 @@ export async function loadSaleToCart(
   mutateLogs: Function,
   sales: SaleObject[],
   mutateSales: Function,
-  inventory: InventoryObject[],
+  inventory: StockObject[],
   mutateInventory: Function,
   giftCards: GiftCardObject[],
   mutateGiftCards: Function
@@ -74,7 +74,7 @@ export async function saveSaleAndPark(
   mutateLogs: Function,
   sales: SaleObject[],
   mutateSales: Function,
-  inventory: InventoryObject[],
+  inventory: StockObject[],
   mutateInventory: Function,
   giftCards: GiftCardObject[],
   mutateGiftCards: Function
@@ -119,7 +119,7 @@ export async function saveSaleItemsTransactionsToDatabase(
   registerID: number,
   sales: SaleObject[],
   mutateSales: Function,
-  inventory: InventoryObject[],
+  inventory: StockObject[],
   mutateInventory: Function,
   giftCards: GiftCardObject[],
   mutateGiftCards: Function,
@@ -161,7 +161,7 @@ export async function saveSaleItemsTransactionsToDatabase(
   //
   for (const item of cart?.items) {
     let invItem = inventory?.filter(
-      (i: InventoryObject) => i?.id === item?.item_id
+      (i: StockObject) => i?.id === item?.item_id
     )[0];
     console.log(invItem);
     // Check whether inventory item needs restocking
@@ -240,7 +240,7 @@ export async function saveSaleItemsTransactionsToDatabase(
 
       // Update inventory item if it's a regular stock item
       const otherInventoryItems = inventory?.filter(
-        (i: InventoryObject) => i?.id !== invItem?.id
+        (i: StockObject) => i?.id !== invItem?.id
       );
       mutateInventory &&
         mutateInventory(
@@ -557,6 +557,26 @@ export async function saveTillToDatabase(till: TillObject) {
   }
 }
 
+export async function saveVendorToDatabase(vendor: VendorObject) {
+  try {
+    const res = await fetch(
+      `/api/create-vendor?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(vendor),
+      }
+    );
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+    return json.insertId;
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
+
 export async function saveVendorPaymentToDatabase(
   vendorPayment: VendorPaymentObject
 ) {
@@ -701,44 +721,50 @@ export async function updateCustomerInDatabase(
   }
 }
 
+export async function updateVendorInDatabase(vendor: VendorObject) {
+  try {
+    const res = await fetch(
+      `/api/update-vendor?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(vendor),
+      }
+    );
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
+
 export async function returnHoldToStock(
   hold: HoldObject,
   clerk: ClerkObject,
   holds: HoldObject[],
   mutateHolds: Function,
-  inventory: InventoryObject[],
-  mutateInventory: Function
+  mutateInventory: Function,
+  registerID: number
 ) {
-  // TODO Return Hold to Stock
-  // setLog(
-  //   `Hold returned to stock.`,
-  //   "holds",
-  //   get(hold, "id", ""),
-  //   currentStaff
-  // );
-  // updateData({
-  //   dispatch,
-  //   collection: "holds",
-  //   doc: get(hold, "id", null),
-  //   update: {
-  //     deleted: true,
-  //     dateRemovedFromHold: new Date(),
-  //     removedFromHoldBy: get(currentStaff, "id", null),
-  //     sold: false,
-  //   },
-  // });
-  // setHold(null);
-  // dispatch(closeDialog("holdItem"));
-  // updateData({
-  //   dispatch,
-  //   collection: "inventory",
-  //   doc: get(hold, "item.id", null),
-  //   update: {
-  //     quantity: get(stockItem, "quantity", 0) + holdItemQty,
-  //     quantityOnHold:
-  //       get(stockItem, "quantityOnHold", 0) - holdItemQty,
-  //   },
-  // });
+  updateHoldInDatabase({
+    ...hold,
+    date_removed_from_hold: dayjs.utc().format(),
+    removed_from_hold_by: clerk?.id,
+  });
+  mutateHolds(
+    holds?.filter((h) => h?.id !== hold?.id),
+    false
+  );
+  saveStockMovementToDatabase(
+    { item_id: hold?.item_id, quantity: hold?.quantity?.toString() },
+    clerk,
+    registerID,
+    StockMovementTypes.Unhold,
+    hold?.note
+  );
+  mutateInventory();
 }
 
 export async function updateHoldInDatabase(item) {
@@ -944,7 +970,8 @@ export async function saveStockMovementToDatabase(
             act === StockMovementTypes.Unhold ||
             act === StockMovementTypes.Unlayby ||
             act === StockMovementTypes.Found ||
-            act === StockMovementTypes.Unsold
+            act === StockMovementTypes.Unsold ||
+            act === StockMovementTypes.Adjustment
               ? parseInt(item?.quantity)
               : -parseInt(item?.quantity),
           act,
@@ -961,7 +988,7 @@ export async function saveStockMovementToDatabase(
 }
 
 export async function saveStockToDatabase(
-  item: InventoryObject | GiftCardObject,
+  item: StockObject | GiftCardObject,
   clerk: ClerkObject
 ) {
   try {
@@ -984,7 +1011,7 @@ export async function saveStockToDatabase(
 }
 
 export async function updateStockItemInDatabase(
-  item: InventoryObject | GiftCardObject
+  item: StockObject | GiftCardObject
 ) {
   try {
     const res = await fetch(
@@ -1279,6 +1306,7 @@ export async function receiveStock(
           item: {
             ...receiveItem?.item,
             vendor_id: basket?.vendor_id,
+            total_sell: parseFloat(receiveItem?.total_sell) * 100,
             id: newStockID,
           },
           quantity: receiveItem?.quantity,
@@ -1295,7 +1323,7 @@ export function returnStock(
   notes: string,
   clerk: ClerkObject,
   registerID: number,
-  inventory: InventoryObject[],
+  inventory: StockObject[],
   mutateInventory: Function,
   logs: LogObject[],
   mutateLogs: Function
@@ -1303,7 +1331,7 @@ export function returnStock(
   if (vendorId && Object.keys(items).length > 0) {
     const itemIds = Object.entries(items)?.map(([id]) => parseInt(id));
     const otherInventoryItems = inventory?.filter(
-      (i: InventoryObject) => !itemIds?.includes(i?.id)
+      (i: StockObject) => !itemIds?.includes(i?.id)
     );
     let updatedInventoryItems = [];
     Object.entries(items)
@@ -1313,7 +1341,7 @@ export function returnStock(
       )
       .forEach(([id, returnQuantity]: [string, string]) => {
         const stockItem = inventory?.filter(
-          (i: InventoryObject) => i?.id === parseInt(id)
+          (i: StockObject) => i?.id === parseInt(id)
         )[0];
         updatedInventoryItems.push({
           ...stockItem,

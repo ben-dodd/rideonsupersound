@@ -1,5 +1,5 @@
 import { receiveStockAtom } from "@/lib/atoms";
-import { InventoryObject } from "@/lib/types";
+import { StockObject } from "@/lib/types";
 import { ChevronRight } from "@mui/icons-material";
 import { useAtom } from "jotai";
 import { useState } from "react";
@@ -9,7 +9,7 @@ import InventoryItemForm from "../inventory-item-form";
 export default function Form() {
   // State
   const [basket, setBasket] = useAtom(receiveStockAtom);
-  const [item, setItem] = useState<InventoryObject>({});
+  const [item, setItem] = useState<StockObject>({});
   const addItem = () => {
     setBasket({
       ...basket,

@@ -3,7 +3,7 @@ import { useMemo } from "react";
 
 // DB
 import { useGiftCards } from "@/lib/swr-hooks";
-import { InventoryObject } from "@/lib/types";
+import { StockObject } from "@/lib/types";
 
 // Components
 import Table from "@/components/_components/table";
@@ -18,7 +18,7 @@ export default function GiftCardTable() {
   // Constants
   const data = useMemo(
     () =>
-      giftCards?.map((g: InventoryObject) => ({
+      giftCards?.map((g: StockObject) => ({
         id: g?.id,
         code: g?.gift_card_code,
         date: g?.date_created,

@@ -11,7 +11,7 @@ import {
   alertAtom,
 } from "@/lib/atoms";
 import { useWeather, useInventory, useLogs, useVendors } from "@/lib/swr-hooks";
-import { InventoryObject, VendorObject } from "@/lib/types";
+import { StockObject, VendorObject } from "@/lib/types";
 
 // Components
 import Image from "next/image";
@@ -34,7 +34,7 @@ import { saveLog } from "@/lib/db-functions";
 import dayjs from "dayjs";
 
 type ListItemProps = {
-  item: InventoryObject;
+  item: StockObject;
   geolocation: any;
 };
 
@@ -87,7 +87,6 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
         quantity: "1",
       });
     else newItems[index].quantity = `${parseInt(newItems[index].quantity) + 1}`;
-    console.log(cart?.date_sale_opened);
     setCart({
       id: cart?.id || null,
       date_sale_opened: cart?.date_sale_opened || dayjs.utc().format(),
@@ -106,7 +105,7 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
     saveLog(
       {
         log: `${getItemDisplayName(
-          inventory?.filter((i: InventoryObject) => i?.id === item?.id)[0]
+          inventory?.filter((i: StockObject) => i?.id === item?.id)[0]
         )} added to cart${cart?.id ? ` (sale #${cart?.id})` : ""}.`,
         clerk_id: clerk?.id,
       },
@@ -185,11 +184,9 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
             <div
               className={`text-md ${itemQuantity < 1 && "text-red-500"}`}
             >{`${itemQuantity} in stock${
-              item?.quantity_hold ? `, ${item?.quantity_hold} on hold` : ""
+              item?.quantity_hold ? `, ${-item?.quantity_hold} on hold` : ""
             }${
-              item?.quantity_layby
-                ? `, ${item?.quantity_layby * -1} on layby`
-                : ""
+              item?.quantity_layby ? `, ${-item?.quantity_layby} on layby` : ""
             }`}</div>
           </Tooltip>
           <Tooltip title="You can change the price in the item details screen.">

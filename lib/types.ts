@@ -32,6 +32,7 @@ export enum VendorPaymentTypes {
   SaleRefund = "sale refund", // vendor refunded something onto their account
   Cash = "cash", // vendor was given cash in store
   DD = "direct deposit", // vendor paid with internet banking
+  Batch = "batch", // vendor paid with batch kiwibank payment
 }
 
 export enum ButtonTypes {
@@ -232,7 +233,7 @@ export interface VendorObject {
   lastSold?: string;
 }
 
-export interface InventoryObject {
+export interface StockObject {
   id?: number;
   sku?: string;
   vendor_id?: number;
@@ -261,6 +262,7 @@ export interface InventoryObject {
   do_list_on_website?: number;
   has_no_quantity?: number;
   date_created?: string;
+  date_last_stocktake?: string;
   date_modified?: string;
   is_deleted?: number;
   vendor_cut?: number;
@@ -403,13 +405,21 @@ export interface DiscogsItem {
 }
 
 export interface DiscogsArtist {
+  aliases?: DiscogsArtist[];
   anv?: string;
+  data_quality?: string;
   id?: number;
+  images?: DiscogsImage[];
   join?: string;
   name?: string;
+  profile?: string;
+  realname?: string;
+  releases_url?: string;
   resource_url?: string;
   role?: string;
   tracks?: string;
+  uri?: string;
+  urls?: string[];
 }
 
 export interface DiscogsFormat {

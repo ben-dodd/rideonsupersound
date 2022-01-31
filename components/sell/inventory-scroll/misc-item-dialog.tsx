@@ -5,7 +5,7 @@ import { useAtom } from "jotai";
 // DB
 import { useInventory, useLogs, useWeather } from "@/lib/swr-hooks";
 import { viewAtom, cartAtom, clerkAtom, alertAtom } from "@/lib/atoms";
-import { ModalButton, InventoryObject } from "@/lib/types";
+import { ModalButton, StockObject } from "@/lib/types";
 
 // Functions
 import { getGeolocation } from "@/lib/data-functions";
@@ -47,7 +47,7 @@ export default function MiscItemDialog() {
       loading: submitting,
       onClick: async () => {
         setSubmitting(true);
-        let newMiscItem: InventoryObject = {
+        let newMiscItem: StockObject = {
           is_misc_item: true,
           misc_item_description: description,
           misc_item_amount: parseFloat(amount) * 100,

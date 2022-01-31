@@ -25,14 +25,10 @@ export default function Csv() {
         key: uuid(),
         quantity: d?.Quantity ? parseInt(d?.Quantity) : 1,
         total_sell: d["Sale Price"]
-          ? parseInt(
-              `${parseFloat(d["Sale Price"]?.replace(/\$|["],/g, "")) * 100}`
-            )
+          ? parseInt(`${parseFloat(d["Sale Price"]?.replace(/\$|["],/g, ""))}`)
           : null,
         vendor_cut: d["Vendor Cut"]
-          ? parseInt(
-              `${parseFloat(d["Vendor Cut"]?.replace(/\$|["],/g, "")) * 100}`
-            )
+          ? parseInt(`${parseFloat(d["Vendor Cut"]?.replace(/\$|["],/g, ""))}`)
           : null,
         item: {
           artist: d?.Artist,
@@ -57,7 +53,12 @@ export default function Csv() {
       <div className="mb-2">
         <ol>
           <li>
-            <a href="https://docs.google.com/spreadsheets/d/1xQSRFFkbYJBi-4-d2eDApVyUC3ym2we9Uh4nCumt_bI/edit?usp=sharing">
+            <a
+              className="underline"
+              href="https://docs.google.com/spreadsheets/d/1xQSRFFkbYJBi-4-d2eDApVyUC3ym2we9Uh4nCumt_bI/edit?usp=sharing"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Click here
             </a>{" "}
             and add your items to the Google Sheet.

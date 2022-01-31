@@ -5,7 +5,7 @@ import { MouseEventHandler } from "react";
 import Image from "next/image";
 
 // Icons
-import { DiscogsItem, InventoryObject } from "@/lib/types";
+import { DiscogsItem, StockObject } from "@/lib/types";
 import {
   getDiscogsItem,
   getDiscogsItemArtistDetails,
@@ -14,7 +14,7 @@ import {
 
 interface discogsProps {
   opt: DiscogsItem;
-  item: InventoryObject;
+  item: StockObject;
   setItem: Function;
   override: boolean;
 }
@@ -35,10 +35,11 @@ export default function DiscogsOption({
       ...detailedDiscogsItem,
       priceSuggestions,
     };
+    console.log(discogsItem);
     if (override)
       item = {
         ...item,
-        artist: discogsItem?.artists?.join(", "),
+        artist: discogsItem?.artists?.map((artist) => artist?.name)?.join(", "),
         barcode: discogsItem?.barcode?.join("\n"),
         country: discogsItem?.country,
         format: discogsItem?.format?.join(", "),

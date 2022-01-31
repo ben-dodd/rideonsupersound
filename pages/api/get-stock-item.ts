@@ -24,7 +24,8 @@ const handler: NextApiHandler = async (req, res) => {
         unl.quantity_unlayby,
         los.quantity_lost,
         fou.quantity_found,
-        dis.quantity_discarded
+        dis.quantity_discarded,
+        adj.quantity_adjustment
       FROM stock AS s
       LEFT JOIN
         (SELECT stock_id, SUM(quantity) AS quantity FROM stock_movement GROUP BY stock_id) AS q

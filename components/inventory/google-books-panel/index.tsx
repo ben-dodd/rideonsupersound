@@ -9,12 +9,12 @@ import Image from "next/image";
 
 // Icons
 import SyncIcon from "@mui/icons-material/Sync";
-import { InventoryObject } from "@/lib/types";
+import { StockObject } from "@/lib/types";
 import GoogleBooksItem from "./google-books-item";
 import GoogleBooksOption from "./google-books-option";
 
 interface inventoryProps {
-  item: InventoryObject;
+  item: StockObject;
   setItem: Function;
   disabled?: boolean;
 }

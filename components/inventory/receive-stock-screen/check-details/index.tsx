@@ -51,6 +51,11 @@ export default function CheckDetails() {
       />
       <div className="flex w-full">
         <div className="w-3/5 mr-4">
+          {item?.id && (
+            <div className="bg-red-500 p-2 mb-2 text-white">
+              Item already in stock. Editing disabled.
+            </div>
+          )}
           <div hidden={mode !== 0}>
             <InventoryItemForm
               item={item}

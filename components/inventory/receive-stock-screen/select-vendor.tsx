@@ -10,6 +10,7 @@ import CreateableSelect from "@/components/_components/inputs/createable-select"
 // Icons
 import { useAtom } from "jotai";
 import { receiveStockAtom } from "@/lib/atoms";
+import { saveVendorToDatabase } from "@/lib/db-functions";
 
 export default function SelectVendor() {
   const [basket, setBasket] = useAtom(receiveStockAtom);
@@ -32,13 +33,11 @@ export default function SelectVendor() {
             vendor_id: parseInt(vendorObject?.value),
           });
         }}
-        onCreateOption={(inputValue: string) =>
-          // setCreateCustomerSidebar({
-          //   id: 1,
-          //   name: inputValue,
-          // })
-          null
-        }
+        onCreateOption={async (inputValue: string) => {
+          const vendorId = await saveVendorToDatabase({ name: inputValue });
+          console.log(`Vendor ID = ${vendorId}`);
+          setBasket({ ...basket, vendor_id: vendorId });
+        }}
         options={vendors?.map((val: VendorObject) => ({
           value: val?.id,
           label: val?.name || "",

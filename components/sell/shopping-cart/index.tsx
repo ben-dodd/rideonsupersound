@@ -5,7 +5,7 @@ import { useAtom } from "jotai";
 // DB
 import { useInventory, useLogs } from "@/lib/swr-hooks";
 import { cartAtom, viewAtom, clerkAtom, alertAtom } from "@/lib/atoms";
-import { InventoryObject, SaleItemObject } from "@/lib/types";
+import { StockObject, SaleItemObject } from "@/lib/types";
 
 // Functions
 import { getItemDisplayName, getSaleVars } from "@/lib/data-functions";
@@ -58,9 +58,7 @@ export default function ShoppingCart() {
     saveLog(
       {
         log: `${getItemDisplayName(
-          inventory?.filter(
-            (i: InventoryObject) => i?.id === parseInt(itemId)
-          )[0]
+          inventory?.filter((i: StockObject) => i?.id === parseInt(itemId))[0]
         )} removed from cart${id ? ` (sale #${id})` : ""}.`,
         clerk_id: clerk?.id,
       },
@@ -74,8 +72,6 @@ export default function ShoppingCart() {
     });
     // setRefresh(refresh + 1);
   }
-
-  console.log(cart);
 
   // Constants
   const { totalPrice, totalStoreCut, totalRemaining, totalPaid } = getSaleVars(
@@ -139,7 +135,7 @@ export default function ShoppingCart() {
             <button
               className="fab-button__secondary w-1/3 mb-4"
               disabled={
-                Boolean(cart?.transactions) ||
+                cart?.transactions?.length > 0 ||
                 loadingSale ||
                 totalRemaining === 0
               }

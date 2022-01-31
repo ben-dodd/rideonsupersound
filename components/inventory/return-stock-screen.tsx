@@ -10,7 +10,7 @@ import {
   useRegisterID,
 } from "@/lib/swr-hooks";
 import { viewAtom, clerkAtom, alertAtom } from "@/lib/atoms";
-import { InventoryObject, VendorObject, ModalButton } from "@/lib/types";
+import { StockObject, VendorObject, ModalButton } from "@/lib/types";
 
 // Functions
 import { returnStock, saveLog } from "@/lib/db-functions";
@@ -87,7 +87,7 @@ export default function ReturnStockScreen() {
         Object.entries(items)?.filter(
           ([id, itemQuantity]: [string, number]) =>
             isNaN(itemQuantity) ||
-            inventory?.filter((i: InventoryObject) => i?.id === parseInt(id))[0]
+            inventory?.filter((i: StockObject) => i?.id === parseInt(id))[0]
               ?.quantity < itemQuantity ||
             itemQuantity < 0
         ).length > 0,
@@ -130,12 +130,12 @@ export default function ReturnStockScreen() {
               value={null}
               options={inventory
                 ?.filter(
-                  (item: InventoryObject) =>
+                  (item: StockObject) =>
                     item?.vendor_id === vendorWrapper?.value &&
                     !items[item?.id] &&
                     item?.quantity > 0
                 )
-                .map((item: InventoryObject) => ({
+                .map((item: StockObject) => ({
                   value: item?.id,
                   label: getItemDisplayName(item),
                 }))}
@@ -144,7 +144,7 @@ export default function ReturnStockScreen() {
                   ...(items || {}),
                   [item?.value]:
                     inventory?.filter(
-                      (i: InventoryObject) => i?.id === parseInt(item?.value)
+                      (i: StockObject) => i?.id === parseInt(item?.value)
                     )[0]?.quantity || 1,
                 })
               }
@@ -165,7 +165,7 @@ export default function ReturnStockScreen() {
                   ([itemId, itemQuantity]: [string, number]) => {
                     console.log(items);
                     const item = inventory?.filter(
-                      (i: InventoryObject) => i?.id === parseInt(itemId)
+                      (i: StockObject) => i?.id === parseInt(itemId)
                     )[0];
                     return (
                       <div

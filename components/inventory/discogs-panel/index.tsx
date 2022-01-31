@@ -18,10 +18,10 @@ import ReactPlayer from "react-player";
 import SyncIcon from "@mui/icons-material/Sync";
 import DiscogsOption from "./discogs-option";
 import DiscogsItem from "./discogs-item";
-import { InventoryObject } from "@/lib/types";
+import { StockObject } from "@/lib/types";
 
 interface inventoryProps {
-  item: InventoryObject;
+  item: StockObject;
   setItem: Function;
   disabled?: boolean;
 }

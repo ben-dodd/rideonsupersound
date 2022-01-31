@@ -1,5 +1,5 @@
 import {
-  InventoryObject,
+  StockObject,
   SaleItemObject,
   SaleTransactionObject,
   KiwiBankTransactionObject,
@@ -16,13 +16,13 @@ import {
 
 import dayjs from "dayjs";
 
-export function getItemSku(item: InventoryObject) {
+export function getItemSku(item: StockObject) {
   return `${("000" + item?.vendor_id || "").slice(-3)}/${(
     "00000" + item?.id || ""
   ).slice(-5)}`;
 }
 
-export function getItemDisplayName(item: InventoryObject | GiftCardObject) {
+export function getItemDisplayName(item: StockObject | GiftCardObject) {
   // Add special cases e.g. for comics
   // Might be better as a span component
   if (item?.is_gift_card)
@@ -39,17 +39,17 @@ export function getItemDisplayName(item: InventoryObject | GiftCardObject) {
 
 export function getItemSkuDisplayNameById(
   item_id: number,
-  inventory: InventoryObject[]
+  inventory: StockObject[]
 ) {
   let item = inventory?.filter((i) => i?.id === item_id)[0];
   return `[${getItemSku(item)}] ${getItemDisplayName(item)}`;
 }
 
-export function getItemSkuDisplayName(item: InventoryObject) {
+export function getItemSkuDisplayName(item: StockObject) {
   return `[${getItemSku(item)}] ${getItemDisplayName(item)}`;
 }
 
-export function getImageSrc(item: InventoryObject) {
+export function getImageSrc(item: StockObject) {
   let src = "default";
   if (item?.image_url) return item.image_url;
   if (item?.is_gift_card) src = "giftCard";
@@ -67,7 +67,7 @@ export function getImageSrc(item: InventoryObject) {
 }
 
 export function getCartItemSummary(
-  item: InventoryObject,
+  item: StockObject,
   cartItem: SaleItemObject
 ) {
   // 1 x V10% x R50% x $27.00
@@ -87,14 +87,14 @@ export function getCartItemSummary(
 }
 
 export function writeCartItemPriceBreakdown(
-  item: InventoryObject,
+  item: StockObject,
   cartItem: SaleItemObject
 ) {
   return getCartItemSummary(item, cartItem);
 }
 
 export function writeCartItemPriceTotal(
-  item: InventoryObject,
+  item: StockObject,
   cartItem: SaleItemObject
 ) {
   return item?.is_gift_card
@@ -107,7 +107,7 @@ export function writeCartItemPriceTotal(
 export function filterInventory({ inventory, search }) {
   if (!inventory) return [];
   return inventory
-    .filter((item: InventoryObject) => {
+    .filter((item: StockObject) => {
       let res = true;
       if (!search || search === "") return false;
 
@@ -137,7 +137,7 @@ export function filterInventory({ inventory, search }) {
       return res;
     })
     .slice(0, 50);
-  // ?.sort((a: InventoryObject, b: InventoryObject) => {
+  // ?.sort((a: StockObject, b: StockObject) => {
   //   if (!a?.quantity || !b?.quantity) return 0;
   //   if (a?.quantity === b?.quantity) return 0;
   //   if (a?.quantity < 1) return 1;
@@ -184,7 +184,7 @@ export function filterHelps(
   else return helps;
   // .slice(0, 50);
   // }
-  // ?.sort((a: InventoryObject, b: InventoryObject) => {
+  // ?.sort((a: StockObject, b: StockObject) => {
   //   if (!a?.quantity || !b?.quantity) return 0;
   //   if (a?.quantity === b?.quantity) return 0;
   //   if (a?.quantity < 1) return 1;
@@ -193,7 +193,7 @@ export function filterHelps(
   // })
 }
 
-export function getItemPrice(item: InventoryObject, cartItem: SaleItemObject) {
+export function getItemPrice(item: StockObject, cartItem: SaleItemObject) {
   let vendorDiscountFactor = 100,
     storeDiscountFactor = 100;
   if (parseInt(cartItem?.vendor_discount) > 0)
@@ -206,10 +206,7 @@ export function getItemPrice(item: InventoryObject, cartItem: SaleItemObject) {
   return (storeCut + vendorCut) * parseInt(cartItem?.quantity);
 }
 
-export function getItemStoreCut(
-  item: InventoryObject,
-  cartItem: SaleItemObject
-) {
+export function getItemStoreCut(item: StockObject, cartItem: SaleItemObject) {
   if (item?.is_gift_card || item?.is_misc_item) return 0;
   let storeDiscountFactor = 100;
   if (parseInt(cartItem?.store_discount) > 0)
@@ -220,12 +217,12 @@ export function getItemStoreCut(
   );
 }
 
-export function getStoreCut(item: InventoryObject) {
+export function getStoreCut(item: StockObject) {
   if (!item?.total_sell || !item?.vendor_cut) return 0;
   return item?.total_sell - item?.vendor_cut;
 }
 
-export function getSaleVars(sale: SaleObject, inventory: InventoryObject[]) {
+export function getSaleVars(sale: SaleObject, inventory: StockObject[]) {
   const totalPrice =
     Math.round(
       (getTotalPrice(sale?.items, inventory) / 100 + Number.EPSILON) * 10
@@ -255,19 +252,19 @@ export function getSaleVars(sale: SaleObject, inventory: InventoryObject[]) {
 }
 
 export function getPaymentVars(
-  inventory: InventoryObject[],
+  inventory: StockObject[],
   vendorSales: VendorSaleItemObject[],
   vendorPayments: VendorPaymentObject[],
   vendor_id: number,
   cart?: SaleObject
 ) {
   let totalItems = inventory?.filter(
-    (i: InventoryObject) => i?.vendor_id === vendor_id
+    (i: StockObject) => i?.vendor_id === vendor_id
   );
 
   let totalSales = vendorSales?.filter(
     (v: VendorSaleItemObject) =>
-      totalItems?.filter((i: InventoryObject) => i?.id === v?.item_id)[0]
+      totalItems?.filter((i: StockObject) => i?.id === v?.item_id)[0]
   );
   let totalPayments = vendorPayments?.filter(
     (v: VendorPaymentObject) => v?.vendor_id === vendor_id
@@ -314,7 +311,7 @@ export function getPaymentVars(
   };
 }
 
-export function getPriceSuggestion(item: InventoryObject) {
+export function getPriceSuggestion(item: StockObject) {
   console.log(item);
   if (item?.discogsItem?.priceSuggestions) {
     const priceSuggestions = item?.discogsItem?.priceSuggestions;
@@ -336,7 +333,7 @@ export function getPriceSuggestion(item: InventoryObject) {
 }
 
 export function getVendorQuantityInStock(
-  inventory: InventoryObject[],
+  inventory: StockObject[],
   vendor_id: number
 ) {
   return getVendorItemsInStock(inventory, vendor_id)?.reduce(
@@ -346,14 +343,14 @@ export function getVendorQuantityInStock(
 }
 
 export function getVendorItemsInStock(
-  inventory: InventoryObject[],
+  inventory: StockObject[],
   vendor_id: number
 ) {
-  return inventory?.filter((i: InventoryObject) => i?.vendor_id === vendor_id);
+  return inventory?.filter((i: StockObject) => i?.vendor_id === vendor_id);
 }
 
 export function getItemQuantity(
-  item: InventoryObject,
+  item: StockObject,
   saleItems: SaleItemObject[]
 ) {
   const saleItem = saleItems?.filter(
@@ -369,14 +366,14 @@ export function getItemQuantity(
 
 export function getTotalPrice(
   saleItems: SaleItemObject[],
-  inventory: InventoryObject[]
+  inventory: StockObject[]
 ) {
   if (!saleItems) return 0;
   return saleItems?.reduce((acc, saleItem) => {
     if (saleItem?.is_refunded) return acc;
     // Misc Items and Gift Cards in inventory
-    let item: InventoryObject = inventory?.filter(
-      (i: InventoryObject) => i?.id === saleItem?.item_id
+    let item: StockObject = inventory?.filter(
+      (i: StockObject) => i?.id === saleItem?.item_id
     )[0];
     if (item?.is_gift_card) return acc + item?.gift_card_amount;
     if (item?.is_misc_item) return acc + item?.misc_item_amount;
@@ -386,12 +383,12 @@ export function getTotalPrice(
 
 export function getTotalStoreCut(
   saleItems: SaleItemObject[],
-  inventory: InventoryObject[]
+  inventory: StockObject[]
 ) {
   return saleItems?.reduce((acc, saleItem: SaleItemObject) => {
     if (saleItem?.is_refunded) return acc;
-    let item: InventoryObject = inventory?.filter(
-      (i: InventoryObject) => i?.id === saleItem?.item_id
+    let item: StockObject = inventory?.filter(
+      (i: StockObject) => i?.id === saleItem?.item_id
     )[0];
     if (item?.is_gift_card) return acc + item?.gift_card_amount;
     if (item?.is_misc_item) return acc + item?.misc_item_amount;
@@ -425,14 +422,14 @@ export function getTotalOwing(
   return totalSell - totalPaid;
 }
 
-export function getGrossProfit(item: InventoryObject) {
+export function getGrossProfit(item: StockObject) {
   let sellNum = item?.total_sell / 100 || 0,
     costNum = item?.vendor_cut / 100 || 0;
   if (sellNum > 0) return `$${(sellNum - costNum)?.toFixed(2)}`;
   else return "";
 }
 
-export function getProfitMargin(item: InventoryObject) {
+export function getProfitMargin(item: StockObject) {
   let sellNum = item?.total_sell || 0,
     costNum = item?.vendor_cut || 0;
   if (sellNum > 0)
@@ -526,14 +523,24 @@ export async function getDiscogsOptionsByBarcode(barcode: string) {
   }
 }
 
-export async function getDiscogsOptionsByItem(item: InventoryObject) {
+export async function getDiscogsOptionsByItem(item: StockObject) {
   try {
+    let url = "";
+    if (item?.barcode) url = `&barcode=${encodeURIComponent(item?.barcode)}`;
+    // if (false) url = "";
+    else
+      url = `&query=${item?.artist ? `${item?.artist} ` : ""}${
+        item?.title ? `${item?.title} ` : ""
+      }${item?.format ? `${item?.format} ` : ""}`;
+    console.log(url);
+    // &artist=${
+    //   item?.artist || ""
+    // }&title=${item?.title || ""}
+    console.log(
+      `https://api.discogs.com/database/search?type=release${url}&key=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_KEY}&secret=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_SECRET}`
+    );
     const res = await fetch(
-      `https://api.discogs.com/database/search?type=release&artist=${
-        item?.artist || ""
-      }&title=${item?.title || ""}&key=${
-        process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_KEY
-      }&secret=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_SECRET}`
+      `https://api.discogs.com/database/search?type=release${url}&key=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_KEY}&secret=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_SECRET}`
     );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
@@ -593,13 +600,14 @@ export async function getDiscogsItemArtistDetails(discogsItem: DiscogsItem) {
       const json = await res.json();
       if (!res.ok) throw Error(json.message);
       artists?.push({ ...json, name: discogsArtist?.name });
+      return artists;
     } catch (e) {
       throw Error(e.message);
     }
   }
 }
 
-export async function getGoogleBooksOptionsByItem(item: InventoryObject) {
+export async function getGoogleBooksOptionsByItem(item: StockObject) {
   try {
     const res = await fetch(
       `https://www.googleapis.com/books/v1/volumes?q=${item?.artist || ""}${
@@ -702,14 +710,14 @@ export function andList(list: string[]) {
 }
 
 export function writeItemList(
-  inventory: InventoryObject[],
+  inventory: StockObject[],
   items: SaleItemObject[]
 ) {
   if (items && inventory) {
     return items
       .filter((item: SaleItemObject) => !item?.is_deleted)
       .map((item: SaleItemObject) => {
-        let stockItem: InventoryObject = inventory?.filter(
+        let stockItem: StockObject = inventory?.filter(
           (i) => i?.id === item?.item_id
         )[0];
         if (item?.is_gift_card) {
@@ -755,7 +763,7 @@ export function getCSVData(items) {
     .forEach((row: any) => {
       Array.from(Array(parseInt(row?.printQuantity || "1")).keys()).forEach(
         () => {
-          let stockItem: InventoryObject = row?.item?.value;
+          let stockItem: StockObject = row?.item?.value;
           console.log(stockItem);
           csv.push([
             getItemSku(stockItem),

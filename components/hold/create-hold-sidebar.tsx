@@ -18,7 +18,7 @@ import {
   sellSearchBarAtom,
   loadedCustomerObjectAtom,
 } from "@/lib/atoms";
-import { CustomerObject, InventoryObject, ModalButton } from "@/lib/types";
+import { CustomerObject, StockObject, ModalButton } from "@/lib/types";
 
 // Functions
 import {
@@ -68,7 +68,7 @@ export default function CreateHoldSidebar() {
       // Create hold for each item
       async (cartItem) => {
         const item = inventory?.filter(
-          (i: InventoryObject) => i?.id === cartItem?.item_id
+          (i: StockObject) => i?.id === cartItem?.item_id
         )[0];
         const itemQuantity = getItemQuantity(item, cart?.items);
         if (itemQuantity > 0) {

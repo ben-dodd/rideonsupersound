@@ -1,11 +1,11 @@
 // DB
 import { useInventory } from "@/lib/swr-hooks";
-import { InventoryObject } from "@/lib/types";
+import { StockObject } from "@/lib/types";
 import { getItemSkuDisplayNameById } from "@/lib/data-functions";
 import { completeRestockTask } from "@/lib/db-functions";
 
 type ListItemProps = {
-  item: InventoryObject;
+  item: StockObject;
 };
 
 export default function RestockJob({ item }: ListItemProps) {
@@ -22,7 +22,7 @@ export default function RestockJob({ item }: ListItemProps) {
               type="checkbox"
               onChange={() => {
                 const otherInventoryItems = inventory?.filter(
-                  (i: InventoryObject) => i?.id !== item?.id
+                  (i: StockObject) => i?.id !== item?.id
                 );
                 mutateInventory([
                   ...otherInventoryItems,

@@ -5,7 +5,7 @@ import { useAtom } from "jotai";
 // DB
 import { useInventory, useVendors } from "@/lib/swr-hooks";
 import { loadedItemIdAtom } from "@/lib/atoms";
-import { InventoryObject, VendorObject } from "@/lib/types";
+import { StockObject, VendorObject } from "@/lib/types";
 
 // Functions
 import { getItemSku } from "@/lib/data-functions";
@@ -30,8 +30,8 @@ export default function InventoryTable() {
   const data = useMemo(
     () =>
       inventory
-        ?.filter((t: InventoryObject) => !t?.is_deleted)
-        .map((t: InventoryObject) => ({
+        ?.filter((t: StockObject) => !t?.is_deleted)
+        .map((t: StockObject) => ({
           id: t?.id,
           sku: getItemSku(t),
           title: t?.title || "-",
@@ -166,7 +166,7 @@ export default function InventoryTable() {
         colorDark="bg-col2-dark"
         data={data}
         columns={columns}
-        heading={"All Stock"}
+        heading={"Inventory"}
         pageSize={20}
         sortOptions={[{ id: "title", desc: false }]}
       />

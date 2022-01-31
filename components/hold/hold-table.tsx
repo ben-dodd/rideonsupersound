@@ -9,7 +9,7 @@ import {
   loadedHoldIdAtom,
   loadedCustomerObjectAtom,
 } from "@/lib/atoms";
-import { CustomerObject, HoldObject, InventoryObject } from "@/lib/types";
+import { CustomerObject, HoldObject, StockObject } from "@/lib/types";
 
 // Functions
 import {
@@ -75,9 +75,7 @@ export default function CustomerTable() {
             }
           >
             {`${value?.quantity || 1} x ${getItemDisplayName(
-              inventory?.filter(
-                (i: InventoryObject) => i?.id === value?.item_id
-              )[0]
+              inventory?.filter((i: StockObject) => i?.id === value?.item_id)[0]
             )}`}
           </div>
         ),

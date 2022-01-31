@@ -9,7 +9,7 @@ import { useAtom } from "jotai";
 import { useCallback, useState } from "react";
 import DiscogsOption from "../../discogs-panel/discogs-option";
 import { v4 as uuid } from "uuid";
-import { DiscogsItem, InventoryObject } from "@/lib/types";
+import { DiscogsItem, StockObject } from "@/lib/types";
 import { ChevronRight } from "@mui/icons-material";
 import debounce from "lodash/debounce";
 

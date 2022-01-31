@@ -7,11 +7,11 @@ import {
   getProfitMargin,
   getStoreCut,
 } from "@/lib/data-functions";
-import { InventoryObject } from "@/lib/types";
+import { StockObject } from "@/lib/types";
 import TextField from "@/components/_components/inputs/text-field";
 
 export default function ListItem({ receiveItem, bucket, setBucket }) {
-  const item: InventoryObject = receiveItem?.item;
+  const item: StockObject = receiveItem?.item;
   const priceSuggestion = getPriceSuggestion(item);
   const profitMargin = getProfitMargin({
     total_sell: parseFloat(

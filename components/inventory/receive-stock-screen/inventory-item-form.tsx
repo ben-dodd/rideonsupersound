@@ -7,12 +7,12 @@ import {
   getItemDisplayName,
   getItemSku,
 } from "@/lib/data-functions";
-import { InventoryObject, VendorObject } from "@/lib/types";
+import { StockObject, VendorObject } from "@/lib/types";
 import { useMemo } from "react";
 import { useVendors } from "@/lib/swr-hooks";
 
 interface inventoryProps {
-  item: InventoryObject;
+  item: StockObject;
   setItem: Function;
   disabled?: boolean;
 }

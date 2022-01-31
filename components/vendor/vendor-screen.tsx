@@ -20,7 +20,7 @@ import {
 } from "@/lib/atoms";
 import {
   VendorObject,
-  InventoryObject,
+  StockObject,
   VendorSaleItemObject,
   VendorPaymentObject,
   CustomerObject,
@@ -286,7 +286,7 @@ export default function VendorScreen() {
                     </div>
                     <div>{`${getItemDisplayName(
                       inventory?.filter(
-                        (i: InventoryObject) => i?.id === sale?.item_id
+                        (i: StockObject) => i?.id === sale?.item_id
                       )[0]
                     )} (${sale?.quantity})`}</div>
                   </div>
@@ -297,16 +297,16 @@ export default function VendorScreen() {
         <div hidden={tab !== 2}>
           <div className="text-xl font-bold bg-col3 px-1">In Stock Items</div>
           {v?.totalItems
-            ?.filter((item: InventoryObject) => item?.quantity > 0)
-            ?.map((item: InventoryObject) => (
+            ?.filter((item: StockObject) => item?.quantity > 0)
+            ?.map((item: StockObject) => (
               <StockItem key={item.id} item={item} />
             ))}
           <div className="text-xl font-bold bg-col4 px-1">
             Out of Stock Items
           </div>
           {v?.totalItems
-            ?.filter((item: InventoryObject) => (item?.quantity || 0) <= 0)
-            ?.map((item: InventoryObject) => (
+            ?.filter((item: StockObject) => (item?.quantity || 0) <= 0)
+            ?.map((item: StockObject) => (
               <StockItem item={item} />
             ))}
         </div>

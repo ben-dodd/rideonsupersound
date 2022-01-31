@@ -5,7 +5,7 @@ import { useAtom } from "jotai";
 // DB
 import { useStockItem, useInventory } from "@/lib/swr-hooks";
 import { loadedItemIdAtom } from "@/lib/atoms";
-import { InventoryObject, ModalButton } from "@/lib/types";
+import { StockObject, ModalButton } from "@/lib/types";
 
 // Functions
 import { getItemDisplayName } from "@/lib/data-functions";
@@ -31,7 +31,7 @@ export default function InventoryItemScreen({ page }) {
   const { inventory, mutateInventory } = useInventory();
 
   // State
-  const [item, setItem]: [InventoryObject, Function] = useState(null);
+  const [item, setItem]: [StockObject, Function] = useState(null);
   const [tab, setTab] = useState(0);
 
   // Load
@@ -52,6 +52,8 @@ export default function InventoryItemScreen({ page }) {
     // REVIEW Delete inventory item
   }
 
+  console.log(item);
+
   const buttons: ModalButton[] = [
     {
       type: "cancel",
@@ -62,7 +64,7 @@ export default function InventoryItemScreen({ page }) {
       type: "ok",
       onClick: () => {
         let otherInventoryItems = inventory?.filter(
-          (i: InventoryObject) => i?.id !== stockItem?.id
+          (i: StockObject) => i?.id !== stockItem?.id
         );
         mutateInventory(
           [...otherInventoryItems, { ...stockItem, ...item }],
@@ -106,7 +108,7 @@ export default function InventoryItemScreen({ page }) {
             <div className="w-1/2">
               <InventoryItemForm item={item} setItem={setItem} />
             </div>
-            <div className="w-1/2">
+            <div className="w-1/2 ml-4">
               <PriceDetails item={item} />
               <StockDetails item={item} />
             </div>

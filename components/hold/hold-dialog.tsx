@@ -1,5 +1,5 @@
 // Packages
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
@@ -8,6 +8,10 @@ import {
   useCustomers,
   useClerks,
   useInventory,
+  useRegister,
+  useRegisterID,
+  useWeather,
+  useLogs,
 } from "@/lib/swr-hooks";
 import {
   viewAtom,
@@ -15,12 +19,14 @@ import {
   loadedHoldIdAtom,
   pageAtom,
   alertAtom,
+  cartAtom,
 } from "@/lib/atoms";
 import {
   ModalButton,
   HoldObject,
   CustomerObject,
   ClerkObject,
+  StockObject,
 } from "@/lib/types";
 
 // Functions
@@ -28,6 +34,7 @@ import {
   returnHoldToStock,
   updateHoldInDatabase,
   loadSaleToCart,
+  saveLog,
 } from "@/lib/db-functions";
 
 // Components
@@ -35,20 +42,41 @@ import Modal from "@/components/_components/container/modal";
 import TextField from "@/components/_components/inputs/text-field";
 import HoldListItem from "./list-item";
 import dayjs from "dayjs";
+import { getItemDisplayName } from "@/lib/data-functions";
 
 export default function HoldDialog() {
+  const { weather } = useWeather();
+  // State
+  const [geolocation, setGeolocation] = useState(null);
+
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      console.log("Geolocation is not supported by your browser");
+    } else {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          console.log(position);
+          setGeolocation(position?.coords);
+        },
+        () => console.log("Unable to retrieve location.")
+      );
+    }
+  }, []);
   // Atoms
-  const [view] = useAtom(viewAtom);
+  const [view, setView] = useAtom(viewAtom);
   const [, setAlert] = useAtom(alertAtom);
   const [loadedHoldId, setLoadedHoldId] = useAtom(loadedHoldIdAtom);
   const [clerk] = useAtom(clerkAtom);
-  const [page] = useAtom(pageAtom);
+  const [page, setPage] = useAtom(pageAtom);
+  const [cart, setCart] = useAtom(cartAtom);
 
   // SWR
   const { holds, isHoldsLoading, mutateHolds } = useHolds();
   const { inventory, mutateInventory } = useInventory();
+  const { logs, mutateLogs } = useLogs();
   const { customers } = useCustomers();
   const { clerks } = useClerks();
+  const { registerID } = useRegisterID();
 
   // States
   const originalHold = holds?.filter(
@@ -71,11 +99,6 @@ export default function HoldDialog() {
   const buttons: ModalButton[] = [
     {
       type: "cancel",
-      text: "Close",
-      onClick: () => setLoadedHoldId({ ...loadedHoldId, [page]: 0 }),
-    },
-    {
-      type: "alt2",
       text: "Return to Stock",
       onClick: () => {
         returnHoldToStock(
@@ -83,17 +106,31 @@ export default function HoldDialog() {
           clerk,
           holds,
           mutateHolds,
-          inventory,
-          mutateInventory
+          mutateInventory,
+          registerID
         );
+        closeDialog();
+        saveLog(
+          {
+            log: `${getItemDisplayName(
+              inventory?.filter((i: StockObject) => i?.id === hold?.item_id)[0]
+            )} removed from hold and added back to stock.`,
+            clerk_id: clerk?.id,
+          },
+          logs,
+          mutateLogs
+        );
+        setAlert({
+          open: true,
+          type: "success",
+          message: `ITEM RETURNED TO STOCK FROM HOLD`,
+        });
       },
     },
     {
       type: "alt1",
       text: "Add To Cart",
-      onClick: () => {
-        addHoldToCart();
-      },
+      onClick: addHoldToCart,
     },
     {
       type: "ok",
@@ -125,8 +162,8 @@ export default function HoldDialog() {
     >
       <>
         <HoldListItem cartItem={hold} />
-        <div>{`Item held for ${customerName} (started by ${clerkName})`}</div>
-        <div>{`Item held for ${dayjs(hold?.date_from).fromNow(true)} of ${
+        <div>{`Item held for ${customerName} (hold set up by ${clerkName})`}</div>
+        <div>{`Item held for ${dayjs().diff(hold?.date_from, "day")} of ${
           hold?.hold_period || 30
         } days.`}</div>
         <TextField
@@ -151,99 +188,60 @@ export default function HoldDialog() {
   );
 
   function addHoldToCart() {
-    // TODO add hold to cart
+    // TODO do we need to check if it is another customer?
+    returnHoldToStock(
+      hold,
+      clerk,
+      holds,
+      mutateHolds,
+      mutateInventory,
+      registerID
+    );
+    closeDialog();
 
-    // await loadSaleToCart(
-    //   cart,
-    //   items,
-    //   setCart,
-    //   sale,
-    //   clerk,
-    //   customers,
-    //   logs,
-    //   mutateLogs,
-    //   sales,
-    //   mutateSales,
-    //   saleItems,
-    //   mutateSaleItems
-    // );
-    return null;
-    // () => {
-    //   const cartItems: SaleItemObject[] = cart?.items || []
-    //   saveLog(
-    //     `Hold added to sale [${saleId}].`,
-    //     "holds",
-    //     get(hold, "id", ""),
-    //     currentStaff
-    //   );
-    //   updateData({
-    //     dispatch,
-    //     collection: "holds",
-    //     doc: get(hold, "id", null),
-    //     update: {
-    //       deleted: true,
-    //       dateRemovedFromHold: new Date(),
-    //       removedFromHoldBy: get(currentStaff, "id", null),
-    //       sold: true,
-    //     },
-    //   });
-    //   if (
-    //     get(cart, "customerId", null) &&
-    //     get(cart, "customerId") !== get(hold, "customerId")
-    //   ) {
-    //     // Shopping cart belongs to different customer, save
-    //     cartItems = {};
-    //     updateData({
-    //       dispatch,
-    //       collection: "sales",
-    //       doc: cart.uid,
-    //       update: {
-    //         ...cart,
-    //         status: "parked",
-    //         dateSaved: get(cart, "dateSaved", new Date()),
-    //         lastModified: new Date(),
-    //       },
-    //     });
-    //     dispatch(clearCart());
-    //     dispatch(
-    //       setAlert({
-    //         type: "success",
-    //         message: "CURRENT SALE SAVED AND CLOSED",
-    //       })
-    //     );
-    //   }
-    //   dispatch(
-    //     setLocal("cart", {
-    //       uid: saleId,
-    //       dateSaleOpened: new Date(),
-    //       saleOpenedBy: get(currentStaff, "id", null),
-    //       customerId: get(hold, "customerId", null),
-    //       notes: `${get(cart, "notes", "")}\n${get(hold, "notes", "")}`,
-    //       items: {
-    //         ...cartItems,
-    //         [holdItemId]: {
-    //           ...get(cartItems, holdItemId, {}),
-    //           cartQuantity:
-    //             parseInt(
-    //               get(get(cartItems, holdItemId, {}), "cartQuantity", 0)
-    //             ) + parseInt(holdItemQty),
-    //         },
-    //       },
-    //     })
-    //   );
-    //   updateData({
-    //     dispatch,
-    //     collection: "inventory",
-    //     doc: get(hold, "item.id", null),
-    //     update: {
-    //       quantity: get(stockItem, "quantity", 0) + holdItemQty,
-    //       quantityOnHold:
-    //         get(stockItem, "quantityOnHold", 0) - holdItemQty,
-    //     },
-    //   });
-    //   setHold(null);
-    //   dispatch(closeDialog("holdItem"));
-    //   dispatch(setLocal("page", "sell"));
-    // }}
+    let newItems = cart?.items || [];
+    let index = newItems.findIndex(
+      (cartItem) => cartItem.item_id === hold?.item_id
+    );
+    if (index < 0)
+      newItems.push({
+        item_id: hold?.item_id,
+        quantity: hold?.quantity,
+      });
+    else
+      newItems[index].quantity = `${
+        parseInt(newItems[index].quantity) + hold?.quantity
+      }`;
+    setCart({
+      id: cart?.id || null,
+      date_sale_opened: cart?.date_sale_opened || dayjs.utc().format(),
+      sale_opened_by: cart?.sale_opened_by || clerk?.id,
+      items: newItems,
+      transactions: cart?.transactions || [],
+      state: cart?.state || null,
+      customer_id: cart?.customer_id || null,
+      layby_started_by: cart?.layby_started_by || null,
+      date_layby_started: cart?.date_layby_started || null,
+      weather: cart?.weather || weather,
+      geo_latitude: cart?.geo_latitude || geolocation?.latitude,
+      geo_longitude: cart?.geo_longitude || geolocation?.longitude,
+    });
+    setPage("sell");
+    setView({ ...view, cart: true });
+    saveLog(
+      {
+        log: `${getItemDisplayName(
+          inventory?.filter((i: StockObject) => i?.id === hold?.item_id)[0]
+        )} added to cart${cart?.id ? ` (sale #${cart?.id}) from hold` : ""}.`,
+        clerk_id: clerk?.id,
+      },
+      logs,
+      mutateLogs
+    );
+    setAlert({
+      open: true,
+      type: "success",
+      message: `ITEM ADDED TO CART FROM HOLD`,
+    });
   }
 }

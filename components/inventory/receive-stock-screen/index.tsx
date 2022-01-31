@@ -56,7 +56,12 @@ export default function ReceiveStockScreen() {
         },
         text: "RESET",
       },
-      { type: "ok", text: "NEXT", onClick: () => setStep(2) },
+      {
+        type: "ok",
+        text: "NEXT",
+        disabled: basket?.items?.length === 0,
+        onClick: () => setStep(2),
+      },
     ],
     [
       { type: "cancel", onClick: () => setStep(1), text: "BACK" },
@@ -134,21 +139,31 @@ export default function ReceiveStockScreen() {
           selectedTextHover="text-col2-dark"
           notSelectedTextHover="text-gray-800"
         />
-        <div hidden={step !== 0}>
-          <SelectVendor />
-        </div>
-        <div hidden={step !== 1}>
-          <SelectItems />
-        </div>
-        <div hidden={step !== 2}>
-          <CheckDetails />
-        </div>
-        <div hidden={step !== 3}>
-          <SetPriceAndQuantities />
-        </div>
-        <div hidden={step !== 4}>
-          <PrintLabel receivedStock={receivedStock} />
-        </div>
+        {step === 0 && (
+          <div>
+            <SelectVendor />
+          </div>
+        )}
+        {step === 1 && (
+          <div>
+            <SelectItems />
+          </div>
+        )}
+        {step == 2 && (
+          <div>
+            <CheckDetails />
+          </div>
+        )}
+        {step == 3 && (
+          <div>
+            <SetPriceAndQuantities />
+          </div>
+        )}
+        {step == 4 && (
+          <div>
+            <PrintLabel receivedStock={receivedStock} />
+          </div>
+        )}
       </div>
     </ScreenContainer>
   );
