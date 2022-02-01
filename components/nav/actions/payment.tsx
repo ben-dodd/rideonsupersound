@@ -17,7 +17,7 @@ export default function PaymentNavActions() {
       </button>
       <button
         className="icon-text-button"
-        onClick={() => setView({ ...view, batchVendorPaymentDialog: true })}
+        onClick={() => setView({ ...view, batchVendorPaymentScreen: true })}
       >
         <PayIcon className="mr-1" />
         Batch Payment

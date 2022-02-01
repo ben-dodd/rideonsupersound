@@ -25,6 +25,7 @@ import TaskScreen from "@/components/jobs";
 import ConfirmModal from "@/components/_components/container/modal/confirm-modal";
 import HelpDialog from "@/components/help";
 import LaybyScreen from "../layby";
+import StocktakeScreen from "../stocktake";
 
 export default function MainPage() {
   // Atoms
@@ -54,6 +55,7 @@ export default function MainPage() {
           {page === "logs" && <LogScreen />}
           {page === "jobs" && <TaskScreen />}
           <PaymentsScreen />
+          <StocktakeScreen />
         </div>
         <HelpDialog />
         <ConfirmModal />

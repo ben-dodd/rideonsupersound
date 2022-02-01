@@ -8,6 +8,7 @@ import { pageAtom, viewAtom } from "@/lib/atoms";
 import PaymentTable from "./payment-table";
 import BatchPaymentDialog from "./batch-payment-dialog";
 import CashPaymentDialog from "./cash-payment-dialog";
+import BatchPaymentScreen from "./batch-payment-screen";
 
 export default function PaymentsScreen() {
   // Atoms
@@ -20,8 +21,9 @@ export default function PaymentsScreen() {
       }`}
     >
       {page === "payments" && <PaymentTable />}
-      {view?.batchVendorPaymentDialog && <BatchPaymentDialog />}
+      {/* {view?.batchVendorPaymentDialog && <BatchPaymentDialog />} */}
       {view?.cashVendorPaymentDialog && <CashPaymentDialog />}
+      {view?.batchVendorPaymentScreen && <BatchPaymentScreen />}
     </div>
   );
 }

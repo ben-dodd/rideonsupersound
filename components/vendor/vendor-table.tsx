@@ -12,15 +12,10 @@ import {
   useVendorPayments,
 } from "@/lib/swr-hooks";
 import { loadedVendorIdAtom } from "@/lib/atoms";
-import {
-  VendorObject,
-  ClerkObject,
-  CustomerObject,
-  StockObject,
-} from "@/lib/types";
+import { VendorObject, ClerkObject, StockObject } from "@/lib/types";
 
 // Functions
-import { getPaymentVars } from "@/lib/data-functions";
+import { getVendorDetails } from "@/lib/data-functions";
 
 // Components
 import Table from "@/components/_components/table";
@@ -45,7 +40,7 @@ export default function VendorsScreen() {
         ? vendors
             ?.filter((v: VendorObject) => !v?.is_deleted)
             .map((v: VendorObject) => {
-              let vendorVars = getPaymentVars(
+              let vendorVars = getVendorDetails(
                 inventory,
                 sales,
                 vendorPayments,

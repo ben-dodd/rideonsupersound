@@ -22,7 +22,7 @@ import {
 } from "@/lib/types";
 
 // Functions
-import { getPaymentVars, getSaleVars } from "@/lib/data-functions";
+import { getSaleVars, getVendorDetails } from "@/lib/data-functions";
 
 // Components
 import Modal from "@/components/_components/container/modal";
@@ -61,7 +61,7 @@ export default function Acct() {
   // Constants
   const vendorVars = useMemo(
     () =>
-      getPaymentVars(
+      getVendorDetails(
         inventory,
         sales,
         vendorPayments,

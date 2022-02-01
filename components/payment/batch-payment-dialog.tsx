@@ -19,10 +19,9 @@ import { VendorObject, ModalButton } from "@/lib/types";
 // Functions
 import { saveLog, saveVendorPaymentToDatabase } from "@/lib/db-functions";
 import {
-  getPaymentVars,
   getVendorQuantityInStock,
   writeKiwiBankBatchFile,
-  fFileDate,
+  getVendorDetails,
 } from "@/lib/data-functions";
 
 // Components
@@ -59,7 +58,7 @@ export default function BatchPaymentDialog() {
     () =>
       vendors
         ?.map((v: VendorObject) => {
-          let saleInformation = getPaymentVars(
+          let saleInformation = getVendorDetails(
             inventory,
             sales,
             vendorPayments,

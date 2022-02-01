@@ -21,7 +21,11 @@ import {
 } from "@/lib/atoms";
 
 // Functions
-import { saveSaleAndPark, saveLog } from "@/lib/db-functions";
+import {
+  saveSaleAndPark,
+  saveLog,
+  saveSaleItemsTransactionsToDatabase,
+} from "@/lib/db-functions";
 
 // Components
 import CircularProgress from "@mui/material/CircularProgress";
@@ -88,7 +92,25 @@ export default function ShoppingCartActions() {
   }
 
   async function onClickContinueLayby() {
-    // TODO continue layby
+    setSaveSaleLoading(true);
+    await saveSaleItemsTransactionsToDatabase(
+      { ...cart, state: SaleStateTypes.Layby },
+      clerk,
+      registerID,
+      sales,
+      mutateSales,
+      inventory,
+      mutateInventory,
+      giftCards,
+      mutateGiftCards
+    );
+    setAlert({
+      open: true,
+      type: "success",
+      message: "LAYBY CONTINUED",
+    });
+    clearCart();
+    setSaveSaleLoading(false);
   }
 
   async function onClickDiscardSale() {

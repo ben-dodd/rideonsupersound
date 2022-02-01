@@ -33,6 +33,7 @@ interface ViewProps {
   returnCashDialog?: boolean;
   takeCashDialog?: boolean;
   batchVendorPaymentDialog?: boolean;
+  batchVendorPaymentScreen?: boolean;
   cashVendorPaymentDialog?: boolean;
   acctPaymentDialog?: boolean;
   cardPaymentDialog?: boolean;

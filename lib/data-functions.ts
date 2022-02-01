@@ -251,7 +251,7 @@ export function getSaleVars(sale: SaleObject, inventory: StockObject[]) {
   };
 }
 
-export function getPaymentVars(
+export function getVendorDetails(
   inventory: StockObject[],
   vendorSales: VendorSaleItemObject[],
   vendorPayments: VendorPaymentObject[],

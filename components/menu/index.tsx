@@ -21,6 +21,7 @@ import GiftCardsIcon from "@mui/icons-material/Redeem";
 import LaybyIcon from "@mui/icons-material/DryCleaning";
 import JobsIcon from "@mui/icons-material/Task";
 import StatsIcon from "@mui/icons-material/QueryStats";
+import StocktakeIcon from "@mui/icons-material/Numbers";
 
 // Types
 type MenuType = {
@@ -155,12 +156,19 @@ export default function Menu() {
       class: "bg-col10-light hover:bg-col10",
       icon: <JobsIcon />,
     },
+    // {
+    //   type: "link",
+    //   page: "stats",
+    //   text: "STATS",
+    //   class: "bg-col1-light hover:bg-col1",
+    //   icon: <StatsIcon />,
+    // },
     {
       type: "link",
-      page: "stats",
-      text: "STATS",
+      page: "stocktake",
+      text: "STOCKTAKE",
       class: "bg-col1-light hover:bg-col1",
-      icon: <StatsIcon />,
+      icon: <StocktakeIcon />,
     },
     // {
     //   type: "link",

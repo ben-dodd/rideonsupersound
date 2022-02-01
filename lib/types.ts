@@ -222,6 +222,7 @@ export interface VendorObject {
   note?: string;
   last_customered?: string;
   store_credit_only?: boolean;
+  email_vendor?: boolean;
   date_created?: string;
   date_modified?: string;
   is_deleted?: boolean;

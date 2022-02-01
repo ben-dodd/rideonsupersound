@@ -64,7 +64,7 @@ export default function TaskScreen() {
         </div>
         <div className="h-menu w-full overflow-y-scroll px-2 bg-white">
           <Tabs
-            tabs={["Restocking", "Other Jobs", "Test"]}
+            tabs={["Restocking", "Other Jobs"]}
             value={tab}
             onChange={setTab}
           />

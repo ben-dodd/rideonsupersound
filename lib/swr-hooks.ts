@@ -153,11 +153,12 @@ export function useSaleItemsForSale(sale_id: number) {
 }
 
 export function useVendors() {
-  const { data, error } = useSWR(`/api/get-vendors`, fetcher);
+  const { data, error, mutate } = useSWR(`/api/get-vendors`, fetcher);
   return {
     vendors: data,
     isVendorsLoading: !error && !data,
     isVendorsError: error,
+    mutateVendors: mutate,
   };
 }
 

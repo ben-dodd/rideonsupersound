@@ -14,6 +14,7 @@ const handler: NextApiHandler = async (req, res) => {
     note,
     last_contacted,
     store_credit_only,
+    email_vendor,
     is_deleted,
     id,
   } = req.body;
@@ -36,6 +37,7 @@ const handler: NextApiHandler = async (req, res) => {
         note = ?,
         last_contacted = ?,
         store_credit_only = ?,
+        email_vendor = ?,
         is_deleted = ?
       WHERE id = ?
       `,
@@ -51,6 +53,7 @@ const handler: NextApiHandler = async (req, res) => {
         note,
         last_contacted,
         store_credit_only,
+        email_vendor,
         is_deleted,
         id,
       ]
