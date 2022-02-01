@@ -53,7 +53,6 @@ export default function DiscogsPanel({
     setDiscogsOptions(options);
   };
 
-  // console.log(item);
   return (
     <div className="flex flex-col h-inventory">
       <div className="flex justify-between px-2">

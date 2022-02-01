@@ -472,7 +472,6 @@ export function useWeather() {
   if (navigator?.geolocation) {
     navigator?.geolocation?.getCurrentPosition((position) => {
       loc = `lat=${position.coords.latitude}, lon=${position.coords.longitude}`;
-      console.log(loc);
     });
   }
   const { data, error } = useSWR(

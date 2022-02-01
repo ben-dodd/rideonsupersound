@@ -72,9 +72,6 @@ export default function Csv() {
       </div>
       <CSVReader
         onUploadAccepted={(results: any) => {
-          console.log("---------------------------");
-          console.log(results);
-          console.log("---------------------------");
           parseCSVItems(results);
         }}
         config={{ header: true }}

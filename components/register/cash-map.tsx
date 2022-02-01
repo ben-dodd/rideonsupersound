@@ -8,7 +8,7 @@ export default function CashMap({ till, setTill }) {
   }
 
   return (
-    <div className="bg-primary-light p-2 mt-2 rounded-md">
+    <div className="bg-col1 p-2 mt-2 rounded-md">
       <div className="text-2xl">Notes</div>
       <div className="grid grid-cols-5 gap-2 mb-2">
         <TextField

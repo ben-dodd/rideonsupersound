@@ -95,7 +95,6 @@ export default function BatchPaymentDialog() {
     {
       type: "ok",
       onClick: () => {
-        // console.log(paymentAmounts);
         payVendors
           .filter(
             (vendor: VendorObject) =>

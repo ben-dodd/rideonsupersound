@@ -17,7 +17,6 @@ export default function Items() {
     );
     setBasket({ ...basket, items });
   };
-  console.log(basket);
   return (
     <div>
       {basket?.items?.length > 0 ? (

@@ -52,8 +52,6 @@ export default function InventoryItemScreen({ page }) {
     // REVIEW Delete inventory item
   }
 
-  console.log(item);
-
   const buttons: ModalButton[] = [
     {
       type: "cancel",
@@ -79,6 +77,8 @@ export default function InventoryItemScreen({ page }) {
     },
   ];
 
+  const titleClass = page === "sell" ? "bg-col1" : "bg-col2";
+
   return (
     <ScreenContainer
       show={Boolean(loadedItemId[page])}
@@ -88,6 +88,7 @@ export default function InventoryItemScreen({ page }) {
       title={getItemDisplayName(item)}
       loading={isStockItemLoading}
       buttons={buttons}
+      titleClass={titleClass}
     >
       <div className="flex flex-col w-full">
         <Tabs
@@ -98,7 +99,7 @@ export default function InventoryItemScreen({ page }) {
               : item?.media === "Literature"
               ? "GoogleBooks"
               : null,
-            "Sale Details",
+            // "Sale Details",
           ]}
           value={tab}
           onChange={setTab}

@@ -33,7 +33,6 @@ const handler: NextApiHandler = async (req, res) => {
           JSON.stringify(transaction_result)
         );
         newSale.transactions = transaction_data;
-        console.log(newSale);
         return res.send(newSale);
       } catch (e) {
         throw new Error(e.message);

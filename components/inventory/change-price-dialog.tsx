@@ -69,9 +69,7 @@ export default function ChangePriceDialog() {
           total_sell: totalSellNum,
           vendor_cut: vendorCutNum,
         };
-        console.log(inventoryItem);
         mutateInventory([...otherInventoryItems, inventoryItem], false);
-        console.log(stockItem);
         mutateStockItem(
           [
             {

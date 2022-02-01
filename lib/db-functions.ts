@@ -46,7 +46,6 @@ export async function loadSaleToCart(
   if (cart?.date_sale_opened && (cart?.items || cart?.id !== sale?.id)) {
     // Cart is loaded with a different sale or
     // Cart has been started but not loaded into sale
-    console.log("Park old sale");
     await saveSaleAndPark(
       cart,
       clerk,
@@ -140,15 +139,11 @@ export async function saveSaleItemsTransactionsToDatabase(
   //
   // HANDLE SALE OBJECT
   //
-  // console.log(newSale);
   if (!newSaleId) {
     // Sale is new, save to database and add id to sales
     newSale.state = newSale?.state || SaleStateTypes.InProgress;
-    console.log("Getting sale ID");
     newSaleId = await saveSaleToDatabase(newSale, clerk);
-    console.log("Got sale ID");
     newSale = { ...newSale, id: newSaleId };
-    console.log(newSale);
     mutateSales([...sales, newSale], false);
   } else {
     // Sale already has id, update
@@ -163,7 +158,6 @@ export async function saveSaleItemsTransactionsToDatabase(
     let invItem = inventory?.filter(
       (i: StockObject) => i?.id === item?.item_id
     )[0];
-    console.log(invItem);
     // Check whether inventory item needs restocking
     const quantity = getItemQuantity(invItem, cart?.items);
     let quantity_layby = invItem?.quantity_layby || 0;
@@ -187,7 +181,6 @@ export async function saveSaleItemsTransactionsToDatabase(
     // Add or update Sale Item
     if (!item?.id) {
       // Item is new to sale
-      console.log("Creating new item in " + newSaleId);
       let newSaleItem = { ...item, sale_id: newSaleId };
       saveSaleItemToDatabase(newSaleItem);
     } else {
@@ -208,7 +201,6 @@ export async function saveSaleItemsTransactionsToDatabase(
             null
           );
           quantity_layby -= 1;
-          console.log("Removed layby quantity");
         }
         // Mark stock as sold
         saveStockMovementToDatabase(
@@ -220,7 +212,6 @@ export async function saveSaleItemsTransactionsToDatabase(
         );
         // Sold quantity is not in main inventory
         // quantity_sold += 1;
-        // console.log("Added sold quantity");
 
         // Add layby stock movement if it's a new layby
       } else if (
@@ -235,7 +226,6 @@ export async function saveSaleItemsTransactionsToDatabase(
           null
         );
         quantity_layby += 1;
-        console.log("Added layby quantity");
       }
 
       // Update inventory item if it's a regular stock item
@@ -247,7 +237,6 @@ export async function saveSaleItemsTransactionsToDatabase(
           [...otherInventoryItems, { ...invItem, quantity, quantity_layby }],
           false
         );
-      console.log({ ...invItem, quantity, quantity_layby });
     }
   }
 
@@ -257,7 +246,6 @@ export async function saveSaleItemsTransactionsToDatabase(
   for await (const trans of cart?.transactions) {
     if (!trans?.id) {
       // Transaction is new to sale
-      console.log("Creating new transaction in " + newSaleId);
       let newSaleTransaction = { ...trans, sale_id: newSaleId };
       saveSaleTransaction(
         newSaleTransaction,
@@ -267,7 +255,6 @@ export async function saveSaleItemsTransactionsToDatabase(
       );
     }
   }
-  // console.log(cartTransactions);
   // // TODO does this need a return
   // return { ...newSale, items: cartItems, transactions: cartTransactions };
   return newSaleId;
@@ -347,7 +334,6 @@ export async function saveSaleTransaction(
 ) {
   if (transaction?.payment_method === PaymentMethodTypes.Account) {
     // Add account payment as a store payment to the vendor
-    console.log(transaction);
     let vendorPaymentId = null;
     const vendorPayment = {
       amount: transaction?.amount,
@@ -698,7 +684,6 @@ export async function updateCustomerInDatabase(
   customers: CustomerObject[],
   mutateCustomers: Function
 ) {
-  console.log(customer);
   try {
     const res = await fetch(
       `/api/update-customer?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
@@ -837,7 +822,6 @@ export async function saveLog(
 }
 
 export async function addRestockTask(id: number) {
-  console.log("Adding restock task");
   try {
     const res = await fetch(
       `/api/restock-task?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
@@ -1113,7 +1097,6 @@ export async function updateSaleItemInDatabase(saleItem: SaleItemObject) {
 }
 
 export async function setRegister(register_id: number) {
-  console.log("Set Register");
   try {
     const res = await fetch(
       `/api/set-register?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
@@ -1379,8 +1362,6 @@ export function returnStock(
 export function uploadFiles(files) {
   // const body = new FormData();
   // body.append("file", files);
-  // console.log(body);
-  // console.log(files);
   try {
     fetch(`/api/upload-file?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`, {
       method: "POST",

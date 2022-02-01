@@ -209,7 +209,6 @@ function Table({
               // {rows.map((row) => {
               prepareRow(row);
               let rowProps = row.getRowProps();
-              // console.log(row);
               return (
                 <tr
                   {...rowProps}

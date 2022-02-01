@@ -134,6 +134,7 @@ export default function VendorScreen() {
         isVendorPaymentsLoading
       }
       buttons={[]}
+      titleClass="bg-col3"
     >
       <div className="flex flex-col w-full">
         <Tabs

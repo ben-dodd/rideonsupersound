@@ -51,8 +51,6 @@ export default function SellScreen() {
     preventDefaultTouchmoveEvent: true,
   });
 
-  console.log(registerID);
-
   return registerID === 0 ? (
     <OpenRegisterScreen />
   ) : (

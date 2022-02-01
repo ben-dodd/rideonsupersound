@@ -19,7 +19,6 @@ export default function DiscogsItemScreen({ discogsItem, item }: discogsProps) {
       (results) => {
         results.json().then((json) => {
           if (json.rates) {
-            console.log(json.rates.NZD / json.rates.USD);
             setExchangeRate(json.rates.NZD / json.rates.USD);
           }
         });

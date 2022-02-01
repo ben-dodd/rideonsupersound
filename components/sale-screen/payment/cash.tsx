@@ -48,8 +48,6 @@ export default function Cash() {
   const [cashReceived, setCashReceived] = useState(
     `${Math.abs(totalRemaining).toFixed(2)}`
   );
-  console.log(totalRemaining);
-  console.log(parseFloat(totalRemaining.toFixed(2)));
   const [submitting, setSubmitting] = useState(false);
 
   // Constants

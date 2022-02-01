@@ -29,13 +29,11 @@ export default function DiscogsOption({
     const detailedDiscogsItem = await getDiscogsItem(opt);
     const priceSuggestions = await getDiscogsPriceSuggestions(opt);
     const artist = await getDiscogsItemArtistDetails(detailedDiscogsItem);
-    console.log(artist);
     const discogsItem = {
       ...opt,
       ...detailedDiscogsItem,
       priceSuggestions,
     };
-    console.log(discogsItem);
     if (override)
       item = {
         ...item,

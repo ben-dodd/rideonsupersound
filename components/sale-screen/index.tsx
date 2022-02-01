@@ -52,7 +52,7 @@ export default function SaleScreen() {
   const [clerk] = useAtom(clerkAtom);
   const [, setAlert] = useAtom(alertAtom);
   const [view, setView] = useAtom(viewAtom);
-  const [, setPage] = useAtom(pageAtom);
+  const [page, setPage] = useAtom(pageAtom);
 
   // SWR
   const { customers } = useCustomers();
@@ -176,7 +176,6 @@ export default function SaleScreen() {
       date_sale_closed: dayjs.utc().format(),
     };
 
-    console.log(completedSale);
     saveSaleItemsTransactionsToDatabase(
       completedSale,
       clerk,
@@ -253,8 +252,6 @@ export default function SaleScreen() {
     },
   ];
 
-  console.log(cart);
-
   return (
     <>
       <ScreenContainer
@@ -265,6 +262,7 @@ export default function SaleScreen() {
         }]`}
         loading={isSaleItemsLoading || isSaleTransactionsLoading}
         buttons={buttons}
+        titleClass="bg-col1"
       >
         <div className="flex items-start overflow-auto w-full">
           <div className="w-2/3">

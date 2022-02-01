@@ -41,8 +41,6 @@ export default function LabelPrintDialog() {
   };
   const [items, setItems] = useState(initItems);
 
-  console.log(items);
-
   function closeDialog() {
     setItems(initItems);
     setView({ ...view, labelPrintDialog: false });

@@ -60,7 +60,6 @@ export default function SellListItem({
 
   // Functions
   function onChangeCart(e: any, property: string) {
-    console.log(e?.target?.value);
     let newCart = { ...cart };
     if (newCart?.items && newCart?.items[index])
       newCart.items[index][property] = e.target.value;

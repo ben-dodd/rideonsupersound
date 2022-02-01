@@ -33,7 +33,7 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
         (item?.vendor_cut ? `${item?.vendor_cut / 100}` : "")
     ),
   });
-  console.log(storeCut);
+
   return (
     <div className="flex justify-between my-2 border-b">
       <div className="flex">

@@ -76,7 +76,6 @@ export default function SaleItemScreen() {
         sales?.filter((s: SaleObject) => s?.id === loadedSaleId[page])[0] || {};
       loadedSale.items = items;
       loadedSale.transactions = transactions;
-      console.log(loadedSale);
       setSale(loadedSale);
       setSaleLoading(false);
     }
@@ -126,6 +125,9 @@ export default function SaleItemScreen() {
     },
   ];
 
+  const titleClass =
+    page === "sell" ? "bg-col1" : page === "sales" ? "bg-col5" : "bg-col6";
+
   return (
     <>
       <ScreenContainer
@@ -142,6 +144,7 @@ export default function SaleItemScreen() {
             ? buttons
             : null
         }
+        titleClass={titleClass}
       >
         <div className="flex items-start overflow-auto w-full">
           <div className="w-2/3">

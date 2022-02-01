@@ -169,7 +169,6 @@ export default function ReceiveStockScreen() {
   );
 
   function isDisabled() {
-    console.log(basket?.items);
     return (
       !basket?.vendor_id ||
       basket?.items?.length === 0 ||

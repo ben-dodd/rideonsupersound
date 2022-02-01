@@ -31,7 +31,6 @@ export default function InventoryScroll() {
     } else {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          console.log(position);
           setGeolocation(position?.coords);
         },
         () => console.log("Unable to retrieve location.")

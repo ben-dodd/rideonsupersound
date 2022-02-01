@@ -13,7 +13,6 @@ import dayjs from "dayjs";
 export default function GiftCardTable() {
   // SWR
   const { giftCards, isGiftCardsLoading } = useGiftCards();
-  console.log(giftCards);
 
   // Constants
   const data = useMemo(

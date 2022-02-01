@@ -35,7 +35,6 @@ export default function SelectVendor() {
         }}
         onCreateOption={async (inputValue: string) => {
           const vendorId = await saveVendorToDatabase({ name: inputValue });
-          console.log(`Vendor ID = ${vendorId}`);
           setBasket({ ...basket, vendor_id: vendorId });
         }}
         options={vendors?.map((val: VendorObject) => ({

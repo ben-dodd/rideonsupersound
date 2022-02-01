@@ -312,10 +312,8 @@ export function getPaymentVars(
 }
 
 export function getPriceSuggestion(item: StockObject) {
-  console.log(item);
   if (item?.discogsItem?.priceSuggestions) {
     const priceSuggestions = item?.discogsItem?.priceSuggestions;
-    console.log(priceSuggestions);
     const priceSuggestion = priceSuggestions[
       item?.is_new ? "Mint (M)" : item?.cond || "Good (G)"
     ]?.value
@@ -326,7 +324,6 @@ export function getPriceSuggestion(item: StockObject) {
           item?.is_new ? "Mint (M)" : item?.cond || "Good (G)"
         } condition)`
       : null;
-    console.log(priceSuggestion);
     return priceSuggestion;
   }
   return null;
@@ -466,7 +463,6 @@ export function getGeolocation() {
   let geolocation = null;
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition((position) => {
-      // console.log(position);
       geolocation = {
         latitude: position.coords.latitude,
         longitude: position.coords.longitude,
@@ -532,13 +528,9 @@ export async function getDiscogsOptionsByItem(item: StockObject) {
       url = `&query=${item?.artist ? `${item?.artist} ` : ""}${
         item?.title ? `${item?.title} ` : ""
       }${item?.format ? `${item?.format} ` : ""}`;
-    console.log(url);
     // &artist=${
     //   item?.artist || ""
     // }&title=${item?.title || ""}
-    console.log(
-      `https://api.discogs.com/database/search?type=release${url}&key=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_KEY}&secret=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_SECRET}`
-    );
     const res = await fetch(
       `https://api.discogs.com/database/search?type=release${url}&key=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_KEY}&secret=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_SECRET}`
     );
@@ -757,14 +749,12 @@ export function makeGiftCardCode(giftCards: GiftCardObject[]) {
 
 export function getCSVData(items) {
   let csv = [];
-  console.log(items);
   Object.values(items || {})
     .filter((row: any) => Boolean(row?.item?.value))
     .forEach((row: any) => {
       Array.from(Array(parseInt(row?.printQuantity || "1")).keys()).forEach(
         () => {
           let stockItem: StockObject = row?.item?.value;
-          console.log(stockItem);
           csv.push([
             getItemSku(stockItem),
             stockItem?.artist,
@@ -824,14 +814,11 @@ export function writeKiwiBankBatchFile({
     transactionAmount += transaction?.amount;
     transactionCount += 1;
     let accountNumber = `${transaction?.accountNumber}`.replace(/\D/g, "");
-    // console.log(accountNumber);
     // remove bank number
     accountNumber = accountNumber.substr(2);
-    // console.log(accountNumber);
     // remove suffix
     accountNumber = accountNumber.slice(0, 11);
     // add to hash total
-    // console.log(accountNumber);
     hashTotal += parseInt(accountNumber);
     kbb.push([
       2,
@@ -853,10 +840,7 @@ export function writeKiwiBankBatchFile({
   let paddedHashTotal = `00000000000${hashTotal}`;
   paddedHashTotal = paddedHashTotal.slice(paddedHashTotal.length - 11);
 
-  // console.log(paddedHashTotal);
-
   kbb.push([3, transactionAmount, transactionCount, parseInt(paddedHashTotal)]);
-  // console.log(kbb);
   return kbb;
 }
 

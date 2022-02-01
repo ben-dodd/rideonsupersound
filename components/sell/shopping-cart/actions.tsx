@@ -111,7 +111,6 @@ export default function ShoppingCartActions() {
           type: "warning",
           message: "SALE DISCARDED",
           undo: () => {
-            console.log("Undo");
             saveLog(
               {
                 log: `Cart uncleared.`,

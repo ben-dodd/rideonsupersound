@@ -163,7 +163,6 @@ export default function ReturnStockScreen() {
               <div>
                 {Object.entries(items)?.map(
                   ([itemId, itemQuantity]: [string, number]) => {
-                    console.log(items);
                     const item = inventory?.filter(
                       (i: StockObject) => i?.id === parseInt(itemId)
                     )[0];

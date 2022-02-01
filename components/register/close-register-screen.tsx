@@ -183,6 +183,7 @@ export default function CloseRegisterScreen() {
         isPettyCashLoading
       }
       buttons={buttons}
+      titleClass="bg-col1"
     >
       <div className="flex">
         <div className="w-1/2 mr-12">

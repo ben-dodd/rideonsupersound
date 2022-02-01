@@ -22,7 +22,6 @@ export default function Discogs() {
     setBarcode(e.target.value);
     if (e.target.value !== "") {
       const results: any = await getDiscogsOptionsByBarcode(e.target.value);
-      console.log(results);
       if (results && results?.length > 0) setDiscogsOptions(results);
     }
   };
