@@ -114,7 +114,7 @@ export function filterInventory({ inventory, search }) {
       if (search) {
         let terms = search.split(" ");
         let itemMatch = `
-        ${item?.sku || ""}
+        ${getItemSku(item) || ""}
         ${item?.artist || ""}
         ${item?.title || ""}
         ${item?.format || ""}
@@ -128,6 +128,7 @@ export function filterInventory({ inventory, search }) {
         ${item?.googleBooksItem?.volumeInfo?.subtitle || ""}
         ${item?.googleBooksItem?.volumeInfo?.categories?.join(" ") || ""}
       `;
+        console.log(itemMatch);
         terms.forEach((term: string) => {
           if (!itemMatch.toLowerCase().includes(term.toLowerCase()))
             res = false;
