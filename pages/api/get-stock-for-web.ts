@@ -3,15 +3,10 @@ import { query } from "../../lib/db";
 import { StockMovementTypes } from "@/lib/types";
 
 const handler: NextApiHandler = async (req, res) => {
-  const { k } = req.query;
   try {
-    if (!k || k !== process.env.NEXT_PUBLIC_SWR_API_KEY)
-      return res.status(401).json({ message: "Resource Denied." });
     const results = await query(
       `
       SELECT
-        s.id,
-        s.vendor_id,
         s.artist,
         s.title,
         s.display_as,
@@ -21,30 +16,13 @@ const handler: NextApiHandler = async (req, res) => {
         s.is_new,
         s.cond,
         s.image_url,
-        s.is_gift_card,
-        s.gift_card_code,
-        s.gift_card_amount,
-        s.gift_card_remaining,
-        s.gift_card_is_valid,
-        s.is_misc_item,
-        s.misc_item_description,
-        s.misc_item_amount,
-        s.needs_restock,
-        p.vendor_cut,
+        s.thumb_url,
         p.total_sell,
-        q.quantity,
-        hol.quantity_hold,
-        lay.quantity_layby
+        q.quantity
       FROM stock AS s
       LEFT JOIN
         (SELECT stock_id, SUM(quantity) AS quantity FROM stock_movement GROUP BY stock_id) AS q
         ON q.stock_id = s.id
-      LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_hold FROM stock_movement WHERE act = '${StockMovementTypes.Hold}' GROUP BY stock_id) AS hol
-        ON hol.stock_id = s.id
-      LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_layby FROM stock_movement WHERE act = '${StockMovementTypes.Layby}' GROUP BY stock_id) AS lay
-        ON lay.stock_id = s.id
       LEFT JOIN stock_price AS p ON p.stock_id = s.id
       WHERE
          (p.id = (
@@ -52,6 +30,8 @@ const handler: NextApiHandler = async (req, res) => {
             FROM stock_price
             WHERE stock_id = s.id
          ) OR s.is_gift_card OR s.is_misc_item)
+      AND q.quantity > 0
+      AND s.do_list_on_website
       AND NOT is_deleted
       `
     );
