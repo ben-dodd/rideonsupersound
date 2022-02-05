@@ -1,5 +1,4 @@
 // Packages
-import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
@@ -27,8 +26,7 @@ export default function Pay() {
   const { inventory } = useInventory();
 
   // State
-  const [note, setNote] = useState("");
-  const { totalRemaining, totalPaid } = getSaleVars(cart, inventory);
+  const { totalRemaining } = getSaleVars(cart, inventory);
 
   return (
     <div className="flex flex-col justify-between">
@@ -139,7 +137,7 @@ export default function Pay() {
       <TextField
         inputLabel="Note"
         multiline
-        value={note}
+        value={cart?.note}
         onChange={(e: any) => setCart({ ...cart, note: e.target.value })}
       />
       {cart?.id && (
