@@ -18,12 +18,19 @@ export default function Discogs() {
   const [keyword, setKeyword] = useState("");
   const [discogsOptions, setDiscogsOptions] = useState([]);
   const [key, setKey] = useState(uuid());
-  const handleChange = async (e) => {
-    setBarcode(e.target.value);
-    if (e.target.value !== "") {
-      const results: any = await getDiscogsOptionsByBarcode(e.target.value);
-      if (results && results?.length > 0) setDiscogsOptions(results);
+  const handleChange = async (val) => {
+    console.group();
+    console.log("Barcode Value");
+    console.log(val);
+    if (val !== "") {
+      const results: any = await getDiscogsOptionsByBarcode(val);
+      console.log(results);
+      if (results && results?.length > 0) {
+        console.log("Discogs Results Set");
+        setDiscogsOptions(results);
+      }
     }
+    console.groupEnd();
   };
   const [basket, setBasket] = useAtom(receiveStockAtom);
   const addItem = (item) => {
@@ -42,6 +49,7 @@ export default function Discogs() {
     if (results && results?.length > 0) setDiscogsOptions(results);
   };
   const debouncedSearch = useCallback(debounce(searchDiscogs, 2000), []);
+  const debouncedBarcode = useCallback(debounce(handleChange, 2000), []);
 
   return (
     <div>
@@ -53,7 +61,10 @@ export default function Discogs() {
         key={key}
         id="barcode"
         value={barcode || ""}
-        onChange={handleChange}
+        onChange={(e) => {
+          setBarcode(e.target.value);
+          debouncedBarcode(e.target.value);
+        }}
         inputLabel="Barcode"
         autoFocus
         selectOnFocus
