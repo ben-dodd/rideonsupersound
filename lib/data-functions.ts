@@ -587,16 +587,24 @@ export async function getDiscogsPriceSuggestions(discogsItem: DiscogsItem) {
 
 export async function getDiscogsItemArtistDetails(discogsItem: DiscogsItem) {
   const artists = [];
-  for (const discogsArtist of discogsItem?.artists) {
-    try {
-      const res = await fetch(discogsArtist?.resource_url);
-      const json = await res.json();
-      if (!res.ok) throw Error(json.message);
-      artists?.push({ ...json, name: discogsArtist?.name });
-      return artists;
-    } catch (e) {
-      throw Error(e.message);
+  console.log(discogsItem?.artists);
+  if (discogsItem?.artists) {
+    for (const discogsArtist of discogsItem?.artists) {
+      console.log(discogsArtist);
+      if (discogsArtist?.resource_url) {
+        try {
+          const res = await fetch(discogsArtist?.resource_url);
+          const json = await res.json();
+          if (!res.ok) throw Error(json.message);
+          artists?.push({ ...json, name: discogsArtist?.name });
+          return artists;
+        } catch (e) {
+          throw Error(e.message);
+        }
+      }
     }
+  } else {
+    return {};
   }
 }
 
