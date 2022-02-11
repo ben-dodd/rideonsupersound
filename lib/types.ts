@@ -116,6 +116,9 @@ export interface SaleObject {
   total_price?: number;
   number_of_items?: number;
   item_list?: string;
+  is_mail_order?: boolean;
+  postage?: number;
+  postal_address?: string;
   cash_note?: string;
   note?: string;
   weather?: any;

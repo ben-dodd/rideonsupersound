@@ -16,6 +16,9 @@ const handler: NextApiHandler = async (req, res) => {
     total_price,
     number_of_items,
     item_list,
+    is_mail_order,
+    postage,
+    postal_address,
   } = req.body;
   const { k } = req.query;
   try {
@@ -35,7 +38,10 @@ const handler: NextApiHandler = async (req, res) => {
         store_cut = ?,
         total_price = ?,
         number_of_items = ?,
-        item_list = ?
+        item_list = ?,
+        is_mail_order = ?,
+        postage = ?,
+        postal_address = ?
       WHERE id = ?
       `,
       [
@@ -51,6 +57,9 @@ const handler: NextApiHandler = async (req, res) => {
         number_of_items,
         item_list,
         sale_id,
+        is_mail_order,
+        postage,
+        postal_address,
       ]
     );
     return res.json(results);

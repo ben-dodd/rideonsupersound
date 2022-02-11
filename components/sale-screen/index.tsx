@@ -171,6 +171,12 @@ export default function SaleScreen() {
     // Update sale to 'complete', add date_sale_closed, sale_closed_by
     let completedSale = {
       ...cart,
+      postal_address: cart?.is_mail_order
+        ? cart?.postal_address ||
+          customers?.filter((c) => c?.id === cart?.customer_id)[0]
+            ?.postal_address ||
+          null
+        : null,
       state: SaleStateTypes.Completed,
       sale_closed_by: clerk?.id,
       date_sale_closed: dayjs.utc().format(),
@@ -186,7 +192,8 @@ export default function SaleScreen() {
       mutateInventory,
       giftCards,
       mutateGiftCards,
-      cart?.state
+      cart?.state,
+      customers?.filter((c) => c?.id === cart?.customer_id)[0]?.name
     );
     setCart(null);
     setView({ ...view, saleScreen: false });

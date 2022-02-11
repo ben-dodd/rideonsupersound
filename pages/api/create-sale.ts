@@ -20,6 +20,9 @@ const handler: NextApiHandler = async (req, res) => {
     total_price,
     number_of_items,
     item_list,
+    is_mail_order,
+    postage,
+    postal_address,
   } = req.body;
   try {
     if (!k || k !== process.env.NEXT_PUBLIC_SWR_API_KEY)
@@ -42,9 +45,12 @@ const handler: NextApiHandler = async (req, res) => {
         store_cut,
         total_price,
         number_of_items,
-        item_list
+        item_list,
+        is_mail_order,
+        postage,
+        postal_address
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
       [
         customer_id,
@@ -63,6 +69,9 @@ const handler: NextApiHandler = async (req, res) => {
         total_price,
         number_of_items,
         item_list,
+        is_mail_order,
+        postage,
+        postal_address,
       ]
     );
     return res.json(results);

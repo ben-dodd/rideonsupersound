@@ -10,6 +10,7 @@ const handler: NextApiHandler = async (req, res) => {
     assigned_to_clerk_id,
     is_priority,
     date_created,
+    is_post_mail_order,
   } = req.body;
   try {
     if (!k || k !== process.env.NEXT_PUBLIC_SWR_API_KEY)
@@ -22,9 +23,10 @@ const handler: NextApiHandler = async (req, res) => {
         assigned_to,
         assigned_to_clerk_id,
         is_priority,
-        date_created
+        date_created,
+        is_post_mail_order
       )
-      VALUES (?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
       `,
       [
         description,
@@ -33,6 +35,7 @@ const handler: NextApiHandler = async (req, res) => {
         assigned_to_clerk_id,
         is_priority,
         date_created,
+        is_post_mail_order,
       ]
     );
     return res.json(results);

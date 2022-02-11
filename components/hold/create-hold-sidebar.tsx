@@ -28,6 +28,7 @@ import {
   getItemSku,
 } from "@/lib/data-functions";
 import {
+  addRestockTask,
   saveHoldToDatabase,
   saveLog,
   saveTaskToDatabase,
@@ -72,11 +73,7 @@ export default function CreateHoldSidebar() {
         )[0];
         const itemQuantity = getItemQuantity(item, cart?.items);
         if (itemQuantity > 0) {
-          saveTaskToDatabase({
-            description: `Restock ${getItemDisplayName(item)} [${getItemSku(
-              item
-            )}]`,
-          });
+          addRestockTask(cartItem?.item_id);
         }
         const rowId = await saveHoldToDatabase(
           cart,

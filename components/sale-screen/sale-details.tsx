@@ -96,6 +96,16 @@ export default function SaleDetails({ sale }) {
               })`
             : "Sale not closed"}
         </div>
+        {sale?.is_mail_order && (
+          <div>
+            <div className="font-bold">Postage</div>
+            <div className="mb-4">
+              {sale?.postage ? `$${sale?.postage}` : "N/A"}
+            </div>
+            <div className="font-bold">Postal Address</div>
+            <div className="mb-4">{sale?.postal_address || "N/A"}</div>
+          </div>
+        )}
         <div className="font-bold">Notes</div>
         <div className="mb-4">{sale?.note || "N/A"}</div>
         {/*weather && (

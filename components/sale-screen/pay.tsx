@@ -27,7 +27,9 @@ export default function Pay() {
 
   // State
   const { totalRemaining } = getSaleVars(cart, inventory);
-
+  console.log(
+    customers?.filter((c: CustomerObject) => c?.id === cart?.customer_id)[0]
+  );
   return (
     <div className="flex flex-col justify-between">
       <div className="flex justify-between my-2">
@@ -107,7 +109,7 @@ export default function Pay() {
       ) : (
         <>
           <div className="font-bold mt-2">
-            Select customer to enable laybys.
+            Select customer to enable laybys and mail orders.
           </div>
           <CreateableSelect
             inputLabel="Select customer"
@@ -133,6 +135,43 @@ export default function Pay() {
             }))}
           />
         </>
+      )}
+      <div className="flex mt-2">
+        <input
+          disabled={!cart?.customer_id}
+          className="cursor-pointer"
+          type="checkbox"
+          checked={cart?.is_mail_order}
+          onChange={() =>
+            setCart((s) => ({ ...s, is_mail_order: !s?.is_mail_order }))
+          }
+        />
+        <div className="ml-2">Mail order</div>
+      </div>
+      {cart?.is_mail_order && (
+        <div>
+          <TextField
+            inputLabel="Postage Fee"
+            startAdornment="$"
+            inputType="number"
+            valueNum={cart?.postage}
+            onChange={(e: any) => setCart({ ...cart, postage: e.target.value })}
+          />
+          <TextField
+            inputLabel="Postal Address"
+            multiline
+            value={
+              cart?.postal_address ||
+              customers?.filter(
+                (c: CustomerObject) => c?.id === cart?.customer_id
+              )[0]?.postal_address ||
+              ""
+            }
+            onChange={(e: any) =>
+              setCart({ ...cart, postal_address: e.target.value })
+            }
+          />
+        </div>
       )}
       <TextField
         inputLabel="Note"

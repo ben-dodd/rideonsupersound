@@ -17,6 +17,7 @@ import {
   PaymentMethodTypes,
   StockMovementTypes,
   VendorPaymentTypes,
+  RoleTypes,
 } from "@/lib/types";
 import dayjs from "dayjs";
 // Change to DayJS utc
@@ -122,16 +123,17 @@ export async function saveSaleItemsTransactionsToDatabase(
   mutateInventory: Function,
   giftCards: GiftCardObject[],
   mutateGiftCards: Function,
-  prevState?: string
+  prevState?: string,
+  customer?: string
 ) {
-  let { totalStoreCut, totalPrice, numberOfItems, itemList } = getSaleVars(
+  let { totalStoreCut, totalItemPrice, numberOfItems, itemList } = getSaleVars(
     cart,
     inventory
   );
   let newSale = {
     ...cart,
     store_cut: totalStoreCut * 100,
-    total_price: totalPrice * 100,
+    total_price: totalItemPrice * 100,
     number_of_items: numberOfItems,
     item_list: itemList,
   };
@@ -145,12 +147,16 @@ export async function saveSaleItemsTransactionsToDatabase(
     newSaleId = await saveSaleToDatabase(newSale, clerk);
     newSale = { ...newSale, id: newSaleId };
     mutateSales([...sales, newSale], false);
+    if (newSale?.is_mail_order) {
+      addNewMailOrderTask(newSale, customer);
+    }
   } else {
     // Sale already has id, update
     updateSaleInDatabase(newSale);
     let otherSales = sales?.filter((s: SaleObject) => s?.id !== newSaleId);
     mutateSales([...otherSales, newSale], false);
   }
+
   //
   // HANDLE ITEMS
   //
@@ -286,6 +292,9 @@ export async function saveSaleToDatabase(sale: SaleObject, clerk: ClerkObject) {
           total_price: sale?.total_price || null,
           number_of_items: sale?.number_of_items || null,
           item_list: sale?.item_list || null,
+          is_mail_order: sale?.is_mail_order ? 1 : 0,
+          postage: sale?.postage || null,
+          postal_address: sale?.postal_address || null,
         }),
       }
     );
@@ -831,6 +840,31 @@ export async function addRestockTask(id: number) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ id, needs_restock: true }),
+      }
+    );
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
+
+export async function addNewMailOrderTask(sale: SaleObject, customer: string) {
+  try {
+    const res = await fetch(
+      `/api/create-task?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          description: `Post Sale ${sale?.id} (${sale?.item_list}) to ${customer}\n${sale?.postal_address}`,
+          created_by_clerk_id: sale?.sale_opened_by,
+          assigned_to: RoleTypes?.MC,
+          date_created: dayjs.utc().format(),
+          is_post_mail_order: 1,
+        }),
       }
     );
     const json = await res.json();

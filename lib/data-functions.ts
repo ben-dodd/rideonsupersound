@@ -128,7 +128,6 @@ export function filterInventory({ inventory, search }) {
         ${item?.googleBooksItem?.volumeInfo?.subtitle || ""}
         ${item?.googleBooksItem?.volumeInfo?.categories?.join(" ") || ""}
       `;
-        console.log(itemMatch);
         terms.forEach((term: string) => {
           if (!itemMatch.toLowerCase().includes(term.toLowerCase()))
             res = false;
@@ -224,10 +223,12 @@ export function getStoreCut(item: StockObject) {
 }
 
 export function getSaleVars(sale: SaleObject, inventory: StockObject[]) {
-  const totalPrice =
+  const totalPostage = parseFloat(`${sale?.postage}`) || 0;
+  const totalItemPrice =
     Math.round(
       (getTotalPrice(sale?.items, inventory) / 100 + Number.EPSILON) * 10
     ) / 10;
+  const totalPrice = totalItemPrice + totalPostage;
   const totalPaid =
     Math.round((getTotalPaid(sale?.transactions) / 100 + Number.EPSILON) * 10) /
     10;
@@ -236,11 +237,14 @@ export function getSaleVars(sale: SaleObject, inventory: StockObject[]) {
       (getTotalStoreCut(sale?.items, inventory) / 100 + Number.EPSILON) * 10
     ) / 10;
   const totalVendorCut =
-    Math.round((totalPrice - totalStoreCut + Number.EPSILON) * 10) / 10;
+    Math.round((totalItemPrice - totalStoreCut + Number.EPSILON) * 10) / 10;
   const totalRemaining =
     Math.round((totalPrice - totalPaid + Number.EPSILON) * 10) / 10;
+  console.log(totalRemaining);
   return {
+    totalItemPrice,
     totalPrice,
+    totalPostage,
     totalPaid,
     totalStoreCut,
     totalVendorCut,

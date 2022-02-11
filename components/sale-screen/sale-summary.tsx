@@ -19,8 +19,14 @@ export default function SaleSummary({ sale }) {
   const { inventory } = useInventory();
 
   // Constants
-  const { totalRemaining, totalStoreCut, totalVendorCut, totalPrice } =
-    getSaleVars(sale, inventory);
+  const {
+    totalRemaining,
+    totalStoreCut,
+    totalVendorCut,
+    totalPrice,
+    totalPaid,
+    totalPostage,
+  } = getSaleVars(sale, inventory);
 
   // Functions
   function SaleItems() {
@@ -89,16 +95,26 @@ export default function SaleSummary({ sale }) {
             {`$${totalStoreCut?.toFixed(2)}`}
           </div>
         </div>
+        <div className="flex justify-end border-gray-500">
+          <div>POSTAGE</div>
+          <div
+            className={`text-right w-2/12 text-gray-600 ${
+              totalPostage < 0 && "text-tertiary-dark"
+            }`}
+          >
+            {`$${totalPostage?.toFixed(2)}`}
+          </div>
+        </div>
         <div className="flex justify-end mt-1">
           <div>TOTAL</div>
           <div className="text-right w-2/12 font-bold">
-            ${totalPrice !== null ? totalPrice?.toFixed(2) : "0.00"}
+            ${totalPrice?.toFixed(2)}
           </div>
         </div>
         <div className="flex justify-end mt-1">
           <div>TOTAL PAID</div>
           <div className="text-right w-2/12 font-bold text-secondary-dark">
-            ${(totalPrice - totalRemaining)?.toFixed(2)}
+            ${totalPaid?.toFixed(2)}
           </div>
         </div>
         <div className="flex justify-end mt-1">

@@ -64,7 +64,7 @@ export default function TaskScreen() {
         </div>
         <div className="h-menu w-full overflow-y-scroll px-2 bg-white">
           <Tabs
-            tabs={["Restocking", "Other Jobs"]}
+            tabs={["Restocking", "Mail Orders", "Other Jobs"]}
             value={tab}
             onChange={setTab}
           />
@@ -88,6 +88,36 @@ export default function TaskScreen() {
               </div>
             ) : (
               jobs
+                ?.filter((job) => job?.is_post_mail_order)
+                ?.sort((jobA: TaskObject, jobB: TaskObject) => {
+                  if (jobA?.is_completed && !jobB?.is_completed) return 1;
+                  else if (jobB?.is_completed && !jobA?.is_completed) return -1;
+                  else if (jobA?.is_completed) {
+                    return dayjs(jobA?.date_completed).isAfter(
+                      jobB.date_completed
+                    )
+                      ? -1
+                      : 1;
+                  } else if (jobA?.is_priority && !jobB?.is_priority) return -1;
+                  else if (jobB?.is_priority && !jobA?.is_priority) return 1;
+                  else
+                    return dayjs(jobA?.date_created).isAfter(jobB?.date_created)
+                      ? -1
+                      : 1;
+                })
+                ?.map((task: TaskObject) => (
+                  <ListTask task={task} key={task?.id} />
+                ))
+            )}
+          </div>
+          <div hidden={tab !== 2}>
+            {isJobsLoading ? (
+              <div className="w-full flex h-full">
+                <div className="loading-icon" />
+              </div>
+            ) : (
+              jobs
+                ?.filter((job) => !job?.is_post_mail_order)
                 ?.sort((jobA: TaskObject, jobB: TaskObject) => {
                   if (jobA?.is_completed && !jobB?.is_completed) return 1;
                   else if (jobB?.is_completed && !jobA?.is_completed) return -1;
