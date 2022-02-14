@@ -1,16 +1,6 @@
-// Packages
-import { useState, useEffect, useMemo } from "react";
-import { useAtom } from "jotai";
-
 // DB
-import {
-  useVendors,
-  useInventory,
-  useSalesJoined,
-  useVendorPayments,
-} from "@/lib/swr-hooks";
-import { loadedVendorIdAtom, pageAtom } from "@/lib/atoms";
-import { VendorObject, StockObject, VendorSaleItemObject } from "@/lib/types";
+import { useInventory } from "@/lib/swr-hooks";
+import { StockObject, VendorSaleItemObject } from "@/lib/types";
 
 // Functions
 import { getItemDisplayName } from "@/lib/data-functions";
@@ -26,7 +16,7 @@ export default function VendorSales({ vendorDetails }) {
     <div>
       {vendorDetails?.totalSales?.length > 0 && (
         <div className="mt-4">
-          <div className="font-bold text-xl">Latest Sales</div>
+          <div className="font-bold text-xl">Sales</div>
           {vendorDetails?.totalSales
             ?.sort(
               (saleA: VendorSaleItemObject, saleB: VendorSaleItemObject) => {
@@ -35,7 +25,7 @@ export default function VendorSales({ vendorDetails }) {
                 return a < b ? 1 : b < a ? -1 : 0;
               }
             )
-            ?.slice(0, 5)
+            // ?.slice(0, 5)
             ?.map((sale: VendorSaleItemObject) => (
               <div className="border-b mt-2">
                 <div className="font-bold text-sm">
@@ -46,6 +36,7 @@ export default function VendorSales({ vendorDetails }) {
                     (i: StockObject) => i?.id === sale?.item_id
                   )[0]
                 )} (${sale?.quantity})`}</div>
+                <div>{sale?.sale_id}</div>
               </div>
             ))}
         </div>

@@ -76,14 +76,14 @@ export default function VendorPayments() {
 
   return (
     <div>
-      <div className="font-bold text-xl">Latest Payments</div>
+      <div className="font-bold text-xl">Payments</div>
       {v?.totalPayments
         ?.sort((debitA: VendorPaymentObject, debitB: VendorPaymentObject) => {
           const a = dayjs(debitA?.date);
           const b = dayjs(debitB?.date);
           return a < b ? 1 : b < a ? -1 : 0;
         })
-        ?.slice(0, 5)
+        // ?.slice(0, 5)
         ?.map((debit: VendorPaymentObject) => (
           <div className="border-b mt-2">
             <div className="font-bold text-sm">
@@ -92,6 +92,7 @@ export default function VendorPayments() {
             <div>{`$${(debit?.amount / 100)?.toFixed(2)} (${
               debit?.type
             })`}</div>
+            <div>{debit?.id}</div>
           </div>
         ))}
     </div>
