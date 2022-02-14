@@ -142,7 +142,7 @@ export default function CashPaymentDialog() {
         <Select
           className="w-full"
           value={{ value: paymentType, label: paymentType?.toUpperCase() }}
-          options={[VendorPaymentTypes.Cash, VendorPaymentTypes.DD]?.map(
+          options={[VendorPaymentTypes.Cash, VendorPaymentTypes.DC]?.map(
             (type) => ({
               value: type,
               label: type?.toUpperCase(),
