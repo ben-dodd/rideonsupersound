@@ -185,7 +185,7 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
           )?.toFixed(2)}`}</div>
           <div>TOTAL OWED</div>
           <div>{`$${(vendorDetails?.totalOwing
-            ? vendorDetails?.totalOwing
+            ? vendorDetails?.totalOwing / 100
             : 0
           )?.toFixed(2)}`}</div>
         </div>
