@@ -28,6 +28,7 @@ export default function ScreenContainer({
   titleClass,
   children,
 }: ScreenProps) {
+  console.log(buttons);
   return (
     <div
       className={`absolute top-0 transition-offset duration-300 ${
@@ -64,6 +65,7 @@ export default function ScreenContainer({
                     headers={button?.headers}
                     filename={button?.fileName}
                     onClick={() => button?.onClick()}
+                    enclosingCharacter=""
                   >
                     {button?.text}
                   </CSVLink>

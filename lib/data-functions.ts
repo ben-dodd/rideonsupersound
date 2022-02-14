@@ -774,7 +774,8 @@ export function getCSVData(items) {
             stockItem?.title,
             stockItem?.is_new ? "NEW" : "USED",
             `$${(stockItem?.total_sell / 100)?.toFixed(2)}`,
-            stockItem?.genre,
+            stockItem?.section,
+            `${("00000" + stockItem?.id || "").slice(-5)}`,
           ]);
         }
       );
@@ -784,20 +785,24 @@ export function getCSVData(items) {
 
 interface KiwiBankBatchFileProps {
   transactions: KiwiBankTransactionObject[];
-  vendors: VendorObject[];
   batchNumber: string;
   sequenceNumber: string;
-  storeAccountNumber: string;
 }
 
 export function writeKiwiBankBatchFile({
   transactions,
-  vendors,
   batchNumber,
   sequenceNumber,
-  storeAccountNumber,
 }: KiwiBankBatchFileProps) {
-  // storeAccountNumber BBbbbbaaaaaaass
+  const storeAccountNumber = "389020005748600";
+  let transactionTest = [
+    {
+      name: "Ben Dodd",
+      vendor_id: "69",
+      amount: 10,
+      accountNumber: "11-7426-0024124-00",
+    },
+  ];
   let error = "";
   let transactionAmount = 0;
   let transactionCount = 0;
@@ -815,7 +820,7 @@ export function writeKiwiBankBatchFile({
       "",
     ],
   ];
-  transactions.forEach((transaction: KiwiBankTransactionObject) => {
+  transactionTest.forEach((transaction: KiwiBankTransactionObject) => {
     if (!transaction?.accountNumber)
       error = `${
         transaction?.name || "Unknown Vendor"
@@ -846,7 +851,7 @@ export function writeKiwiBankBatchFile({
       "Ride On Super Sound",
       `Seq ${sequenceNumber}`,
       `Batch ${batchNumber}`,
-      "",
+      transaction?.vendor_id,
     ]);
   });
 

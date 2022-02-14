@@ -53,12 +53,10 @@ export default function CreateCustomerSidebar() {
 
   async function onClickCreateCustomer() {
     setSubmitting(true);
-    const id = await saveCustomerToDatabase(
-      customer,
-      clerk,
-      customers,
-      mutateCustomers
-    );
+    let newCustomer = { ...customer, created_by_clerk_id: clerk?.id };
+    const id = await saveCustomerToDatabase(customer, clerk);
+    newCustomer = { ...newCustomer, id };
+    mutateCustomers([...customers, newCustomer], false);
     setCart({ ...cart, customer_id: id });
     closeSidebar();
     setSubmitting(false);

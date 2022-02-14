@@ -39,7 +39,7 @@ export default function InventoryTable() {
           vendor: vendors?.filter(
             (v: VendorObject) => v?.id === t?.vendor_id
           )[0]?.name,
-          genre: t?.genre || "-",
+          section: t?.section || "-",
           media: t?.media || "-",
           format: t?.format || "-",
           cost: t?.vendor_cut ? t?.vendor_cut / 100 : 0,
@@ -102,8 +102,8 @@ export default function InventoryTable() {
         width: 150,
       },
       {
-        accessor: "genre",
-        Header: "Genre",
+        accessor: "section",
+        Header: "Section",
         width: 100,
       },
       {

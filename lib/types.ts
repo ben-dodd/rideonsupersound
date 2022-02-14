@@ -31,7 +31,7 @@ export enum VendorPaymentTypes {
   Sale = "sale", // vendor bought something with account
   SaleRefund = "sale refund", // vendor refunded something onto their account
   Cash = "cash", // vendor was given cash in store
-  DD = "direct deposit", // vendor paid with internet banking
+  DC = "direct credit", // vendor paid with internet banking
   Batch = "batch", // vendor paid with batch kiwibank payment
 }
 
@@ -247,6 +247,7 @@ export interface StockObject {
   display_as?: string;
   media?: string;
   format?: string;
+  section?: string;
   genre?: string;
   is_new?: number;
   cond?: string;
@@ -284,7 +285,6 @@ export interface StockObject {
   quantity_sold?: number;
   quantity_unsold?: number;
   quantity_adjustment?: number;
-  section?: string;
   tags?: string[];
   is_gift_card?: boolean;
   gift_card_code?: string;
@@ -582,6 +582,7 @@ export interface TillObject {
 
 export interface KiwiBankTransactionObject {
   name?: string;
+  vendor_id?: string;
   amount?: number;
   accountNumber?: string;
 }

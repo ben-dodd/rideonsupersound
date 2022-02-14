@@ -138,25 +138,25 @@ export default function BatchPaymentDialog() {
       },
       fileName: `batch-payment-${dayjs().format("YYYY-MM-DD")}.csv`,
       data: writeKiwiBankBatchFile({
-        transactions: payVendors
-          .filter(
-            (vendor: VendorObject) =>
-              vendor?.bank_account_number &&
-              parseFloat(
-                paymentAmounts[vendor?.id] || vendor?.totalOwing || "0"
-              ) > 0
-          )
-          .map((vendor: VendorObject) => ({
-            name: vendor?.name || "",
-            accountNumber: vendor?.bank_account_number || "",
-            amount: parseFloat(
-              paymentAmounts[vendor?.id] || vendor?.totalOwing || "0"
-            ),
-          })),
-        vendors,
+        transactions: [],
+        // transactions: payVendors
+        //   .filter(
+        //     (vendor: VendorObject) =>
+        //       vendor?.bank_account_number &&
+        //       parseFloat(
+        //         paymentAmounts[vendor?.id] || vendor?.totalOwing || "0"
+        //       ) > 0
+        //   )
+        //   .map((vendor: VendorObject) => ({
+        //     name: vendor?.name || "",
+        //     vendor_id: `${vendor?.id || ""}`,
+        //     accountNumber: vendor?.bank_account_number || "",
+        //     amount: parseFloat(
+        //       paymentAmounts[vendor?.id] || vendor?.totalOwing || "0"
+        //     ),
+        //   })),
         batchNumber: `${registerID}`,
         sequenceNumber: "Test",
-        storeAccountNumber: "",
       }),
     },
   ];

@@ -56,7 +56,15 @@ export default function LabelPrintDialog() {
     {
       type: "ok",
       data: getCSVData(items),
-      headers: ["SKU", "ARTIST", "TITLE", "NEW/USED", "SELL PRICE", "GENRE"],
+      headers: [
+        "SKU",
+        "ARTIST",
+        "TITLE",
+        "NEW/USED",
+        "SELL PRICE",
+        "SECTION",
+        "BARCODE",
+      ],
       fileName: `label-print-${dayjs().format("YYYY-MM-DD")}.csv`,
       text: "PRINT LABELS",
       onClick: () => {

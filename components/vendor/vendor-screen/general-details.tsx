@@ -174,11 +174,20 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
               : "N/A"}
           </div>
           <div>TOTAL TAKE</div>
-          <div>{`$${(vendorDetails?.totalSell || 0)?.toFixed(2)}`}</div>
+          <div>{`$${(vendorDetails?.totalSell
+            ? vendorDetails?.totalSell / 100
+            : 0
+          )?.toFixed(2)}`}</div>
           <div>TOTAL PAID</div>
-          <div>{`$${(vendorDetails?.totalPaid || 0)?.toFixed(2)}`}</div>
+          <div>{`$${(vendorDetails?.totalPaid
+            ? vendorDetails?.totalPaid / 100
+            : 0
+          )?.toFixed(2)}`}</div>
           <div>TOTAL OWED</div>
-          <div>{`$${(vendorDetails?.totalOwing || 0)?.toFixed(2)}`}</div>
+          <div>{`$${(vendorDetails?.totalOwing
+            ? vendorDetails?.totalOwing
+            : 0
+          )?.toFixed(2)}`}</div>
         </div>
         <div />
       </div>

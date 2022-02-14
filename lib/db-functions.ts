@@ -664,9 +664,7 @@ export async function saveHoldToDatabase(
 
 export async function saveCustomerToDatabase(
   customer: CustomerObject,
-  clerk: ClerkObject,
-  customers: CustomerObject[],
-  mutateCustomers: Function
+  clerk: ClerkObject
 ) {
   try {
     const res = await fetch(
@@ -681,7 +679,6 @@ export async function saveCustomerToDatabase(
     );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
-    mutateCustomers([...customers, customer], false);
     return json?.insertId;
   } catch (e) {
     throw Error(e.message);
@@ -710,6 +707,7 @@ export async function updateCustomerInDatabase(
       (c: CustomerObject) => c?.id !== customer?.id
     );
     mutateCustomers([...otherCustomers, customer], false);
+    console.log(customer);
   } catch (e) {
     throw Error(e.message);
   }
