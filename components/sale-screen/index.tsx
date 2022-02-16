@@ -75,7 +75,6 @@ export default function SaleScreen() {
   // BUG dates are wrong on vercel
   // BUG why are some sales showing items as separate line items, not 2x quantity
 
-  const itemList = writeItemList(inventory, items);
   const { totalRemaining, totalPrice, numberOfItems } = getSaleVars(
     cart,
     inventory
@@ -182,7 +181,7 @@ export default function SaleScreen() {
       date_sale_closed: dayjs.utc().format(),
     };
 
-    saveSaleItemsTransactionsToDatabase(
+    const saleId = await saveSaleItemsTransactionsToDatabase(
       completedSale,
       clerk,
       registerID,
@@ -200,10 +199,14 @@ export default function SaleScreen() {
     setCompleteSaleLoading(false);
     saveLog(
       {
-        log: `Sale #${cart?.id} completed. ${itemList}.`,
+        log: `Sale #${cart?.id || saleId} completed.`,
+        // log: `Sale #${cart?.id || saleId} completed. ${writeItemList(
+        //   inventory,
+        //   items || cart?.items
+        // )}.`,
         clerk_id: clerk?.id,
         table_id: "sale",
-        row_id: cart?.id,
+        row_id: cart?.id || saleId,
       },
       logs,
       mutateLogs

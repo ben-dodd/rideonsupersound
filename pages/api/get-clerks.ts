@@ -10,6 +10,7 @@ const handler: NextApiHandler = async (req, res) => {
       `
       SELECT *
       FROM clerk
+      ORDER BY colour
       `
     );
 

@@ -15,6 +15,7 @@ const handler: NextApiHandler = async (req, res) => {
         FROM account_clerk
         WHERE account_id = ?
       )
+      ORDER BY colour
       `,
       account_id
     );

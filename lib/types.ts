@@ -66,6 +66,7 @@ export enum RoleTypes {
 export interface ClerkObject {
   id: number;
   name?: string;
+  colour?: number;
   password?: string;
   full_name?: string;
   email?: string;
@@ -652,3 +653,42 @@ interface WeatherObject {
   description?: string;
   icon?: string;
 }
+
+export const bgDark = [
+  "bg-col1-dark",
+  "bg-col2-dark",
+  "bg-col3-dark",
+  "bg-col4-dark",
+  "bg-col5-dark",
+  "bg-col6-dark",
+  "bg-col7-dark",
+  "bg-col8-dark",
+  "bg-col9-dark",
+  "bg-col10-dark",
+];
+
+export const bg = [
+  "bg-col1",
+  "bg-col2",
+  "bg-col3",
+  "bg-col4",
+  "bg-col5",
+  "bg-col6",
+  "bg-col7",
+  "bg-col8",
+  "bg-col9",
+  "bg-col10",
+];
+
+export const bgLight = [
+  "bg-col1-light",
+  "bg-col2-light",
+  "bg-col3-light",
+  "bg-col4-light",
+  "bg-col5-light",
+  "bg-col6-light",
+  "bg-col7-light",
+  "bg-col8-light",
+  "bg-col9-light",
+  "bg-col10-light",
+];

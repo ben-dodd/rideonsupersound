@@ -17,6 +17,7 @@ import TaskNavActions from "./actions/task";
 
 // Icons
 import HelpIcon from "@mui/icons-material/Help";
+import { bg } from "@/lib/types";
 
 // REVIEW fix all actions and clean up files
 
@@ -29,17 +30,8 @@ export default function Nav() {
   const [page] = useAtom(pageAtom);
   const [view, setView] = useAtom(viewAtom);
 
-  const bg = {
-    nick: "bg-nick",
-    mieke: "bg-mieke",
-    john: "bg-john",
-    michael: "bg-michael",
-    guest: "bg-guest",
-    isaac: "bg-isaac",
-  };
-
   return (
-    <nav className={`py-2 ${bg[clerk?.name?.toLowerCase()]} text-white h-nav`}>
+    <nav className={`py-2 ${bg[clerk?.colour]} text-white h-nav`}>
       <div className="flex justify-between items-center">
         <div className="flex items-center">
           <div className="ml-4 text-black text-4xl font-black">

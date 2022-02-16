@@ -5,7 +5,7 @@ import Image from "next/image";
 // DB
 import { useJobs, useInventory } from "@/lib/swr-hooks";
 import { pageAtom, cartAtom, clerkAtom, viewAtom } from "@/lib/atoms";
-import { SaleItemObject, TaskObject, StockObject } from "@/lib/types";
+import { SaleItemObject, TaskObject, StockObject, bg } from "@/lib/types";
 
 // Icons
 // import CustomersIcon from "@mui/icons-material/LocalLibrary";
@@ -188,19 +188,10 @@ export default function Menu() {
     },
   ];
 
-  const bg = {
-    nick: "bg-nick",
-    mieke: "bg-mieke",
-    john: "bg-john",
-    michael: "bg-michael",
-    guest: "bg-guest",
-    isaac: "bg-isaac",
-  };
-
   return (
     <div
       className={`w-0 overflow-y-auto flex flex-col h-menu justify-between ${
-        bg[clerk?.name?.toLowerCase()]
+        bg[clerk?.colour]
       } z-50 flex-shrink-0 whitespace-pre relative ${
         view?.mainMenu && "w-full "
       }sm:w-full sm:w-icons sm:border-r lg:w-menu transition-width duration-200 `}

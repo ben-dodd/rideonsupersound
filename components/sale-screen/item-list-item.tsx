@@ -74,7 +74,7 @@ export default function ItemListItem({
           )}
         </div>
       </div>
-      <div className="flex flex-col w-full p-2 justify-between">
+      <div className="flex flex-col w-full py-2 pl-2 justify-between">
         <div className="text-sm pl-1">
           <div>{getItemDisplayName(item)}</div>
           {saleItem?.is_refunded ? (

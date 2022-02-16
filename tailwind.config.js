@@ -82,24 +82,24 @@ module.exports = {
           DEFAULT: "#ff87ff",
           light: "#ffdeff",
         },
-        nick: {
-          DEFAULT: "#faf989",
-        },
-        mieke: {
-          DEFAULT: "#d59ae4",
-        },
-        michael: {
-          DEFAULT: "#f9da88",
-        },
-        john: {
-          DEFAULT: "#f99bad",
-        },
-        isaac: {
-          DEFAULT: "#98f991",
-        },
-        guest: {
-          DEFAULT: "#97cafa",
-        },
+        // nick: {
+        //   DEFAULT: "#faf989",
+        // },
+        // mieke: {
+        //   DEFAULT: "#d59ae4",
+        // },
+        // michael: {
+        //   DEFAULT: "#f9da88",
+        // },
+        // john: {
+        //   DEFAULT: "#f99bad",
+        // },
+        // isaac: {
+        //   DEFAULT: "#98f991",
+        // },
+        // guest: {
+        //   DEFAULT: "#97cafa",
+        // },
         brown: {
           dark: "#423e3e",
           DEFAULT: "#7c7474",

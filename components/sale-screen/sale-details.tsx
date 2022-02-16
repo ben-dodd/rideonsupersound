@@ -71,29 +71,33 @@ export default function SaleDetails({ sale }) {
         <div className="font-bold">Sale Open</div>
         <div className="mb-4">
           {sale?.date_sale_opened
-            ? `${dayjs(sale?.date_sale_opened).format(
-                "D MMMM YYYY, h:mm A"
-              )} (opened by ${
-                clerks
-                  ? clerks.filter(
-                      (clerk: any) => clerk?.id === sale?.sale_opened_by
-                    )[0]?.name
-                  : "unknown clerk"
-              })`
+            ? `${dayjs(sale?.date_sale_opened).format("D MMMM YYYY, h:mm A")}${
+                sale?.sale_opened_by
+                  ? `(opened by ${
+                      clerks
+                        ? clerks.filter(
+                            (clerk: any) => clerk?.id === sale?.sale_opened_by
+                          )[0]?.name
+                        : "unknown clerk"
+                    })`
+                  : ""
+              }`
             : "Sale not opened"}
         </div>
         <div className="font-bold">Sale Close</div>
         <div className="mb-4">
           {sale?.date_sale_closed
-            ? `${dayjs(sale?.date_sale_closed).format(
-                "D MMMM YYYY, h:mm A"
-              )} (opened by ${
-                clerks
-                  ? clerks.filter(
-                      (clerk: any) => clerk?.id === sale?.sale_closed_by
-                    )[0]?.name
-                  : "unknown clerk"
-              })`
+            ? `${dayjs(sale?.date_sale_closed).format("D MMMM YYYY, h:mm A")}${
+                sale?.sale_closed_by
+                  ? `(opened by ${
+                      clerks
+                        ? clerks.filter(
+                            (clerk: any) => clerk?.id === sale?.sale_closed_by
+                          )[0]?.name
+                        : "unknown clerk"
+                    })`
+                  : ""
+              }`
             : "Sale not closed"}
         </div>
         {sale?.is_mail_order && (

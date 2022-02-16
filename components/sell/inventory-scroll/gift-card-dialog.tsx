@@ -21,6 +21,7 @@ import Modal from "@/components/_components/container/modal";
 import TextField from "@/components/_components/inputs/text-field";
 
 import SyncIcon from "@mui/icons-material/Sync";
+import dayjs from "dayjs";
 
 export default function GiftCardDialog() {
   // Atoms
@@ -79,7 +80,7 @@ export default function GiftCardDialog() {
         setCart({
           id: cart?.id || null,
           // REVIEW check the date to string thing works ok
-          date_sale_opened: cart?.date_sale_opened || new Date().toString(),
+          date_sale_opened: cart?.date_sale_opened || dayjs.utc().format(),
           sale_opened_by: cart?.sale_opened_by || clerk?.id,
           items: newItems,
           weather: cart?.weather || weather,
