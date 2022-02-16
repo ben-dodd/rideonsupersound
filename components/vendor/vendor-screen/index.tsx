@@ -94,7 +94,7 @@ export default function VendorScreen() {
     >
       <div className="flex flex-col w-full">
         <Tabs
-          tabs={["General Details", "Sales", "Items", "Payments"]}
+          tabs={["General Details", "Items", "Sales", "Payments"]}
           value={tab}
           onChange={setTab}
         />
@@ -106,10 +106,10 @@ export default function VendorScreen() {
           />
         </div>
         <div hidden={tab !== 1}>
-          <VendorSales vendorDetails={vendorDetails} />
+          <VendorItems />
         </div>
         <div hidden={tab !== 2}>
-          <VendorItems />
+          <VendorSales vendorDetails={vendorDetails} />
         </div>
         <div hidden={tab !== 3}>
           <VendorPayments />

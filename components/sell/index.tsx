@@ -3,7 +3,13 @@ import { useAtom } from "jotai";
 import { useSwipeable } from "react-swipeable";
 
 // DB
-import { viewAtom, pageAtom, cartAtom, loadedItemIdAtom } from "@/lib/atoms";
+import {
+  viewAtom,
+  pageAtom,
+  cartAtom,
+  loadedItemIdAtom,
+  bypassRegisterAtom,
+} from "@/lib/atoms";
 import { useRegisterID } from "@/lib/swr-hooks";
 
 // Components
@@ -35,6 +41,7 @@ export default function SellScreen() {
   // Atoms
   const [view, setView] = useAtom(viewAtom);
   const [page] = useAtom(pageAtom);
+  const [bypassRegister] = useAtom(bypassRegisterAtom);
 
   const handlers = useSwipeable({
     onSwipedRight: () =>
@@ -51,12 +58,12 @@ export default function SellScreen() {
     preventDefaultTouchmoveEvent: true,
   });
 
-  return registerID === 0 ? (
+  return registerID === 0 && !bypassRegister ? (
     <OpenRegisterScreen />
   ) : (
     <div
       className={`flex relative overflow-x-hidden ${
-        page !== "sell" || registerID < 1 ? "hidden" : ""
+        page !== "sell" || (registerID < 1 && !bypassRegister) ? "hidden" : ""
       }`}
       {...handlers}
     >
@@ -76,7 +83,6 @@ export default function SellScreen() {
       {view?.closeRegisterScreen && <CloseRegisterScreen />}
       {view?.returnCashDialog && <ReturnCashDialog />}
       {view?.takeCashDialog && <TakeCashDialog />}
-      {/*view?.loadSalesDialog && <LoadSalesDialog />*/}
     </div>
   );
 }

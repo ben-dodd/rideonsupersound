@@ -4,7 +4,12 @@ import { useAtom } from "jotai";
 
 // DB
 import { TillObject, RegisterObject } from "@/lib/types";
-import { clerkAtom, pageAtom, alertAtom } from "@/lib/atoms";
+import {
+  clerkAtom,
+  pageAtom,
+  alertAtom,
+  bypassRegisterAtom,
+} from "@/lib/atoms";
 import { useRegisterID, useLogs } from "@/lib/swr-hooks";
 
 // Functions
@@ -26,6 +31,7 @@ export default function OpenRegisterScreen() {
   const [, setAlert] = useAtom(alertAtom);
   const [clerk] = useAtom(clerkAtom);
   const [page] = useAtom(pageAtom);
+  const [, setBypassRegister] = useAtom(bypassRegisterAtom);
 
   // State
   const [till, setTill] = useState({});
@@ -136,20 +142,28 @@ export default function OpenRegisterScreen() {
           onChange={(e: any) => setNotes(e.target.value)}
           multiline
         />
-        <button
-          disabled={isError(till) || invalidOpenAmount || loading}
-          className="modal__button--ok"
-          onClick={openRegister}
-        >
-          {loading ? (
-            <span className="pr-4">
-              <CircularProgress color="inherit" size={18} />
-            </span>
-          ) : (
-            <OpenIcon className="mr-2" />
-          )}
-          Open Register
-        </button>
+        <div className="flex">
+          <button
+            className="modal__button--cancel"
+            onClick={() => setBypassRegister(true)}
+          >
+            Bypass Register
+          </button>
+          <button
+            disabled={isError(till) || invalidOpenAmount || loading}
+            className="modal__button--ok"
+            onClick={openRegister}
+          >
+            {loading ? (
+              <span className="pr-4">
+                <CircularProgress color="inherit" size={18} />
+              </span>
+            ) : (
+              <OpenIcon className="mr-2" />
+            )}
+            Open Register
+          </button>
+        </div>
       </div>
     </div>
   );

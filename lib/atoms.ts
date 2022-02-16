@@ -83,3 +83,4 @@ export const confirmModalAtom = atom<ConfirmModal>({ open: false });
 export const alertAtom = atom<AlertProps>({ open: false });
 
 export const receiveStockAtom = atom<any>({});
+export const bypassRegisterAtom = atom<boolean>(false);

@@ -27,7 +27,7 @@ export default function SaleTable() {
   const { sales, isSalesLoading } = useSales();
   // const { saleItems, isSaleItemsLoading } = useSaleItems();
   const { inventory, isInventoryLoading } = useInventory();
-  const { customers, isCustomersLoading } = useCustomers();
+  // const { customers, isCustomersLoading } = useCustomers();
   const { clerks, isClerksLoading } = useClerks();
 
   // Atoms
@@ -49,9 +49,9 @@ export default function SaleTable() {
             id: s?.id,
             date: s?.date_sale_opened,
             status: s?.state,
-            customer: customers?.filter(
-              (c: CustomerObject) => c?.id === s?.customer_id
-            )[0],
+            // customer: customers?.filter(
+            //   (c: CustomerObject) => c?.id === s?.customer_id
+            // )[0],
             clerk: clerks?.filter(
               (c: ClerkObject) => c?.id === s?.sale_opened_by
             )[0],
@@ -69,7 +69,7 @@ export default function SaleTable() {
             // sell: getTotalPrice(items, inventory),
           };
         }),
-    [sales, customers, clerks, inventory]
+    [sales, clerks, inventory]
   );
   const columns = useMemo(() => {
     return [
@@ -128,11 +128,11 @@ export default function SaleTable() {
         width: 120,
         Cell: ({ value }) => (value ? `$${(value / 100)?.toFixed(2)}` : "N/A"),
       },
-      {
-        Header: "Customer",
-        accessor: "customer",
-        Cell: ({ value }) => value?.name || "",
-      },
+      // {
+      //   Header: "Customer",
+      //   accessor: "customer",
+      //   Cell: ({ value }) => value?.name || "",
+      // },
       {
         Header: "#",
         accessor: "numberOfItems",
@@ -148,12 +148,7 @@ export default function SaleTable() {
 
   return (
     <TableContainer
-      loading={
-        isSalesLoading ||
-        isClerksLoading ||
-        isInventoryLoading ||
-        isCustomersLoading
-      }
+      loading={isSalesLoading || isClerksLoading || isInventoryLoading}
     >
       <Table
         color="bg-col5"

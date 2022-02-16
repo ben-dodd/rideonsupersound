@@ -22,7 +22,6 @@ export default function SalesScreen() {
         page !== "sales" ? "hidden" : ""
       }`}
     >
-      {" "}
       {page === "sales" && <SaleTable />}
       {loadedSaleId[page] && <SaleItemScreen />}
     </div>

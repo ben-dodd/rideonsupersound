@@ -68,7 +68,7 @@ export default function VendorPayments() {
   }, [loadedVendorId[page]]);
 
   // Constants
-  const v = useMemo(
+  const vendorDetails = useMemo(
     () =>
       getVendorDetails(inventory, sales, vendorPayments, loadedVendorId[page]),
     [inventory, sales, vendorPayments, loadedVendorId[page]]
@@ -76,25 +76,77 @@ export default function VendorPayments() {
 
   return (
     <div>
-      <div className="font-bold text-xl">Payments</div>
-      {v?.totalPayments
-        ?.sort((debitA: VendorPaymentObject, debitB: VendorPaymentObject) => {
-          const a = dayjs(debitA?.date);
-          const b = dayjs(debitB?.date);
-          return a < b ? 1 : b < a ? -1 : 0;
-        })
-        // ?.slice(0, 5)
-        ?.map((debit: VendorPaymentObject) => (
-          <div className="border-b mt-2">
-            <div className="font-bold text-sm">
-              {dayjs(debit?.date).format("D MMMM YYYY")}
-            </div>
-            <div>{`$${(debit?.amount / 100)?.toFixed(2)} (${
-              debit?.type
-            })`}</div>
-            <div>{debit?.id}</div>
+      {vendorDetails?.totalPayments?.length > 0 && (
+        <div className="mt-4">
+          <div className="border-b mb-2 flex text-sm">
+            <div className="w-1/6">DATE SOLD</div>
+            <div className="w-1/2" />
+            <div className="w-1/6">TYPE</div>
+            <div className="w-1/6 text-right">AMOUNT</div>
+            {/* <div className="w-1/3">ITEM SOLD</div> */}
+            {/* <div className="w-1/6">FORMAT</div>
+          <div className="w-1/6">TOTAL SELL</div>
+          <div className="w-1/6">VENDOR TAKE</div> */}
           </div>
-        ))}
+
+          <div className="border-b py-1 flex text-sm font-bold">
+            <div className="w-1/6" />
+            <div className="w-1/2" />
+            <div className="w-1/6">{`${
+              vendorDetails?.totalPayments?.length
+            } PAYMENT${
+              vendorDetails?.totalPayments?.length === 1 ? "" : "S"
+            } MADE`}</div>
+            <div className="w-1/6 text-right">
+              {`$${(
+                vendorDetails?.totalPayments?.reduce(
+                  (prev, curr) => prev + curr?.amount,
+                  0
+                ) / 100
+              )?.toFixed(2)}`}
+            </div>
+          </div>
+
+          {vendorDetails?.totalPayments
+            ?.sort(
+              (debitA: VendorPaymentObject, debitB: VendorPaymentObject) => {
+                const a = dayjs(debitA?.date);
+                const b = dayjs(debitB?.date);
+                return a < b ? 1 : b < a ? -1 : 0;
+              }
+            )
+            // ?.slice(0, 5)
+            ?.map((debit: VendorPaymentObject) => {
+              console.log(debit);
+              return (
+                <div
+                  className="border-b py-1 flex hover:bg-gray-100 text-sm"
+                  key={debit?.id}
+                >
+                  <div className="font-bold w-1/6">
+                    {dayjs(debit?.date).format("D MMMM YYYY")}
+                  </div>
+                  <div className="w-1/2" />
+                  <div className="w-1/6">{debit?.type?.toUpperCase()}</div>
+                  {/* <div className="w-1/3">{`${
+                  sale?.quantity
+                } x ${getItemDisplayName(stockItem)}`}</div>
+                <div className="w-1/6">{stockItem?.format}</div>
+                <div className="w-1/6">
+                  {sale?.total_sell
+                    ? `$${(sale?.total_sell / 100)?.toFixed(2)}`
+                    : "N/A"}
+                </div> */}
+                  <div className="w-1/6 text-right">
+                    {debit?.amount
+                      ? `$${(debit?.amount / 100)?.toFixed(2)}`
+                      : "N/A"}
+                  </div>
+                </div>
+              );
+            })}
+        </div>
+      )}
     </div>
   );
 }
