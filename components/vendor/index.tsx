@@ -7,6 +7,7 @@ import { pageAtom } from "@/lib/atoms";
 // Components
 import VendorTable from "@/components/vendor/vendor-table";
 import VendorScreen from "@/components/vendor/vendor-screen";
+import InventoryItemScreen from "../inventory/inventory-item-screen";
 
 export default function VendorPage() {
   // Atoms
@@ -19,6 +20,7 @@ export default function VendorPage() {
     >
       {page === "vendors" && <VendorTable />}
       <VendorScreen />
+      <InventoryItemScreen page="vendors" />
     </div>
   );
 }

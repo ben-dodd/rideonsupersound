@@ -1,6 +1,7 @@
 // Packages
 import { useState, useEffect, useMemo } from "react";
 import { useAtom } from "jotai";
+import Image from "next/image";
 
 // DB
 import {
@@ -9,11 +10,18 @@ import {
   useSalesJoined,
   useVendorPayments,
 } from "@/lib/swr-hooks";
-import { loadedVendorIdAtom, pageAtom } from "@/lib/atoms";
+import { loadedItemIdAtom, loadedVendorIdAtom, pageAtom } from "@/lib/atoms";
 import { VendorObject, StockObject } from "@/lib/types";
 
 // Functions
-import { getItemDisplayName, getVendorDetails } from "@/lib/data-functions";
+import {
+  getImageSrc,
+  getItemDisplayName,
+  getItemSku,
+  getVendorDetails,
+} from "@/lib/data-functions";
+import { Tooltip } from "@mui/material";
+import InfoIcon from "@mui/icons-material/Info";
 
 export default function VendorItems() {
   // Atoms
@@ -28,6 +36,7 @@ export default function VendorItems() {
 
   // State
   const [vendor, setVendor]: [VendorObject, Function] = useState({});
+  const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom);
 
   // Load
   useEffect(() => {
@@ -39,16 +48,76 @@ export default function VendorItems() {
   // Functions
   function StockItem({ item }) {
     return (
-      <div className={`flex justify-between my-2 border-b`}>
-        <div className="flex">
-          <div className="cursor-pointer w-1/3" onClick={() => null}></div>
-          <div className="ml-8 w-2/3">
-            {getItemDisplayName(item)}
+      <div
+        className={`flex w-full mb-2 pr-2 text-black ${
+          item?.quantity < 1 ? "bg-pink-200" : "bg-gray-200"
+        }`}
+      >
+        <div className="w-32">
+          <div
+            className={`w-32 h-32 relative${
+              item?.quantity < 1 ? " opacity-50" : ""
+            }`}
+          >
+            <Image
+              layout="fill"
+              objectFit="cover"
+              src={getImageSrc(item)}
+              alt={item?.title || "Inventory image"}
+            />
+          </div>
+          <div className="text-lg font-bold text-center bg-black text-white">
+            {getItemSku(item)}
+          </div>
+        </div>
+        <div className="flex flex-col justify-between pl-2 w-full">
+          <div>
+            <div className="flex justify-between border-b items-center border-gray-400">
+              <div>
+                <div className="font-bold text-md">{`${
+                  item?.title || "Untitled"
+                }`}</div>
+                <div className="text-md">{`${item?.artist || "Untitled"}`}</div>
+              </div>
+              <div className="text-yellow-400 font-bold text-3xl">
+                {item?.needs_restock ? "PLEASE RESTOCK!" : ""}
+              </div>
+            </div>
+            <div className="text-sm text-green-800">{`${
+              item?.genre ? `${item.genre} / ` : ""
+            }${item?.format} [${
+              item?.is_new ? "NEW" : item?.cond?.toUpperCase() || "USED"
+            }]`}</div>
+          </div>
+          <div className="flex justify-between items-end">
+            <div className="text-xs">
+              {`${vendor ? `Selling for ${vendor?.name}` : ""}`}
+            </div>
+            <div className="self-center pl-8 hidden sm:inline">
+              <Tooltip title="View and edit item details.">
+                <button
+                  className="icon-button-large text-black hover:text-blue-500"
+                  onClick={() =>
+                    setLoadedItemId({ ...loadedItemId, vendors: item?.id })
+                  }
+                >
+                  <InfoIcon style={{ fontSize: "40px" }} />
+                </button>
+              </Tooltip>
+            </div>
+          </div>
+
+          <div className="flex justify-between items-end">
             <div
-              className={`mt-8 ${
-                (item?.quantity || 0) <= 0 ? "text-tertiary" : "text-black"
-              }`}
-            >{`${item?.quantity || 0} in stock.`}</div>
+              className={`text-md ${item?.quantity < 1 && "text-red-500"}`}
+            >{`${item?.quantity} in stock${
+              item?.quantity_hold ? `, ${-item?.quantity_hold} on hold` : ""
+            }${
+              item?.quantity_layby ? `, ${-item?.quantity_layby} on layby` : ""
+            }`}</div>
+            <div className="text-xl pr-2">{`$${(
+              (item?.total_sell || 0) / 100
+            )?.toFixed(2)}`}</div>
           </div>
         </div>
       </div>
@@ -63,19 +132,23 @@ export default function VendorItems() {
   );
 
   return (
-    <div>
-      <div className="text-xl font-bold bg-col3 px-1">In Stock Items</div>
-      {v?.totalItems
-        ?.filter((item: StockObject) => item?.quantity > 0)
-        ?.map((item: StockObject) => (
-          <StockItem key={item.id} item={item} />
-        ))}
-      <div className="text-xl font-bold bg-col4 px-1">Out of Stock Items</div>
-      {v?.totalItems
-        ?.filter((item: StockObject) => (item?.quantity || 0) <= 0)
-        ?.map((item: StockObject) => (
-          <StockItem item={item} />
-        ))}
+    <div className="flex">
+      <div className="w-1/2 pr-2">
+        <div className="text-sm font-bold px-1 border-b mb-2">IN STOCK</div>
+        {v?.totalItems
+          ?.filter((item: StockObject) => item?.quantity > 0)
+          ?.map((item: StockObject) => (
+            <StockItem key={item.id} item={item} />
+          ))}
+      </div>
+      <div className="w-1/2 pl-2">
+        <div className="text-sm font-bold px-1 border-b mb-2">OUT OF STOCK</div>
+        {v?.totalItems
+          ?.filter((item: StockObject) => (item?.quantity || 0) <= 0)
+          ?.map((item: StockObject) => (
+            <StockItem item={item} />
+          ))}
+      </div>
     </div>
   );
 }

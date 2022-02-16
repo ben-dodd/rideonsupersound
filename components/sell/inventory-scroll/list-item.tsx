@@ -148,9 +148,6 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
             src={getImageSrc(item)}
             alt={item?.title || "Inventory image"}
           />
-          {/*<div className="absolute w-32 h-8 bg-opacity-50 bg-black text-white flex justify-center items-center">
-            {getItemSku(item)}
-          </div>*/}
         </div>
         <div className="text-lg font-bold text-center bg-black text-white">
           {getItemSku(item)}
