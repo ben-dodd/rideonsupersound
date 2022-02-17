@@ -181,6 +181,8 @@ export default function SaleScreen() {
       date_sale_closed: dayjs.utc().format(),
     };
 
+    console.log(completedSale);
+
     const saleId = await saveSaleItemsTransactionsToDatabase(
       completedSale,
       clerk,

@@ -126,6 +126,7 @@ export async function saveSaleItemsTransactionsToDatabase(
   prevState?: string,
   customer?: string
 ) {
+  console.log("save sale");
   let { totalStoreCut, totalItemPrice, numberOfItems, itemList } = getSaleVars(
     cart,
     inventory
@@ -152,6 +153,7 @@ export async function saveSaleItemsTransactionsToDatabase(
     }
   } else {
     // Sale already has id, update
+    console.log(newSale);
     updateSaleInDatabase(newSale);
     let otherSales = sales?.filter((s: SaleObject) => s?.id !== newSaleId);
     mutateSales([...otherSales, newSale], false);

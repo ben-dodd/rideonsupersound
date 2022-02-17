@@ -51,9 +51,8 @@ export default function Modal({
       </div>
       {buttons && (
         <div className={`modal__button-div`}>
-          {buttons.map((button: ModalButton, i: number) => {
-            console.log(button);
-            return button?.data && !button?.disabled ? (
+          {buttons.map((button: ModalButton, i: number) =>
+            button?.data && !button?.disabled ? (
               <CSVLink
                 key={i}
                 className={`modal__button--${button?.type}`}
@@ -80,8 +79,8 @@ export default function Modal({
                 )}
                 {button?.text}
               </button>
-            );
-          })}
+            )
+          )}
         </div>
       )}
     </ModalBase>

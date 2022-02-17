@@ -25,7 +25,6 @@ export default function InventoryItemForm({
   const handleChange = (e) =>
     setItem({ ...item, [e.target.name]: e.target.value });
   const { vendors } = useVendors();
-  console.log(item);
 
   const vendor = useMemo(
     () =>

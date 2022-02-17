@@ -52,7 +52,6 @@ export default function Menu() {
     0
   );
 
-  console.log(inventory);
   const jobsToDo =
     (jobs?.filter?.((t: TaskObject) => !t?.is_deleted && !t?.is_completed)
       ?.length || 0) +

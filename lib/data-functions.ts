@@ -240,7 +240,6 @@ export function getSaleVars(sale: SaleObject, inventory: StockObject[]) {
     Math.round((totalItemPrice - totalStoreCut + Number.EPSILON) * 10) / 10;
   const totalRemaining =
     Math.round((totalPrice - totalPaid + Number.EPSILON) * 10) / 10;
-  console.log(totalRemaining);
   return {
     totalItemPrice,
     totalPrice,

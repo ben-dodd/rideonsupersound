@@ -136,7 +136,7 @@ export default function SaleTable() {
       {
         Header: "#",
         accessor: "numberOfItems",
-        width: 30,
+        width: 50,
       },
       {
         Header: "Items",

@@ -27,9 +27,6 @@ export default function Pay() {
 
   // State
   const { totalRemaining } = getSaleVars(cart, inventory);
-  console.log(
-    customers?.filter((c: CustomerObject) => c?.id === cart?.customer_id)[0]
-  );
   return (
     <div className="flex flex-col justify-between">
       <div className="flex justify-between my-2">
@@ -148,7 +145,7 @@ export default function Pay() {
         />
         <div className="ml-2">Mail order</div>
       </div>
-      {cart?.is_mail_order && (
+      {cart?.is_mail_order ? (
         <div>
           <TextField
             inputLabel="Postage Fee"
@@ -172,6 +169,8 @@ export default function Pay() {
             }
           />
         </div>
+      ) : (
+        <div />
       )}
       <TextField
         inputLabel="Note"

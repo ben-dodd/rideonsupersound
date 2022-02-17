@@ -56,10 +56,10 @@ const handler: NextApiHandler = async (req, res) => {
         total_price,
         number_of_items,
         item_list,
-        sale_id,
         is_mail_order,
         postage,
         postal_address,
+        sale_id,
       ]
     );
     return res.json(results);
