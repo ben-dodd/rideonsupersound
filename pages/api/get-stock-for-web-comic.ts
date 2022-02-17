@@ -31,7 +31,8 @@ const handler: NextApiHandler = async (req, res) => {
             FROM stock_price
             WHERE stock_id = s.id
          ) OR s.is_gift_card OR s.is_misc_item)
-      AND s.format = "Comic"
+      AND s.media = "Literature"
+      AND s.format !== "Zine"
       AND q.quantity > 0
       AND s.do_list_on_website
       AND NOT is_deleted
