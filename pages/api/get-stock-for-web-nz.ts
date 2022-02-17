@@ -15,6 +15,7 @@ const handler: NextApiHandler = async (req, res) => {
         s.section,
         s.genre,
         s.is_new,
+        s.is_nz,
         s.cond,
         s.image_url,
         s.thumb_url,
@@ -31,7 +32,7 @@ const handler: NextApiHandler = async (req, res) => {
             FROM stock_price
             WHERE stock_id = s.id
          ) OR s.is_gift_card OR s.is_misc_item)
-      AND INSTR(s.format, '{$Zine}') > 0
+      AND (s.country = 'NZ' OR s.is_nz)
       AND q.quantity > 0
       AND s.do_list_on_website
       AND NOT is_deleted
