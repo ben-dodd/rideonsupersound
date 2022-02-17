@@ -165,8 +165,16 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
               }`}</div>
               <div className="text-md">{`${item?.artist || "Untitled"}`}</div>
             </div>
-            <div className="text-yellow-400 font-bold text-3xl">
-              {item?.needs_restock ? "PLEASE RESTOCK!" : ""}
+            <div
+              className={`${
+                item?.needs_restock ? "text-yellow-400" : "text-red-400"
+              } font-bold text-3xl`}
+            >
+              {item?.needs_restock
+                ? "PLEASE RESTOCK!"
+                : itemQuantity < 1
+                ? "OUT OF STOCK"
+                : ""}
             </div>
           </div>
           <div className="text-sm text-green-800">{`${
