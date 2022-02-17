@@ -11,6 +11,7 @@ const handler: NextApiHandler = async (req, res) => {
     display_as,
     media,
     format,
+    section,
     genre,
     is_new,
     cond,
@@ -55,6 +56,7 @@ const handler: NextApiHandler = async (req, res) => {
         display_as,
         media,
         format,
+        section,
         genre,
         is_new,
         cond,
@@ -87,7 +89,7 @@ const handler: NextApiHandler = async (req, res) => {
         created_by_id,
         date_last_stocktake
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
       [
         vendor_id,
@@ -96,7 +98,8 @@ const handler: NextApiHandler = async (req, res) => {
         display_as,
         media,
         format,
-        genre,
+        section,
+        JSON.stringify(genre),
         is_new || 0,
         cond,
         country,

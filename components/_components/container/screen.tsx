@@ -28,7 +28,6 @@ export default function ScreenContainer({
   titleClass,
   children,
 }: ScreenProps) {
-  console.log(buttons);
   return (
     <div
       className={`absolute top-0 transition-offset duration-300 ${

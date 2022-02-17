@@ -44,6 +44,7 @@ export default function InventoryItemScreen({ page }) {
     newItem.googleBooksItem = newItem?.googleBooksItem
       ? JSON.parse(newItem.googleBooksItem)
       : null;
+    newItem.genre = newItem?.genre ? JSON.parse(newItem.genre) : null;
     setItem(newItem);
   }, [stockItem]);
 

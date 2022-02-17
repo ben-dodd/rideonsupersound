@@ -108,9 +108,10 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
             }
           />
         </div>
-        <div className="flex cursor-pointer mt-2">
+        <div className="flex mt-2">
           <input
             type="checkbox"
+            className="cursor-pointer"
             checked={vendor?.store_credit_only}
             onChange={(e) =>
               setVendor({ ...vendor, store_credit_only: e.target.checked })
@@ -118,9 +119,10 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
           />
           <div className="ml-2">Store Credit Only</div>
         </div>
-        <div className="flex cursor-pointer mt-2">
+        <div className="flex mt-2">
           <input
             type="checkbox"
+            className="cursor-pointer"
             checked={vendor?.email_vendor}
             onChange={(e) =>
               setVendor({ ...vendor, email_vendor: e.target.checked })

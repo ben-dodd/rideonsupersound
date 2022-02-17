@@ -9,7 +9,13 @@ import {
   useLogs,
   useWeather,
 } from "@/lib/swr-hooks";
-import { viewAtom, cartAtom, clerkAtom, alertAtom } from "@/lib/atoms";
+import {
+  viewAtom,
+  cartAtom,
+  clerkAtom,
+  alertAtom,
+  sellSearchBarAtom,
+} from "@/lib/atoms";
 import { GiftCardObject, ModalButton } from "@/lib/types";
 
 // Functions
@@ -29,6 +35,7 @@ export default function GiftCardDialog() {
   const [view, setView] = useAtom(viewAtom);
   const [, setAlert] = useAtom(alertAtom);
   const [cart, setCart] = useAtom(cartAtom);
+  const [, setSearch] = useAtom(sellSearchBarAtom);
 
   // SWR
   const { giftCards, mutateGiftCards } = useGiftCards();
@@ -52,6 +59,7 @@ export default function GiftCardDialog() {
       loading: submitting,
       onClick: async () => {
         setSubmitting(true);
+        setSearch("");
         let newGiftCard: GiftCardObject = {
           is_gift_card: true,
           gift_card_code: giftCardCode,

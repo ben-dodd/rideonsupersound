@@ -56,18 +56,27 @@ export default function SettingsSelect({
         value={
           dbField
             ? isMulti
-              ? object &&
-                object[dbField]?.map((val: string) => ({
-                  value: val,
-                  label: val,
-                }))
+              ? Array.isArray(object?.[dbField])
+                ? object?.[dbField]?.map((val: string) => ({
+                    value: val,
+                    label: val,
+                  }))
+                : object?.[dbField]
+                ? [
+                    {
+                      value: object?.[dbField] || "",
+                      label: object?.[dbField] || "",
+                    },
+                  ]
+                : []
               : {
-                  value: (object && object[dbField]) || "",
-                  label: (object && object[dbField]) || "",
+                  value: object?.[dbField] || "",
+                  label: object?.[dbField] || "",
                 }
             : null
         }
         onChange={(e: any) => {
+          console.log(e);
           customEdit
             ? customEdit(e)
             : isMulti
@@ -81,6 +90,18 @@ export default function SettingsSelect({
           if (!isCreateDisabled) {
             setLoading(true);
             saveSelectToDatabase(inputValue, dbField, mutateSelects);
+            if (isMulti)
+              onEdit({
+                ...object,
+                [dbField]: inputValue
+                  ? object?.[dbField]
+                    ? Array.isArray(object[dbField])
+                      ? [...object[dbField], inputValue]
+                      : [object[dbField], inputValue]
+                    : [inputValue]
+                  : [],
+              });
+            else onEdit({ ...object, [dbField]: inputValue || null });
             setLoading(false);
           }
         }}

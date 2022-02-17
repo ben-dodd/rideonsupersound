@@ -25,6 +25,7 @@ export default function InventoryItemForm({
   const handleChange = (e) =>
     setItem({ ...item, [e.target.name]: e.target.value });
   const { vendors } = useVendors();
+  console.log(item);
 
   const vendor = useMemo(
     () =>
@@ -89,6 +90,7 @@ export default function InventoryItemForm({
           value={item?.barcode || ""}
           onChange={handleChange}
           disabled={disabled}
+          rows={1}
         />
       </div>
       <div className="grid grid-cols-2 gap-2 mb-2">
@@ -155,42 +157,86 @@ export default function InventoryItemForm({
         <SettingsSelect
           object={item}
           onEdit={setItem}
-          inputLabel="COUNTRY"
-          dbField="country"
+          inputLabel="SECTION"
+          dbField="section"
+          isCreateDisabled={true}
           isDisabled={disabled}
         />
         <SettingsSelect
           object={item}
           onEdit={setItem}
-          inputLabel="GENRE"
-          dbField="genre"
+          inputLabel="COUNTRY"
+          dbField="country"
           isDisabled={disabled}
         />
       </div>
       <SettingsSelect
         object={item}
         onEdit={setItem}
+        inputLabel="GENRE / TAGS"
+        isMulti
+        dbField="genre"
+        isDisabled={disabled}
+      />
+      {/* <div className="gap-2 items-center justify-center">
+        <TextField
+          id="release_year"
+          inputLabel="RELEASE YEAR"
+          value={item?.release_year || ""}
+          onChange={handleChange}
+          disabled={disabled}
+        />
+      </div> */}
+      {/* <SettingsSelect
+        object={item}
+        onEdit={setItem}
         isMulti
         inputLabel="TAGS"
         dbField="tag"
         isDisabled={disabled}
-      />
+      /> */}
       <TextField
         id="description"
-        inputLabel="DESCRIPTION"
+        inputLabel="DESCRIPTION / NOTES"
         value={item?.description || ""}
         onChange={handleChange}
         multiline
         disabled={disabled}
       />
-      <TextField
+      {/* <TextField
         id="note"
         inputLabel="NOTES"
         value={item?.note || ""}
         onChange={handleChange}
         multiline
         disabled={disabled}
-      />
+      /> */}
+      <div className="grid grid-cols-2 mt-2 gap-2 items-center justify-center">
+        <div className="flex">
+          <input
+            type="checkbox"
+            className="cursor-pointer"
+            checked={item?.do_list_on_website === 1 ? true : false}
+            onChange={(e) =>
+              setItem({ ...item, do_list_on_website: e.target.checked ? 1 : 0 })
+            }
+          />
+          <div className="ml-2">List on website</div>
+        </div>
+        <div className="flex">
+          <input
+            type="checkbox"
+            className="cursor-pointer"
+            checked={item?.has_no_quantity === 1 ? true : false}
+            onChange={(e) =>
+              setItem({ ...item, has_no_quantity: e.target.checked ? 1 : 0 })
+            }
+          />
+          <div className="ml-2">
+            Item has no stock quantity (e.g. lathe cut services)
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

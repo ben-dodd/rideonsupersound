@@ -4,7 +4,13 @@ import { useAtom } from "jotai";
 
 // DB
 import { useInventory, useLogs, useWeather } from "@/lib/swr-hooks";
-import { viewAtom, cartAtom, clerkAtom, alertAtom } from "@/lib/atoms";
+import {
+  viewAtom,
+  cartAtom,
+  clerkAtom,
+  alertAtom,
+  sellSearchBarAtom,
+} from "@/lib/atoms";
 import { ModalButton, StockObject } from "@/lib/types";
 
 // Functions
@@ -22,6 +28,7 @@ export default function MiscItemDialog() {
   const [view, setView] = useAtom(viewAtom);
   const [, setAlert] = useAtom(alertAtom);
   const [cart, setCart] = useAtom(cartAtom);
+  const [, setSearch] = useAtom(sellSearchBarAtom);
 
   // SWR
   const { logs, mutateLogs } = useLogs();
@@ -48,6 +55,7 @@ export default function MiscItemDialog() {
       loading: submitting,
       onClick: async () => {
         setSubmitting(true);
+        setSearch("");
         let newMiscItem: StockObject = {
           is_misc_item: true,
           misc_item_description: description,

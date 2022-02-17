@@ -9,6 +9,7 @@ import {
   confirmModalAtom,
   loadedItemIdAtom,
   alertAtom,
+  sellSearchBarAtom,
 } from "@/lib/atoms";
 import { useWeather, useInventory, useLogs, useVendors } from "@/lib/swr-hooks";
 import { StockObject, VendorObject } from "@/lib/types";
@@ -47,6 +48,7 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
 
   // Atoms
   const [cart, setCart] = useAtom(cartAtom);
+  const [, setSearch] = useAtom(sellSearchBarAtom);
   const [view, setView] = useAtom(viewAtom);
   const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom);
   const [, setConfirmModal] = useAtom(confirmModalAtom);
@@ -102,6 +104,7 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
       geo_longitude: cart?.geo_longitude || geolocation?.longitude,
     });
     setView({ ...view, cart: true });
+    setSearch("");
     saveLog(
       {
         log: `${getItemDisplayName(
@@ -167,7 +170,7 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
             </div>
           </div>
           <div className="text-sm text-green-800">{`${
-            item?.genre ? `${item.genre} / ` : ""
+            item?.section ? `${item.section} / ` : ""
           }${item?.format} [${
             item?.is_new ? "NEW" : item?.cond?.toUpperCase() || "USED"
           }]`}</div>

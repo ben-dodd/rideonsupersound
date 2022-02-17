@@ -115,8 +115,9 @@ export default function JobDialog() {
           }))}
           onChange={(roleWrapper: any) => setAssignedTo(roleWrapper)}
         />
-        <div className="flex cursor-pointer mt-2">
+        <div className="flex mt-2">
           <input
+            className="cursor-pointer"
             type="checkbox"
             checked={isPriority}
             onChange={() => setIsPriority(!isPriority)}
