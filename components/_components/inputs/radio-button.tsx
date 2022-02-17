@@ -26,7 +26,7 @@ function RadioButton({
 }: RadioButtonProps) {
   return (
     <div>
-      {inputLabel && <label className={`input-label`}>{inputLabel}</label>}
+      {inputLabel && <label className={`input-label pb-2`}>{inputLabel}</label>}
       <div className={"radio-button__container mb-2"}>
         {options.map((e) => (
           <label key={e.id} id={e.id} className="radio-button__label">
