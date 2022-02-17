@@ -211,8 +211,8 @@ export default function InventoryItemForm({
         multiline
         disabled={disabled}
       /> */}
-      <div className="grid grid-cols-2 mt-2 gap-2 items-center justify-center">
-        <div className="flex">
+      <div className="grid grid-cols-3 mt-4 gap-2">
+        <div className="flex items-center">
           <input
             type="checkbox"
             className="cursor-pointer"
@@ -223,7 +223,7 @@ export default function InventoryItemForm({
           />
           <div className="ml-2">List on website</div>
         </div>
-        <div className="flex">
+        <div className="flex col-span-2 items-center">
           <input
             type="checkbox"
             className="cursor-pointer"

@@ -38,15 +38,27 @@ export default function InventoryItemScreen({ page }) {
   useEffect(() => {
     let newItem = { ...stockItem };
     // Parse JSON fields
-    newItem.discogsItem = newItem?.discogsItem
-      ? JSON.parse(newItem.discogsItem)
-      : null;
-    newItem.googleBooksItem = newItem?.googleBooksItem
-      ? JSON.parse(newItem.googleBooksItem)
-      : null;
-    newItem.genre = newItem?.genre ? JSON.parse(newItem.genre) : null;
+    newItem.discogsItem = parseJSON(
+      newItem?.discogsItem,
+      newItem?.discogsItem || null
+    );
+    newItem.googleBooksItem = parseJSON(
+      newItem?.googleBooksItem,
+      newItem?.googleBooksItem || null
+    );
+    newItem.genre = parseJSON(newItem?.genre, [newItem?.genre] || null);
     setItem(newItem);
   }, [stockItem]);
+
+  const parseJSON = (inputString, fallback) => {
+    if (inputString) {
+      try {
+        return JSON.parse(inputString);
+      } catch (e) {
+        return fallback;
+      }
+    } else return null;
+  };
 
   // Functions
   function onClickDelete() {
@@ -115,14 +127,14 @@ export default function InventoryItemScreen({ page }) {
               <StockDetails item={item} />
             </div>
           </div>
-          <div className="flex justify-end">
+          {/* <div className="flex justify-end">
             <button
               className="p-1 border border-black hover:bg-tertiary rounded-xl mt-2"
               onClick={onClickDelete}
             >
               Delete Item
             </button>
-          </div>
+          </div> */}
         </div>
         <div
           hidden={
