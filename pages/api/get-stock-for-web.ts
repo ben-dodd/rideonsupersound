@@ -34,6 +34,7 @@ const handler: NextApiHandler = async (req, res) => {
       AND q.quantity > 0
       AND s.do_list_on_website
       AND NOT is_deleted
+      ORDER BY s.artist, s.title
       `
     );
 
