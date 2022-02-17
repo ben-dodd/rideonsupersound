@@ -359,11 +359,8 @@ export function getItemQuantity(
     (i: SaleItemObject) => i?.item_id === item?.id
   )[0];
   const cartQuantity = saleItem?.quantity || "0";
-  return item?.quantity || item?.quantity === 0
-    ? item?.quantity - parseInt(cartQuantity)
-    : item?.quantity_received -
-        item?.quantity_returned -
-        parseInt(cartQuantity);
+  const itemQuantity = item?.quantity || 0;
+  return itemQuantity - parseInt(cartQuantity);
 }
 
 export function getTotalPrice(

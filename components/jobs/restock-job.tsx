@@ -1,8 +1,13 @@
 // DB
-import { useInventory } from "@/lib/swr-hooks";
+import { useInventory, useLogs } from "@/lib/swr-hooks";
 import { StockObject } from "@/lib/types";
-import { getItemSkuDisplayNameById } from "@/lib/data-functions";
-import { completeRestockTask } from "@/lib/db-functions";
+import {
+  getItemDisplayName,
+  getItemSkuDisplayNameById,
+} from "@/lib/data-functions";
+import { completeRestockTask, saveLog } from "@/lib/db-functions";
+import { useAtom } from "jotai";
+import { clerkAtom } from "@/lib/atoms";
 
 type ListItemProps = {
   item: StockObject;
@@ -11,6 +16,8 @@ type ListItemProps = {
 export default function RestockJob({ item }: ListItemProps) {
   // SWR
   const { inventory, mutateInventory } = useInventory();
+  const { logs, mutateLogs } = useLogs();
+  const [clerk] = useAtom(clerkAtom);
 
   return (
     <div className={`flex w-full border-b border-yellow-100 py-1 text-sm`}>
@@ -29,6 +36,14 @@ export default function RestockJob({ item }: ListItemProps) {
                   { ...item, needs_restock: false },
                 ]);
                 completeRestockTask(item?.id);
+                saveLog(
+                  {
+                    log: `${getItemDisplayName(item)} restocked.`,
+                    clerk_id: clerk?.id,
+                  },
+                  logs,
+                  mutateLogs
+                );
               }}
             />
           </div>

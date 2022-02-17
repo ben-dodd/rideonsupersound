@@ -46,7 +46,7 @@ export default function Menu() {
   const { inventory } = useInventory();
 
   // Constants
-  const cartItems = cart?.items?.reduce(
+  const cartItems = cart?.items?.reduce?.(
     (accumulator: number, item: SaleItemObject) =>
       accumulator + (parseInt(item?.quantity) || 1),
     0
@@ -54,9 +54,9 @@ export default function Menu() {
 
   console.log(inventory);
   const jobsToDo =
-    (jobs?.filter((t: TaskObject) => !t?.is_deleted && !t?.is_completed)
+    (jobs?.filter?.((t: TaskObject) => !t?.is_deleted && !t?.is_completed)
       ?.length || 0) +
-    (inventory?.filter((i: StockObject) => i?.needs_restock)?.length || 0);
+    (inventory?.filter?.((i: StockObject) => i?.needs_restock)?.length || 0);
 
   const topMenu = [
     {
