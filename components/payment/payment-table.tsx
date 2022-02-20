@@ -51,6 +51,7 @@ export default function PaymentTable() {
       {
         Header: "Vendor",
         accessor: "vendor_id",
+        width: 250,
         Cell: ({ value }) =>
           vendors?.filter((v: VendorObject) => v?.id === value)[0]?.name || "",
       },

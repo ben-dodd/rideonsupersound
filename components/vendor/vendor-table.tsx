@@ -15,11 +15,12 @@ import { loadedVendorIdAtom } from "@/lib/atoms";
 import { VendorObject, ClerkObject, StockObject } from "@/lib/types";
 
 // Functions
-import { getVendorDetails } from "@/lib/data-functions";
+import { getItemPrice, getVendorDetails } from "@/lib/data-functions";
 
 // Components
 import Table from "@/components/_components/table";
 import TableContainer from "@/components/_components/container/table";
+import { CSVLink } from "react-csv";
 
 export default function VendorsScreen() {
   // Atoms
@@ -32,6 +33,18 @@ export default function VendorsScreen() {
   const { vendors, isVendorsLoading } = useVendors();
   const { clerks, isClerksLoading } = useClerks();
   const { customers, isCustomersLoading } = useCustomers();
+
+  const wrongSales: any[] = sales?.filter((s: any) => {
+    let vendorDiscountFactor = 100,
+      storeDiscountFactor = 100;
+    if (s?.vendor_discount > 0) vendorDiscountFactor = 100 - s?.vendor_discount;
+    if (s?.store_discount > 0) storeDiscountFactor = 100 - s?.store_discount;
+    let storeCut =
+      ((s?.total_sell - s?.vendor_cut) * storeDiscountFactor) / 100;
+    let vendorCut = (s?.vendor_cut * vendorDiscountFactor) / 100;
+    let calcPrice = (storeCut + vendorCut) * s?.quantity;
+    return s?.total_price !== calcPrice;
+  });
 
   // Constants
   const data = useMemo(
@@ -78,12 +91,12 @@ export default function VendorsScreen() {
       {
         Header: "ID",
         accessor: "id",
-        width: 50,
+        width: 60,
       },
       {
         Header: "Name",
         accessor: "name",
-        width: 180,
+        width: 200,
         Cell: (item: any) => (
           <span
             className="cursor-pointer underline"
@@ -98,12 +111,12 @@ export default function VendorsScreen() {
           </span>
         ),
       },
-      {
-        Header: "Contact Name",
-        accessor: "contactName",
-        width: 150,
-        Cell: ({ value }) => value?.name || "-",
-      },
+      // {
+      //   Header: "Contact Name",
+      //   accessor: "contactName",
+      //   width: 150,
+      //   Cell: ({ value }) => value?.name || "-",
+      // },
       {
         Header: "Staff",
         accessor: "storeContact",
@@ -111,7 +124,7 @@ export default function VendorsScreen() {
         Cell: ({ value }) => value?.name || "-",
       },
       { Header: "Type", accessor: "type", width: 100 },
-      { Header: "Bank Account #", accessor: "bankAccountNumber", width: 200 },
+      { Header: "Bank Account #", accessor: "bankAccountNumber", width: 220 },
       {
         Header: "Total Take",
         accessor: "totalTake",
@@ -167,6 +180,14 @@ export default function VendorsScreen() {
         pageSize={20}
         sortOptions={[{ id: "name", desc: false }]}
       />
+      <CSVLink
+        className={`bg-col2-dark hover:bg-col2 disabled:bg-gray-200 p-2 rounded`}
+        data={wrongSales}
+        // headers={["SKU", "ARTIST", "TITLE", "NEW/USED", "SELL PRICE", "GENRE"]}
+        filename={`wrong-sales.csv`}
+      >
+        WRONG SALES
+      </CSVLink>
     </TableContainer>
   );
 }

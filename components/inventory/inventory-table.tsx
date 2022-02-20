@@ -30,16 +30,21 @@ export default function InventoryTable() {
   const data = useMemo(
     () =>
       inventory
-        ?.filter((t: StockObject) => !t?.is_deleted)
+        ?.filter(
+          (t: StockObject) =>
+            !t?.is_deleted && !t?.is_gift_card && !t?.is_misc_item
+        )
         .map((t: StockObject) => ({
           id: t?.id,
-          sku: getItemSku(t),
           title: t?.title || "-",
           artist: t?.artist || "-",
-          vendor: vendors?.filter(
-            (v: VendorObject) => v?.id === t?.vendor_id
-          )[0]?.name,
-          section: t?.section || "-",
+          vendor: `[${("000" + t?.vendor_id || "").slice(-3)}] ${
+            vendors?.filter((v: VendorObject) => v?.id === t?.vendor_id)[0]
+              ?.name
+          }`,
+          section: `${t?.section || ""}${t?.section && t?.country ? "/" : ""}${
+            t?.country === "New Zealand" ? "NZ" : ""
+          }`,
           media: t?.media || "-",
           format: t?.format || "-",
           cost: t?.vendor_cut ? t?.vendor_cut / 100 : 0,
@@ -69,9 +74,9 @@ export default function InventoryTable() {
     // const openInventoryDialog = (item:any) => openInventoryModal(item?.row?.original?.id);
     return [
       {
-        accessor: "sku",
-        Header: "SKU",
-        width: 120,
+        accessor: "id",
+        Header: "ID",
+        width: 70,
         Cell: (params: any) => (
           <span
             className="cursor-pointer underline"
@@ -89,28 +94,28 @@ export default function InventoryTable() {
       {
         accessor: "title",
         Header: "Title",
-        width: 170,
+        width: 250,
       },
       {
         accessor: "artist",
         Header: "Artist",
-        width: 170,
+        width: 230,
       },
       {
         accessor: "vendor",
         Header: "Vendor",
-        width: 150,
+        width: 210,
       },
       {
         accessor: "section",
         Header: "Section",
-        width: 100,
+        width: 80,
       },
-      {
-        accessor: "media",
-        Header: "Media Type",
-        width: 70,
-      },
+      // {
+      //   accessor: "media",
+      //   Header: "Media Type",
+      //   width: 70,
+      // },
       {
         accessor: "format",
         Header: "Format",

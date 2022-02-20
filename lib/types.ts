@@ -249,7 +249,7 @@ export interface StockObject {
   media?: string;
   format?: string;
   section?: string;
-  genre?: string;
+  genre?: string[] | string;
   is_new?: number;
   cond?: string;
   country?: string;

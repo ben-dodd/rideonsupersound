@@ -764,13 +764,16 @@ export function getCSVData(items) {
       Array.from(Array(parseInt(row?.printQuantity || "1")).keys()).forEach(
         () => {
           let stockItem: StockObject = row?.item?.value;
+          console.log(stockItem);
           csv.push([
             getItemSku(stockItem),
             stockItem?.artist,
             stockItem?.title,
             stockItem?.is_new ? "NEW" : "USED",
-            `$${(stockItem?.total_sell / 100)?.toFixed(2)}`,
-            stockItem?.section,
+            `$${Math.round(stockItem?.total_sell / 100)}`,
+            `${stockItem?.section}${
+              stockItem?.section && stockItem?.country ? "/" : ""
+            }${stockItem?.country === "New Zealand" ? "NZ" : ""}`,
             `${("00000" + stockItem?.id || "").slice(-5)}`,
           ]);
         }

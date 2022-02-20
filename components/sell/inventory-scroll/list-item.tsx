@@ -48,7 +48,7 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
 
   // Atoms
   const [cart, setCart] = useAtom(cartAtom);
-  const [, setSearch] = useAtom(sellSearchBarAtom);
+  const [sellSearch, setSearch] = useAtom(sellSearchBarAtom);
   const [view, setView] = useAtom(viewAtom);
   const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom);
   const [, setConfirmModal] = useAtom(confirmModalAtom);
@@ -133,6 +133,9 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
   //   onDoubleClick={clickOpenInventoryModal}
   // >
 
+  if (sellSearch === `${("00000" + item?.id || "").slice(-5)}`) {
+    addItemToCart();
+  }
   return (
     <div
       className={`flex w-full mb-2 text-black ${

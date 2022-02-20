@@ -44,9 +44,18 @@ export default function DiscogsOption({
         country: discogsItem?.country,
         format: discogsItem?.format?.join(", "),
         media: "Audio",
-        genre: `${discogsItem?.genre?.join("/")}/${discogsItem?.style?.join(
-          "/"
-        )}`,
+        genre: [
+          ...(discogsItem?.genre
+            ? Array.isArray(discogsItem?.genre)
+              ? discogsItem?.genre
+              : [discogsItem?.genre]
+            : []),
+          ...(discogsItem?.style
+            ? Array.isArray(discogsItem?.style)
+              ? discogsItem?.style
+              : [discogsItem?.style]
+            : []),
+        ],
         title: discogsItem?.title,
         release_year: discogsItem?.year?.toString(),
       };

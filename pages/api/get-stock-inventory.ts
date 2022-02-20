@@ -18,6 +18,7 @@ const handler: NextApiHandler = async (req, res) => {
         s.media,
         s.format,
         s.section,
+        s.country,
         s.is_new,
         s.cond,
         s.image_url,
