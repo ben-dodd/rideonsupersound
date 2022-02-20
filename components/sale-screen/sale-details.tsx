@@ -2,22 +2,13 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 // DB
 import { useClerks, useCustomers, useInventory } from "@/lib/swr-hooks";
-import {
-  CustomerObject,
-  OpenWeatherObject,
-  SaleItemObject,
-  SaleStateTypes,
-} from "@/lib/types";
+import { CustomerObject, OpenWeatherObject, SaleStateTypes } from "@/lib/types";
 
 // Functions
 import { getSaleVars } from "@/lib/data-functions";
-import { useAtom } from "jotai";
-import { viewAtom } from "@/lib/atoms";
-import ReturnIcon from "@mui/icons-material/KeyboardReturn";
 
 export default function SaleDetails({ sale }) {
   dayjs.extend(utc);
-  const [view, setView] = useAtom(viewAtom);
   // SWR
   const { clerks } = useClerks();
   const { customers } = useCustomers();

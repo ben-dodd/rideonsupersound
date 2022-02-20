@@ -159,6 +159,7 @@ export default function SaleTable() {
         heading={"Sales"}
         pageSize={20}
         sortOptions={[{ id: "date", desc: true }]}
+        downloadCSV={true}
       />
     </TableContainer>
   );

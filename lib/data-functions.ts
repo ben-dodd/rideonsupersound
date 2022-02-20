@@ -15,6 +15,7 @@ import {
 } from "@/lib/types";
 
 import dayjs from "dayjs";
+import { AnyCnameRecord } from "dns";
 
 export function getItemSku(item: StockObject) {
   return `${("000" + item?.vendor_id || "").slice(-3)}/${(
@@ -66,10 +67,7 @@ export function getImageSrc(item: StockObject) {
   return `${process.env.NEXT_PUBLIC_RESOURCE_URL}img/${src}.png`;
 }
 
-export function getCartItemSummary(
-  item: StockObject,
-  cartItem: SaleItemObject
-) {
+export function getCartItemSummary(item: StockObject, cartItem: any) {
   // 1 x V10% x R50% x $27.00
   return item?.is_gift_card
     ? `$${(item?.gift_card_amount / 100)?.toFixed(2)} GIFT CARD`
@@ -83,7 +81,7 @@ export function getCartItemSummary(
         parseInt(cartItem?.store_discount) > 0
           ? ` x S${cartItem?.store_discount}%`
           : ""
-      } x $${(item?.total_sell / 100)?.toFixed(2)}`;
+      } x $${((cartItem?.total_sell || item?.total_sell) / 100)?.toFixed(2)}`;
 }
 
 export function writeCartItemPriceBreakdown(
@@ -222,22 +220,27 @@ export function getStoreCut(item: StockObject) {
   return item?.total_sell - item?.vendor_cut;
 }
 
-export function getSaleVars(sale: SaleObject, inventory: StockObject[]) {
+export function getSaleVars(sale: any, inventory: StockObject[]) {
+  console.log(sale);
   const totalPostage = parseFloat(`${sale?.postage}`) || 0;
   const totalItemPrice =
     Math.round(
-      (getTotalPrice(sale?.items, inventory) / 100 + Number.EPSILON) * 10
+      (sale?.items?.reduce((prev, curr) => curr?.total_sell + prev, 0) / 100 +
+        Number.EPSILON) *
+        10
     ) / 10;
   const totalPrice = totalItemPrice + totalPostage;
   const totalPaid =
     Math.round((getTotalPaid(sale?.transactions) / 100 + Number.EPSILON) * 10) /
     10;
-  const totalStoreCut =
-    Math.round(
-      (getTotalStoreCut(sale?.items, inventory) / 100 + Number.EPSILON) * 10
-    ) / 10;
   const totalVendorCut =
-    Math.round((totalItemPrice - totalStoreCut + Number.EPSILON) * 10) / 10;
+    Math.round(
+      (sale?.items?.reduce((prev, curr) => curr?.vendor_cut + prev, 0) / 100 +
+        Number.EPSILON) *
+        10
+    ) / 10;
+  const totalStoreCut =
+    Math.round((totalItemPrice - totalVendorCut + Number.EPSILON) * 10) / 10;
   const totalRemaining =
     Math.round((totalPrice - totalPaid + Number.EPSILON) * 10) / 10;
   return {

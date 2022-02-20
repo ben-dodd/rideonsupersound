@@ -64,9 +64,8 @@ export default function VendorsScreen() {
                 name: v?.name || "-",
                 contactName: v?.contact_name || "-",
                 storeContact:
-                  clerks?.filter(
-                    (c: ClerkObject) => c?.id === v?.clerk_id
-                  )[0] || {},
+                  clerks?.filter((c: ClerkObject) => c?.id === v?.clerk_id)[0]
+                    ?.name || "-",
                 type: v?.vendor_category || "-",
                 bankAccountNumber: v?.bank_account_number || "-",
                 totalTake: vendorVars?.totalSell || 0,
@@ -121,7 +120,6 @@ export default function VendorsScreen() {
         Header: "Staff",
         accessor: "storeContact",
         width: 80,
-        Cell: ({ value }) => value?.name || "-",
       },
       { Header: "Type", accessor: "type", width: 100 },
       { Header: "Bank Account #", accessor: "bankAccountNumber", width: 220 },
@@ -179,15 +177,16 @@ export default function VendorsScreen() {
         heading={"Vendors"}
         pageSize={20}
         sortOptions={[{ id: "name", desc: false }]}
+        downloadCSV={true}
       />
-      <CSVLink
+      {/* <CSVLink
         className={`bg-col2-dark hover:bg-col2 disabled:bg-gray-200 p-2 rounded`}
         data={wrongSales}
         // headers={["SKU", "ARTIST", "TITLE", "NEW/USED", "SELL PRICE", "GENRE"]}
         filename={`wrong-sales.csv`}
       >
         WRONG SALES
-      </CSVLink>
+      </CSVLink> */}
     </TableContainer>
   );
 }

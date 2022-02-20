@@ -7,8 +7,9 @@ import { getItemDisplayName } from "@/lib/data-functions";
 
 // Components
 import dayjs from "dayjs";
+import { CSVLink } from "react-csv";
 
-export default function VendorSales({ vendorDetails }) {
+export default function VendorSales({ vendor, vendorDetails }) {
   // SWR
   const { inventory } = useInventory();
 
@@ -16,7 +17,16 @@ export default function VendorSales({ vendorDetails }) {
     <div>
       {vendorDetails?.totalSales?.length > 0 && (
         <div className="mt-4">
-          <div className="border-b mb-2 flex text-sm">
+          <CSVLink
+            className={`bg-white hover:bg-gray-100 disabled:bg-gray-200 p-2 rounded border`}
+            filename={`${vendor?.name}-sales-${dayjs().format(
+              "YYYY-MM-DD"
+            )}.csv`}
+            data={vendorDetails?.totalSales}
+          >
+            DOWNLOAD DATA
+          </CSVLink>
+          <div className="border-b mb-2 flex text-sm mt-4">
             <div className="w-1/6">DATE SOLD</div>
             <div className="w-1/3">ITEM SOLD</div>
             <div className="w-1/6">FORMAT</div>

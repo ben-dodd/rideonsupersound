@@ -129,10 +129,10 @@ export default function VendorScreen() {
           <VendorItems />
         </div>
         <div hidden={tab !== 2}>
-          <VendorSales vendorDetails={vendorDetails} />
+          <VendorSales vendor={vendor} vendorDetails={vendorDetails} />
         </div>
         <div hidden={tab !== 3}>
-          <VendorPayments />
+          <VendorPayments vendor={vendor} />
         </div>
       </div>
     </ScreenContainer>

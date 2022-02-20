@@ -76,6 +76,7 @@ export default function SaleItemScreen() {
         sales?.filter((s: SaleObject) => s?.id === loadedSaleId[page])[0] || {};
       loadedSale.items = items;
       loadedSale.transactions = transactions;
+      console.log(loadedSale);
       setSale(loadedSale);
       setSaleLoading(false);
     }

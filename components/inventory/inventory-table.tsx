@@ -174,6 +174,7 @@ export default function InventoryTable() {
         heading={"Inventory"}
         pageSize={20}
         sortOptions={[{ id: "title", desc: false }]}
+        downloadCSV={true}
       />
     </TableContainer>
   );

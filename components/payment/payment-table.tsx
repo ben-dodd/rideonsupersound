@@ -88,6 +88,7 @@ export default function PaymentTable() {
         heading={"Vendor Payments"}
         pageSize={20}
         sortOptions={[{ id: "date", desc: true }]}
+        downloadCSV={true}
       />
     </TableContainer>
   );

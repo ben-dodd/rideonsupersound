@@ -18,54 +18,24 @@ import {
   loadedVendorIdAtom,
   pageAtom,
 } from "@/lib/atoms";
-import {
-  VendorObject,
-  StockObject,
-  VendorSaleItemObject,
-  VendorPaymentObject,
-  CustomerObject,
-  ClerkObject,
-} from "@/lib/types";
+import { VendorObject, VendorPaymentObject } from "@/lib/types";
 
 // Functions
-import { getItemDisplayName, getVendorDetails } from "@/lib/data-functions";
+import { getVendorDetails } from "@/lib/data-functions";
 
 // Components
-import ScreenContainer from "@/components/_components/container/screen";
-import Tabs from "@/components/_components/navigation/tabs";
-import Select from "react-select";
-import MaskedInput from "react-text-mask";
-import TextField from "@/components/_components/inputs/text-field";
-import CreateableSelect from "@/components/_components/inputs/createable-select";
-import SettingsSelect from "@/components/_components/inputs/settings-select";
 import dayjs from "dayjs";
+import { CSVLink } from "react-csv";
 
-export default function VendorPayments() {
+export default function VendorPayments({ vendor }) {
   // Atoms
-  const [loadedVendorId, setLoadedVendorId] = useAtom(loadedVendorIdAtom);
-  const [view, setView] = useAtom(viewAtom);
+  const [loadedVendorId] = useAtom(loadedVendorIdAtom);
   const [page] = useAtom(pageAtom);
-  const [, setCustomer] = useAtom(loadedCustomerObjectAtom);
-  const [clerk] = useAtom(clerkAtom);
 
   // SWR
-  const { vendors, isVendorsLoading } = useVendors();
-  const { clerks, isClerksLoading } = useClerks();
-  const { customers, isCustomersLoading } = useCustomers();
-  const { inventory, isInventoryLoading } = useInventory();
-  const { sales, isSalesLoading } = useSalesJoined();
-  const { vendorPayments, isVendorPaymentsLoading } = useVendorPayments();
-
-  // State
-  const [vendor, setVendor]: [VendorObject, Function] = useState({});
-  const [tab, setTab] = useState(0);
-
-  // Load
-  useEffect(() => {
-    setVendor(
-      vendors?.filter((v: VendorObject) => v?.id === loadedVendorId[page])[0]
-    );
-  }, [loadedVendorId[page]]);
+  const { inventory } = useInventory();
+  const { sales } = useSalesJoined();
+  const { vendorPayments } = useVendorPayments();
 
   // Constants
   const vendorDetails = useMemo(
@@ -78,7 +48,16 @@ export default function VendorPayments() {
     <div>
       {vendorDetails?.totalPayments?.length > 0 && (
         <div className="mt-4">
-          <div className="border-b mb-2 flex text-sm">
+          <CSVLink
+            className={`bg-white hover:bg-gray-100 disabled:bg-gray-200 p-2 rounded border`}
+            filename={`${vendor?.name}-payments-${dayjs().format(
+              "YYYY-MM-DD"
+            )}.csv`}
+            data={vendorDetails?.totalPayments}
+          >
+            DOWNLOAD DATA
+          </CSVLink>
+          <div className="border-b mb-2 flex text-sm mt-4">
             <div className="w-1/6">DATE SOLD</div>
             <div className="w-1/2" />
             <div className="w-1/6">TYPE</div>

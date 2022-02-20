@@ -133,17 +133,22 @@ export function useSaleItemsForSale(sale_id: number) {
 
   let duplicates = {};
 
+  console.log(data);
+
   data &&
     data.forEach((sale: VendorSaleItemObject) => {
       let key = `${sale?.sale_id}-${sale?.item_id}`;
+      console.log(duplicates);
+      console.log(sale);
       if (
         !duplicates[key] ||
-        duplicates[key]?.date_valid_from < sale?.date_price_valid_from
+        duplicates[key]?.date_price_valid_from < sale?.date_price_valid_from
       )
         duplicates[key] = sale;
     });
 
   const totalSalesReduced = Object.values(duplicates);
+  console.log(totalSalesReduced);
   return {
     items: totalSalesReduced,
     isSaleItemsLoading: !error && !data,
