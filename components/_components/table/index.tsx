@@ -22,6 +22,8 @@ import MdNavigateNext from "@mui/icons-material/NavigateNext";
 import MdLastPage from "@mui/icons-material/LastPage";
 import ArrowDown from "@mui/icons-material/ArrowDropDown";
 import ArrowUp from "@mui/icons-material/ArrowDropUp";
+import { CSVLink } from "react-csv";
+import dayjs from "dayjs";
 
 function GlobalFilter({
   preGlobalFilteredRows,
@@ -71,6 +73,7 @@ interface TableProps {
   onClickRow?: Function;
   sortOptions?: any;
   hiddenColumns?: string[];
+  downloadCSV?: boolean;
 }
 
 function Table({
@@ -85,6 +88,7 @@ function Table({
   onClickRow,
   sortOptions,
   hiddenColumns,
+  downloadCSV,
 }: TableProps) {
   const defaultColumn = useMemo(
     () => ({
@@ -150,7 +154,20 @@ function Table({
         ) : (
           <div />
         )}
-        <div className="flex">
+        <div className="flex items-center">
+          {downloadCSV ? (
+            <CSVLink
+              className={`bg-white hover:bg-gray-100 disabled:bg-gray-200 p-2 rounded border`}
+              filename={`${heading?.toLowerCase?.()}-${dayjs().format(
+                "YYYY-MM-DD"
+              )}.csv`}
+              data={data}
+            >
+              DOWNLOAD DATA
+            </CSVLink>
+          ) : (
+            <div />
+          )}
           <GlobalFilter
             preGlobalFilteredRows={preGlobalFilteredRows}
             globalFilter={state.globalFilter}
