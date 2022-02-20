@@ -1,5 +1,4 @@
 import Head from "next/head";
-import Clerk from "@/components/clerk";
 import SignOutButton from "@/components/_components/button/sign-out-button";
 
 import { bg, bgDark, bgLight, ClerkObject } from "@/lib/types";
