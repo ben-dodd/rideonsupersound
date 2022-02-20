@@ -8,10 +8,10 @@ const handler: NextApiHandler = async (req, res) => {
       return res.status(401).json({ message: "Resource Denied." });
     const results = await query(
       `
-          SELECT *
-          FROM log
-          WHERE NOT is_deleted
-          ORDER BY date_created desc
+        SELECT *
+        FROM log
+        WHERE NOT is_deleted AND NOT table_id <=> "system"
+        ORDER BY date_created desc
           `
     );
     return res.json(results);

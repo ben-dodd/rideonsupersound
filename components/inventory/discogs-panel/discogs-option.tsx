@@ -74,9 +74,10 @@ export default function DiscogsOption({
     >
       <div className="w-32">
         <div className="w-32 h-32 relative">
-          <Image
-            layout="fill"
-            objectFit="cover"
+          <img
+            className="object-cover absolute"
+            // layout="fill"
+            // objectFit="cover"
             src={
               opt?.thumb ||
               `${process.env.NEXT_PUBLIC_RESOURCE_URL}img/default.png`

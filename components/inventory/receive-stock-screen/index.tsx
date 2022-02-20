@@ -174,6 +174,9 @@ export default function ReceiveStockScreen() {
       basket?.items?.length === 0 ||
       basket?.items?.filter(
         (item) =>
+          !item?.section ||
+          item?.is_new === null ||
+          !item?.cond ||
           !Number.isInteger(parseInt(`${item?.quantity}`)) ||
           !(
             (Number.isInteger(parseInt(`${item?.vendor_cut}`)) &&

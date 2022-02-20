@@ -8,14 +8,19 @@ import { viewAtom, clerkAtom } from "@/lib/atoms";
 import { StockObject, ModalButton } from "@/lib/types";
 
 // Functions
-import { getCSVData, getItemSkuDisplayName } from "@/lib/data-functions";
+import {
+  filterInventory,
+  getCSVData,
+  getItemSkuDisplayName,
+} from "@/lib/data-functions";
 import { saveLog } from "@/lib/db-functions";
+import { v4 as uuid } from "uuid";
 
 // Components
 import Modal from "@/components/_components/container/modal";
-import TextField from "@/components/_components/inputs/text-field";
-import Select from "react-select";
 import dayjs from "dayjs";
+import SearchIcon from "@mui/icons-material/Search";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function LabelPrintDialog() {
   // Atoms
@@ -27,22 +32,24 @@ export default function LabelPrintDialog() {
   const { logs, mutateLogs } = useLogs();
 
   // State
-  const initItems = {
-    0: { item: {}, printQuantity: 1 },
-    1: { item: {}, printQuantity: 1 },
-    2: { item: {}, printQuantity: 1 },
-    3: { item: {}, printQuantity: 1 },
-    4: { item: {}, printQuantity: 1 },
-    5: { item: {}, printQuantity: 1 },
-    6: { item: {}, printQuantity: 1 },
-    7: { item: {}, printQuantity: 1 },
-    8: { item: {}, printQuantity: 1 },
-    9: { item: {}, printQuantity: 1 },
-  };
-  const [items, setItems] = useState(initItems);
+  const [search, setSearch] = useState("");
+  const [items, setItems] = useState([]);
+  // const initItems = {
+  //   0: { item: {}, printQuantity: 1 },
+  //   1: { item: {}, printQuantity: 1 },
+  //   2: { item: {}, printQuantity: 1 },
+  //   3: { item: {}, printQuantity: 1 },
+  //   4: { item: {}, printQuantity: 1 },
+  //   5: { item: {}, printQuantity: 1 },
+  //   6: { item: {}, printQuantity: 1 },
+  //   7: { item: {}, printQuantity: 1 },
+  //   8: { item: {}, printQuantity: 1 },
+  //   9: { item: {}, printQuantity: 1 },
+  // };
+  // const [items, setItems] = useState(initItems);
 
   function closeDialog() {
-    setItems(initItems);
+    setItems([]);
     setView({ ...view, labelPrintDialog: false });
   }
 
@@ -81,52 +88,88 @@ export default function LabelPrintDialog() {
     },
   ];
 
+  function addItem(item) {
+    setItems([...items, { ...item, key: uuid() }]);
+    setSearch("");
+  }
+
+  function deleteItem(item) {
+    setItems([...items?.filter?.((i) => i?.key !== item?.key)]);
+  }
+
   return (
     <Modal
       open={view?.labelPrintDialog}
       closeFunction={closeDialog}
       title={"LABEL PRINT"}
       buttons={buttons}
-      width={"max-w-xl"}
+      width={"max-w-dialog"}
     >
-      <>
+      <div className="h-dialog">
         <div className="help-text">
-          Select item from dropdown list and enter the quantity of labels you
-          wish to print. Then click print to download the CSV file for the label
-          printer.
+          Search items and add to the list. Then click print to download the CSV
+          file for the label printer.
         </div>
-        <div className="input-label">Add Items</div>
-        {Array.from(Array(10).keys()).map((key) => (
-          <div key={`${key}`} className="flex mb-1 items-center">
-            <div className="w-full mr-2">
-              <Select
-                className="w-full self-stretch"
-                value={items[key]?.item}
-                options={inventory?.map((item: StockObject) => ({
-                  value: item,
-                  label: getItemSkuDisplayName(item),
-                }))}
-                onChange={(item) =>
-                  setItems({ ...items, [key]: { ...items[key], item } })
-                }
+        <div className="grid grid-cols-2 gap-10 pt-2">
+          <div>
+            <div
+              className={`flex items-center ring-1 ring-gray-400 w-auto bg-gray-100 hover:bg-gray-200 ${
+                search && "bg-pink-200 hover:bg-pink-300"
+              }`}
+            >
+              <div className="pl-3 pr-1">
+                <SearchIcon />
+              </div>
+              <input
+                autoFocus
+                className="w-full py-1 px-2 outline-none bg-transparent text-2xl"
+                value={search || ""}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="SEARCH…"
               />
             </div>
-            <div className="w-1/3">
-              <TextField
-                inputType="number"
-                min={0}
-                valueNum={items[key]?.printQuantity}
-                onChange={(e: any) =>
-                  setItems({
-                    ...items,
-                    [key]: { ...items[key], printQuantity: e.target.value },
-                  })
+            <div className="overflow-y-scroll pt-2">
+              {filterInventory({ inventory, search })?.map(
+                (item: StockObject) => {
+                  if (search === `${("00000" + item?.id || "").slice(-5)}`) {
+                    addItem(item);
+                  }
+                  return (
+                    <div
+                      className="hover:bg-gray-100 cursor-pointer py-2 px-2"
+                      onClick={() => addItem(item)}
+                      key={item?.id}
+                    >
+                      {getItemSkuDisplayName(item)}
+                    </div>
+                  );
                 }
-              />
+              )}
             </div>
           </div>
-        ))}
-      </>
+          <div>
+            <div className="font-bold text-xl">Selected Items</div>
+            <div>
+              {items?.map((item) => (
+                <div
+                  key={item?.key}
+                  className="flex space-between items-center"
+                >
+                  <div className="flex-auto">{getItemSkuDisplayName(item)}</div>
+                  <div className="w-50 text-right">
+                    <button
+                      className="py-2 text-tertiary hover:text-tertiary-dark"
+                      onClick={() => deleteItem(item)}
+                    >
+                      <DeleteIcon />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
     </Modal>
   );
 }

@@ -38,11 +38,13 @@ export default function Modal({
       disableBackdropClick={disableBackdropClick}
       width={width}
     >
-      {closeFunction && <CloseButton closeFunction={closeFunction} />}
-      {title && <div className="modal__title">{title}</div>}
+      <div className="top-0 sticky">
+        {closeFunction && <CloseButton closeFunction={closeFunction} />}
+        {title && <div className="modal__title">{title}</div>}
+      </div>
       <div className="modal__body">
         {loading ? (
-          <div className="loading-screen max-h-dialog">
+          <div className="loading-screen">
             <div className="loading-icon" />
           </div>
         ) : (

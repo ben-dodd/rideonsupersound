@@ -56,7 +56,7 @@ export default function GoogleBooksPanel({
   return (
     <div className="flex flex-col h-inventory">
       <div className="flex justify-between px-2">
-        <Image
+        <img
           src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/google-books-logo.png`}
           alt="GoogleBooks Logo"
           width="100px"

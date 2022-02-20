@@ -14,9 +14,10 @@ export default function GoogleBooksItemDisplay({
     <div>
       <div className="w-32">
         <div className="w-32 h-32 relative">
-          <Image
-            layout="fill"
-            objectFit="contain"
+          <img
+            className="object-cover absolute"
+            // layout="fill"
+            // objectFit="contain"
             src={
               googleBooksItem?.volumeInfo?.imageLinks?.thumbnail ||
               `${process.env.NEXT_PUBLIC_RESOURCE_URL}img/default.png`

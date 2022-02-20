@@ -55,7 +55,7 @@ export default function Pay() {
             : `$${(totalRemaining || 0)?.toFixed(2)}`}
         </div>
       </div>
-      {totalRemaining === 0 && (
+      {cart?.state !== SaleStateTypes.Completed && totalRemaining === 0 && (
         <div className="font-sm">Click complete sale to finish.</div>
       )}
       <div className="grid grid-cols-2 gap-2 mt-4">
@@ -88,90 +88,98 @@ export default function Pay() {
           GIFT
         </button>
       </div>
-      {cart?.state === SaleStateTypes.Layby ? (
-        <div className="mt-2">
-          {cart?.customer_id ? (
-            <div>
-              <div className="font-bold">Customer</div>
+      <div
+        className={`${
+          cart?.state === SaleStateTypes.Completed ? "hidden" : ""
+        }`}
+      >
+        {cart?.state === SaleStateTypes.Layby ? (
+          <div className="mt-2">
+            {cart?.customer_id ? (
               <div>
-                {customers?.filter(
-                  (c: CustomerObject) => c?.id === cart?.customer_id
-                )[0]?.name || ""}
+                <div className="font-bold">Customer</div>
+                <div>
+                  {customers?.filter(
+                    (c: CustomerObject) => c?.id === cart?.customer_id
+                  )[0]?.name || ""}
+                </div>
               </div>
-            </div>
-          ) : (
-            <div>No customer set.</div>
-          )}
-        </div>
-      ) : (
-        <>
-          <div className="font-bold mt-2">
-            Select customer to enable laybys and mail orders.
+            ) : (
+              <div>No customer set.</div>
+            )}
           </div>
-          <CreateableSelect
-            inputLabel="Select customer"
-            value={cart?.customer_id}
-            label={
-              customers?.filter(
-                (c: CustomerObject) => c?.id === cart?.customer_id
-              )[0]?.name || ""
-            }
-            onChange={(customerObject: any) => {
-              setCart((s) => ({
-                ...s,
-                customer_id: parseInt(customerObject?.value),
-              }));
-            }}
-            onCreateOption={(inputValue: string) => {
-              setCustomer({ name: inputValue });
-              setView({ ...view, createCustomer: true });
-            }}
-            options={customers?.map((val: CustomerObject) => ({
-              value: val?.id,
-              label: val?.name || "",
-            }))}
-          />
-        </>
-      )}
-      <div className="flex mt-2">
-        <input
-          disabled={!cart?.customer_id}
-          className="cursor-pointer"
-          type="checkbox"
-          checked={cart?.is_mail_order}
-          onChange={() =>
-            setCart((s) => ({ ...s, is_mail_order: !s?.is_mail_order }))
-          }
-        />
-        <div className="ml-2">Mail order</div>
-      </div>
-      {cart?.is_mail_order ? (
-        <div>
-          <TextField
-            inputLabel="Postage Fee"
-            startAdornment="$"
-            inputType="number"
-            valueNum={cart?.postage}
-            onChange={(e: any) => setCart({ ...cart, postage: e.target.value })}
-          />
-          <TextField
-            inputLabel="Postal Address"
-            multiline
-            value={
-              cart?.postal_address ||
-              customers?.filter(
-                (c: CustomerObject) => c?.id === cart?.customer_id
-              )[0]?.postal_address ||
-              ""
-            }
-            onChange={(e: any) =>
-              setCart({ ...cart, postal_address: e.target.value })
+        ) : (
+          <>
+            <div className="font-bold mt-2">
+              Select customer to enable laybys and mail orders.
+            </div>
+            <CreateableSelect
+              inputLabel="Select customer"
+              value={cart?.customer_id}
+              label={
+                customers?.filter(
+                  (c: CustomerObject) => c?.id === cart?.customer_id
+                )[0]?.name || ""
+              }
+              onChange={(customerObject: any) => {
+                setCart((s) => ({
+                  ...s,
+                  customer_id: parseInt(customerObject?.value),
+                }));
+              }}
+              onCreateOption={(inputValue: string) => {
+                setCustomer({ name: inputValue });
+                setView({ ...view, createCustomer: true });
+              }}
+              options={customers?.map((val: CustomerObject) => ({
+                value: val?.id,
+                label: val?.name || "",
+              }))}
+            />
+          </>
+        )}
+        <div className="flex mt-2">
+          <input
+            disabled={!cart?.customer_id}
+            className="cursor-pointer"
+            type="checkbox"
+            checked={cart?.is_mail_order}
+            onChange={() =>
+              setCart((s) => ({ ...s, is_mail_order: !s?.is_mail_order }))
             }
           />
+          <div className="ml-2">Mail order</div>
         </div>
-      ) : (
-        <div />
-      )}
+        {cart?.is_mail_order ? (
+          <div>
+            <TextField
+              inputLabel="Postage Fee"
+              startAdornment="$"
+              inputType="number"
+              valueNum={cart?.postage}
+              onChange={(e: any) =>
+                setCart({ ...cart, postage: e.target.value })
+              }
+            />
+            <TextField
+              inputLabel="Postal Address"
+              multiline
+              value={
+                cart?.postal_address ||
+                customers?.filter(
+                  (c: CustomerObject) => c?.id === cart?.customer_id
+                )[0]?.postal_address ||
+                ""
+              }
+              onChange={(e: any) =>
+                setCart({ ...cart, postal_address: e.target.value })
+              }
+            />
+          </div>
+        ) : (
+          <div />
+        )}
+      </div>
       <TextField
         inputLabel="Note"
         multiline

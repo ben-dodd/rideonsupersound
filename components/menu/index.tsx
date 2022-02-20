@@ -212,6 +212,7 @@ export default function Menu() {
                   ? item?.onClick
                   : () => {
                       window.scrollTo(0, 0);
+                      // checkResets(page, item?.page);
                       setPage(item?.page);
                       setView({ ...view, mainMenu: false });
                     }
@@ -237,7 +238,7 @@ export default function Menu() {
       <div className="px-8">
         <div className="hover:animate-wiggle">
           {/*src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/clerk/${clerk?.name}.png`}*/}
-          <Image
+          <img
             src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/pyramid.png`}
             alt="Ride On Super Sound"
             width={500}
@@ -287,3 +288,7 @@ export default function Menu() {
     </div>
   );
 }
+// function checkResets(currentPage: string, newPage: string) {
+//   if (currentPage === "sell") {
+//   }
+// }

@@ -67,7 +67,7 @@ export default function VendorsScreen() {
                   clerks?.filter(
                     (c: ClerkObject) => c?.id === v?.clerk_id
                   )[0] || {},
-                type: v?.category || "-",
+                type: v?.vendor_category || "-",
                 bankAccountNumber: v?.bank_account_number || "-",
                 totalTake: vendorVars?.totalSell || 0,
                 totalOwing: vendorVars?.totalOwing || 0,

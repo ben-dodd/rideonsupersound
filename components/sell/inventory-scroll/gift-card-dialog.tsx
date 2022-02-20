@@ -134,6 +134,7 @@ export default function GiftCardDialog() {
           </button>
         </div>
         <TextField
+          autoFocus
           className="mt-8"
           divClass="text-8xl"
           startAdornment="$"

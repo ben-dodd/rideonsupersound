@@ -21,7 +21,10 @@ import GeneralDetails from "./general-details";
 import VendorSales from "./sales";
 import VendorItems from "./items";
 import VendorPayments from "./payments";
-import { updateVendorInDatabase } from "@/lib/db-functions";
+import {
+  saveVendorToDatabase,
+  updateVendorInDatabase,
+} from "@/lib/db-functions";
 import { getVendorDetails } from "@/lib/data-functions";
 
 export default function VendorScreen() {
@@ -43,9 +46,15 @@ export default function VendorScreen() {
 
   // Load
   useEffect(() => {
-    setVendor(
-      vendors?.filter((v: VendorObject) => v?.id === loadedVendorId[page])[0]
-    );
+    if (loadedVendorId[page] < 0) {
+      // New vendor
+      setVendor({});
+    } else {
+      setVendor(
+        vendors?.filter((v: VendorObject) => v?.id === loadedVendorId[page])[0]
+      );
+    }
+    setTab(0);
   }, [loadedVendorId[page]]);
 
   // Constants
@@ -63,14 +72,21 @@ export default function VendorScreen() {
     },
     {
       type: "ok",
-      onClick: () => {
-        let otherVendors = vendors?.filter(
-          (i: VendorObject) => i?.id !== vendor?.id
-        );
-        mutateVendors([...otherVendors, vendor], false);
-        updateVendorInDatabase(vendor);
-        setLoadedVendorId({ ...loadedVendorId, [page]: 0 });
-        setVendor(null);
+      onClick: async () => {
+        if (loadedVendorId[page] < 0) {
+          const newVendorId = await saveVendorToDatabase(vendor);
+          mutateVendors([...vendors, { ...vendor, id: newVendorId }]);
+          setLoadedVendorId({ ...loadedVendorId, [page]: 0 });
+          setVendor(null);
+        } else {
+          let otherVendors = vendors?.filter(
+            (i: VendorObject) => i?.id !== vendor?.id
+          );
+          mutateVendors([...otherVendors, vendor], false);
+          updateVendorInDatabase(vendor);
+          setLoadedVendorId({ ...loadedVendorId, [page]: 0 });
+          setVendor(null);
+        }
       },
       text: "SAVE",
     },
@@ -80,7 +96,7 @@ export default function VendorScreen() {
     <ScreenContainer
       show={loadedVendorId[page]}
       closeFunction={() => setLoadedVendorId({ ...loadedVendorId, [page]: 0 })}
-      title={vendor?.name}
+      title={loadedVendorId[page] < 0 ? "New Vendor" : vendor?.name}
       loading={
         isSalesLoading ||
         isClerksLoading ||
@@ -94,7 +110,11 @@ export default function VendorScreen() {
     >
       <div className="flex flex-col w-full">
         <Tabs
-          tabs={["General Details", "Items", "Sales", "Payments"]}
+          tabs={
+            loadedVendorId[page] < 0
+              ? ["General Details"]
+              : ["General Details", "Items", "Sales", "Payments"]
+          }
           value={tab}
           onChange={setTab}
         />

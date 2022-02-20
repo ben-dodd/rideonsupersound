@@ -165,7 +165,7 @@
 }
 
 .modal__body {
-  @apply px-6 pt-6 flex-grow overflow-y-scroll;
+  @apply px-6 pt-6 flex-grow overflow-y-scroll max-h-dialog;
 }
 
 .modal__button-div {

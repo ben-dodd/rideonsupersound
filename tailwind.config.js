@@ -120,11 +120,22 @@ module.exports = {
         dialoglg: `calc(100vh - 12rem)`,
         dialog: `calc(100vh - 16rem)`,
         dialogsm: `calc(100vh - 24rem)`,
+        imageMed: "120px",
+        imageSmall: "80px",
       },
       maxHeight: {
         dialog: `calc(100vh - 16rem)`,
       },
-      width: { icons: "3rem", menu: `12rem`, board: `calc(100vw - 12rem)` },
+      maxWidth: {
+        dialog: `calc(100vw - 24rem)`,
+      },
+      width: {
+        icons: "3rem",
+        menu: `12rem`,
+        board: `calc(100vw - 12rem)`,
+        imageMed: "120px",
+        imageSmall: "80px",
+      },
       transitionProperty: { width: "width", height: "height" },
       gridTemplateColumns: {
         right: "auto 200px 200px",

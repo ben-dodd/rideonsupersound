@@ -60,7 +60,7 @@ export default function InventoryScroll() {
             ))}
         </>
       ) : (
-        <div className="text-sm">Use the search bar to find an item...</div>
+        <div className="text-xl">Use the search bar to find an item...</div>
       )}
     </div>
   );

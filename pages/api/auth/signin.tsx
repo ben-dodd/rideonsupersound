@@ -13,7 +13,7 @@ export default function SignIn() {
       </Head>
       <div className="flex flex-col h-screen justify-center">
         <div className="mx-auto mb-8">
-          <Image
+          <img
             src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/logo_400.png`}
             height={200}
             width={200}

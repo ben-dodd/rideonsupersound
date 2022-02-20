@@ -18,34 +18,38 @@ export default function StockDetails({ item }: stockDetailsProps) {
             item?.quantity <= 0 ? "bg-tertiary-light" : "bg-primary-light"
           }`}
         >
-          {item?.quantity || 0}
+          {`${item?.quantity || 0}`}
         </div>
         <div className="stock-indicator__container">RECEIVED</div>
         <div className="stock-indicator__number bg-secondary-light">
-          {item?.quantity_received || 0}
+          {`${item?.quantity_received || 0}`}
         </div>
         <div className="stock-indicator__container">SOLD</div>
         <div className="stock-indicator__number bg-secondary-light">
-          {Math.abs(item?.quantity_sold || 0)}
+          {`${Math.abs(item?.quantity_sold || 0)}`}
         </div>
         <div className="stock-indicator__container">RETURNED</div>
         <div className="stock-indicator__number bg-secondary-light">
-          {Math.abs(item?.quantity_returned || 0)}
+          {`${Math.abs(item?.quantity_returned || 0)}`}
         </div>
         <div className="stock-indicator__container">LAYBY/HOLD</div>
         <div className="stock-indicator__number bg-secondary-light">
-          {(item?.quantity_layby +
-            item?.quantity_hold +
-            item?.quantity_unlayby +
-            item?.quantity_unhold) *
-            -1}
+          {`${
+            (item?.quantity_layby +
+              item?.quantity_hold +
+              item?.quantity_unlayby +
+              item?.quantity_unhold) *
+            -1
+          }`}
         </div>
         <div className="stock-indicator__container">DISCARD/LOST</div>
         <div className="stock-indicator__number bg-secondary-light">
-          {(item?.quantity_discarded +
-            item?.quantity_lost +
-            item?.quantity_found) *
-            -1}
+          {`${
+            (item?.quantity_discarded +
+              item?.quantity_lost +
+              item?.quantity_found) *
+            -1
+          }`}
         </div>
         <div className="stock-indicator__container">ADJUSTMENT</div>
         <div
@@ -55,7 +59,7 @@ export default function StockDetails({ item }: stockDetailsProps) {
               : "bg-secondary-light"
           }`}
         >
-          {item?.quantity_adjustment || 0}
+          {`${item?.quantity_adjustment || 0}`}
         </div>
         <div className="col-span-2" />
       </div>

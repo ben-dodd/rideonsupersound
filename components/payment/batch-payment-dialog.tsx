@@ -227,7 +227,7 @@ export default function BatchPaymentDialog() {
           >
             <div className="w-full">
               {`[${vendor?.id}] ${vendor?.name}${
-                vendor?.category ? ` (${vendor?.category})` : ""
+                vendor?.vendor_category ? ` (${vendor?.vendor_category})` : ""
               }${vendor?.bank_account_number ? "" : " NO BANK NUMBER"}`}
             </div>
             <TextField

@@ -20,6 +20,17 @@ export default function PrintLabel({ receivedStock }) {
     0
   );
 
+  function getStock() {
+    let res = [];
+    receivedStock?.forEach((receiveItem) => {
+      [...Array(parseInt(receiveItem?.quantity))]?.forEach(() =>
+        res.push(receiveItem?.item)
+      );
+    });
+    console.log(res);
+    return res;
+  }
+
   return (
     <div>
       <div className="my-4 w-2/5">
@@ -30,9 +41,10 @@ export default function PrintLabel({ receivedStock }) {
           <div className="flex justify-between mb-2" key={item?.item?.id}>
             <div className="w-20">
               <div className="w-20 h-20 relative">
-                <Image
-                  layout="fill"
-                  objectFit="cover"
+                <img
+                  className="object-cover absolute"
+                  // layout="fill"
+                  // objectFit="cover"
                   src={getImageSrc(item?.item)}
                   alt={item?.title || "Inventory image"}
                 />
@@ -54,14 +66,7 @@ export default function PrintLabel({ receivedStock }) {
       </div>
       <CSVLink
         className={`bg-col2-dark hover:bg-col2 disabled:bg-gray-200 p-2 rounded`}
-        data={getCSVData(
-          receivedStock
-            ? receivedStock?.map((receiveItem) => ({
-                printQuantity: parseInt(`${receiveItem?.quantity}`),
-                item: { value: receiveItem?.item },
-              }))
-            : []
-        )}
+        data={getCSVData(getStock())}
         headers={["SKU", "ARTIST", "TITLE", "NEW/USED", "SELL PRICE", "GENRE"]}
         filename={`label-print-${dayjs().format("YYYY-MM-DD")}.csv`}
         onClick={() =>

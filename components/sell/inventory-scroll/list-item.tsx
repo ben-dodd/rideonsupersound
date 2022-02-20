@@ -142,15 +142,17 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
         item?.quantity < 1 ? "bg-pink-200" : "bg-gray-200"
       }`}
     >
-      <div className="w-32">
+      <div className="w-imageMed">
         <div
-          className={`w-32 h-32 relative${
+          className={`w-imageMed h-imageMed${
             item?.quantity < 1 ? " opacity-50" : ""
           }`}
         >
-          <Image
-            layout="fill"
-            objectFit="cover"
+          <img
+            className="object-cover h-imageMed"
+            width="100%"
+            // layout="fill"
+            // objectFit="cover"
             src={getImageSrc(item)}
             alt={item?.title || "Inventory image"}
           />

@@ -36,6 +36,7 @@ export default function InventoryItemScreen({ page }) {
 
   // Load
   useEffect(() => {
+    setTab[0];
     let newItem = { ...stockItem };
     // Parse JSON fields
     newItem.discogsItem = parseJSON(
@@ -105,15 +106,15 @@ export default function InventoryItemScreen({ page }) {
     >
       <div className="flex flex-col w-full">
         <Tabs
-          tabs={[
-            "General Information",
-            item?.media === "Audio"
-              ? "Discogs"
+          tabs={
+            item?.media === "Mixed"
+              ? ["General Information", "Discogs", "GoogleBooks"]
+              : item?.media === "Audio"
+              ? ["General Information", "Discogs"]
               : item?.media === "Literature"
-              ? "GoogleBooks"
-              : null,
-            // "Sale Details",
-          ]}
+              ? ["General Information", "GoogleBooks"]
+              : ["General Information"]
+          }
           value={tab}
           onChange={setTab}
         />

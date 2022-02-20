@@ -1,30 +1,22 @@
 // Packages
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
 import {
-  useSaleItemsForSale,
   useSaleTransactionsForSale,
   useCustomers,
   useInventory,
   useLogs,
   useSales,
-  useSaleItems,
   useGiftCards,
   useRegisterID,
 } from "@/lib/swr-hooks";
-import {
-  clerkAtom,
-  alertAtom,
-  cartAtom,
-  viewAtom,
-  pageAtom,
-} from "@/lib/atoms";
+import { clerkAtom, alertAtom, cartAtom, viewAtom } from "@/lib/atoms";
 import { ModalButton, CustomerObject, SaleStateTypes } from "@/lib/types";
 
 // Functions
-import { getSaleVars, writeItemList } from "@/lib/data-functions";
+import { getSaleVars } from "@/lib/data-functions";
 import {
   saveSaleAndPark,
   saveLog,
@@ -52,12 +44,10 @@ export default function SaleScreen() {
   const [clerk] = useAtom(clerkAtom);
   const [, setAlert] = useAtom(alertAtom);
   const [view, setView] = useAtom(viewAtom);
-  const [page, setPage] = useAtom(pageAtom);
 
   // SWR
   const { customers } = useCustomers();
   const { inventory, mutateInventory } = useInventory();
-  const { items, isSaleItemsLoading } = useSaleItemsForSale(cart?.id);
   const { isSaleTransactionsLoading } = useSaleTransactionsForSale(cart?.id);
   const { sales, mutateSales } = useSales();
   const { giftCards, mutateGiftCards } = useGiftCards();
@@ -202,10 +192,6 @@ export default function SaleScreen() {
     saveLog(
       {
         log: `Sale #${cart?.id || saleId} completed.`,
-        // log: `Sale #${cart?.id || saleId} completed. ${writeItemList(
-        //   inventory,
-        //   items || cart?.items
-        // )}.`,
         clerk_id: clerk?.id,
         table_id: "sale",
         row_id: cart?.id || saleId,
@@ -258,7 +244,10 @@ export default function SaleScreen() {
     {
       type: "ok",
       onClick: clickCompleteSale,
-      disabled: completeSaleLoading || totalRemaining !== 0,
+      disabled:
+        completeSaleLoading ||
+        totalRemaining !== 0 ||
+        cart?.state === SaleStateTypes.Completed,
       loading: completeSaleLoading,
       text: "COMPLETE SALE",
     },
@@ -268,11 +257,17 @@ export default function SaleScreen() {
     <>
       <ScreenContainer
         show={view?.saleScreen}
-        closeFunction={() => setView({ ...view, saleScreen: false })}
+        closeFunction={() => {
+          if (totalRemaining === 0) {
+            if (cart?.state === SaleStateTypes.Completed) setCart(null);
+            else clickCompleteSale();
+          }
+          setView({ ...view, saleScreen: false });
+        }}
         title={`${cart?.id ? `SALE #${cart?.id}` : `NEW SALE`} [${
           cart?.state ? cart?.state.toUpperCase() : "IN PROGRESS"
         }]`}
-        loading={isSaleItemsLoading || isSaleTransactionsLoading}
+        loading={isSaleTransactionsLoading}
         buttons={buttons}
         titleClass="bg-col1"
       >

@@ -129,9 +129,10 @@ export default function CloseRegisterScreen() {
     );
     saveLog(
       {
-        log: `Register closed with $${
-          closeAmount ? parseFloat(closeAmount) : 0
-        } in the till.`,
+        log: `Register closed with $${(closeAmount
+          ? parseFloat(closeAmount)
+          : 0
+        )?.toFixed(2)} in the till.`,
         clerk_id: clerk?.id,
         table_id: "register",
         row_id: registerID,

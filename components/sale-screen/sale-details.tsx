@@ -73,7 +73,7 @@ export default function SaleDetails({ sale }) {
           {sale?.date_sale_opened
             ? `${dayjs(sale?.date_sale_opened).format("D MMMM YYYY, h:mm A")}${
                 sale?.sale_opened_by
-                  ? `(opened by ${
+                  ? ` (opened by ${
                       clerks
                         ? clerks.filter(
                             (clerk: any) => clerk?.id === sale?.sale_opened_by
@@ -89,7 +89,7 @@ export default function SaleDetails({ sale }) {
           {sale?.date_sale_closed
             ? `${dayjs(sale?.date_sale_closed).format("D MMMM YYYY, h:mm A")}${
                 sale?.sale_closed_by
-                  ? `(opened by ${
+                  ? ` (closed by ${
                       clerks
                         ? clerks.filter(
                             (clerk: any) => clerk?.id === sale?.sale_closed_by
@@ -100,7 +100,7 @@ export default function SaleDetails({ sale }) {
               }`
             : "Sale not closed"}
         </div>
-        {sale?.is_mail_order && (
+        {sale?.is_mail_order ? (
           <div>
             <div className="font-bold">Postage</div>
             <div className="mb-4">
@@ -109,9 +109,17 @@ export default function SaleDetails({ sale }) {
             <div className="font-bold">Postal Address</div>
             <div className="mb-4">{sale?.postal_address || "N/A"}</div>
           </div>
+        ) : (
+          <div />
         )}
-        <div className="font-bold">Notes</div>
-        <div className="mb-4">{sale?.note || "N/A"}</div>
+        {sale?.note ? (
+          <>
+            <div className="font-bold">Notes</div>
+            <div className="mb-4">{sale?.note || "N/A"}</div>
+          </>
+        ) : (
+          <div />
+        )}
         {/*weather && (
           <div className="bg-blue-200 p-2 my-2 rounded-md">
             <div className="font-bold">Weather</div>

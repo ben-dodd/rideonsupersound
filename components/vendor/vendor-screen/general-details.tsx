@@ -1,23 +1,5 @@
-// Packages
-import { useState, useEffect, useMemo } from "react";
-import { useAtom } from "jotai";
-
 // DB
-import {
-  useVendors,
-  useClerks,
-  useInventory,
-  useSalesJoined,
-  useVendorPayments,
-  useCustomers,
-} from "@/lib/swr-hooks";
-import {
-  clerkAtom,
-  viewAtom,
-  loadedCustomerObjectAtom,
-  loadedVendorIdAtom,
-  pageAtom,
-} from "@/lib/atoms";
+import { useClerks } from "@/lib/swr-hooks";
 import { ClerkObject } from "@/lib/types";
 
 // Components
@@ -65,13 +47,14 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
           object={vendor}
           onEdit={setVendor}
           inputLabel="Vendor Category"
-          dbField="category"
+          dbField="vendor_category"
           isCreateDisabled={true}
         />
 
         <div className="input-label">Staff Contact</div>
         <div className="w-full">
           <Select
+            isClearable
             value={{
               value: vendor?.clerk_id,
               label: clerks?.filter(
@@ -85,7 +68,7 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
             onChange={(e: any) =>
               setVendor({
                 ...vendor,
-                clerk_id: e.value,
+                clerk_id: e?.value || null,
               })
             }
           />

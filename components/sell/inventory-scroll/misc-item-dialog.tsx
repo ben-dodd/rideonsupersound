@@ -117,6 +117,7 @@ export default function MiscItemDialog() {
     >
       <>
         <TextField
+          autoFocus
           className="mt-8"
           divClass="text-8xl"
           startAdornment="$"

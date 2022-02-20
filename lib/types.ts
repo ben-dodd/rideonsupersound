@@ -216,7 +216,7 @@ export interface VendorPaymentObject {
 export interface VendorObject {
   id?: number;
   name?: string;
-  category?: string;
+  vendor_category?: string;
   clerk_id?: number;
   bank_account_number?: string;
   contact_name?: string;

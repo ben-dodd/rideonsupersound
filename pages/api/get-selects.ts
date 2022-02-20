@@ -11,7 +11,6 @@ const handler: NextApiHandler = async (req, res) => {
       SELECT label
       FROM select_option
       WHERE setting_select = ?
-      ORDER BY label
       `,
       setting_select
     );

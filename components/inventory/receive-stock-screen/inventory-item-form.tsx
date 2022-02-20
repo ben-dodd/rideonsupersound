@@ -149,6 +149,7 @@ export default function InventoryItemForm({
             dbField="cond"
             isCreateDisabled={true}
             isDisabled={disabled}
+            sorted={false}
           />
         </div>
       )}

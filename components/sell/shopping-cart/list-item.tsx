@@ -93,9 +93,10 @@ export default function SellListItem({
       >
         <div className="w-20">
           <div className="w-20 h-20 relative">
-            <Image
-              layout="fill"
-              objectFit="cover"
+            <img
+              className="object-cover absolute"
+              // layout="fill"
+              // objectFit="cover"
               src={getImageSrc(item)}
               alt={item?.title || "Inventory image"}
             />

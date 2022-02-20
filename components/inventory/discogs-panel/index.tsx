@@ -40,10 +40,8 @@ export default function DiscogsPanel({
   // Load
   useEffect(() => {
     if (
-      (item?.media === "Audio" &&
-        Boolean(item?.discogsItem) &&
-        Boolean(item?.artist)) ||
-      Boolean(item?.title)
+      !Boolean(item?.discogsItem) &&
+      (Boolean(item?.artist) || Boolean(item?.title) || Boolean(item?.barcode))
     )
       handleGetDiscogsOptions();
   }, []);
@@ -98,8 +96,8 @@ export default function DiscogsPanel({
           )
         ) : (
           <div className="text-xl p-6">
-            To search item on Discogs, fill in the title and artist on the left
-            and click the button above.
+            To search item on Discogs, fill in the title, artist, and/or barcode
+            and click the "Refresh Discogs Search" button.
           </div>
         )}
       </div>

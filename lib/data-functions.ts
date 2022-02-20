@@ -262,6 +262,7 @@ export function getVendorDetails(
   vendor_id: number,
   cart?: SaleObject
 ) {
+  if (vendor_id < 0) return {};
   let totalItems = inventory?.filter(
     (i: StockObject) => i?.vendor_id === vendor_id
   );
@@ -757,29 +758,18 @@ export function makeGiftCardCode(giftCards: GiftCardObject[]) {
 //               //
 
 export function getCSVData(items) {
-  let csv = [];
-  Object.values(items || {})
-    .filter((row: any) => Boolean(row?.item?.value))
-    .forEach((row: any) => {
-      Array.from(Array(parseInt(row?.printQuantity || "1")).keys()).forEach(
-        () => {
-          let stockItem: StockObject = row?.item?.value;
-          console.log(stockItem);
-          csv.push([
-            getItemSku(stockItem),
-            stockItem?.artist,
-            stockItem?.title,
-            stockItem?.is_new ? "NEW" : "USED",
-            `$${Math.round(stockItem?.total_sell / 100)}`,
-            `${stockItem?.section}${
-              stockItem?.section && stockItem?.country ? "/" : ""
-            }${stockItem?.country === "New Zealand" ? "NZ" : ""}`,
-            `${("00000" + stockItem?.id || "").slice(-5)}`,
-          ]);
-        }
-      );
-    });
-  return csv;
+  console.log(items);
+  return items?.map((item: any) => [
+    getItemSku(item),
+    item?.artist,
+    item?.title,
+    item?.is_new ? "NEW" : "USED",
+    `$${Math.round(item?.total_sell / 100)}`,
+    `${item?.section}${item?.section && item?.country ? "/" : ""}${
+      item?.country === "New Zealand" ? "NZ" : ""
+    }`,
+    `${("00000" + item?.id || "").slice(-5)}`,
+  ]);
 }
 
 interface KiwiBankBatchFileProps {

@@ -5,7 +5,7 @@ const handler: NextApiHandler = async (req, res) => {
   const { k } = req.query;
   const {
     name,
-    category,
+    vendor_category,
     clerk_id,
     bank_account_number,
     contact_name,
@@ -24,7 +24,7 @@ const handler: NextApiHandler = async (req, res) => {
       `
       INSERT INTO vendor (
         name,
-        category,
+        vendor_category,
         clerk_id,
         bank_account_number,
         contact_name,
@@ -40,7 +40,7 @@ const handler: NextApiHandler = async (req, res) => {
       `,
       [
         name,
-        category,
+        vendor_category,
         clerk_id,
         bank_account_number,
         contact_name,

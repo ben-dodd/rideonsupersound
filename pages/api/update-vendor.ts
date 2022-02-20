@@ -4,7 +4,7 @@ import { query } from "../../lib/db";
 const handler: NextApiHandler = async (req, res) => {
   const {
     name,
-    category,
+    vendor_category,
     clerk_id,
     bank_account_number,
     contact_name,
@@ -27,7 +27,7 @@ const handler: NextApiHandler = async (req, res) => {
       UPDATE vendor
       SET
         name = ?,
-        category = ?,
+        vendor_category = ?,
         clerk_id = ?,
         bank_account_number = ?,
         contact_name = ?,
@@ -43,7 +43,7 @@ const handler: NextApiHandler = async (req, res) => {
       `,
       [
         name,
-        category,
+        vendor_category,
         clerk_id,
         bank_account_number,
         contact_name,
