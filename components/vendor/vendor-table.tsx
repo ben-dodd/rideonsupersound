@@ -46,6 +46,8 @@ export default function VendorsScreen() {
     return s?.total_price !== calcPrice;
   });
 
+  // TODO Vendor totals are different between vendor screen adn table - Muz Moeller, Andrew Tolley, clubhouse records
+
   // Constants
   const data = useMemo(
     () =>
@@ -71,6 +73,8 @@ export default function VendorsScreen() {
                 totalTake: vendorVars?.totalSell || 0,
                 totalOwing: vendorVars?.totalOwing || 0,
                 totalDebitAmount: vendorVars?.totalPaid || 0,
+                numberOfSales: vendorVars?.totalSales?.length,
+                numberOfPayments: vendorVars?.totalPayments?.length,
                 uniqueItemsInStock: vendorVars?.totalItems?.length,
                 totalItemsInStock: vendorVars?.totalItems?.reduce(
                   (sum: number, item: StockObject) =>
