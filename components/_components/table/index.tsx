@@ -157,7 +157,7 @@ function Table({
         <div className="flex items-center">
           {downloadCSV ? (
             <CSVLink
-              className={`bg-white hover:bg-gray-100 disabled:bg-gray-200 p-2 rounded border`}
+              className={`text-gray-600 bg-gray-100 hover:bg-gray-200 p-2 py-1 my-1 rounded border border-gray-600`}
               filename={`${heading?.toLowerCase?.()}-${dayjs().format(
                 "YYYY-MM-DD"
               )}.csv`}

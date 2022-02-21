@@ -191,6 +191,11 @@ export function filterHelps(
   // })
 }
 
+export function applyDiscount(price, discount) {
+  let discountFactor = 100 - parseInt(`${discount || 0}`);
+  return parseInt(`${price}`) * discountFactor;
+}
+
 export function getItemPrice(item: StockObject, cartItem: SaleItemObject) {
   let vendorDiscountFactor = 100,
     storeDiscountFactor = 100;
@@ -223,24 +228,38 @@ export function getStoreCut(item: StockObject) {
 export function getSaleVars(sale: any, inventory: StockObject[]) {
   console.log(sale);
   const totalPostage = parseFloat(`${sale?.postage}`) || 0;
-  const totalItemPrice =
-    Math.round(
-      (sale?.items?.reduce((prev, curr) => curr?.total_sell + prev, 0) / 100 +
-        Number.EPSILON) *
-        10
-    ) / 10;
-  const totalPrice = totalItemPrice + totalPostage;
-  const totalPaid =
-    Math.round((getTotalPaid(sale?.transactions) / 100 + Number.EPSILON) * 10) /
-    10;
   const totalVendorCut =
     Math.round(
-      (sale?.items?.reduce((prev, curr) => curr?.vendor_cut + prev, 0) / 100 +
+      (sale?.items?.reduce(
+        (prev, curr) =>
+          applyDiscount(curr?.vendor_cut, curr?.vendor_discount) / 100 + prev,
+        0
+      ) /
+        100 +
         Number.EPSILON) *
         10
     ) / 10;
   const totalStoreCut =
-    Math.round((totalItemPrice - totalVendorCut + Number.EPSILON) * 10) / 10;
+    Math.round(
+      (sale?.items?.reduce(
+        (prev, curr) =>
+          applyDiscount(
+            curr?.total_sell - curr?.vendor_cut,
+            curr?.store_discount
+          ) /
+            100 +
+          prev,
+        0
+      ) /
+        100 +
+        Number.EPSILON) *
+        10
+    ) / 10;
+  const totalItemPrice = totalVendorCut + totalStoreCut;
+  const totalPrice = totalItemPrice + totalPostage;
+  const totalPaid =
+    Math.round((getTotalPaid(sale?.transactions) / 100 + Number.EPSILON) * 10) /
+    10;
   const totalRemaining =
     Math.round((totalPrice - totalPaid + Number.EPSILON) * 10) / 10;
   return {

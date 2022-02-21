@@ -11,6 +11,7 @@ const handler: NextApiHandler = async (req, res) => {
       SELECT date, amount
       FROM vendor_payment
       WHERE vendor_id = ?
+      AND NOT is_deleted
       `,
       vendor_id
     );
