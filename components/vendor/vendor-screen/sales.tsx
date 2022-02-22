@@ -3,7 +3,11 @@ import { useInventory } from "@/lib/swr-hooks";
 import { StockObject, VendorSaleItemObject } from "@/lib/types";
 
 // Functions
-import { getItemDisplayName } from "@/lib/data-functions";
+import {
+  applyDiscount,
+  getItemDisplayName,
+  getVendorDetails,
+} from "@/lib/data-functions";
 
 // Components
 import dayjs from "dayjs";
@@ -41,19 +45,11 @@ export default function VendorSales({ vendor, vendorDetails }) {
             } SOLD`}</div>
             <div className="w-1/6">
               {`$${(
-                vendorDetails?.totalSales?.reduce(
-                  (prev, curr) => prev + curr?.total_sell,
-                  0
-                ) / 100
+                vendorDetails?.totalStoreCut + vendorDetails?.totalSell
               )?.toFixed(2)}`}
             </div>
             <div className="w-1/6">
-              {`$${(
-                vendorDetails?.totalSales?.reduce(
-                  (prev, curr) => prev + curr?.vendor_cut,
-                  0
-                ) / 100
-              )?.toFixed(2)}`}
+              {`$${vendorDetails?.totalSell?.toFixed(2)}`}
             </div>
           </div>
           {vendorDetails?.totalSales

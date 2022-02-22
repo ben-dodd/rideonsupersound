@@ -232,7 +232,10 @@ export function getSaleVars(sale: any, inventory: StockObject[]) {
     Math.round(
       (sale?.items?.reduce(
         (prev, curr) =>
-          applyDiscount(curr?.vendor_cut, curr?.vendor_discount) / 100 + prev,
+          (curr?.quantity *
+            applyDiscount(curr?.vendor_cut, curr?.vendor_discount)) /
+            100 +
+          prev,
         0
       ) /
         100 +
@@ -243,10 +246,11 @@ export function getSaleVars(sale: any, inventory: StockObject[]) {
     Math.round(
       (sale?.items?.reduce(
         (prev, curr) =>
-          applyDiscount(
-            curr?.total_sell - curr?.vendor_cut,
-            curr?.store_discount
-          ) /
+          (curr?.quantity *
+            applyDiscount(
+              curr?.total_sell - curr?.vendor_cut,
+              curr?.store_discount
+            )) /
             100 +
           prev,
         0
@@ -310,13 +314,25 @@ export function getVendorDetails(
     0
   );
 
-  const totalSell: any = totalSales?.reduce(
-    (acc: number, sale: VendorSaleItemObject) =>
-      acc +
-      (sale?.quantity * sale?.vendor_cut * (100 - sale?.vendor_discount || 0)) /
-        100,
-    0
-  );
+  const totalStoreCut =
+    totalSales?.reduce(
+      (acc: number, sale: VendorSaleItemObject) =>
+        acc +
+        sale?.quantity *
+          (sale?.total_sell - sale?.vendor_cut) *
+          (1 - (sale?.store_discount || 0) / 100),
+      0
+    ) / 100;
+
+  const totalSell: any =
+    totalSales?.reduce(
+      (acc: number, sale: VendorSaleItemObject) =>
+        acc +
+        sale?.quantity *
+          sale?.vendor_cut *
+          (1 - (sale?.vendor_discount || 0) / 100),
+      0
+    ) / 100;
 
   let lastPaid = latestDate(
     totalPayments?.map((p: VendorPaymentObject) => p?.date)
@@ -335,6 +351,7 @@ export function getVendorDetails(
     lastPaid,
     totalOwing,
     lastSold,
+    totalStoreCut,
   };
 }
 

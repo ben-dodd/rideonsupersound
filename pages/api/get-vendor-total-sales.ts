@@ -13,6 +13,7 @@ const handler: NextApiHandler = async (req, res) => {
         sale_item.item_id,
         sale_item.quantity,
         sale_item.vendor_discount,
+        sale_item.store_discount,
         stock_price.vendor_cut,
         stock_price.total_sell,
         stock_price.date_valid_from AS date_price_valid_from,

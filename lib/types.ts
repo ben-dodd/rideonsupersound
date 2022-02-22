@@ -192,6 +192,7 @@ export interface VendorSaleItemObject {
   item_id?: number;
   quantity?: number;
   vendor_discount?: number;
+  store_discount?: number;
   vendor_cut?: number;
   total_sell?: number;
   date_price_valid_from?: string;
