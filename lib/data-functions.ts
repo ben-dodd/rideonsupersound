@@ -326,25 +326,23 @@ export function getVendorDetails(
     0
   );
 
-  const totalStoreCut =
-    totalSales?.reduce(
-      (acc: number, sale: VendorSaleItemObject) =>
-        acc +
-        sale?.quantity *
-          (sale?.total_sell - sale?.vendor_cut) *
-          (1 - (sale?.store_discount || 0) / 100),
-      0
-    ) / 100;
+  const totalStoreCut = totalSales?.reduce(
+    (acc: number, sale: VendorSaleItemObject) =>
+      acc +
+      sale?.quantity *
+        (sale?.total_sell - sale?.vendor_cut) *
+        (1 - (sale?.store_discount || 0) / 100),
+    0
+  );
 
-  const totalSell: any =
-    totalSales?.reduce(
-      (acc: number, sale: VendorSaleItemObject) =>
-        acc +
-        sale?.quantity *
-          sale?.vendor_cut *
-          (1 - (sale?.vendor_discount || 0) / 100),
-      0
-    ) / 100;
+  const totalSell: any = totalSales?.reduce(
+    (acc: number, sale: VendorSaleItemObject) =>
+      acc +
+      sale?.quantity *
+        sale?.vendor_cut *
+        (1 - (sale?.vendor_discount || 0) / 100),
+    0
+  );
 
   let lastPaid = latestDate(
     totalPayments?.map((p: VendorPaymentObject) => p?.date)

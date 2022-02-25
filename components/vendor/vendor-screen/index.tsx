@@ -64,6 +64,8 @@ export default function VendorScreen() {
     [inventory, sales, vendorPayments, loadedVendorId[page]]
   );
 
+  console.log(vendorDetails);
+
   const buttons: ModalButton[] = [
     {
       type: "cancel",

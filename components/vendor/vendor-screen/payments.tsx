@@ -1,23 +1,14 @@
 // Packages
-import { useState, useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { useAtom } from "jotai";
 
 // DB
 import {
-  useVendors,
-  useClerks,
   useInventory,
   useSalesJoined,
   useVendorPayments,
-  useCustomers,
 } from "@/lib/swr-hooks";
-import {
-  clerkAtom,
-  viewAtom,
-  loadedCustomerObjectAtom,
-  loadedVendorIdAtom,
-  pageAtom,
-} from "@/lib/atoms";
+import { loadedVendorIdAtom, pageAtom } from "@/lib/atoms";
 import { VendorObject, VendorPaymentObject } from "@/lib/types";
 
 // Functions
@@ -96,7 +87,6 @@ export default function VendorPayments({ vendor }) {
             )
             // ?.slice(0, 5)
             ?.map((debit: VendorPaymentObject) => {
-              console.log(debit);
               return (
                 <div
                   className="border-b py-1 flex hover:bg-gray-100 text-sm"

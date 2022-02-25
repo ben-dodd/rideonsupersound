@@ -45,11 +45,12 @@ export default function VendorSales({ vendor, vendorDetails }) {
             } SOLD`}</div>
             <div className="w-1/6">
               {`$${(
-                vendorDetails?.totalStoreCut + vendorDetails?.totalSell
+                (vendorDetails?.totalStoreCut + vendorDetails?.totalSell) /
+                100
               )?.toFixed(2)}`}
             </div>
             <div className="w-1/6">
-              {`$${vendorDetails?.totalSell?.toFixed(2)}`}
+              {`$${(vendorDetails?.totalSell / 100)?.toFixed(2)}`}
             </div>
           </div>
           {vendorDetails?.totalSales
