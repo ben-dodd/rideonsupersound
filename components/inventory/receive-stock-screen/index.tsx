@@ -169,14 +169,15 @@ export default function ReceiveStockScreen() {
   );
 
   function isDisabled() {
+    console.log(basket);
     return (
       !basket?.vendor_id ||
       basket?.items?.length === 0 ||
       basket?.items?.filter(
         (item) =>
-          !item?.section ||
-          item?.is_new === null ||
-          !item?.cond ||
+          !item?.item?.section ||
+          item?.item?.is_new === null ||
+          !item?.item?.cond ||
           !Number.isInteger(parseInt(`${item?.quantity}`)) ||
           !(
             (Number.isInteger(parseInt(`${item?.vendor_cut}`)) &&
