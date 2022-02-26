@@ -31,7 +31,7 @@ export default function SaleSummary({ sale }) {
   // Functions
   function SaleItems() {
     return (
-      <div>
+      <div className={`h-2/5 overflow-y-scroll`}>
         {sale?.items?.length > 0 ? (
           sale?.items?.map((saleItem: SaleItemObject) => (
             <ItemListItem
@@ -50,7 +50,7 @@ export default function SaleSummary({ sale }) {
   function TransactionItems() {
     return (
       <div
-        className={`flex-1 overflow-y-scroll mt-1 pt-1 border-t border-gray-500 ${
+        className={`h-1/5 overflow-y-scroll mt-1 pt-1 border-t border-gray-500 ${
           !sale?.transactions || (sale?.transactions?.length === 0 && " hidden")
         }`}
       >
@@ -74,7 +74,7 @@ export default function SaleSummary({ sale }) {
   }
   function SaleDetails() {
     return (
-      <div>
+      <div className="h-2/5 overflow-y-scroll">
         <div className="flex justify-end mt-2 pt-2 border-t border-gray-500">
           <div>VENDOR CUT</div>
           <div
