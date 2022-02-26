@@ -24,6 +24,8 @@ function RadioButton({
   group,
   disabled,
 }: RadioButtonProps) {
+  console.log(group);
+  console.log(options);
   return (
     <div>
       {inputLabel && <label className={`input-label pb-2`}>{inputLabel}</label>}
@@ -32,7 +34,7 @@ function RadioButton({
           <label key={e.id} id={e.id} className="radio-button__label">
             <input
               className="radio-button__input"
-              id={e?.id}
+              id={e.id}
               name={group || null}
               type="radio"
               checked={value === e.value}
