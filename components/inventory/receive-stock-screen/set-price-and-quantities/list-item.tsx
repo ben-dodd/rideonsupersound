@@ -66,9 +66,9 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
       <div>
         <div className="self-center flex items-center">
           <RadioButton
-            key={`isNew${item?.is_new}`}
+            key={`${receiveItem?.key}isNew${item?.is_new}`}
             inputLabel="CONDITION"
-            group="isNew"
+            group={`${receiveItem?.key}isNew`}
             value={
               item?.is_new === null ? null : item?.is_new ? "true" : "false"
             }
@@ -90,8 +90,8 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
               })
             }
             options={[
-              { id: "new", value: "true", label: "New" },
-              { id: "used", value: "false", label: "Used" },
+              { id: `new${receiveItem?.key}`, value: "true", label: "New" },
+              { id: `used${receiveItem?.key}`, value: "false", label: "Used" },
             ]}
           />
           <SettingsSelect
