@@ -229,50 +229,33 @@ export function getStoreCut(item: StockObject) {
 }
 
 export function getSaleVars(sale: any, inventory: StockObject[]) {
-  console.log(sale);
   const totalPostage = parseFloat(`${sale?.postage}`) || 0;
   const totalVendorCut =
-    Math.round(
-      (sale?.items?.reduce((prev, curr) => {
-        console.log(curr?.quantity);
-        console.log(curr);
-        const stockItem = inventory?.filter((i) => i?.id === curr?.item_id)[0];
-        console.log(
-          applyDiscount(stockItem?.vendor_cut, curr?.vendor_discount)
-        );
-        return (
-          (curr?.quantity *
-            applyDiscount(stockItem?.vendor_cut, curr?.vendor_discount)) /
-            100 +
-          prev
-        );
-      }, 0) /
-        100 +
-        Number.EPSILON) *
-        10
-    ) / 10;
+    sale?.items?.reduce((prev, curr) => {
+      const stockItem = inventory?.filter((i) => i?.id === curr?.item_id)[0];
+      return (
+        (curr?.quantity *
+          applyDiscount(stockItem?.vendor_cut, curr?.vendor_discount)) /
+          100 +
+        prev
+      );
+    }, 0) / 100;
   const totalStoreCut =
-    Math.round(
-      (sale?.items?.reduce((prev, curr) => {
-        const stockItem = inventory?.filter((i) => i?.id === curr?.item_id)[0];
-        return (
-          (curr?.quantity *
-            applyDiscount(
-              stockItem?.total_sell - stockItem?.vendor_cut,
-              curr?.store_discount
-            )) /
-            100 +
-          prev
-        );
-      }, 0) /
-        100 +
-        Number.EPSILON) *
-        10
-    ) / 10;
-  const totalItemPrice = totalVendorCut + totalStoreCut;
+    sale?.items?.reduce((prev, curr) => {
+      const stockItem = inventory?.filter((i) => i?.id === curr?.item_id)[0];
+      return (
+        (curr?.quantity *
+          applyDiscount(
+            stockItem?.total_sell - stockItem?.vendor_cut,
+            curr?.store_discount
+          )) /
+          100 +
+        prev
+      );
+    }, 0) / 100;
+  const totalItemPrice =
+    Math.round((totalVendorCut + totalStoreCut + Number.EPSILON) * 10) / 10;
   const totalPrice = totalItemPrice + totalPostage;
-  console.log(totalStoreCut);
-  console.log(totalVendorCut);
   const totalPaid =
     Math.round((getTotalPaid(sale?.transactions) / 100 + Number.EPSILON) * 10) /
     10;
