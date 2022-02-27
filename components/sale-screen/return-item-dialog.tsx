@@ -9,7 +9,7 @@ import { ModalButton, SaleItemObject, SaleStateTypes } from "@/lib/types";
 
 // Functions
 import { writeItemList } from "@/lib/data-functions";
-import { saveLog } from "@/lib/db-functions";
+import { saveLog, saveSystemLog } from "@/lib/db-functions";
 
 // Components
 import Modal from "@/components/_components/container/modal";
@@ -45,6 +45,7 @@ export default function ReturnItemsDialog({ sale }) {
       type: "ok",
       loading: submitting,
       onClick: () => {
+        saveSystemLog("RETURN ITEMS - OK clicked.", clerk?.id);
         const updatedCartItems = cart?.items?.map((item: SaleItemObject) =>
           refundItems.includes(item?.id)
             ? { ...item, is_refunded: true, refund_note: notes }
@@ -103,6 +104,7 @@ export default function ReturnItemsDialog({ sale }) {
                 sale={sale}
                 selected={refundItems.includes(item?.id)}
                 onClick={() => {
+                  saveSystemLog(`ITEM ${item?.id} CLICKED`, clerk?.id);
                   let newRefundItems = [...refundItems];
                   if (refundItems?.includes(item?.id))
                     newRefundItems = newRefundItems.filter(

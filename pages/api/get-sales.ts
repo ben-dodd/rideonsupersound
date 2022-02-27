@@ -22,7 +22,8 @@ const handler: NextApiHandler = async (req, res) => {
         item_list,
         is_mail_order,
         postage,
-        postal_address
+        postal_address,
+        weather
       FROM sale
       WHERE NOT is_deleted
       `

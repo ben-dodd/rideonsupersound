@@ -210,14 +210,25 @@ export async function saveSaleItemsTransactionsToDatabase(
           );
           quantity_layby -= 1;
         }
-        // Mark stock as sold
-        saveStockMovementToDatabase(
-          item,
-          clerk,
-          registerID,
-          StockMovementTypes.Sold,
-          null
-        );
+        if (item?.is_refunded) {
+          // Refund item if refunded
+          saveStockMovementToDatabase(
+            item,
+            clerk,
+            registerID,
+            StockMovementTypes.Unsold,
+            null
+          );
+        } else {
+          // Mark stock as sold
+          saveStockMovementToDatabase(
+            item,
+            clerk,
+            registerID,
+            StockMovementTypes.Sold,
+            null
+          );
+        }
         // Sold quantity is not in main inventory
         // quantity_sold += 1;
 
@@ -790,6 +801,30 @@ export async function saveGiftCardToDatabase() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({}),
+      }
+    );
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
+export async function saveSystemLog(log: string, clerkID: number) {
+  let logObj = {
+    date_created: dayjs.utc().format(),
+    log: log,
+    clerk_id: clerkID,
+    table_id: "system",
+  };
+  try {
+    const res = await fetch(
+      `/api/create-log?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(logObj),
       }
     );
     const json = await res.json();

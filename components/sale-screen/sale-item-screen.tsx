@@ -30,7 +30,7 @@ import {
 
 // Functions
 import { getSaleVars } from "@/lib/data-functions";
-import { loadSaleToCart } from "@/lib/db-functions";
+import { loadSaleToCart, saveSystemLog } from "@/lib/db-functions";
 
 // Components
 import SaleDetails from "./sale-details";
@@ -92,6 +92,7 @@ export default function SaleItemScreen() {
 
   // Functions
   async function loadSale() {
+    saveSystemLog("LOAD SALE clicked.", clerk?.id);
     setLoadToCartLoading(true);
     await loadSaleToCart(
       cart,

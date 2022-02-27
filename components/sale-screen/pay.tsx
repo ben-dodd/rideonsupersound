@@ -3,7 +3,12 @@ import { useAtom } from "jotai";
 
 // DB
 import { useCustomers, useInventory } from "@/lib/swr-hooks";
-import { cartAtom, viewAtom, loadedCustomerObjectAtom } from "@/lib/atoms";
+import {
+  cartAtom,
+  viewAtom,
+  loadedCustomerObjectAtom,
+  clerkAtom,
+} from "@/lib/atoms";
 import { CustomerObject, SaleStateTypes } from "@/lib/types";
 
 // Functions
@@ -14,11 +19,13 @@ import CreateableSelect from "@/components/_components/inputs/createable-select"
 import TextField from "@/components/_components/inputs/text-field";
 
 import ReturnIcon from "@mui/icons-material/KeyboardReturn";
+import { saveSystemLog } from "@/lib/db-functions";
 
 export default function Pay() {
   // Atoms
   const [cart, setCart] = useAtom(cartAtom);
   const [, setCustomer] = useAtom(loadedCustomerObjectAtom);
+  const [clerk] = useAtom(clerkAtom);
   const [view, setView] = useAtom(viewAtom);
 
   // SWR
@@ -61,28 +68,40 @@ export default function Pay() {
       <div className="grid grid-cols-2 gap-2 mt-4">
         <button
           className="square-button"
-          onClick={() => setView({ ...view, cashPaymentDialog: true })}
+          onClick={() => {
+            saveSystemLog("CASH PAYMENT clicked.", clerk?.id);
+            setView({ ...view, cashPaymentDialog: true });
+          }}
           disabled={totalRemaining === 0}
         >
           CASH
         </button>
         <button
           className="square-button"
-          onClick={() => setView({ ...view, cardPaymentDialog: true })}
+          onClick={() => {
+            saveSystemLog("CARD PAYMENT clicked.", clerk?.id);
+            setView({ ...view, cardPaymentDialog: true });
+          }}
           disabled={totalRemaining === 0}
         >
           CARD
         </button>
         <button
           className="square-button"
-          onClick={() => setView({ ...view, acctPaymentDialog: true })}
+          onClick={() => {
+            saveSystemLog("ACCT PAYMENT clicked.", clerk?.id);
+            setView({ ...view, acctPaymentDialog: true });
+          }}
           disabled={totalRemaining === 0}
         >
           ACCT
         </button>
         <button
           className="square-button"
-          onClick={() => setView({ ...view, giftPaymentDialog: true })}
+          onClick={() => {
+            saveSystemLog("GIFT PAYMENT clicked.", clerk?.id);
+            setView({ ...view, giftPaymentDialog: true });
+          }}
           disabled={totalRemaining === 0}
         >
           GIFT
@@ -122,12 +141,17 @@ export default function Pay() {
                 )[0]?.name || ""
               }
               onChange={(customerObject: any) => {
+                saveSystemLog("SALE SCREEN customer selected.", clerk?.id);
                 setCart((s) => ({
                   ...s,
                   customer_id: parseInt(customerObject?.value),
                 }));
               }}
               onCreateOption={(inputValue: string) => {
+                saveSystemLog(
+                  "SALE SCREEN new customer screen opened.",
+                  clerk?.id
+                );
                 setCustomer({ name: inputValue });
                 setView({ ...view, createCustomer: true });
               }}
@@ -144,9 +168,10 @@ export default function Pay() {
             className="cursor-pointer"
             type="checkbox"
             checked={cart?.is_mail_order}
-            onChange={() =>
-              setCart((s) => ({ ...s, is_mail_order: !s?.is_mail_order }))
-            }
+            onChange={() => {
+              saveSystemLog("SALE SCREEN - IS MAIL ORDER clicked.", clerk?.id);
+              setCart((s) => ({ ...s, is_mail_order: !s?.is_mail_order }));
+            }}
           />
           <div className="ml-2">Mail order</div>
         </div>

@@ -5,7 +5,11 @@ import { useClerks, useCustomers, useInventory } from "@/lib/swr-hooks";
 import { CustomerObject, OpenWeatherObject, SaleStateTypes } from "@/lib/types";
 
 // Functions
-import { getSaleVars } from "@/lib/data-functions";
+import {
+  convertDegToCardinal,
+  convertMPStoKPH,
+  getSaleVars,
+} from "@/lib/data-functions";
 
 export default function SaleDetails({ sale }) {
   dayjs.extend(utc);
@@ -20,9 +24,11 @@ export default function SaleDetails({ sale }) {
   // Constants
   const weather: OpenWeatherObject = sale?.weather
     ? sale?.weather instanceof String
-      ? JSON.parse(sale?.weather)
+      ? JSON.parse(JSON.parse(sale?.weather))
       : sale?.weather
     : null;
+
+  console.log(weather);
 
   return (
     <div className="flex flex-col justify-between">
@@ -111,7 +117,7 @@ export default function SaleDetails({ sale }) {
         ) : (
           <div />
         )}
-        {/*weather && (
+        {weather && (
           <div className="bg-blue-200 p-2 my-2 rounded-md">
             <div className="font-bold">Weather</div>
             <div className="flex">
@@ -136,7 +142,7 @@ export default function SaleDetails({ sale }) {
               </div>
             </div>
           </div>
-                )*/}
+        )}
         {/*sale?.geo_latitude && sale?.geo_longitude && (
           <iframe
             className="p-2"

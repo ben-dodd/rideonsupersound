@@ -24,8 +24,6 @@ function RadioButton({
   group,
   disabled,
 }: RadioButtonProps) {
-  console.log(group);
-  console.log(options);
   return (
     <div>
       {inputLabel && <label className={`input-label pb-2`}>{inputLabel}</label>}

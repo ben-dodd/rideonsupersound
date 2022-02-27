@@ -21,6 +21,7 @@ import {
   saveSaleAndPark,
   saveLog,
   saveSaleItemsTransactionsToDatabase,
+  saveSystemLog,
 } from "@/lib/db-functions";
 
 // Components
@@ -72,6 +73,7 @@ export default function SaleScreen() {
 
   // Functions
   async function clickParkSale() {
+    saveSystemLog("PARK SALE clicked.", clerk?.id);
     setParkSaleLoading(true);
     saveSaleAndPark(
       cart,
@@ -98,6 +100,7 @@ export default function SaleScreen() {
   }
 
   async function clickLayby() {
+    saveSystemLog("START LAYBY started.", clerk?.id);
     setLaybyLoading(true);
     let laybySale = { ...cart };
     if (cart?.state !== SaleStateTypes.Layby) {
@@ -108,7 +111,7 @@ export default function SaleScreen() {
       laybySale = {
         ...laybySale,
         state: SaleStateTypes.Layby,
-        date_layby_started: "CURRENT_TIMESTAMP",
+        date_layby_started: dayjs.utc().format(),
         layby_started_by: clerk?.id,
       };
       saveLog(
@@ -156,6 +159,7 @@ export default function SaleScreen() {
   }
 
   async function clickCompleteSale() {
+    saveSystemLog("COMPLETE SALE clicked.", clerk?.id);
     setCompleteSaleLoading(true);
     // Update sale to 'complete', add date_sale_closed, sale_closed_by
     let completedSale = {
@@ -170,8 +174,6 @@ export default function SaleScreen() {
       sale_closed_by: clerk?.id,
       date_sale_closed: dayjs.utc().format(),
     };
-
-    console.log(completedSale);
 
     const saleId = await saveSaleItemsTransactionsToDatabase(
       completedSale,
@@ -212,6 +214,7 @@ export default function SaleScreen() {
     {
       type: "cancel",
       onClick: () => {
+        saveSystemLog("DISCARD SALE clicked.", clerk?.id);
         setCart(null);
         setView({ ...view, saleScreen: false });
       },
@@ -221,7 +224,10 @@ export default function SaleScreen() {
     },
     {
       type: "alt2",
-      onClick: () => setView({ ...view, saleScreen: false }),
+      onClick: () => {
+        saveSystemLog("CHANGE ITEMS clicked.", clerk?.id);
+        setView({ ...view, saleScreen: false });
+      },
       disabled: totalRemaining === 0,
       loading: addMoreItemsLoading,
       text: "CHANGE ITEMS",
@@ -259,9 +265,24 @@ export default function SaleScreen() {
         show={view?.saleScreen}
         closeFunction={() => {
           if (totalRemaining === 0) {
-            if (cart?.state === SaleStateTypes.Completed) setCart(null);
-            else clickCompleteSale();
+            if (cart?.state === SaleStateTypes.Completed) {
+              saveSystemLog(
+                "Sale screen closed. Total remaining === 0. Cart set to null.",
+                clerk?.id
+              );
+              setCart(null);
+            } else {
+              saveSystemLog(
+                "Sale screen closed. Total remaining === 0. Sale completed.",
+                clerk?.id
+              );
+              clickCompleteSale();
+            }
           }
+          saveSystemLog(
+            "Sale screen closed. Total remaining not 0.",
+            clerk?.id
+          );
           setView({ ...view, saleScreen: false });
         }}
         title={`${cart?.id ? `SALE #${cart?.id}` : `NEW SALE`} [${

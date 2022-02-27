@@ -145,7 +145,7 @@ export default function Gift() {
                     (c: CustomerObject) => c?.id === cart?.customer_id
                   )[0]?.name
                 : "customer"
-            }${cart?.id ? ` (sale #${cart?.id}).` : ""}.${
+            }${cart?.id ? ` (sale #${cart?.id})` : ""}.${
               isRefund
                 ? ""
                 : ` Gift card #${giftCardCode?.toUpperCase()}. ${
