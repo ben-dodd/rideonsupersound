@@ -8,6 +8,7 @@ import {
   viewAtom,
   loadedHoldIdAtom,
   loadedCustomerObjectAtom,
+  clerkAtom,
 } from "@/lib/atoms";
 import { CustomerObject, HoldObject, StockObject } from "@/lib/types";
 
@@ -21,6 +22,7 @@ import {
 import Table from "@/components/_components/table";
 import TableContainer from "@/components/_components/container/table";
 import dayjs from "dayjs";
+import { saveSystemLog } from "@/lib/db-functions";
 
 export default function CustomerTable() {
   // SWR
@@ -31,6 +33,7 @@ export default function CustomerTable() {
   // Atoms
   const [view, setView] = useAtom(viewAtom);
   const [loadedHoldId, setLoadedHoldId] = useAtom(loadedHoldIdAtom);
+  const [clerk] = useAtom(clerkAtom);
   const [customer, setCustomer] = useAtom(loadedCustomerObjectAtom);
 
   // Constants
@@ -70,9 +73,13 @@ export default function CustomerTable() {
           <div
             key={value?.id}
             className={`mb-2 cursor-pointer underline whitespace-normal`}
-            onClick={() =>
-              setLoadedHoldId({ ...loadedHoldId, holds: value?.id })
-            }
+            onClick={() => {
+              saveSystemLog(
+                `Hold table - Hold ${loadedHoldId} opened.`,
+                clerk?.id
+              );
+              setLoadedHoldId({ ...loadedHoldId, holds: value?.id });
+            }}
           >
             {`${value?.quantity || 1} x ${getItemDisplayName(
               inventory?.filter((i: StockObject) => i?.id === value?.item_id)[0]

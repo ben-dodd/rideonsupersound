@@ -31,6 +31,7 @@ import {
   addRestockTask,
   saveHoldToDatabase,
   saveLog,
+  saveSystemLog,
   saveTaskToDatabase,
 } from "@/lib/db-functions";
 
@@ -62,6 +63,7 @@ export default function CreateHoldSidebar() {
 
   // Functions
   async function onClickConfirmHold() {
+    saveSystemLog("Confirm Hold clicked.", clerk?.id);
     setSubmitting(true);
     // Create hold
 
@@ -121,7 +123,10 @@ export default function CreateHoldSidebar() {
   const buttons: ModalButton[] = [
     {
       type: "cancel",
-      onClick: () => setView({ ...view, cart: false, createHold: false }),
+      onClick: () => {
+        saveSystemLog("New hold cancelled.", clerk?.id);
+        setView({ ...view, cart: false, createHold: false });
+      },
       text: "CANCEL",
     },
     {
@@ -161,12 +166,14 @@ export default function CreateHoldSidebar() {
             )[0]?.name || ""
           }
           onChange={(customerObject: any) => {
+            saveSystemLog("New hold sidebar - Customer selected.", clerk?.id);
             setCart({
               ...cart,
               customer_id: parseInt(customerObject?.value),
             });
           }}
           onCreateOption={(inputValue: string) => {
+            saveSystemLog("New hold sidebar - Customer created.", clerk?.id);
             setCustomer({ name: inputValue });
             setView({ ...view, createCustomer: true });
           }}

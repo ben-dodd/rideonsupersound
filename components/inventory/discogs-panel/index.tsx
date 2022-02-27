@@ -19,6 +19,9 @@ import SyncIcon from "@mui/icons-material/Sync";
 import DiscogsOption from "./discogs-option";
 import DiscogsItem from "./discogs-item";
 import { StockObject } from "@/lib/types";
+import { useAtom } from "jotai";
+import { clerkAtom } from "@/lib/atoms";
+import { saveSystemLog } from "@/lib/db-functions";
 
 interface inventoryProps {
   item: StockObject;
@@ -33,6 +36,7 @@ export default function DiscogsPanel({
 }: inventoryProps) {
   // State
   const [discogsOptions, setDiscogsOptions] = useState(null);
+  const [clerk] = useAtom(clerkAtom);
 
   // Constants
   const discogsItem = item?.discogsItem || null;
@@ -64,6 +68,7 @@ export default function DiscogsPanel({
           className="icon-text-button"
           disabled={disabled}
           onClick={() => {
+            saveSystemLog("Discogs Panel - sync clicked.", clerk?.id);
             setItem({ ...item, discogsItem: null });
             handleGetDiscogsOptions();
           }}

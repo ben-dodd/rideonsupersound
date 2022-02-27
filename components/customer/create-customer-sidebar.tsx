@@ -15,6 +15,7 @@ import { CustomerObject, ModalButton } from "@/lib/types";
 // Functions
 import {
   saveCustomerToDatabase,
+  saveSystemLog,
   updateCustomerInDatabase,
 } from "@/lib/db-functions";
 
@@ -47,11 +48,13 @@ export default function CreateCustomerSidebar() {
 
   // Functions
   function closeSidebar() {
+    saveSystemLog("New customer sidebar closed.", clerk?.id);
     setCustomer(null);
     setView({ ...view, createCustomer: false });
   }
 
   async function onClickCreateCustomer() {
+    saveSystemLog(`New customer (${customer?.name}) created.`, clerk?.id);
     setSubmitting(true);
     let newCustomer = { ...customer, created_by_clerk_id: clerk?.id };
     const id = await saveCustomerToDatabase(customer, clerk);

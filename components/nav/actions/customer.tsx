@@ -9,7 +9,9 @@ export default function CustomerNavActions() {
     <div className="flex">
       <button
         className="icon-text-button"
-        onClick={() => setView({ ...view, createCustomer: true })}
+        onClick={() => {
+          setView({ ...view, createCustomer: true });
+        }}
       >
         <NewIcon className="mr-1" />
         New Customer

@@ -11,6 +11,9 @@ import {
   getDiscogsItemArtistDetails,
   getDiscogsPriceSuggestions,
 } from "@/lib/data-functions";
+import { saveSystemLog } from "@/lib/db-functions";
+import { clerkAtom } from "@/lib/atoms";
+import { useAtom } from "jotai";
 
 interface discogsProps {
   opt: DiscogsItem;
@@ -25,11 +28,13 @@ export default function DiscogsOption({
   setItem,
   override,
 }: discogsProps) {
+  const [clerk] = useAtom(clerkAtom);
   const handleDiscogsOptionClick = async () => {
+    saveSystemLog(`Discogs option clicked - ${opt?.id}`, clerk?.id);
     const detailedDiscogsItem = await getDiscogsItem(opt);
     const priceSuggestions = await getDiscogsPriceSuggestions(opt);
     console.log(detailedDiscogsItem);
-    const artist = await getDiscogsItemArtistDetails(detailedDiscogsItem);
+    // const artist = await getDiscogsItemArtistDetails(detailedDiscogsItem);
     const discogsItem = {
       ...opt,
       ...detailedDiscogsItem,

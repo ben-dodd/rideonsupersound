@@ -12,6 +12,9 @@ import SyncIcon from "@mui/icons-material/Sync";
 import { StockObject } from "@/lib/types";
 import GoogleBooksItem from "./google-books-item";
 import GoogleBooksOption from "./google-books-option";
+import { saveSystemLog } from "@/lib/db-functions";
+import { useAtom } from "jotai";
+import { clerkAtom } from "@/lib/atoms";
 
 interface inventoryProps {
   item: StockObject;
@@ -29,6 +32,7 @@ export default function GoogleBooksPanel({
 
   // Constants
   const googleBooksItem = item?.googleBooksItem;
+  const [clerk] = useAtom(clerkAtom);
 
   // Load
   useEffect(() => {
@@ -46,6 +50,7 @@ export default function GoogleBooksPanel({
   };
 
   const handleGoogleBooksOptionClick = (googleBooksItem) => {
+    saveSystemLog(`Googlebooks Option clicked.`, clerk?.id);
     setItem({
       ...item,
       image_url: googleBooksItem?.volumeInfo?.imageLinks?.thumbnail || null,
@@ -66,6 +71,7 @@ export default function GoogleBooksPanel({
           className="icon-text-button hover:bg-blue-100"
           disabled={disabled}
           onClick={() => {
+            saveSystemLog("Googlebooks Sync clicked.", clerk?.id);
             setItem({ ...item, googleBooksItem: null });
             handleGetGoogleBooksOptions();
           }}

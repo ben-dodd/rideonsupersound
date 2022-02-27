@@ -35,6 +35,7 @@ import {
   updateHoldInDatabase,
   loadSaleToCart,
   saveLog,
+  saveSystemLog,
 } from "@/lib/db-functions";
 
 // Components
@@ -100,6 +101,7 @@ export default function HoldDialog() {
       type: "cancel",
       text: "Return to Stock",
       onClick: () => {
+        saveSystemLog("Hold dialog - Return hold to stock clicked.", clerk?.id);
         returnHoldToStock(
           hold,
           clerk,
@@ -139,6 +141,7 @@ export default function HoldDialog() {
           hold?.note === originalHold?.note) ||
         isNaN(parseInt(hold?.hold_period)),
       onClick: () => {
+        saveSystemLog("Hold dialog - Update hold clicked.", clerk?.id);
         if (hold?.hold_period !== null || hold?.note !== null) {
           const otherHolds = holds?.filter(
             (h: HoldObject) => h?.id !== loadedHoldId
@@ -188,6 +191,7 @@ export default function HoldDialog() {
 
   function addHoldToCart() {
     // TODO do we need to check if it is another customer?
+    saveSystemLog("Hold dialog - Add hold to cart.", clerk?.id);
     returnHoldToStock(
       hold,
       clerk,

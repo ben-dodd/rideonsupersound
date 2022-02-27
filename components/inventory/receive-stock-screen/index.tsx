@@ -8,7 +8,7 @@ import { viewAtom, clerkAtom, receiveStockAtom } from "@/lib/atoms";
 import { ModalButton } from "@/lib/types";
 
 // Functions
-import { receiveStock } from "@/lib/db-functions";
+import { receiveStock, saveSystemLog } from "@/lib/db-functions";
 
 // Components
 import Stepper from "@/components/_components/navigation/stepper";
@@ -44,13 +44,17 @@ export default function ReceiveStockScreen() {
         type: "ok",
         text: "NEXT",
         disabled: !basket?.vendor_id,
-        onClick: () => setStep(1),
+        onClick: () => {
+          saveSystemLog(`Receive stock screen - Set step 1`, clerk?.id);
+          setStep(1);
+        },
       },
     ],
     [
       {
         type: "cancel",
         onClick: () => {
+          saveSystemLog(`Receive stock screen - Set step 0`, clerk?.id);
           setStep(0);
           setBasket({});
         },
@@ -60,26 +64,48 @@ export default function ReceiveStockScreen() {
         type: "ok",
         text: "NEXT",
         disabled: basket?.items?.length === 0,
-        onClick: () => setStep(2),
+        onClick: () => {
+          saveSystemLog(`Receive stock screen - Set step 2`, clerk?.id);
+          setStep(2);
+        },
       },
     ],
     [
-      { type: "cancel", onClick: () => setStep(1), text: "BACK" },
+      {
+        type: "cancel",
+        onClick: () => {
+          saveSystemLog(`Receive stock screen - Set step 1`, clerk?.id);
+          setStep(1);
+        },
+        text: "BACK",
+      },
       {
         type: "ok",
         text: "NEXT",
         onClick: () => {
+          saveSystemLog(`Receive stock screen - Set step 3`, clerk?.id);
           setStep(3);
         },
       },
     ],
     [
-      { type: "cancel", onClick: () => setStep(2), text: "BACK" },
+      {
+        type: "cancel",
+        onClick: () => {
+          saveSystemLog(`Receive stock screen - Set step 2`, clerk?.id);
+          setStep(2);
+        },
+        text: "BACK",
+      },
       {
         type: "ok",
         disabled: isDisabled(),
         text: "RECEIVE ITEMS",
         onClick: async () => {
+          saveSystemLog(
+            `Receive stock screen - Set step 4, receive stock called`,
+            clerk?.id
+          );
           const receivedStock = await receiveStock(basket, clerk, registerID);
           mutateInventory();
           setReceivedStock(receivedStock);
@@ -93,6 +119,7 @@ export default function ReceiveStockScreen() {
         disabled: isDisabled(),
         text: "DONE",
         onClick: () => {
+          saveSystemLog(`Receive stock screen - DONE clicked`, clerk?.id);
           setBasket({});
           setView({ ...view, receiveStockScreen: false });
         },

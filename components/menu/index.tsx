@@ -22,6 +22,7 @@ import LaybyIcon from "@mui/icons-material/DryCleaning";
 import JobsIcon from "@mui/icons-material/Task";
 import StatsIcon from "@mui/icons-material/QueryStats";
 import StocktakeIcon from "@mui/icons-material/Numbers";
+import { saveSystemLog } from "@/lib/db-functions";
 
 // Types
 type MenuType = {
@@ -212,7 +213,10 @@ export default function Menu() {
                   ? item?.onClick
                   : () => {
                       window.scrollTo(0, 0);
-                      // checkResets(page, item?.page);
+                      saveSystemLog(
+                        `${item?.page} on menu clicked.`,
+                        clerk?.id
+                      );
                       setPage(item?.page);
                       setView({ ...view, mainMenu: false });
                     }
