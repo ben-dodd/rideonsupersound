@@ -59,9 +59,8 @@ export default function VendorItems() {
               item?.quantity < 1 ? " opacity-50" : ""
             }`}
           >
-            <Image
-              layout="fill"
-              objectFit="cover"
+            <img
+              className="object-cover absolute"
               src={getImageSrc(item)}
               alt={item?.title || "Inventory image"}
             />

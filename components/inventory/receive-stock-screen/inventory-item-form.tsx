@@ -41,9 +41,8 @@ export default function InventoryItemForm({
         {/* IMAGE */}
         <div className="pr-2 w-52 mr-2">
           <div className="w-52 h-52 relative">
-            <Image
-              layout="fill"
-              objectFit="contain"
+            <img
+              className="object-cover absolute"
               src={getImageSrc(item)}
               alt={item?.title || "Inventory image"}
             />

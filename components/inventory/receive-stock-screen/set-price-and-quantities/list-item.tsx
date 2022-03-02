@@ -43,9 +43,8 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
       <div className="flex">
         <div className="w-20">
           <div className="w-20 h-20 relative">
-            <Image
-              layout="fill"
-              objectFit="cover"
+            <img
+              className="object-cover absolute"
               src={getImageSrc(item)}
               alt={item?.title || "Inventory image"}
             />

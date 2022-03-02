@@ -40,7 +40,7 @@ export default function Nav() {
           <div className="ml-4">
             {/*<div className="sm:hidden">{`${clerk?.name?.toUpperCase()} @ R.O.S.S.`}</div>
             <div className="hidden sm:block">{`${clerk?.name?.toUpperCase()} @ RIDE ON SUPER SOUND`}</div>*/}
-            <Image
+            <img
               src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/POS-RIDEONSUPERSOUNDLOGO.png`}
               alt="Ride On Super Sound"
               height="42px"

@@ -102,12 +102,17 @@ export function writeCartItemPriceTotal(
     : `$${(getItemPrice(item, cartItem) / 100)?.toFixed(2)}`;
 }
 
-export function filterInventory({ inventory, search }) {
+export function filterInventory({
+  inventory,
+  search,
+  slice = 50,
+  emptyReturn = false,
+}) {
   if (!inventory) return [];
   return inventory
     .filter((item: StockObject) => {
       let res = true;
-      if (!search || search === "") return false;
+      if (!search || search === "") return emptyReturn;
 
       if (search) {
         let terms = search.split(" ");
@@ -134,7 +139,7 @@ export function filterInventory({ inventory, search }) {
 
       return res;
     })
-    .slice(0, 50);
+    .slice(0, slice);
   // ?.sort((a: StockObject, b: StockObject) => {
   //   if (!a?.quantity || !b?.quantity) return 0;
   //   if (a?.quantity === b?.quantity) return 0;

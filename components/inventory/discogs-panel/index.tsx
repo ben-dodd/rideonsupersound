@@ -58,7 +58,7 @@ export default function DiscogsPanel({
   return (
     <div className="flex flex-col h-inventory">
       <div className="flex justify-between px-2">
-        <Image
+        <img
           src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/discogs-logo.png`}
           alt="Discogs Logo"
           width="100px"
