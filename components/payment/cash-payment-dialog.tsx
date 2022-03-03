@@ -172,6 +172,7 @@ export default function CashPaymentDialog() {
           divClass="text-8xl"
           inputClass="text-center"
           startAdornment="$"
+          error={isNaN(parseFloat(payment))}
           autoFocus
           selectOnFocus
           value={payment}
@@ -189,6 +190,8 @@ export default function CashPaymentDialog() {
         </div>
         <div className="my-4 text-center text-xl font-bold">
           {vendor_id > 0
+            ? isNaN(parseFloat(payment))
+            : "NUMBERS ONLY PLEASE"
             ? totalOwing / 100 < parseFloat(payment)
               ? `YOU CANNOT PAY VENDOR MORE THAN THEY ARE OWED`
               : "PAYMENT OK"

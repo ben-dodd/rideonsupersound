@@ -65,6 +65,35 @@ export async function loadSaleToCart(
   setCart(sale);
 }
 
+export async function nukeSaleInDatabase(
+  sale: SaleObject,
+  clerk: ClerkObject,
+  registerID: number,
+  logs: LogObject[],
+  mutateLogs: Function,
+  sales: SaleObject[],
+  mutateSales: Function,
+  inventory: StockObject[],
+  mutateInventory: Function,
+  giftCards: GiftCardObject[],
+  mutateGiftCards: Function
+) {
+  saveLog(
+    {
+      log: `Sale #${sale?.id} nuked.`,
+      clerk_id: clerk?.id,
+      table_id: "sale",
+      row_id: sale?.id,
+    },
+    logs,
+    mutateLogs
+  );
+  sale?.items?.forEach((i) => deleteSaleItemFromDatabase(i?.id));
+  sale?.transactions?.forEach((i) => deleteSaleTransactionFromDatabase(i?.id));
+  deleteStockMovementsFromDatabase(sale?.id);
+  deleteSaleFromDatabase(sale?.id);
+}
+
 export async function saveSaleAndPark(
   cart: SaleObject,
   clerk: ClerkObject,
@@ -153,7 +182,6 @@ export async function saveSaleItemsTransactionsToDatabase(
     }
   } else {
     // Sale already has id, update
-    console.log(newSale);
     updateSaleInDatabase(newSale);
     let otherSales = sales?.filter((s: SaleObject) => s?.id !== newSaleId);
     mutateSales([...otherSales, newSale], false);
@@ -206,7 +234,8 @@ export async function saveSaleItemsTransactionsToDatabase(
             clerk,
             registerID,
             StockMovementTypes.Unlayby,
-            null
+            null,
+            newSaleId
           );
           quantity_layby -= 1;
         }
@@ -217,7 +246,8 @@ export async function saveSaleItemsTransactionsToDatabase(
             clerk,
             registerID,
             StockMovementTypes.Unsold,
-            null
+            null,
+            newSaleId
           );
         } else {
           // Mark stock as sold
@@ -226,11 +256,10 @@ export async function saveSaleItemsTransactionsToDatabase(
             clerk,
             registerID,
             StockMovementTypes.Sold,
-            null
+            null,
+            newSaleId
           );
         }
-        // Sold quantity is not in main inventory
-        // quantity_sold += 1;
 
         // Add layby stock movement if it's a new layby
       } else if (
@@ -242,7 +271,8 @@ export async function saveSaleItemsTransactionsToDatabase(
           clerk,
           registerID,
           StockMovementTypes.Layby,
-          null
+          null,
+          newSaleId
         );
         quantity_layby += 1;
       }
@@ -1004,7 +1034,8 @@ export async function saveStockMovementToDatabase(
   clerk: ClerkObject,
   registerID: number,
   act: string,
-  note: string
+  note: string,
+  sale_id?: number
 ) {
   try {
     const res = await fetch(
@@ -1029,6 +1060,7 @@ export async function saveStockMovementToDatabase(
               : -parseInt(item?.quantity),
           act,
           note,
+          sale_id,
         }),
       }
     );
@@ -1254,9 +1286,7 @@ export async function deleteSaleItemFromDatabase(sale_item_id: number) {
 }
 
 export async function deleteSaleTransactionFromDatabase(
-  transaction_id: number,
-  transactions: SaleTransactionObject[],
-  mutate: Function
+  transaction_id: number
 ) {
   try {
     const res = await fetch(
@@ -1273,16 +1303,16 @@ export async function deleteSaleTransactionFromDatabase(
     );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
-    let deletedTransaction = transactions?.filter(
-      (t: SaleTransactionObject) => t?.id === transaction_id
-    )[0];
-    let otherTransactions = transactions?.filter(
-      (t: SaleTransactionObject) => t?.id !== transaction_id
-    );
-    mutate(
-      [...otherTransactions, { ...deletedTransaction, is_deleted: true }],
-      false
-    );
+    // let deletedTransaction = transactions?.filter(
+    //   (t: SaleTransactionObject) => t?.id === transaction_id
+    // )[0];
+    // let otherTransactions = transactions?.filter(
+    //   (t: SaleTransactionObject) => t?.id !== transaction_id
+    // );
+    // mutate(
+    //   [...otherTransactions, { ...deletedTransaction, is_deleted: true }],
+    //   false
+    // );
   } catch (e) {
     throw Error(e.message);
   }
@@ -1292,6 +1322,27 @@ export async function deleteSaleFromDatabase(sale_id: number) {
   try {
     const res = await fetch(
       `/api/delete-sale?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          sale_id,
+        }),
+      }
+    );
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
+
+export async function deleteStockMovementsFromDatabase(sale_id: number) {
+  try {
+    const res = await fetch(
+      `/api/delete-stock-movements-by-sale?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
         method: "POST",
         headers: {

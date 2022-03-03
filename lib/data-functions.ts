@@ -623,6 +623,38 @@ export async function getDiscogsItemArtistDetails(discogsItem: DiscogsItem) {
   }
 }
 
+export function getFormatFromDiscogs(formats: string[]) {
+  if (!formats) return "";
+  let format = null;
+  console.log(formats);
+  [
+    "LP",
+    "CD",
+    "Cassette",
+    '16"',
+    '12"',
+    '11"',
+    '10"',
+    '9"',
+    '8"',
+    '7"',
+    '6½"',
+    '6"',
+    '5½"',
+    '5"',
+    '4"',
+    '3½"',
+    '3"',
+    '2"',
+    '1"',
+  ]?.forEach((f) => {
+    if (formats?.includes(f)) format = f;
+  });
+  if (!format) format = formats[0];
+  console.log(format);
+  return format;
+}
+
 export async function getGoogleBooksOptionsByItem(item: StockObject) {
   try {
     const res = await fetch(
@@ -645,6 +677,11 @@ export function isMoneyFormat(value: string) {
 
 export function isDollarMoneyFormat(value: string) {
   return !value || /^\$?((\d+\.?|\.(?=\d))?\d{0,2})$/.test(value);
+}
+
+export function isValidBankAccountNumber(value: string) {
+  if (!value) return false;
+  return /^(?:[0-9]{15}|[0-9]{16})$/.test(`${value}`.replace(/\D/g, ""));
 }
 
 export function writeIntegerAsWord(number: number) {

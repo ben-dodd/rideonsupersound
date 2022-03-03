@@ -4,7 +4,12 @@ import { useAtom } from "jotai";
 
 // DB
 import { useInventory, useRegisterID } from "@/lib/swr-hooks";
-import { viewAtom, clerkAtom, receiveStockAtom } from "@/lib/atoms";
+import {
+  viewAtom,
+  clerkAtom,
+  receiveStockAtom,
+  confirmModalAtom,
+} from "@/lib/atoms";
 import { ModalButton } from "@/lib/types";
 
 // Functions
@@ -24,6 +29,7 @@ import SetPriceAndQuantities from "./set-price-and-quantities";
 export default function ReceiveStockScreen() {
   // Atoms
   const [basket, setBasket] = useAtom(receiveStockAtom);
+  const [, setConfirmModal] = useAtom(confirmModalAtom);
   const { inventory, mutateInventory } = useInventory();
   const [view, setView] = useAtom(viewAtom);
   const [clerk] = useAtom(clerkAtom);
@@ -54,9 +60,19 @@ export default function ReceiveStockScreen() {
       {
         type: "cancel",
         onClick: () => {
-          saveSystemLog(`Receive stock screen - Set step 0`, clerk?.id);
-          setStep(0);
-          setBasket({});
+          setConfirmModal({
+            open: true,
+            title: "Reset Basket?",
+            styledMessage: (
+              <span>Are you sure you want to wipe all received items?</span>
+            ),
+            yesText: "YES, I'M SURE",
+            action: () => {
+              saveSystemLog(`Receive stock screen - Set step 0`, clerk?.id);
+              setStep(0);
+              setBasket({});
+            },
+          });
         },
         text: "RESET",
       },

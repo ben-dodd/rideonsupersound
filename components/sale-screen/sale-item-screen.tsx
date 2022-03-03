@@ -20,17 +20,17 @@ import {
   loadedSaleIdAtom,
   viewAtom,
   pageAtom,
+  confirmModalAtom,
 } from "@/lib/atoms";
-import {
-  ModalButton,
-  SaleItemObject,
-  SaleObject,
-  SaleStateTypes,
-} from "@/lib/types";
+import { ModalButton, SaleItemObject, SaleObject } from "@/lib/types";
 
 // Functions
 import { getSaleVars } from "@/lib/data-functions";
-import { loadSaleToCart, saveSystemLog } from "@/lib/db-functions";
+import {
+  loadSaleToCart,
+  nukeSaleInDatabase,
+  saveSystemLog,
+} from "@/lib/db-functions";
 
 // Components
 import SaleDetails from "./sale-details";
@@ -49,6 +49,7 @@ export default function SaleItemScreen() {
   const [, setAlert] = useAtom(alertAtom);
   const [view, setView] = useAtom(viewAtom);
   const [page, setPage] = useAtom(pageAtom);
+  const [, setConfirmModal] = useAtom(confirmModalAtom);
 
   // SWR
   const { customers } = useCustomers();
@@ -64,6 +65,7 @@ export default function SaleItemScreen() {
   // State
   const [saleLoading, setSaleLoading] = useState(false);
   const [loadToCartLoading, setLoadToCartLoading] = useState(false);
+  const [nukeSaleLoading, setNukeSaleLoading] = useState(false);
 
   // State
   const [sale, setSale]: [SaleObject, Function] = useState({});
@@ -117,8 +119,47 @@ export default function SaleItemScreen() {
     setPage("sell");
   }
 
+  async function nukeSale() {
+    saveSystemLog("SALE NUKED", clerk?.id);
+    await nukeSaleInDatabase(
+      sale,
+      clerk,
+      registerID,
+      logs,
+      mutateLogs,
+      sales,
+      mutateSales,
+      inventory,
+      mutateInventory,
+      giftCards,
+      mutateGiftCards
+    );
+    setSale(null);
+    setLoadedSaleId({ ...loadedSaleId, [page]: null });
+  }
+
   // Constants
   const buttons: ModalButton[] = [
+    {
+      type: "cancel",
+      onClick: () => {
+        saveSystemLog("NUKE SALE clicked.", clerk?.id);
+        setConfirmModal({
+          open: true,
+          title: "Are you sure you want to delete this sale?",
+          styledMessage: (
+            <span>
+              This will delete the sale and all associated transactions. There
+              is no coming back.
+            </span>
+          ),
+          yesText: "YES, I'M SURE",
+          action: nukeSale,
+        });
+      },
+      loading: nukeSaleLoading,
+      text: "NUKE SALE",
+    },
     {
       type: "ok",
       onClick: loadSale,

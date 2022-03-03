@@ -10,6 +10,7 @@ import {
   getDiscogsItem,
   getDiscogsItemArtistDetails,
   getDiscogsPriceSuggestions,
+  getFormatFromDiscogs,
 } from "@/lib/data-functions";
 import { saveSystemLog } from "@/lib/db-functions";
 import { clerkAtom } from "@/lib/atoms";
@@ -47,7 +48,7 @@ export default function DiscogsOption({
         artist: discogsItem?.artists?.map((artist) => artist?.name)?.join(", "),
         barcode: discogsItem?.barcode?.join("\n"),
         country: discogsItem?.country,
-        format: discogsItem?.format?.join(", "),
+        format: getFormatFromDiscogs(discogsItem?.format),
         media: "Audio",
         genre: [
           ...(discogsItem?.genre

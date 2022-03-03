@@ -2,15 +2,12 @@ import TextField from "@/components/_components/inputs/text-field";
 import { receiveStockAtom } from "@/lib/atoms";
 import {
   getDiscogsOptionsByBarcode,
-  getDiscogsItem,
   getDiscogsOptionsByKeyword,
 } from "@/lib/data-functions";
 import { useAtom } from "jotai";
 import { useCallback, useState } from "react";
 import DiscogsOption from "../../discogs-panel/discogs-option";
 import { v4 as uuid } from "uuid";
-import { DiscogsItem, StockObject } from "@/lib/types";
-import { ChevronRight } from "@mui/icons-material";
 import debounce from "lodash/debounce";
 
 export default function Discogs() {
@@ -19,18 +16,12 @@ export default function Discogs() {
   const [discogsOptions, setDiscogsOptions] = useState([]);
   const [key, setKey] = useState(uuid());
   const handleChange = async (val) => {
-    console.group();
-    console.log("Barcode Value");
-    console.log(val);
     if (val !== "") {
       const results: any = await getDiscogsOptionsByBarcode(val);
-      console.log(results);
       if (results && results?.length > 0) {
-        console.log("Discogs Results Set");
         setDiscogsOptions(results);
       }
     }
-    console.groupEnd();
   };
   const [basket, setBasket] = useAtom(receiveStockAtom);
   const addItem = (item) => {

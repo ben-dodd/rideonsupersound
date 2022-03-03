@@ -42,9 +42,9 @@ export default function InventoryTable() {
             vendors?.filter((v: VendorObject) => v?.id === t?.vendor_id)[0]
               ?.name
           }`,
-          section: `${t?.section || ""}${t?.section && t?.country ? "/" : ""}${
-            t?.country === "New Zealand" ? "NZ" : ""
-          }`,
+          section: `${t?.section || ""}${
+            t?.section && t?.country === "New Zealand" ? "/" : ""
+          }${t?.country === "New Zealand" ? "NZ" : ""}`,
           media: t?.media || "-",
           format: t?.format || "-",
           cost: t?.vendor_cut ? t?.vendor_cut / 100 : 0,

@@ -22,12 +22,7 @@ export default function SaleDetails({ sale }) {
   const { totalRemaining } = getSaleVars(sale, inventory);
 
   // Constants
-  const weather: OpenWeatherObject = sale?.weather
-    ? sale?.weather instanceof String
-      ? JSON.parse(JSON.parse(sale?.weather))
-      : sale?.weather
-    : null;
-
+  const weather: OpenWeatherObject = jsonDecode(sale?.weather);
   console.log(weather);
 
   return (
@@ -117,17 +112,17 @@ export default function SaleDetails({ sale }) {
         ) : (
           <div />
         )}
-        {weather && (
+        {weather?.weather?.[0] && (
           <div className="bg-blue-200 p-2 my-2 rounded-md">
             <div className="font-bold">Weather</div>
             <div className="flex">
               <div>
                 <img
-                  src={`http://openweathermap.org/img/w/${weather?.weather[0]?.icon}.png`}
+                  src={`http://openweathermap.org/img/w/${weather?.weather?.[0]?.icon}.png`}
                 />
               </div>
               <div>
-                <div className="font-bold">{`${weather?.weather[0]?.main} (${weather?.weather[0]?.description})`}</div>
+                <div className="font-bold">{`${weather?.weather?.[0]?.main} (${weather?.weather?.[0]?.description})`}</div>
                 <div>{`${weather?.main?.temp.toFixed(
                   1
                 )}°C (felt like ${weather?.main?.feels_like.toFixed(
@@ -157,5 +152,11 @@ export default function SaleDetails({ sale }) {
     </div>
   );
 }
-// TODO Add refund items/ refund transactions
-// TODO Add split sale for when person wants to take one layby item etc.
+
+function jsonDecode(weather: any) {
+  let ret: any = weather || null;
+  while (typeof ret === "string") {
+    ret = JSON.parse(ret);
+  }
+  return ret;
+}

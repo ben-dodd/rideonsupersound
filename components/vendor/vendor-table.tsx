@@ -34,17 +34,17 @@ export default function VendorsScreen() {
   const { clerks, isClerksLoading } = useClerks();
   const { customers, isCustomersLoading } = useCustomers();
 
-  const wrongSales: any[] = sales?.filter((s: any) => {
-    let vendorDiscountFactor = 100,
-      storeDiscountFactor = 100;
-    if (s?.vendor_discount > 0) vendorDiscountFactor = 100 - s?.vendor_discount;
-    if (s?.store_discount > 0) storeDiscountFactor = 100 - s?.store_discount;
-    let storeCut =
-      ((s?.total_sell - s?.vendor_cut) * storeDiscountFactor) / 100;
-    let vendorCut = (s?.vendor_cut * vendorDiscountFactor) / 100;
-    let calcPrice = (storeCut + vendorCut) * s?.quantity;
-    return s?.total_price !== calcPrice;
-  });
+  // const wrongSales: any[] = sales?.filter((s: any) => {
+  //   let vendorDiscountFactor = 100,
+  //     storeDiscountFactor = 100;
+  //   if (s?.vendor_discount > 0) vendorDiscountFactor = 100 - s?.vendor_discount;
+  //   if (s?.store_discount > 0) storeDiscountFactor = 100 - s?.store_discount;
+  //   let storeCut =
+  //     ((s?.total_sell - s?.vendor_cut) * storeDiscountFactor) / 100;
+  //   let vendorCut = (s?.vendor_cut * vendorDiscountFactor) / 100;
+  //   let calcPrice = (storeCut + vendorCut) * s?.quantity;
+  //   return s?.total_price !== calcPrice;
+  // });
 
   // TODO Vendor totals are different between vendor screen adn table - Muz Moeller, Andrew Tolley, clubhouse records
 
