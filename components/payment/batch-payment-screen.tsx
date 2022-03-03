@@ -14,6 +14,7 @@ import { viewAtom, clerkAtom, receiveStockAtom } from "@/lib/atoms";
 import { ModalButton, VendorObject } from "@/lib/types";
 import StoreCreditOnlyIcon from "@mui/icons-material/ShoppingBag";
 import NoBankDetailsIcon from "@mui/icons-material/CreditCardOff";
+import QuantityCheckIcon from "@mui/icons-material/Warning";
 
 // Functions
 import { receiveStock } from "@/lib/db-functions";
@@ -235,11 +236,8 @@ export default function BatchPaymentScreen() {
               </button> */}
             </div>
             <div className="text-red-400 text-2xl font-bold text-right">
-              {vendorList?.reduce(
-                (prev, v) =>
-                  isNaN(parseFloat(v?.payAmount)) ? prev + 1 : prev,
-                0
-              ) > 0
+              {vendorList?.filter((v) => isNaN(parseFloat(v?.payAmount)))
+                ?.length > 0
                 ? `CHECK PAY ENTRIES`
                 : `PAY $${parseFloat(
                     totalPay
@@ -253,7 +251,7 @@ export default function BatchPaymentScreen() {
               <div className="w-1/12">OWED</div>
               <div className="w-2/12">LAST SALE</div>
               <div className="w-2/12">LAST PAID</div>
-              <div className="w-2/12">AMOUNT TO PAY</div>
+              <div className="w-3/12">AMOUNT TO PAY</div>
             </div>
             <div className="h-dialog overflow-y-scroll">
               {vendorList?.map((v) => (
@@ -284,6 +282,45 @@ export default function BatchPaymentScreen() {
                       }
                     />
                     <div className="pl-4">{`[${v?.id}] ${v?.name}`}</div>
+                  </div>
+                  <div className="w-1/12">{`$${(
+                    (v?.totalSell || 0) / 100
+                  )?.toFixed(2)}`}</div>
+                  <div
+                    className={`w-1/12${
+                      v?.totalOwing < 0 ? " text-red-500" : ""
+                    }`}
+                  >{`${v?.totalOwing < 0 ? "(" : ""}$${(
+                    Math.abs(v?.totalOwing || 0) / 100
+                  )?.toFixed(2)}${v?.totalOwing < 0 ? ")" : ""}`}</div>
+                  <div className="w-2/12">
+                    {v?.lastSold
+                      ? dayjs(v?.lastSold).format("D MMMM YYYY")
+                      : "NO SALES"}
+                  </div>
+                  <div className="w-2/12">
+                    {v?.lastPaid
+                      ? dayjs(v?.lastPaid).format("D MMMM YYYY")
+                      : "NEVER PAID"}
+                  </div>
+                  <div className="w-2/12 flex">
+                    <TextField
+                      disabled={v?.totalOwing <= 0 || !v?.is_checked}
+                      error={isNaN(parseFloat(v?.payAmount))}
+                      startAdornment={"$"}
+                      value={v?.payAmount || ""}
+                      onChange={(e) =>
+                        setVendorList(
+                          vendorList?.map((vendor) =>
+                            vendor?.id === v?.id
+                              ? { ...vendor, payAmount: e.target.value }
+                              : vendor
+                          )
+                        )
+                      }
+                    />
+                  </div>
+                  <div className="w-1/12 flex">
                     {v?.store_credit_only ? (
                       <div className="text-green-500 pl-2">
                         <Tooltip title="Store Credit Only">
@@ -312,43 +349,16 @@ export default function BatchPaymentScreen() {
                     ) : (
                       <div />
                     )}
-                  </div>
-                  <div className="w-1/12">{`$${(
-                    (v?.totalSell || 0) / 100
-                  )?.toFixed(2)}`}</div>
-                  <div
-                    className={`w-1/12${
-                      v?.totalOwing < 0 ? " text-red-500" : ""
-                    }`}
-                  >{`${v?.totalOwing < 0 ? "(" : ""}$${(
-                    Math.abs(v?.totalOwing || 0) / 100
-                  )?.toFixed(2)}${v?.totalOwing < 0 ? ")" : ""}`}</div>
-                  <div className="w-2/12">
-                    {v?.lastSold
-                      ? dayjs(v?.lastSold).format("D MMMM YYYY")
-                      : "NO SALES"}
-                  </div>
-                  <div className="w-2/12">
-                    {v?.lastPaid
-                      ? dayjs(v?.lastPaid).format("D MMMM YYYY")
-                      : "NEVER PAID"}
-                  </div>
-                  <div className="w-2/12">
-                    <TextField
-                      disabled={v?.totalOwing <= 0 || !v?.is_checked}
-                      error={isNaN(parseFloat(v?.payAmount))}
-                      startAdornment={"$"}
-                      value={v?.payAmount || ""}
-                      onChange={(e) =>
-                        setVendorList(
-                          vendorList?.map((vendor) =>
-                            vendor?.id === v?.id
-                              ? { ...vendor, payAmount: e.target.value }
-                              : vendor
-                          )
-                        )
-                      }
-                    />
+                    {v?.totalItems?.filter((i) => i?.quantity < 0)?.length >
+                    0 ? (
+                      <Tooltip title="Vendor has negative quantity items. Please check!">
+                        <div className="text-purple-500 pl-2">
+                          <QuantityCheckIcon />
+                        </div>
+                      </Tooltip>
+                    ) : (
+                      <div />
+                    )}
                   </div>
                 </div>
               ))}
