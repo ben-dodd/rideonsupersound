@@ -6,7 +6,6 @@ import { pageAtom, viewAtom } from "@/lib/atoms";
 
 // Components
 import PaymentTable from "./payment-table";
-import BatchPaymentDialog from "./batch-payment-dialog";
 import CashPaymentDialog from "./cash-payment-dialog";
 import BatchPaymentScreen from "./batch-payment-screen";
 
