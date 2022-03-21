@@ -126,6 +126,11 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
           onChange={(e: any) => setVendor({ ...vendor, email: e.target.value })}
         />
         <TextField
+          inputLabel="Phone"
+          value={vendor?.phone || ""}
+          onChange={(e: any) => setVendor({ ...vendor, phone: e.target.value })}
+        />
+        <TextField
           inputLabel="Postal Address"
           value={vendor?.postal_address || ""}
           onChange={(e: any) =>

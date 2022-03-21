@@ -112,8 +112,15 @@ export default function VendorScreen() {
           AN UNKNOWN ERROR HAS OCCURRED!
         </div>
       ) : (
-        <div className="flex h-screen w-screen p-8 content-center">
-          <div className="w-1/2">
+        <div className="flex h-screen w-screen p-8">
+          <div
+            style={{
+              width: "1000px",
+              minWidth: "500px",
+              marginLeft: "auto",
+              marginRight: "auto",
+            }}
+          >
             <div className="pb-4">
               <img
                 src="http://hmn.exu.mybluehost.me/img/POS-RIDEONSUPERSOUNDLOGOBLACK.png"
