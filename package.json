@@ -38,6 +38,7 @@
     "react-swipeable": "^6.2.0",
     "react-table": "^7.7.0",
     "react-text-mask": "^5.4.3",
+    "react-vis": "^1.11.7",
     "serverless-mysql": "^1.5.4",
     "swr": "^1.0.1",
     "use-long-press": "^1.1.1",

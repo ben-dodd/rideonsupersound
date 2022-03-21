@@ -5,7 +5,7 @@ import { StockObject, SaleItemObject } from "@/lib/types";
 import {
   getItemSku,
   getItemDisplayName,
-  getCartItemSummary,
+  writeCartItemPriceBreakdown,
 } from "@/lib/data-functions";
 
 type HoldListItemProps = {
@@ -38,7 +38,7 @@ export default function HoldListItem({ cartItem }: HoldListItemProps) {
       <div className="flex flex-col w-full p-2 justify-between">
         <div className="text-sm pl-1">{getItemDisplayName(item)}</div>
         <div className="text-red-500 self-end">
-          {getCartItemSummary(item, cartItem)}
+          {writeCartItemPriceBreakdown(item, cartItem)}
         </div>
       </div>
     </div>

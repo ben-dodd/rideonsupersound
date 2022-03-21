@@ -3,19 +3,9 @@ import { useMemo } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import {
-  useSales,
-  useCustomers,
-  useClerks,
-  useInventory,
-} from "@/lib/swr-hooks";
+import { useSales, useClerks, useInventory } from "@/lib/swr-hooks";
 import { loadedSaleIdAtom, pageAtom } from "@/lib/atoms";
-import {
-  SaleObject,
-  CustomerObject,
-  ClerkObject,
-  SaleStateTypes,
-} from "@/lib/types";
+import { SaleObject, ClerkObject, SaleStateTypes } from "@/lib/types";
 
 // Components
 import Table from "@/components/_components/table";
@@ -25,13 +15,10 @@ import dayjs from "dayjs";
 export default function SaleTable() {
   // SWR
   const { sales, isSalesLoading } = useSales();
-  // const { saleItems, isSaleItemsLoading } = useSaleItems();
   const { inventory, isInventoryLoading } = useInventory();
-  // const { customers, isCustomersLoading } = useCustomers();
   const { clerks, isClerksLoading } = useClerks();
 
   // Atoms
-  // const [view, setView] = useAtom(viewAtom);
   const [page] = useAtom(pageAtom);
   const [loadedSaleId, setLoadedSaleId] = useAtom(loadedSaleIdAtom);
 
@@ -65,8 +52,8 @@ export default function SaleTable() {
             //   0
             // ),
             // items: writeItemList(inventory, items),
-            // store: getTotalStoreCut(items, inventory),
-            // sell: getTotalPrice(items, inventory),
+            // store: getTotalCurrentStoreCut(items, inventory),
+            // sell: getTotalCurrentPrice(items, inventory),
           };
         }),
     [sales, clerks, inventory]
@@ -238,8 +225,8 @@ export default function SaleTable() {
 //             //   0
 //             // ),
 //             // items: writeItemList(inventory, items),
-//             // store: getTotalStoreCut(items, inventory),
-//             // sell: getTotalPrice(items, inventory),
+//             // store: getTotalCurrentStoreCut(items, inventory),
+//             // sell: getTotalCurrentPrice(items, inventory),
 //           };
 //         }),
 //     [sales, customers, clerks, inventory]

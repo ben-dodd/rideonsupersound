@@ -21,6 +21,7 @@ export default function PaymentTable() {
     () =>
       vendorPayments?.map((v: VendorPaymentObject) => ({
         date: v?.date,
+        payment_id: v?.id,
         vendor_id: v?.vendor_id,
         amount: v?.amount,
         type: v?.type,

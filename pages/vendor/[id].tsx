@@ -1,5 +1,9 @@
-import Tabs from "@/components/_components/navigation/tabs";
-import { filterInventory, getImageSrc, getItemSku } from "@/lib/data-functions";
+import Payments from "@/components/vendor-page/payments";
+import Sales from "@/components/vendor-page/sales";
+import StockItem from "@/components/vendor-page/stock-item";
+import Summary from "@/components/vendor-page/summary";
+import Tabs from "@/components/vendor-page/tabs";
+import { filterInventory, sumPrices } from "@/lib/data-functions";
 import {
   useVendorByUid,
   useVendorPaymentsByUid,
@@ -9,6 +13,7 @@ import {
   useVendorStockPriceByUid,
 } from "@/lib/swr-hooks";
 import { StockObject } from "@/lib/types";
+import dayjs from "dayjs";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -59,71 +64,44 @@ export default function VendorScreen() {
   const [tab, setTab] = useState(0);
   const [stockSearch, setStockSearch] = useState("");
 
-  // Functions
-  function StockItem({ item }) {
-    return (
-      <div
-        className={`flex w-full mb-2 pr-2 text-black ${
-          item?.quantity < 1 ? "bg-pink-100" : "bg-gray-200"
-        }`}
-      >
-        <div className="w-32">
-          <div
-            className={`w-32 h-32 relative${
-              item?.quantity < 1 ? " opacity-50" : ""
-            }`}
-          >
-            <img
-              className="object-cover absolute"
-              src={getImageSrc(item)}
-              alt={item?.title || "Inventory image"}
-            />
-          </div>
-          <div className="text-lg font-bold text-center bg-black text-white">
-            {getItemSku(item)}
-          </div>
-        </div>
-        <div className="flex flex-col justify-between pl-2 w-full">
-          <div>
-            <div className="flex justify-between border-b items-center border-gray-400">
-              <div>
-                <div className="font-bold text-md">{`${
-                  item?.title || "Untitled"
-                }`}</div>
-                <div className="text-md">{`${item?.artist || "Untitled"}`}</div>
-              </div>
-              <div className="text-red-400 font-bold text-3xl">
-                {item?.quantity < 1 ? "OUT OF STOCK!" : ""}
-              </div>
-            </div>
-            <div className="text-sm text-green-800">{`${
-              item?.genre ? `${item.genre} / ` : ""
-            }${item?.format} [${
-              item?.is_new ? "NEW" : item?.cond?.toUpperCase() || "USED"
-            }]`}</div>
-          </div>
+  const [startDate, setStartDate] = useState(
+    dayjs().subtract(1, "year").format("YYYY-MM-DD")
+  );
+  const [endDate, setEndDate] = useState(dayjs().format("YYYY-MM-DD"));
+  const [sales, setSales] = useState([]);
+  const [payments, setPayments] = useState([]);
+  const [totalTake, setTotalTake] = useState(0);
+  const [totalPaid, setTotalPaid] = useState(0);
 
-          <div className="flex justify-between items-end">
-            <div
-              className={`text-md ${item?.quantity < 1 && "text-red-500"}`}
-            >{`${item?.quantity} in stock${
-              item?.quantity_hold ? `, ${-item?.quantity_hold} on hold` : ""
-            }${
-              item?.quantity_layby ? `, ${-item?.quantity_layby} on layby` : ""
-            }`}</div>
-            <div className="text-xl pr-2">{`$${(
-              (item?.total_sell || 0) / 100
-            )?.toFixed(2)}`}</div>
-          </div>
-        </div>
-      </div>
+  useEffect(() => {
+    const totalSales = vendorSales?.map((sale) => {
+      const price = vendorStockPrice?.filter(
+        (v) =>
+          v?.stock_id === sale?.item_id &&
+          dayjs(v?.date_valid_from)?.isBefore(dayjs(sale?.date_sale_closed))
+      )?.[0];
+      return {
+        ...sale,
+        vendor_cut: price?.vendor_cut,
+        total_sell: price?.total_sell,
+      };
+    });
+    const filteredSales = totalSales?.filter((sale) =>
+      dayjs(sale?.date_sale_closed)?.isBetween(startDate, endDate, null, "[]")
     );
-  }
+    const filteredPayments = vendorPayments?.filter((payment) =>
+      dayjs(payment?.date)?.isBetween(startDate, endDate, null, "[]")
+    );
+    setSales(filteredSales);
+    setPayments(filteredPayments);
+    setTotalTake(sumPrices(totalSales, null, "vendorPrice"));
+    setTotalPaid(vendorPayments?.reduce((prev, pay) => prev + pay?.amount, 0));
+  }, [vendorStockPrice, vendorSales, vendorPayments, startDate, endDate]);
 
   return (
     <>
       <Head>
-        <title>RIDE ON SUPER SOUND VENDOR SHEET</title>
+        <title>R.O.S.S. VENDOR SHEET</title>
       </Head>
       {loading ? (
         <div className="flex h-screen w-screen p-8">
@@ -142,13 +120,73 @@ export default function VendorScreen() {
                 width="500px"
               />
             </div>
+            <div className="bg-orange-800 font-4xl font-black italic text-white uppercase py-1 mb-2 px-2 flex justify-between">
+              <div>{vendor?.name}</div>
+              <div>{`VENDOR ID: ${vendor?.id}`}</div>
+            </div>
             <Tabs
-              tabs={["Summary", "Stock List", "Sales", "Payments"]}
+              tabs={["Summary", "Sales", "Payments", "Stock List"]}
               value={tab}
               onChange={setTab}
             />
-            <div hidden={tab !== 0}>Summary</div>
+            {/* <div className="bg-orange-800 text-white font-bold italic px-2 py-1 mb-2" /> */}
+            {tab !== 3 && (
+              <div className="flex mb-2 justify-between">
+                <div className="flex items-start">
+                  <div className="font-bold mr-2">FROM</div>
+                  <input
+                    type="date"
+                    onChange={(e) => setStartDate(e.target.value)}
+                    value={startDate}
+                  />
+                  <div className="font-bold mx-2">TO</div>
+                  <input
+                    type="date"
+                    onChange={(e) => setEndDate(e.target.value)}
+                    value={endDate}
+                  />
+                </div>
+                <div className="text-sm font-bold text-right w-2/5">
+                  <div className="w-full flex">
+                    <div className="p-2 w-3/4 whitespace-nowrap bg-gradient-to-r from-white to-gray-300 hover:to-red-300">
+                      TOTAL TAKE TO DATE
+                    </div>
+                    <div className="pl-2 py-2 w-1/12 text-left">$</div>
+                    <div className="py-2 w-2/12">
+                      {(totalTake / 100)?.toFixed(2)}
+                    </div>
+                  </div>
+                  <div className="w-full flex">
+                    <div className="p-2 w-3/4 whitespace-nowrap bg-gradient-to-r from-white to-gray-200 hover:to-orange-200">
+                      TOTAL PAID TO DATE
+                    </div>
+                    <div className="pl-2 py-2 w-1/12 text-left">$</div>
+                    <div className="py-2 w-2/12">
+                      {(totalPaid / 100)?.toFixed(2)}
+                    </div>
+                  </div>
+                  <div className="w-full flex">
+                    <div className="p-2 w-3/4 whitespace-nowrap bg-gradient-to-r from-white to-gray-100 hover:to-green-100">
+                      PAYMENT OWING ►
+                    </div>
+                    <div className="pl-2 py-2 w-1/12 text-left">$</div>
+                    <div className="py-2 w-2/12">
+                      {((totalTake - totalPaid) / 100)?.toFixed(2)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div hidden={tab !== 0}>
+              <Summary id={id} sales={sales} payments={payments} />
+            </div>
             <div hidden={tab !== 1}>
+              <Sales id={id} sales={sales} />
+            </div>
+            <div hidden={tab !== 2}>
+              <Payments id={id} payments={payments} />
+            </div>
+            <div hidden={tab !== 3}>
               <div className="w-full">
                 <input
                   type="text"
@@ -173,8 +211,6 @@ export default function VendorScreen() {
                 ))}
               </div>
             </div>
-            <div hidden={tab !== 2}>Sales</div>
-            <div hidden={tab !== 3}>Payments</div>
           </div>
         </div>
       )}

@@ -3,11 +3,7 @@ import { useInventory } from "@/lib/swr-hooks";
 import { StockObject, VendorSaleItemObject } from "@/lib/types";
 
 // Functions
-import {
-  applyDiscount,
-  getItemDisplayName,
-  getVendorDetails,
-} from "@/lib/data-functions";
+import { getCartItemPrice, getItemDisplayName } from "@/lib/data-functions";
 
 // Components
 import dayjs from "dayjs";
@@ -26,7 +22,10 @@ export default function VendorSales({ vendor, vendorDetails }) {
             filename={`${vendor?.name}-sales-${dayjs().format(
               "YYYY-MM-DD"
             )}.csv`}
-            data={vendorDetails?.totalSales}
+            data={vendorDetails?.totalSales?.map((s) => {
+              const prices = getCartItemPrice(s, null);
+              return { ...s, ...prices };
+            })}
           >
             DOWNLOAD DATA
           </CSVLink>
@@ -66,10 +65,11 @@ export default function VendorSales({ vendor, vendorDetails }) {
               const stockItem: StockObject = inventory?.filter(
                 (i: StockObject) => i?.id === sale?.item_id
               )[0];
+              const prices = getCartItemPrice(sale, null);
               return (
                 <div
                   className="border-b py-1 flex hover:bg-gray-100 text-sm"
-                  key={sale?.sale_id}
+                  key={`${sale?.sale_id}${sale?.item_id}`}
                 >
                   <div className="font-bold w-1/6">
                     {dayjs(sale?.date_sale_closed).format("D MMMM YYYY")}
@@ -79,14 +79,14 @@ export default function VendorSales({ vendor, vendorDetails }) {
                   } x ${getItemDisplayName(stockItem)}`}</div>
                   <div className="w-1/6">{stockItem?.format}</div>
                   <div className="w-1/6">
-                    {sale?.total_sell
-                      ? `$${(sale?.total_sell / 100)?.toFixed(2)}`
-                      : "N/A"}
+                    {`$${(prices?.totalPrice / 100)?.toFixed(2)}`}
                   </div>
                   <div className="w-1/6">
-                    {sale?.vendor_cut
-                      ? `$${(sale?.vendor_cut / 100)?.toFixed(2)}`
-                      : "N/A"}
+                    {`$${(prices?.vendorPrice / 100)?.toFixed(2)}${
+                      sale?.vendor_discount
+                        ? ` (${sale?.vendor_discount}% DISCOUNT)`
+                        : ""
+                    }`}
                   </div>
                 </div>
               );

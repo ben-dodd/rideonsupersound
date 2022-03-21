@@ -11,6 +11,7 @@ const handler: NextApiHandler = async (req, res) => {
       vendor_id = (
         SELECT id FROM vendor WHERE uid = ?
         )
+        ORDER BY date DESC
       `,
       uid
     );

@@ -20,10 +20,10 @@ export default function SaleDetails({ sale }) {
 
   // State
   const { totalRemaining } = getSaleVars(sale, inventory);
+  console.log(totalRemaining);
 
   // Constants
   const weather: OpenWeatherObject = jsonDecode(sale?.weather);
-  console.log(weather);
 
   return (
     <div className="flex flex-col justify-between">
@@ -48,9 +48,7 @@ export default function SaleDetails({ sale }) {
         <div className="text-2xl text-red-500 font-bold text-xl">
           {totalRemaining === 0
             ? ""
-            : totalRemaining < 0
-            ? `$${Math.abs(totalRemaining || 0)?.toFixed(2)}`
-            : `$${(totalRemaining || 0)?.toFixed(2)}`}
+            : `$${Math.abs(totalRemaining || 0)?.toFixed(2)}`}
         </div>
       </div>
       <div className="px-2">

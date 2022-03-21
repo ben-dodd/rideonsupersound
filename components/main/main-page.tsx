@@ -39,7 +39,7 @@ export default function MainPage() {
   return (
     <>
       <Head>
-        <title>Ride On Super Sound</title>
+        <title>R.O.S.S. P.O.S.</title>
       </Head>
       <Nav />
       <div className="flex h-menu relative overflow-y-hidden">

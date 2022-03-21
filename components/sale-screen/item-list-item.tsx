@@ -12,7 +12,7 @@ import { MouseEventHandler } from "react";
 import {
   getItemSku,
   getItemDisplayName,
-  getCartItemSummary,
+  writeCartItemPriceBreakdown,
   getImageSrc,
 } from "@/lib/data-functions";
 import {
@@ -89,7 +89,7 @@ export default function ItemListItem({
             saleItem?.is_refunded ? " line-through" : ""
           }`}
         >
-          <div>{getCartItemSummary(item, saleItem)}</div>
+          <div>{writeCartItemPriceBreakdown(saleItem, item)}</div>
         </div>
       </div>
     </div>

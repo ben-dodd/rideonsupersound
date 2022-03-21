@@ -7,10 +7,11 @@ const handler: NextApiHandler = async (req, res) => {
     const results = await query(
       `
       SELECT * FROM stock_price
-      WHERE NOT is_deleted AND
-      vendor_id = (
-        SELECT id FROM vendor WHERE uid = ?
+      WHERE stock_id IN (
+        SELECT id FROM stock WHERE vendor_id=(
+          SELECT id FROM vendor WHERE uid = ?
         )
+      ) ORDER BY date_valid_from DESC
       `,
       uid
     );

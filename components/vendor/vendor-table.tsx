@@ -15,7 +15,7 @@ import { loadedVendorIdAtom } from "@/lib/atoms";
 import { VendorObject, ClerkObject, StockObject } from "@/lib/types";
 
 // Functions
-import { getItemPrice, getVendorDetails } from "@/lib/data-functions";
+import { getVendorDetails } from "@/lib/data-functions";
 
 // Components
 import Table from "@/components/_components/table";
@@ -69,6 +69,7 @@ export default function VendorsScreen() {
                   clerks?.filter((c: ClerkObject) => c?.id === v?.clerk_id)[0]
                     ?.name || "-",
                 type: v?.vendor_category || "-",
+                email: v?.email || "",
                 bankAccountNumber: v?.bank_account_number || "-",
                 totalTake: vendorVars?.totalSell || 0,
                 totalOwing: vendorVars?.totalOwing || 0,
@@ -81,6 +82,7 @@ export default function VendorsScreen() {
                     (item?.quantity || 0) + sum,
                   0
                 ),
+                url: `../vendor/${v?.uid}`,
               };
             })
         : [],
@@ -126,7 +128,27 @@ export default function VendorsScreen() {
         width: 80,
       },
       { Header: "Type", accessor: "type", width: 100 },
-      { Header: "Bank Account #", accessor: "bankAccountNumber", width: 220 },
+      {
+        Header: "Email",
+        accessor: "email",
+        Cell: ({ value }) => (
+          <a href={`mailto:${value}`} className="underline">
+            {value}
+          </a>
+        ),
+        width: 220,
+      },
+      {
+        Header: "Link",
+        accessor: "url",
+        Cell: ({ value }) => (
+          <a href={`${value}`} target="_blank" className="underline">
+            Link
+          </a>
+        ),
+        width: 100,
+      },
+      // { Header: "Bank Account #", accessor: "bankAccountNumber", width: 220 },
       {
         Header: "Total Take",
         accessor: "totalTake",

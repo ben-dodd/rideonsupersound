@@ -144,6 +144,9 @@ export interface SaleItemObject {
   refund_note?: string;
   date_refunded?: string;
   is_deleted?: boolean;
+  total_sell?: number;
+  vendor_cut?: number;
+  store_cut?: number;
 }
 
 export interface SaleTransactionObject {
@@ -224,6 +227,7 @@ export interface VendorObject {
   email?: string;
   phone?: string;
   postal_address?: string;
+  uid?: string;
   note?: string;
   last_customered?: string;
   store_credit_only?: boolean;

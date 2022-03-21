@@ -80,6 +80,7 @@ export default function ShoppingCart() {
     cart,
     inventory
   );
+
   return (
     <div
       className={`absolute top-0 transition-offset duration-300 ${

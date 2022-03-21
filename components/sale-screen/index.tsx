@@ -65,6 +65,7 @@ export default function SaleScreen() {
   // BUG fix bug where bottom of dialog is visible
   // BUG dates are wrong on vercel
   // BUG why are some sales showing items as separate line items, not 2x quantity
+  // TODO refunding items, then adding the same item again
 
   const { totalRemaining, totalPrice, numberOfItems } = getSaleVars(
     cart,

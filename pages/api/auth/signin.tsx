@@ -9,7 +9,7 @@ export default function SignIn() {
   return (
     <>
       <Head>
-        <title>Sign In - Ride On Super Sound</title>
+        <title>SIGN IN - R.O.S.S.</title>
       </Head>
       <div className="flex flex-col h-screen justify-center">
         <div className="mx-auto mb-8">

@@ -64,8 +64,8 @@ export default function LaybyTable() {
             //   0
             // ),
             // items: writeItemList(inventory, items),
-            // store: getTotalStoreCut(items, inventory),
-            // sell: getTotalPrice(items, inventory),
+            // store: getTotalCurrentStoreCut(items, inventory),
+            // sell: getTotalCurrentPrice(items, inventory),
           };
         }),
     [sales, customers, clerks, inventory]

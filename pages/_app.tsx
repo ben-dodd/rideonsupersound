@@ -13,6 +13,7 @@ import minMax from "dayjs/plugin/minMax";
 import isLeapYear from "dayjs/plugin/isLeapYear";
 import tz from "dayjs/plugin/timezone";
 import relative from "dayjs/plugin/relativeTime";
+import isBetween from "dayjs/plugin/isBetween";
 // import "dayjs/locale/en-nz";
 
 function MyApp({ Component, pageProps }) {
@@ -22,6 +23,7 @@ function MyApp({ Component, pageProps }) {
   dayjs.extend(tz);
   dayjs.extend(relative);
   dayjs.extend(minMax);
+  dayjs.extend(isBetween);
   // dayjs.locale("en-nz");
 
   return (

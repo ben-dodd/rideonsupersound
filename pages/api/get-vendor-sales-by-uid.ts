@@ -12,30 +12,20 @@ const handler: NextApiHandler = async (req, res) => {
         sale_item.quantity,
         sale_item.store_discount,
         sale_item.vendor_discount,
-        stock_price.vendor_cut,
-        stock_price.total_sell,
-        stock_price.date_valid_from AS date_price_valid_from,
-        sale.date_sale_opened,
         sale.date_sale_closed,
-        stock.vendor_id,
-        sale.store_cut,
-        sale.total_price,
-        sale.number_of_items,
-        sale.item_list
+        stock.vendor_id
       FROM sale_item
       LEFT JOIN stock
         ON sale_item.item_id = stock.id
       LEFT JOIN sale
-        ON sale.id = sale_item.sale_id
-      LEFT JOIN stock_price
-        ON stock_price.stock_id = sale_item.item_id
-      AND stock_price.date_valid_from <= sale.date_sale_opened
-      AND sale.state = 'completed'
-      AND sale.is_deleted = 0
-      AND sale_item.is_deleted = 0
+        ON sale.id = sale_item.sale_id        
+      WHERE sale.state = 'completed'
+      AND NOT sale.is_deleted
+      AND NOT sale_item.is_deleted
       AND stock.vendor_id = (
         SELECT id FROM vendor WHERE uid = ?
         )
+        ORDER BY sale.date_sale_closed DESC
       `,
       uid
     );

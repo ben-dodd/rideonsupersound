@@ -67,7 +67,8 @@ export function getImageSrc(item: StockObject) {
   return `${process.env.NEXT_PUBLIC_RESOURCE_URL}img/${src}.png`;
 }
 
-export function getCartItemSummary(item: StockObject, cartItem: any) {
+export function writeCartItemPriceBreakdown(cartItem: any, item?: StockObject) {
+  // Writes out the sale item in the following form:
   // 1 x V10% x R50% x $27.00
   return item?.is_gift_card
     ? `$${(item?.gift_card_amount / 100)?.toFixed(2)} GIFT CARD`
@@ -81,148 +82,59 @@ export function getCartItemSummary(item: StockObject, cartItem: any) {
         parseInt(cartItem?.store_discount) > 0
           ? ` x S${cartItem?.store_discount}%`
           : ""
-      } x $${((cartItem?.total_sell || item?.total_sell) / 100)?.toFixed(2)}`;
-}
-
-export function writeCartItemPriceBreakdown(
-  item: StockObject,
-  cartItem: SaleItemObject
-) {
-  return getCartItemSummary(item, cartItem);
+      } x $${((cartItem?.total_sell ?? item?.total_sell) / 100)?.toFixed(2)}`;
 }
 
 export function writeCartItemPriceTotal(
-  item: StockObject,
-  cartItem: SaleItemObject
+  cartItem: SaleItemObject,
+  item?: StockObject
 ) {
-  return item?.is_gift_card
-    ? `$${(item?.gift_card_amount / 100)?.toFixed(2)}`
-    : item?.is_misc_item
-    ? `$${(item?.misc_item_amount / 100)?.toFixed(2)}`
-    : `$${(getItemPrice(item, cartItem) / 100)?.toFixed(2)}`;
+  // Writes out the sale item total applying discounts and quantity
+  // $40.00
+  const prices = getCartItemPrice(cartItem, item);
+  return `$${(prices?.totalPrice / 100)?.toFixed(2)}`;
 }
 
-export function filterInventory({
-  inventory,
-  search,
-  slice = 50,
-  emptyReturn = false,
-}) {
-  if (!inventory) return [];
-  return inventory
-    .filter((item: StockObject) => {
-      let res = true;
-      if (!search || search === "") return emptyReturn;
-
-      if (search) {
-        let terms = search.split(" ");
-        let itemMatch = `
-        ${getItemSku(item) || ""}
-        ${item?.artist || ""}
-        ${item?.title || ""}
-        ${item?.format || ""}
-        ${item?.genre || ""}
-        ${item?.country || ""}
-        ${item?.section || ""}
-        ${item?.tags ? item?.tags?.join(" ") : ""}
-        ${item?.vendor_name || ""}
-        ${item?.googleBooksItem?.volumeInfo?.authors?.join(" ") || ""}
-        ${item?.googleBooksItem?.volumeInfo?.publisher || ""}
-        ${item?.googleBooksItem?.volumeInfo?.subtitle || ""}
-        ${item?.googleBooksItem?.volumeInfo?.categories?.join(" ") || ""}
-      `;
-        terms.forEach((term: string) => {
-          if (!itemMatch.toLowerCase().includes(term.toLowerCase()))
-            res = false;
-        });
-      }
-
-      return res;
-    })
-    .slice(0, slice);
-  // ?.sort((a: StockObject, b: StockObject) => {
-  //   if (!a?.quantity || !b?.quantity) return 0;
-  //   if (a?.quantity === b?.quantity) return 0;
-  //   if (a?.quantity < 1) return 1;
-  //   if (b?.quantity < 1) return -1;
-  //   return 0;
-  // })
-}
-
-export function filterHelps(
-  helps: HelpObject[],
-  page: string,
-  view: Object,
-  search: string
+export function getPrice(
+  cost: number | string,
+  discount: number | string,
+  quantity: number | string
 ) {
-  if (!helps) return [];
-  // REVIEW make search order by relevance with page or view
-  // if (!search || search === "") {
-  //   return helps.filter((help: HelpObject) => {
-  //     let res = false;
-  //     let helpMatch = `${
-  //       help?.pages?.toLowerCase() || ""
-  //     } ${help?.views?.toLowerCase()}`;
-  //     if (helpMatch?.includes(page?.toLowerCase())) res = true;
-  //     Object.entries(view)
-  //       ?.filter(([k, v]) => v)
-  //       ?.forEach(([k, v]) => {
-  //         if (helpMatch?.includes(k?.toLowerCase())) res = true;
-  //       });
-  //     return res;
-  //   });
-  // } else {
-  if (search)
-    return helps.filter((help: HelpObject) => {
-      let res = false;
-      let terms = search.split(" ");
-      let helpMatch = `${
-        help?.tags?.toLowerCase() || ""
-      } ${help?.title?.toLowerCase()}`;
-      terms.forEach((term: string) => {
-        if (helpMatch?.includes(term.toLowerCase())) res = true;
-      });
-      return res;
-    });
-  else return helps;
-  // .slice(0, 50);
-  // }
-  // ?.sort((a: StockObject, b: StockObject) => {
-  //   if (!a?.quantity || !b?.quantity) return 0;
-  //   if (a?.quantity === b?.quantity) return 0;
-  //   if (a?.quantity < 1) return 1;
-  //   if (b?.quantity < 1) return -1;
-  //   return 0;
-  // })
-}
-
-export function applyDiscount(price, discount) {
-  let discountFactor = 100 - parseInt(`${discount || 0}`);
-  return parseInt(`${price}`) * discountFactor;
-}
-
-export function getItemPrice(item: StockObject, cartItem: SaleItemObject) {
-  let vendorDiscountFactor = 100,
-    storeDiscountFactor = 100;
-  if (parseInt(cartItem?.vendor_discount) > 0)
-    vendorDiscountFactor = 100 - parseInt(cartItem?.vendor_discount);
-  if (parseInt(cartItem.store_discount) > 0)
-    storeDiscountFactor = 100 - parseInt(cartItem?.store_discount);
-  let storeCut =
-    ((item?.total_sell - item?.vendor_cut) * storeDiscountFactor) / 100;
-  let vendorCut = (item?.vendor_cut * vendorDiscountFactor) / 100;
-  return (storeCut + vendorCut) * parseInt(cartItem?.quantity);
-}
-
-export function getItemStoreCut(item: StockObject, cartItem: SaleItemObject) {
-  if (item?.is_gift_card || item?.is_misc_item) return 0;
-  let storeDiscountFactor = 100;
-  if (parseInt(cartItem?.store_discount) > 0)
-    storeDiscountFactor = 100 - parseInt(cartItem?.store_discount);
   return (
-    (((item?.total_sell - item?.vendor_cut) * storeDiscountFactor) / 100) *
-    parseInt(cartItem?.quantity)
+    (parseInt(`${quantity}`) ?? 1) *
+    ((parseFloat(`${cost}`) || 0) *
+      (1 - (parseFloat(`${discount}`) || 0) / 100))
   );
+}
+
+export function getCartItemPrice(cartItem: any, item: StockObject) {
+  // Gets three prices for each sale item: the vendor cut, store cut, and total
+  // Price is returned in cents
+  const totalSell: number =
+    !cartItem || cartItem?.is_refunded
+      ? 0
+      : item?.is_gift_card
+      ? item?.gift_card_amount || 0
+      : item?.is_misc_item
+      ? item?.misc_item_amount || 0
+      : null;
+  const vendorCut: number = cartItem?.vendor_cut ?? item?.vendor_cut;
+  const storeCut: number = item?.is_misc_item
+    ? item?.misc_item_amount || 0
+    : // : cartItem?.store_cut ??
+      (cartItem?.total_sell ?? item?.total_sell) - vendorCut;
+  const storePrice: number = getPrice(
+    storeCut,
+    cartItem?.store_discount,
+    cartItem?.quantity
+  );
+  const vendorPrice: number = getPrice(
+    vendorCut,
+    cartItem?.vendor_discount,
+    cartItem?.quantity
+  );
+  const totalPrice: number = totalSell ?? storePrice + vendorPrice;
+  return { storePrice, vendorPrice, totalPrice };
 }
 
 export function getStoreCut(item: StockObject) {
@@ -231,18 +143,22 @@ export function getStoreCut(item: StockObject) {
 }
 
 export function getSaleVars(sale: any, inventory: StockObject[]) {
-  const totalPostage = parseFloat(`${sale?.postage}`) || 0;
-  const totalStoreCut = getTotalStoreCut(sale?.items, inventory) / 100;
-  const totalPriceUnrounded = getTotalPrice(sale?.items, inventory) / 100;
-  const totalVendorCut = totalPriceUnrounded - totalStoreCut;
+  // Sale - sale item
+  // Inventory - used to look up item prices if not in sale, used for new sales
+  const totalPostage = parseFloat(`${sale?.postage}`) || 0; // Postage: currently in dollars
+  const totalStoreCut = sumPrices(sale?.items, inventory, "storePrice") / 100; // Total Amount of Sale goes to Store in dollars
+  console.log(totalStoreCut);
+  const totalPriceUnrounded =
+    sumPrices(sale?.items, inventory, "totalPrice") / 100; // Total Amount of Sale in dollars
+  const totalVendorCut = totalPriceUnrounded - totalStoreCut; // Total Vendor Cut in dollars
   const totalItemPrice =
-    Math.round((totalPriceUnrounded + Number.EPSILON) * 10) / 10;
-  const totalPrice = totalItemPrice + totalPostage;
+    Math.round((totalPriceUnrounded + Number.EPSILON) * 10) / 10; // Total Amount rounded to 10c to avoid unpayable sales
+  const totalPrice = totalItemPrice + totalPostage; // TotalPrice + postage
   const totalPaid =
     Math.round((getTotalPaid(sale?.transactions) / 100 + Number.EPSILON) * 10) /
-    10;
+    10; // Total Paid to nearest 10c
   const totalRemaining =
-    Math.round((totalPrice - totalPaid + Number.EPSILON) * 10) / 10;
+    Math.round((totalPrice - totalPaid + Number.EPSILON) * 10) / 10; // Amount remaining to pay
   return {
     totalItemPrice,
     totalPrice,
@@ -253,8 +169,8 @@ export function getSaleVars(sale: any, inventory: StockObject[]) {
     totalRemaining,
     numberOfItems: sale?.items
       ?.filter((item) => !item.is_refunded && !item?.is_deleted)
-      ?.reduce((acc, item) => acc + parseInt(item?.quantity), 0),
-    itemList: writeItemList(inventory, sale?.items),
+      ?.reduce((acc, item) => acc + parseInt(item?.quantity), 0), // Total number of items in sale
+    itemList: writeItemList(inventory, sale?.items), // List of items written in full
   };
 }
 
@@ -265,19 +181,25 @@ export function getVendorDetails(
   vendor_id: number,
   cart?: SaleObject
 ) {
-  if (vendor_id < 0) return {};
+  if (vendor_id < 0) return {}; // -1 is used for new vendors, i.e. no sales or payments
+
+  // Total Items - all stock items that belong to the vendor
   let totalItems = inventory?.filter(
     (i: StockObject) => i?.vendor_id === vendor_id
   );
 
+  // Total Sales - all sale items of the Vendor's stock
   let totalSales = vendorSales?.filter(
     (v: VendorSaleItemObject) =>
       totalItems?.filter((i: StockObject) => i?.id === v?.item_id)[0]
   );
+
+  // Total Payments - all payments made to the Vendor
   let totalPayments = vendorPayments?.filter(
     (v: VendorPaymentObject) => v?.vendor_id === vendor_id
   );
 
+  // If a cart is in progress, add these payments - possibly delete this?
   if (cart) {
     let cartPayments: VendorPaymentObject[] =
       cart?.transactions
@@ -286,35 +208,52 @@ export function getVendorDetails(
     totalPayments = [...totalPayments, ...cartPayments];
   }
 
+  // Total Paid = sum all payments
   const totalPaid = totalPayments?.reduce(
     (acc: number, payment: VendorPaymentObject) => acc + payment?.amount,
     0
   );
 
-  const totalStoreCut = totalSales?.reduce(
-    (acc: number, sale: VendorSaleItemObject) =>
-      acc +
-      sale?.quantity *
-        (sale?.total_sell - sale?.vendor_cut) *
-        (1 - (sale?.store_discount || 0) / 100),
-    0
-  );
+  // Total Store Cut = sum all store cut
+  const totalStoreCut = sumPrices(totalSales, null, "storePrice");
+  // const totalStoreCut2 = totalSales?.reduce(
+  //   (acc: number, sale: VendorSaleItemObject) =>
+  //     acc +
+  //     sale?.quantity *
+  //       (sale?.total_sell - sale?.vendor_cut) *
+  //       (1 - (sale?.store_discount || 0) / 100),
+  //   0
+  // );
 
-  const totalSell: any = totalSales?.reduce(
-    (acc: number, sale: VendorSaleItemObject) =>
-      acc +
-      sale?.quantity *
-        sale?.vendor_cut *
-        (1 - (sale?.vendor_discount || 0) / 100),
-    0
-  );
+  // Total Vendor Take = sum all vendor take
+  const totalSell: number = sumPrices(totalSales, null, "vendorPrice");
+  // const totalSell2: any = totalSales?.reduce(
+  //   (acc: number, sale: VendorSaleItemObject) =>
+  //     acc +
+  //     sale?.quantity *
+  //       sale?.vendor_cut *
+  //       (1 - (sale?.vendor_discount || 0) / 100),
+  //   0
+  // );
 
+  // console.group(`${vendor_id}`);
+  // console.log(`totalStoreCut: ${totalStoreCut}`);
+  // console.log(`totalStoreCut2: ${totalStoreCut2}`);
+  // console.log(`totalSell: ${totalSell}`);
+  // console.log(`totalSell2: ${totalSell2}`);
+  // console.groupEnd();
+
+  // Get the date of the last payment made to vendor
   let lastPaid = latestDate(
     totalPayments?.map((p: VendorPaymentObject) => p?.date)
   );
+
+  // Get the date of the last sale of the vendor stock
   let lastSold = latestDate(
     totalSales?.map((s: VendorSaleItemObject) => s?.date_sale_closed)
   );
+
+  // Total vendor take minus total paid to vendor
   let totalOwing = totalSell - totalPaid;
 
   return {
@@ -377,35 +316,20 @@ export function getItemQuantity(
   return itemQuantity - parseInt(cartQuantity);
 }
 
-export function getTotalPrice(
-  saleItems: SaleItemObject[],
-  inventory: StockObject[]
+export function sumPrices(
+  saleItems: any[],
+  inventory: StockObject[],
+  field: string
 ) {
   if (!saleItems) return 0;
   return saleItems?.reduce((acc, saleItem) => {
-    if (saleItem?.is_refunded) return acc;
-    // Misc Items and Gift Cards in inventory
-    let item: StockObject = inventory?.filter(
-      (i: StockObject) => i?.id === saleItem?.item_id
-    )[0];
-    if (item?.is_gift_card) return acc + item?.gift_card_amount;
-    if (item?.is_misc_item) return acc + item?.misc_item_amount;
-    return (acc += getItemPrice(item, saleItem));
-  }, 0);
-}
-
-export function getTotalStoreCut(
-  saleItems: SaleItemObject[],
-  inventory: StockObject[]
-) {
-  return saleItems?.reduce((acc, saleItem: SaleItemObject) => {
-    if (saleItem?.is_refunded) return acc;
-    let item: StockObject = inventory?.filter(
-      (i: StockObject) => i?.id === saleItem?.item_id
-    )[0];
-    if (item?.is_gift_card) return acc + item?.gift_card_amount;
-    if (item?.is_misc_item) return acc + item?.misc_item_amount;
-    return acc + getItemStoreCut(item, saleItem);
+    // Dont bother getting inventory item if not needed
+    let item: StockObject =
+      saleItem?.total_sell && saleItem?.vendor_cut && saleItem?.store_cut
+        ? null
+        : inventory?.filter((i: StockObject) => i?.id === saleItem?.item_id)[0];
+    const prices = getCartItemPrice(saleItem, item);
+    return (acc += prices?.[field]);
   }, 0);
 }
 
@@ -921,4 +845,98 @@ export function authoriseUrl(url: string) {
   if (!url || !k) return null;
   if (url?.includes("?")) return `${url}&k=${k}`;
   else return `${url}?k=${k}`;
+}
+
+export function filterInventory({
+  inventory,
+  search,
+  slice = 50,
+  emptyReturn = false,
+}) {
+  if (!inventory) return [];
+  return inventory
+    .filter((item: StockObject) => {
+      let res = true;
+      if (!search || search === "") return emptyReturn;
+
+      if (search) {
+        let terms = search.split(" ");
+        let itemMatch = `
+        ${getItemSku(item) || ""}
+        ${item?.artist || ""}
+        ${item?.title || ""}
+        ${item?.format || ""}
+        ${item?.genre || ""}
+        ${item?.country || ""}
+        ${item?.section || ""}
+        ${item?.tags ? item?.tags?.join(" ") : ""}
+        ${item?.vendor_name || ""}
+        ${item?.googleBooksItem?.volumeInfo?.authors?.join(" ") || ""}
+        ${item?.googleBooksItem?.volumeInfo?.publisher || ""}
+        ${item?.googleBooksItem?.volumeInfo?.subtitle || ""}
+        ${item?.googleBooksItem?.volumeInfo?.categories?.join(" ") || ""}
+      `;
+        terms.forEach((term: string) => {
+          if (!itemMatch.toLowerCase().includes(term.toLowerCase()))
+            res = false;
+        });
+      }
+
+      return res;
+    })
+    .slice(0, slice);
+  // ?.sort((a: StockObject, b: StockObject) => {
+  //   if (!a?.quantity || !b?.quantity) return 0;
+  //   if (a?.quantity === b?.quantity) return 0;
+  //   if (a?.quantity < 1) return 1;
+  //   if (b?.quantity < 1) return -1;
+  //   return 0;
+  // })
+}
+
+export function filterHelps(
+  helps: HelpObject[],
+  page: string,
+  view: Object,
+  search: string
+) {
+  if (!helps) return [];
+  // REVIEW make search order by relevance with page or view
+  // if (!search || search === "") {
+  //   return helps.filter((help: HelpObject) => {
+  //     let res = false;
+  //     let helpMatch = `${
+  //       help?.pages?.toLowerCase() || ""
+  //     } ${help?.views?.toLowerCase()}`;
+  //     if (helpMatch?.includes(page?.toLowerCase())) res = true;
+  //     Object.entries(view)
+  //       ?.filter(([k, v]) => v)
+  //       ?.forEach(([k, v]) => {
+  //         if (helpMatch?.includes(k?.toLowerCase())) res = true;
+  //       });
+  //     return res;
+  //   });
+  // } else {
+  if (search)
+    return helps.filter((help: HelpObject) => {
+      let res = false;
+      let terms = search.split(" ");
+      let helpMatch = `${
+        help?.tags?.toLowerCase() || ""
+      } ${help?.title?.toLowerCase()}`;
+      terms.forEach((term: string) => {
+        if (helpMatch?.includes(term.toLowerCase())) res = true;
+      });
+      return res;
+    });
+  else return helps;
+  // .slice(0, 50);
+  // }
+  // ?.sort((a: StockObject, b: StockObject) => {
+  //   if (!a?.quantity || !b?.quantity) return 0;
+  //   if (a?.quantity === b?.quantity) return 0;
+  //   if (a?.quantity < 1) return 1;
+  //   if (b?.quantity < 1) return -1;
+  //   return 0;
+  // })
 }

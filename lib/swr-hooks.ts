@@ -1,6 +1,7 @@
 import useSWR from "swr";
 import { authoriseUrl } from "@/lib/data-functions";
 import { VendorSaleItemObject } from "@/lib/types";
+import dayjs from "dayjs";
 
 async function fetcher(url: string) {
   return window.fetch(authoriseUrl(url)).then((res) => {
@@ -26,7 +27,7 @@ export function useAccount(email: string) {
     nakedFetcher
   );
   return {
-    account: data && data[0],
+    account: data?.[0],
     isAccountLoading: !error && !data,
     isAccountError: error,
   };
@@ -59,7 +60,7 @@ export function useClerkImage(clerk_image_id: number) {
     fetcher
   );
   return {
-    image: data && data[0]?.image,
+    image: data?.[0]?.image,
     isClerkImageLoading: !error && !data,
     isClerkImageError: error,
   };
@@ -82,7 +83,7 @@ export function useStockItem(stock_id: number) {
     fetcher
   );
   return {
-    stockItem: data && data[0],
+    stockItem: data?.[0],
     isStockItemLoading: !error && !data,
     isStockItemError: error,
     mutateStockItem: mutate,
@@ -133,22 +134,18 @@ export function useSaleItemsForSale(sale_id: number) {
 
   let duplicates = {};
 
-  console.log(data);
-
-  data &&
-    data.forEach((sale: VendorSaleItemObject) => {
-      let key = `${sale?.sale_id}-${sale?.item_id}`;
-      console.log(duplicates);
-      console.log(sale);
-      if (
-        !duplicates[key] ||
-        duplicates[key]?.date_price_valid_from < sale?.date_price_valid_from
-      )
-        duplicates[key] = sale;
-    });
+  data?.forEach((sale: VendorSaleItemObject) => {
+    let key = `${sale?.sale_id}-${sale?.item_id}`;
+    // console.log(duplicates);
+    // console.log(sale);
+    if (
+      !duplicates[key] ||
+      duplicates[key]?.date_price_valid_from < sale?.date_price_valid_from
+    )
+      duplicates[key] = sale;
+  });
 
   const totalSalesReduced = Object.values(duplicates);
-  console.log(totalSalesReduced);
   return {
     items: totalSalesReduced,
     isSaleItemsLoading: !error && !data,
@@ -173,7 +170,7 @@ export function useVendorByUid(uid) {
     nakedFetcher
   );
   return {
-    vendor: data,
+    vendor: data?.[0],
     isVendorLoading: !error && !data,
     isVendorError: error,
   };
@@ -300,7 +297,7 @@ export function useVendorFromVendorPayment(vendor_payment_id: number) {
     fetcher
   );
   return {
-    vendor: data && data[0],
+    vendor: data?.[0],
     isLoading: !error && !data,
     isError: error,
   };
@@ -312,7 +309,7 @@ export function useVendorFromCustomer(customer_id: number) {
     fetcher
   );
   return {
-    vendor: data && data[0],
+    vendor: data?.[0],
     isLoading: !error && !data,
     isError: error,
   };
@@ -350,7 +347,7 @@ export function useCustomer(customer_id: number) {
     fetcher
   );
   return {
-    customer: data && data[0],
+    customer: data?.[0],
     isCustomerLoading: !error && !data,
     isCustomerError: error,
   };
@@ -375,15 +372,16 @@ export function useSalesJoined() {
 
   let duplicates = {};
 
-  data &&
-    data.forEach((sale: VendorSaleItemObject) => {
-      let key = `${sale?.sale_id}-${sale?.item_id}`;
-      if (
-        !duplicates[key] ||
-        duplicates[key]?.date_valid_from < sale?.date_price_valid_from
+  data?.forEach?.((sale: VendorSaleItemObject) => {
+    let key = `${sale?.sale_id}-${sale?.item_id}`;
+    if (
+      !duplicates[key] ||
+      dayjs(duplicates[key]?.date_price_valid_from)?.isBefore(
+        dayjs(sale?.date_price_valid_from)
       )
-        duplicates[key] = sale;
-    });
+    )
+      duplicates[key] = sale;
+  });
 
   const totalSalesReduced = Object.values(duplicates);
 
@@ -460,7 +458,7 @@ export function useRegisterID() {
     revalidateIfStale: false,
   });
   return {
-    registerID: data && data[0] && data[0]?.num,
+    registerID: data?.[0] && data[0]?.num,
     isRegisterIDLoading: !error && !data,
     isRegisterIDError: error,
     mutateRegisterID: mutate,
@@ -473,7 +471,7 @@ export function useRegister(register_id: number) {
     fetcher
   );
   return {
-    register: data && data[0],
+    register: data?.[0],
     isRegisterLoading: !error && !data,
     isRegisterError: error,
     mutateRegister: mutate,

@@ -14,7 +14,7 @@ export default function SplashPage({ clerks }) {
   return (
     <>
       <Head>
-        <title>Choose Your Fighter - Ride On Super Sound</title>
+        <title>CHOOSE YOUR FIGHTER - R.O.S.S.</title>
       </Head>
       <div className="bg-black h-screen">
         <div className="flex flex-col sm:h-full mx-auto">

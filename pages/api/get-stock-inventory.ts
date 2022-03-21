@@ -35,7 +35,8 @@ const handler: NextApiHandler = async (req, res) => {
         p.total_sell,
         q.quantity,
         hol.quantity_hold,
-        lay.quantity_layby
+        lay.quantity_layby,
+        sol.quantity_sold
       FROM stock AS s
       LEFT JOIN
         (SELECT stock_id, SUM(quantity) AS quantity FROM stock_movement GROUP BY stock_id) AS q
@@ -46,6 +47,9 @@ const handler: NextApiHandler = async (req, res) => {
       LEFT JOIN
         (SELECT stock_id, SUM(quantity) AS quantity_layby FROM stock_movement WHERE act = '${StockMovementTypes.Layby}' GROUP BY stock_id) AS lay
         ON lay.stock_id = s.id
+      LEFT JOIN
+        (SELECT stock_id, SUM(quantity) AS quantity_sold FROM stock_movement WHERE act = '${StockMovementTypes.Sold}' GROUP BY stock_id) AS sol
+        ON sol.stock_id = s.id
       LEFT JOIN stock_price AS p ON p.stock_id = s.id
       WHERE
          (p.id = (

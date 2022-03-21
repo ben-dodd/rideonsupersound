@@ -11,12 +11,9 @@ import { StockObject, SaleItemObject } from "@/lib/types";
 import {
   getItemSku,
   getItemDisplayName,
-  getCartItemSummary,
-  writeCartItemPriceTotal,
   writeCartItemPriceBreakdown,
+  writeCartItemPriceTotal,
   getImageSrc,
-  getItemQuantity,
-  writeIntegerAsWord,
 } from "@/lib/data-functions";
 
 // Components
@@ -110,7 +107,7 @@ export default function SellListItem({
         <div className="flex flex-col w-full pt-2 px-2 justify-between">
           <div className="text-sm pl-1">{getItemDisplayName(item)}</div>
           <div className="text-red-500 self-end">
-            {getCartItemSummary(item, cartItem)}
+            {writeCartItemPriceBreakdown(cartItem, item)}
           </div>
           <div className="self-end text-xs">
             {expanded ? (
@@ -178,11 +175,11 @@ export default function SellListItem({
           />
           <div className="flex w-full justify-between place-start">
             <div className="font-bold">
-              {writeCartItemPriceBreakdown(item, cartItem)}
+              {writeCartItemPriceBreakdown(cartItem, item)}
             </div>
             <div>
               <div className="font-bold self-center">
-                {writeCartItemPriceTotal(item, cartItem)}
+                {writeCartItemPriceTotal(cartItem, item)}
               </div>
               <div className="w-50 text-right">
                 <button
