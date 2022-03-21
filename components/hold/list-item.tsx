@@ -38,7 +38,7 @@ export default function HoldListItem({ cartItem }: HoldListItemProps) {
       <div className="flex flex-col w-full p-2 justify-between">
         <div className="text-sm pl-1">{getItemDisplayName(item)}</div>
         <div className="text-red-500 self-end">
-          {writeCartItemPriceBreakdown(item, cartItem)}
+          {writeCartItemPriceBreakdown(cartItem, item)}
         </div>
       </div>
     </div>
