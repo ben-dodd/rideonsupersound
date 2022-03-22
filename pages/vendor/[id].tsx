@@ -61,7 +61,7 @@ export default function VendorScreen() {
     isVendorSalesError ||
     isVendorPaymentsError;
 
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useState(1);
   const [stockSearch, setStockSearch] = useState("");
 
   const [startDate, setStartDate] = useState(
@@ -143,7 +143,7 @@ export default function VendorScreen() {
             </div>
             <div className="w-full">
               <Tabs
-                tabs={["Summary", "Sales", "Payments", "Stock"]}
+                tabs={["Sales", "Payments", "Stock"]}
                 value={tab}
                 onChange={setTab}
               />
@@ -196,9 +196,9 @@ export default function VendorScreen() {
                 </div>
               </div>
             )}
-            <div hidden={tab !== 0}>
+            {/* <div hidden={tab !== 0}>
               <Summary id={id} sales={sales} payments={payments} />
-            </div>
+            </div> */}
             <div hidden={tab !== 1}>
               <Sales id={id} sales={sales} />
             </div>

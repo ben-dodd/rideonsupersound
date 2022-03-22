@@ -36,10 +36,15 @@ export default function Sales({ id, sales }) {
             return (
               <div
                 key={`${sale?.sale_id}-${sale?.item_id}`}
-                className="flex py-2 text-xs border-b hover:bg-gradient-to-r from-white via-orange-200 to-transparent"
+                className="flex py-2 text-xs border-b hover:bg-gradient-to-r from-white via-orange-200 to-white"
               >
                 <div className="w-2/12 px-1 md:w-1/12">
-                  {dayjs(sale?.date_sale_closed).format("DD/MM/YYYY")}
+                  <div className="hidden md:inline">
+                    {dayjs(sale?.date_sale_closed).format("DD/MM/YYYY")}
+                  </div>
+                  <div className="md:hidden">
+                    {dayjs(sale?.date_sale_closed).format("DD/MM/YY")}
+                  </div>
                 </div>
                 <div className="w-1/12 px-1 hidden md:inline">
                   {stockItem?.quantity}

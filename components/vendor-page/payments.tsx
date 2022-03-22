@@ -22,10 +22,15 @@ export default function Payments({ payments }) {
             return (
               <div
                 key={`${pay?.id}`}
-                className="flex py-2 text-xs border-b hover:bg-gradient-to-r from-white via-orange-200 to-transparent"
+                className="flex py-2 text-xs border-b hover:bg-gradient-to-r from-white via-orange-200 to-white"
               >
                 <div className="w-2/12 md:w-1/12 px-1">
-                  {dayjs(pay?.date).format("DD/MM/YYYY")}
+                  <div className="hidden md:inline">
+                    {dayjs(pay?.date).format("DD/MM/YYYY")}
+                  </div>
+                  <div className="md:hidden">
+                    {dayjs(pay?.date).format("DD/MM/YY")}
+                  </div>
                 </div>
                 <div className="w-1/6 px-1 text-right">
                   ${(pay?.amount / 100)?.toFixed(2)}
