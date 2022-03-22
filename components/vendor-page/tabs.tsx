@@ -6,7 +6,7 @@ interface TabProps {
 
 export default function Tabs({ tabs, value, onChange }: TabProps) {
   return (
-    <div className="flex w-50">
+    <div className="flex">
       <div className="flex justify-between pb-2">
         {tabs?.map((val, index) => (
           <div

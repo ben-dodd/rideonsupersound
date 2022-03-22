@@ -87,10 +87,20 @@ export default function VendorScreen() {
       };
     });
     const filteredSales = totalSales?.filter((sale) =>
-      dayjs(sale?.date_sale_closed)?.isBetween(startDate, endDate, null, "[]")
+      dayjs(sale?.date_sale_closed)?.isBetween(
+        dayjs(startDate),
+        dayjs(endDate),
+        null,
+        "[]"
+      )
     );
     const filteredPayments = vendorPayments?.filter((payment) =>
-      dayjs(payment?.date)?.isBetween(startDate, endDate, null, "[]")
+      dayjs(payment?.date)?.isBetween(
+        dayjs(startDate),
+        dayjs(endDate),
+        null,
+        "[]"
+      )
     );
     setSales(filteredSales);
     setPayments(filteredPayments);
@@ -112,11 +122,11 @@ export default function VendorScreen() {
           AN UNKNOWN ERROR HAS OCCURRED!
         </div>
       ) : (
-        <div className="flex h-screen w-screen p-8">
+        <div className="flex h-screen w-screen p-2 md:p-8">
           <div
             style={{
               width: "1000px",
-              minWidth: "500px",
+              minWidth: "380px",
               marginLeft: "auto",
               marginRight: "auto",
             }}
@@ -131,15 +141,17 @@ export default function VendorScreen() {
               <div>{vendor?.name}</div>
               <div>{`VENDOR ID: ${vendor?.id}`}</div>
             </div>
-            <Tabs
-              tabs={["Summary", "Sales", "Payments", "Stock List"]}
-              value={tab}
-              onChange={setTab}
-            />
+            <div className="w-full">
+              <Tabs
+                tabs={["Summary", "Sales", "Payments", "Stock"]}
+                value={tab}
+                onChange={setTab}
+              />
+            </div>
             {/* <div className="bg-orange-800 text-white font-bold italic px-2 py-1 mb-2" /> */}
             {tab !== 3 && (
-              <div className="flex mb-2 justify-between">
-                <div className="flex items-start">
+              <div className="mb-2 md:flex md:justify-between">
+                <div className="flex items-start mb-2">
                   <div className="font-bold mr-2">FROM</div>
                   <input
                     type="date"
@@ -153,7 +165,7 @@ export default function VendorScreen() {
                     value={endDate}
                   />
                 </div>
-                <div className="text-sm font-bold text-right w-2/5">
+                <div className="w-full text-sm font-bold text-right md:w-2/5">
                   <div className="w-full flex">
                     <div className="p-2 w-3/4 whitespace-nowrap bg-gradient-to-r from-white to-gray-300 hover:to-red-300">
                       TOTAL TAKE TO DATE
@@ -191,7 +203,7 @@ export default function VendorScreen() {
               <Sales id={id} sales={sales} />
             </div>
             <div hidden={tab !== 2}>
-              <Payments id={id} payments={payments} />
+              <Payments payments={payments} />
             </div>
             <div hidden={tab !== 3}>
               <div className="w-full">

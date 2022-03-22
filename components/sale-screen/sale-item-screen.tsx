@@ -121,19 +121,7 @@ export default function SaleItemScreen() {
 
   async function nukeSale() {
     saveSystemLog("SALE NUKED", clerk?.id);
-    await nukeSaleInDatabase(
-      sale,
-      clerk,
-      registerID,
-      logs,
-      mutateLogs,
-      sales,
-      mutateSales,
-      inventory,
-      mutateInventory,
-      giftCards,
-      mutateGiftCards
-    );
+    await nukeSaleInDatabase(sale, clerk, registerID, logs, mutateLogs);
     setSale(null);
     setLoadedSaleId({ ...loadedSaleId, [page]: null });
   }

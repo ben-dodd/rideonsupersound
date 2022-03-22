@@ -8,18 +8,14 @@ export default function StockItem({ item }) {
       }`}
     >
       <div className="w-32">
-        <div
-          className={`w-32 h-32 relative${
+        <img
+          className={`object-cover h-32 ${
             item?.quantity < 1 ? " opacity-50" : ""
           }`}
-        >
-          <img
-            className="object-cover absolute"
-            src={getImageSrc(item)}
-            alt={item?.title || "Inventory image"}
-          />
-        </div>
-        <div className="text-lg font-bold text-center bg-black text-white">
+          src={getImageSrc(item)}
+          alt={item?.title || "Inventory image"}
+        />
+        <div className="text-lg font-bold text-center bg-black text-white w-32">
           {getItemSku(item)}
         </div>
       </div>
@@ -32,7 +28,7 @@ export default function StockItem({ item }) {
               }`}</div>
               <div className="text-md">{`${item?.artist || "Untitled"}`}</div>
             </div>
-            <div className="text-red-400 font-bold text-3xl">
+            <div className="text-red-400 font-bold text-xl text-right">
               {item?.quantity < 1 ? "OUT OF STOCK!" : ""}
             </div>
           </div>

@@ -70,13 +70,7 @@ export async function nukeSaleInDatabase(
   clerk: ClerkObject,
   registerID: number,
   logs: LogObject[],
-  mutateLogs: Function,
-  sales: SaleObject[],
-  mutateSales: Function,
-  inventory: StockObject[],
-  mutateInventory: Function,
-  giftCards: GiftCardObject[],
-  mutateGiftCards: Function
+  mutateLogs: Function
 ) {
   saveLog(
     {
@@ -88,9 +82,19 @@ export async function nukeSaleInDatabase(
     logs,
     mutateLogs
   );
-  sale?.items?.forEach((i) => deleteSaleItemFromDatabase(i?.id));
+  sale?.items?.forEach((saleItem) => {
+    deleteSaleItemFromDatabase(saleItem?.id);
+    saveStockMovementToDatabase(
+      saleItem,
+      clerk,
+      registerID,
+      StockMovementTypes.Unhold,
+      "Sale nuked.",
+      sale?.id
+    );
+  });
   sale?.transactions?.forEach((i) => deleteSaleTransactionFromDatabase(i?.id));
-  deleteStockMovementsFromDatabase(sale?.id);
+  // deleteStockMovementsFromDatabase(sale?.id);
   deleteSaleFromDatabase(sale?.id);
 }
 
