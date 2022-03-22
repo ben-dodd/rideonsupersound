@@ -61,7 +61,7 @@ export default function VendorScreen() {
     isVendorSalesError ||
     isVendorPaymentsError;
 
-  const [tab, setTab] = useState(1);
+  const [tab, setTab] = useState(0);
   const [stockSearch, setStockSearch] = useState("");
 
   const [startDate, setStartDate] = useState(
@@ -122,11 +122,11 @@ export default function VendorScreen() {
           AN UNKNOWN ERROR HAS OCCURRED!
         </div>
       ) : (
-        <div className="flex h-screen w-screen p-2 md:p-8">
+        <div className="flex h-screen w-screen p-4 md:p-8">
           <div
             style={{
               width: "1000px",
-              minWidth: "380px",
+              // minWidth: "380px",
               marginLeft: "auto",
               marginRight: "auto",
             }}
@@ -149,7 +149,7 @@ export default function VendorScreen() {
               />
             </div>
             {/* <div className="bg-orange-800 text-white font-bold italic px-2 py-1 mb-2" /> */}
-            {tab !== 3 && (
+            {tab !== 2 && (
               <div className="mb-2 md:flex md:justify-between">
                 <div className="flex items-start mb-2">
                   <div className="font-bold mr-2">FROM</div>
@@ -199,13 +199,13 @@ export default function VendorScreen() {
             {/* <div hidden={tab !== 0}>
               <Summary id={id} sales={sales} payments={payments} />
             </div> */}
-            <div hidden={tab !== 1}>
+            <div hidden={tab !== 0}>
               <Sales id={id} sales={sales} />
             </div>
-            <div hidden={tab !== 2}>
+            <div hidden={tab !== 1}>
               <Payments payments={payments} />
             </div>
-            <div hidden={tab !== 3}>
+            <div hidden={tab !== 2}>
               <div className="w-full">
                 <input
                   type="text"
