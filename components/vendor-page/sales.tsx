@@ -1,11 +1,8 @@
-import { useVendorStockByUid } from "@/lib/swr-hooks";
 import dayjs from "dayjs";
 // import { XYPlot, VerticalBarSeries, XAxis, YAxis } from "react-vis";
 // import { timeFormatDefaultLocale } from "d3-time-format";
 
-export default function Sales({ id, sales }) {
-  const { vendorStock } = useVendorStockByUid(id);
-
+export default function Sales({ sales, vendorStock }) {
   return (
     <div className="w-full">
       <div className="bg-orange-800 text-white font-bold italic px-2 py-1 mb-2">

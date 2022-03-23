@@ -191,6 +191,7 @@ export interface HoldObject {
 }
 
 export interface VendorSaleItemObject {
+  id?: number;
   sale_id?: number;
   item_id?: number;
   quantity?: number;

@@ -11,6 +11,7 @@ import {
   useVendorStockByUid,
   useVendorStockMovementByUid,
   useVendorStockPriceByUid,
+  useVendorStoreCreditsByUid,
 } from "@/lib/swr-hooks";
 import { StockObject } from "@/lib/types";
 import dayjs from "dayjs";
@@ -46,20 +47,27 @@ export default function VendorScreen() {
     useVendorSalesByUid(id);
   const { vendorPayments, isVendorPaymentsLoading, isVendorPaymentsError } =
     useVendorPaymentsByUid(id);
+  const {
+    vendorStoreCredits,
+    isVendorStoreCreditsError,
+    isVendorStoreCreditsLoading,
+  } = useVendorStoreCreditsByUid(id);
   const loading =
     isVendorLoading ||
     isVendorStockLoading ||
     isVendorStockMovementLoading ||
     isVendorStockPriceLoading ||
     isVendorSalesLoading ||
-    isVendorPaymentsLoading;
+    isVendorPaymentsLoading ||
+    isVendorStoreCreditsLoading;
   const error =
     isVendorError ||
     isVendorStockError ||
     isVendorStockMovementError ||
     isVendorStockPriceError ||
     isVendorSalesError ||
-    isVendorPaymentsError;
+    isVendorPaymentsError ||
+    isVendorStoreCreditsError;
 
   const [tab, setTab] = useState(0);
   const [stockSearch, setStockSearch] = useState("");
@@ -200,10 +208,10 @@ export default function VendorScreen() {
               <Summary id={id} sales={sales} payments={payments} />
             </div> */}
             <div hidden={tab !== 0}>
-              <Sales id={id} sales={sales} />
+              <Sales sales={sales} vendorStock={vendorStock} />
             </div>
             <div hidden={tab !== 1}>
-              <Payments payments={payments} />
+              <Payments payments={payments} storeCredits={vendorStoreCredits} />
             </div>
             <div hidden={tab !== 2}>
               <div className="w-full">

@@ -9,6 +9,7 @@ const handler: NextApiHandler = async (req, res) => {
     const results = await query(
       `
       SELECT
+        sale_item.id,
         sale_item.sale_id,
         sale_item.item_id,
         sale_item.quantity,
@@ -31,7 +32,7 @@ const handler: NextApiHandler = async (req, res) => {
         ON sale.id = sale_item.sale_id
       LEFT JOIN stock_price
         ON stock_price.stock_id = sale_item.item_id
-      AND stock_price.date_valid_from <= sale.date_sale_opened
+      WHERE stock_price.date_valid_from <= sale.date_sale_opened
       AND sale.state = 'completed'
       AND sale.is_deleted = 0
       AND sale_item.is_deleted = 0

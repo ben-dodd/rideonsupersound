@@ -30,15 +30,16 @@ export default function VendorSales({ vendor, vendorDetails }) {
             DOWNLOAD DATA
           </CSVLink>
           <div className="border-b mb-2 flex text-sm mt-4">
+            <div className="w-1/12">ID</div>
             <div className="w-1/6">DATE SOLD</div>
             <div className="w-1/3">ITEM SOLD</div>
             <div className="w-1/6">FORMAT</div>
             <div className="w-1/6">TOTAL SELL</div>
-            <div className="w-1/6">VENDOR TAKE</div>
+            <div className="w-1/12">VENDOR TAKE</div>
           </div>
 
           <div className="border-b py-1 flex text-sm font-bold">
-            <div className="w-1/6" />
+            <div className="w-3/12" />
             <div className="w-1/2">{`${vendorDetails?.totalSales?.length} ITEM${
               vendorDetails?.totalSales?.length === 1 ? "" : "S"
             } SOLD`}</div>
@@ -48,7 +49,7 @@ export default function VendorSales({ vendor, vendorDetails }) {
                 100
               )?.toFixed(2)}`}
             </div>
-            <div className="w-1/6">
+            <div className="w-1/12">
               {`$${(vendorDetails?.totalSell / 100)?.toFixed(2)}`}
             </div>
           </div>
@@ -71,6 +72,7 @@ export default function VendorSales({ vendor, vendorDetails }) {
                   className="border-b py-1 flex hover:bg-gray-100 text-sm"
                   key={`${sale?.sale_id}${sale?.item_id}`}
                 >
+                  <div className="w-1/12">#{sale?.id}</div>
                   <div className="font-bold w-1/6">
                     {dayjs(sale?.date_sale_closed).format("D MMMM YYYY")}
                   </div>
@@ -81,7 +83,7 @@ export default function VendorSales({ vendor, vendorDetails }) {
                   <div className="w-1/6">
                     {`$${(prices?.totalPrice / 100)?.toFixed(2)}`}
                   </div>
-                  <div className="w-1/6">
+                  <div className="w-1/12">
                     {`$${(prices?.vendorPrice / 100)?.toFixed(2)}${
                       sale?.vendor_discount
                         ? ` (${sale?.vendor_discount}% DISCOUNT)`

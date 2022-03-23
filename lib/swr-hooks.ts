@@ -188,6 +188,18 @@ export function useVendorPaymentsByUid(uid) {
   };
 }
 
+export function useVendorStoreCreditsByUid(uid) {
+  const { data, error } = useSWR(
+    `/api/get-vendor-store-credit-by-uid?uid=${uid}`,
+    nakedFetcher
+  );
+  return {
+    vendorStoreCredits: data,
+    isVendorStoreCreditsLoading: !error && !data,
+    isVendorStoreCreditsError: error,
+  };
+}
+
 export function useVendorSalesByUid(uid) {
   const { data, error } = useSWR(
     `/api/get-vendor-sales-by-uid?uid=${uid}`,
