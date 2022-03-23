@@ -4,7 +4,9 @@ import { useAtom } from "jotai";
 
 // DB
 import {
+  useCashGiven,
   useInventory,
+  useLogs,
   useRegisterID,
   useSalesJoined,
   useVendorPayments,
@@ -15,9 +17,14 @@ import { ModalButton, VendorObject } from "@/lib/types";
 import StoreCreditOnlyIcon from "@mui/icons-material/ShoppingBag";
 import NoBankDetailsIcon from "@mui/icons-material/CreditCardOff";
 import QuantityCheckIcon from "@mui/icons-material/Warning";
+import CheckIcon from "@mui/icons-material/CheckCircleOutline";
 
 // Functions
-import { receiveStock } from "@/lib/db-functions";
+import {
+  receiveStock,
+  saveLog,
+  saveVendorPaymentToDatabase,
+} from "@/lib/db-functions";
 
 // Components
 import ScreenContainer from "@/components/_components/container/screen";
@@ -38,10 +45,14 @@ export default function BatchPaymentScreen() {
 
   // SWR
   const { registerID } = useRegisterID();
+  const [clerk] = useAtom(clerkAtom);
   const { inventory, isInventoryLoading } = useInventory();
   const { sales, isSalesLoading } = useSalesJoined();
-  const { vendorPayments, isVendorPaymentsLoading } = useVendorPayments();
+  const { vendorPayments, isVendorPaymentsLoading, mutateVendorPayments } =
+    useVendorPayments();
+  const { cashGiven, mutateCashGiven } = useCashGiven(registerID);
   const { vendors, isVendorsLoading } = useVendors();
+  const { logs, mutateLogs } = useLogs();
 
   const [vendorList, setVendorList] = useState([]);
   const [stage, setStage] = useState(0);
@@ -49,47 +60,54 @@ export default function BatchPaymentScreen() {
   const [selectOwed, setSelectOwed] = useState(true);
   const [selectDate, setSelectDate] = useState(true);
 
-  useEffect(() => {
-    let vList = [];
-    vendors?.forEach((v) => {
-      let vendorVars = getVendorDetails(
-        inventory,
-        sales,
-        vendorPayments,
-        v?.id
+  useEffect(
+    () => {
+      let vList = [];
+      vendors
+        ?.filter((vendor) => vendor?.id !== 666)
+        ?.forEach((v) => {
+          let vendorVars = getVendorDetails(
+            inventory,
+            sales,
+            vendorPayments,
+            v?.id
+          );
+          vList.push({
+            ...v,
+            ...vendorVars,
+            is_checked: checkValid({ ...v, ...vendorVars }),
+            payAmount: (
+              (vendorVars?.totalOwing > 0 ? vendorVars?.totalOwing : 0) / 100
+            )?.toFixed(2),
+          });
+        });
+      setVendorList(
+        vList?.sort((a, b) => {
+          if (!a?.is_checked && b?.is_checked) return 1;
+          if (!b?.is_checked && a?.is_checked) return -1;
+          return b?.totalOwing - a?.totalOwing;
+        })
       );
-      vList.push({
-        ...v,
-        ...vendorVars,
-        is_checked:
-          !v?.store_credit_only &&
-          (vendorVars?.totalOwing >= 2000 ||
-            (dayjs().diff(vendorVars?.lastPaid, "month") >= 3 &&
-              vendorVars?.totalOwing > 0) ||
-            (dayjs().diff(vendorVars?.lastSold, "month") >= 3 &&
-              !vendorVars?.lastPaid))
-            ? true
-            : false,
-        payAmount: (
-          (vendorVars?.totalOwing > 0 ? vendorVars?.totalOwing : 0) / 100
-        )?.toFixed(2),
-      });
-    });
-    setVendorList(
-      vList?.sort((a, b) => {
-        if (!a?.is_checked && b?.is_checked) return 1;
-        if (!b?.is_checked && a?.is_checked) return -1;
-        return b?.totalOwing - a?.totalOwing;
-      })
-    );
-  }, [
-    isVendorsLoading,
-    isInventoryLoading,
-    isSalesLoading,
-    isVendorPaymentsLoading,
-  ]);
+    },
+    [
+      // isVendorsLoading,
+      // isInventoryLoading,
+      // isSalesLoading,
+      // isVendorPaymentsLoading,
+    ]
+  );
 
-  console.log(vendorList);
+  const [checked, setChecked] = useState(true);
+
+  const checkValid = (vendor) =>
+    isValidBankAccountNumber(vendor?.bank_account_number) &&
+    !vendor?.store_credit_only &&
+    (vendor?.totalOwing >= 2000 ||
+      (dayjs().diff(vendor?.lastPaid, "month") >= 3 &&
+        vendor?.totalOwing > 0) ||
+      (dayjs().diff(vendor?.lastSold, "month") >= 3 && !vendor?.lastPaid))
+      ? true
+      : false;
 
   const buttons: ModalButton[] =
     stage === 0
@@ -115,74 +133,73 @@ export default function BatchPaymentScreen() {
           {
             type: "ok",
             text: "OK",
-            // disabled: !basket?.vendor_id,
-            // onClick: () => {
-            //   payVendors
-            //     .filter(
-            //       (vendor: VendorObject) =>
-            //         vendor?.bank_account_number &&
-            //         parseFloat(
-            //           paymentAmounts[vendor?.id] || vendor?.totalOwing || "0"
-            //         ) > 0
-            //     )
-            //     .forEach(async (vendor: VendorObject) => {
-            //       let vendorPayment = {
-            //         amount: Math.round(
-            //           parseFloat(
-            //             paymentAmounts[vendor?.id] || vendor?.totalOwing || "0"
-            //           ) * 100
-            //         ),
-            //         bank_account_number: vendor?.bank_account_number,
-            //         batch_number: "Test",
-            //         sequence_number: "Test",
-            //         clerk_id: clerk?.id,
-            //         vendor_id: vendor?.id,
-            //         register_id: registerID,
-            //         type: "batch",
-            //       };
-            //       saveVendorPaymentToDatabase(vendorPayment).then((id) => {
-            //         mutateVendorPayments([
-            //           ...vendorPayments,
-            //           { ...vendorPayment, id },
-            //         ]);
-            //         mutateCashGiven();
-            //         saveLog(
-            //           {
-            //             log: `Batch payment made to Vendor (${vendor?.id || ""}).`,
-            //             clerk_id: clerk?.id,
-            //             table_id: "vendor_payment",
-            //             row_id: id,
-            //           },
-            //           logs,
-            //           mutateLogs
-            //         );
-            //       });
-            //     });
-            // },
-            fileName: `batch-payment-${dayjs().format("YYYY-MM-DD")}.csv`,
-            data: writeKiwiBankBatchFile({
-              transactions: [],
-              // transactions: payVendors
-              //   .filter(
-              //     (vendor: VendorObject) =>
-              //       vendor?.bank_account_number &&
-              //       parseFloat(
-              //         paymentAmounts[vendor?.id] || vendor?.totalOwing || "0"
-              //       ) > 0
-              //   )
-              //   .map((vendor: VendorObject) => ({
-              //     name: vendor?.name || "",
-              //     vendor_id: `${vendor?.id || ""}`,
-              //     accountNumber: vendor?.bank_account_number || "",
-              //     amount: parseFloat(
-              //       paymentAmounts[vendor?.id] || vendor?.totalOwing || "0"
-              //     ),
-              //   })),
-              batchNumber: `${registerID}`,
-              sequenceNumber: "Test",
-            }),
             onClick: () => {
               setView({ ...view, batchVendorPaymentScreen: false });
+              let csvContent = writeKiwiBankBatchFile({
+                transactions: vendorList
+                  ?.filter((v) => v?.is_checked)
+                  ?.map((vendor: any) => ({
+                    name: vendor?.name || "",
+                    vendor_id: `${vendor?.id || ""}`,
+                    accountNumber: vendor?.bank_account_number || "",
+                    amount: Math.round(
+                      parseFloat(vendor?.payAmount || "0") * 100
+                    ),
+                  })),
+                batchNumber: `${registerID}`,
+                sequenceNumber: "Batch",
+              });
+              var link = document.createElement("a");
+              link.setAttribute("href", csvContent);
+              link.setAttribute(
+                "download",
+                `batch-payment-${dayjs().format("YYYY-MM-DD")}.kbb`
+              );
+              document.body.appendChild(link);
+              link.click();
+              // console.group();
+              vendorList
+                ?.filter(
+                  (v) =>
+                    v?.is_checked &&
+                    isValidBankAccountNumber(v?.accountNumber) &&
+                    v?.amount
+                )
+                ?.forEach(async (vendor: any) => {
+                  let vendorPayment = {
+                    amount: Math.round(
+                      parseFloat(vendor?.payAmount || "0") * 100
+                    ),
+                    date: dayjs.utc().format(),
+                    bank_account_number: vendor?.bank_account_number,
+                    batchNumber: `${registerID}`,
+                    sequenceNumber: "Batch",
+                    clerk_id: clerk?.id,
+                    vendor_id: vendor?.id,
+                    register_id: registerID,
+                    type: "batch",
+                  };
+                  console.log(vendorPayment);
+                  // saveVendorPaymentToDatabase(vendorPayment).then((id) => {
+                  //   mutateVendorPayments([
+                  //     ...vendorPayments,
+                  //     { ...vendorPayment, id },
+                  //   ]);
+                  //   saveLog(
+                  //     {
+                  //       log: `Batch payment made to Vendor ${vendor?.name} (${
+                  //         vendor?.id || ""
+                  //       }).`,
+                  //       clerk_id: clerk?.id,
+                  //       table_id: "vendor_payment",
+                  //       row_id: id,
+                  //     },
+                  //     logs,
+                  //     mutateLogs
+                  //   );
+                  // });
+                });
+              // console.groupEnd();
             },
           },
         ];
@@ -246,7 +263,34 @@ export default function BatchPaymentScreen() {
           </div>
           <div className="w-full">
             <div className="flex font-bold py-2 px-2 border-b border-black">
-              <div className="w-3/12">NAME</div>
+              <div className="w-3/12 flex">
+                <input
+                  type="checkbox"
+                  className="cursor-pointer"
+                  checked={checked}
+                  onChange={(e) => {
+                    if (checked) {
+                      setVendorList(
+                        vendorList?.map((vendor) => ({
+                          ...vendor,
+                          is_checked: false,
+                        }))
+                      );
+                      setChecked(false);
+                    } else {
+                      setVendorList(
+                        vendorList?.map((vendor) =>
+                          checkValid(vendor)
+                            ? { ...vendor, is_checked: true }
+                            : vendor
+                        )
+                      );
+                      setChecked(true);
+                    }
+                  }}
+                />
+                <div className="pl-4">NAME</div>
+              </div>
               <div className="w-1/12">TAKE</div>
               <div className="w-1/12">OWED</div>
               <div className="w-2/12">LAST SALE</div>
@@ -322,7 +366,7 @@ export default function BatchPaymentScreen() {
                   </div>
                   <div className="w-1/12 flex">
                     {v?.store_credit_only ? (
-                      <div className="text-green-500 pl-2">
+                      <div className="text-blue-500 pl-2">
                         <Tooltip title="Store Credit Only">
                           <StoreCreditOnlyIcon />
                         </Tooltip>
@@ -368,14 +412,71 @@ export default function BatchPaymentScreen() {
         <div className="w-full" hidden={stage === 0}>
           {vendorList
             ?.filter((v) => v?.is_checked)
-            ?.map((v) => (
-              <div key={v?.id} className="border-b flex">
-                <div className="w-2/3">{`[${v?.id}] ${v?.name}`}</div>
-                <div className="w-1/3">{`$${parseFloat(v?.payAmount)?.toFixed(
-                  2
-                )}`}</div>
-              </div>
-            ))}
+            ?.map((v) => {
+              let invalidBankAccountNumber = !isValidBankAccountNumber(
+                v?.bank_account_number
+              );
+              let negativeQuantity =
+                v?.totalItems?.filter((i) => i?.quantity < 0)?.length > 0;
+              return (
+                <div key={v?.id} className="border-b flex">
+                  <div className="w-2/3">{`[${v?.id}] ${v?.name}`}</div>
+                  <div className="w-1/3">{`$${parseFloat(v?.payAmount)?.toFixed(
+                    2
+                  )}`}</div>
+                  <div className="flex">
+                    {v?.store_credit_only ? (
+                      <div className="text-blue-500 pl-2">
+                        <Tooltip title="Vendor wants Store Credit Only">
+                          <StoreCreditOnlyIcon />
+                        </Tooltip>
+                      </div>
+                    ) : (
+                      <div />
+                    )}
+                    {invalidBankAccountNumber ? (
+                      <Tooltip
+                        title={`${
+                          v?.bank_account_number ? "Invalid" : "Missing"
+                        } Bank Account Number`}
+                      >
+                        <div
+                          className={`${
+                            v?.bank_account_number
+                              ? "text-orange-500"
+                              : "text-red-500"
+                          } pl-2 flex`}
+                        >
+                          <NoBankDetailsIcon />
+                        </div>
+                      </Tooltip>
+                    ) : (
+                      <div />
+                    )}
+                    {negativeQuantity ? (
+                      <Tooltip title="Vendor has negative quantity items. Please check!">
+                        <div className="text-purple-500 pl-2">
+                          <QuantityCheckIcon />
+                        </div>
+                      </Tooltip>
+                    ) : (
+                      <div />
+                    )}
+                    {!negativeQuantity &&
+                    !invalidBankAccountNumber &&
+                    !v?.store_credit_only ? (
+                      <Tooltip title="Everything looks good!">
+                        <div className="text-green-500 pl-2">
+                          <CheckIcon />
+                        </div>
+                      </Tooltip>
+                    ) : (
+                      <div />
+                    )}
+                  </div>
+                </div>
+              );
+            })}
         </div>
       </>
     </ScreenContainer>

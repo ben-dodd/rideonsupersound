@@ -759,14 +759,14 @@ export function writeKiwiBankBatchFile({
   sequenceNumber,
 }: KiwiBankBatchFileProps) {
   const storeAccountNumber = "389020005748600";
-  let transactionTest = [
-    {
-      name: "Ben Dodd",
-      vendor_id: "69",
-      amount: 10,
-      accountNumber: "11-7426-0024124-00",
-    },
-  ];
+  // let transactionTest = [
+  //   {
+  //     name: "Ben Dodd",
+  //     vendor_id: "69",
+  //     amount: 10,
+  //     accountNumber: "11-7426-0024124-00",
+  //   },
+  // ];
   let error = "";
   let transactionAmount = 0;
   let transactionCount = 0;
@@ -775,55 +775,57 @@ export function writeKiwiBankBatchFile({
     [
       1,
       "",
-      batchNumber || "",
-      sequenceNumber || "",
-      storeAccountNumber,
+      parseInt(batchNumber?.substring(0, 2)) || "",
+      parseInt(sequenceNumber?.substring(0, 4)) || "",
+      parseInt(storeAccountNumber?.substring(0, 16)),
       7,
       parseInt(dayjs.utc().format("YYMMDD")),
       parseInt(dayjs.utc().format("YYMMDD")),
       "",
     ],
   ];
-  transactionTest.forEach((transaction: KiwiBankTransactionObject) => {
-    if (!transaction?.accountNumber)
-      error = `${
-        transaction?.name || "Unknown Vendor"
-      } is missing an account number.`;
-    if (!transaction?.amount)
-      error = `No payment amount set for ${
-        transaction?.name || "Unknown Vendor"
-      }.`;
-    transactionAmount += transaction?.amount;
-    transactionCount += 1;
-    let accountNumber = `${transaction?.accountNumber}`.replace(/\D/g, "");
-    // remove bank number
-    accountNumber = accountNumber.substr(2);
-    // remove suffix
-    accountNumber = accountNumber.slice(0, 11);
-    // add to hash total
-    hashTotal += parseInt(accountNumber);
-    kbb.push([
-      2,
-      parseInt(`${transaction?.accountNumber}`.replace(/\D/g, "")),
-      50,
-      transaction?.amount,
-      transaction?.name,
-      "Ride On Super Sound",
-      "",
-      "",
-      "",
-      "Ride On Super Sound",
-      `Seq ${sequenceNumber}`,
-      `Batch ${batchNumber}`,
-      transaction?.vendor_id,
-    ]);
-  });
+  transactions
+    ?.filter((t) => isValidBankAccountNumber(t?.accountNumber) && t?.amount)
+    .forEach((transaction: KiwiBankTransactionObject) => {
+      transactionAmount += transaction?.amount;
+      transactionCount += 1;
+      let accountNumber = `${transaction?.accountNumber}`.replace(/\D/g, "");
+      // remove bank number
+      accountNumber = accountNumber.substring(2);
+      // remove suffix
+      accountNumber = accountNumber.slice(0, 11);
+      // add to hash total
+      hashTotal += parseInt(accountNumber);
+      kbb.push([
+        2,
+        parseInt(
+          `${transaction?.accountNumber}`.replace(/\D/g, "")?.substring(0, 16)
+        ),
+        50,
+        transaction?.amount,
+        transaction?.name?.substring(0, 20),
+        "RideOn Pay",
+        "",
+        "",
+        "",
+        "Ride On Super Sound",
+        `Seq ${dayjs.utc().format("YYMMDD")}`?.substring(0, 12),
+        `Reg ${batchNumber}`?.substring(0, 12),
+        `${transaction?.vendor_id} ${transaction?.name}`?.substring(0, 12),
+      ]);
+    });
 
   let paddedHashTotal = `00000000000${hashTotal}`;
   paddedHashTotal = paddedHashTotal.slice(paddedHashTotal.length - 11);
 
   kbb.push([3, transactionAmount, transactionCount, parseInt(paddedHashTotal)]);
-  return kbb;
+
+  let csvContent = "data:text/csv;charset=utf-8,";
+  kbb.forEach((rowArray) => {
+    let row = rowArray?.join(",");
+    csvContent += row + "\r\n";
+  });
+  return encodeURI(csvContent);
 }
 
 //                //
