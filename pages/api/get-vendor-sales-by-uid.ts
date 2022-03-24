@@ -10,6 +10,7 @@ const handler: NextApiHandler = async (req, res) => {
         sale_item.sale_id,
         sale_item.item_id,
         sale_item.quantity,
+        sale_item.is_refunded,
         sale_item.store_discount,
         sale_item.vendor_discount,
         sale.date_sale_closed,

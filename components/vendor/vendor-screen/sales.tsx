@@ -78,12 +78,22 @@ export default function VendorSales({ vendor, vendorDetails }) {
                   </div>
                   <div className="w-1/3">{`${
                     sale?.quantity
-                  } x ${getItemDisplayName(stockItem)}`}</div>
+                  } x ${getItemDisplayName(stockItem)}${
+                    sale?.is_refunded ? " [REFUNDED]" : ""
+                  }`}</div>
                   <div className="w-1/6">{stockItem?.format}</div>
-                  <div className="w-1/6">
+                  <div
+                    className={`w-1/6${
+                      sale?.is_refunded ? " line-through" : ""
+                    }`}
+                  >
                     {`$${(prices?.totalPrice / 100)?.toFixed(2)}`}
                   </div>
-                  <div className="w-1/12">
+                  <div
+                    className={`w-1/12${
+                      sale?.is_refunded ? " line-through" : ""
+                    }`}
+                  >
                     {`$${(prices?.vendorPrice / 100)?.toFixed(2)}${
                       sale?.vendor_discount
                         ? ` (${sale?.vendor_discount}% DISCOUNT)`

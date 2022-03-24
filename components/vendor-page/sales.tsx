@@ -48,14 +48,28 @@ export default function Sales({ sales, vendorStock }) {
                 </div>
                 <div className="w-2/12 px-1">{stockItem?.format}</div>
                 <div className="w-2/12 px-1">{stockItem?.artist}</div>
-                <div className="w-2/12 md:w-3/12 px-1">{stockItem?.title}</div>
-                <div className="w-2/12 md:w-1/12 px-1 text-right">
+                <div className="w-2/12 md:w-3/12 px-1">{`${stockItem?.title}${
+                  sale?.is_refunded ? " [REFUNDED]" : ""
+                }`}</div>
+                <div
+                  className={`w-2/12 md:w-1/12 px-1 text-right${
+                    sale?.is_refunded ? " line-through" : ""
+                  }`}
+                >
                   ${(sale?.total_sell / 100)?.toFixed(2)}
                 </div>
-                <div className="w-1/12 px-1 text-right hidden md:inline">
+                <div
+                  className={`w-1/12 px-1 text-right hidden md:inline${
+                    sale?.is_refunded ? " line-through" : ""
+                  }`}
+                >
                   ${((sale?.total_sell - sale?.vendor_cut) / 100)?.toFixed(2)}
                 </div>
-                <div className="w-2/12 md:w-1/12 px-1 text-right">
+                <div
+                  className={`w-2/12 md:w-1/12 px-1 text-right${
+                    sale?.is_refunded ? " line-through" : ""
+                  }`}
+                >
                   ${(sale?.vendor_cut / 100)?.toFixed(2)}
                 </div>
               </div>

@@ -197,9 +197,17 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
             <div
               className={`text-md ${itemQuantity < 1 && "text-red-500"}`}
             >{`${itemQuantity} in stock${
-              item?.quantity_hold ? `, ${-item?.quantity_hold} on hold` : ""
+              (item?.quantity_hold || 0) + (item?.quantity_unhold || 0) > 0
+                ? `, ${-(
+                    (item?.quantity_hold || 0) + (item?.quantity_unhold || 0)
+                  )} on hold`
+                : ""
             }${
-              item?.quantity_layby ? `, ${-item?.quantity_layby} on layby` : ""
+              (item?.quantity_layby || 0) + (item?.quantity_unlayby || 0) > 0
+                ? `, ${-(
+                    (item?.quantity_layby || 0) + (item?.quantity_unlayby || 0)
+                  )} on layby`
+                : ""
             }`}</div>
           </Tooltip>
           <Tooltip title="You can change the price in the item details screen.">

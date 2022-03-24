@@ -110,14 +110,13 @@ export function getPrice(
 export function getCartItemPrice(cartItem: any, item: StockObject) {
   // Gets three prices for each sale item: the vendor cut, store cut, and total
   // Price is returned in cents
-  const totalSell: number =
-    !cartItem || cartItem?.is_refunded
-      ? 0
-      : item?.is_gift_card
-      ? item?.gift_card_amount || 0
-      : item?.is_misc_item
-      ? item?.misc_item_amount || 0
-      : null;
+  const totalSell: number = !cartItem
+    ? 0
+    : item?.is_gift_card
+    ? item?.gift_card_amount || 0
+    : item?.is_misc_item
+    ? item?.misc_item_amount || 0
+    : null;
   const vendorCut: number = cartItem?.vendor_cut ?? item?.vendor_cut;
   const storeCut: number = item?.is_misc_item
     ? item?.misc_item_amount || 0
@@ -147,9 +146,13 @@ export function getSaleVars(sale: any, inventory: StockObject[]) {
   // Inventory - used to look up item prices if not in sale, used for new sales
   const totalPostage = parseFloat(`${sale?.postage}`) || 0; // Postage: currently in dollars
   const totalStoreCut = sumPrices(sale?.items, inventory, "storePrice") / 100; // Total Amount of Sale goes to Store in dollars
-  console.log(totalStoreCut);
+  // console.log(totalStoreCut);
   const totalPriceUnrounded =
-    sumPrices(sale?.items, inventory, "totalPrice") / 100; // Total Amount of Sale in dollars
+    sumPrices(
+      sale?.items?.filter((s) => !s?.is_refunded),
+      inventory,
+      "totalPrice"
+    ) / 100; // Total Amount of Sale in dollars
   const totalVendorCut = totalPriceUnrounded - totalStoreCut; // Total Vendor Cut in dollars
   const totalItemPrice =
     Math.round((totalPriceUnrounded + Number.EPSILON) * 10) / 10; // Total Amount rounded to 10c to avoid unpayable sales
@@ -322,15 +325,19 @@ export function sumPrices(
   field: string
 ) {
   if (!saleItems) return 0;
-  return saleItems?.reduce((acc, saleItem) => {
-    // Dont bother getting inventory item if not needed
-    let item: StockObject =
-      saleItem?.total_sell && saleItem?.vendor_cut && saleItem?.store_cut
-        ? null
-        : inventory?.filter((i: StockObject) => i?.id === saleItem?.item_id)[0];
-    const prices = getCartItemPrice(saleItem, item);
-    return (acc += prices?.[field]);
-  }, 0);
+  return saleItems
+    ?.filter((s) => !s?.is_refunded)
+    ?.reduce((acc, saleItem) => {
+      // Dont bother getting inventory item if not needed
+      let item: StockObject =
+        saleItem?.total_sell && saleItem?.vendor_cut && saleItem?.store_cut
+          ? null
+          : inventory?.filter(
+              (i: StockObject) => i?.id === saleItem?.item_id
+            )[0];
+      const prices = getCartItemPrice(saleItem, item);
+      return (acc += prices?.[field]);
+    }, 0);
 }
 
 export function getTotalPaid(saleTransactions: SaleTransactionObject[]) {

@@ -202,6 +202,7 @@ export interface VendorSaleItemObject {
   date_price_valid_from?: string;
   date_sale_opened?: string;
   date_sale_closed?: string;
+  is_refunded?: boolean;
 }
 
 export interface VendorPaymentObject {
