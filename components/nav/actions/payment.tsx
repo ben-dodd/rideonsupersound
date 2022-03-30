@@ -3,6 +3,7 @@ import { clerkAtom, viewAtom } from "@/lib/atoms";
 
 import NewIcon from "@mui/icons-material/AddBox";
 import PayIcon from "@mui/icons-material/Payment";
+import TransferIcon from "@mui/icons-material/TransferWithinAStation";
 import { saveSystemLog } from "@/lib/db-functions";
 
 export default function PaymentNavActions() {
@@ -19,6 +20,16 @@ export default function PaymentNavActions() {
       >
         <NewIcon className="mr-1" />
         New Manual Payment
+      </button>
+      <button
+        className="icon-text-button"
+        onClick={() => {
+          saveSystemLog("Payment Nav - New Transfer clicked.", clerk?.id);
+          setView({ ...view, transferVendorPaymentDialog: true });
+        }}
+      >
+        <TransferIcon className="mr-1" />
+        New Transfer
       </button>
       <button
         className="icon-text-button"

@@ -94,6 +94,7 @@ export default function CashPaymentDialog() {
           vendor_id: vendor?.id,
           register_id: registerID,
           type: paymentType,
+          note: notes,
         };
         saveVendorPaymentToDatabase(vendorPayment).then((id) => {
           mutateVendorPayments([...vendorPayments, { ...vendorPayment, id }]);
@@ -117,9 +118,8 @@ export default function CashPaymentDialog() {
         });
       },
       disabled:
-        totalOwing < parseFloat(payment) ||
-        !payment ||
-        parseFloat(payment) <= 0,
+        // totalOwing < parseFloat(payment) ||
+        !payment || parseFloat(payment) <= 0,
     },
   ];
 
@@ -193,7 +193,7 @@ export default function CashPaymentDialog() {
             ? isNaN(parseFloat(payment))
             : "NUMBERS ONLY PLEASE"
             ? totalOwing / 100 < parseFloat(payment)
-              ? `YOU CANNOT PAY VENDOR MORE THAN THEY ARE OWED`
+              ? `YOU ARE PAYING VENDOR MORE THAN THEY ARE OWED`
               : "PAYMENT OK"
             : "SELECT VENDOR"}
         </div>

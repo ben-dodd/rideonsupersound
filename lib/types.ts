@@ -33,6 +33,8 @@ export enum VendorPaymentTypes {
   Cash = "cash", // vendor was given cash in store
   DC = "direct credit", // vendor paid with internet banking
   Batch = "batch", // vendor paid with batch kiwibank payment
+  TransferTo = "transfer to", // vendor has been paid with a store credit transfer
+  TransferFrom = "transfer from", // vendor has transferred their store credit to another
 }
 
 export enum ButtonTypes {
