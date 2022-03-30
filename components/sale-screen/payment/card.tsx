@@ -56,7 +56,7 @@ export default function Cash() {
         submitting ||
         (!isRefund && parseFloat(cardPayment) > totalRemaining) ||
         (isRefund && parseFloat(cardPayment) < totalRemaining) ||
-        parseFloat(cardPayment) === 0 ||
+        parseFloat(cardPayment) <= 0 ||
         cardPayment === "" ||
         isNaN(parseFloat(cardPayment)),
       loading: submitting,
@@ -129,6 +129,8 @@ export default function Cash() {
         <div className="text-center text-xl font-bold my-4">
           {cardPayment === "" || parseFloat(cardPayment) === 0
             ? "..."
+            : parseFloat(cardPayment) < 0
+            ? "NO NEGATIVES ALLOWED"
             : isNaN(parseFloat(cardPayment))
             ? "NUMBERS ONLY PLEASE"
             : parseFloat(cardPayment) > Math.abs(totalRemaining)

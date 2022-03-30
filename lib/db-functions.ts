@@ -779,6 +779,25 @@ export async function updateVendorInDatabase(vendor: VendorObject) {
   }
 }
 
+export async function updateVendorLastContactedInDatabase(vendor: any) {
+  try {
+    const res = await fetch(
+      `/api/update-vendor-last-contacted?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(vendor),
+      }
+    );
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
+
 export async function returnHoldToStock(
   hold: HoldObject,
   clerk: ClerkObject,
@@ -870,8 +889,8 @@ export async function saveSystemLog(log: string, clerkID: number) {
 
 export async function saveLog(
   log: LogObject,
-  logs: LogObject[],
-  mutateLogs: Function
+  logs?: LogObject[],
+  mutateLogs?: Function
 ) {
   let logObj = {
     date_created: dayjs.utc().format(),
@@ -893,7 +912,7 @@ export async function saveLog(
     );
     const json = await res.json();
     if (!res.ok) throw Error(json.message);
-    if (logs) mutateLogs([...logs, { ...logObj, id: json?.insertId }], false);
+    if (logs) mutateLogs?.([...logs, { ...logObj, id: json?.insertId }], false);
   } catch (e) {
     throw Error(e.message);
   }
@@ -928,7 +947,9 @@ export async function addNewMailOrderTask(sale: SaleObject, customer: string) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          description: `Post Sale ${sale?.id} (${sale?.item_list}) to ${customer}\n${sale?.postal_address}`,
+          description: `Post Sale ${sale?.id} (${sale?.item_list}) to ${
+            `${customer}\n` || ""
+          }${sale?.postal_address}`,
           created_by_clerk_id: sale?.sale_opened_by,
           assigned_to: RoleTypes?.MC,
           date_created: dayjs.utc().format(),

@@ -57,7 +57,7 @@ export default function Cash() {
       type: "ok",
       disabled:
         submitting ||
-        parseFloat(cashReceived) === 0 ||
+        parseFloat(cashReceived) <= 0 ||
         (isRefund && parseFloat(cashReceived) > Math.abs(totalRemaining)) ||
         cashReceived === "" ||
         isNaN(parseFloat(cashReceived)),
@@ -149,6 +149,8 @@ export default function Cash() {
         <div className="text-center text-xl font-bold my-4">
           {cashReceived === "" || parseFloat(cashReceived) === 0
             ? "..."
+            : parseFloat(cashReceived) < 0
+            ? "NO NEGATIVES ALLOWED"
             : isNaN(parseFloat(cashReceived))
             ? "NUMBERS ONLY PLEASE"
             : isRefund && parseFloat(cashReceived) > Math.abs(totalRemaining)

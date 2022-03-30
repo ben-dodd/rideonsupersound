@@ -77,9 +77,9 @@ export default function Acct() {
       disabled:
         submitting ||
         parseFloat(acctPayment) > Math.abs(totalRemaining) ||
-        parseFloat(acctPayment) === 0 ||
+        parseFloat(acctPayment) <= 0 ||
         acctPayment <= "" ||
-        (!isRefund && vendorVars?.totalOwing / 100 < parseFloat(acctPayment)) ||
+        // (!isRefund && vendorVars?.totalOwing / 100 < parseFloat(acctPayment)) ||
         isNaN(parseFloat(acctPayment)),
       loading: submitting,
       onClick: () => {
@@ -176,6 +176,8 @@ export default function Acct() {
             <div className="text-center text-xl font-bold my-4">
               {acctPayment === "" || parseFloat(acctPayment) === 0
                 ? "..."
+                : parseFloat(acctPayment) < 0
+                ? "NO NEGATIVES ALLOWED"
                 : isNaN(parseFloat(acctPayment))
                 ? "NUMBERS ONLY PLEASE"
                 : parseFloat(acctPayment) > Math.abs(totalRemaining)
@@ -183,7 +185,7 @@ export default function Acct() {
                 : isRefund
                 ? "ALL GOOD!"
                 : vendorVars?.totalOwing / 100 < parseFloat(acctPayment)
-                ? `NOT ENOUGH IN ACCOUNT`
+                ? `NOT ENOUGH IN ACCOUNT, VENDOR WILL OWE THE SHOP`
                 : parseFloat(acctPayment) < totalRemaining
                 ? `AMOUNT SHORT BY $${(
                     totalRemaining - parseFloat(acctPayment)

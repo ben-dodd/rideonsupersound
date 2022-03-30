@@ -79,7 +79,7 @@ export default function Gift() {
       disabled:
         submitting ||
         parseFloat(giftCardPayment) > Math.abs(totalRemaining) ||
-        parseFloat(giftCardPayment) === 0 ||
+        parseFloat(giftCardPayment) <= 0 ||
         giftCardPayment === "" ||
         isNaN(parseFloat(giftCardPayment)) ||
         (!isRefund &&
@@ -236,6 +236,8 @@ export default function Gift() {
           parseFloat(giftCardPayment) === 0 ||
           submitting ? (
             `...`
+          ) : parseFloat(giftCardPayment) < 0 ? (
+            "NO NEGATIVES ALLOWED"
           ) : isNaN(parseFloat(giftCardPayment)) ? (
             `NUMBERS ONLY PLEASE`
           ) : parseFloat(giftCardPayment) > Math.abs(totalRemaining) ? (

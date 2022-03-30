@@ -13,6 +13,7 @@ import {
   GiftCardObject,
   SaleObject,
 } from "@/lib/types";
+import { Email } from "@mui/icons-material";
 
 import dayjs from "dayjs";
 import { AnyCnameRecord } from "dns";
@@ -766,15 +767,6 @@ export function writeKiwiBankBatchFile({
   sequenceNumber,
 }: KiwiBankBatchFileProps) {
   const storeAccountNumber = "389020005748600";
-  // let transactionTest = [
-  //   {
-  //     name: "Ben Dodd",
-  //     vendor_id: "69",
-  //     amount: 10,
-  //     accountNumber: "11-7426-0024124-00",
-  //   },
-  // ];
-  let error = "";
   let transactionAmount = 0;
   let transactionCount = 0;
   let hashTotal = 0;
@@ -812,13 +804,13 @@ export function writeKiwiBankBatchFile({
         transaction?.amount,
         transaction?.name?.substring(0, 20),
         "RideOn Pay",
+        `${transaction?.vendor_id} ${transaction?.name}`?.substring(0, 12),
         "",
-        "",
-        "",
+        `Reg ${batchNumber}`?.substring(0, 12),
         "Ride On Super Sound",
-        `Seq ${dayjs.utc().format("YYMMDD")}`?.substring(0, 12),
         `Reg ${batchNumber}`?.substring(0, 12),
         `${transaction?.vendor_id} ${transaction?.name}`?.substring(0, 12),
+        `Seq ${dayjs.utc().format("YYMMDD")}`?.substring(0, 12),
       ]);
     });
 
@@ -830,6 +822,35 @@ export function writeKiwiBankBatchFile({
   let csvContent = "data:text/csv;charset=utf-8,";
   kbb.forEach((rowArray) => {
     let row = rowArray?.join(",");
+    csvContent += row + "\r\n";
+  });
+  return encodeURI(csvContent);
+}
+
+export function writeEmailCSV(vendors) {
+  let csvContent = "data:text/csv;charset=utf-8,";
+  csvContent += "CODE,NAME,RECIPIENT,ACCOUNT,OWING,LINK,DATE\r\n";
+  console.log(vendors);
+  let vendorArrays = vendors
+    // ?.filter(
+    //   (v) =>
+    //     v?.is_checked &&
+    //     v?.payAmount &&
+    //     isValidBankAccountNumber(v?.bank_account_number)
+    // )
+    ?.map((v) => [
+      v?.id,
+      v?.name,
+      v?.email,
+      v?.bank_account_number,
+      v?.payAmount,
+      `https://rideonsupersound.vercel.app/vendor/${v?.uid}`,
+      dayjs().format("DD/MM/YYYY"),
+      isValidBankAccountNumber(v?.bank_account_number),
+    ]);
+  console.log(vendorArrays);
+  vendorArrays?.forEach((vendorArray) => {
+    let row = vendorArray?.join(",");
     csvContent += row + "\r\n";
   });
   return encodeURI(csvContent);

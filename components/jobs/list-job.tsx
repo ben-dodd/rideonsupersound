@@ -34,7 +34,7 @@ export default function ListJob({ task }: ListItemProps) {
       }`}
     >
       <div className="flex flex-col sm:flex-row w-full justify-between">
-        <div className="flex w-3/12">
+        <div className="flex w-2/12">
           <div className="mx-2 w-1/12">
             <input
               className="cursor-pointer"
@@ -61,7 +61,7 @@ export default function ListJob({ task }: ListItemProps) {
             {dayjs(task?.date_created).format("D MMMM YYYY, h:mm A")}
           </div>
         </div>
-        <div className={`w-7/12 ${checked ? "line-through" : ""}`}>
+        <div className={`w-4/12 ${checked ? "line-through" : ""}`}>
           {task?.description}
         </div>
         {/*<div className="grid grid-cols-3 w-2/5">
@@ -70,12 +70,14 @@ export default function ListJob({ task }: ListItemProps) {
               (c: ClerkObject) => c?.id === task?.created_by_clerk_id
             )[0]?.name
           }`}</div>*/}
-        {task?.assigned_to ? (
-          <div>{`Assigned to ${task?.assigned_to}`}</div>
-        ) : (
-          <div />
-        )}
-        <div className="w-4/12 text-right">
+        <div className="w-3/12">
+          {task?.assigned_to ? (
+            <div>{`Assigned to ${task?.assigned_to}`}</div>
+          ) : (
+            <div />
+          )}
+        </div>
+        <div className="w-3/12 text-right">
           {task?.completed_by_clerk_id
             ? `Completed by ${
                 clerks?.filter(
