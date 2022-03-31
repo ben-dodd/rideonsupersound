@@ -18,6 +18,7 @@ import {
   getImageSrc,
   getItemDisplayName,
   getItemSku,
+  getItemSkuDisplayName,
 } from "@/lib/data-functions";
 
 // Components
@@ -145,7 +146,7 @@ export default function ReturnStockScreen() {
                 )
                 .map((item: StockObject) => ({
                   value: item?.id,
-                  label: getItemDisplayName(item),
+                  label: getItemSkuDisplayName(item),
                 }))}
               onChange={(item: any) =>
                 setReturnItems([
