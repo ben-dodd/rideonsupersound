@@ -177,7 +177,7 @@ export default function ReturnStockScreen() {
                     (prev += parseInt(returnItem?.quantity)),
                   0
                 )} ITEMS`}</div>
-                {returnItems?.reverse()?.map((returnItem: any, i: number) => {
+                {returnItems?.map((returnItem: any, i: number) => {
                   const item = inventory?.filter(
                     (i: StockObject) => i?.id === parseInt(returnItem?.id)
                   )[0];
