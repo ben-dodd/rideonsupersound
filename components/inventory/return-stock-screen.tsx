@@ -14,7 +14,11 @@ import { StockObject, VendorObject, ModalButton } from "@/lib/types";
 
 // Functions
 import { returnStock, saveLog } from "@/lib/db-functions";
-import { getItemDisplayName } from "@/lib/data-functions";
+import {
+  getImageSrc,
+  getItemDisplayName,
+  getItemSku,
+} from "@/lib/data-functions";
 
 // Components
 import TextField from "@/components/_components/inputs/text-field";
@@ -38,7 +42,7 @@ export default function ReturnStockScreen() {
 
   // State
   const [vendorWrapper, setVendorWrapper] = useState(null);
-  const [items, setItems] = useState({});
+  const [returnItems, setReturnItems] = useState([]);
   const [notes, setNotes] = useState("");
 
   const [submitting, setSubmitting] = useState(false);
@@ -46,7 +50,7 @@ export default function ReturnStockScreen() {
   function closeFunction() {
     setView({ ...view, returnStockScreen: false });
     setVendorWrapper(null);
-    setItems({});
+    setReturnItems([]);
     setNotes("");
   }
 
@@ -62,7 +66,7 @@ export default function ReturnStockScreen() {
         setSubmitting(true);
         returnStock(
           vendorWrapper?.value,
-          items,
+          returnItems,
           notes,
           clerk,
           registerID,
@@ -83,17 +87,20 @@ export default function ReturnStockScreen() {
       disabled:
         submitting ||
         !vendorWrapper?.value ||
-        Object.keys(items)?.length === 0 ||
-        Object.entries(items)?.filter(
-          ([id, itemQuantity]: [string, number]) =>
-            isNaN(itemQuantity) ||
-            inventory?.filter((i: StockObject) => i?.id === parseInt(id))[0]
-              ?.quantity < itemQuantity ||
-            itemQuantity < 0
+        returnItems?.length === 0 ||
+        returnItems?.filter(
+          (returnItem: any) =>
+            isNaN(returnItem?.quantity) ||
+            inventory?.filter(
+              (i: StockObject) => i?.id === parseInt(returnItem?.id)
+            )[0]?.quantity < parseInt(`${returnItem?.quantity}`) ||
+            returnItem?.quantity < 0
         ).length > 0,
       text: "RETURN STOCK",
     },
   ];
+
+  console.log(returnItems);
 
   return (
     <ScreenContainer
@@ -116,7 +123,7 @@ export default function ReturnStockScreen() {
               value={vendorWrapper}
               onChange={(vendorObject: any) => {
                 setVendorWrapper(vendorObject);
-                setItems({});
+                setReturnItems([]);
               }}
               options={vendors?.map((val: VendorObject) => ({
                 value: val?.id,
@@ -132,7 +139,8 @@ export default function ReturnStockScreen() {
                 ?.filter(
                   (item: StockObject) =>
                     item?.vendor_id === vendorWrapper?.value &&
-                    !items[item?.id] &&
+                    returnItems?.filter((i) => i?.id === item?.id)?.length ===
+                      0 &&
                     item?.quantity > 0
                 )
                 .map((item: StockObject) => ({
@@ -140,13 +148,16 @@ export default function ReturnStockScreen() {
                   label: getItemDisplayName(item),
                 }))}
               onChange={(item: any) =>
-                setItems({
-                  ...(items || {}),
-                  [item?.value]:
-                    inventory?.filter(
-                      (i: StockObject) => i?.id === parseInt(item?.value)
-                    )[0]?.quantity || 1,
-                })
+                setReturnItems([
+                  ...returnItems,
+                  {
+                    id: item?.value,
+                    quantity:
+                      inventory?.filter(
+                        (i: StockObject) => i?.id === item?.value
+                      )[0]?.quantity || 1,
+                  },
+                ])
               }
             />
             <TextField
@@ -159,60 +170,82 @@ export default function ReturnStockScreen() {
           </div>
           <div className="w-2/3 pl-8">
             <div className="font-bold text-xl">Items to Return</div>
-            {Object.keys(items)?.length > 0 ? (
+            {returnItems?.length > 0 ? (
               <div>
-                {Object.entries(items)?.map(
-                  ([itemId, itemQuantity]: [string, number]) => {
-                    const item = inventory?.filter(
-                      (i: StockObject) => i?.id === parseInt(itemId)
-                    )[0];
-                    return (
-                      <div
-                        className="flex justify-between my-2 border-b w-full"
-                        key={itemId}
-                      >
-                        <div className="flex">
-                          <div className="ml-2">
-                            {getItemDisplayName(item)}
-                            <div
-                              className={`mt-2 text-sm font-bold ${
-                                item?.quantity <= 0
-                                  ? "text-tertiary"
-                                  : "text-black"
-                              }`}
-                            >{`${item?.quantity || 0} in stock.`}</div>
+                <div className="font-bold text-xl">{`RETURNING ${returnItems?.reduce(
+                  (prev, returnItem) =>
+                    (prev += parseInt(returnItem?.quantity)),
+                  0
+                )} ITEMS`}</div>
+                {returnItems?.reverse()?.map((returnItem: any, i: number) => {
+                  const item = inventory?.filter(
+                    (i: StockObject) => i?.id === parseInt(returnItem?.id)
+                  )[0];
+                  return (
+                    <div
+                      className="flex justify-between my-2 border-b w-full"
+                      key={`${returnItem?.id}-${i}`}
+                    >
+                      <div className="flex">
+                        <div className="w-20">
+                          <div className="w-20 h-20 relative">
+                            <img
+                              className="object-cover absolute"
+                              // layout="fill"
+                              // objectFit="cover"
+                              src={getImageSrc(item)}
+                              alt={item?.title || "Inventory image"}
+                            />
+                            {!item?.is_gift_card && !item?.is_misc_item && (
+                              <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white text-sm flex justify-center items-center">
+                                {getItemSku(item)}
+                              </div>
+                            )}
                           </div>
                         </div>
-                        <div className="flex items-center justify-end">
-                          <TextField
-                            className="w-16 mr-6"
-                            inputType="number"
-                            error={!itemQuantity}
-                            max={item?.quantity || 0}
-                            min={0}
-                            valueNum={itemQuantity}
-                            onChange={(e: any) =>
-                              setItems({
-                                ...(items || {}),
-                                [itemId]: e.target.value,
-                              })
-                            }
-                          />
-                          <button
-                            className="bg-gray-200 hover:bg-gray-300 p-1 w-10 h-10 rounded-full mr-8"
-                            onClick={() => {
-                              let newItems = { ...items };
-                              delete newItems[itemId];
-                              setItems(newItems);
-                            }}
-                          >
-                            <DeleteIcon />
-                          </button>
+                        <div className="ml-2">
+                          {getItemDisplayName(item)}
+                          <div
+                            className={`mt-2 text-sm font-bold ${
+                              item?.quantity <= 0
+                                ? "text-tertiary"
+                                : "text-black"
+                            }`}
+                          >{`${item?.quantity || 0} in stock.`}</div>
                         </div>
                       </div>
-                    );
-                  }
-                )}
+                      <div className="flex items-center justify-end">
+                        <TextField
+                          className="w-16 mr-6"
+                          inputType="number"
+                          error={!returnItem?.quantity}
+                          max={item?.quantity || 0}
+                          min={0}
+                          valueNum={returnItem?.quantity}
+                          onChange={(e: any) =>
+                            returnItems?.map((i) =>
+                              i?.id === returnItem?.id
+                                ? { ...returnItem, quantity: e.target.value }
+                                : returnItem
+                            )
+                          }
+                        />
+                        <button
+                          className="bg-gray-200 hover:bg-gray-300 p-1 w-10 h-10 rounded-full mr-8"
+                          onClick={() =>
+                            setReturnItems(
+                              returnItems?.filter(
+                                (i) => i?.id !== returnItem?.id
+                              )
+                            )
+                          }
+                        >
+                          <DeleteIcon />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             ) : vendorWrapper?.value ? (
               <div>Select items from the drop-down menu.</div>
