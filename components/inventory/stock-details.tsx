@@ -26,9 +26,7 @@ export default function StockDetails({ item }: stockDetailsProps) {
         </div>
         <div className="stock-indicator__container">SOLD</div>
         <div className="stock-indicator__number bg-secondary-light">
-          {`${Math.abs(
-            (item?.quantity_sold || 0) + (item?.quantity_unsold || 0)
-          )}`}
+          {`${Math.abs(item?.quantity_sold || 0)}`}
         </div>
         <div className="stock-indicator__container">RETURNED</div>
         <div className="stock-indicator__number bg-secondary-light">
@@ -53,6 +51,10 @@ export default function StockDetails({ item }: stockDetailsProps) {
             -1
           }`}
         </div>
+        <div className="stock-indicator__container">REFUNDED</div>
+        <div className="stock-indicator__number bg-secondary-light">
+          {`${Math.abs(item?.quantity_unsold || 0)}`}
+        </div>
         <div className="stock-indicator__container">ADJUSTMENT</div>
         <div
           className={`stock-indicator__number ${
@@ -63,7 +65,6 @@ export default function StockDetails({ item }: stockDetailsProps) {
         >
           {`${item?.quantity_adjustment || 0}`}
         </div>
-        <div className="col-span-2" />
       </div>
       <button
         onClick={() => setView({ ...view, changeStockQuantityDialog: true })}
