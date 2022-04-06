@@ -32,15 +32,17 @@ export default function InventoryItemForm({
   const { logs, mutateLogs } = useLogs();
   const [clerk] = useAtom(clerkAtom);
 
-  const vendor = useMemo(
-    () =>
-      (vendors &&
-        vendors.filter(
-          (vendor: VendorObject) => vendor?.id === item?.vendor_id
-        )[0]) ||
-      null,
-    [item?.vendor_id]
-  );
+  // const vendor = useMemo(
+  //   () =>
+  //     (vendors &&
+  //       vendors.filter(
+  //         (vendor: VendorObject) => vendor?.id === item?.vendor_id
+  //       )[0]) ||
+  //     null,
+  //   [item?.vendor_id]
+  // );
+
+  console.log(item);
 
   return (
     <div>
@@ -82,7 +84,7 @@ export default function InventoryItemForm({
             inputLabel="DISPLAY NAME"
             disabled={disabled}
           />
-          {vendor && (
+          {item?.vendor_id && (
             <div>
               <CreateableSelect
                 inputLabel="SELLING FOR VENDOR"
@@ -254,7 +256,7 @@ export default function InventoryItemForm({
           <input
             type="checkbox"
             className="cursor-pointer"
-            checked={item?.do_list_on_website === 1 ? true : false}
+            checked={item?.do_list_on_website === 0 ? false : true}
             onChange={(e) =>
               setItem({ ...item, do_list_on_website: e.target.checked ? 1 : 0 })
             }

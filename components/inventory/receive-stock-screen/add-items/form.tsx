@@ -9,7 +9,8 @@ import InventoryItemForm from "../inventory-item-form";
 export default function Form() {
   // State
   const [basket, setBasket] = useAtom(receiveStockAtom);
-  const [item, setItem] = useState<StockObject>({});
+  const defaultItem = { is_new: 1, do_list_on_website: 1 };
+  const [item, setItem] = useState<StockObject>(defaultItem);
   const addItem = () => {
     setBasket({
       ...basket,
@@ -17,7 +18,7 @@ export default function Form() {
         ? [...basket?.items, { key: uuid(), item }]
         : [{ key: uuid(), item }],
     });
-    setItem({});
+    setItem(defaultItem);
   };
   return (
     <div>
