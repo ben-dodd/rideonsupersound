@@ -103,6 +103,18 @@ export default function ReturnStockScreen() {
 
   console.log(returnItems);
 
+  const returnOptions = inventory
+    ?.filter(
+      (item: StockObject) =>
+        item?.vendor_id === vendorWrapper?.value &&
+        returnItems?.filter((i) => i?.id === item?.id)?.length === 0 &&
+        item?.quantity > 0
+    )
+    ?.map((item: StockObject) => ({
+      value: item?.id,
+      label: getItemSkuDisplayName(item),
+    }));
+
   return (
     <ScreenContainer
       show={view?.returnStockScreen}
@@ -121,6 +133,7 @@ export default function ReturnStockScreen() {
             <div className="font-bold text-xl">Select Vendor</div>
             <Select
               fieldRequired
+              // isDisabled={vendorWrapper?.value}
               value={vendorWrapper}
               onChange={(vendorObject: any) => {
                 setVendorWrapper(vendorObject);
@@ -136,21 +149,9 @@ export default function ReturnStockScreen() {
               className="w-full text-xs"
               isDisabled={!vendorWrapper?.value}
               value={null}
-              options={inventory
-                ?.filter(
-                  (item: StockObject) =>
-                    item?.vendor_id === vendorWrapper?.value &&
-                    returnItems?.filter((i) => i?.id === item?.id)?.length ===
-                      0 &&
-                    item?.quantity > 0
-                )
-                .map((item: StockObject) => ({
-                  value: item?.id,
-                  label: getItemSkuDisplayName(item),
-                }))}
+              options={returnOptions}
               onChange={(item: any) =>
                 setReturnItems([
-                  ...returnItems,
                   {
                     id: item?.value,
                     quantity:
@@ -158,8 +159,38 @@ export default function ReturnStockScreen() {
                         (i: StockObject) => i?.id === item?.value
                       )[0]?.quantity || 1,
                   },
+                  ...returnItems,
                 ])
               }
+              onInputChange={(newValue, actionMeta, prevInputValue) => {
+                if (
+                  actionMeta?.action === "input-change" &&
+                  returnOptions?.filter(
+                    (opt) =>
+                      newValue === `${("00000" + opt?.value || "").slice(-5)}`
+                  )?.length > 0
+                ) {
+                  let returnItem = inventory?.filter(
+                    (i: StockObject) =>
+                      i?.id ===
+                      returnOptions?.filter(
+                        (opt) =>
+                          newValue ===
+                          `${("00000" + opt?.value || "").slice(-5)}`
+                      )?.[0]?.value
+                  )[0];
+                  setReturnItems([
+                    {
+                      id: returnItem?.id,
+                      quantity: returnItem?.quantity || 1,
+                    },
+                    ...returnItems,
+                  ]);
+                }
+                // if () {
+                //   addItemToCart();
+                // }
+              }}
             />
             <TextField
               inputLabel="Notes"
@@ -170,83 +201,85 @@ export default function ReturnStockScreen() {
             />
           </div>
           <div className="w-2/3 pl-8">
-            <div className="font-bold text-xl">Items to Return</div>
+            {/* <div className="font-bold text-xl">Items to Return</div> */}
             {returnItems?.length > 0 ? (
-              <div>
+              <div className="h-dialog">
                 <div className="font-bold text-xl">{`RETURNING ${returnItems?.reduce(
                   (prev, returnItem) =>
                     (prev += parseInt(returnItem?.quantity)),
                   0
                 )} ITEMS`}</div>
-                {returnItems?.map((returnItem: any, i: number) => {
-                  const item = inventory?.filter(
-                    (i: StockObject) => i?.id === parseInt(returnItem?.id)
-                  )[0];
-                  return (
-                    <div
-                      className="flex justify-between my-2 border-b w-full"
-                      key={`${returnItem?.id}-${i}`}
-                    >
-                      <div className="flex">
-                        <div className="w-20">
-                          <div className="w-20 h-20 relative">
-                            <img
-                              className="object-cover absolute"
-                              // layout="fill"
-                              // objectFit="cover"
-                              src={getImageSrc(item)}
-                              alt={item?.title || "Inventory image"}
-                            />
-                            {!item?.is_gift_card && !item?.is_misc_item && (
-                              <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white text-sm flex justify-center items-center">
-                                {getItemSku(item)}
-                              </div>
-                            )}
+                <div className="h-full overflow-y-scroll">
+                  {returnItems?.map((returnItem: any, i: number) => {
+                    const item = inventory?.filter(
+                      (i: StockObject) => i?.id === parseInt(returnItem?.id)
+                    )[0];
+                    return (
+                      <div
+                        className="flex justify-between my-2 border-b w-full"
+                        key={`${returnItem?.id}-${i}`}
+                      >
+                        <div className="flex">
+                          <div className="w-20">
+                            <div className="w-20 h-20 relative">
+                              <img
+                                className="object-cover absolute"
+                                // layout="fill"
+                                // objectFit="cover"
+                                src={getImageSrc(item)}
+                                alt={item?.title || "Inventory image"}
+                              />
+                              {!item?.is_gift_card && !item?.is_misc_item && (
+                                <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white text-sm flex justify-center items-center">
+                                  {getItemSku(item)}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="ml-2">
+                            {getItemDisplayName(item)}
+                            <div
+                              className={`mt-2 text-sm font-bold ${
+                                item?.quantity <= 0
+                                  ? "text-tertiary"
+                                  : "text-black"
+                              }`}
+                            >{`${item?.quantity || 0} in stock.`}</div>
                           </div>
                         </div>
-                        <div className="ml-2">
-                          {getItemDisplayName(item)}
-                          <div
-                            className={`mt-2 text-sm font-bold ${
-                              item?.quantity <= 0
-                                ? "text-tertiary"
-                                : "text-black"
-                            }`}
-                          >{`${item?.quantity || 0} in stock.`}</div>
+                        <div className="flex items-center justify-end">
+                          <TextField
+                            className="w-16 mr-6"
+                            inputType="number"
+                            error={!returnItem?.quantity}
+                            max={item?.quantity || 0}
+                            min={0}
+                            valueNum={returnItem?.quantity}
+                            onChange={(e: any) =>
+                              returnItems?.map((i) =>
+                                i?.id === returnItem?.id
+                                  ? { ...returnItem, quantity: e.target.value }
+                                  : returnItem
+                              )
+                            }
+                          />
+                          <button
+                            className="bg-gray-200 hover:bg-gray-300 p-1 w-10 h-10 rounded-full mr-8"
+                            onClick={() =>
+                              setReturnItems(
+                                returnItems?.filter(
+                                  (i) => i?.id !== returnItem?.id
+                                )
+                              )
+                            }
+                          >
+                            <DeleteIcon />
+                          </button>
                         </div>
                       </div>
-                      <div className="flex items-center justify-end">
-                        <TextField
-                          className="w-16 mr-6"
-                          inputType="number"
-                          error={!returnItem?.quantity}
-                          max={item?.quantity || 0}
-                          min={0}
-                          valueNum={returnItem?.quantity}
-                          onChange={(e: any) =>
-                            returnItems?.map((i) =>
-                              i?.id === returnItem?.id
-                                ? { ...returnItem, quantity: e.target.value }
-                                : returnItem
-                            )
-                          }
-                        />
-                        <button
-                          className="bg-gray-200 hover:bg-gray-300 p-1 w-10 h-10 rounded-full mr-8"
-                          onClick={() =>
-                            setReturnItems(
-                              returnItems?.filter(
-                                (i) => i?.id !== returnItem?.id
-                              )
-                            )
-                          }
-                        >
-                          <DeleteIcon />
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             ) : vendorWrapper?.value ? (
               <div>Select items from the drop-down menu.</div>

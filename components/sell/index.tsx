@@ -6,7 +6,6 @@ import { useSwipeable } from "react-swipeable";
 import {
   viewAtom,
   pageAtom,
-  cartAtom,
   loadedItemIdAtom,
   bypassRegisterAtom,
 } from "@/lib/atoms";

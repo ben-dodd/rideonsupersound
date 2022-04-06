@@ -84,14 +84,15 @@ export async function nukeSaleInDatabase(
   );
   sale?.items?.forEach((saleItem) => {
     deleteSaleItemFromDatabase(saleItem?.id);
-    saveStockMovementToDatabase(
-      saleItem,
-      clerk,
-      registerID,
-      StockMovementTypes.Unhold,
-      "Sale nuked.",
-      sale?.id
-    );
+    if (!saleItem?.is_refunded)
+      saveStockMovementToDatabase(
+        saleItem,
+        clerk,
+        registerID,
+        StockMovementTypes.Unsold,
+        "Sale nuked.",
+        sale?.id
+      );
   });
   sale?.transactions?.forEach((i) => deleteSaleTransactionFromDatabase(i?.id));
   // deleteStockMovementsFromDatabase(sale?.id);
