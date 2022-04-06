@@ -9,7 +9,11 @@ import {
 } from "@/lib/data-functions";
 import { StockObject, VendorObject } from "@/lib/types";
 import { useMemo } from "react";
-import { useVendors } from "@/lib/swr-hooks";
+import { useLogs, useVendors } from "@/lib/swr-hooks";
+import CreateableSelect from "@/components/_components/inputs/createable-select";
+import { saveLog, saveVendorToDatabase } from "@/lib/db-functions";
+import { useAtom } from "jotai";
+import { clerkAtom } from "@/lib/atoms";
 
 interface inventoryProps {
   item: StockObject;
@@ -25,6 +29,8 @@ export default function InventoryItemForm({
   const handleChange = (e) =>
     setItem({ ...item, [e.target.name]: e.target.value });
   const { vendors } = useVendors();
+  const { logs, mutateLogs } = useLogs();
+  const [clerk] = useAtom(clerkAtom);
 
   const vendor = useMemo(
     () =>
@@ -33,8 +39,9 @@ export default function InventoryItemForm({
           (vendor: VendorObject) => vendor?.id === item?.vendor_id
         )[0]) ||
       null,
-    [item]
+    [item?.vendor_id]
   );
+
   return (
     <div>
       <div className="flex justify-start w-full">
@@ -76,7 +83,39 @@ export default function InventoryItemForm({
             disabled={disabled}
           />
           {vendor && (
-            <div className="font-bold text-sm">{`Selling for ${vendor?.name}`}</div>
+            <div>
+              <CreateableSelect
+                inputLabel="SELLING FOR VENDOR"
+                fieldRequired
+                value={item?.vendor_id}
+                label={
+                  vendors?.filter(
+                    (v: VendorObject) => v?.id === item?.vendor_id
+                  )?.[0]?.name || ""
+                }
+                onChange={(vendorObject: any) =>
+                  setItem({ ...item, vendor_id: parseInt(vendorObject?.value) })
+                }
+                onCreateOption={async (inputValue: string) => {
+                  const vendorId = await saveVendorToDatabase({
+                    name: inputValue,
+                  });
+                  saveLog(
+                    {
+                      log: `Vendor ${inputValue} (${vendorId}) created.`,
+                      clerk_id: clerk?.id,
+                    },
+                    logs,
+                    mutateLogs
+                  );
+                  setItem({ ...item, vendor_id: vendorId });
+                }}
+                options={vendors?.map((val: VendorObject) => ({
+                  value: val?.id,
+                  label: val?.name || "",
+                }))}
+              />
+            </div>
           )}
         </div>
       </div>
