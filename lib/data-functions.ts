@@ -797,9 +797,7 @@ export function writeKiwiBankBatchFile({
       hashTotal += parseInt(accountNumber);
       kbb.push([
         2,
-        parseInt(
-          `${transaction?.accountNumber}`.replace(/\D/g, "")?.substring(0, 16)
-        ),
+        `${transaction?.accountNumber}`.replace(/\D/g, "")?.substring(0, 16),
         50,
         transaction?.amount,
         transaction?.name?.substring(0, 20),
