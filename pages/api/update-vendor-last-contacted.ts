@@ -11,7 +11,7 @@ const handler: NextApiHandler = async (req, res) => {
       `
       UPDATE vendor
       SET
-        last_contacted = ?,
+        last_contacted = ?
       WHERE id = ?
       `,
       [last_contacted, id]

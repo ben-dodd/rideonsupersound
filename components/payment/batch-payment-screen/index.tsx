@@ -159,6 +159,7 @@ export default function BatchPaymentScreen() {
                   },
                 });
               } else {
+                saveSystemLog(`Batch Payment closed with Emailing`, clerk?.id);
                 setView({ ...view, batchVendorPaymentScreen: false });
                 completeBatchPayment(
                   vendorList,
@@ -216,7 +217,9 @@ function completeBatchPayment(
   vendorPayments: any,
   mutateVendorPayments: Function
 ) {
+  console.log(vendorList);
   if (emailed) {
+    console.log(vendorList?.filter((v) => v?.is_checked));
     vendorList
       ?.filter((v) => v?.is_checked)
       ?.forEach((v) => {
@@ -229,7 +232,9 @@ function completeBatchPayment(
   vendorList
     ?.filter(
       (v) =>
-        v?.is_checked && isValidBankAccountNumber(v?.accountNumber) && v?.amount
+        v?.is_checked &&
+        isValidBankAccountNumber(v?.bank_account_number) &&
+        parseFloat(v?.payAmount)
     )
     ?.forEach(async (vendor: any) => {
       let vendorPayment = {

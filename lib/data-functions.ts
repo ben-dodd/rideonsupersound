@@ -827,8 +827,9 @@ export function writeKiwiBankBatchFile({
 
 export function writeEmailCSV(vendors) {
   let csvContent = "data:text/csv;charset=utf-8,";
-  csvContent += "CODE,NAME,RECIPIENT,ACCOUNT,OWING,LINK,DATE\r\n";
-  console.log(vendors);
+  csvContent +=
+    "CODE,NAME,RECIPIENT,ACCOUNT,OWING,LINK,DATE,CHECKED,VALID BANK NUM\r\n";
+  // console.log(vendors);
   let vendorArrays = vendors
     // ?.filter(
     //   (v) =>
@@ -844,9 +845,10 @@ export function writeEmailCSV(vendors) {
       v?.payAmount,
       `https://rideonsupersound.vercel.app/vendor/${v?.uid}`,
       dayjs().format("DD/MM/YYYY"),
+      v?.is_checked,
       isValidBankAccountNumber(v?.bank_account_number),
     ]);
-  console.log(vendorArrays);
+  // console.log(vendorArrays);
   vendorArrays?.forEach((vendorArray) => {
     let row = vendorArray?.join(",");
     csvContent += row + "\r\n";
