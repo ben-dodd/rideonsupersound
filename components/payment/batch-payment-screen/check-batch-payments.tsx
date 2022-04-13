@@ -10,6 +10,7 @@ import {
 } from "@/lib/data-functions";
 import dayjs from "dayjs";
 import { useRegisterID } from "@/lib/swr-hooks";
+import { useState } from "react";
 
 export default function CheckBatchPayments({
   vendorList,
@@ -25,6 +26,8 @@ export default function CheckBatchPayments({
     (prev, v) => (v?.is_checked ? 1 : 0) + prev,
     0
   );
+  const [includeUnchecked, setIncludeUnchecked] = useState(false);
+  const [includeNoBank, setIncludeNoBank] = useState(false);
 
   return (
     <div>
@@ -63,7 +66,11 @@ export default function CheckBatchPayments({
           <button
             className="ml-2 border p-2 rounded bg-gray-100 hover:bg-gray-200"
             onClick={() => {
-              let csvContent = writeEmailCSV(vendorList);
+              let csvContent = writeEmailCSV(
+                vendorList,
+                includeUnchecked,
+                includeNoBank
+              );
               var link = document.createElement("a");
               link.setAttribute("href", csvContent);
               link.setAttribute(
@@ -78,13 +85,35 @@ export default function CheckBatchPayments({
             Download Email List CSV
           </button>
         </div>
+        <div>
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              className="cursor-pointer"
+              checked={includeUnchecked}
+              onChange={(e) => setIncludeUnchecked(e.target.checked)}
+            />
+            <div className="ml-2">Include unchecked vendors</div>
+          </div>
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              className="cursor-pointer"
+              checked={includeNoBank}
+              onChange={(e) => setIncludeNoBank(e.target.checked)}
+            />
+            <div className="ml-2">
+              Include vendors with no bank account number
+            </div>
+          </div>
+        </div>
         <div className="text-red-400 text-2xl font-bold text-right">
           {vendorList?.filter((v) => isNaN(parseFloat(v?.payAmount)))?.length >
           0
             ? `CHECK PAY ENTRIES`
-            : `PAY $${parseFloat(
-                totalPay
-              ).toLocaleString()}\nto ${vendorNum} VENDORS`}
+            : `PAY $${parseFloat(totalPay).toFixed(
+                2
+              )}\nto ${vendorNum} VENDORS`}
         </div>
       </div>
       <div className="text-sm">

@@ -825,18 +825,17 @@ export function writeKiwiBankBatchFile({
   return encodeURI(csvContent);
 }
 
-export function writeEmailCSV(vendors) {
+export function writeEmailCSV(vendors, includeUnchecked, includeNoBank) {
   let csvContent = "data:text/csv;charset=utf-8,";
   csvContent +=
-    "CODE,NAME,RECIPIENT,ACCOUNT,OWING,LINK,DATE,CHECKED,VALID BANK NUM\r\n";
+    "CODE,NAME,RECIPIENT,ACCOUNT,OWING,LINK,DATE,CHECKED,VALID BANK NUM,STORE CREDIT ONLY\r\n";
   // console.log(vendors);
   let vendorArrays = vendors
-    // ?.filter(
-    //   (v) =>
-    //     v?.is_checked &&
-    //     v?.payAmount &&
-    //     isValidBankAccountNumber(v?.bank_account_number)
-    // )
+    ?.filter(
+      (v) =>
+        (includeUnchecked || v?.is_checked) &&
+        (includeNoBank || isValidBankAccountNumber(v?.bank_account_number))
+    )
     ?.map((v) => [
       v?.id,
       v?.name,
@@ -847,6 +846,7 @@ export function writeEmailCSV(vendors) {
       dayjs().format("DD/MM/YYYY"),
       v?.is_checked,
       isValidBankAccountNumber(v?.bank_account_number),
+      Boolean(v?.store_credit_only),
     ]);
   // console.log(vendorArrays);
   vendorArrays?.forEach((vendorArray) => {

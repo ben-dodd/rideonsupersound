@@ -60,9 +60,9 @@ export default function SelectBatchPayments({ vendorList, setVendorList }) {
           {vendorList?.filter((v) => isNaN(parseFloat(v?.payAmount)))?.length >
           0
             ? `CHECK PAY ENTRIES`
-            : `PAY $${parseFloat(
-                totalPay
-              ).toLocaleString()}\nto ${vendorNum} VENDORS`}
+            : `PAY $${parseFloat(totalPay).toFixed(
+                2
+              )}\nto ${vendorNum} VENDORS`}
         </div>
       </div>
       <div className="w-full">
