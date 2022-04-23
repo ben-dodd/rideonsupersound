@@ -9,7 +9,7 @@ const handler: NextApiHandler = async (req, res) => {
     const results = await query(
       `
       SELECT *
-      FROM stocktakes
+      FROM stocktake
       `
     );
 
