@@ -13,7 +13,7 @@ export default function StocktakeNavActions() {
         className="icon-text-button"
         onClick={() => {
           saveSystemLog("Stocktake Nav - New Stocktake clicked.", clerk?.id);
-          setView({ ...view, stocktakeDialog: true });
+          setView({ ...view, stocktakeScreen: true });
         }}
       >
         <NewIcon className="mr-1" />
