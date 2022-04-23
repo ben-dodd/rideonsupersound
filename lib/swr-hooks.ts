@@ -465,6 +465,16 @@ export function useJobs() {
   };
 }
 
+export function useStocktakes() {
+  const { data, error, mutate } = useSWR(`/api/get-stocktakes`, fetcher);
+  return {
+    stocktakes: data,
+    isStocktakesLoading: !error && !data,
+    isStocktakesError: error,
+    mutateStocktakes: mutate,
+  };
+}
+
 export function useRegisterID() {
   const { data, error, mutate } = useSWR(`/api/get-register-id`, nakedFetcher, {
     revalidateIfStale: false,

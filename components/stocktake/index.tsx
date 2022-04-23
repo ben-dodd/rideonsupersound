@@ -2,9 +2,10 @@
 import { useAtom } from "jotai";
 
 // DB
-import { useLogs, useStockMovements } from "@/lib/swr-hooks";
+import { useLogs, useStockMovements, useStocktakes } from "@/lib/swr-hooks";
 import { pageAtom } from "@/lib/atoms";
 import { LogObject, StockMovementObject } from "@/lib/types";
+import StocktakeScreen from "./stocktake-screen";
 
 // Components
 // import ListLog from "./list-log";
@@ -12,10 +13,10 @@ import Tabs from "../_components/navigation/tabs";
 import { useState } from "react";
 // import ListStockMovement from "./list-stock-movement";
 
-export default function StocktakeScreen() {
+export default function StocktakesScreen() {
   // SWR
   const { logs, isLogsLoading } = useLogs();
-  const { stockMovements, isStockMovementsLoading } = useStockMovements();
+  const { stocktakes, isStocktakesLoading } = useStocktakes();
 
   // Atoms
   const [page] = useAtom(pageAtom);
@@ -33,6 +34,7 @@ export default function StocktakeScreen() {
       {/* <Tabs tabs={["Logs", "Stock Movement"]} value={tab} onChange={setTab} /> */}
 
       <div className="h-menu w-full overflow-y-scroll px-2 bg-white"></div>
+      <StocktakeScreen />
     </div>
   );
 }

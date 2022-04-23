@@ -18,6 +18,7 @@ import TaskNavActions from "./actions/task";
 // Icons
 import HelpIcon from "@mui/icons-material/Help";
 import { bg } from "@/lib/types";
+import StocktakeNavActions from "./actions/stocktake";
 
 // REVIEW fix all actions and clean up files
 
@@ -55,6 +56,7 @@ export default function Nav() {
           {page === "vendors" && <VendorNavActions />}
           {page === "payments" && <PaymentNavActions />}
           {page === "jobs" && <TaskNavActions />}
+          {page === "stocktake" && <StocktakeNavActions />}
           <button
             onClick={() => setView({ ...view, helpDialog: true })}
             className="text-brown-dark hover:text-brown"

@@ -347,10 +347,26 @@ export interface StockMovementObject {
   stock_id?: number;
   clerk_id?: number;
   quantity?: number;
+  sale_id?: number;
   register_id?: number;
+  stocktake_id?: number;
   act?: string;
   note?: string;
   date_moved?: string;
+}
+
+export interface StocktakeObject {
+  id?: number;
+  date_started?: string;
+  started_by?: number;
+  date_finished?: string;
+  finished_by?: string;
+  filter_vendor_ids?: string | [];
+  filter_sections?: string | [];
+  filter_media_types?: string | [];
+  filter_formats?: string | [];
+  stocktake_map?: string | {};
+  is_deleted?: boolean;
 }
 
 export interface TaskObject {

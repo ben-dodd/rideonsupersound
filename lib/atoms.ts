@@ -50,6 +50,7 @@ interface ViewProps {
   splitSaleDialog?: boolean;
   saleScreen?: boolean;
   taskDialog?: boolean;
+  stocktakeScreen?: boolean;
 }
 
 interface PageProps {
@@ -62,6 +63,7 @@ interface PageProps {
   laybys?: number;
   payments?: number;
   logs?: number;
+  stocktake?: number;
 }
 
 export const viewAtom = atom<ViewProps>({});
@@ -74,6 +76,7 @@ export const loadedItemIdAtom = atom<PageProps>({});
 export const loadedVendorIdAtom = atom<PageProps>({});
 export const loadedHoldIdAtom = atom<PageProps>({});
 export const loadedSaleIdAtom = atom<PageProps>({});
+export const loadedStocktakeIdAtom = atom<PageProps>({});
 
 export const loadedCustomerObjectAtom = atom<CustomerObject>({});
 
