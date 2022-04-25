@@ -110,9 +110,17 @@ export default function VendorItems() {
             <div
               className={`text-md ${item?.quantity < 1 && "text-red-500"}`}
             >{`${item?.quantity} in stock${
-              item?.quantity_hold ? `, ${-item?.quantity_hold} on hold` : ""
+              (item?.quantity_hold || 0) + (item?.quantity_unhold || 0) > 0
+                ? `, ${-(
+                    (item?.quantity_hold || 0) + (item?.quantity_unhold || 0)
+                  )} on hold`
+                : ""
             }${
-              item?.quantity_layby ? `, ${-item?.quantity_layby} on layby` : ""
+              (item?.quantity_layby || 0) + (item?.quantity_unlayby || 0) > 0
+                ? `, ${-(
+                    (item?.quantity_layby || 0) + (item?.quantity_unlayby || 0)
+                  )} on layby`
+                : ""
             }`}</div>
             <div className="text-xl pr-2">{`$${(
               (item?.total_sell || 0) / 100
