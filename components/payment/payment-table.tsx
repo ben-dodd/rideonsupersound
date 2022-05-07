@@ -27,6 +27,7 @@ export default function PaymentTable() {
         type: v?.type,
         clerk: clerks?.filter((c: ClerkObject) => c?.id === v?.clerk_id)[0]
           ?.name,
+        note: v?.note,
       })),
     [vendorPayments, clerks]
   );
@@ -72,6 +73,7 @@ export default function PaymentTable() {
       },
       { Header: "Clerk", accessor: "clerk" },
       { Header: "Type", accessor: "type" },
+      { Header: "Notes", accessor: "note", width: 300 },
     ],
     [vendors]
   );

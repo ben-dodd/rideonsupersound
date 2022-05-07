@@ -218,6 +218,7 @@ export interface VendorPaymentObject {
   vendor_id?: number;
   register_id?: number;
   type?: string;
+  note?: string;
   is_deleted?: boolean;
 }
 
