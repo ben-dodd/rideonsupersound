@@ -56,7 +56,8 @@ export default function ChangePriceDialog() {
         quantity === undefined ||
         quantity === null ||
         movement === null ||
-        isNaN(parseInt(quantity)),
+        isNaN(parseInt(quantity)) ||
+        parseInt(quantity) < 0,
       loading: submitting,
       onClick: async () => {
         setSubmitting(true);
@@ -68,7 +69,8 @@ export default function ChangePriceDialog() {
           adjustment = newQuantity - originalQuantity;
         } else if (
           movement === StockMovementTypes?.Discarded ||
-          movement === StockMovementTypes?.Lost
+          movement === StockMovementTypes?.Lost ||
+          movement === StockMovementTypes?.Returned
         ) {
           newQuantity -= adjustment;
         } else {
@@ -124,7 +126,8 @@ export default function ChangePriceDialog() {
                 : `${
                     parseInt(quantity) *
                     (movement === StockMovementTypes?.Discarded ||
-                    movement === StockMovementTypes?.Lost
+                    movement === StockMovementTypes?.Lost ||
+                    movement === StockMovementTypes?.Returned
                       ? -1
                       : 1)
                   } copies of ${getItemDisplayName(
@@ -166,6 +169,8 @@ export default function ChangePriceDialog() {
           className="w-full"
           value={{ value: movement, label: movement?.toUpperCase() }}
           options={[
+            StockMovementTypes?.Received,
+            StockMovementTypes?.Returned,
             StockMovementTypes?.Adjustment,
             StockMovementTypes?.Discarded,
             StockMovementTypes?.Found,
@@ -177,7 +182,11 @@ export default function ChangePriceDialog() {
           onChange={(item: any) => setMovement(item?.value)}
         />
         <div className="help-text">
-          {movement === StockMovementTypes?.Adjustment
+          {movement === StockMovementTypes?.Received
+            ? "Enter the number of items received from the vendor. Use this option for receiving new copies of items from vendor."
+            : movement === StockMovementTypes?.Returned
+            ? "Enter the number of items returned to the vendor. Use this option when vendor takes stock out of the shop."
+            : movement === StockMovementTypes?.Adjustment
             ? "Enter the quantity of items currently in stock. Use this option for stock taking."
             : movement === StockMovementTypes?.Discarded
             ? "Enter the number of items discarded. Use this option for items that are not in a condition to sell."
