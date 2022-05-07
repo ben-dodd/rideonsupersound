@@ -2,6 +2,7 @@ import { VendorPaymentTypes } from "@/lib/types";
 import dayjs from "dayjs";
 
 export default function Payments({ payments, storeCredits }) {
+  console.log(payments);
   console.log(storeCredits);
   return (
     <div className="w-full">
@@ -41,15 +42,13 @@ export default function Payments({ payments, storeCredits }) {
                   {pay?.type === VendorPaymentTypes?.DC ||
                   pay?.type === VendorPaymentTypes.Batch
                     ? pay?.bank_reference
-                    : pay?.type === VendorPaymentTypes.Cash
-                    ? pay?.note
                     : pay?.type === VendorPaymentTypes.Sale
                     ? storeCredits?.filter(
                         (s) => s?.vendor_payment_id === pay?.id
                       )?.[0]?.item_list ||
                       pay?.note ||
                       ""
-                    : ""}
+                    : pay?.note || ""}
                 </div>
               </div>
             );
