@@ -44,7 +44,7 @@ export default function ChangePriceDialog() {
   const { registerID } = useRegisterID();
 
   // State
-  const [movement, setMovement] = useState(StockMovementTypes?.Adjustment);
+  const [movement, setMovement] = useState(StockMovementTypes?.Received);
   const [quantity, setQuantity] = useState("");
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
