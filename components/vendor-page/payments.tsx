@@ -46,7 +46,9 @@ export default function Payments({ payments, storeCredits }) {
                     : pay?.type === VendorPaymentTypes.Sale
                     ? storeCredits?.filter(
                         (s) => s?.vendor_payment_id === pay?.id
-                      )?.[0]?.item_list || ""
+                      )?.[0]?.item_list ||
+                      pay?.note ||
+                      ""
                     : ""}
                 </div>
               </div>
