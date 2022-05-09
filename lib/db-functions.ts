@@ -21,6 +21,7 @@ import {
 } from "@/lib/types";
 import dayjs from "dayjs";
 // Change to DayJS utc
+import { v4 as uuid } from "uuid";
 
 import {
   getItemDisplayName,
@@ -609,7 +610,7 @@ export async function saveVendorToDatabase(vendor: VendorObject) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(vendor),
+        body: JSON.stringify({ ...vendor, uid: uuid() }),
       }
     );
     const json = await res.json();

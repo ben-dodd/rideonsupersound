@@ -16,6 +16,7 @@ const handler: NextApiHandler = async (req, res) => {
     last_contacted,
     store_credit_only,
     email_vendor,
+    uid,
   } = req.body;
   try {
     if (!k || k !== process.env.NEXT_PUBLIC_SWR_API_KEY)
@@ -34,9 +35,10 @@ const handler: NextApiHandler = async (req, res) => {
         note,
         last_contacted,
         store_credit_only,
-        email_vendor
+        email_vendor,
+        uid
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
       [
         name,
@@ -51,6 +53,7 @@ const handler: NextApiHandler = async (req, res) => {
         last_contacted,
         store_credit_only,
         email_vendor,
+        uid,
       ]
     );
     return res.json(results);
