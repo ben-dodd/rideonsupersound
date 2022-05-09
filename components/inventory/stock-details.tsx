@@ -90,14 +90,18 @@ export default function StockDetails({ item }: stockDetailsProps) {
             {stockMovements?.map((s) => (
               <div
                 key={s?.id}
-                className="flex hover:bg-gray-200 p-2 justify-between"
+                className={`flex hover:bg-gray-200 p-2 justify-between`}
               >
                 <div className="mr-2">
                   {dayjs(s?.date_moved).format("D MMMM YYYY, h:mm A")}
                 </div>
-                <div className="mr-2">{`${Math.abs(s?.quantity)} ${
-                  s?.act
-                }`}</div>
+                <div
+                  className={`mr-2 font-bold ${
+                    s?.quantity < 1 ? "text-red-500" : "text-blue-500"
+                  }`}
+                >{`${
+                  s?.act === "adjustment" ? (s?.quantity < 1 ? "-" : "+") : ""
+                }${Math.abs(s?.quantity)} ${s?.act}`}</div>
               </div>
             ))}
           </div>
