@@ -15,7 +15,7 @@ import ListStockMovement from "./list-stock-movement";
 export default function LogScreen() {
   // SWR
   const { logs, isLogsLoading } = useLogs();
-  const { stockMovements, isStockMovementsLoading } = useStockMovements();
+  const { stockMovements, isStockMovementsLoading } = useStockMovements(200);
 
   // Atoms
   const [page] = useAtom(pageAtom);

@@ -445,8 +445,24 @@ export function useLogs() {
   };
 }
 
-export function useStockMovements() {
-  const { data, error, mutate } = useSWR(`/api/get-stock-movements`, fetcher);
+export function useStockMovements(limit) {
+  const { data, error, mutate } = useSWR(
+    `/api/get-stock-movements?limit=${limit}`,
+    fetcher
+  );
+  return {
+    stockMovements: data,
+    isStockMovementsLoading: !error && !data,
+    isStockMovementsError: error,
+    mutateStockMovements: mutate,
+  };
+}
+
+export function useStockMovementByStockId(id) {
+  const { data, error, mutate } = useSWR(
+    `/api/get-stock-movements-by-stock-id?id=${id}`,
+    fetcher
+  );
   return {
     stockMovements: data,
     isStockMovementsLoading: !error && !data,
@@ -557,6 +573,16 @@ export function useSelect(setting_select: string) {
     `/api/get-selects?setting_select=${setting_select}`,
     fetcher
   );
+  return {
+    selects: data,
+    isSelectsLoading: !error && !data,
+    isSelectsError: error,
+    mutateSelects: mutate,
+  };
+}
+
+export function useAllSelects() {
+  const { data, error, mutate } = useSWR(`/api/get-all-selects`, fetcher);
   return {
     selects: data,
     isSelectsLoading: !error && !data,

@@ -358,6 +358,7 @@ export interface StockMovementObject {
 
 export interface StocktakeObject {
   id?: number;
+  description?: string;
   date_started?: string;
   started_by?: number;
   date_finished?: string;

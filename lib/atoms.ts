@@ -51,6 +51,7 @@ interface ViewProps {
   saleScreen?: boolean;
   taskDialog?: boolean;
   stocktakeScreen?: boolean;
+  stocktakeSetupDialog?: boolean;
 }
 
 interface PageProps {

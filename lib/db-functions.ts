@@ -18,6 +18,7 @@ import {
   StockMovementTypes,
   VendorPaymentTypes,
   RoleTypes,
+  StocktakeObject,
 } from "@/lib/types";
 import dayjs from "dayjs";
 // Change to DayJS utc
@@ -633,6 +634,26 @@ export async function saveVendorPaymentToDatabase(
           "Content-Type": "application/json",
         },
         body: JSON.stringify(vendorPayment),
+      }
+    );
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+    return json.insertId;
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
+
+export async function saveStocktakeToDatabase(stocktake: StocktakeObject) {
+  try {
+    const res = await fetch(
+      `/api/create-stocktake?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(stocktake),
       }
     );
     const json = await res.json();

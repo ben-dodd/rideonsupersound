@@ -1,5 +1,7 @@
 import { viewAtom } from "@/lib/atoms";
+import { useStockMovementByStockId } from "@/lib/swr-hooks";
 import { StockObject } from "@/lib/types";
+import dayjs from "dayjs";
 import { useAtom } from "jotai";
 
 interface stockDetailsProps {
@@ -7,6 +9,11 @@ interface stockDetailsProps {
 }
 
 export default function StockDetails({ item }: stockDetailsProps) {
+  const { stockMovements, isStockMovementsLoading } = useStockMovementByStockId(
+    item?.id
+  );
+
+  console.log(stockMovements);
   const [view, setView] = useAtom(viewAtom);
 
   return (
@@ -72,6 +79,30 @@ export default function StockDetails({ item }: stockDetailsProps) {
       >
         CHANGE STOCK LEVEL
       </button>
+      <div className="font-bold py-2">Stock Movement Logs</div>
+      <div className="h-dialogsm overflow-y-scroll">
+        {isStockMovementsLoading ? (
+          <div>Loading...</div>
+        ) : stockMovements?.length === 0 ? (
+          <div>No stock movements found.</div>
+        ) : (
+          <div>
+            {stockMovements?.map((s) => (
+              <div
+                key={s?.id}
+                className="flex hover:bg-gray-200 p-2 justify-between"
+              >
+                <div className="mr-2">
+                  {dayjs(s?.date_moved).format("D MMMM YYYY, h:mm A")}
+                </div>
+                <div className="mr-2">{`${Math.abs(s?.quantity)} ${
+                  s?.act
+                }`}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </>
   );
 }

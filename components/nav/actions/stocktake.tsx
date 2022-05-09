@@ -9,7 +9,7 @@ export default function StocktakeNavActions() {
   const [clerk] = useAtom(clerkAtom);
   return (
     <div className="flex">
-      <button
+      {/* <button
         className="icon-text-button"
         onClick={() => {
           saveSystemLog("Stocktake Nav - New Stocktake clicked.", clerk?.id);
@@ -18,7 +18,7 @@ export default function StocktakeNavActions() {
       >
         <NewIcon className="mr-1" />
         New Stocktake
-      </button>
+      </button> */}
     </div>
   );
 }
