@@ -184,14 +184,15 @@ export async function saveSaleItemsTransactionsToDatabase(
     newSaleId = await saveSaleToDatabase(newSale, clerk);
     newSale = { ...newSale, id: newSaleId };
     mutateSales([...sales, newSale], false);
-    if (newSale?.is_mail_order) {
-      addNewMailOrderTask(newSale, customer);
-    }
   } else {
     // Sale already has id, update
     updateSaleInDatabase(newSale);
     let otherSales = sales?.filter((s: SaleObject) => s?.id !== newSaleId);
     mutateSales([...otherSales, newSale], false);
+  }
+
+  if (newSale?.is_mail_order && cart?.state === SaleStateTypes.Completed) {
+    addNewMailOrderTask(newSale, customer);
   }
 
   //

@@ -38,6 +38,8 @@ import SaleSummary from "./sale-summary";
 import ScreenContainer from "@/components/_components/container/screen";
 import ReturnItemsDialog from "./return-item-dialog";
 
+import DeleteIcon from "@mui/icons-material/Delete";
+
 // TODO add returns to sale items
 // TODO refund dialog like PAY, refund with store credit, cash or card
 
@@ -128,26 +130,26 @@ export default function SaleItemScreen() {
 
   // Constants
   const buttons: ModalButton[] = [
-    {
-      type: "cancel",
-      onClick: () => {
-        saveSystemLog("NUKE SALE clicked.", clerk?.id);
-        setConfirmModal({
-          open: true,
-          title: "Are you sure you want to delete this sale?",
-          styledMessage: (
-            <span>
-              This will delete the sale and all associated transactions. There
-              is no coming back.
-            </span>
-          ),
-          yesText: "YES, I'M SURE",
-          action: nukeSale,
-        });
-      },
-      loading: nukeSaleLoading,
-      text: "NUKE SALE",
-    },
+    // {
+    //   type: "cancel",
+    //   onClick: () => {
+    //     saveSystemLog("NUKE SALE clicked.", clerk?.id);
+    //     setConfirmModal({
+    //       open: true,
+    //       title: "Are you sure you want to delete this sale?",
+    //       styledMessage: (
+    //         <span>
+    //           This will delete the sale and all associated transactions. There
+    //           is no coming back.
+    //         </span>
+    //       ),
+    //       yesText: "YES, I'M SURE",
+    //       action: nukeSale,
+    //     });
+    //   },
+    //   loading: nukeSaleLoading,
+    //   text: "NUKE SALE",
+    // },
     {
       type: "ok",
       onClick: loadSale,
@@ -183,6 +185,29 @@ export default function SaleItemScreen() {
           </div>
           <div className="w-1/3 p-2 flex flex-col justify-between">
             <SaleDetails sale={sale} />
+            <div className="flex justify-start py-2">
+              <button
+                className="p-1 border border-black hover:bg-tertiary rounded-xl mt-2"
+                onClick={() => {
+                  saveSystemLog("NUKE SALE clicked.", clerk?.id);
+                  setConfirmModal({
+                    open: true,
+                    title: "Are you sure you want to delete this sale?",
+                    styledMessage: (
+                      <span>
+                        This will delete the sale and all associated
+                        transactions. There is no coming back.
+                      </span>
+                    ),
+                    yesText: "YES, I'M SURE",
+                    action: nukeSale,
+                  });
+                }}
+              >
+                <DeleteIcon />
+                Nuke Sale
+              </button>
+            </div>
           </div>
         </div>
       </ScreenContainer>
