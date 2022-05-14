@@ -1,5 +1,5 @@
 // DB
-import { useClerks } from "@/lib/swr-hooks";
+import { useClerks, useInventory, useLogs, useVendors } from "@/lib/swr-hooks";
 import { ClerkObject } from "@/lib/types";
 
 // Components
@@ -8,10 +8,27 @@ import MaskedInput from "react-text-mask";
 import TextField from "@/components/_components/inputs/text-field";
 import SettingsSelect from "@/components/_components/inputs/settings-select";
 import dayjs from "dayjs";
+import {
+  clerkAtom,
+  confirmModalAtom,
+  loadedVendorIdAtom,
+  pageAtom,
+} from "@/lib/atoms";
+import { useAtom } from "jotai";
+import { deleteVendorFromDatabase, saveLog } from "@/lib/db-functions";
+
+import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
   // SWR
   const { clerks } = useClerks();
+  const [clerk] = useAtom(clerkAtom);
+  const [, setConfirmModal] = useAtom(confirmModalAtom);
+  const [loadedVendorId, setLoadedVendorId] = useAtom(loadedVendorIdAtom);
+  const [page] = useAtom(pageAtom);
+  const { logs, mutateLogs } = useLogs();
+  const { vendors, mutateVendors } = useVendors();
+  const { inventory } = useInventory();
 
   const bankAccountMask = [
     /\d/,
@@ -34,6 +51,57 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
     /\d/,
     /\d/,
   ];
+
+  const vendorIsUsed =
+    inventory?.filter((i) => i?.vendor_id === vendor?.id)?.length > 0;
+
+  // Functions
+  function onClickDelete() {
+    // REVIEW Delete inventory item
+    // const itemIsPartOfSale =
+    //   saleItems?.filter((s) => s?.item_id === item?.id)?.length > 0;
+    setConfirmModal({
+      open: true,
+      title: "Are you sure you want to delete this item?",
+      styledMessage: (
+        <div>
+          {vendorIsUsed ? (
+            <>
+              <div className="text-red-500 text-lg text-center p-2 border-red-500">
+                SORRY
+              </div>
+              <div>
+                This vendor has items assigned to them and cannot be deleted.
+              </div>
+            </>
+          ) : (
+            <div>This will delete the vendor.</div>
+          )}
+        </div>
+      ),
+      yesText: vendorIsUsed ? "OK" : "YES, I'M SURE",
+      action: vendorIsUsed
+        ? () => {}
+        : async () =>
+            deleteVendorFromDatabase(vendor?.id)?.then(() => {
+              mutateVendors(
+                vendors?.filter((v) => v?.id !== vendor?.id),
+                false
+              );
+              saveLog(
+                {
+                  log: `Vendor #${vendor?.id} ${vendor?.name} deleted.`,
+                  clerk_id: clerk?.id,
+                  table_id: "vendor",
+                  row_id: vendor?.id,
+                },
+                logs,
+                mutateLogs
+              );
+              setLoadedVendorId({ ...loadedVendorId, [page]: 0 });
+            }),
+    });
+  }
 
   return (
     <div className="flex w-full">
@@ -146,6 +214,15 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
           multiline
           rows={3}
         />
+        <div className="flex justify-start py-2">
+          <button
+            className="p-1 border border-black hover:bg-tertiary rounded-xl mt-2"
+            onClick={onClickDelete}
+          >
+            <DeleteIcon />
+            Delete Vendor
+          </button>
+        </div>
       </div>
       <div className="w-1/2">
         <div className="ml-4 grid grid-cols-2 justify-items-start rounded border p-2 mt-2">

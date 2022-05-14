@@ -15,8 +15,10 @@ const handler: NextApiHandler = async (req, res) => {
         s.artist,
         s.title,
         s.display_as,
+        s.media,
         s.format,
         s.section,
+        s.country,
         s.is_new,
         s.cond,
         s.image_url,
@@ -29,6 +31,7 @@ const handler: NextApiHandler = async (req, res) => {
         s.misc_item_description,
         s.misc_item_amount,
         s.needs_restock,
+        s.is_deleted,
         p.vendor_cut,
         p.total_sell,
         q.quantity,
@@ -55,9 +58,10 @@ const handler: NextApiHandler = async (req, res) => {
             FROM stock_price
             WHERE stock_id = s.id
          ) OR s.is_gift_card OR s.is_misc_item)
-      AND NOT is_deleted
       `
     );
+
+    // AND NOT is_deleted
 
     return res.json(results);
   } catch (e) {

@@ -1312,6 +1312,48 @@ export async function validateGiftCard(id: number) {
 //   }
 // }
 
+export async function deleteInventoryItemFromDatabase(id: number) {
+  try {
+    const res = await fetch(
+      `/api/delete-inventory-item?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id,
+        }),
+      }
+    );
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
+
+export async function deleteVendorFromDatabase(id: number) {
+  try {
+    const res = await fetch(
+      `/api/delete-vendor?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id,
+        }),
+      }
+    );
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
+
 export async function deleteSaleItemFromDatabase(sale_item_id: number) {
   try {
     const res = await fetch(

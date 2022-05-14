@@ -3,13 +3,25 @@ import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useStockItem, useInventory } from "@/lib/swr-hooks";
-import { loadedItemIdAtom } from "@/lib/atoms";
+import {
+  useStockItem,
+  useInventory,
+  useLogs,
+  useSaleItems,
+} from "@/lib/swr-hooks";
+import { clerkAtom, confirmModalAtom, loadedItemIdAtom } from "@/lib/atoms";
 import { StockObject, ModalButton } from "@/lib/types";
 
 // Functions
-import { getItemDisplayName } from "@/lib/data-functions";
-import { updateStockItemInDatabase } from "@/lib/db-functions";
+import {
+  getItemDisplayName,
+  getItemSkuDisplayNameById,
+} from "@/lib/data-functions";
+import {
+  deleteInventoryItemFromDatabase,
+  saveLog,
+  updateStockItemInDatabase,
+} from "@/lib/db-functions";
 
 // Components
 import Image from "next/image";
@@ -21,14 +33,21 @@ import ScreenContainer from "@/components/_components/container/screen";
 import InventoryItemForm from "./receive-stock-screen/inventory-item-form";
 import StockDetails from "./stock-details";
 import PriceDetails from "./price-details";
+import { mutate } from "swr";
+
+import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function InventoryItemScreen({ page }) {
   // Atoms
   const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom);
+  const [, setConfirmModal] = useAtom(confirmModalAtom);
 
   // SWR
   const { stockItem, isStockItemLoading } = useStockItem(loadedItemId[page]);
   const { inventory, mutateInventory } = useInventory();
+  const { saleItems } = useSaleItems();
+  const { logs, mutateLogs } = useLogs();
+  const [clerk] = useAtom(clerkAtom);
 
   // State
   const [item, setItem]: [StockObject, Function] = useState(null);
@@ -61,9 +80,57 @@ export default function InventoryItemScreen({ page }) {
     } else return null;
   };
 
+  const itemIsPartOfSale =
+    saleItems?.filter((s) => s?.item_id === item?.id)?.length > 0;
+
   // Functions
   function onClickDelete() {
     // REVIEW Delete inventory item
+    setConfirmModal({
+      open: true,
+      title: "Are you sure you want to delete this item?",
+      styledMessage: (
+        <div>
+          {itemIsPartOfSale ? (
+            <>
+              <div className="text-red-500 text-lg text-center p-2 border-red-500">
+                SORRY
+              </div>
+              <div>
+                This item has already been sold, so can't be deleted. Use CHANGE
+                STOCK LEVEL if it's out of stock.
+              </div>
+            </>
+          ) : (
+            <div>This will delete the item from the stock list.</div>
+          )}
+        </div>
+      ),
+      yesText: itemIsPartOfSale ? "OK" : "YES, I'M SURE",
+      action: itemIsPartOfSale
+        ? () => {}
+        : async () =>
+            deleteInventoryItemFromDatabase(item?.id)?.then(() => {
+              mutateInventory(
+                inventory?.filter((i) => i?.id !== item?.id),
+                false
+              );
+              saveLog(
+                {
+                  log: `${getItemSkuDisplayNameById(
+                    item?.id,
+                    inventory
+                  )} deleted.`,
+                  clerk_id: clerk?.id,
+                  table_id: "stock",
+                  row_id: item?.id,
+                },
+                logs,
+                mutateLogs
+              );
+              setLoadedItemId({ ...loadedItemId, [page]: 0 });
+            }),
+    });
   }
 
   const buttons: ModalButton[] = [
@@ -128,14 +195,15 @@ export default function InventoryItemScreen({ page }) {
               <StockDetails item={item} />
             </div>
           </div>
-          {/* <div className="flex justify-end">
+          <div className="flex justify-start py-2">
             <button
               className="p-1 border border-black hover:bg-tertiary rounded-xl mt-2"
               onClick={onClickDelete}
             >
+              <DeleteIcon />
               Delete Item
             </button>
-          </div> */}
+          </div>
         </div>
         <div
           hidden={

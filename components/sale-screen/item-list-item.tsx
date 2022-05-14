@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useInventory, useSaleItemsForSale, useLogs } from "@/lib/swr-hooks";
+import { useAllInventory, useSaleItemsForSale, useLogs } from "@/lib/swr-hooks";
 import { cartAtom, alertAtom, clerkAtom } from "@/lib/atoms";
 import { StockObject, SaleObject, SaleItemObject } from "@/lib/types";
 import { MouseEventHandler } from "react";
@@ -38,7 +38,7 @@ export default function ItemListItem({
   onClick,
 }: SellListItemProps) {
   // SWR
-  const { inventory } = useInventory();
+  const { inventory } = useAllInventory();
 
   // State
   const [item, setItem] = useState(null);
@@ -80,6 +80,8 @@ export default function ItemListItem({
           <div>{getItemDisplayName(item)}</div>
           {saleItem?.is_refunded ? (
             <div className={"text-red-500"}>REFUNDED</div>
+          ) : saleItem?.is_deleted ? (
+            <div className={"text-red-500"}>DELETED ITEM</div>
           ) : (
             <div />
           )}

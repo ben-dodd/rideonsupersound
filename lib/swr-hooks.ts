@@ -77,6 +77,19 @@ export function useInventory() {
   };
 }
 
+export function useAllInventory() {
+  const { data, error, mutate } = useSWR(
+    `/api/get-all-stock-inventory`,
+    fetcher
+  );
+  return {
+    inventory: data,
+    isInventoryLoading: !error && !data,
+    isInventoryError: error,
+    mutateInventory: mutate,
+  };
+}
+
 export function useStockItem(stock_id: number) {
   const { data, error, mutate } = useSWR(
     `/api/get-stock-item?stock_id=${stock_id}`,

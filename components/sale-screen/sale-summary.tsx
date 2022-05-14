@@ -1,5 +1,5 @@
 // DB
-import { useInventory } from "@/lib/swr-hooks";
+import { useAllInventory } from "@/lib/swr-hooks";
 import {
   SaleTransactionObject,
   SaleItemObject,
@@ -16,7 +16,7 @@ import dayjs from "dayjs";
 
 export default function SaleSummary({ sale }) {
   // SWR
-  const { inventory } = useInventory();
+  const { inventory } = useAllInventory();
 
   // Constants
   const {
