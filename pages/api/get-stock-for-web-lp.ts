@@ -9,17 +9,9 @@ const handler: NextApiHandler = async (req, res) => {
       SELECT
         s.artist,
         s.title,
-        s.display_as,
-        s.media,
         s.format,
-        s.section,
-        s.genre,
         s.is_new,
-        s.cond,
-        s.image_url,
-        s.thumb_url,
-        p.total_sell,
-        q.quantity
+        p.total_sell
       FROM stock AS s
       LEFT JOIN
         (SELECT stock_id, SUM(quantity) AS quantity FROM stock_movement GROUP BY stock_id) AS q
