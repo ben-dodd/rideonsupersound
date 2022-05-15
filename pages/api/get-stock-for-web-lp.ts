@@ -18,15 +18,15 @@ const handler: NextApiHandler = async (req, res) => {
         ON q.stock_id = s.id
       LEFT JOIN stock_price AS p ON p.stock_id = s.id
       WHERE
+        q.quantity > 0 AND
+        s.do_list_on_website AND
+        NOT is_deleted AND
+        INSTR(s.format, 'LP') > 0 AND
          (p.id = (
             SELECT MAX(id)
             FROM stock_price
             WHERE stock_id = s.id
          ) OR s.is_gift_card OR s.is_misc_item)
-         AND INSTR(s.format, 'LP') > 0
-      AND q.quantity > 0
-      AND s.do_list_on_website
-      AND NOT is_deleted
       ORDER BY s.format, s.artist, s.title
       `
     );
@@ -38,50 +38,3 @@ const handler: NextApiHandler = async (req, res) => {
 };
 
 export default handler;
-
-// SELECT
-//   s.id,
-//   s.vendor_id,
-//   s.artist,
-//   s.title,
-//   s.format,
-//   s.genre,
-//   s.is_new,
-//   s.cond,
-//   stock_price1.vendor_cut,
-//   stock_price1.total_sell,
-//   q.quantity
-// FROM
-//   stock AS s
-// LEFT JOIN
-//   (
-//       SELECT
-//           stock_movement.stock_id,
-//           SUM(stock_movement.quantity) AS quantity
-//       FROM
-//           stock_movement
-//       GROUP BY
-//           stock_movement.stock_id
-//       ORDER BY
-//           NULL
-//   ) AS q
-//       ON q.stock_id = s.id
-// LEFT JOIN
-//   stock_price AS stock_price1
-//       ON stock_price1.stock_id = s.id
-// LEFT JOIN
-//   stock_price AS stock_price2
-//       ON (
-//           stock_price2.stock_id = s.id
-//       )
-//       AND (
-//           stock_price1.id < stock_price2.id
-//       )
-// WHERE
-//   (
-//       1 = 1
-//       AND s.is_deleted = 0
-//   )
-//   AND (
-//       stock_price2.id IS NULL
-//   )
