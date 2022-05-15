@@ -1,6 +1,5 @@
 import { NextApiHandler } from "next";
 import { query } from "../../lib/db";
-import { StockMovementTypes } from "@/lib/types";
 
 const handler: NextApiHandler = async (req, res) => {
   try {
