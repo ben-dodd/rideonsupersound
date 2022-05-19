@@ -9,6 +9,7 @@ import { CSVLink } from "react-csv";
 
 // Types
 import { MouseEventHandler } from "react";
+import CircularProgress from "@mui/material/CircularProgress";
 interface ScreenProps {
   show: boolean;
   closeFunction: MouseEventHandler<HTMLButtonElement>;
@@ -73,8 +74,19 @@ export default function ScreenContainer({
                     key={i}
                     className={`screen__button--${button?.type}`}
                     onClick={() => button?.onClick()}
-                    disabled={button?.disabled}
+                    disabled={button?.disabled || button?.loading}
                   >
+                    {button?.loading ? (
+                      <span className="pr-4">
+                        <CircularProgress
+                          color="inherit"
+                          thickness={5}
+                          size={18}
+                        />
+                      </span>
+                    ) : (
+                      <span />
+                    )}
                     {button?.text}
                   </button>
                 )

@@ -35,6 +35,7 @@ export default function ReceiveStockScreen() {
   const [clerk] = useAtom(clerkAtom);
   const [step, setStep] = useState(0);
   const [receivedStock, setReceivedStock] = useState(null);
+  const [receiveLoading, setReceiveLoading] = useState(false);
 
   // SWR
   const { registerID } = useRegisterID();
@@ -107,6 +108,7 @@ export default function ReceiveStockScreen() {
     [
       {
         type: "cancel",
+        disabled: receiveLoading,
         onClick: () => {
           saveSystemLog(`Receive stock screen - Set step 2`, clerk?.id);
           setStep(2);
@@ -116,8 +118,10 @@ export default function ReceiveStockScreen() {
       {
         type: "ok",
         disabled: isDisabled(),
+        loading: receiveLoading,
         text: "RECEIVE ITEMS",
         onClick: async () => {
+          setReceiveLoading(true);
           saveSystemLog(
             `Receive stock screen - Set step 4, receive stock called`,
             clerk?.id
@@ -125,6 +129,7 @@ export default function ReceiveStockScreen() {
           const receivedStock = await receiveStock(basket, clerk, registerID);
           mutateInventory();
           setReceivedStock(receivedStock);
+          setReceiveLoading(false);
           setStep(4);
         },
       },
