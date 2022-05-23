@@ -515,6 +515,7 @@ export function useStocktakesByTemplate(stocktake_template_id: number) {
   );
   console.log(data);
   return {
+    // stocktakes: data,
     stocktakes: data?.map((stocktake) => ({
       ...stocktake,
       counted_items: parseJSON(stocktake?.counted_items, []),

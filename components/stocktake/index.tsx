@@ -25,8 +25,8 @@ export default function StocktakesScreen() {
         page !== "stocktake" ? "hidden" : ""
       }`}
     >
-      {page === "stocktake" && <StocktakeListScreen />}
-      {loadedStocktakeTemplate && <StocktakeTemplateScreen />}
+      {/* {page === "stocktake" && <StocktakeListScreen />}
+      {loadedStocktakeTemplate && <StocktakeTemplateScreen />} */}
     </div>
   );
 }
