@@ -16,6 +16,7 @@ import { StockObject, ModalButton } from "@/lib/types";
 import {
   getItemDisplayName,
   getItemSkuDisplayNameById,
+  parseJSON,
 } from "@/lib/data-functions";
 import {
   deleteInventoryItemFromDatabase,
@@ -69,16 +70,6 @@ export default function InventoryItemScreen({ page }) {
     newItem.genre = parseJSON(newItem?.genre, [newItem?.genre] || null);
     setItem(newItem);
   }, [stockItem]);
-
-  const parseJSON = (inputString, fallback) => {
-    if (inputString) {
-      try {
-        return JSON.parse(inputString);
-      } catch (e) {
-        return fallback;
-      }
-    } else return null;
-  };
 
   const itemIsPartOfSale =
     saleItems?.filter((s) => s?.item_id === item?.id)?.length > 0;

@@ -49,7 +49,7 @@ export default function InventoryScroll() {
           {"gift card".includes(search) && <GiftCardItem />}
           {"misc item".includes(search) && <MiscItem />}
           {filterInventory({ inventory, search })
-            .sort((a: StockObject, b: StockObject) => {
+            ?.sort((a: StockObject, b: StockObject) => {
               if (a?.quantity === b?.quantity) return 0;
               if (a?.quantity < 1) return 1;
               if (b?.quantity < 1) return -1;

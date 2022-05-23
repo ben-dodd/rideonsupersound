@@ -4,14 +4,19 @@ import { query } from "../../lib/db";
 const handler: NextApiHandler = async (req, res) => {
   const { k } = req.query;
   const {
-    description,
+    stocktake_template_id,
     date_started,
     started_by,
-    filter_vendor_ids,
-    filter_sections,
-    filter_media_types,
-    filter_formats,
-    stocktake_map,
+    date_closed,
+    closed_by,
+    date_cancelled,
+    cancelled_by,
+    counted_items,
+    reviewed_items,
+    total_counted,
+    total_unique_counted,
+    total_estimated,
+    total_unique_estimated,
   } = req.body;
   try {
     if (!k || k !== process.env.NEXT_PUBLIC_SWR_API_KEY)
@@ -19,26 +24,36 @@ const handler: NextApiHandler = async (req, res) => {
     const results = await query(
       `
       INSERT INTO stocktake (
-        description,
+        stocktake_template_id,
         date_started,
         started_by,
-        filter_vendor_ids,
-        filter_sections,
-        filter_media_types,
-        filter_formats,
-        stocktake_map
+        date_closed,
+        closed_by,
+        date_cancelled,
+        cancelled_by,
+        counted_items,
+        reviewed_items,
+        total_counted,
+        total_unique_counted,
+        total_estimated,
+        total_unique_estimated
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
       [
-        description,
+        stocktake_template_id,
         date_started,
         started_by,
-        filter_vendor_ids,
-        filter_sections,
-        filter_media_types,
-        filter_formats,
-        stocktake_map,
+        date_closed,
+        closed_by,
+        date_cancelled,
+        cancelled_by,
+        counted_items ? JSON.stringify(counted_items) : null,
+        reviewed_items ? JSON.stringify(reviewed_items) : null,
+        total_counted,
+        total_unique_counted,
+        total_estimated,
+        total_unique_estimated,
       ]
     );
     return res.json(results);

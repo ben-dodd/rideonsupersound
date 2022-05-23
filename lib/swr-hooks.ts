@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { authoriseUrl } from "@/lib/data-functions";
+import { authoriseUrl, parseJSON } from "@/lib/data-functions";
 import { VendorSaleItemObject } from "@/lib/types";
 import dayjs from "dayjs";
 
@@ -494,13 +494,54 @@ export function useJobs() {
   };
 }
 
-export function useStocktakes() {
-  const { data, error, mutate } = useSWR(`/api/get-stocktakes`, fetcher);
+// export function useStocktakes() {
+//   const { data, error, mutate } = useSWR(`/api/get-stocktakes`, fetcher);
+//   return {
+//     stocktakes: data?.map((stocktake) => ({
+//       ...stocktake,
+//       counted_items: parseJSON(stocktake?.counted_items, []),
+//       counted_items: parseJSON(stocktake?.counted_items, []),
+//     })),
+//     isStocktakesLoading: !error && !data,
+//     isStocktakesError: error,
+//     mutateStocktakes: mutate,
+//   };
+// }
+
+export function useStocktakesByTemplate(stocktake_template_id: number) {
+  const { data, error, mutate } = useSWR(
+    `/api/get-stocktakes-by-template-id?id=${stocktake_template_id}`,
+    fetcher
+  );
+  console.log(data);
   return {
-    stocktakes: data,
+    stocktakes: data?.map((stocktake) => ({
+      ...stocktake,
+      counted_items: parseJSON(stocktake?.counted_items, []),
+      reviewed_items: parseJSON(stocktake?.reviewed_items, []),
+    })),
     isStocktakesLoading: !error && !data,
     isStocktakesError: error,
     mutateStocktakes: mutate,
+  };
+}
+
+export function useStocktakeTemplates() {
+  const { data, error, mutate } = useSWR(
+    `/api/get-stocktake-templates`,
+    fetcher
+  );
+  return {
+    stocktakeTemplates: data?.map((stocktake) => ({
+      ...stocktake,
+      media_list: parseJSON(stocktake?.media_list, []),
+      format_list: parseJSON(stocktake?.format_list, []),
+      section_list: parseJSON(stocktake?.section_list, []),
+      vendor_list: parseJSON(stocktake?.vendor_list, []),
+    })),
+    isStocktakeTemplatesLoading: !error && !data,
+    isStocktakeTemplatesError: error,
+    mutateStocktakeTemplates: mutate,
   };
 }
 

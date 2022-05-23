@@ -65,6 +65,22 @@ export enum RoleTypes {
   RS = "Retail Samurai",
 }
 
+export enum StocktakeStatuses {
+  inProgress = "In Progress",
+  completed = "Completed",
+  overdue = "Overdue",
+}
+
+export enum StocktakeReviewDecisions {
+  review = "Review Later, Don't Adjust",
+  adjust = "Adjust Quantity",
+  keep = "Keep Recorded Quantity",
+  lost = "Mark Difference Lost",
+  discard = "Mark Difference Discarded",
+  return = "Mark Difference Returned to Vendor",
+  found = "Mark Difference Found",
+}
+
 export interface ClerkObject {
   id: number;
   name?: string;
@@ -358,17 +374,54 @@ export interface StockMovementObject {
 
 export interface StocktakeObject {
   id?: number;
-  description?: string;
+  stocktake_template_id?: number;
   date_started?: string;
   started_by?: number;
-  date_finished?: string;
-  finished_by?: string;
-  filter_vendor_ids?: string | [];
-  filter_sections?: string | [];
-  filter_media_types?: string | [];
-  filter_formats?: string | [];
-  stocktake_map?: string | {};
+  date_closed?: string;
+  closed_by?: number;
+  date_cancelled?: string;
+  cancelled_by?: number;
+  counted_items?: CountedItemObject[];
+  reviewed_items?: ReviewedItemObject[];
+  total_counted?: number;
+  total_unique_counted?: number;
+  total_estimated?: number;
+  total_unique_estimated?: number;
   is_deleted?: boolean;
+}
+
+export interface CountedItemObject {
+  id?: number;
+  quantity?: number;
+}
+
+export interface ReviewedItemObject {
+  id?: number;
+  quantity_counted?: number;
+  quantity_recorded?: number;
+  quantity_difference?: number;
+  review_decision?: string;
+}
+
+export interface StocktakeTemplateObject {
+  id?: number;
+  name?: string;
+  filter_description?: string;
+  image?: number;
+  vendor_enabled?: boolean;
+  vendor_list?: [any];
+  section_enabled?: boolean;
+  section_list?: [string];
+  media_enabled?: boolean;
+  media_list?: [string];
+  format_enabled?: boolean;
+  format_list?: [string];
+  last_completed?: string;
+  status?: string;
+  is_deleted?: boolean;
+  total_estimated?: number;
+  total_unique_estimated?: number;
+  inventory_list?: number;
 }
 
 export interface TaskObject {

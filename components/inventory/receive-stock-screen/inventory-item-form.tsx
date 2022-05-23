@@ -42,7 +42,7 @@ export default function InventoryItemForm({
   //   [item?.vendor_id]
   // );
 
-  console.log(item);
+  // console.log(item);
 
   return (
     <div>

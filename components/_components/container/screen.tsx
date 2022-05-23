@@ -72,7 +72,9 @@ export default function ScreenContainer({
                 ) : (
                   <button
                     key={i}
-                    className={`screen__button--${button?.type}`}
+                    className={`screen__button--${button?.type}${
+                      button?.hidden ? " hidden" : ""
+                    }`}
                     onClick={() => button?.onClick()}
                     disabled={button?.disabled || button?.loading}
                   >

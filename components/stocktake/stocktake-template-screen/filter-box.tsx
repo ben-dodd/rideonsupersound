@@ -3,13 +3,14 @@ import { Switch } from "@mui/material";
 export default function FilterBox({
   title,
   list,
-  stocktake,
-  setStocktake,
+  stocktakeTemplate,
+  setStocktakeTemplate,
   field,
 }) {
-  console.log(stocktake);
-  const enabled = stocktake?.[`${field}Enabled`];
-  const dataList = stocktake?.[`${field}List`];
+  // console.log(stocktake);
+  const enabled = stocktakeTemplate?.[`${field}_enabled`] || false;
+  const dataList = stocktakeTemplate?.[`${field}_list`] || [];
+  // console.log(dataList);
   return (
     <div className={`p-2 border${enabled ? "" : " bg-gray-400"}`}>
       <div className="flex justify-between border-b mb-2">
@@ -21,9 +22,9 @@ export default function FilterBox({
               className="cursor-pointer"
               checked={dataList?.length === list?.length}
               onChange={(e) =>
-                setStocktake({
-                  ...stocktake,
-                  [`${field}List`]:
+                setStocktakeTemplate({
+                  ...stocktakeTemplate,
+                  [`${field}_list`]:
                     dataList?.length === list?.length
                       ? []
                       : list?.map((l) => l?.value),
@@ -39,7 +40,10 @@ export default function FilterBox({
             color="warning"
             checked={enabled}
             onChange={(e) =>
-              setStocktake({ ...stocktake, [`${field}Enabled`]: !enabled })
+              setStocktakeTemplate({
+                ...stocktakeTemplate,
+                [`${field}_enabled`]: !enabled,
+              })
             }
           />
         </div>
@@ -56,9 +60,9 @@ export default function FilterBox({
                   className="cursor-pointer"
                   checked={dataList?.includes(l?.value)}
                   onChange={(e) =>
-                    setStocktake({
-                      ...stocktake,
-                      [`${field}List`]: dataList?.includes(l?.value)
+                    setStocktakeTemplate({
+                      ...stocktakeTemplate,
+                      [`${field}_list`]: dataList?.includes(l?.value)
                         ? dataList?.filter((d) => d !== l?.value)
                         : [...dataList, l?.value],
                     })

@@ -19,6 +19,8 @@ import {
   VendorPaymentTypes,
   RoleTypes,
   StocktakeObject,
+  StocktakeTemplateObject,
+  StocktakeReviewDecisions,
 } from "@/lib/types";
 import dayjs from "dayjs";
 // Change to DayJS utc
@@ -27,6 +29,7 @@ import { v4 as uuid } from "uuid";
 import {
   getItemDisplayName,
   getItemQuantity,
+  getItemSkuDisplayNameById,
   getSaleVars,
 } from "./data-functions";
 
@@ -665,6 +668,28 @@ export async function saveStocktakeToDatabase(stocktake: StocktakeObject) {
   }
 }
 
+export async function saveStocktakeTemplateToDatabase(
+  stocktakeTemplate: StocktakeTemplateObject
+) {
+  try {
+    const res = await fetch(
+      `/api/create-stocktake-template?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(stocktakeTemplate),
+      }
+    );
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+    return json.insertId;
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
+
 export async function saveSelectToDatabase(
   label: string,
   setting_select: string,
@@ -1165,6 +1190,46 @@ export async function updateStockItemInDatabase(
   }
 }
 
+export async function updateStocktakeInDatabase(stocktake: StocktakeObject) {
+  try {
+    const res = await fetch(
+      `/api/update-stocktake?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(stocktake),
+      }
+    );
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
+
+export async function updateStocktakeTemplateInDatabase(
+  stocktakeTemplate: StocktakeTemplateObject
+) {
+  try {
+    const res = await fetch(
+      `/api/update-stocktake-template?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(stocktakeTemplate),
+      }
+    );
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
+
 export async function updateGiftCard(giftCard: GiftCardObject) {
   try {
     const res = await fetch(
@@ -1566,6 +1631,65 @@ export function returnStock(
       });
     mutateInventory([...otherInventoryItems, ...updatedInventoryItems], false);
   }
+}
+
+export function processStocktake(
+  stocktake: StocktakeObject,
+  inventory: StockObject[],
+  clerk: ClerkObject
+) {
+  let tasks = [];
+  stocktake?.reviewed_items?.forEach(async (item) => {
+    if (item?.review_decision === StocktakeReviewDecisions?.keep) {
+      saveLog({
+        log: `Stock take: ${getItemSkuDisplayNameById(item?.id, inventory)}. ${
+          item?.quantity_counted
+        } counted, ${
+          item?.quantity_recorded
+        } in the system. System quantity kept.`,
+        clerk_id: clerk?.id,
+      });
+    } else if (item?.review_decision === StocktakeReviewDecisions?.review) {
+      let newTask: TaskObject = {
+        description: `Review stock take. ${getItemSkuDisplayNameById(
+          item?.id,
+          inventory
+        )}. ${item?.quantity_counted} counted, ${
+          item?.quantity_recorded
+        } in the system.`,
+        created_by_clerk_id: clerk?.id,
+        date_created: dayjs.utc().format(),
+      };
+      const id = await saveTaskToDatabase(newTask);
+      tasks?.push({ ...newTask, id });
+    } else {
+      let act = StockMovementTypes?.Adjustment;
+      if (item?.review_decision === StocktakeReviewDecisions?.discard)
+        act = StockMovementTypes?.Discarded;
+      else if (item?.review_decision === StocktakeReviewDecisions?.found)
+        act = StockMovementTypes?.Found;
+      else if (item?.review_decision === StocktakeReviewDecisions?.lost)
+        act = StockMovementTypes?.Lost;
+      else if (item?.review_decision === StocktakeReviewDecisions?.return)
+        act = StockMovementTypes?.Returned;
+      saveStockMovementToDatabase(
+        { quantity: `${item?.quantity_difference}` },
+        clerk,
+        null,
+        act,
+        "Stock take adjustment.",
+        null
+      );
+      saveLog({
+        log: `Stock take: ${getItemSkuDisplayNameById(item?.id, inventory)}. ${
+          item?.quantity_counted
+        } counted, ${
+          item?.quantity_recorded
+        } in the system. Difference marked as ${act}.`,
+        clerk_id: clerk?.id,
+      });
+    }
+  });
 }
 
 export function uploadFiles(files) {

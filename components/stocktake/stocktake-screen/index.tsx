@@ -1,69 +1,106 @@
 // Packages
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useInventory, useRegisterID, useStocktakes } from "@/lib/swr-hooks";
+import { useInventory, useStocktakesByTemplate } from "@/lib/swr-hooks";
 import {
   viewAtom,
   clerkAtom,
-  receiveStockAtom,
   confirmModalAtom,
-  loadedStocktakeIdAtom,
+  loadedStocktakeAtom,
+  loadedItemIdAtom,
 } from "@/lib/atoms";
 import { ModalButton } from "@/lib/types";
 
 // Functions
 import {
-  receiveStock,
+  processStocktake,
   saveStocktakeToDatabase,
   saveSystemLog,
+  updateStocktakeInDatabase,
 } from "@/lib/db-functions";
 
 // Components
-import Stepper from "@/components/_components/navigation/stepper";
 import ScreenContainer from "@/components/_components/container/screen";
 import CountItems from "./count-items";
 import CompleteStocktake from "./complete-stocktake";
-import SetupStocktake from "./setup-stocktake";
+import dayjs from "dayjs";
+import InventoryItemScreen from "@/components/inventory/inventory-item-screen";
 
 export default function StocktakeScreen() {
   // Atoms
-  const [basket, setBasket] = useAtom(receiveStockAtom);
   const [, setConfirmModal] = useAtom(confirmModalAtom);
-  const { inventory, mutateInventory } = useInventory();
+  const [stocktake, setLoadedStocktake] = useAtom(loadedStocktakeAtom);
+  const { inventory } = useInventory();
+  const [loadedItemId] = useAtom(loadedItemIdAtom);
   const [view, setView] = useAtom(viewAtom);
   const [clerk] = useAtom(clerkAtom);
   const [step, setStep] = useState(0);
-  const [receivedStock, setReceivedStock] = useState(null);
-  const { stocktakes, isStocktakesLoading } = useStocktakes();
-  const [stocktake, setStocktake] = useState(null);
-  const [loadedStocktakeId] = useAtom(loadedStocktakeIdAtom);
+  const { stocktakes, isStocktakesLoading, mutateStocktakes } =
+    useStocktakesByTemplate(stocktake?.stocktake_template_id);
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    setStep[0];
-    setStocktake(
-      stocktakes?.filter((s) => s?.id === loadedStocktakeId?.stocktake)?.[0] ||
-        null
-    );
-  }, [loadedStocktakeId?.stocktake]);
+  async function saveOrUpdateStocktake(st?) {
+    const stocktakeToSave = st || stocktake;
+    console.log(stocktakeToSave);
+    if (!stocktakeToSave?.id) {
+      setIsLoading(true);
+      const id = await saveStocktakeToDatabase({
+        ...stocktakeToSave,
+        date_started: dayjs.utc().format(),
+        started_by: clerk?.id,
+      });
+      setLoadedStocktake({ ...stocktakeToSave, id });
+      mutateStocktakes(
+        [...(stocktakes || []), { ...stocktakeToSave, id }],
+        false
+      );
+      setIsLoading(false);
+      saveSystemLog(`New stocktake saved`, clerk?.id);
+    } else {
+      updateStocktakeInDatabase(stocktakeToSave);
+      mutateStocktakes(
+        [
+          ...(stocktakes || [])?.filter((s) => s?.id !== stocktakeToSave?.id),
+          stocktakeToSave,
+        ],
+        false
+      );
+    }
+  }
 
-  // SWR
-  const { registerID } = useRegisterID();
+  // const debouncedSave = useCallback(debounce(saveOrUpdateStocktake, 5000), []);
+
+  // useEffect(() => {
+  //   const st = { ...stocktake };
+  //   debouncedSave(st);
+  // }, stocktake?.counted_items);
 
   const buttons: ModalButton[][] = [
     [
       {
         type: "cancel",
-        onClick: () => setView({ ...view, stocktakeScreen: false }),
+        onClick: () => {
+          setView({ ...view, stocktakeScreen: false });
+          setLoadedStocktake(null);
+        },
         text: "CANCEL",
       },
       {
-        type: "ok",
-        text: "START STOCKTAKING",
+        type: "alt1",
+        text: `SAVE AND CLOSE`,
         onClick: async () => {
-          const id = await saveStocktakeToDatabase({ ...stocktake });
-          saveSystemLog(`Stocktake setup - Set step 1`, clerk?.id);
+          await saveOrUpdateStocktake();
+          setView({ ...view, stocktakeScreen: false });
+          setLoadedStocktake(null);
+        },
+      },
+      {
+        type: "ok",
+        text: `REVIEW`,
+        onClick: async () => {
+          await saveOrUpdateStocktake();
           setStep(1);
         },
       },
@@ -72,121 +109,83 @@ export default function StocktakeScreen() {
       {
         type: "cancel",
         onClick: () => {
-          // setConfirmModal({
-          //   open: true,
-          //   title: "Reset Basket?",
-          //   styledMessage: (
-          //     <span>Are you sure you want to wipe all received items?</span>
-          //   ),
-          //   yesText: "YES, I'M SURE",
-          //   action: () => {
-          //     saveSystemLog(`Receive stock screen - Set step 0`, clerk?.id);
-          //     setStep(0);
-          //     setBasket({});
-          //   },
-          // });
-        },
-        text: "BACK",
-      },
-      {
-        type: "ok",
-        text: "CLOSE AND SAVE",
-        // disabled: basket?.items?.length === 0,
-        onClick: () => {
-          saveSystemLog(`Receive stock screen - Set step 2`, clerk?.id);
-          setStep(2);
-        },
-      },
-      {
-        type: "ok",
-        text: "REVIEW",
-        disabled: basket?.items?.length === 0,
-        onClick: () => {
-          saveSystemLog(`Receive stock screen - Set step 2`, clerk?.id);
-          setStep(2);
-        },
-      },
-    ],
-    [
-      {
-        type: "ok",
-        // disabled: isDisabled(),
-        text: "DONE",
-        onClick: () => {
-          saveSystemLog(`Receive stock screen - DONE clicked`, clerk?.id);
-          setBasket({});
           setView({ ...view, stocktakeScreen: false });
+          setLoadedStocktake(null);
+        },
+        text: "CANCEL",
+      },
+      {
+        type: "alt2",
+        text: `BACK TO COUNTING`,
+        onClick: async () => {
+          await saveOrUpdateStocktake();
+          setStep(0);
+        },
+      },
+      {
+        type: "alt1",
+        text: `SAVE AND CLOSE`,
+        onClick: async () => {
+          await saveOrUpdateStocktake();
+          setView({ ...view, stocktakeScreen: false });
+          setLoadedStocktake(null);
+        },
+      },
+      {
+        type: "ok",
+        text: `COMPLETE`,
+        onClick: async () => {
+          setConfirmModal({
+            open: true,
+            title: "Lock It In",
+            styledMessage: (
+              <span>Are you sure you want to process the stocktake?</span>
+            ),
+            yesText: "YES, I'M SURE",
+            action: async () => {
+              await saveOrUpdateStocktake();
+              // processStocktake(stocktake, inventory, clerk);
+              setView({ ...view, stocktakeScreen: false });
+              setLoadedStocktake(null);
+            },
+          });
         },
       },
     ],
   ];
 
-  // TODO make stepper receive
-  // Step 1 - set up stocktake, add filters etc.
-  // Step 2 - count items
-  // Step 3 - review stocktake and complete
-
   return (
-    <ScreenContainer
-      show={view?.stocktakeScreen}
-      closeFunction={() => setView({ ...view, stocktakeScreen: false })}
-      title={`${stocktake?.id ? "" : "NEW "}STOCK TAKE ${
-        stocktake?.id ? `#${stocktake?.id}` : ""
-      }`}
-      buttons={buttons[step]}
-      titleClass="bg-col2"
-    >
-      <div className="flex flex-col w-full">
-        <Stepper
-          steps={["Setup Stocktake", "Count Items", "Complete Stocktake"]}
-          value={step}
-          onChange={setStep}
-          disabled
-          selectedBg="bg-col2"
-          notSelectedBg="bg-gray-200"
-          selectedText="text-col2-dark"
-          notSelectedText="text-black"
-          selectedTextHover="text-col2-dark"
-          notSelectedTextHover="text-gray-800"
-        />
-        {step === 0 && (
-          <div>
-            <SetupStocktake stocktake={stocktake} setStocktake={setStocktake} />
-          </div>
-        )}
-        {step === 1 && (
-          <div>
-            <CountItems stocktake={stocktake} setStocktake={setStocktake} />
-          </div>
-        )}
-        {step == 4 && (
-          <div>
-            <CompleteStocktake
-              stocktake={stocktake}
-              setStocktake={setStocktake}
-            />
-          </div>
-        )}
-      </div>
-    </ScreenContainer>
+    <>
+      <ScreenContainer
+        loading={isStocktakesLoading}
+        show={view?.stocktakeScreen}
+        closeFunction={() => setView({ ...view, stocktakeScreen: false })}
+        title={`${stocktake?.id ? "" : "NEW "}STOCK TAKE ${
+          stocktake?.id ? `#${stocktake?.id}` : ""
+        }`}
+        buttons={buttons[step]}
+        titleClass="bg-col2"
+      >
+        <div className="flex flex-col w-full">
+          {step === 0 && (
+            <div>
+              <CountItems
+                stocktake={stocktake}
+                setStocktake={setLoadedStocktake}
+              />
+            </div>
+          )}
+          {step == 1 && (
+            <div>
+              <CompleteStocktake
+                stocktake={stocktake}
+                setStocktake={setLoadedStocktake}
+              />
+            </div>
+          )}
+        </div>
+      </ScreenContainer>
+      {loadedItemId?.stocktake && <InventoryItemScreen page={"stocktake"} />}
+    </>
   );
-
-  // function isDisabled() {
-  //   return (
-  //     !basket?.vendor_id ||
-  //     basket?.items?.length === 0 ||
-  //     basket?.items?.filter(
-  //       (item) =>
-  //         // !item?.item?.section ||
-  //         item?.item?.is_new === null ||
-  //         // (!item?.item?.is_new && !item?.item?.cond) ||
-  //         !Number.isInteger(parseInt(`${item?.quantity}`)) ||
-  //         !(
-  //           (Number.isInteger(parseInt(`${item?.vendor_cut}`)) &&
-  //             Number.isInteger(parseInt(`${item?.total_sell}`))) ||
-  //           item?.item?.id
-  //         )
-  //     ).length > 0
-  //   );
-  // }
 }

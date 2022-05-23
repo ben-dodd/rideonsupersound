@@ -12,6 +12,8 @@ import {
   HelpObject,
   GiftCardObject,
   SaleObject,
+  StocktakeObject,
+  StocktakeTemplateObject,
 } from "@/lib/types";
 import { Email } from "@mui/icons-material";
 
@@ -720,6 +722,48 @@ export function writeItemList(
   } else return "";
 }
 
+export function writeStocktakeFilterDescription(
+  stocktake: StocktakeTemplateObject
+) {
+  const maxNum = 20;
+  let filters = [];
+  if (stocktake?.media_enabled)
+    filters?.push(
+      `Media Filters: ${
+        stocktake?.media_list?.length < maxNum
+          ? stocktake?.media_list?.join(", ")
+          : `${stocktake?.media_list?.length} Media Types`
+      }`
+    );
+  if (stocktake?.format_enabled)
+    filters?.push(
+      `Format Filters: ${
+        stocktake?.format_list?.length < maxNum
+          ? stocktake?.format_list?.join(", ")
+          : `${stocktake?.format_list?.length} Formats`
+      }`
+    );
+  if (stocktake?.section_enabled)
+    filters?.push(
+      `Section Filters: ${
+        stocktake?.section_list?.length < maxNum
+          ? stocktake?.section_list?.join(", ")
+          : `${stocktake?.section_list?.length} Sections`
+      }`
+    );
+  if (stocktake?.vendor_enabled)
+    filters?.push(
+      `Vendor Filters: ${
+        stocktake?.vendor_list?.length < maxNum
+          ? stocktake?.vendor_list?.join(", ")
+          : `${stocktake?.vendor_list?.length} Vendors`
+      }`
+    );
+  if (filters?.length > 0) {
+    return filters?.join(", ");
+  } else return "No Filters";
+}
+
 export function makeGiftCardCode(giftCards: GiftCardObject[]) {
   var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   var charactersLength = characters.length;
@@ -970,3 +1014,13 @@ export function filterHelps(
   //   return 0;
   // })
 }
+
+export const parseJSON = (inputString, fallback) => {
+  if (inputString) {
+    try {
+      return JSON.parse(inputString);
+    } catch (e) {
+      return fallback;
+    }
+  } else return null;
+};

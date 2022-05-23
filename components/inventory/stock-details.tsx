@@ -13,7 +13,6 @@ export default function StockDetails({ item }: stockDetailsProps) {
     item?.id
   );
 
-  console.log(stockMovements);
   const [view, setView] = useAtom(viewAtom);
 
   return (

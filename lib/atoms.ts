@@ -5,6 +5,8 @@ import {
   SaleObject,
   CustomerObject,
   ConfirmModal,
+  StocktakeTemplateObject,
+  StocktakeObject,
 } from "@/lib/types";
 
 interface PaymentDialogProps {
@@ -51,7 +53,8 @@ interface ViewProps {
   saleScreen?: boolean;
   taskDialog?: boolean;
   stocktakeScreen?: boolean;
-  stocktakeSetupDialog?: boolean;
+  stocktakeTemplateScreen?: boolean;
+  stocktakeTemplateSetupDialog?: boolean;
 }
 
 interface PageProps {
@@ -77,7 +80,8 @@ export const loadedItemIdAtom = atom<PageProps>({});
 export const loadedVendorIdAtom = atom<PageProps>({});
 export const loadedHoldIdAtom = atom<PageProps>({});
 export const loadedSaleIdAtom = atom<PageProps>({});
-export const loadedStocktakeIdAtom = atom<PageProps>({});
+export const loadedStocktakeAtom = atom<StocktakeObject>({});
+export const loadedStocktakeTemplateAtom = atom<StocktakeTemplateObject>({});
 
 export const loadedCustomerObjectAtom = atom<CustomerObject>({});
 
