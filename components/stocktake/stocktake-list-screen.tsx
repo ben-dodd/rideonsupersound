@@ -15,7 +15,7 @@ export default function StocktakeListScreen() {
           <div className="loading-icon" />
         </div>
       ) : (
-        <div className="h-menusm w-full overflow-y-scroll px-2 bg-white grid grid-cols-3">
+        <div className="h-inventory w-full overflow-y-scroll px-2 bg-white grid grid-cols-3">
           {stocktakeTemplates?.length > 0
             ? stocktakeTemplates?.map((st) => (
                 <StocktakeTemplateListItem

@@ -126,7 +126,8 @@ export default function ReviewListItem({
               mutateStocktakeItems(
                 (stocktakeItems || [])?.map((si) =>
                   si?.id === stocktakeItem?.id ? newStocktakeItem : si
-                )
+                ),
+                false
               );
             }}
           />

@@ -251,12 +251,12 @@ export default function StocktakeTemplateScreen() {
                         stocktakeTemplate?.total_unique_estimated,
                     };
                     const id = await saveStocktakeToDatabase(newStocktake);
-                    setIsLoading(false);
                     setView({ ...view, stocktakeScreen: true });
                     setLoadedStocktakeId(id);
+                    setIsLoading(false);
                   }}
                   disabled={
-                    stocktakeInProgress || !Boolean(stocktakeTemplate?.id)
+                    stocktakeInProgress || !Boolean(stocktakeTemplateId)
                   }
                 >
                   <AddIcon className="pr-2" />

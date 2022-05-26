@@ -23,7 +23,7 @@ export default function StocktakesScreen() {
       }`}
     >
       {page === "stocktake" && <StocktakeListScreen />}
-      {loadedStocktakeTemplateId && <StocktakeTemplateScreen />}
+      {loadedStocktakeTemplateId ? <StocktakeTemplateScreen /> : <div />}
     </div>
   );
 }

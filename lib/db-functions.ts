@@ -1770,6 +1770,11 @@ export function processStocktake(
       });
     }
   });
+  updateStocktakeInDatabase({
+    ...stocktake,
+    date_closed: dayjs.utc().format(),
+    closed_by: clerk?.id,
+  });
   updateStocktakeTemplateInDatabase({
     ...stocktakeTemplate,
     last_completed: dayjs.utc().format(),
