@@ -80,8 +80,8 @@ export const loadedItemIdAtom = atom<PageProps>({});
 export const loadedVendorIdAtom = atom<PageProps>({});
 export const loadedHoldIdAtom = atom<PageProps>({});
 export const loadedSaleIdAtom = atom<PageProps>({});
-export const loadedStocktakeAtom = atom<StocktakeObject>({});
-export const loadedStocktakeTemplateAtom = atom<StocktakeTemplateObject>({});
+export const loadedStocktakeIdAtom = atom<number>(0);
+export const loadedStocktakeTemplateIdAtom = atom<number>(0);
 
 export const loadedCustomerObjectAtom = atom<CustomerObject>({});
 

@@ -43,6 +43,7 @@ export default function VendorScreen() {
   // State
   const [vendor, setVendor]: [VendorObject, Function] = useState({});
   const [tab, setTab] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Load
   useEffect(() => {
@@ -64,8 +65,6 @@ export default function VendorScreen() {
     [inventory, sales, vendorPayments, loadedVendorId[page]]
   );
 
-  console.log(vendorDetails);
-
   const buttons: ModalButton[] = [
     {
       type: "cancel",
@@ -74,12 +73,15 @@ export default function VendorScreen() {
     },
     {
       type: "ok",
+      disabled: isLoading,
       onClick: async () => {
         if (loadedVendorId[page] < 0) {
+          setIsLoading(true);
           const newVendorId = await saveVendorToDatabase(vendor);
           mutateVendors([...vendors, { ...vendor, id: newVendorId }]);
           setLoadedVendorId({ ...loadedVendorId, [page]: 0 });
           setVendor(null);
+          setIsLoading(false);
         } else {
           let otherVendors = vendors?.filter(
             (i: VendorObject) => i?.id !== vendor?.id

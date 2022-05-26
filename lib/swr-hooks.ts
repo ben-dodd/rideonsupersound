@@ -508,19 +508,28 @@ export function useJobs() {
 //   };
 // }
 
+export function useStocktakeItemsByStocktake(stocktake_id: number) {
+  const { data, error, mutate } = useSWR(
+    `/api/get-stocktake-items-by-stocktake?id=${stocktake_id}`,
+    fetcher
+  );
+
+  return {
+    stocktakeItems: data,
+    isStocktakeItemsLoading: !error && !data,
+    isStocktakeItemsError: error,
+    mutateStocktakeItems: mutate,
+  };
+}
+
 export function useStocktakesByTemplate(stocktake_template_id: number) {
   const { data, error, mutate } = useSWR(
     `/api/get-stocktakes-by-template-id?id=${stocktake_template_id}`,
     fetcher
   );
-  console.log(data);
+
   return {
-    // stocktakes: data,
-    stocktakes: data?.map((stocktake) => ({
-      ...stocktake,
-      counted_items: parseJSON(stocktake?.counted_items, []),
-      reviewed_items: parseJSON(stocktake?.reviewed_items, []),
-    })),
+    stocktakes: data,
     isStocktakesLoading: !error && !data,
     isStocktakesError: error,
     mutateStocktakes: mutate,
@@ -532,14 +541,32 @@ export function useStocktakeTemplates() {
     `/api/get-stocktake-templates`,
     fetcher
   );
+
+  const stocktakeTemplates = data?.map((st) => {
+    return {
+      ...st,
+      media_list:
+        typeof st?.media_list === "string" || st?.media_list instanceof String
+          ? JSON.parse(st?.media_list || "[]")
+          : st?.media_list,
+      format_list:
+        typeof st?.format_list === "string" || st?.format_list instanceof String
+          ? JSON.parse(st?.format_list || "[]")
+          : st?.format_list,
+      section_list:
+        typeof st?.section_list === "string" ||
+        st?.section_list instanceof String
+          ? JSON.parse(st?.section_list || "[]")
+          : st?.section_list,
+      vendor_list:
+        typeof st?.vendor_list === "string" || st?.vendor_list instanceof String
+          ? JSON.parse(st?.vendor_list || "[]")
+          : st?.vendor_list,
+    };
+  });
+
   return {
-    stocktakeTemplates: data?.map((stocktake) => ({
-      ...stocktake,
-      media_list: parseJSON(stocktake?.media_list, []),
-      format_list: parseJSON(stocktake?.format_list, []),
-      section_list: parseJSON(stocktake?.section_list, []),
-      vendor_list: parseJSON(stocktake?.vendor_list, []),
-    })),
+    stocktakeTemplates: stocktakeTemplates,
     isStocktakeTemplatesLoading: !error && !data,
     isStocktakeTemplatesError: error,
     mutateStocktakeTemplates: mutate,

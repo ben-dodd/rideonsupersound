@@ -1,21 +1,42 @@
 import { useAtom } from "jotai";
-import { clerkAtom, loadedStocktakeTemplateAtom, viewAtom } from "@/lib/atoms";
+import {
+  clerkAtom,
+  loadedStocktakeTemplateIdAtom,
+  viewAtom,
+} from "@/lib/atoms";
 
 import NewIcon from "@mui/icons-material/AddBox";
-import { saveSystemLog } from "@/lib/db-functions";
+import {
+  saveStocktakeTemplateToDatabase,
+  saveSystemLog,
+} from "@/lib/db-functions";
+import { StocktakeTemplateObject } from "@/lib/types";
+import { useState } from "react";
 
 export default function StocktakeNavActions() {
   const [view, setView] = useAtom(viewAtom);
-  const [, setLoadedStocktakeTemplate] = useAtom(loadedStocktakeTemplateAtom);
+  const [, setLoadedStocktakeTemplateId] = useAtom(
+    loadedStocktakeTemplateIdAtom
+  );
   const [clerk] = useAtom(clerkAtom);
+  const [isLoading, setIsLoading] = useState(false);
   return (
     <div className="flex">
       <button
+        disabled={isLoading}
         className="icon-text-button"
-        onClick={() => {
+        onClick={async () => {
+          setIsLoading(true);
           saveSystemLog("Stocktake Nav - New Stocktake clicked.", clerk?.id);
+          let newStocktakeTemplate: StocktakeTemplateObject = {
+            format_enabled: true,
+          };
+          const id = await saveStocktakeTemplateToDatabase(
+            newStocktakeTemplate
+          );
+          setLoadedStocktakeTemplateId(id);
           setView({ ...view, stocktakeTemplateScreen: true });
-          setLoadedStocktakeTemplate({});
+          setIsLoading(false);
         }}
       >
         <NewIcon className="mr-1" />

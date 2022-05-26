@@ -18,7 +18,10 @@ export default function StocktakeListScreen() {
         <div className="h-menusm w-full overflow-y-scroll px-2 bg-white grid grid-cols-3">
           {stocktakeTemplates?.length > 0
             ? stocktakeTemplates?.map((st) => (
-                <StocktakeTemplateListItem stocktakeTemplate={st} />
+                <StocktakeTemplateListItem
+                  key={st?.id}
+                  stocktakeTemplate={st}
+                />
               ))
             : "No stocktake templates found."}
         </div>

@@ -25,16 +25,13 @@ import {
 } from "@/lib/db-functions";
 
 // Components
-import Image from "next/image";
 import Tabs from "@/components/_components/navigation/tabs";
-import TextField from "@/components/_components/inputs/text-field";
 import DiscogsPanel from "./discogs-panel";
 import GoogleBooksPanel from "./google-books-panel";
 import ScreenContainer from "@/components/_components/container/screen";
 import InventoryItemForm from "./receive-stock-screen/inventory-item-form";
 import StockDetails from "./stock-details";
 import PriceDetails from "./price-details";
-import { mutate } from "swr";
 
 import DeleteIcon from "@mui/icons-material/Delete";
 

@@ -8,8 +8,8 @@ import {
 } from "@/lib/types";
 import {
   clerkAtom,
-  loadedStocktakeAtom,
-  loadedStocktakeTemplateAtom,
+  loadedStocktakeIdAtom,
+  loadedStocktakeTemplateIdAtom,
   viewAtom,
 } from "@/lib/atoms";
 import dayjs from "dayjs";
@@ -22,7 +22,7 @@ type ListItemProps = {
 export default function StocktakeListItem({ stocktake }: ListItemProps) {
   // SWR
   const [view, setView] = useAtom(viewAtom);
-  const [, setLoadedStocktake] = useAtom(loadedStocktakeAtom);
+  const [, setLoadedStocktakeId] = useAtom(loadedStocktakeIdAtom);
   console.log(stocktake);
 
   return (
@@ -30,7 +30,7 @@ export default function StocktakeListItem({ stocktake }: ListItemProps) {
       className={`flex w-full border-b border-red-100 py-1 text-sm hover:bg-gray-100 cursor-pointer`}
       onClick={() => {
         setView({ ...view, stocktakeScreen: true });
-        setLoadedStocktake(stocktake);
+        setLoadedStocktakeId(stocktake?.id);
       }}
     >
       <div className="flex w-full">

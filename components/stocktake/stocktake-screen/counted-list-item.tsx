@@ -16,17 +16,23 @@ import TextField from "@/components/_components/inputs/text-field";
 // Icons
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { useVendors } from "@/lib/swr-hooks";
+import { useStocktakeItemsByStocktake, useVendors } from "@/lib/swr-hooks";
+import {
+  deleteStocktakeItemFromDatabase,
+  updateStocktakeItemInDatabase,
+} from "@/lib/db-functions";
 
 export default function CountedListItem({
-  item,
-  countedItem,
+  stocktakeItem,
+  stockItem,
   stocktake,
-  setStocktake,
 }) {
+  const { stocktakeItems, mutateStocktakeItems } = useStocktakeItemsByStocktake(
+    stocktake?.id
+  );
   const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom);
   const { vendors } = useVendors();
-  const vendor = vendors?.filter((v) => v?.id === item?.vendor_id)?.[0];
+  const vendor = vendors?.filter((v) => v?.id === stockItem?.vendor_id)?.[0];
   return (
     <div className="flex justify-between my-2 border-b w-full hover:bg-gray-100">
       <div className="flex">
@@ -36,23 +42,23 @@ export default function CountedListItem({
               className="object-cover absolute"
               // layout="fill"
               // objectFit="cover"
-              src={getImageSrc(item)}
-              alt={item?.title || "Inventory image"}
+              src={getImageSrc(stockItem)}
+              alt={stockItem?.title || "Inventory image"}
             />
-            {!item?.is_gift_card && !item?.is_misc_item && (
+            {!stockItem?.is_gift_card && !stockItem?.is_misc_item && (
               <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white text-sm flex justify-center items-center">
-                {getItemSku(item)}
+                {getItemSku(stockItem)}
               </div>
             )}
           </div>
         </div>
         <div className="ml-2">
-          <div>{getItemDisplayName(item)}</div>
+          <div>{getItemDisplayName(stockItem)}</div>
 
-          <div className="">{`${item?.section ? `${item.section} / ` : ""}${
-            item?.format
-          } [${
-            item?.is_new ? "NEW" : item?.cond?.toUpperCase() || "USED"
+          <div className="">{`${
+            stockItem?.section ? `${stockItem.section} / ` : ""
+          }${stockItem?.format} [${
+            stockItem?.is_new ? "NEW" : stockItem?.cond?.toUpperCase() || "USED"
           }]`}</div>
           <div className="text-sm">
             {`${vendor ? `Selling for ${vendor?.name}` : ""}`}
@@ -69,39 +75,43 @@ export default function CountedListItem({
           // error={!countedItem?.quantity}
           // max={item?.quantity || 0}
           min={0}
-          valueNum={countedItem?.quantity}
-          onChange={(e: any) =>
-            setStocktake({
-              ...stocktake,
-              counted_items: stocktake?.counted_items?.map((i) =>
-                i?.id === countedItem?.id
-                  ? {
-                      ...countedItem,
-                      quantity: parseInt(e.target.value),
-                    }
-                  : i
-              ),
-            })
-          }
+          valueNum={stocktakeItem?.quantity_counted}
+          onChange={(e: any) => {
+            const newStocktakeItem = {
+              ...stocktakeItem,
+              quantity_counted: parseInt(e.target.value) || 0,
+              quantity_difference:
+                (parseInt(e.target.value) || 0) -
+                stocktakeItem?.quantity_recorded,
+            };
+            updateStocktakeItemInDatabase(newStocktakeItem);
+            mutateStocktakeItems(
+              (stocktakeItems || [])?.map((si) =>
+                si?.id === stocktakeItem?.id ? newStocktakeItem : si
+              )
+            );
+          }}
         />
         <button
           className="bg-gray-200 hover:bg-gray-300 p-1 w-10 h-10 rounded-full"
           onClick={() =>
-            setLoadedItemId({ ...loadedItemId, stocktake: item?.id })
+            setLoadedItemId({
+              ...loadedItemId,
+              stocktake: stocktakeItem?.stock_id,
+            })
           }
         >
           <EditIcon />
         </button>
         <button
           className="bg-gray-200 hover:bg-gray-300 p-1 w-10 h-10 rounded-full mx-4"
-          onClick={() =>
-            setStocktake({
-              ...stocktake,
-              counted_items: stocktake?.counted_items?.filter(
-                (i) => i?.id !== countedItem?.id
-              ),
-            })
-          }
+          onClick={() => {
+            deleteStocktakeItemFromDatabase(stocktakeItem?.id);
+            mutateStocktakeItems(
+              stocktakeItems?.filter((si) => si?.id !== stocktakeItem?.id),
+              false
+            );
+          }}
         >
           <DeleteIcon />
         </button>

@@ -13,27 +13,38 @@ import {
 import {
   viewAtom,
   clerkAtom,
-  loadedStocktakeTemplateAtom,
-  loadedStocktakeAtom,
+  loadedStocktakeIdAtom,
+  loadedStocktakeTemplateIdAtom,
 } from "@/lib/atoms";
-import { ModalButton, StockObject, StocktakeTemplateObject } from "@/lib/types";
+import {
+  ModalButton,
+  StockObject,
+  StocktakeObject,
+  StocktakeStatuses,
+  StocktakeTemplateObject,
+} from "@/lib/types";
 
 // Functions
 import {
   saveStocktakeTemplateToDatabase,
+  saveStocktakeToDatabase,
   saveSystemLog,
   updateStocktakeTemplateInDatabase,
 } from "@/lib/db-functions";
 
 // Components
 import ScreenContainer from "@/components/_components/container/screen";
-import { writeStocktakeFilterDescription } from "@/lib/data-functions";
+import {
+  parseJSON,
+  writeStocktakeFilterDescription,
+} from "@/lib/data-functions";
 import FilterBox from "./filter-box";
 import TextField from "@/components/_components/inputs/text-field";
 import StocktakeListItem from "./stocktake-list-item";
 
 import AddIcon from "@mui/icons-material/Add";
 import StocktakeScreen from "../stocktake-screen";
+import dayjs from "dayjs";
 
 export default function StocktakeTemplateScreen() {
   // Atoms
@@ -41,22 +52,57 @@ export default function StocktakeTemplateScreen() {
   const { selects, isSelectsLoading } = useAllSelects();
   const { vendors, isVendorsLoading } = useVendors();
 
-  const [view, setView] = useAtom(viewAtom);
-  const [clerk] = useAtom(clerkAtom);
+  const [stocktakeId, setLoadedStocktakeId] = useAtom(loadedStocktakeIdAtom);
+  const [stocktakeTemplateId, setLoadedStocktakeTemplateId] = useAtom(
+    loadedStocktakeTemplateIdAtom
+  );
+
+  const { stocktakes, isStocktakesLoading, mutateStocktakes } =
+    useStocktakesByTemplate(stocktakeTemplateId);
   const {
     stocktakeTemplates,
     isStocktakeTemplatesLoading,
     mutateStocktakeTemplates,
   } = useStocktakeTemplates();
-  const [stocktakeTemplate, setLoadedStocktakeTemplate] = useAtom(
-    loadedStocktakeTemplateAtom
-  );
-  const [stocktake, setLoadedStocktake] = useAtom(loadedStocktakeAtom);
-  const { stocktakes, isStocktakesLoading, mutateStocktakes } =
-    useStocktakesByTemplate(stocktakeTemplate?.id);
+
+  const stocktake = stocktakes?.filter(
+    (stocktake) => stocktake?.id === stocktakeId
+  )?.[0];
+  const stocktakeTemplate = stocktakeTemplates?.filter(
+    (st) => st?.id === stocktakeTemplateId
+  )?.[0];
+
+  const [view, setView] = useAtom(viewAtom);
+  const [clerk] = useAtom(clerkAtom);
   const [isLoading, setIsLoading] = useState(false);
 
+  // useEffect(() => {
+  //   // const mediaList = JSON.parse(stocktakeTemplate?.media_list);
+  //   const st = {
+  //     ...stocktakeTemplate,
+  //     media_list: JSON.parse(stocktakeTemplate?.media_list || "[]"),
+  //     format_list: JSON.parse(stocktakeTemplate?.format_list || "[]"),
+  //     section_list: JSON.parse(stocktakeTemplate?.section_list || "[]"),
+  //     vendor_list: JSON.parse(stocktakeTemplate?.vendor_list || "[]"),
+  //   };
+  //   // console.log(st);
+  //   console.log("JSON");
+  //   setLoadedStocktakeTemplate(st);
+  //   // console.log(stocktakeTemplate);
+  // }, [stocktakeTemplate?.id]);
+
   useEffect(() => {
+    console.log(stocktakeTemplate);
+    // if (
+    //   (stocktakeTemplate?.media_list &&
+    //     !Array.isArray(stocktakeTemplate?.media_list)) ||
+    //   (stocktakeTemplate?.format_list &&
+    //     !Array.isArray(stocktakeTemplate?.format_list)) ||
+    //   (stocktakeTemplate?.section_list &&
+    //     !Array.isArray(stocktakeTemplate?.section_list)) ||
+    //   (stocktakeTemplate?.vendor_list &&
+    //     !Array.isArray(stocktakeTemplate?.vendor_list))
+    // ) {
     const inventoryList = inventory?.filter(
       (i: StockObject) =>
         i?.quantity > 0 &&
@@ -74,7 +120,8 @@ export default function StocktakeTemplateScreen() {
           : true)
     );
     // console.log(inventoryList);
-    setLoadedStocktakeTemplate({
+    console.log("Inventory List");
+    const newStocktakeTemplate = {
       ...stocktakeTemplate,
       inventory_list: inventoryList,
       total_estimated: inventoryList?.reduce(
@@ -83,7 +130,15 @@ export default function StocktakeTemplateScreen() {
       ),
       total_unique_estimated: inventoryList?.length,
       filter_description: writeStocktakeFilterDescription(stocktakeTemplate),
-    });
+    };
+    updateStocktakeTemplateInDatabase(newStocktakeTemplate);
+    mutateStocktakeTemplates(
+      stocktakeTemplates?.map((st) =>
+        st?.id === stocktakeTemplateId ? newStocktakeTemplate : st
+      ),
+      false
+    );
+    // }
   }, [
     inventory,
     stocktakeTemplate?.vendor_enabled,
@@ -102,7 +157,7 @@ export default function StocktakeTemplateScreen() {
       hidden: Boolean(stocktakeTemplate?.id),
       onClick: () => {
         setView({ ...view, stocktakeTemplateScreen: false });
-        setLoadedStocktakeTemplate(null);
+        setLoadedStocktakeTemplateId(null);
       },
       text: "CANCEL",
     },
@@ -112,41 +167,44 @@ export default function StocktakeTemplateScreen() {
       disabled: isLoading,
       text: `${stocktakeTemplate?.id ? "OK" : "SAVE AND CLOSE"}`,
       onClick: async () => {
-        if (!stocktakeTemplate?.id) {
-          setIsLoading(true);
-          const id = await saveStocktakeTemplateToDatabase(stocktakeTemplate);
-          setLoadedStocktakeTemplate({ ...stocktakeTemplate, id });
-          mutateStocktakeTemplates(
-            [...stocktakeTemplates, { ...stocktakeTemplate, id }],
-            false
-          );
-          setIsLoading(false);
-          saveSystemLog(`Stocktake setup - Set step 1`, clerk?.id);
-          setView({ ...view, stocktakeTemplateScreen: false });
-          setLoadedStocktakeTemplate(null);
-        } else {
-          updateStocktakeTemplateInDatabase(stocktakeTemplate);
-          mutateStocktakeTemplates(
-            [
-              ...stocktakeTemplates?.filter(
-                (s) => s?.id !== stocktakeTemplate?.id
-              ),
-              stocktakeTemplate,
-            ],
-            false
-          );
-          setView({ ...view, stocktakeTemplateScreen: false });
-          setLoadedStocktakeTemplate(null);
-        }
+        // if (!stocktakeTemplate?.id) {
+        //   setIsLoading(true);
+        //   const id = await saveStocktakeTemplateToDatabase(stocktakeTemplate);
+        //   setLoadedStocktakeTemplateId(id);
+        //   mutateStocktakeTemplates(
+        //     [...stocktakeTemplates, { ...stocktakeTemplate, id }],
+        //     false
+        //   );
+        //   setIsLoading(false);
+        //   saveSystemLog(`Stocktake setup - Set step 1`, clerk?.id);
+        //   setView({ ...view, stocktakeTemplateScreen: false });
+        //   setLoadedStocktakeTemplateId(null);
+        // } else {
+        updateStocktakeTemplateInDatabase(stocktakeTemplate);
+        mutateStocktakeTemplates(
+          stocktakeTemplates?.map((s) =>
+            s?.id === stocktakeTemplate?.id ? stocktakeTemplate : s
+          ),
+          false
+        );
+        setView({ ...view, stocktakeTemplateScreen: false });
+        setLoadedStocktakeTemplateId(null);
+        // }
       },
     },
   ];
 
-  console.log(stocktakes);
-
   const stocktakeInProgress =
     stocktakes?.filter((s) => !s?.date_cancelled && !s?.date_closed)?.length >
     0;
+
+  function setLoadedStocktakeTemplate(newTemplate: StocktakeTemplateObject) {
+    updateStocktakeTemplateInDatabase(newTemplate);
+    mutateStocktakeTemplates(
+      (st) => (st?.id === newTemplate?.id ? newTemplate : st),
+      false
+    );
+  }
 
   return (
     <>
@@ -154,13 +212,14 @@ export default function StocktakeTemplateScreen() {
         show={view?.stocktakeTemplateScreen}
         closeFunction={() => {
           setView({ ...view, stocktakeTemplateScreen: false });
-          setLoadedStocktakeTemplate(null);
+          setLoadedStocktakeTemplateId(null);
         }}
         loading={
           isStocktakeTemplatesLoading ||
           isStocktakesLoading ||
           isSelectsLoading ||
-          isVendorsLoading
+          isVendorsLoading ||
+          isLoading
         }
         title={`${
           stocktakeTemplate?.id
@@ -177,14 +236,24 @@ export default function StocktakeTemplateScreen() {
                 <div className="font-bold">STOCKTAKE HISTORY</div>
                 <button
                   className="icon-text-button"
-                  onClick={() => {
-                    setView({ ...view, stocktakeScreen: true });
-                    setLoadedStocktake({
+                  onClick={async () => {
+                    setIsLoading(true);
+                    updateStocktakeTemplateInDatabase({
+                      ...stocktakeTemplate,
+                      status: StocktakeStatuses?.inProgress,
+                    });
+                    let newStocktake: StocktakeObject = {
+                      date_started: dayjs.utc().format(),
+                      started_by: clerk?.id,
                       stocktake_template_id: stocktakeTemplate?.id,
                       total_estimated: stocktakeTemplate?.total_estimated,
                       total_unique_estimated:
                         stocktakeTemplate?.total_unique_estimated,
-                    });
+                    };
+                    const id = await saveStocktakeToDatabase(newStocktake);
+                    setIsLoading(false);
+                    setView({ ...view, stocktakeScreen: true });
+                    setLoadedStocktakeId(id);
                   }}
                   disabled={
                     stocktakeInProgress || !Boolean(stocktakeTemplate?.id)
@@ -197,7 +266,9 @@ export default function StocktakeTemplateScreen() {
               {stocktakes?.length === 0 ? (
                 <div>No Stocktakes</div>
               ) : (
-                stocktakes?.map((s) => <StocktakeListItem stocktake={s} />)
+                stocktakes?.map((s) => (
+                  <StocktakeListItem key={s?.id} stocktake={s} />
+                ))
               )}
             </div>
             <div className="w-1/3 px-4">
@@ -277,6 +348,7 @@ export default function StocktakeTemplateScreen() {
           </div>
         </div>
       </ScreenContainer>
+      {/* <StocktakeScreen /> */}
       {stocktake && <StocktakeScreen />}
     </>
   );

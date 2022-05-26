@@ -6,7 +6,11 @@ import {
   StocktakeStatuses,
   StocktakeTemplateObject,
 } from "@/lib/types";
-import { clerkAtom, loadedStocktakeTemplateAtom, viewAtom } from "@/lib/atoms";
+import {
+  clerkAtom,
+  loadedStocktakeTemplateIdAtom,
+  viewAtom,
+} from "@/lib/atoms";
 import dayjs from "dayjs";
 
 type ListItemProps = {
@@ -18,14 +22,16 @@ export default function StocktakeTemplateListItem({
 }: ListItemProps) {
   // SWR
   const [view, setView] = useAtom(viewAtom);
-  const [, setLoadedStocktakeTemplate] = useAtom(loadedStocktakeTemplateAtom);
+  const [, setLoadedStocktakeTemplateId] = useAtom(
+    loadedStocktakeTemplateIdAtom
+  );
 
   return (
     <div
       className={`flex w-full border-b border-red-100 py-1 text-sm hover:bg-gray-100 cursor-pointer`}
       onClick={() => {
         setView({ ...view, stocktakeTemplateScreen: true });
-        setLoadedStocktakeTemplate(stocktakeTemplate);
+        setLoadedStocktakeTemplateId(stocktakeTemplate?.id);
       }}
     >
       <div className="flex w-full">

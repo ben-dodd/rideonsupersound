@@ -5,19 +5,29 @@ import { useAtom } from "jotai";
 // DB
 import {
   useInventory,
-  useVendors,
   useLogs,
   useRegisterID,
+  useStocktakeItemsByStocktake,
+  useStocktakesByTemplate,
 } from "@/lib/swr-hooks";
-import { viewAtom, clerkAtom, alertAtom } from "@/lib/atoms";
-import { StockObject, VendorObject, ModalButton } from "@/lib/types";
+import {
+  viewAtom,
+  clerkAtom,
+  alertAtom,
+  loadedStocktakeIdAtom,
+  loadedStocktakeTemplateIdAtom,
+} from "@/lib/atoms";
+import { StockObject, StocktakeItemObject } from "@/lib/types";
 
 // Functions
-import { returnStock, saveLog } from "@/lib/db-functions";
 import {
-  getItemDisplayName,
-  getItemSkuDisplayName,
-} from "@/lib/data-functions";
+  returnStock,
+  saveLog,
+  saveStocktakeItemToDatabase,
+  updateStocktakeInDatabase,
+  updateStocktakeItemInDatabase,
+} from "@/lib/db-functions";
+import { getItemSkuDisplayName } from "@/lib/data-functions";
 
 // Components
 import TextField from "@/components/_components/inputs/text-field";
@@ -27,10 +37,21 @@ import Select from "react-select";
 import CountedListItem from "./counted-list-item";
 import ItemCard from "./item-card";
 import SearchIcon from "@mui/icons-material/Search";
+import dayjs from "dayjs";
 
-export default function CountItems({ stocktake, setStocktake }) {
+export default function CountItems() {
   // SWR
   const { inventory, mutateInventory } = useInventory();
+  const [stocktakeId] = useAtom(loadedStocktakeIdAtom);
+  const [stocktakeTemplateId] = useAtom(loadedStocktakeTemplateIdAtom);
+  const { stocktakes, mutateStocktakes } =
+    useStocktakesByTemplate(stocktakeTemplateId);
+  const { stocktakeItems, mutateStocktakeItems } =
+    useStocktakeItemsByStocktake(stocktakeId);
+
+  const stocktake = stocktakes?.filter(
+    (stocktake) => stocktake?.id === stocktakeId
+  )?.[0];
   const { logs, mutateLogs } = useLogs();
   const { registerID } = useRegisterID();
   const [inputValue, setInputValue] = useState("");
@@ -45,36 +66,61 @@ export default function CountItems({ stocktake, setStocktake }) {
   const [lastAddedItem, setLastAddedItem] = useState(null);
   const [search, setSearch] = useState("");
 
-  const [submitting, setSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   function closeFunction() {
     setView({ ...view, stocktakeScreen: false });
   }
 
   function addCountedItem(item_id) {
-    let countedItem = stocktake?.counted_items?.filter(
+    setIsLoading(true);
+    let countedItem: StocktakeItemObject = stocktakeItems?.filter(
+      (i) => i?.stock_id === item_id
+    )?.[0];
+    let stockItem: StockObject = inventory?.filter(
       (i) => i?.id === item_id
     )?.[0];
+    setLastAddedItem(stockItem);
     if (countedItem) {
-      countedItem.quantity += 1;
+      countedItem.quantity_counted += 1;
+      countedItem.quantity_difference = countedItem?.quantity_difference + 1;
+      countedItem.counted_by = clerk?.id;
+      countedItem.date_counted = dayjs.utc().format();
+      countedItem.review_decision = null;
+      updateStocktakeItemInDatabase(countedItem);
     } else {
-      countedItem = { id: item_id, quantity: 1 };
+      countedItem = {
+        id: `${stocktake?.id}-${item_id}`,
+        stock_id: item_id,
+        stocktake_id: stocktake?.id,
+        quantity_counted: 1,
+        quantity_recorded: stockItem?.quantity || 0,
+        quantity_difference: 1 - (stockItem?.quantity || 0),
+        counted_by: clerk?.id,
+        date_counted: dayjs.utc().format(),
+      };
+      saveStocktakeItemToDatabase(countedItem);
     }
-    let countData = stocktake?.counted_items || [];
+    let countData = stocktakeItems || [];
     let newCountedItems = [
       countedItem,
       ...countData.filter((i) => i?.id !== countedItem?.id),
     ];
-    setLastAddedItem(inventory?.filter((i) => i?.id === countedItem?.id)?.[0]);
-    setStocktake({
+    mutateStocktakeItems(newCountedItems, false);
+    const newStocktake = {
       ...stocktake,
-      counted_items: newCountedItems,
       total_counted: newCountedItems?.reduce(
-        (prev, curr) => prev + curr?.quantity,
+        (prev, curr) => prev + curr?.quantity_counted,
         0
       ),
       total_unique_counted: newCountedItems?.length,
-    });
+    };
+    updateStocktakeInDatabase(newStocktake);
+    mutateStocktakes(
+      stocktakes?.map((st) => (st?.id === stocktakeId ? newStocktake : st)),
+      false
+    );
+    setIsLoading(false);
   }
 
   const itemOptions = inventory?.map((item: StockObject) => ({
@@ -88,6 +134,7 @@ export default function CountItems({ stocktake, setStocktake }) {
         <div className="w-1/3 border-r border-black pr-4">
           <div className="font-bold text-xl">ADD ITEMS</div>
           <TextField
+            disabled={isLoading}
             inputLabel="SCANNER"
             inputClass="text-4xl"
             selectOnFocus
@@ -112,6 +159,7 @@ export default function CountItems({ stocktake, setStocktake }) {
             OR SEARCH ITEMS
           </div>
           <Select
+            disabled={isLoading}
             className="w-full text-xs"
             value={inputValue}
             options={itemOptions}
@@ -140,12 +188,14 @@ export default function CountItems({ stocktake, setStocktake }) {
           )}
         </div>
         <div className="w-2/3 px-4">
-          {stocktake?.counted_items?.length > 0 ? (
+          {stocktakeItems?.length > 0 ? (
             <div className="h-dialog">
-              <div className="font-bold text-xl">{`COUNTED ${stocktake?.counted_items?.reduce(
-                (prev, returnItem) => (prev += parseInt(returnItem?.quantity)),
-                0
-              )} ITEMS`}</div>
+              <div className="font-bold text-xl">{`COUNTED ${
+                stocktakeItems?.reduce(
+                  (prev, curr) => prev + curr?.quantity_counted,
+                  0
+                ) || 0
+              } ITEMS`}</div>
               <div
                 className={`flex items-center ring-1 ring-gray-400 w-auto bg-gray-100 hover:bg-gray-200`}
               >
@@ -160,29 +210,30 @@ export default function CountItems({ stocktake, setStocktake }) {
                 />
               </div>
               <div className="h-full overflow-y-scroll">
-                {stocktake?.counted_items?.map(
-                  (countedItem: any, i: number) => {
-                    const item = inventory?.filter(
-                      (i: StockObject) => i?.id === parseInt(countedItem?.id)
+                {stocktakeItems
+                  // ?.filter(
+                  //   (stocktakeItem) => stocktakeItem?.quantity_counted > 0
+                  // )
+                  .map((stocktakeItem: any, i: number) => {
+                    const stockItem = inventory?.filter(
+                      (i: StockObject) => i?.id === stocktakeItem?.stock_id
                     )[0];
                     if (
                       search !== "" &&
-                      !getItemSkuDisplayName(item)
+                      !getItemSkuDisplayName(stockItem)
                         ?.toLowerCase?.()
                         ?.includes?.(search?.toLowerCase?.())
                     )
                       return <div />;
                     return (
                       <CountedListItem
-                        key={`${countedItem?.id}-${i}`}
-                        item={item}
-                        countedItem={countedItem}
+                        key={`${stocktakeItem?.id}-${i}`}
+                        stocktakeItem={stocktakeItem}
+                        stockItem={stockItem}
                         stocktake={stocktake}
-                        setStocktake={setStocktake}
                       />
                     );
-                  }
-                )}
+                  })}
               </div>
             </div>
           ) : (

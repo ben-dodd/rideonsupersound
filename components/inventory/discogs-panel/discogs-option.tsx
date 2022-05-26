@@ -34,14 +34,14 @@ export default function DiscogsOption({
     saveSystemLog(`Discogs option clicked - ${opt?.id}`, clerk?.id);
     const detailedDiscogsItem = await getDiscogsItem(opt);
     const priceSuggestions = await getDiscogsPriceSuggestions(opt);
-    console.log(detailedDiscogsItem);
+    // console.log(detailedDiscogsItem);
     // const artist = await getDiscogsItemArtistDetails(detailedDiscogsItem);
     const discogsItem = {
       ...opt,
       ...detailedDiscogsItem,
       priceSuggestions,
     };
-    console.log(discogsItem);
+    // console.log(discogsItem);
     if (override)
       item = {
         ...item,

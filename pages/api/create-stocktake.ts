@@ -11,8 +11,6 @@ const handler: NextApiHandler = async (req, res) => {
     closed_by,
     date_cancelled,
     cancelled_by,
-    counted_items,
-    reviewed_items,
     total_counted,
     total_unique_counted,
     total_estimated,
@@ -31,14 +29,12 @@ const handler: NextApiHandler = async (req, res) => {
         closed_by,
         date_cancelled,
         cancelled_by,
-        counted_items,
-        reviewed_items,
         total_counted,
         total_unique_counted,
         total_estimated,
         total_unique_estimated
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
       [
         stocktake_template_id,
@@ -48,8 +44,6 @@ const handler: NextApiHandler = async (req, res) => {
         closed_by,
         date_cancelled,
         cancelled_by,
-        counted_items ? JSON.stringify(counted_items) : null,
-        reviewed_items ? JSON.stringify(reviewed_items) : null,
         total_counted,
         total_unique_counted,
         total_estimated,

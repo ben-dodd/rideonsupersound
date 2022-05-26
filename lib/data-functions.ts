@@ -731,7 +731,7 @@ export function writeStocktakeFilterDescription(
     filters?.push(
       `Media Filters: ${
         stocktake?.media_list?.length < maxNum
-          ? stocktake?.media_list?.join(", ")
+          ? stocktake?.media_list?.join?.(", ")
           : `${stocktake?.media_list?.length} Media Types`
       }`
     );
@@ -739,7 +739,7 @@ export function writeStocktakeFilterDescription(
     filters?.push(
       `Format Filters: ${
         stocktake?.format_list?.length < maxNum
-          ? stocktake?.format_list?.join(", ")
+          ? stocktake?.format_list?.join?.(", ")
           : `${stocktake?.format_list?.length} Formats`
       }`
     );
@@ -747,7 +747,7 @@ export function writeStocktakeFilterDescription(
     filters?.push(
       `Section Filters: ${
         stocktake?.section_list?.length < maxNum
-          ? stocktake?.section_list?.join(", ")
+          ? stocktake?.section_list?.join?.(", ")
           : `${stocktake?.section_list?.length} Sections`
       }`
     );
@@ -755,12 +755,12 @@ export function writeStocktakeFilterDescription(
     filters?.push(
       `Vendor Filters: ${
         stocktake?.vendor_list?.length < maxNum
-          ? stocktake?.vendor_list?.join(", ")
+          ? stocktake?.vendor_list?.join?.(", ")
           : `${stocktake?.vendor_list?.length} Vendors`
       }`
     );
   if (filters?.length > 0) {
-    return filters?.join(", ");
+    return filters?.join?.(", ");
   } else return "No Filters";
 }
 

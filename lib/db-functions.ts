@@ -21,6 +21,8 @@ import {
   StocktakeObject,
   StocktakeTemplateObject,
   StocktakeReviewDecisions,
+  StocktakeItemObject,
+  StocktakeStatuses,
 } from "@/lib/types";
 import dayjs from "dayjs";
 // Change to DayJS utc
@@ -648,6 +650,28 @@ export async function saveVendorPaymentToDatabase(
   }
 }
 
+export async function saveStocktakeItemToDatabase(
+  stocktakeItem: StocktakeItemObject
+) {
+  try {
+    const res = await fetch(
+      `/api/create-stocktake-item?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(stocktakeItem),
+      }
+    );
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+    return json.insertId;
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
+
 export async function saveStocktakeToDatabase(stocktake: StocktakeObject) {
   try {
     const res = await fetch(
@@ -1109,7 +1133,8 @@ export async function saveStockMovementToDatabase(
   registerID: number,
   act: string,
   note: string,
-  sale_id?: number
+  sale_id?: number,
+  stocktake_id?: number
 ) {
   try {
     const res = await fetch(
@@ -1135,6 +1160,7 @@ export async function saveStockMovementToDatabase(
           act,
           note,
           sale_id,
+          stocktake_id,
         }),
       }
     );
@@ -1181,6 +1207,27 @@ export async function updateStockItemInDatabase(
           "Content-Type": "application/json",
         },
         body: JSON.stringify(item),
+      }
+    );
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
+
+export async function updateStocktakeItemInDatabase(
+  stocktakeItem: StocktakeItemObject
+) {
+  try {
+    const res = await fetch(
+      `/api/update-stocktake-item?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(stocktakeItem),
       }
     );
     const json = await res.json();
@@ -1495,6 +1542,29 @@ export async function deleteSaleFromDatabase(sale_id: number) {
   }
 }
 
+export async function deleteStocktakeItemFromDatabase(
+  stocktake_item_id: number
+) {
+  try {
+    const res = await fetch(
+      `/api/delete-stocktake-item?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          stocktake_item_id,
+        }),
+      }
+    );
+    const json = await res.json();
+    if (!res.ok) throw Error(json.message);
+  } catch (e) {
+    throw Error(e.message);
+  }
+}
+
 export async function deleteStockMovementsFromDatabase(sale_id: number) {
   try {
     const res = await fetch(
@@ -1635,24 +1705,32 @@ export function returnStock(
 
 export function processStocktake(
   stocktake: StocktakeObject,
+  stocktakeTemplate: StocktakeTemplateObject,
+  stocktakeItems: StocktakeItemObject[],
   inventory: StockObject[],
   clerk: ClerkObject
 ) {
   let tasks = [];
-  stocktake?.reviewed_items?.forEach(async (item) => {
-    if (item?.review_decision === StocktakeReviewDecisions?.keep) {
+  stocktakeItems?.forEach(async (item: StocktakeItemObject) => {
+    if (item?.quantity_counted === item?.quantity_recorded) {
+      // Do nothing
+    } else if (item?.review_decision === StocktakeReviewDecisions?.keep) {
       saveLog({
-        log: `Stock take: ${getItemSkuDisplayNameById(item?.id, inventory)}. ${
-          item?.quantity_counted
-        } counted, ${
+        log: `Stock take: ${getItemSkuDisplayNameById(
+          item?.stock_id,
+          inventory
+        )}. ${item?.quantity_counted} counted, ${
           item?.quantity_recorded
         } in the system. System quantity kept.`,
         clerk_id: clerk?.id,
       });
-    } else if (item?.review_decision === StocktakeReviewDecisions?.review) {
+    } else if (
+      item?.review_decision === StocktakeReviewDecisions?.review ||
+      !item?.review_decision
+    ) {
       let newTask: TaskObject = {
         description: `Review stock take. ${getItemSkuDisplayNameById(
-          item?.id,
+          item?.stock_id,
           inventory
         )}. ${item?.quantity_counted} counted, ${
           item?.quantity_recorded
@@ -1673,22 +1751,29 @@ export function processStocktake(
       else if (item?.review_decision === StocktakeReviewDecisions?.return)
         act = StockMovementTypes?.Returned;
       saveStockMovementToDatabase(
-        { quantity: `${item?.quantity_difference}` },
+        { item_id: item?.stock_id, quantity: `${item?.quantity_difference}` },
         clerk,
         null,
         act,
         "Stock take adjustment.",
-        null
+        null,
+        stocktake?.id
       );
       saveLog({
-        log: `Stock take: ${getItemSkuDisplayNameById(item?.id, inventory)}. ${
-          item?.quantity_counted
-        } counted, ${
+        log: `Stock take: ${getItemSkuDisplayNameById(
+          item?.stock_id,
+          inventory
+        )}. ${item?.quantity_counted} counted, ${
           item?.quantity_recorded
         } in the system. Difference marked as ${act}.`,
         clerk_id: clerk?.id,
       });
     }
+  });
+  updateStocktakeTemplateInDatabase({
+    ...stocktakeTemplate,
+    last_completed: dayjs.utc().format(),
+    status: StocktakeStatuses?.completed,
   });
 }
 

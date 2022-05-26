@@ -381,8 +381,6 @@ export interface StocktakeObject {
   closed_by?: number;
   date_cancelled?: string;
   cancelled_by?: number;
-  counted_items?: CountedItemObject[];
-  reviewed_items?: ReviewedItemObject[];
   total_counted?: number;
   total_unique_counted?: number;
   total_estimated?: number;
@@ -390,17 +388,18 @@ export interface StocktakeObject {
   is_deleted?: boolean;
 }
 
-export interface CountedItemObject {
-  id?: number;
-  quantity?: number;
-}
-
-export interface ReviewedItemObject {
-  id?: number;
+export interface StocktakeItemObject {
+  id?: string;
+  stock_id?: number;
+  stocktake_id?: number;
   quantity_counted?: number;
   quantity_recorded?: number;
   quantity_difference?: number;
   review_decision?: string;
+  date_counted?: string;
+  counted_by?: number;
+  do_check_details?: boolean;
+  is_deleted?: boolean;
 }
 
 export interface StocktakeTemplateObject {
@@ -409,13 +408,13 @@ export interface StocktakeTemplateObject {
   filter_description?: string;
   image?: number;
   vendor_enabled?: boolean;
-  vendor_list?: [any];
+  vendor_list?: [any] | any;
   section_enabled?: boolean;
-  section_list?: [string];
+  section_list?: [string] | any;
   media_enabled?: boolean;
-  media_list?: [string];
+  media_list?: [string] | any;
   format_enabled?: boolean;
-  format_list?: [string];
+  format_list?: [string] | any;
   last_completed?: string;
   status?: string;
   is_deleted?: boolean;

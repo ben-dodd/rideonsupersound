@@ -8,7 +8,7 @@ export default function FilterBox({
   field,
 }) {
   // console.log(stocktake);
-  const enabled = stocktakeTemplate?.[`${field}_enabled`] || false;
+  const enabled = Boolean(stocktakeTemplate?.[`${field}_enabled`]) || false;
   const dataList = stocktakeTemplate?.[`${field}_list`] || [];
   // console.log(dataList);
   return (
@@ -63,7 +63,7 @@ export default function FilterBox({
                     setStocktakeTemplate({
                       ...stocktakeTemplate,
                       [`${field}_list`]: dataList?.includes(l?.value)
-                        ? dataList?.filter((d) => d !== l?.value)
+                        ? dataList?.filter?.((d) => d !== l?.value)
                         : [...dataList, l?.value],
                     })
                   }
