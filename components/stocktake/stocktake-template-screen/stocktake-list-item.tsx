@@ -23,7 +23,7 @@ export default function StocktakeListItem({ stocktake }: ListItemProps) {
   // SWR
   const [view, setView] = useAtom(viewAtom);
   const [, setLoadedStocktakeId] = useAtom(loadedStocktakeIdAtom);
-  console.log(stocktake);
+  // console.log(stocktake);
 
   return (
     <div
@@ -33,34 +33,33 @@ export default function StocktakeListItem({ stocktake }: ListItemProps) {
         setLoadedStocktakeId(stocktake?.id);
       }}
     >
-      <div className="flex w-full">
+      <div className="font-bold w-1/4">
+        {dayjs(stocktake?.date_started).format("D MMMM YYYY")}
+      </div>
+      <div className="mx-2 w-full w-3/4">
         <div className="font-bold">
-          {dayjs(stocktake?.date_started).format("D MMMM YYYY")}
-        </div>
-        <div className="mx-2 w-full">
-          <div className="font-bold">
-            {stocktake?.date_cancelled ? (
-              <div>Cancelled</div>
-            ) : stocktake?.date_closed ? (
-              <div>{`Completed on ${dayjs(stocktake?.date_closed).format(
-                "D MMMM YYYY"
-              )}`}</div>
-            ) : (
+          {stocktake?.date_cancelled ? (
+            <div>Cancelled</div>
+          ) : stocktake?.date_closed ? (
+            <div>{`Completed on ${dayjs(stocktake?.date_closed).format(
+              "D MMMM YYYY"
+            )}`}</div>
+          ) : (
+            <>
               <div>{`In Progress`}</div>
-            )}
-          </div>
-          <div>
-            <LinearProgress
-              variant="determinate"
-              value={
-                ((stocktake?.total_counted || 0) /
-                  (stocktake?.total_estimated || 1)) *
-                100
-              }
-            />
-          </div>
+              <LinearProgress
+                variant="determinate"
+                value={
+                  ((stocktake?.total_counted || 0) /
+                    (stocktake?.total_estimated || 1)) *
+                  100
+                }
+              />
+            </>
+          )}
+        </div>
 
-          {/* <CSVLink
+        {/* <CSVLink
         className={`bg-col2-dark hover:bg-col2 disabled:bg-gray-200 p-2 rounded`}
         data={getCSVData(getStock())}
         headers={["SKU", "ARTIST", "TITLE", "NEW/USED", "SELL PRICE", "GENRE"]}
@@ -78,7 +77,6 @@ export default function StocktakeListItem({ stocktake }: ListItemProps) {
       >
         PRINT LABELS
       </CSVLink> */}
-        </div>
       </div>
     </div>
   );

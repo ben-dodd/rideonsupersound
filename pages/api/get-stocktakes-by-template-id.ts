@@ -9,6 +9,7 @@ const handler: NextApiHandler = async (req, res) => {
       SELECT * FROM stocktake
       WHERE NOT is_deleted
       AND stocktake_template_id = ?
+      ORDER BY date_started DESC
       `,
       id
     );

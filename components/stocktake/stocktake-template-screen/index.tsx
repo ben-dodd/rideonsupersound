@@ -6,6 +6,7 @@ import { useAtom } from "jotai";
 import {
   useAllInventory,
   useAllSelects,
+  useStocktakeItemsByStocktake,
   useStocktakesByTemplate,
   useStocktakeTemplates,
   useVendors,
@@ -68,6 +69,9 @@ export default function StocktakeTemplateScreen() {
   const stocktake = stocktakes?.filter(
     (stocktake) => stocktake?.id === stocktakeId
   )?.[0];
+  const { isStocktakeItemsLoading } = useStocktakeItemsByStocktake(
+    stocktake?.id
+  );
   const stocktakeTemplate = stocktakeTemplates?.filter(
     (st) => st?.id === stocktakeTemplateId
   )?.[0];
@@ -92,7 +96,7 @@ export default function StocktakeTemplateScreen() {
   // }, [stocktakeTemplate?.id]);
 
   useEffect(() => {
-    console.log(stocktakeTemplate);
+    // console.log(stocktakeTemplate);
     // if (
     //   (stocktakeTemplate?.media_list &&
     //     !Array.isArray(stocktakeTemplate?.media_list)) ||
@@ -120,7 +124,7 @@ export default function StocktakeTemplateScreen() {
           : true)
     );
     // console.log(inventoryList);
-    console.log("Inventory List");
+    // console.log("Inventory List");
     const newStocktakeTemplate = {
       ...stocktakeTemplate,
       inventory_list: inventoryList,
@@ -199,9 +203,12 @@ export default function StocktakeTemplateScreen() {
     0;
 
   function setLoadedStocktakeTemplate(newTemplate: StocktakeTemplateObject) {
+    // console.log(newTemplate);
     updateStocktakeTemplateInDatabase(newTemplate);
     mutateStocktakeTemplates(
-      (st) => (st?.id === newTemplate?.id ? newTemplate : st),
+      stocktakeTemplates?.map((st) =>
+        st?.id === newTemplate?.id ? newTemplate : st
+      ),
       false
     );
   }
@@ -217,6 +224,7 @@ export default function StocktakeTemplateScreen() {
         loading={
           isStocktakeTemplatesLoading ||
           isStocktakesLoading ||
+          isStocktakeItemsLoading ||
           isSelectsLoading ||
           isVendorsLoading ||
           isLoading
@@ -237,7 +245,9 @@ export default function StocktakeTemplateScreen() {
                 <button
                   className="icon-text-button"
                   onClick={async () => {
+                    console.log("set is loading");
                     setIsLoading(true);
+                    console.log("update stock template");
                     updateStocktakeTemplateInDatabase({
                       ...stocktakeTemplate,
                       status: StocktakeStatuses?.inProgress,
@@ -250,9 +260,17 @@ export default function StocktakeTemplateScreen() {
                       total_unique_estimated:
                         stocktakeTemplate?.total_unique_estimated,
                     };
+                    console.log("save stocktake");
                     const id = await saveStocktakeToDatabase(newStocktake);
+                    mutateStocktakes(
+                      [{ ...newStocktake, id }, ...stocktakes],
+                      false
+                    );
+                    console.log("set view");
                     setView({ ...view, stocktakeScreen: true });
+                    console.log("set loaded stocktake id");
                     setLoadedStocktakeId(id);
+                    console.log("set loading false");
                     setIsLoading(false);
                   }}
                   disabled={
@@ -349,7 +367,7 @@ export default function StocktakeTemplateScreen() {
         </div>
       </ScreenContainer>
       {/* <StocktakeScreen /> */}
-      {stocktake && <StocktakeScreen />}
+      {stocktakeId && <StocktakeScreen />}
     </>
   );
 }

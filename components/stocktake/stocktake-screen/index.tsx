@@ -68,13 +68,16 @@ export default function StocktakeScreen() {
     const stocktakeToSave = st || stocktake;
     updateStocktakeInDatabase(stocktakeToSave);
     mutateStocktakes(
-      [
-        ...(stocktakes || [])?.filter((s) => s?.id !== stocktakeToSave?.id),
-        stocktakeToSave,
-      ],
+      stocktakes?.map((st) =>
+        st?.id === stocktakeToSave?.id ? stocktakeToSave : st
+      ),
       false
     );
   }
+
+  const completed = Boolean(
+    stocktake?.date_closed || stocktake?.date_cancelled
+  );
 
   function addMissedItems() {
     const inventoryList = inventory?.filter(
@@ -131,6 +134,17 @@ export default function StocktakeScreen() {
     mutateStocktakeItems(newCountedItems, false);
     missedItems?.forEach((i) => saveStocktakeItemToDatabase(i));
   }
+
+  const completedButtons: ModalButton[] = [
+    {
+      type: "ok",
+      text: `OK`,
+      onClick: () => {
+        setView({ ...view, stocktakeScreen: false });
+        setLoadedStocktakeId(null);
+      },
+    },
+  ];
 
   const buttons: ModalButton[][] = [
     [
@@ -221,24 +235,31 @@ export default function StocktakeScreen() {
       <ScreenContainer
         loading={isStocktakesLoading || isStocktakeItemsLoading}
         show={view?.stocktakeScreen}
-        closeFunction={async () => {
-          setView({ ...view, stocktakeScreen: false });
-          await saveOrUpdateStocktake(stocktake);
-          setLoadedStocktakeId(null);
-        }}
+        closeFunction={
+          completed
+            ? () => {
+                setView({ ...view, stocktakeScreen: false });
+                setLoadedStocktakeId(null);
+              }
+            : async () => {
+                setView({ ...view, stocktakeScreen: false });
+                await saveOrUpdateStocktake(stocktake);
+                setLoadedStocktakeId(null);
+              }
+        }
         title={`${stocktake?.id ? "" : "NEW "}${
           stocktakeTemplate?.name
         } STOCK TAKE ${stocktake?.id ? `#${stocktake?.id}` : ""}`}
-        buttons={buttons[step]}
+        buttons={completed ? completedButtons : buttons[step]}
         titleClass="bg-col2"
       >
         <div className="flex flex-col w-full">
-          {step === 0 && (
+          {step === 0 && !completed && (
             <div>
               <CountItems />
             </div>
           )}
-          {step == 1 && (
+          {(step == 1 || completed) && (
             <div>
               <ReviewItems />
             </div>

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useInventory, useLogs } from "@/lib/swr-hooks";
+import { useInventory, useLogs, useVendors } from "@/lib/swr-hooks";
 import { viewAtom, clerkAtom } from "@/lib/atoms";
 import { StockObject, ModalButton } from "@/lib/types";
 
@@ -11,6 +11,7 @@ import { StockObject, ModalButton } from "@/lib/types";
 import {
   filterInventory,
   getCSVData,
+  getImageSrc,
   getItemSkuDisplayName,
 } from "@/lib/data-functions";
 import { saveLog } from "@/lib/db-functions";
@@ -29,6 +30,7 @@ export default function LabelPrintDialog() {
 
   // SWR
   const { inventory } = useInventory();
+  const { vendors } = useVendors();
   const { logs, mutateLogs } = useLogs();
 
   // State
@@ -134,13 +136,39 @@ export default function LabelPrintDialog() {
                   if (search === `${("00000" + item?.id || "").slice(-5)}`) {
                     addItem(item);
                   }
+                  const vendor = vendors?.filter(
+                    (v) => v?.id === item?.vendor_id
+                  )?.[0];
                   return (
                     <div
-                      className="hover:bg-gray-100 cursor-pointer py-2 px-2"
+                      className="hover:bg-gray-100 cursor-pointer py-2 px-2 border-b border-black flex"
                       onClick={() => addItem(item)}
                       key={item?.id}
                     >
-                      {getItemSkuDisplayName(item)}
+                      <div className="w-12 mr-2">
+                        <img
+                          className={`object-cover h-12 ${
+                            item?.quantity < 1 ? " opacity-50" : ""
+                          }`}
+                          src={getImageSrc(item)}
+                          alt={item?.title || "Inventory image"}
+                        />
+                      </div>
+                      <div>
+                        <div className="font-bold">
+                          {getItemSkuDisplayName(item)}
+                        </div>
+                        <div className="text-sm">{`${
+                          item?.section ? `${item.section} / ` : ""
+                        }${item?.format} [${
+                          item?.is_new
+                            ? "NEW"
+                            : item?.cond?.toUpperCase() || "USED"
+                        }]`}</div>
+                        <div className="text-sm">
+                          {`${vendor ? `Selling for ${vendor?.name}` : ""}`}
+                        </div>
+                      </div>
                     </div>
                   );
                 }
@@ -148,24 +176,54 @@ export default function LabelPrintDialog() {
             </div>
           </div>
           <div>
-            <div className="font-bold text-xl">Selected Items</div>
+            <div className="font-bold">SELECTED ITEMS</div>
             <div>
-              {items?.map((item) => (
-                <div
-                  key={item?.key}
-                  className="flex space-between items-center"
-                >
-                  <div className="flex-auto">{getItemSkuDisplayName(item)}</div>
-                  <div className="w-50 text-right">
-                    <button
-                      className="py-2 text-tertiary hover:text-tertiary-dark"
-                      onClick={() => deleteItem(item)}
-                    >
-                      <DeleteIcon />
-                    </button>
+              {items?.map((item) => {
+                const vendor = vendors?.filter(
+                  (v) => v?.id === item?.vendor_id
+                )?.[0];
+                return (
+                  <div
+                    key={item?.key}
+                    className="flex items-center justify-between hover:bg-gray-100 my-2 border-b border-black"
+                  >
+                    <div className="flex">
+                      <div className="w-12 mr-2">
+                        <img
+                          className={`object-cover h-12 ${
+                            item?.quantity < 1 ? " opacity-50" : ""
+                          }`}
+                          src={getImageSrc(item)}
+                          alt={item?.title || "Inventory image"}
+                        />
+                      </div>
+                      <div>
+                        <div className="font-bold">
+                          {getItemSkuDisplayName(item)}
+                        </div>
+                        <div className="text-sm">{`${
+                          item?.section ? `${item.section} / ` : ""
+                        }${item?.format} [${
+                          item?.is_new
+                            ? "NEW"
+                            : item?.cond?.toUpperCase() || "USED"
+                        }]`}</div>
+                        <div className="text-sm">
+                          {`${vendor ? `Selling for ${vendor?.name}` : ""}`}
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <button
+                        className="py-2 text-tertiary hover:text-tertiary-dark"
+                        onClick={() => deleteItem(item)}
+                      >
+                        <DeleteIcon />
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>

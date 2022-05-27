@@ -42,6 +42,9 @@ export default function ReviewListItem({
   const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom);
   const { vendors } = useVendors();
   const vendor = vendors?.filter((v) => v?.id === stockItem?.vendor_id)?.[0];
+  const completed = Boolean(
+    stocktake?.date_closed || stocktake?.date_cancelled
+  );
   return (
     <div className="flex my-2 border-b w-full hover:bg-gray-100">
       <div className="w-1/2 flex">
@@ -79,6 +82,7 @@ export default function ReviewListItem({
           <div />
         ) : (
           <Select
+            isDisabled={completed}
             className={`w-full border border-4 ${
               !stocktakeItem?.review_decision
                 ? "border-red-500"
