@@ -220,7 +220,7 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
           <TextField
             inputLabel="QUANTITY"
             className="w-24"
-            inputType="number"
+            // inputType="number"
             error={parseInt(receiveItem?.quantity) < 1}
             min={0}
             value={`${receiveItem?.quantity}`}
