@@ -101,7 +101,6 @@ export default function ReturnItemsDialog({ sale }) {
             <div className="flex" key={item?.id}>
               <ItemListItem
                 saleItem={item}
-                sale={sale}
                 selected={refundItems.includes(item?.id)}
                 onClick={() => {
                   saveSystemLog(`ITEM ${item?.id} CLICKED`, clerk?.id);
