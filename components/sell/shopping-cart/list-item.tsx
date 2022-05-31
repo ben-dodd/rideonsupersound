@@ -45,15 +45,10 @@ export default function SellListItem({
   const [, setConfirmModal] = useAtom(confirmModalAtom);
 
   // State
-  const [item, setItem] = useState(null);
   const [expanded, setExpanded] = useState(false);
-
-  // Load
-  useEffect(() => {
-    setItem(
-      inventory?.filter((i: StockObject) => i.id === cartItem?.item_id)[0]
-    );
-  }, [inventory]);
+  const item = inventory?.filter(
+    (i: StockObject) => i.id === cartItem?.item_id
+  )?.[0];
 
   // Functions
   function onChangeCart(e: any, property: string) {

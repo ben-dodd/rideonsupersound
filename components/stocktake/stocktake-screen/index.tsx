@@ -1,5 +1,5 @@
 // Packages
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
@@ -17,14 +17,12 @@ import {
   loadedStocktakeIdAtom,
   loadedStocktakeTemplateIdAtom,
 } from "@/lib/atoms";
-import { ModalButton, StockObject, StocktakeItemObject } from "@/lib/types";
+import { ModalButton, StockObject } from "@/lib/types";
 
 // Functions
 import {
   processStocktake,
   saveStocktakeItemToDatabase,
-  saveStocktakeToDatabase,
-  saveSystemLog,
   updateStocktakeInDatabase,
   updateStocktakeItemInDatabase,
 } from "@/lib/db-functions";
@@ -32,8 +30,6 @@ import {
 // Components
 import ScreenContainer from "@/components/_components/container/screen";
 import CountItems from "./count-items";
-import CompleteStocktake from "./review-items";
-import dayjs from "dayjs";
 import InventoryItemScreen from "@/components/inventory/inventory-item-screen";
 import ReviewItems from "./review-items";
 
@@ -251,7 +247,7 @@ export default function StocktakeScreen() {
           stocktakeTemplate?.name
         } STOCK TAKE ${stocktake?.id ? `#${stocktake?.id}` : ""}`}
         buttons={completed ? completedButtons : buttons[step]}
-        titleClass="bg-col2"
+        titleClass="bg-col1"
       >
         <div className="flex flex-col w-full">
           {step === 0 && !completed && (

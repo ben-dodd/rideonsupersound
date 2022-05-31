@@ -1,10 +1,5 @@
-// Packages
-import { useState, useEffect } from "react";
-import { useAtom } from "jotai";
-
 // DB
-import { useAllInventory, useSaleItemsForSale, useLogs } from "@/lib/swr-hooks";
-import { cartAtom, alertAtom, clerkAtom } from "@/lib/atoms";
+import { useInventory } from "@/lib/swr-hooks";
 import { StockObject, SaleObject, SaleItemObject } from "@/lib/types";
 import { MouseEventHandler } from "react";
 
@@ -15,40 +10,26 @@ import {
   writeCartItemPriceBreakdown,
   getImageSrc,
 } from "@/lib/data-functions";
-import {
-  updateSaleItemInDatabase,
-  saveLog,
-  deleteSaleItemFromDatabase,
-} from "@/lib/db-functions";
 
 // Components
 import Image from "next/image";
 
 type SellListItemProps = {
   saleItem: SaleItemObject;
-  sale: SaleObject;
   selected?: boolean;
   onClick?: MouseEventHandler;
 };
 
 export default function ItemListItem({
   saleItem,
-  sale,
   selected,
   onClick,
 }: SellListItemProps) {
   // SWR
-  const { inventory } = useAllInventory();
-
-  // State
-  const [item, setItem] = useState(null);
-
-  // Load
-  useEffect(() => {
-    setItem(
-      inventory?.filter((i: StockObject) => i.id === saleItem?.item_id)[0]
-    );
-  }, [inventory]);
+  const { inventory } = useInventory();
+  const item = inventory?.filter(
+    (i: StockObject) => i.id === saleItem?.item_id
+  )?.[0];
 
   // Functions
 
@@ -63,8 +44,6 @@ export default function ItemListItem({
         <div className="w-20 h-20 relative">
           <img
             className="object-cover absolute"
-            // layout="fill"
-            // objectFit="cover"
             src={getImageSrc(item)}
             alt={item?.title || "Inventory image"}
           />
@@ -80,8 +59,6 @@ export default function ItemListItem({
           <div>{getItemDisplayName(item)}</div>
           {saleItem?.is_refunded ? (
             <div className={"text-red-500"}>REFUNDED</div>
-          ) : saleItem?.is_deleted ? (
-            <div className={"text-red-500"}>DELETED ITEM</div>
           ) : (
             <div />
           )}

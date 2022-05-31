@@ -76,17 +76,12 @@ export default function ChangePriceDialog() {
         } else {
           newQuantity += adjustment;
         }
-        const otherInventoryItems = inventory?.filter(
-          (i: StockObject) => i?.id !== stockItem?.id
+        mutateInventory(
+          inventory?.map((i) =>
+            i?.id === stockItem?.id ? { ...i, quantity: newQuantity } : i
+          ),
+          false
         );
-        let inventoryItem = inventory?.filter(
-          (i: StockObject) => i?.id === stockItem?.id
-        )[0];
-        inventoryItem = {
-          ...inventoryItem,
-          quantity: newQuantity,
-        };
-        mutateInventory([...otherInventoryItems, inventoryItem], false);
         mutateStockItem(
           [
             {

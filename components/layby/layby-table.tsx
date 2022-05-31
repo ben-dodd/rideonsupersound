@@ -3,12 +3,7 @@ import { useMemo } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import {
-  useSales,
-  useCustomers,
-  useClerks,
-  useInventory,
-} from "@/lib/swr-hooks";
+import { useSales, useCustomers, useClerks } from "@/lib/swr-hooks";
 import { loadedSaleIdAtom, pageAtom } from "@/lib/atoms";
 import {
   SaleObject,
@@ -26,7 +21,6 @@ export default function LaybyTable() {
   // SWR
   const { sales, isSalesLoading } = useSales();
   // const { saleItems, isSaleItemsLoading } = useSaleItems();
-  const { inventory, isInventoryLoading } = useInventory();
   const { customers, isCustomersLoading } = useCustomers();
   const { clerks, isClerksLoading } = useClerks();
 
@@ -41,10 +35,6 @@ export default function LaybyTable() {
       sales
         ?.filter((s: SaleObject) => s?.state === SaleStateTypes.Layby)
         ?.map((s: SaleObject) => {
-          // const items = saleItems?.filter(
-          //   (i: SaleItemObject) => i?.sale_id === s?.id
-          // );
-          // s = { ...s, items };
           return {
             id: s?.id,
             date: s?.date_sale_opened,
@@ -58,17 +48,9 @@ export default function LaybyTable() {
             items: s?.item_list,
             store: s?.store_cut,
             sell: s?.total_price,
-            // numberOfItems: items?.reduce(
-            //   (accumulator: number, item: SaleItemObject) =>
-            //     accumulator + parseInt(item?.quantity) || 1,
-            //   0
-            // ),
-            // items: writeItemList(inventory, items),
-            // store: getTotalCurrentStoreCut(items, inventory),
-            // sell: getTotalCurrentPrice(items, inventory),
           };
         }),
-    [sales, customers, clerks, inventory]
+    [sales, customers, clerks]
   );
   const columns = useMemo(() => {
     return [
@@ -134,16 +116,11 @@ export default function LaybyTable() {
         width: 400,
       },
     ];
-  }, [sales, inventory]);
+  }, [sales]);
 
   return (
     <TableContainer
-      loading={
-        isSalesLoading ||
-        isClerksLoading ||
-        isInventoryLoading ||
-        isCustomersLoading
-      }
+      loading={isSalesLoading || isClerksLoading || isCustomersLoading}
     >
       <Table
         color="bg-col6"

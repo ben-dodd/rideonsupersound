@@ -76,17 +76,54 @@ export function useInventory() {
     mutateInventory: mutate,
   };
 }
-
-export function useAllInventory() {
+export function useStockByVendor(vendor_id: number) {
   const { data, error, mutate } = useSWR(
-    `/api/get-all-stock-inventory`,
+    `/api/get-stock-by-vendor?vendor_id=${vendor_id}`,
     fetcher
   );
   return {
-    inventory: data,
-    isInventoryLoading: !error && !data,
-    isInventoryError: error,
-    mutateInventory: mutate,
+    vendorStock: data,
+    isVendorStockLoading: !error && !data,
+    isVendorStockError: error,
+    mutateVendorStock: mutate,
+  };
+}
+
+export function useStockSaleVars() {
+  // Gets all stock items for getSaleVars and for SaveSale
+  const { data, error, mutate } = useSWR(`/api/get-stock-sale-vars`, fetcher);
+  return {
+    stockSaleVars: data,
+    isStockSaleVarsLoading: !error && !data,
+    isStockSaleVarsError: error,
+    mutateStockSaleVars: mutate,
+  };
+}
+
+export function useStockDisplay() {
+  // Gets all stock items, including misc and gift cards but gets less information
+  // Used for list items, dropdowns etc.
+  // Use where price etc. still required
+  const { data, error, mutate } = useSWR(`/api/get-stock-display`, fetcher);
+  return {
+    stockDisplay: data,
+    isStockDisplayLoading: !error && !data,
+    isStockDisplayError: error,
+    mutateStockDisplay: mutate,
+  };
+}
+
+export function useStockDisplayMin() {
+  // Gets all stock items, including misc and gift cards but gets less information
+  // Used for list items, dropdowns etc.
+  // Used for bare minimum needs
+  // No misc items or gift cards
+  const { data, error, mutate } = useSWR(`/api/get-stock-display-min`, fetcher);
+  return {
+    stockDisplay: data,
+    isStockDisplayLoading: !error && !data,
+    isStockDisplayError: error,
+    mutateStockDisplay: mutate,
   };
 }
 

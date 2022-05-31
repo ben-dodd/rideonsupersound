@@ -5,9 +5,8 @@ import {
   getItemDisplayName,
   getItemSku,
 } from "@/lib/data-functions";
-import Image from "next/image";
 import { saveLog } from "@/lib/db-functions";
-import { useInventory, useLogs } from "@/lib/swr-hooks";
+import { useLogs } from "@/lib/swr-hooks";
 import dayjs from "dayjs";
 import { useAtom } from "jotai";
 import { CSVLink } from "react-csv";
@@ -27,7 +26,6 @@ export default function PrintLabel({ receivedStock }) {
         res.push(receiveItem?.item)
       );
     });
-    console.log(res);
     return res;
   }
 

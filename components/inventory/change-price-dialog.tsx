@@ -11,7 +11,7 @@ import {
   loadedItemIdAtom,
   pageAtom,
 } from "@/lib/atoms";
-import { ModalButton, StockObject } from "@/lib/types";
+import { ModalButton } from "@/lib/types";
 
 // Functions
 import { getItemDisplayName } from "@/lib/data-functions";
@@ -58,18 +58,14 @@ export default function ChangePriceDialog() {
         setSubmitting(true);
         const totalSellNum = parseFloat(totalSell) * 100;
         const vendorCutNum = parseFloat(vendorCut) * 100;
-        const otherInventoryItems = inventory?.filter(
-          (i: StockObject) => i?.id !== stockItem?.id
+        mutateInventory(
+          inventory?.map((i) =>
+            i?.id === stockItem?.id
+              ? { ...i, total_sell: totalSellNum, vendor_cut: vendorCutNum }
+              : i
+          ),
+          false
         );
-        let inventoryItem = inventory?.filter(
-          (i: StockObject) => i?.id === stockItem?.id
-        )[0];
-        inventoryItem = {
-          ...inventoryItem,
-          total_sell: totalSellNum,
-          vendor_cut: vendorCutNum,
-        };
-        mutateInventory([...otherInventoryItems, inventoryItem], false);
         mutateStockItem(
           [
             {

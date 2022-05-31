@@ -167,7 +167,6 @@ export async function saveSaleItemsTransactionsToDatabase(
   prevState?: string,
   customer?: string
 ) {
-  console.log("save sale");
   let { totalStoreCut, totalItemPrice, numberOfItems, itemList } = getSaleVars(
     cart,
     inventory
@@ -192,8 +191,10 @@ export async function saveSaleItemsTransactionsToDatabase(
   } else {
     // Sale already has id, update
     updateSaleInDatabase(newSale);
-    let otherSales = sales?.filter((s: SaleObject) => s?.id !== newSaleId);
-    mutateSales([...otherSales, newSale], false);
+    mutateSales(
+      sales?.map((s) => (s?.id === newSaleId ? newSale : s)),
+      false
+    );
   }
 
   if (newSale?.is_mail_order && cart?.state === SaleStateTypes.Completed) {
@@ -206,7 +207,7 @@ export async function saveSaleItemsTransactionsToDatabase(
   for (const item of cart?.items) {
     let invItem = inventory?.filter(
       (i: StockObject) => i?.id === item?.item_id
-    )[0];
+    )?.[0];
     // Check whether inventory item needs restocking
     const quantity = getItemQuantity(invItem, cart?.items);
     let quantity_layby = invItem?.quantity_layby || 0;
@@ -220,10 +221,10 @@ export async function saveSaleItemsTransactionsToDatabase(
     if (cart?.state === SaleStateTypes.Completed && item?.is_gift_card) {
       // Add to collection
       invItem.gift_card_is_valid = true;
-      const otherGiftCards = giftCards?.filter(
-        (g: GiftCardObject) => g?.id !== invItem?.id
+      mutateGiftCards(
+        giftCards?.map((gc) => (gc?.id === invItem?.id ? invItem : gc)),
+        false
       );
-      mutateGiftCards([...otherGiftCards, invItem], false);
       validateGiftCard(item?.item_id);
     }
 
@@ -291,12 +292,11 @@ export async function saveSaleItemsTransactionsToDatabase(
       }
 
       // Update inventory item if it's a regular stock item
-      const otherInventoryItems = inventory?.filter(
-        (i: StockObject) => i?.id !== invItem?.id
-      );
       mutateInventory &&
         mutateInventory(
-          [...otherInventoryItems, { ...invItem, quantity, quantity_layby }],
+          inventory?.map((i) =>
+            i?.id === invItem?.id ? { ...invItem, quantity, quantity_layby } : i
+          ),
           false
         );
     }

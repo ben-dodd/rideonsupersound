@@ -12,9 +12,12 @@ import {
 } from "@/lib/db-functions";
 import { StocktakeTemplateObject } from "@/lib/types";
 import { useState } from "react";
+import { useStocktakeTemplates } from "@/lib/swr-hooks";
 
 export default function StocktakeNavActions() {
   const [view, setView] = useAtom(viewAtom);
+  const { stocktakeTemplates, mutateStocktakeTemplates } =
+    useStocktakeTemplates();
   const [, setLoadedStocktakeTemplateId] = useAtom(
     loadedStocktakeTemplateIdAtom
   );
@@ -33,6 +36,10 @@ export default function StocktakeNavActions() {
           };
           const id = await saveStocktakeTemplateToDatabase(
             newStocktakeTemplate
+          );
+          mutateStocktakeTemplates(
+            [{ id, format_enabled: true, name: "" }, ...stocktakeTemplates],
+            false
           );
           setLoadedStocktakeTemplateId(id);
           setView({ ...view, stocktakeTemplateScreen: true });

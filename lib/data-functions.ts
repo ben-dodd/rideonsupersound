@@ -337,7 +337,7 @@ export function sumPrices(
           ? null
           : inventory?.filter(
               (i: StockObject) => i?.id === saleItem?.item_id
-            )[0];
+            )?.[0];
       const prices = getCartItemPrice(saleItem, item);
       return (acc += prices?.[field]);
     }, 0);

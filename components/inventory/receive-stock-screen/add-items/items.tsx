@@ -2,15 +2,12 @@ import { receiveStockAtom } from "@/lib/atoms";
 import {
   getItemDisplayName,
   getItemSkuDisplayName,
-  getItemSkuDisplayNameById,
 } from "@/lib/data-functions";
 import { useAtom } from "jotai";
 import CloseIcon from "@mui/icons-material/Close";
-import { useInventory } from "@/lib/swr-hooks";
 
 export default function Items() {
   const [basket, setBasket] = useAtom(receiveStockAtom);
-  const { inventory } = useInventory();
   const removeItem = (removeItem) => {
     const items = basket?.items?.filter(
       (item) => item?.key !== removeItem?.key

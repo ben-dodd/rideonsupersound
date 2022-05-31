@@ -6,6 +6,7 @@ import {
   getItemSku,
   getItemDisplayName,
   writeCartItemPriceBreakdown,
+  getImageSrc,
 } from "@/lib/data-functions";
 
 type HoldListItemProps = {
@@ -13,23 +14,15 @@ type HoldListItemProps = {
 };
 export default function HoldListItem({ cartItem }: HoldListItemProps) {
   const { inventory } = useInventory();
-  const [item, setItem] = useState(null);
-  useEffect(() => {
-    setItem(
-      inventory?.filter((i: StockObject) => i.id === cartItem?.item_id)[0]
-    );
-  }, [inventory]);
+  const item = inventory?.filter(
+    (i: StockObject) => i.id === cartItem?.item_id
+  )?.[0];
 
   return (
     <div className="flex w-full bg-blue-100 text-black relative pt mb-2">
       <img
         className="w-20 h-20"
-        src={
-          item?.is_gift_card
-            ? `${process.env.NEXT_PUBLIC_RESOURCE_URL}img/giftCard.png`
-            : item?.image_url ||
-              `${process.env.NEXT_PUBLIC_RESOURCE_URL}img/default.png`
-        }
+        src={getImageSrc(item)}
         alt={item?.title || "Inventory image"}
       />
       <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white flex justify-center items-center text-sm">

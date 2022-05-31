@@ -2,14 +2,11 @@ import { receiveStockAtom } from "@/lib/atoms";
 import {
   getItemDisplayName,
   getItemSkuDisplayName,
-  getItemSkuDisplayNameById,
 } from "@/lib/data-functions";
 import { useAtom } from "jotai";
-import { useInventory } from "@/lib/swr-hooks";
 
 export default function Items({ onClick }) {
   const [basket] = useAtom(receiveStockAtom);
-  const { inventory } = useInventory();
   return (
     <div>
       {basket?.items?.length > 0 ? (

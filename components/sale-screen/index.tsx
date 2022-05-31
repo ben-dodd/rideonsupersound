@@ -11,6 +11,7 @@ import {
   useSales,
   useGiftCards,
   useRegisterID,
+  useStockSaleVars,
 } from "@/lib/swr-hooks";
 import { clerkAtom, alertAtom, cartAtom, viewAtom } from "@/lib/atoms";
 import { ModalButton, CustomerObject, SaleStateTypes } from "@/lib/types";
@@ -48,6 +49,7 @@ export default function SaleScreen() {
 
   // SWR
   const { customers } = useCustomers();
+  // const { stockSaleVars, mutateStockSaleVars } = useStockSaleVars();
   const { inventory, mutateInventory } = useInventory();
   const { isSaleTransactionsLoading } = useSaleTransactionsForSale(cart?.id);
   const { sales, mutateSales } = useSales();

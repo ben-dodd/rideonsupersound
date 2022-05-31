@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 
 // DB
-import { useInventory, useLogs, useVendors } from "@/lib/swr-hooks";
+import { useLogs, useStockDisplay, useVendors } from "@/lib/swr-hooks";
 import { viewAtom, clerkAtom } from "@/lib/atoms";
 import { StockObject, ModalButton } from "@/lib/types";
 
@@ -29,26 +29,13 @@ export default function LabelPrintDialog() {
   const [clerk] = useAtom(clerkAtom);
 
   // SWR
-  const { inventory } = useInventory();
+  const { stockDisplay } = useStockDisplay();
   const { vendors } = useVendors();
   const { logs, mutateLogs } = useLogs();
 
   // State
   const [search, setSearch] = useState("");
   const [items, setItems] = useState([]);
-  // const initItems = {
-  //   0: { item: {}, printQuantity: 1 },
-  //   1: { item: {}, printQuantity: 1 },
-  //   2: { item: {}, printQuantity: 1 },
-  //   3: { item: {}, printQuantity: 1 },
-  //   4: { item: {}, printQuantity: 1 },
-  //   5: { item: {}, printQuantity: 1 },
-  //   6: { item: {}, printQuantity: 1 },
-  //   7: { item: {}, printQuantity: 1 },
-  //   8: { item: {}, printQuantity: 1 },
-  //   9: { item: {}, printQuantity: 1 },
-  // };
-  // const [items, setItems] = useState(initItems);
 
   function closeDialog() {
     setItems([]);
@@ -131,7 +118,7 @@ export default function LabelPrintDialog() {
               />
             </div>
             <div className="overflow-y-scroll pt-2">
-              {filterInventory({ inventory, search })?.map(
+              {filterInventory({ inventory: stockDisplay, search })?.map(
                 (item: StockObject) => {
                   if (search === `${("00000" + item?.id || "").slice(-5)}`) {
                     addItem(item);

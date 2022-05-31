@@ -30,7 +30,7 @@ export default function ReceiveStockScreen() {
   // Atoms
   const [basket, setBasket] = useAtom(receiveStockAtom);
   const [, setConfirmModal] = useAtom(confirmModalAtom);
-  const { inventory, mutateInventory } = useInventory();
+  const { mutateInventory } = useInventory();
   const [view, setView] = useAtom(viewAtom);
   const [clerk] = useAtom(clerkAtom);
   const [step, setStep] = useState(0);

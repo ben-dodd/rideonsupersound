@@ -36,8 +36,6 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
     ),
   });
 
-  console.log(bucket);
-
   return (
     <div className="flex justify-between my-2 border-b">
       <div className="flex">

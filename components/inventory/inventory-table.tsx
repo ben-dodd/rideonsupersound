@@ -39,7 +39,7 @@ export default function InventoryTable() {
           title: t?.title || "-",
           artist: t?.artist || "-",
           vendor: `[${("000" + t?.vendor_id || "").slice(-3)}] ${
-            vendors?.filter((v: VendorObject) => v?.id === t?.vendor_id)[0]
+            vendors?.filter((v: VendorObject) => v?.id === t?.vendor_id)?.[0]
               ?.name
           }`,
           section: `${t?.section || ""}${

@@ -1,6 +1,3 @@
-import { receiveStockAtom } from "@/lib/atoms";
-import { useInventory } from "@/lib/swr-hooks";
-import { useAtom } from "jotai";
 import { useState } from "react";
 import Tabs from "@/components/_components/navigation/tabs";
 import Discogs from "./discogs";

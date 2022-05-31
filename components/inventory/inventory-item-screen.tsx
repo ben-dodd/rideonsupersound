@@ -130,11 +130,10 @@ export default function InventoryItemScreen({ page }) {
     {
       type: "ok",
       onClick: () => {
-        let otherInventoryItems = inventory?.filter(
-          (i: StockObject) => i?.id !== stockItem?.id
-        );
         mutateInventory(
-          [...otherInventoryItems, { ...stockItem, ...item }],
+          inventory?.map((i) =>
+            i?.id === stockItem?.id ? { ...stockItem, ...item } : i
+          ),
           false
         );
         updateStockItemInDatabase(item);

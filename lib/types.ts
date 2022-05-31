@@ -420,7 +420,6 @@ export interface StocktakeTemplateObject {
   is_deleted?: boolean;
   total_estimated?: number;
   total_unique_estimated?: number;
-  inventory_list?: number;
 }
 
 export interface TaskObject {

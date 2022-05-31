@@ -1,7 +1,7 @@
 // DB
 import { getItemSkuDisplayNameById } from "@/lib/data-functions";
-import { useClerks, useInventory } from "@/lib/swr-hooks";
-import { LogObject, ClerkObject, StockMovementObject } from "@/lib/types";
+import { useClerks, useStockDisplayMin } from "@/lib/swr-hooks";
+import { ClerkObject, StockMovementObject } from "@/lib/types";
 
 type ListItemProps = {
   sm: StockMovementObject;
@@ -10,7 +10,7 @@ type ListItemProps = {
 export default function ListStockMovement({ sm }: ListItemProps) {
   // SWR
   const { clerks } = useClerks();
-  const { inventory } = useInventory();
+  const { stockDisplay } = useStockDisplayMin();
 
   return (
     <div className="flex w-full border-b border-yellow-100 py-1 font-mono text-xs text-black">
@@ -28,7 +28,7 @@ export default function ListStockMovement({ sm }: ListItemProps) {
           <div className="uppercase pr-4 w-1/12">{sm?.act}</div>
           <div className="font-bold pr-4 w-1/12">{sm?.quantity} x</div>
           <div className="w-7/12">
-            {getItemSkuDisplayNameById(sm?.stock_id, inventory)}
+            {getItemSkuDisplayNameById(sm?.stock_id, stockDisplay)}
           </div>
         </div>
       </div>

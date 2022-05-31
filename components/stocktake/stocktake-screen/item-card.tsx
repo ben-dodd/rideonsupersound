@@ -1,38 +1,16 @@
-// Packages
-import { useState } from "react";
-import { useAtom } from "jotai";
-
 // DB
-import {
-  useInventory,
-  useVendors,
-  useLogs,
-  useRegisterID,
-} from "@/lib/swr-hooks";
-import { viewAtom, clerkAtom, alertAtom, loadedItemIdAtom } from "@/lib/atoms";
-import { StockObject, VendorObject, ModalButton } from "@/lib/types";
+import { useVendors } from "@/lib/swr-hooks";
 
 // Functions
-import { returnStock, saveLog } from "@/lib/db-functions";
 import {
   getImageSrc,
   getItemDisplayName,
   getItemSku,
-  getItemSkuDisplayName,
 } from "@/lib/data-functions";
 
-// Components
-import TextField from "@/components/_components/inputs/text-field";
-import Select from "react-select";
-
-// Icons
-import EditIcon from "@mui/icons-material/Edit";
-
 export default function ItemCard({ item }) {
-  const [ite, setItem] = useState(item);
-  const { vendors, isVendorsLoading } = useVendors();
+  const { vendors } = useVendors();
   const vendor = vendors?.filter((v) => v?.id === item?.vendor_id)?.[0];
-  const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom);
   // SWR
   if (!item) return <div />;
 
@@ -72,7 +50,6 @@ export default function ItemCard({ item }) {
           alt={item?.title || "Inventory image"}
         />
       </div>
-      {/* <InventoryItemForm item={item} setItem={setItem} /> */}
     </div>
   );
 }

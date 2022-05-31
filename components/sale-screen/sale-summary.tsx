@@ -1,10 +1,6 @@
 // DB
-import { useAllInventory } from "@/lib/swr-hooks";
-import {
-  SaleTransactionObject,
-  SaleItemObject,
-  SaleStateTypes,
-} from "@/lib/types";
+import { useInventory } from "@/lib/swr-hooks";
+import { SaleTransactionObject, SaleItemObject } from "@/lib/types";
 
 // Functions
 import { getSaleVars } from "@/lib/data-functions";
@@ -16,7 +12,7 @@ import dayjs from "dayjs";
 
 export default function SaleSummary({ sale }) {
   // SWR
-  const { inventory } = useAllInventory();
+  const { inventory } = useInventory();
 
   // Constants
   const {
@@ -34,11 +30,7 @@ export default function SaleSummary({ sale }) {
       <div className={`h-2/5 overflow-y-scroll`}>
         {sale?.items?.length > 0 ? (
           sale?.items?.map((saleItem: SaleItemObject) => (
-            <ItemListItem
-              key={saleItem?.item_id}
-              saleItem={saleItem}
-              sale={sale}
-            />
+            <ItemListItem key={saleItem?.item_id} saleItem={saleItem} />
           ))
         ) : (
           <div>No items in cart...</div>

@@ -24,12 +24,10 @@ import { useAtom } from "jotai";
 import { CSVLink } from "react-csv";
 import ReviewListItem from "./review-list-item";
 import { StockObject, StocktakeItemObject } from "@/lib/types";
-import { useEffect, useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
+import { useState } from "react";
 
 export default function ReviewItems() {
-  const { logs, mutateLogs } = useLogs();
-  const [clerk] = useAtom(clerkAtom);
   const [stocktakeId] = useAtom(loadedStocktakeIdAtom);
   const [stocktakeTemplateId] = useAtom(loadedStocktakeTemplateIdAtom);
   const { stocktakes, mutateStocktakes } =

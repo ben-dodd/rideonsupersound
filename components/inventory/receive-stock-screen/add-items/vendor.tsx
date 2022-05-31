@@ -1,8 +1,5 @@
 import { receiveStockAtom } from "@/lib/atoms";
-import {
-  getItemDisplayName,
-  getItemSkuDisplayName,
-} from "@/lib/data-functions";
+import { getItemSkuDisplayName } from "@/lib/data-functions";
 import { useInventory } from "@/lib/swr-hooks";
 import { StockObject } from "@/lib/types";
 import { useAtom } from "jotai";

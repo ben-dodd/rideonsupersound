@@ -7,7 +7,7 @@ export default function StocktakeListScreen() {
   return (
     <div className="flex flex-col w-full">
       <div className="bg-col1 text-4xl font-bold uppercase text-white p-2 mb-1">
-        Stocktake
+        Stocktakes
       </div>
       {/* <Tabs tabs={["Logs", "Stock Movement"]} value={tab} onChange={setTab} /> */}
       {isStocktakeTemplatesLoading ? (

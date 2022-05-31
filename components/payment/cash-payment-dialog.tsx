@@ -14,34 +14,22 @@ import {
   useLogs,
 } from "@/lib/swr-hooks";
 import { viewAtom, clerkAtom } from "@/lib/atoms";
-import {
-  VendorSaleItemObject,
-  VendorPaymentObject,
-  StockObject,
-  VendorObject,
-  ModalButton,
-  PaymentMethodTypes,
-  VendorPaymentTypes,
-} from "@/lib/types";
+import { VendorObject, ModalButton, VendorPaymentTypes } from "@/lib/types";
 
 // Functions
 import { saveLog, saveVendorPaymentToDatabase } from "@/lib/db-functions";
-import { getTotalOwing } from "@/lib/data-functions";
+import { getTotalOwing, getVendorDetails } from "@/lib/data-functions";
 
 // Components
 import TextField from "@/components/_components/inputs/text-field";
 import Modal from "@/components/_components/container/modal";
-import CreateableSelect from "@/components/_components/inputs/createable-select";
 import dayjs from "dayjs";
 
 export default function CashPaymentDialog() {
   // SWR
   const { registerID } = useRegisterID();
-  const { inventory } = useInventory();
   const { vendors } = useVendors();
-  const { sales } = useSalesJoined();
   const { mutateCashGiven } = useCashGiven(registerID || 0);
-  const { vendorPayments, mutateVendorPayments } = useVendorPayments();
   const { logs, mutateLogs } = useLogs();
 
   // Atoms
@@ -51,30 +39,19 @@ export default function CashPaymentDialog() {
   // State
   const [submitting, setSubmitting] = useState(false);
   const [vendor_id, setVendor]: [number, Function] = useState(0);
+  const { inventory } = useInventory();
+  const { sales } = useSalesJoined();
+  const { vendorPayments, mutateVendorPayments } = useVendorPayments();
   const [payment, setPayment] = useState("0");
   const [notes, setNotes] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [paymentType, setPaymentType] = useState(VendorPaymentTypes.Cash);
 
   // Constants
-  const totalOwing = useMemo(
-    () =>
-      getTotalOwing(
-        vendorPayments?.filter(
-          (v: VendorPaymentObject) => v?.vendor_id === vendor_id
-        ),
-        sales?.filter(
-          (v: VendorSaleItemObject) =>
-            inventory?.filter((i: StockObject) => i?.id === v?.item_id)[0]
-              ?.vendor_id === vendor_id
-        )
-      ),
-    [vendor_id, vendorPayments]
+  const vendorVars = useMemo(
+    () => getVendorDetails(inventory, sales, vendorPayments, vendor_id),
+    [inventory, sales, vendorPayments, vendor_id]
   );
-  const vendor = useMemo(
-    () => vendors?.filter((v: VendorObject) => v?.id === vendor_id)[0],
-    [vendor_id, vendors]
-  );
+  const vendor = vendors?.filter((v: VendorObject) => v?.id === vendor_id)?.[0];
   const buttons: ModalButton[] = [
     {
       type: "cancel",
@@ -186,13 +163,14 @@ export default function CashPaymentDialog() {
           onChange={(e: any) => setNotes(e.target.value)}
         />
         <div className="mt-4 text-center">
-          {vendor_id > 0 && `VENDOR OWED $${(totalOwing / 100)?.toFixed(2)}`}
+          {vendor_id > 0 &&
+            `VENDOR OWED $${(vendorVars?.totalOwing / 100)?.toFixed(2)}`}
         </div>
         <div className="my-4 text-center text-xl font-bold">
           {vendor_id > 0
             ? isNaN(parseFloat(payment))
             : "NUMBERS ONLY PLEASE"
-            ? totalOwing / 100 < parseFloat(payment)
+            ? vendorVars?.totalOwing / 100 < parseFloat(payment)
               ? `YOU ARE PAYING VENDOR MORE THAN THEY ARE OWED`
               : "PAYMENT OK"
             : "SELECT VENDOR"}

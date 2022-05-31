@@ -28,13 +28,12 @@ export default function RestockJob({ item }: ListItemProps) {
               className="cursor-pointer"
               type="checkbox"
               onChange={() => {
-                const otherInventoryItems = inventory?.filter(
-                  (i: StockObject) => i?.id !== item?.id
+                mutateInventory(
+                  inventory?.map((i) =>
+                    i?.id === item?.id ? { ...item, needs_restock: false } : i
+                  ),
+                  false
                 );
-                mutateInventory([
-                  ...otherInventoryItems,
-                  { ...item, needs_restock: false },
-                ]);
                 completeRestockTask(item?.id);
                 saveLog(
                   {
