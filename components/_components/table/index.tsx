@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { SaleStateTypes, PaymentMethodTypes } from "@/lib/types";
 
@@ -24,6 +24,9 @@ import ArrowDown from "@mui/icons-material/ArrowDropDown";
 import ArrowUp from "@mui/icons-material/ArrowDropUp";
 import { CSVLink } from "react-csv";
 import dayjs from "dayjs";
+
+// const skipPageResetRef:any = useRef();
+// skipPageResetRef.current = false;
 
 function GlobalFilter({
   preGlobalFilteredRows,
@@ -96,8 +99,6 @@ function Table({
     }),
     []
   );
-
-  // const skipPageResetRef = useRef();
   // useEffect(() => {
   //   skipPageResetRef.current = false;
   // });
@@ -127,9 +128,13 @@ function Table({
       columns,
       data,
       defaultColumn,
-      // autoResetPage: !skipPageResetRef.current,
-      // autoResetSortBy: !skipPageResetRef.current,
-      // autoResetFilters: !skipPageResetRef.current,
+      // autoResetPage: false,
+      // autoResetExpanded: false,
+      // autoResetGroupBy: false,
+      // autoResetSelectedRows: false,
+      // autoResetSortBy: false,
+      // autoResetFilters: false,
+      // autoResetRowState: false,
       initialState: {
         pageSize: pageSize || 15,
         sortBy: sortOptions || [],

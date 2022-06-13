@@ -23,17 +23,17 @@ import {
   StocktakeReviewDecisions,
   StocktakeItemObject,
   StocktakeStatuses,
-} from "@/lib/types";
-import dayjs from "dayjs";
+} from '@/lib/types'
+import dayjs from 'dayjs'
 // Change to DayJS utc
-import { v4 as uuid } from "uuid";
+import { v4 as uuid } from 'uuid'
 
 import {
   getItemDisplayName,
   getItemQuantity,
   getItemSkuDisplayNameById,
   getSaleVars,
-} from "./data-functions";
+} from './data-functions'
 
 export async function loadSaleToCart(
   cart: SaleObject,
@@ -67,9 +67,9 @@ export async function loadSaleToCart(
       mutateInventory,
       giftCards,
       mutateGiftCards
-    );
+    )
   }
-  setCart(sale);
+  setCart(sale)
 }
 
 export async function nukeSaleInDatabase(
@@ -83,27 +83,31 @@ export async function nukeSaleInDatabase(
     {
       log: `Sale #${sale?.id} nuked.`,
       clerk_id: clerk?.id,
-      table_id: "sale",
+      table_id: 'sale',
       row_id: sale?.id,
     },
     logs,
     mutateLogs
-  );
+  )
   sale?.items?.forEach((saleItem) => {
-    deleteSaleItemFromDatabase(saleItem?.id);
+    deleteSaleItemFromDatabase(saleItem?.id)
     if (!saleItem?.is_refunded)
       saveStockMovementToDatabase(
         saleItem,
         clerk,
         registerID,
         StockMovementTypes.Unsold,
-        "Sale nuked.",
+        'Sale nuked.',
         sale?.id
-      );
-  });
-  sale?.transactions?.forEach((i) => deleteSaleTransactionFromDatabase(i?.id));
+      )
+  })
+  sale?.transactions?.forEach((saleTransaction) => {
+    if (saleTransaction?.vendor_payment_id)
+      deleteVendorPaymentFromDatabase(saleTransaction?.vendor_payment_id)
+    deleteSaleTransactionFromDatabase(saleTransaction?.id)
+  })
   // deleteStockMovementsFromDatabase(sale?.id);
-  deleteSaleFromDatabase(sale?.id);
+  deleteSaleFromDatabase(sale?.id)
 }
 
 export async function saveSaleAndPark(
@@ -130,11 +134,11 @@ export async function saveSaleAndPark(
     mutateInventory,
     giftCards,
     mutateGiftCards
-  );
+  )
   saveLog(
     {
       log: `Sale #${id} parked (${cart?.items?.length} item${
-        cart?.items?.length === 1 ? "" : "s"
+        cart?.items?.length === 1 ? '' : 's'
       }${
         cart?.customer_id
           ? ` for ${
@@ -142,16 +146,16 @@ export async function saveSaleAndPark(
                 (c: CustomerObject) => c?.id === cart?.customer_id
               )[0]?.name
             }.`
-          : ""
+          : ''
       }).`,
       clerk_id: clerk?.id,
-      table_id: "sale",
+      table_id: 'sale',
       row_id: id,
     },
     logs,
     mutateLogs
-  );
-  mutateInventory && mutateInventory();
+  )
+  mutateInventory && mutateInventory()
 }
 
 export async function saveSaleItemsTransactionsToDatabase(
@@ -170,35 +174,35 @@ export async function saveSaleItemsTransactionsToDatabase(
   let { totalStoreCut, totalItemPrice, numberOfItems, itemList } = getSaleVars(
     cart,
     inventory
-  );
+  )
   let newSale = {
     ...cart,
     store_cut: totalStoreCut * 100,
     total_price: totalItemPrice * 100,
     number_of_items: numberOfItems,
     item_list: itemList,
-  };
-  let newSaleId = newSale?.id;
+  }
+  let newSaleId = newSale?.id
   //
   // HANDLE SALE OBJECT
   //
   if (!newSaleId) {
     // Sale is new, save to database and add id to sales
-    newSale.state = newSale?.state || SaleStateTypes.InProgress;
-    newSaleId = await saveSaleToDatabase(newSale, clerk);
-    newSale = { ...newSale, id: newSaleId };
-    mutateSales([...sales, newSale], false);
+    newSale.state = newSale?.state || SaleStateTypes.InProgress
+    newSaleId = await saveSaleToDatabase(newSale, clerk)
+    newSale = { ...newSale, id: newSaleId }
+    mutateSales([...sales, newSale], false)
   } else {
     // Sale already has id, update
-    updateSaleInDatabase(newSale);
+    updateSaleInDatabase(newSale)
     mutateSales(
       sales?.map((s) => (s?.id === newSaleId ? newSale : s)),
       false
-    );
+    )
   }
 
   if (newSale?.is_mail_order && cart?.state === SaleStateTypes.Completed) {
-    addNewMailOrderTask(newSale, customer);
+    addNewMailOrderTask(newSale, customer)
   }
 
   //
@@ -207,35 +211,35 @@ export async function saveSaleItemsTransactionsToDatabase(
   for (const item of cart?.items) {
     let invItem = inventory?.filter(
       (i: StockObject) => i?.id === item?.item_id
-    )?.[0];
+    )?.[0]
     // Check whether inventory item needs restocking
-    const quantity = getItemQuantity(invItem, cart?.items);
-    let quantity_layby = invItem?.quantity_layby || 0;
+    const quantity = getItemQuantity(invItem, cart?.items)
+    let quantity_layby = invItem?.quantity_layby || 0
     // let quantity_sold = invItem?.quantity_sold || 0;
     if (quantity > 0) {
-      invItem.needs_restock = true;
-      addRestockTask(invItem?.id);
+      invItem.needs_restock = true
+      addRestockTask(invItem?.id)
     }
 
     // If sale is complete, validate gift card
     if (cart?.state === SaleStateTypes.Completed && item?.is_gift_card) {
       // Add to collection
-      invItem.gift_card_is_valid = true;
+      invItem.gift_card_is_valid = true
       mutateGiftCards(
         giftCards?.map((gc) => (gc?.id === invItem?.id ? invItem : gc)),
         false
-      );
-      validateGiftCard(item?.item_id);
+      )
+      validateGiftCard(item?.item_id)
     }
 
     // Add or update Sale Item
     if (!item?.id) {
       // Item is new to sale
-      let newSaleItem = { ...item, sale_id: newSaleId };
-      saveSaleItemToDatabase(newSaleItem);
+      let newSaleItem = { ...item, sale_id: newSaleId }
+      saveSaleItemToDatabase(newSaleItem)
     } else {
       // Item was already in sale, update in case discount, quantity has changed or item has been deleted
-      updateSaleItemInDatabase(item);
+      updateSaleItemInDatabase(item)
     }
 
     // Add stock movement if it's a regular stock item
@@ -250,8 +254,8 @@ export async function saveSaleItemsTransactionsToDatabase(
             StockMovementTypes.Unlayby,
             null,
             newSaleId
-          );
-          quantity_layby -= 1;
+          )
+          quantity_layby -= 1
         }
         if (item?.is_refunded) {
           // Refund item if refunded
@@ -262,7 +266,7 @@ export async function saveSaleItemsTransactionsToDatabase(
             StockMovementTypes.Unsold,
             null,
             newSaleId
-          );
+          )
         } else {
           // Mark stock as sold
           saveStockMovementToDatabase(
@@ -272,7 +276,7 @@ export async function saveSaleItemsTransactionsToDatabase(
             StockMovementTypes.Sold,
             null,
             newSaleId
-          );
+          )
         }
 
         // Add layby stock movement if it's a new layby
@@ -287,8 +291,8 @@ export async function saveSaleItemsTransactionsToDatabase(
           StockMovementTypes.Layby,
           null,
           newSaleId
-        );
-        quantity_layby += 1;
+        )
+        quantity_layby += 1
       }
 
       // Update inventory item if it's a regular stock item
@@ -298,7 +302,7 @@ export async function saveSaleItemsTransactionsToDatabase(
             i?.id === invItem?.id ? { ...invItem, quantity, quantity_layby } : i
           ),
           false
-        );
+        )
     }
   }
 
@@ -308,18 +312,13 @@ export async function saveSaleItemsTransactionsToDatabase(
   for await (const trans of cart?.transactions) {
     if (!trans?.id) {
       // Transaction is new to sale
-      let newSaleTransaction = { ...trans, sale_id: newSaleId };
-      saveSaleTransaction(
-        newSaleTransaction,
-        clerk,
-        giftCards,
-        mutateGiftCards
-      );
+      let newSaleTransaction = { ...trans, sale_id: newSaleId }
+      saveSaleTransaction(newSaleTransaction, clerk, giftCards, mutateGiftCards)
     }
   }
   // // TODO does this need a return
   // return { ...newSale, items: cartItems, transactions: cartTransactions };
-  return newSaleId;
+  return newSaleId
 }
 
 export async function saveSaleToDatabase(sale: SaleObject, clerk: ClerkObject) {
@@ -327,16 +326,16 @@ export async function saveSaleToDatabase(sale: SaleObject, clerk: ClerkObject) {
     const res = await fetch(
       `/api/create-sale?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           customer_id: sale?.customer_id || null,
           state: sale?.state || null,
           sale_opened_by: clerk?.id,
           date_sale_opened: sale?.date_sale_opened || null,
-          weather: JSON.stringify(sale?.weather) || "",
+          weather: JSON.stringify(sale?.weather) || '',
           geo_latitude: sale?.geo_latitude || null,
           geo_longitude: sale?.geo_longitude || null,
           note: sale?.note || null,
@@ -353,12 +352,12 @@ export async function saveSaleToDatabase(sale: SaleObject, clerk: ClerkObject) {
           postal_address: sale?.postal_address || null,
         }),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
-    return json?.insertId;
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
+    return json?.insertId
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -367,9 +366,9 @@ export async function saveSaleItemToDatabase(item: SaleItemObject) {
     const res = await fetch(
       `/api/create-sale-item?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           sale_id: item?.sale_id,
@@ -382,12 +381,12 @@ export async function saveSaleItemToDatabase(item: SaleItemObject) {
           note: item?.note || null,
         }),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
-    return json?.insertId;
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
+    return json?.insertId
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -399,7 +398,7 @@ export async function saveSaleTransaction(
 ) {
   if (transaction?.payment_method === PaymentMethodTypes.Account) {
     // Add account payment as a store payment to the vendor
-    let vendorPaymentId = null;
+    let vendorPaymentId = null
     const vendorPayment = {
       amount: transaction?.amount,
       clerk_id: transaction?.clerk_id,
@@ -409,29 +408,29 @@ export async function saveSaleTransaction(
         : VendorPaymentTypes.Sale,
       date: dayjs.utc().format(),
       register_id: transaction?.register_id,
-    };
-    vendorPaymentId = await saveVendorPaymentToDatabase(vendorPayment);
-    transaction = { ...transaction, vendor_payment_id: vendorPaymentId };
+    }
+    vendorPaymentId = await saveVendorPaymentToDatabase(vendorPayment)
+    transaction = { ...transaction, vendor_payment_id: vendorPaymentId }
   }
-  let giftCardId = null;
+  let giftCardId = null
   if (transaction?.payment_method === PaymentMethodTypes.GiftCard) {
     if (transaction?.is_refund) {
       // Gift card is new, create new one
       giftCardId = await saveStockToDatabase(
         transaction?.gift_card_update,
         clerk
-      );
+      )
     } else {
       // Update gift card
-      updateStockItemInDatabase(transaction?.gift_card_update);
+      updateStockItemInDatabase(transaction?.gift_card_update)
     }
     const otherGiftCards = giftCards?.filter(
       (g: GiftCardObject) => g?.id !== transaction?.gift_card_update?.id
-    );
-    mutateGiftCards([...otherGiftCards, transaction?.gift_card_update], false);
+    )
+    mutateGiftCards([...otherGiftCards, transaction?.gift_card_update], false)
   }
-  if (giftCardId) transaction = { ...transaction, gift_card_id: giftCardId };
-  saveSaleTransactionToDatabase(transaction);
+  if (giftCardId) transaction = { ...transaction, gift_card_id: giftCardId }
+  saveSaleTransactionToDatabase(transaction)
 }
 
 export async function saveSaleTransactionToDatabase(
@@ -441,18 +440,18 @@ export async function saveSaleTransactionToDatabase(
     const res = await fetch(
       `/api/create-sale-transaction?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(transaction),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
-    return json?.insertId;
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
+    return json?.insertId
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -464,13 +463,13 @@ export async function saveClosedRegisterToDatabase(
   mutateLogs: Function
 ) {
   try {
-    const tillID = await saveTillToDatabase(till);
+    const tillID = await saveTillToDatabase(till)
     const res = await fetch(
       `/api/update-register?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           ...register,
@@ -479,22 +478,22 @@ export async function saveClosedRegisterToDatabase(
           close_date: dayjs.utc().format(),
         }),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
     saveLog(
       {
         log: `Register closed.`,
-        table_id: "register",
+        table_id: 'register',
         row_id: json?.insertId,
         clerk_id: register?.closed_by_id,
       },
       logs,
       mutateLogs
-    );
-    setRegister(json?.insertId);
+    )
+    setRegister(json?.insertId)
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -506,13 +505,13 @@ export async function saveAndOpenRegister(
   mutateLogs: Function
 ) {
   try {
-    const tillID = await saveTillToDatabase(till);
+    const tillID = await saveTillToDatabase(till)
     const res = await fetch(
       `/api/create-register?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           ...register,
@@ -520,23 +519,23 @@ export async function saveAndOpenRegister(
           open_date: dayjs.utc().format(),
         }),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
     saveLog(
       {
         log: `Register opened.`,
-        table_id: "register",
+        table_id: 'register',
         row_id: json?.insertId,
         clerk_id: clerk?.id,
       },
       logs,
       mutateLogs
-    );
-    setRegister(json?.insertId);
-    return [{ num: json?.insertId }];
+    )
+    setRegister(json?.insertId)
+    return [{ num: json?.insertId }]
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -550,14 +549,14 @@ export async function savePettyCashToRegister(
   mutateLogs: Function
 ) {
   try {
-    let numberAmount = parseFloat(amount) * 100;
-    if (isTake) numberAmount = numberAmount * -1;
+    let numberAmount = parseFloat(amount) * 100
+    if (isTake) numberAmount = numberAmount * -1
     const res = await fetch(
       `/api/create-petty-cash?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           register_id: registerID,
@@ -568,23 +567,23 @@ export async function savePettyCashToRegister(
           date: dayjs.utc().format(),
         }),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
     saveLog(
       {
         log: `$${parseFloat(amount)?.toFixed(2)} ${
-          isTake ? "taken from till." : "put in till."
+          isTake ? 'taken from till.' : 'put in till.'
         }`,
-        table_id: "register_petty_cash",
+        table_id: 'register_petty_cash',
         row_id: json?.insertId,
         clerk_id: clerkID,
       },
       logs,
       mutateLogs
-    );
+    )
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -593,18 +592,18 @@ export async function saveTillToDatabase(till: TillObject) {
     const res = await fetch(
       `/api/create-till?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(till),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
-    return json?.insertId;
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
+    return json?.insertId
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -613,18 +612,18 @@ export async function saveVendorToDatabase(vendor: VendorObject) {
     const res = await fetch(
       `/api/create-vendor?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ ...vendor, uid: uuid() }),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
-    return json.insertId;
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
+    return json.insertId
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -635,18 +634,18 @@ export async function saveVendorPaymentToDatabase(
     const res = await fetch(
       `/api/create-vendor-payment?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(vendorPayment),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
-    return json.insertId;
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
+    return json.insertId
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -657,18 +656,18 @@ export async function saveStocktakeItemToDatabase(
     const res = await fetch(
       `/api/create-stocktake-item?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(stocktakeItem),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
-    return json.insertId;
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
+    return json.insertId
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -677,18 +676,18 @@ export async function saveStocktakeToDatabase(stocktake: StocktakeObject) {
     const res = await fetch(
       `/api/create-stocktake?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(stocktake),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
-    return json.insertId;
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
+    return json.insertId
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -699,18 +698,18 @@ export async function saveStocktakeTemplateToDatabase(
     const res = await fetch(
       `/api/create-stocktake-template?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(stocktakeTemplate),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
-    return json.insertId;
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
+    return json.insertId
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -723,19 +722,19 @@ export async function saveSelectToDatabase(
     const res = await fetch(
       `/api/create-setting-select?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ label, setting_select }),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
-    mutate();
-    return json.insertId;
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
+    mutate()
+    return json.insertId
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -751,9 +750,9 @@ export async function saveHoldToDatabase(
     const res = await fetch(
       `/api/create-hold?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           customer_id: sale?.customer_id,
@@ -766,19 +765,19 @@ export async function saveHoldToDatabase(
           note: note,
         }),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
     saveStockMovementToDatabase(
       item,
       clerk,
       registerID,
       StockMovementTypes.Hold,
       null
-    );
-    return json?.insertId;
+    )
+    return json?.insertId
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -790,18 +789,18 @@ export async function saveCustomerToDatabase(
     const res = await fetch(
       `/api/create-customer?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ ...customer, created_by_clerk_id: clerk?.id }),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
-    return json?.insertId;
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
+    return json?.insertId
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -814,22 +813,22 @@ export async function updateCustomerInDatabase(
     const res = await fetch(
       `/api/update-customer?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(customer),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
     const otherCustomers = customers?.filter(
       (c: CustomerObject) => c?.id !== customer?.id
-    );
-    mutateCustomers([...otherCustomers, customer], false);
-    console.log(customer);
+    )
+    mutateCustomers([...otherCustomers, customer], false)
+    console.log(customer)
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -838,17 +837,17 @@ export async function updateVendorInDatabase(vendor: VendorObject) {
     const res = await fetch(
       `/api/update-vendor?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(vendor),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -857,17 +856,17 @@ export async function updateVendorLastContactedInDatabase(vendor: any) {
     const res = await fetch(
       `/api/update-vendor-last-contacted?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(vendor),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -883,19 +882,19 @@ export async function returnHoldToStock(
     ...hold,
     date_removed_from_hold: dayjs.utc().format(),
     removed_from_hold_by: clerk?.id,
-  });
+  })
   mutateHolds(
     holds?.filter((h) => h?.id !== hold?.id),
     false
-  );
+  )
   saveStockMovementToDatabase(
     { item_id: hold?.item_id, quantity: hold?.quantity?.toString() },
     clerk,
     registerID,
     StockMovementTypes.Unhold,
     hold?.note
-  );
-  mutateInventory();
+  )
+  mutateInventory()
 }
 
 export async function updateHoldInDatabase(item) {
@@ -903,17 +902,17 @@ export async function updateHoldInDatabase(item) {
     const res = await fetch(
       `/api/update-hold?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(item),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -922,17 +921,17 @@ export async function saveGiftCardToDatabase() {
     const res = await fetch(
       `/api/create-hold?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({}),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 export async function saveSystemLog(log: string, clerkID: number) {
@@ -940,23 +939,23 @@ export async function saveSystemLog(log: string, clerkID: number) {
     date_created: dayjs.utc().format(),
     log: log,
     clerk_id: clerkID,
-    table_id: "system",
-  };
+    table_id: 'system',
+  }
   try {
     const res = await fetch(
       `/api/create-log?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(logObj),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -971,23 +970,23 @@ export async function saveLog(
     table_id: log?.table_id || null,
     row_id: log?.row_id || null,
     clerk_id: log?.clerk_id || null,
-  };
+  }
   try {
     const res = await fetch(
       `/api/create-log?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(logObj),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
-    if (logs) mutateLogs?.([...logs, { ...logObj, id: json?.insertId }], false);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
+    if (logs) mutateLogs?.([...logs, { ...logObj, id: json?.insertId }], false)
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -996,17 +995,17 @@ export async function addRestockTask(id: number) {
     const res = await fetch(
       `/api/restock-task?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ id, needs_restock: true }),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -1015,13 +1014,13 @@ export async function addNewMailOrderTask(sale: SaleObject, customer: string) {
     const res = await fetch(
       `/api/create-task?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           description: `Post Sale ${sale?.id} (${sale?.item_list}) to ${
-            `${customer}\n` || ""
+            `${customer}\n` || ''
           }${sale?.postal_address}`,
           created_by_clerk_id: sale?.sale_opened_by,
           assigned_to: RoleTypes?.MC,
@@ -1029,11 +1028,11 @@ export async function addNewMailOrderTask(sale: SaleObject, customer: string) {
           is_post_mail_order: 1,
         }),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -1042,18 +1041,18 @@ export async function saveTaskToDatabase(task: TaskObject) {
     const res = await fetch(
       `/api/create-task?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(task),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
-    return json?.insertId;
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
+    return json?.insertId
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -1062,17 +1061,17 @@ export async function completeTask(task: TaskObject) {
     const res = await fetch(
       `/api/complete-task?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(task),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -1081,17 +1080,17 @@ export async function completeRestockTask(id: number) {
     const res = await fetch(
       `/api/restock-task?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ id, needs_restock: false }),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -1106,9 +1105,9 @@ export async function saveStockPriceToDatabase(
     const res = await fetch(
       `/api/create-stock-price?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           stock_id,
@@ -1118,12 +1117,12 @@ export async function saveStockPriceToDatabase(
           note,
         }),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
-    return json?.insertId;
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
+    return json?.insertId
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -1140,9 +1139,9 @@ export async function saveStockMovementToDatabase(
     const res = await fetch(
       `/api/create-stock-movement?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           stock_id: item?.item_id,
@@ -1163,12 +1162,12 @@ export async function saveStockMovementToDatabase(
           stocktake_id,
         }),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
-    return json?.insertId;
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
+    return json?.insertId
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -1180,18 +1179,18 @@ export async function saveStockToDatabase(
     const res = await fetch(
       `/api/create-stock-item?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ ...item, created_by_id: clerk?.id || null }),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
-    return json?.insertId;
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
+    return json?.insertId
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -1202,17 +1201,17 @@ export async function updateStockItemInDatabase(
     const res = await fetch(
       `/api/update-stock-item?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(item),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -1223,17 +1222,17 @@ export async function updateStocktakeItemInDatabase(
     const res = await fetch(
       `/api/update-stocktake-item?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(stocktakeItem),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -1242,17 +1241,17 @@ export async function updateStocktakeInDatabase(stocktake: StocktakeObject) {
     const res = await fetch(
       `/api/update-stocktake?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(stocktake),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -1263,17 +1262,17 @@ export async function updateStocktakeTemplateInDatabase(
     const res = await fetch(
       `/api/update-stocktake-template?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(stocktakeTemplate),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -1282,17 +1281,17 @@ export async function updateGiftCard(giftCard: GiftCardObject) {
     const res = await fetch(
       `/api/update-gift-card?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(giftCard),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -1301,9 +1300,9 @@ export async function updateSaleInDatabase(sale: SaleObject) {
     const res = await fetch(
       `/api/update-sale?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           sale_id: sale?.id,
@@ -1320,11 +1319,11 @@ export async function updateSaleInDatabase(sale: SaleObject) {
           item_list: sale?.item_list || null,
         }),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -1333,9 +1332,9 @@ export async function updateSaleItemInDatabase(saleItem: SaleItemObject) {
     const res = await fetch(
       `/api/update-sale-item?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           sale_item_id: saleItem?.id,
@@ -1350,11 +1349,11 @@ export async function updateSaleItemInDatabase(saleItem: SaleItemObject) {
           is_deleted: saleItem?.is_deleted,
         }),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -1363,19 +1362,19 @@ export async function setRegister(register_id: number) {
     const res = await fetch(
       `/api/set-register?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           register_id: register_id,
         }),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -1384,17 +1383,17 @@ export async function validateGiftCard(id: number) {
     const res = await fetch(
       `/api/validate-gift-card?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ id }),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -1430,19 +1429,19 @@ export async function deleteInventoryItemFromDatabase(id: number) {
     const res = await fetch(
       `/api/delete-inventory-item?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           id,
         }),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -1451,19 +1450,42 @@ export async function deleteVendorFromDatabase(id: number) {
     const res = await fetch(
       `/api/delete-vendor?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           id,
         }),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
+  }
+}
+
+export async function deleteVendorPaymentFromDatabase(
+  vendor_payment_id: number
+) {
+  try {
+    const res = await fetch(
+      `/api/delete-vendor-payment?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          vendor_payment_id,
+        }),
+      }
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
+  } catch (e) {
+    throw Error(e.message)
   }
 }
 
@@ -1472,19 +1494,19 @@ export async function deleteSaleItemFromDatabase(sale_item_id: number) {
     const res = await fetch(
       `/api/delete-sale-item?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           sale_item_id,
         }),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -1495,17 +1517,17 @@ export async function deleteSaleTransactionFromDatabase(
     const res = await fetch(
       `/api/delete-sale-transaction?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           transaction_id,
         }),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
     // let deletedTransaction = transactions?.filter(
     //   (t: SaleTransactionObject) => t?.id === transaction_id
     // )[0];
@@ -1517,7 +1539,7 @@ export async function deleteSaleTransactionFromDatabase(
     //   false
     // );
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -1526,19 +1548,19 @@ export async function deleteSaleFromDatabase(sale_id: number) {
     const res = await fetch(
       `/api/delete-sale?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           sale_id,
         }),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -1549,19 +1571,19 @@ export async function deleteStocktakeItemFromDatabase(
     const res = await fetch(
       `/api/delete-stocktake-item?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           stocktake_item_id,
         }),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -1570,19 +1592,19 @@ export async function deleteStockMovementsFromDatabase(sale_id: number) {
     const res = await fetch(
       `/api/delete-stock-movements-by-sale?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           sale_id,
         }),
       }
-    );
-    const json = await res.json();
-    if (!res.ok) throw Error(json.message);
+    )
+    const json = await res.json()
+    if (!res.ok) throw Error(json.message)
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }
 
@@ -1591,7 +1613,7 @@ export async function receiveStock(
   clerk: ClerkObject,
   registerID: number
 ) {
-  const receivedStock = [];
+  const receivedStock = []
   await Promise.all(
     basket?.items?.map(async (receiveItem: any) => {
       if (receiveItem?.item?.id) {
@@ -1603,24 +1625,24 @@ export async function receiveStock(
           clerk,
           registerID,
           StockMovementTypes?.Received,
-          "Existing stock received."
-        );
+          'Existing stock received.'
+        )
         receivedStock.push({
           item: receiveItem?.item,
           quantity: receiveItem?.quantity,
-        });
+        })
       } else {
         const newStockID = await saveStockToDatabase(
           { ...receiveItem?.item, vendor_id: basket?.vendor_id },
           clerk
-        );
+        )
         saveStockPriceToDatabase(
           newStockID,
           clerk,
           parseFloat(receiveItem?.total_sell) * 100,
           parseFloat(receiveItem?.vendor_cut) * 100,
-          "New stock priced."
-        );
+          'New stock priced.'
+        )
         saveStockMovementToDatabase(
           {
             item_id: newStockID,
@@ -1629,8 +1651,8 @@ export async function receiveStock(
           clerk,
           registerID,
           StockMovementTypes?.Received,
-          "New stock received."
-        );
+          'New stock received.'
+        )
         receivedStock.push({
           item: {
             ...receiveItem?.item,
@@ -1639,11 +1661,11 @@ export async function receiveStock(
             id: newStockID,
           },
           quantity: receiveItem?.quantity,
-        });
+        })
       }
     })
-  );
-  return receivedStock;
+  )
+  return receivedStock
 }
 
 export function returnStock(
@@ -1658,24 +1680,24 @@ export function returnStock(
   mutateLogs: Function
 ) {
   if (vendorId && returnItems?.length > 0) {
-    const itemIds = returnItems?.map((returnItem) => parseInt(returnItem?.id));
+    const itemIds = returnItems?.map((returnItem) => parseInt(returnItem?.id))
     const otherInventoryItems = inventory?.filter(
       (i: StockObject) => !itemIds?.includes(i?.id)
-    );
-    let updatedInventoryItems = [];
+    )
+    let updatedInventoryItems = []
     returnItems
       .filter((returnItem: any) => parseInt(`${returnItem?.quantity}`) > 0)
       .forEach((returnItem: any) => {
         const stockItem = inventory?.filter(
           (i: StockObject) => i?.id === parseInt(returnItem?.id)
-        )[0];
+        )[0]
         updatedInventoryItems.push({
           ...stockItem,
           quantity_returned:
             (stockItem?.quantity_returned || 0) +
             parseInt(returnItem?.quantity),
           quantity: (stockItem?.quantity || 0) - parseInt(returnItem?.quantity),
-        });
+        })
         saveStockMovementToDatabase(
           {
             item_id: parseInt(returnItem?.id),
@@ -1684,22 +1706,22 @@ export function returnStock(
           clerk,
           registerID,
           StockMovementTypes?.Returned,
-          notes || "Stock returned to vendor."
-        );
+          notes || 'Stock returned to vendor.'
+        )
         saveLog(
           {
             log: `${getItemDisplayName(stockItem)} (x${
               returnItem?.quantity
             }) returned to vendor.`,
             clerk_id: clerk?.id,
-            table_id: "stock_movement",
+            table_id: 'stock_movement',
             row_id: null,
           },
           logs,
           mutateLogs
-        );
-      });
-    mutateInventory([...otherInventoryItems, ...updatedInventoryItems], false);
+        )
+      })
+    mutateInventory([...otherInventoryItems, ...updatedInventoryItems], false)
   }
 }
 
@@ -1710,7 +1732,7 @@ export function processStocktake(
   inventory: StockObject[],
   clerk: ClerkObject
 ) {
-  let tasks = [];
+  let tasks = []
   stocktakeItems?.forEach(async (item: StocktakeItemObject) => {
     if (item?.quantity_counted === item?.quantity_recorded) {
       // Do nothing
@@ -1723,7 +1745,7 @@ export function processStocktake(
           item?.quantity_recorded
         } in the system. System quantity kept.`,
         clerk_id: clerk?.id,
-      });
+      })
     } else if (
       item?.review_decision === StocktakeReviewDecisions?.review ||
       !item?.review_decision
@@ -1737,28 +1759,28 @@ export function processStocktake(
         } in the system.`,
         created_by_clerk_id: clerk?.id,
         date_created: dayjs.utc().format(),
-      };
-      const id = await saveTaskToDatabase(newTask);
-      tasks?.push({ ...newTask, id });
+      }
+      const id = await saveTaskToDatabase(newTask)
+      tasks?.push({ ...newTask, id })
     } else {
-      let act = StockMovementTypes?.Adjustment;
+      let act = StockMovementTypes?.Adjustment
       if (item?.review_decision === StocktakeReviewDecisions?.discard)
-        act = StockMovementTypes?.Discarded;
+        act = StockMovementTypes?.Discarded
       else if (item?.review_decision === StocktakeReviewDecisions?.found)
-        act = StockMovementTypes?.Found;
+        act = StockMovementTypes?.Found
       else if (item?.review_decision === StocktakeReviewDecisions?.lost)
-        act = StockMovementTypes?.Lost;
+        act = StockMovementTypes?.Lost
       else if (item?.review_decision === StocktakeReviewDecisions?.return)
-        act = StockMovementTypes?.Returned;
+        act = StockMovementTypes?.Returned
       saveStockMovementToDatabase(
         { item_id: item?.stock_id, quantity: `${item?.quantity_difference}` },
         clerk,
         null,
         act,
-        "Stock take adjustment.",
+        'Stock take adjustment.',
         null,
         stocktake?.id
-      );
+      )
       saveLog({
         log: `Stock take: ${getItemSkuDisplayNameById(
           item?.stock_id,
@@ -1767,19 +1789,19 @@ export function processStocktake(
           item?.quantity_recorded
         } in the system. Difference marked as ${act}.`,
         clerk_id: clerk?.id,
-      });
+      })
     }
-  });
+  })
   updateStocktakeInDatabase({
     ...stocktake,
     date_closed: dayjs.utc().format(),
     closed_by: clerk?.id,
-  });
+  })
   updateStocktakeTemplateInDatabase({
     ...stocktakeTemplate,
     last_completed: dayjs.utc().format(),
     status: StocktakeStatuses?.completed,
-  });
+  })
 }
 
 export function uploadFiles(files) {
@@ -1787,15 +1809,15 @@ export function uploadFiles(files) {
   // body.append("file", files);
   try {
     fetch(`/api/upload-file?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "multipart/form-data",
+        'Content-Type': 'multipart/form-data',
       },
       body: files,
     })
       .then((res) => res.json())
-      .then((data) => console.log(data));
+      .then((data) => console.log(data))
   } catch (e) {
-    throw Error(e.message);
+    throw Error(e.message)
   }
 }

@@ -66,7 +66,7 @@ export default function SellScreen() {
       }`}
       {...handlers}
     >
-      <MidScreenContainer>
+      <MidScreenContainer title={null} titleClass={""} isLoading={false}>
         <SearchBar />
         <InventoryScroll />
       </MidScreenContainer>

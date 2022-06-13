@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from 'next/image'
 import {
   getImageSrc,
   getItemDisplayName,
@@ -6,35 +6,35 @@ import {
   getPriceSuggestion,
   getProfitMargin,
   getStoreCut,
-} from "@/lib/data-functions";
-import { StockObject } from "@/lib/types";
-import TextField from "@/components/_components/inputs/text-field";
-import SettingsSelect from "@/components/_components/inputs/settings-select";
-import RadioButton from "@/components/_components/inputs/radio-button";
+} from '@/lib/data-functions'
+import { StockObject } from '@/lib/types'
+import TextField from '@/components/_components/inputs/text-field'
+import SettingsSelect from '@/components/_components/inputs/settings-select'
+import RadioButton from '@/components/_components/inputs/radio-button'
 
 export default function ListItem({ receiveItem, bucket, setBucket }) {
-  const item: StockObject = receiveItem?.item;
-  const priceSuggestion = getPriceSuggestion(item);
+  const item: StockObject = receiveItem?.item
+  const priceSuggestion = getPriceSuggestion(item)
   const profitMargin = getProfitMargin({
     total_sell: parseFloat(
       receiveItem?.total_sell ||
-        (item?.total_sell ? `${item?.total_sell / 100}` : "")
+        (item?.total_sell ? `${item?.total_sell / 100}` : '')
     ),
     vendor_cut: parseFloat(
       receiveItem?.vendor_cut ||
-        (item?.vendor_cut ? `${item?.vendor_cut / 100}` : "")
+        (item?.vendor_cut ? `${item?.vendor_cut / 100}` : '')
     ),
-  });
+  })
   const storeCut = getStoreCut({
     total_sell: parseFloat(
       receiveItem?.total_sell ||
-        (item?.total_sell ? `${item?.total_sell / 100}` : "")
+        (item?.total_sell ? `${item?.total_sell / 100}` : '')
     ),
     vendor_cut: parseFloat(
       receiveItem?.vendor_cut ||
-        (item?.vendor_cut ? `${item?.vendor_cut / 100}` : "")
+        (item?.vendor_cut ? `${item?.vendor_cut / 100}` : '')
     ),
-  });
+  })
 
   return (
     <div className="flex justify-between my-2 border-b">
@@ -44,7 +44,7 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
             <img
               className="object-cover absolute"
               src={getImageSrc(item)}
-              alt={item?.title || "Inventory image"}
+              alt={item?.title || 'Inventory image'}
             />
             {!item?.is_gift_card && !item?.is_misc_item && item?.id && (
               <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white text-sm flex justify-center items-center">
@@ -56,7 +56,7 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
         <div className="ml-2">
           <div>{getItemDisplayName(item)}</div>
           <div className="text-sm italic">
-            {priceSuggestion ? `Discogs suggest ${priceSuggestion}` : ""}
+            {priceSuggestion ? `Discogs suggest ${priceSuggestion}` : ''}
           </div>
         </div>
       </div>
@@ -67,7 +67,7 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
             inputLabel="CONDITION"
             group={`${receiveItem?.key}isNew`}
             value={
-              item?.is_new === null ? null : item?.is_new ? "true" : "false"
+              item?.is_new === null ? null : item?.is_new ? 'true' : 'false'
             }
             onChange={(value: string) =>
               setBucket({
@@ -78,8 +78,8 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
                         ...bucket.items[i],
                         item: {
                           ...bucket.items[i].item,
-                          is_new: value === "true" ? 1 : 0,
-                          cond: value === "true" ? null : item?.cond,
+                          is_new: value === 'true' ? 1 : 0,
+                          cond: value === 'true' ? null : item?.cond,
                         },
                       }
                     : bItem
@@ -87,8 +87,8 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
               })
             }
             options={[
-              { id: `new${receiveItem?.key}`, value: "true", label: "New" },
-              { id: `used${receiveItem?.key}`, value: "false", label: "Used" },
+              { id: `new${receiveItem?.key}`, value: 'true', label: 'New' },
+              { id: `used${receiveItem?.key}`, value: 'false', label: 'Used' },
             ]}
           />
           <SettingsSelect
@@ -163,11 +163,11 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
           <TextField
             inputLabel="VENDOR CUT"
             className="w-24 mr-6"
-            startAdornment={"$"}
+            startAdornment={'$'}
             disabled={Boolean(item?.id)}
             value={`${
               receiveItem?.vendor_cut ||
-              (item?.vendor_cut ? item?.vendor_cut / 100 : "")
+              (item?.vendor_cut ? item?.vendor_cut / 100 : '')
             }`}
             onChange={(e: any) =>
               setBucket({
@@ -183,10 +183,10 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
           <TextField
             inputLabel="TOTAL SELL"
             className="w-24 mr-6"
-            startAdornment={"$"}
+            startAdornment={'$'}
             value={`${
               receiveItem?.total_sell ||
-              (item?.total_sell ? item?.total_sell / 100 : "")
+              (item?.total_sell ? item?.total_sell / 100 : '')
             }`}
             onChange={(e: any) =>
               setBucket({
@@ -204,7 +204,7 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
             inputLabel="STORE CUT"
             error={storeCut < 0}
             className={`w-24 mr-6`}
-            startAdornment={"$"}
+            startAdornment={'$'}
             value={`${storeCut}`}
           />
           <TextField
@@ -212,7 +212,7 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
             inputLabel="MARGIN"
             error={storeCut < 0}
             className="w-24 mr-12"
-            endAdornment={"%"}
+            endAdornment={'%'}
             value={`${profitMargin || 0}`}
           />
           <TextField
@@ -221,7 +221,7 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
             // inputType="number"
             error={parseInt(receiveItem?.quantity) < 1}
             min={0}
-            value={`${receiveItem?.quantity}`}
+            value={`${receiveItem?.quantity || ''}`}
             onChange={(e: any) =>
               setBucket({
                 ...bucket,
@@ -236,5 +236,5 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
         </div>
       </div>
     </div>
-  );
+  )
 }

@@ -3,7 +3,7 @@ import { useAtom } from "jotai";
 
 // DB
 import { useRegisterID } from "@/lib/swr-hooks";
-import { clerkAtom, pageAtom, viewAtom } from "@/lib/atoms";
+import { clerkAtom, pageAtom, tableModeAtom, viewAtom } from "@/lib/atoms";
 
 // Components
 import Image from "next/image";
@@ -17,6 +17,7 @@ import TaskNavActions from "./actions/task";
 
 // Icons
 import HelpIcon from "@mui/icons-material/Help";
+import TableIcon from "@mui/icons-material/TableView";
 import { bg } from "@/lib/types";
 import StocktakeNavActions from "./actions/stocktake";
 
@@ -30,6 +31,7 @@ export default function Nav() {
   const [clerk] = useAtom(clerkAtom);
   const [page] = useAtom(pageAtom);
   const [view, setView] = useAtom(viewAtom);
+  const [tableMode, setTableMode] = useAtom(tableModeAtom);
 
   return (
     <nav className={`py-2 ${bg[clerk?.colour]} text-white h-nav`}>
@@ -57,6 +59,14 @@ export default function Nav() {
           {page === "payments" && <PaymentNavActions />}
           {page === "jobs" && <TaskNavActions />}
           {page === "stocktake" && <StocktakeNavActions />}
+          <button
+            onClick={() => setTableMode(!tableMode)}
+            className={`text-brown-dark hover:text-brown ${
+              !tableMode && "opacity-50"
+            }`}
+          >
+            <TableIcon />
+          </button>
           <button
             onClick={() => setView({ ...view, helpDialog: true })}
             className="text-brown-dark hover:text-brown"
