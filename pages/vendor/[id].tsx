@@ -1,9 +1,9 @@
-import Payments from "@/components/vendor-page/payments";
-import Sales from "@/components/vendor-page/sales";
-import StockItem from "@/components/vendor-page/stock-item";
-import Summary from "@/components/vendor-page/summary";
-import Tabs from "@/components/vendor-page/tabs";
-import { filterInventory, sumPrices } from "@/lib/data-functions";
+import Payments from '@/components/vendor-page/payments'
+import Sales from '@/components/vendor-page/sales'
+import StockItem from '@/components/vendor-page/stock-item'
+import Summary from '@/components/vendor-page/summary'
+import Tabs from '@/components/vendor-page/tabs'
+import { filterInventory, sumPrices } from '@/lib/data-functions'
 import {
   useVendorByUid,
   useVendorPaymentsByUid,
@@ -12,16 +12,16 @@ import {
   useVendorStockMovementByUid,
   useVendorStockPriceByUid,
   useVendorStoreCreditsByUid,
-} from "@/lib/swr-hooks";
-import { StockObject } from "@/lib/types";
-import dayjs from "dayjs";
-import Head from "next/head";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+} from '@/lib/swr-hooks'
+import { StockObject } from '@/lib/types'
+import dayjs from 'dayjs'
+import Head from 'next/head'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 
 export default function VendorScreen() {
-  const router = useRouter();
-  const { id } = router.query;
+  const router = useRouter()
+  const { id } = router.query
   // const [uid, setUid] = useState(null);
   // useEffect(() => {
   //   if (!router.isReady) {
@@ -30,28 +30,28 @@ export default function VendorScreen() {
   //     setUid(id);
   //   }
   // }, [router.isReady]);
-  const { vendor, isVendorLoading, isVendorError } = useVendorByUid(id);
+  const { vendor, isVendorLoading, isVendorError } = useVendorByUid(id)
   const { vendorStock, isVendorStockLoading, isVendorStockError } =
-    useVendorStockByUid(id);
+    useVendorStockByUid(id)
   const {
     vendorStockMovement,
     isVendorStockMovementLoading,
     isVendorStockMovementError,
-  } = useVendorStockMovementByUid(id);
+  } = useVendorStockMovementByUid(id)
   const {
     vendorStockPrice,
     isVendorStockPriceLoading,
     isVendorStockPriceError,
-  } = useVendorStockPriceByUid(id);
+  } = useVendorStockPriceByUid(id)
   const { vendorSales, isVendorSalesLoading, isVendorSalesError } =
-    useVendorSalesByUid(id);
+    useVendorSalesByUid(id)
   const { vendorPayments, isVendorPaymentsLoading, isVendorPaymentsError } =
-    useVendorPaymentsByUid(id);
+    useVendorPaymentsByUid(id)
   const {
     vendorStoreCredits,
     isVendorStoreCreditsError,
     isVendorStoreCreditsLoading,
-  } = useVendorStoreCreditsByUid(id);
+  } = useVendorStoreCreditsByUid(id)
   const loading =
     isVendorLoading ||
     isVendorStockLoading ||
@@ -59,7 +59,7 @@ export default function VendorScreen() {
     isVendorStockPriceLoading ||
     isVendorSalesLoading ||
     isVendorPaymentsLoading ||
-    isVendorStoreCreditsLoading;
+    isVendorStoreCreditsLoading
   const error =
     isVendorError ||
     isVendorStockError ||
@@ -67,19 +67,20 @@ export default function VendorScreen() {
     isVendorStockPriceError ||
     isVendorSalesError ||
     isVendorPaymentsError ||
-    isVendorStoreCreditsError;
+    isVendorStoreCreditsError
 
-  const [tab, setTab] = useState(0);
-  const [stockSearch, setStockSearch] = useState("");
+  const [tab, setTab] = useState(0)
+  const [stockSearch, setStockSearch] = useState('')
 
-  const [startDate, setStartDate] = useState(
-    dayjs().subtract(1, "year").format("YYYY-MM-DD")
-  );
-  const [endDate, setEndDate] = useState(dayjs().format("YYYY-MM-DD"));
-  const [sales, setSales] = useState([]);
-  const [payments, setPayments] = useState([]);
-  const [totalTake, setTotalTake] = useState(0);
-  const [totalPaid, setTotalPaid] = useState(0);
+  // const [startDate, setStartDate] = useState(
+  //   dayjs().subtract(1, "year").format("YYYY-MM-DD")
+  // );
+  const [startDate, setStartDate] = useState('2018-11-03')
+  const [endDate, setEndDate] = useState(dayjs().format('YYYY-MM-DD'))
+  const [sales, setSales] = useState([])
+  const [payments, setPayments] = useState([])
+  const [totalTake, setTotalTake] = useState(0)
+  const [totalPaid, setTotalPaid] = useState(0)
 
   useEffect(() => {
     const totalSales = vendorSales?.map((sale) => {
@@ -87,34 +88,34 @@ export default function VendorScreen() {
         (v) =>
           v?.stock_id === sale?.item_id &&
           dayjs(v?.date_valid_from)?.isBefore(dayjs(sale?.date_sale_closed))
-      )?.[0];
+      )?.[0]
       return {
         ...sale,
         vendor_cut: price?.vendor_cut,
         total_sell: price?.total_sell,
-      };
-    });
+      }
+    })
     const filteredSales = totalSales?.filter((sale) =>
       dayjs(sale?.date_sale_closed)?.isBetween(
         dayjs(startDate),
         dayjs(endDate),
         null,
-        "[]"
+        '[]'
       )
-    );
+    )
     const filteredPayments = vendorPayments?.filter((payment) =>
       dayjs(payment?.date)?.isBetween(
         dayjs(startDate),
         dayjs(endDate),
         null,
-        "[]"
+        '[]'
       )
-    );
-    setSales(filteredSales);
-    setPayments(filteredPayments);
-    setTotalTake(sumPrices(totalSales, null, "vendorPrice"));
-    setTotalPaid(vendorPayments?.reduce((prev, pay) => prev + pay?.amount, 0));
-  }, [vendorStockPrice, vendorSales, vendorPayments, startDate, endDate]);
+    )
+    setSales(filteredSales)
+    setPayments(filteredPayments)
+    setTotalTake(sumPrices(totalSales, null, 'vendorPrice'))
+    setTotalPaid(vendorPayments?.reduce((prev, pay) => prev + pay?.amount, 0))
+  }, [vendorStockPrice, vendorSales, vendorPayments, startDate, endDate])
 
   return (
     <>
@@ -133,10 +134,10 @@ export default function VendorScreen() {
         <div className="flex h-screen w-screen p-4 md:p-8">
           <div
             style={{
-              width: "1000px",
+              width: '1000px',
               // minWidth: "380px",
-              marginLeft: "auto",
-              marginRight: "auto",
+              marginLeft: 'auto',
+              marginRight: 'auto',
             }}
           >
             <div className="pb-4">
@@ -151,7 +152,7 @@ export default function VendorScreen() {
             </div>
             <div className="w-full">
               <Tabs
-                tabs={["Sales", "Payments", "Stock"]}
+                tabs={['Sales', 'Payments', 'Stock']}
                 value={tab}
                 onChange={setTab}
               />
@@ -224,10 +225,10 @@ export default function VendorScreen() {
                 {filterInventory({
                   inventory: vendorStock?.sort(
                     (a: StockObject, b: StockObject) => {
-                      if (a?.quantity === b?.quantity) return 0;
-                      if (a?.quantity < 1) return 1;
-                      if (b?.quantity < 1) return -1;
-                      return 0;
+                      if (a?.quantity === b?.quantity) return 0
+                      if (a?.quantity < 1) return 1
+                      if (b?.quantity < 1) return -1
+                      return 0
                     }
                   ),
                   search: stockSearch,
@@ -242,5 +243,5 @@ export default function VendorScreen() {
         </div>
       )}
     </>
-  );
+  )
 }
