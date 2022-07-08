@@ -3,14 +3,16 @@ export default function MidScreenContainer({
   title,
   titleClass,
   isLoading,
+  actionButtons,
 }) {
   return (
     <div className="w-full sm:w-2/3 bg-gray-100">
       {title && (
         <div
-          className={`${titleClass} text-4xl font-bold uppercase text-white p-2 mb-1`}
+          className={`${titleClass} text-4xl font-bold uppercase text-white p-2 mb-1 flex justify-between`}
         >
-          {title}
+          <div>{title}</div>
+          {actionButtons}
         </div>
       )}
       {isLoading ? (
@@ -21,5 +23,5 @@ export default function MidScreenContainer({
         children
       )}
     </div>
-  );
+  )
 }

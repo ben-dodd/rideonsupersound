@@ -75,6 +75,7 @@ export const viewAtom = atom<ViewProps>({})
 export const clerkAtom = atom<ClerkObject>({ id: null })
 export const pageAtom = atom<string>('sell')
 export const tableModeAtom = atom<boolean>(true)
+export const compactModeAtom = atom<boolean>(false)
 
 export const cartAtom = atom<SaleObject>({})
 
