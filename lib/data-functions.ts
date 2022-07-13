@@ -1,24 +1,19 @@
 import {
-  StockObject,
-  SaleItemObject,
-  SaleTransactionObject,
-  KiwiBankTransactionObject,
-  TillObject,
-  VendorObject,
-  VendorSaleItemObject,
-  VendorPaymentObject,
   DiscogsItem,
-  GoogleBooksItem,
-  HelpObject,
   GiftCardObject,
+  HelpObject,
+  KiwiBankTransactionObject,
+  SaleItemObject,
   SaleObject,
-  StocktakeObject,
+  SaleTransactionObject,
+  StockObject,
   StocktakeTemplateObject,
+  TillObject,
+  VendorPaymentObject,
+  VendorSaleItemObject,
 } from '@/lib/types'
-import { Email } from '@mui/icons-material'
 
 import dayjs from 'dayjs'
-import { AnyCnameRecord } from 'dns'
 
 export function getItemSku(item: StockObject) {
   return `${('000' + item?.vendor_id || '').slice(-3)}/${(
