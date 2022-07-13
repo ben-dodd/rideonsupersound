@@ -1,54 +1,35 @@
-import { useAtom } from "jotai";
-import { clerkAtom, viewAtom } from "@/lib/atoms";
+import { useAtom } from 'jotai'
+import {
+  clerkAtom,
+  compactModeAtom,
+  tableModeAtom,
+  viewAtom,
+} from '@/lib/atoms'
 
-import ReceiveIcon from "@mui/icons-material/AssignmentReturned";
-import ReturnIcon from "@mui/icons-material/AssignmentReturn";
-import PrintIcon from "@mui/icons-material/Print";
-import { saveSystemLog } from "@/lib/db-functions";
+import TableIcon from '@mui/icons-material/TableView'
+import CompactIcon from '@mui/icons-material/ViewCompact'
 
 export default function InventoryNavActions() {
-  const [view, setView] = useAtom(viewAtom);
-  const [clerk] = useAtom(clerkAtom);
+  const [tableMode, setTableMode] = useAtom(tableModeAtom)
+  const [compactMode, setCompactMode] = useAtom(compactModeAtom)
   return (
     <div className="flex">
       <button
-        className="icon-text-button"
-        onClick={() => {
-          saveSystemLog("Inventory Nav - Receive stock clicked.", clerk?.id);
-          setView({
-            ...view,
-            receiveStockScreen: true,
-            returnStockScreen: false,
-          });
-        }}
+        onClick={() => setCompactMode(!compactMode)}
+        className={`text-brown-dark hover:text-brown mr-2 ${
+          !compactMode && 'opacity-50'
+        }`}
       >
-        <ReceiveIcon className="mr-1" />
-        Receive Items
+        <CompactIcon />
       </button>
       <button
-        className="icon-text-button"
-        onClick={() => {
-          saveSystemLog("Inventory Nav - Return stock clicked.", clerk?.id);
-          setView({
-            ...view,
-            returnStockScreen: true,
-            receiveStockScreen: false,
-          });
-        }}
+        onClick={() => setTableMode(!tableMode)}
+        className={`text-brown-dark hover:text-brown mr-2 ${
+          !tableMode && 'opacity-50'
+        }`}
       >
-        <ReturnIcon className="mr-1" />
-        Return Items
-      </button>
-      <button
-        className="icon-text-button"
-        onClick={() => {
-          saveSystemLog("Inventory Nav - Print labels clicked.", clerk?.id);
-          setView({ ...view, labelPrintDialog: true });
-        }}
-      >
-        <PrintIcon className="mr-1" />
-        Print Labels
+        <TableIcon />
       </button>
     </div>
-  );
+  )
 }

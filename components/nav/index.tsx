@@ -1,37 +1,36 @@
 // Packages
-import { useAtom } from "jotai";
+import { useAtom } from 'jotai'
 
 // DB
-import { useRegisterID } from "@/lib/swr-hooks";
-import { clerkAtom, pageAtom, tableModeAtom, viewAtom } from "@/lib/atoms";
+import { useRegisterID } from '@/lib/swr-hooks'
+import { clerkAtom, pageAtom, tableModeAtom, viewAtom } from '@/lib/atoms'
 
 // Components
-import Image from "next/image";
-import Hamburger from "@/components/_components/icon/hamburger";
+import Image from 'next/image'
+import Hamburger from '@/components/_components/icon/hamburger'
 
-import SellNavActions from "./actions/sell";
-import InventoryNavActions from "./actions/inventory";
-import PaymentNavActions from "./actions/payment";
-import VendorNavActions from "./actions/vendor";
-import TaskNavActions from "./actions/task";
+import SellNavActions from './actions/sell'
+import InventoryNavActions from './actions/inventory'
+import PaymentNavActions from './actions/payment'
+import VendorNavActions from './actions/vendor'
+import TaskNavActions from './actions/task'
 
 // Icons
-import HelpIcon from "@mui/icons-material/Help";
-import TableIcon from "@mui/icons-material/TableView";
-import { bg } from "@/lib/types";
-import StocktakeNavActions from "./actions/stocktake";
+import HelpIcon from '@mui/icons-material/Help'
+import { bg } from '@/lib/types'
+import StocktakeNavActions from './actions/stocktake'
+import SaleNavActions from './actions/sale'
 
 // REVIEW fix all actions and clean up files
 
 export default function Nav() {
   // SWR
-  const { registerID } = useRegisterID();
+  const { registerID } = useRegisterID()
 
   // Atoms
-  const [clerk] = useAtom(clerkAtom);
-  const [page] = useAtom(pageAtom);
-  const [view, setView] = useAtom(viewAtom);
-  const [tableMode, setTableMode] = useAtom(tableModeAtom);
+  const [clerk] = useAtom(clerkAtom)
+  const [page] = useAtom(pageAtom)
+  const [view, setView] = useAtom(viewAtom)
 
   return (
     <nav className={`py-2 ${bg[clerk?.colour]} text-white h-nav`}>
@@ -53,20 +52,13 @@ export default function Nav() {
           </div>
         </div>
         <div className="flex mr-2">
-          {page === "sell" && registerID > 0 && <SellNavActions />}
-          {page === "inventory" && <InventoryNavActions />}
-          {page === "vendors" && <VendorNavActions />}
-          {page === "payments" && <PaymentNavActions />}
-          {page === "jobs" && <TaskNavActions />}
-          {page === "stocktake" && <StocktakeNavActions />}
-          <button
-            onClick={() => setTableMode(!tableMode)}
-            className={`text-brown-dark hover:text-brown ${
-              !tableMode && "opacity-50"
-            }`}
-          >
-            <TableIcon />
-          </button>
+          {page === 'sell' && registerID > 0 && <SellNavActions />}
+          {page === 'inventory' && <InventoryNavActions />}
+          {page === 'vendors' && <VendorNavActions />}
+          {page === 'payments' && <PaymentNavActions />}
+          {page === 'jobs' && <TaskNavActions />}
+          {page === 'stocktake' && <StocktakeNavActions />}
+          {page === 'sale' && <SaleNavActions />}
           <button
             onClick={() => setView({ ...view, helpDialog: true })}
             className="text-brown-dark hover:text-brown"
@@ -82,7 +74,7 @@ export default function Nav() {
         </button>*/}
       </div>
     </nav>
-  );
+  )
 }
 
 // <div
