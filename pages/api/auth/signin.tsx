@@ -1,11 +1,10 @@
-import { useSession } from "next-auth/client";
-import Image from "next/image";
-import Head from "next/head";
+import { useSession } from 'next-auth/client'
+import Head from 'next/head'
 
-import SignInButton from "@/components/_components/button/sign-in-button";
+import SignInButton from 'features/sign-in/components/sign-in-button'
 
 export default function SignIn() {
-  const [session] = useSession();
+  const [session] = useSession()
   return (
     <>
       <Head>
@@ -29,5 +28,5 @@ export default function SignIn() {
         )}
       </div>
     </>
-  );
+  )
 }

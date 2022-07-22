@@ -1,6 +1,6 @@
 import { useAccount, useRegisterID } from "@/lib/swr-hooks";
 import { useSession } from "next-auth/client";
-import LandingPage from "@/components/main/landing-page";
+import LandingPage from "views/main/landing-page";
 import SignIn from "./api/auth/signin";
 
 export default function IndexPage() {

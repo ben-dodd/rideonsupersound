@@ -1,7 +1,8 @@
-import useSWR from 'swr'
-import { authoriseUrl, parseJSON } from '@/lib/data-functions'
+import { authoriseUrl } from '@/lib/data-functions'
 import { VendorSaleItemObject } from '@/lib/types'
 import dayjs from 'dayjs'
+import useSWR from 'swr'
+import { camelCase, pascalCase } from './utils'
 
 async function fetcher(url: string) {
   return window.fetch(authoriseUrl(url)).then((res) => {
@@ -393,51 +394,11 @@ export function useVendorFromCustomer(customer_id: number) {
 }
 
 export function useGiftCards() {
-  const { data, error, mutate } = useSWR(`/api/get-gift-cards`, fetcher)
-  return {
-    giftCards: data,
-    isGiftCardsLoading: !error && !data,
-    isGiftCardsError: error,
-    mutateGiftCards: mutate,
-  }
-}
-
-export function useCustomers() {
-  const { data, error, mutate } = useSWR(
-    `/api/get-customers`,
-    fetcher
-    //   {
-    //   refreshInterval: 5000,
-    // }
-  )
-  return {
-    customers: data,
-    isCustomersLoading: !error && !data,
-    isCustomersError: error,
-    mutateCustomers: mutate,
-  }
-}
-
-export function useCustomer(customer_id: number) {
-  const { data, error } = useSWR(
-    `/api/get-customer?customer_id=${customer_id}`,
-    fetcher
-  )
-  return {
-    customer: data?.[0],
-    isCustomerLoading: !error && !data,
-    isCustomerError: error,
-  }
+  return useItems('gift-cards')
 }
 
 export function useSales() {
-  const { data, error, mutate } = useSWR(`/api/get-sales`, fetcher)
-  return {
-    sales: data,
-    isSalesLoading: !error && !data,
-    isSalesError: error,
-    mutateSales: mutate,
-  }
+  return useItems('sales')
 }
 
 export function useSalesJoined() {
@@ -470,95 +431,57 @@ export function useSalesJoined() {
   }
 }
 
-export function useSaleItems() {
-  const { data, error, mutate } = useSWR(`/api/get-sale-items`, fetcher)
+export function useCustomers() {
+  return useItems('customers')
+}
+
+export function useCustomer(customer_id: number) {
+  return useItems('customer', { customer_id })
+}
+
+export function useItems(itemName, params = {}) {
+  const queryString = Object.entries(params)
+    .map((param) => `${param[0]}=${param[1]}`)
+    .join('&')
+  const { data, error, mutate } = useSWR(
+    `/api/get-${itemName}?${queryString}`,
+    fetcher
+  )
   return {
-    saleItems: data,
-    isSaleItemsLoading: !error && !data,
-    isSaleItemsError: error,
-    mutateSaleItems: mutate,
+    [camelCase(itemName)]: data,
+    [`is${pascalCase(itemName)}Loading`]: !error && !data,
+    [`is${pascalCase(itemName)}Error`]: error,
+    [`mutate${pascalCase(itemName)}`]: mutate,
   }
+}
+
+export function useSaleItems() {
+  return useItems('sale-items')
 }
 
 export function useHelps() {
-  const { data, error, mutate } = useSWR(`/api/get-helps`, fetcher)
-  return {
-    helps: data,
-    isHelpsLoading: !error && !data,
-    isHelpsError: error,
-    mutateHelps: mutate,
-  }
+  return useItems('helps')
 }
 
 export function useHolds() {
-  const { data, error, mutate } = useSWR(`/api/get-holds`, fetcher)
-  return {
-    holds: data,
-    isHoldsLoading: !error && !data,
-    isHoldsError: error,
-    mutateHolds: mutate,
-  }
+  return useItems('holds')
 }
 
 export function useLogs() {
-  const { data, error, mutate } = useSWR(`/api/get-logs`, fetcher)
-  return {
-    logs: data,
-    isLogsLoading: !error && !data,
-    isLogsError: error,
-    mutateLogs: mutate,
-  }
+  return useItems('logs')
 }
 
 export function useStockMovements(limit) {
-  const { data, error, mutate } = useSWR(
-    `/api/get-stock-movements?limit=${limit}`,
-    fetcher
-  )
-  return {
-    stockMovements: data,
-    isStockMovementsLoading: !error && !data,
-    isStockMovementsError: error,
-    mutateStockMovements: mutate,
-  }
+  return useItems('stock-movements', { limit })
 }
 
 export function useStockMovementByStockId(id) {
-  const { data, error, mutate } = useSWR(
-    `/api/get-stock-movements-by-stock-id?id=${id}`,
-    fetcher
-  )
-  return {
-    stockMovements: data,
-    isStockMovementsLoading: !error && !data,
-    isStockMovementsError: error,
-    mutateStockMovements: mutate,
-  }
+  return useItems('stock-movements-by-stock-id', { id })
 }
 
 export function useJobs() {
-  const { data, error, mutate } = useSWR(`/api/get-jobs`, fetcher)
-  return {
-    jobs: data,
-    isJobsLoading: !error && !data,
-    isJobsError: error,
-    mutateJobs: mutate,
-  }
+  return useItems('jobs')
 }
-
-// export function useStocktakes() {
-//   const { data, error, mutate } = useSWR(`/api/get-stocktakes`, fetcher);
-//   return {
-//     stocktakes: data?.map((stocktake) => ({
-//       ...stocktake,
-//       counted_items: parseJSON(stocktake?.counted_items, []),
-//       counted_items: parseJSON(stocktake?.counted_items, []),
-//     })),
-//     isStocktakesLoading: !error && !data,
-//     isStocktakesError: error,
-//     mutateStocktakes: mutate,
-//   };
-// }
 
 export function useStocktakeItemsByStocktake(stocktake_id: number) {
   const { data, error, mutate } = useSWR(
