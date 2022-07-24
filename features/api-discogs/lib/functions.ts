@@ -1,105 +1,47 @@
-import { StockObject } from '@/lib/types'
+import { get } from 'lib/api'
+import { StockObject } from 'lib/types'
 import { DiscogsItem } from './types'
 
-export async function getDiscogsOptionsByBarcode(barcode: string) {
-  try {
-    const res = await fetch(
-      `https://api.discogs.com/database/search?type=release&barcode=${barcode}&key=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_KEY}&secret=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_SECRET}`
-    )
-    const json = await res.json()
-    if (!res.ok) throw Error(json.message)
-    return json.results
-  } catch (e) {
-    throw Error(e.message)
-  }
+export async function getDiscogsOptions({
+  query,
+  artist,
+  title,
+  barcode,
+}: any) {
+  return get(`https://api.discogs.com/database/search`, {
+    params: {
+      query,
+      release_title: title,
+      artist,
+      barcode,
+      key: process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_KEY,
+      secret: process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_SECRET,
+    },
+  })
 }
 
-export async function getDiscogsOptionsByItem(item: StockObject) {
-  try {
-    let url = ''
-    if (item?.barcode) url = `&barcode=${encodeURIComponent(item?.barcode)}`
-    // if (false) url = "";
-    else
-      url = `&query=${item?.artist ? `${item?.artist} ` : ''}${
-        item?.title ? `${item?.title} ` : ''
-      }${item?.format ? `${item?.format} ` : ''}`
-    // &artist=${
-    //   item?.artist || ""
-    // }&title=${item?.title || ""}
-    const res = await fetch(
-      `https://api.discogs.com/database/search?type=release${url}&key=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_KEY}&secret=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_SECRET}`
-    )
-    const json = await res.json()
-    if (!res.ok) throw Error(json.message)
-    return json.results
-  } catch (e) {
-    throw Error(e.message)
-  }
+export async function getDiscogsItem({ master_id, resource_url }: any) {
+  if (!master_id && !resource_url) return null
+  return get(
+    master_id ? `https://api.discogs.com/masters/${master_id}` : resource_url
+  )
 }
 
-export async function getDiscogsOptionsByKeyword(keyword: string) {
-  try {
-    const res = await fetch(
-      `https://api.discogs.com/database/search?type=release&query=${keyword}&key=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_KEY}&secret=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_SECRET}`
-    )
-    const json = await res.json()
-    if (!res.ok) throw Error(json.message)
-    return json.results
-  } catch (e) {
-    throw Error(e.message)
-  }
+export async function getDiscogsPriceSuggestions({ id }: any) {
+  return get(
+    `https://api.discogs.com/marketplace/price_suggestions/${id || ''}?token=${
+      process.env.NEXT_PUBLIC_DISCOGS_PERSONAL_ACCESS_TOKEN
+    }`
+  )
 }
 
-export async function getDiscogsItem(discogsItem: DiscogsItem) {
-  try {
-    let url = `https://api.discogs.com/masters/${discogsItem?.master_id || ''}`
-    if (discogsItem?.master_id === 0 || !discogsItem?.master_id)
-      url = discogsItem?.resource_url
-    const res = await fetch(url)
-    const json = await res.json()
-    if (!res.ok) throw Error(json.message)
-    return json
-  } catch (e) {
-    throw Error(e.message)
-  }
-}
-
-export async function getDiscogsPriceSuggestions(discogsItem: DiscogsItem) {
-  try {
-    const res = await fetch(
-      `https://api.discogs.com/marketplace/price_suggestions/${
-        discogsItem?.id || ''
-      }?token=${process.env.NEXT_PUBLIC_DISCOGS_PERSONAL_ACCESS_TOKEN}`
-    )
-    const json = await res.json()
-    if (!res.ok) throw Error(json.message)
-    return json
-  } catch (e) {
-    throw Error(e.message)
-  }
-}
-
-export async function getDiscogsItemArtistDetails(discogsItem: DiscogsItem) {
-  const artists = []
-  console.log(discogsItem?.artists)
-  if (discogsItem?.artists) {
-    for (const discogsArtist of discogsItem?.artists) {
-      console.log(discogsArtist)
-      if (discogsArtist?.resource_url) {
-        try {
-          const res = await fetch(discogsArtist?.resource_url)
-          const json = await res.json()
-          if (!res.ok) throw Error(json.message)
-          artists?.push({ ...json, name: discogsArtist?.name })
-          return artists
-        } catch (e) {
-          throw Error(e.message)
-        }
-      }
-    }
-  } else {
-    return {}
-  }
+export async function getDiscogsItemArtistDetails({ artists }: any) {
+  if (!artists) return []
+  return Promise.all(
+    artists
+      .filter((artist) => artist.resource_url)
+      .map((artist) => get(artist.resource_url))
+  ).then((data) => data.filter((artist) => typeof artist === 'object'))
 }
 
 export async function setDiscogsItemToStockItem(
@@ -109,34 +51,16 @@ export async function setDiscogsItemToStockItem(
 ) {
   const detailedDiscogsItem = await getDiscogsItem(discogsOption)
   const priceSuggestions = await getDiscogsPriceSuggestions(discogsOption)
+
   const discogsItem = {
     ...discogsOption,
     ...detailedDiscogsItem,
     priceSuggestions,
   }
+
   if (overrideItemDetails)
-    stockItem = {
-      ...stockItem,
-      artist: discogsItem?.artists?.map((artist) => artist?.name)?.join(', '),
-      barcode: discogsItem?.barcode?.join('\n'),
-      country: discogsItem?.country,
-      format: getFormatFromDiscogs(discogsItem?.format),
-      media: 'Audio',
-      genre: [
-        ...(discogsItem?.genre
-          ? Array.isArray(discogsItem?.genre)
-            ? discogsItem?.genre
-            : [discogsItem?.genre]
-          : []),
-        ...(discogsItem?.style
-          ? Array.isArray(discogsItem?.style)
-            ? discogsItem?.style
-            : [discogsItem?.style]
-          : []),
-      ],
-      title: discogsItem?.title,
-      release_year: discogsItem?.year?.toString(),
-    }
+    stockItem = mergeStockAndDiscogsItems(stockItem, discogsItem)
+
   return {
     ...stockItem,
     thumb_url: discogsOption?.thumb || null,
@@ -145,11 +69,34 @@ export async function setDiscogsItemToStockItem(
   }
 }
 
+export function mergeStockAndDiscogsItems(stockItem, discogsItem) {
+  return {
+    ...stockItem,
+    artist: discogsItem?.artists?.map((artist) => artist?.name)?.join(', '),
+    barcode: discogsItem?.barcode?.join('\n'),
+    country: discogsItem?.country,
+    format: getFormatFromDiscogs(discogsItem?.format),
+    media: 'Audio',
+    genre: [
+      ...(discogsItem?.genre
+        ? Array.isArray(discogsItem?.genre)
+          ? discogsItem?.genre
+          : [discogsItem?.genre]
+        : []),
+      ...(discogsItem?.style
+        ? Array.isArray(discogsItem?.style)
+          ? discogsItem?.style
+          : [discogsItem?.style]
+        : []),
+    ],
+    title: discogsItem?.title,
+    release_year: discogsItem?.year?.toString(),
+  }
+}
+
 export function getFormatFromDiscogs(formats: string[]) {
   if (!formats) return ''
-  let format = null
-  console.log(formats)
-  ;[
+  let format = [
     'LP',
     'CD',
     'Cassette',
@@ -169,11 +116,8 @@ export function getFormatFromDiscogs(formats: string[]) {
     '3"',
     '2"',
     '1"',
-  ]?.forEach((f) => {
-    if (formats?.includes(f)) format = f
-  })
+  ]?.find((f) => formats?.includes(f))
   if (!format) format = formats[0]
-  console.log(format)
   return format
 }
 

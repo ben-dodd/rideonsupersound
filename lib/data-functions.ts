@@ -15,10 +15,10 @@ import {
 import dayjs from 'dayjs'
 import { isValidBankAccountNumber } from './utils'
 
-export function getItemSku(item: StockObject) {
-  return `${('000' + item?.vendor_id || '').slice(-3)}/${(
-    '00000' + item?.id || ''
-  ).slice(-5)}`
+export function getItemSku({ id, vendor_id }: any) {
+  return `${('000' + vendor_id || '').slice(-3)}/${('00000' + id || '').slice(
+    -5
+  )}`
 }
 
 export function getItemDisplayName(item: StockObject | GiftCardObject) {

@@ -1,30 +1,31 @@
+import axios from 'axios'
+import dayjs from 'dayjs'
 import {
-  SaleObject,
-  SaleItemObject,
-  SaleTransactionObject,
   ClerkObject,
+  CustomerObject,
   GiftCardObject,
+  HoldObject,
+  LogObject,
+  PaymentMethodTypes,
+  RegisterObject,
+  RoleTypes,
+  SaleItemObject,
+  SaleObject,
+  SaleStateTypes,
+  SaleTransactionObject,
+  StockMovementTypes,
+  StockObject,
+  StocktakeItemObject,
+  StocktakeObject,
+  StocktakeReviewDecisions,
+  StocktakeStatuses,
+  StocktakeTemplateObject,
+  TaskObject,
+  TillObject,
   VendorObject,
   VendorPaymentObject,
-  StockObject,
-  RegisterObject,
-  LogObject,
-  TillObject,
-  HoldObject,
-  CustomerObject,
-  TaskObject,
-  SaleStateTypes,
-  PaymentMethodTypes,
-  StockMovementTypes,
   VendorPaymentTypes,
-  RoleTypes,
-  StocktakeObject,
-  StocktakeTemplateObject,
-  StocktakeReviewDecisions,
-  StocktakeItemObject,
-  StocktakeStatuses,
-} from '@/lib/types'
-import dayjs from 'dayjs'
+} from './types'
 // Change to DayJS utc
 import { v4 as uuid } from 'uuid'
 
@@ -781,27 +782,37 @@ export async function saveHoldToDatabase(
   }
 }
 
-export async function saveCustomerToDatabase(
-  customer: CustomerObject,
-  clerk: ClerkObject
-) {
-  try {
-    const res = await fetch(
-      `/api/create-customer?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ...customer, created_by_clerk_id: clerk?.id }),
+export async function saveCustomerToDatabase({ customer, clerk }: any) {
+  await updateItemInDatabase({
+    url: `create-customer`,
+    item: { name: 'Testy man' },
+  })
+  return 1
+}
+
+export async function updateItemInDatabase({
+  url,
+  item,
+  itemList,
+  mutateFunction,
+}: any) {
+  axios
+    .post(`/api/${url}?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`, item)
+    .then((response) => {
+      console.log(response.data)
+      if (mutateFunction) {
+        if (itemList)
+          mutateFunction(
+            itemList?.map((listItem) =>
+              listItem?.id === item.id ? item : listItem
+            ),
+            false
+          )
+        else mutateFunction()
       }
-    )
-    const json = await res.json()
-    if (!res.ok) throw Error(json.message)
-    return json?.insertId
-  } catch (e) {
-    throw Error(e.message)
-  }
+      return response.data.insertId
+    })
+    .catch((error) => console.log(error))
 }
 
 export async function updateCustomerInDatabase(

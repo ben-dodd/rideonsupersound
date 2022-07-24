@@ -1,17 +1,10 @@
-// Packages
-import { useEffect, useState } from 'react'
-
-// Functions
-import { getGoogleBooksOptionsByItem } from '../lib/functions'
-
-// Components
-
-// Icons
 import { clerkAtom } from '@/lib/atoms'
 import { saveSystemLog } from '@/lib/db-functions'
 import { StockObject } from '@/lib/types'
 import SyncIcon from '@mui/icons-material/Sync'
 import { useAtom } from 'jotai'
+import { useEffect, useState } from 'react'
+import { getGoogleBooksOptionsByItem } from '../lib/functions'
 import GoogleBooksItem from './google-books-item'
 import GoogleBooksOption from './google-books-option'
 
@@ -83,10 +76,10 @@ export default function GoogleBooksPanel({
           <GoogleBooksItem googleBooksItem={googleBooksItem} />
         ) : googleBooksOptions ? (
           <div>
-            {googleBooksOptions.map((opt: any, i: number) => (
+            {googleBooksOptions.map((googleBooksOption: any, i: number) => (
               <GoogleBooksOption
                 key={i}
-                opt={opt}
+                googleBooksOption={googleBooksOption}
                 handleGoogleBooksOptionClick={handleGoogleBooksOptionClick}
               />
             ))}

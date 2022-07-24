@@ -9,57 +9,40 @@ interface googleProps {
 export default function GoogleBooksItemDisplay({
   googleBooksItem,
 }: googleProps) {
+  const volumeInfo = googleBooksItem?.volumeInfo
   return (
     <div>
       <div className="w-32">
         <div className="w-32 h-32 relative">
           <img
             className="object-cover absolute"
-            // layout="fill"
-            // objectFit="contain"
             src={
-              googleBooksItem?.volumeInfo?.imageLinks?.thumbnail ||
+              volumeInfo?.imageLinks?.thumbnail ||
               `${process.env.NEXT_PUBLIC_RESOURCE_URL}img/default.png`
             }
-            alt={googleBooksItem?.volumeInfo?.title || 'Book cover art'}
+            alt={volumeInfo?.title || 'Book cover art'}
           />
-          {/*<div className="absolute w-32 h-8 bg-opacity-50 bg-black text-white flex justify-center items-center">
-        {getItemSku(item)}
-      </div>*/}
         </div>
       </div>
-      <div className="font-bold">{googleBooksItem?.volumeInfo?.title}</div>
-      <div>{googleBooksItem?.volumeInfo?.subtitle}</div>
-      <div>{andList(googleBooksItem?.volumeInfo?.authors)}</div>
-      <div>{googleBooksItem?.volumeInfo?.categories?.join(', ')}</div>
+      <div className="font-bold">{volumeInfo?.title}</div>
+      <div>{volumeInfo?.subtitle}</div>
+      <div>{andList(volumeInfo?.authors)}</div>
+      <div>{volumeInfo?.categories?.join(', ')}</div>
       <div>
-        {googleBooksItem?.volumeInfo?.publisher || ''}
-        {googleBooksItem?.volumeInfo?.publisher &&
-        googleBooksItem?.volumeInfo?.pageCount
-          ? ', '
-          : ''}
-        {googleBooksItem?.volumeInfo?.pageCount
-          ? `${googleBooksItem?.volumeInfo?.pageCount}pp.`
-          : ''}
+        {volumeInfo?.publisher || ''}
+        {volumeInfo?.publisher && volumeInfo?.pageCount ? ', ' : ''}
+        {volumeInfo?.pageCount ? `${volumeInfo?.pageCount}pp.` : ''}
       </div>
-      {googleBooksItem?.volumeInfo?.publishedDate && (
-        <div>
-          {dayjs(googleBooksItem?.volumeInfo?.publishedDate).format(
-            'D MMMM YYYY'
-          )}
-        </div>
+      {volumeInfo?.publishedDate && (
+        <div>{dayjs(volumeInfo?.publishedDate).format('D MMMM YYYY')}</div>
       )}
       <div style={{ marginBottom: 16, fontStyle: 'italic' }}>
-        {googleBooksItem?.volumeInfo?.description}
+        {volumeInfo?.description}
       </div>
-      <div>{googleBooksItem?.volumeInfo?.categories?.join(', ')}</div>
-      <div>{`Print Type: ${googleBooksItem?.volumeInfo?.printType || ''}`}</div>
-      <div>
-        {`Maturity Rating: ${
-          googleBooksItem?.volumeInfo?.maturityRating || ''
-        }`}
-      </div>
-      <div>{`Language: ${googleBooksItem?.volumeInfo?.language || ''}`}</div>
+      <div>{volumeInfo?.categories?.join(', ')}</div>
+      <div>{`Print Type: ${volumeInfo?.printType || ''}`}</div>
+      <div>{`Maturity Rating: ${volumeInfo?.maturityRating || ''}`}</div>
+      <div>{`Language: ${volumeInfo?.language || ''}`}</div>
       {googleBooksItem?.saleInfo?.saleability !== 'NOT_FOR_SALE' && (
         <>
           <div>

@@ -57,7 +57,7 @@ export default function CreateCustomerSidebar() {
     saveSystemLog(`New customer (${customer?.name}) created.`, clerk?.id)
     setSubmitting(true)
     let newCustomer = { ...customer, created_by_clerk_id: clerk?.id }
-    const id = await saveCustomerToDatabase(customer, clerk)
+    const id = await saveCustomerToDatabase({ customer, clerk })
     newCustomer = { ...newCustomer, id }
     mutateCustomers([...customers, newCustomer], false)
     setCart({ ...cart, customer_id: id })

@@ -1,9 +1,6 @@
 import TextField from '@/components/inputs/text-field'
 import DiscogsOption from '@/features/api-discogs/components/discogs-option'
-import {
-  getDiscogsOptionsByBarcode,
-  getDiscogsOptionsByKeyword,
-} from '@/features/api-discogs/lib/functions'
+import { getDiscogsOptions } from '@/features/api-discogs/lib/functions'
 import { receiveStockAtom } from '@/lib/atoms'
 import { useAtom } from 'jotai'
 import debounce from 'lodash/debounce'
@@ -15,9 +12,9 @@ export default function Discogs() {
   const [keyword, setKeyword] = useState('')
   const [discogsOptions, setDiscogsOptions] = useState([])
   const [key, setKey] = useState(uuid())
-  const handleChange = async (val) => {
-    if (val !== '') {
-      const results: any = await getDiscogsOptionsByBarcode(val)
+  const handleChange = async (barcode) => {
+    if (barcode !== '') {
+      const results: any = await getDiscogsOptions({ barcode })
       if (results && results?.length > 0) {
         setDiscogsOptions(results)
       }
@@ -36,7 +33,7 @@ export default function Discogs() {
     setDiscogsOptions([])
   }
   const searchDiscogs = async (k) => {
-    const results = await getDiscogsOptionsByKeyword(k)
+    const results = await getDiscogsOptions({ query: k })
     if (results && results?.length > 0) setDiscogsOptions(results)
   }
   const debouncedSearch = useCallback(debounce(searchDiscogs, 2000), [])
@@ -70,13 +67,13 @@ export default function Discogs() {
         inputLabel="Search Keywords (e.g. 'palace of wisdom common threads cdr')"
       />
       {discogsOptions?.length > 0 ? (
-        discogsOptions?.map((opt, k) => (
+        discogsOptions?.map((discogsOption, k) => (
           <DiscogsOption
-            opt={opt}
+            discogsOption={discogsOption}
             key={k}
             item={{ vendor_id: basket?.vendor_id }}
             setItem={addItem}
-            override={true}
+            overrideItemDetails={true}
           />
         ))
       ) : barcode === '' ? (

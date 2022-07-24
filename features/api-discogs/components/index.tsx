@@ -1,17 +1,10 @@
-// Packages
-import { useEffect, useState } from 'react'
-
-// Functions
-import { getDiscogsOptionsByItem } from '../lib/functions'
-
-// Components
-
-// Icons
 import { clerkAtom } from '@/lib/atoms'
 import { saveSystemLog } from '@/lib/db-functions'
 import { StockObject } from '@/lib/types'
 import SyncIcon from '@mui/icons-material/Sync'
 import { useAtom } from 'jotai'
+import { useEffect, useState } from 'react'
+import { getDiscogsOptions } from '../lib/functions'
 import DiscogsItem from './discogs-item'
 import DiscogsOption from './discogs-option'
 
@@ -43,7 +36,7 @@ export default function DiscogsPanel({
   }, [])
 
   const handleGetDiscogsOptions = async () => {
-    const options = await getDiscogsOptionsByItem(item)
+    const options = await getDiscogsOptions(item)
     setDiscogsOptions(options)
   }
 
@@ -74,13 +67,12 @@ export default function DiscogsPanel({
         ) : discogsOptions ? (
           discogsOptions.length > 0 ? (
             <div>
-              {discogsOptions.map((opt: any, i: number) => (
+              {discogsOptions.map((discogsOption: any, i: number) => (
                 <DiscogsOption
                   key={i}
-                  opt={opt}
+                  discogsOption={discogsOption}
                   item={item}
                   setItem={setItem}
-                  override={false}
                 />
               ))}
             </div>

@@ -1,54 +1,40 @@
-import { andList } from "@/lib/data-functions";
-import dayjs from "dayjs";
-import Image from "next/image";
+import { andList } from '@/lib/utils'
+import dayjs from 'dayjs'
 
 export default function GoogleBooksOption({
-  opt,
+  googleBooksOption,
   handleGoogleBooksOptionClick,
 }) {
+  const volumeInfo = googleBooksOption.volumeInfo
   return (
     <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 2fr",
-        gap: 16,
-        cursor: "pointer",
-        marginBottom: 16,
-        alignContent: "flex-start",
-        justifyContent: "flex-start",
-      }}
-      onClick={() => handleGoogleBooksOptionClick(opt)}
+      className="flex item-start cursor-pointer p-2 mb-2 hover:bg-gray-300"
+      onClick={() => handleGoogleBooksOptionClick(googleBooksOption)}
     >
-      <div className="w-32">
-        <div className="w-32 h-32 relative">
-          <img
-            className="object-cover absolute"
-            src={
-              opt?.volumeInfo?.imageLinks?.smallThumbnail ||
-              `${process.env.NEXT_PUBLIC_RESOURCE_URL}img/default.png`
-            }
-            alt={opt?.volumeInfo?.title || "Book cover art"}
-          />
-          {/*<div className="absolute w-32 h-8 bg-opacity-50 bg-black text-white flex justify-center items-center">
-        {getItemSku(item)}
-      </div>*/}
-        </div>
+      <div className="flex w-32 h-32">
+        <img
+          src={
+            volumeInfo?.imageLinks?.smallThumbnail ||
+            `${process.env.NEXT_PUBLIC_RESOURCE_URL}img/default.png`
+          }
+          alt={volumeInfo?.title || 'Book cover art'}
+        />
       </div>
-      <div>
-        <div className="font-bold">{opt?.volumeInfo?.title || ""}</div>
-        <div>{andList(opt?.volumeInfo?.authors || [])}</div>
-        <div>
-          {opt?.volumeInfo?.publisher || ""}
-          {opt?.volumeInfo?.pageCount
-            ? `, ${opt?.volumeInfo?.pageCount}pp.`
-            : ""}
+      <div className="w-2/3 ml-6">
+        <div className="font-bold">
+          {volumeInfo?.title || ''}
+          {volumeInfo?.subtitle ? <i> {volumeInfo.subtitle}</i> : ''}
         </div>
-        {opt?.volumeInfo?.publishedDate && (
-          <div>
-            {dayjs(opt?.volumeInfo?.publishedDate).format("D MMMM YYYY")}
-          </div>
+        <div>{andList(volumeInfo?.authors || [])}</div>
+        <div>
+          <b>{volumeInfo?.publisher ? `${volumeInfo.publisher} ` : ''}</b>
+          {volumeInfo?.printType || ''}
+          <i>{volumeInfo?.pageCount ? ` ${volumeInfo?.pageCount}pp.` : ''}</i>
+        </div>
+        {volumeInfo?.publishedDate && (
+          <div>{dayjs(volumeInfo?.publishedDate).format('D MMMM YYYY')}</div>
         )}
       </div>
     </div>
-  );
+  )
 }

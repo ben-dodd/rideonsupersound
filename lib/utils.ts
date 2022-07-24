@@ -24,7 +24,7 @@ export function andList(list: string[]) {
 
 export function isValidBankAccountNumber(value: string) {
   if (!value) return false
-  return /^(?:[0-9]{15}|[0-9]{16})$/.test(`${value}`.replace(/\D/g, ''))
+  return /^(?:[0-9]{15}|[0-9]{16})$/.test(`${value}`.replace(/-/g, ''))
 }
 
 export function convertDegToCardinal(deg: number) {

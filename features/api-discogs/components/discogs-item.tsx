@@ -1,10 +1,7 @@
-// Functions
-import { getExchangeRate } from '@/lib/api'
+import { getUSDExchangeRate } from '@/lib/api'
 import { StockObject } from '@/lib/types'
 import { andList } from '@/lib/utils'
 import { useEffect, useState } from 'react'
-
-// Components
 import ReactPlayer from 'react-player'
 import { DiscogsItem } from '../lib/types'
 
@@ -14,16 +11,15 @@ interface discogsProps {
 }
 
 export default function DiscogsItemScreen({ discogsItem, item }: discogsProps) {
+  // Set USD to NZD exchange rate (lowest prices is in USD)
   const [exchangeRate, setExchangeRate] = useState<number>(1)
-
   useEffect(() => {
-    getExchangeRate().then((exchangeRate) => setExchangeRate(exchangeRate))
+    getUSDExchangeRate().then((exchangeRate) => setExchangeRate(exchangeRate))
   }, [])
 
   return (
     <div className="flex">
       <div className="w-1/2">
-        {/* HEADER DETAILS */}
         <div className="text-xl">
           <div className="font-bold">
             {andList(discogsItem?.artists?.map((e: any) => e.name))}
