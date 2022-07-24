@@ -7,7 +7,7 @@ import { pageAtom } from '@/lib/atoms'
 // Components
 import GiftCardTable from '../../features/display-gift-cards/components/gift-card-table'
 
-export default function GiftCardScreen() {
+export default function GiftCardPage() {
   // atoms
   const [page] = useAtom(pageAtom)
   return (

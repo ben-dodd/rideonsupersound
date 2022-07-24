@@ -1,8 +1,7 @@
-import Payments from '@/components/vendor-page/payments'
-import Sales from '@/components/vendor-page/sales'
-import StockItem from '@/components/vendor-page/stock-item'
-import Summary from '@/components/vendor-page/summary'
-import Tabs from '@/components/vendor-page/tabs'
+import Payments from '@/features/web-vendor/components/payments'
+import Sales from '@/features/web-vendor/components/sales'
+import StockItem from '@/features/web-vendor/components/stock-item'
+import Tabs from '@/features/web-vendor/components/tabs'
 import { filterInventory, sumPrices } from '@/lib/data-functions'
 import {
   useVendorByUid,
@@ -22,14 +21,6 @@ import { useEffect, useState } from 'react'
 export default function VendorScreen() {
   const router = useRouter()
   const { id } = router.query
-  // const [uid, setUid] = useState(null);
-  // useEffect(() => {
-  //   if (!router.isReady) {
-  //     const { id } = router.query;
-  //     console.log(id);
-  //     setUid(id);
-  //   }
-  // }, [router.isReady]);
   const { vendor, isVendorLoading, isVendorError } = useVendorByUid(id)
   const { vendorStock, isVendorStockLoading, isVendorStockError } =
     useVendorStockByUid(id)

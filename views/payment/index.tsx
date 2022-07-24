@@ -2,15 +2,15 @@
 import { useAtom } from 'jotai'
 
 // DB
+import PaymentTable from '@/features/display-payments/components/payment-table'
 import { pageAtom, viewAtom } from '@/lib/atoms'
 import BatchPaymentScreen from 'features/payment/components/batch-payment-screen'
 import CashPaymentDialog from 'features/payment/components/cash-payment-dialog'
-import PaymentTable from 'features/payment/components/payment-table'
 import TransferVendorPaymentDialog from 'features/payment/components/transfer-payment-dialog'
 
 // Components
 
-export default function PaymentsScreen() {
+export default function PaymentsPage() {
   // Atoms
   const [page] = useAtom(pageAtom)
   const [view] = useAtom(viewAtom)

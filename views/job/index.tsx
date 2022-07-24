@@ -11,11 +11,11 @@ import { StockObject, TaskObject } from '@/lib/types'
 // Components
 import Tabs from '@/components/navigation/tabs'
 import dayjs from 'dayjs'
-import TaskDialog from './job-dialog'
-import ListTask from './list-job'
-import RestockTask from './restock-job'
+import TaskDialog from '../../features/jobs/components/job-dialog'
+import ListTask from '../../features/jobs/components/list-job'
+import RestockTask from '../../features/jobs/components/restock-job'
 
-export default function TaskScreen() {
+export default function JobsPage() {
   // SWR
   const { jobs, isJobsLoading } = useJobs()
   const { inventory, isInventoryLoading } = useInventory()

@@ -11,7 +11,7 @@ import SaleItemScreen from 'features/item-sale/components/sale-item-screen'
 
 // REVIEW add filter buttons to table for laybys etc.
 
-export default function SalesScreen() {
+export default function SalesPage() {
   // Atoms
   const [page] = useAtom(pageAtom)
   const [tableMode] = useAtom(tableModeAtom)

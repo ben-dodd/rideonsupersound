@@ -4,6 +4,7 @@ import { useSwipeable } from 'react-swipeable'
 
 // DB
 import MidScreenContainer from '@/components/container/mid-screen'
+import ChangeStockQuantityDialog from '@/features/item-inventory/components/change-stock-quantity-dialog'
 import {
   bypassRegisterAtom,
   loadedItemIdAtom,
@@ -13,7 +14,6 @@ import {
 import { useRegisterID } from '@/lib/swr-hooks'
 import CreateCustomerSidebar from 'features/customer/components/sidebar'
 import CreateHoldSidebar from 'features/hold/components/create-hold-sidebar'
-import ChangeStockQuantityDialog from 'features/inventory/components/change-stock-quantity-dialog'
 import ChangePriceDialog from 'features/item-inventory/components/change-price-dialog'
 import InventoryItemScreen from 'features/item-inventory/components/inventory-item-screen'
 import SaleScreen from 'features/item-sale/components'
@@ -29,7 +29,7 @@ import ShoppingCart from 'features/sell/components/shopping-cart'
 
 // Components
 
-export default function SellScreen() {
+export default function SellPage() {
   // SWR
   const { registerID } = useRegisterID()
   const [loadedItemId] = useAtom(loadedItemIdAtom)

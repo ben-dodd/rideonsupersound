@@ -12,7 +12,7 @@ import ListStockMovement from 'features/log/components/list-stock-movement'
 
 // Components
 
-export default function LogScreen() {
+export default function LogPage() {
   // SWR
   const { logs, isLogsLoading } = useLogs()
   const { stockMovements, isStockMovementsLoading } = useStockMovements(200)

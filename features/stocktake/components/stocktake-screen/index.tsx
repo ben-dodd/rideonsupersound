@@ -29,7 +29,7 @@ import {
 
 // Components
 import ScreenContainer from '@/components/container/screen'
-import InventoryItemScreen from '@/components/inventory/inventory-item-screen'
+import InventoryItemScreen from '@/features/item-inventory/components/inventory-item-screen'
 import CountItems from './count-items'
 import ReviewItems from './review-items'
 

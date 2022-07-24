@@ -5,8 +5,8 @@ import { useAtom } from 'jotai'
 import { pageAtom, viewAtom } from '@/lib/atoms'
 
 // Components
+import ChangeStockQuantityDialog from '@/features/item-inventory/components/change-stock-quantity-dialog'
 import VendorTable from 'features/display-vendors/components/vendor-table'
-import ChangeStockQuantityDialog from 'features/inventory/components/change-stock-quantity-dialog'
 import ChangePriceDialog from 'features/item-inventory/components/change-price-dialog'
 import InventoryItemScreen from 'features/item-inventory/components/inventory-item-screen'
 import VendorScreen from 'pages/vendor/[id]'

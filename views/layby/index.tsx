@@ -10,7 +10,7 @@ import LaybyTable from '../../features/display-laybys/components/layby-table'
 
 // REVIEW add filter buttons to table for laybys etc.
 
-export default function LaybyScreen() {
+export default function LaybyPage() {
   // Atoms
   const [page] = useAtom(pageAtom)
   const [loadedSaleId] = useAtom(loadedSaleIdAtom)

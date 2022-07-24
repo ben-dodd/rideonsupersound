@@ -102,6 +102,49 @@ export async function getDiscogsItemArtistDetails(discogsItem: DiscogsItem) {
   }
 }
 
+export async function setDiscogsItemToStockItem(
+  discogsOption: DiscogsItem,
+  stockItem: StockObject,
+  overrideItemDetails: boolean
+) {
+  const detailedDiscogsItem = await getDiscogsItem(discogsOption)
+  const priceSuggestions = await getDiscogsPriceSuggestions(discogsOption)
+  const discogsItem = {
+    ...discogsOption,
+    ...detailedDiscogsItem,
+    priceSuggestions,
+  }
+  if (overrideItemDetails)
+    stockItem = {
+      ...stockItem,
+      artist: discogsItem?.artists?.map((artist) => artist?.name)?.join(', '),
+      barcode: discogsItem?.barcode?.join('\n'),
+      country: discogsItem?.country,
+      format: getFormatFromDiscogs(discogsItem?.format),
+      media: 'Audio',
+      genre: [
+        ...(discogsItem?.genre
+          ? Array.isArray(discogsItem?.genre)
+            ? discogsItem?.genre
+            : [discogsItem?.genre]
+          : []),
+        ...(discogsItem?.style
+          ? Array.isArray(discogsItem?.style)
+            ? discogsItem?.style
+            : [discogsItem?.style]
+          : []),
+      ],
+      title: discogsItem?.title,
+      release_year: discogsItem?.year?.toString(),
+    }
+  return {
+    ...stockItem,
+    thumb_url: discogsOption?.thumb || null,
+    image_url: discogsOption?.cover_image || null,
+    discogsItem,
+  }
+}
+
 export function getFormatFromDiscogs(formats: string[]) {
   if (!formats) return ''
   let format = null

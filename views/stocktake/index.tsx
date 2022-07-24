@@ -1,29 +1,29 @@
 // Packages
-import { useAtom } from "jotai";
+import { useAtom } from 'jotai'
 
 // DB
-import { loadedStocktakeTemplateIdAtom, pageAtom } from "@/lib/atoms";
+import StocktakeListScreen from '@/features/stocktake/components/stocktake-list-screen'
+import StocktakeTemplateScreen from '@/features/stocktake/components/stocktake-template-screen'
+import { loadedStocktakeTemplateIdAtom, pageAtom } from '@/lib/atoms'
 
 // Components
-import StocktakeTemplateScreen from "../../components/stocktake/stocktake-template-screen";
-import StocktakeListScreen from "../../components/stocktake/stocktake-list-screen";
 // import ListStockMovement from "./list-stock-movement";
 
-export default function StocktakesScreen() {
+export default function StocktakePage() {
   // SWR
-  const [loadedStocktakeTemplateId] = useAtom(loadedStocktakeTemplateIdAtom);
+  const [loadedStocktakeTemplateId] = useAtom(loadedStocktakeTemplateIdAtom)
 
   // Atoms
-  const [page] = useAtom(pageAtom);
+  const [page] = useAtom(pageAtom)
 
   return (
     <div
       className={`flex relative overflow-x-hidden ${
-        page !== "stocktake" ? "hidden" : ""
+        page !== 'stocktake' ? 'hidden' : ''
       }`}
     >
-      {page === "stocktake" && <StocktakeListScreen />}
+      {page === 'stocktake' && <StocktakeListScreen />}
       {loadedStocktakeTemplateId ? <StocktakeTemplateScreen /> : <div />}
     </div>
-  );
+  )
 }

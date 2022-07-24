@@ -10,22 +10,22 @@ import Alert from '@mui/material/Alert'
 import Slide from '@mui/material/Slide'
 import Snackbar from '@mui/material/Snackbar'
 
-import GiftCardsScreen from '@/components/gift-card'
-import HelpDialog from '@/components/help'
-import HoldsScreen from '@/components/hold'
-import InventoryScreen from '@/components/inventory'
-import TaskScreen from '@/components/jobs'
-import LogScreen from '@/components/log'
-import Menu from '@/components/menu'
 import ConfirmModal from '@/components/modal/confirm-modal'
-import Nav from '@/components/nav'
-import PaymentsScreen from '@/components/payment'
-import SalesScreen from '@/components/sale'
-import SellScreen from '@/components/sell'
-import VendorScreen from '@/components/vendor'
+import HelpDialog from '@/features/help/components'
 import Head from 'next/head'
-import LaybyScreen from '../../components/layby'
-import StocktakeScreen from '../stocktake'
+import GiftCardPage from '../gift-card'
+import HoldsPage from '../hold'
+import InventoryPage from '../inventory'
+import JobsPage from '../job'
+import LaybyPage from '../layby'
+import LogPage from '../log'
+import Menu from '../menu'
+import Nav from '../nav'
+import PaymentsPage from '../payment'
+import SalesPage from '../sale'
+import SellPage from '../sell'
+import StocktakePage from '../stocktake'
+import VendorPage from '../vendor'
 
 export default function MainPage() {
   // Atoms
@@ -45,17 +45,17 @@ export default function MainPage() {
       <div className="flex h-menu relative overflow-y-hidden">
         <Menu />
         <div className="h-full w-full absolute sm:static">
-          <SellScreen />
-          <InventoryScreen />
-          <VendorScreen />
-          <HoldsScreen />
-          <LaybyScreen />
-          <GiftCardsScreen />
-          <SalesScreen />
-          {page === 'logs' && <LogScreen />}
-          {page === 'jobs' && <TaskScreen />}
-          <PaymentsScreen />
-          <StocktakeScreen />
+          <SellPage />
+          <InventoryPage />
+          <VendorPage />
+          <HoldsPage />
+          <LaybyPage />
+          <GiftCardPage />
+          <SalesPage />
+          {page === 'logs' && <LogPage />}
+          {page === 'jobs' && <JobsPage />}
+          <PaymentsPage />
+          <StocktakePage />
         </div>
         <HelpDialog />
         <ConfirmModal />
