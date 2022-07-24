@@ -9,18 +9,18 @@ import {
   loadedItemIdAtom,
   pageAtom,
   viewAtom,
-} from '@/lib/atoms'
+} from 'lib/atoms'
 import {
   useInventory,
   useLogs,
   useRegisterID,
   useStockItem,
-} from '@/lib/swr-hooks'
-import { ModalButton, StockMovementTypes } from '@/lib/types'
+} from 'lib/swr-hooks'
+import { ModalButton, StockMovementTypes } from 'lib/types'
 
 // Functions
-import { getItemDisplayName } from '@/lib/data-functions'
-import { saveLog, saveStockMovementToDatabase } from '@/lib/db-functions'
+import { getItemDisplayName } from 'lib/data-functions'
+import { saveLog, saveStockMovementToDatabase } from 'lib/db-functions'
 
 // Components
 import TextField from '@/components/inputs/text-field'

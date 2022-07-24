@@ -1,6 +1,6 @@
 // DB
-import { useLogs, useVendors } from '@/lib/swr-hooks'
-import { VendorObject } from '@/lib/types'
+import { useLogs, useVendors } from 'lib/swr-hooks'
+import { VendorObject } from 'lib/types'
 
 // Functions
 
@@ -8,9 +8,9 @@ import { VendorObject } from '@/lib/types'
 import CreateableSelect from '@/components/inputs/createable-select'
 
 // Icons
-import { clerkAtom, receiveStockAtom } from '@/lib/atoms'
-import { saveLog, saveVendorToDatabase } from '@/lib/db-functions'
 import { useAtom } from 'jotai'
+import { clerkAtom, receiveStockAtom } from 'lib/atoms'
+import { saveLog, saveVendorToDatabase } from 'lib/db-functions'
 
 export default function SelectVendor() {
   const [basket, setBasket] = useAtom(receiveStockAtom)

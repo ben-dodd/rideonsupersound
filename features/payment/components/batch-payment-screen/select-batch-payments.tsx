@@ -1,10 +1,10 @@
 import TextField from '@/components/inputs/text-field'
-import { isValidBankAccountNumber } from '@/lib/data-functions'
 import NoBankDetailsIcon from '@mui/icons-material/CreditCardOff'
 import StoreCreditOnlyIcon from '@mui/icons-material/ShoppingBag'
 import QuantityCheckIcon from '@mui/icons-material/Warning'
 import { Tooltip } from '@mui/material'
 import dayjs from 'dayjs'
+import { isValidBankAccountNumber } from 'lib/data-functions'
 import { useState } from 'react'
 
 export default function SelectBatchPayments({ vendorList, setVendorList }) {

@@ -3,19 +3,18 @@ import { useAtom } from 'jotai'
 
 // DB
 import {
+  alertAtom,
   cartAtom,
-  viewAtom,
   clerkAtom,
   confirmModalAtom,
   loadedItemIdAtom,
-  alertAtom,
   sellSearchBarAtom,
-} from '@/lib/atoms'
-import { useWeather, useInventory, useLogs, useVendors } from '@/lib/swr-hooks'
-import { StockObject, VendorObject } from '@/lib/types'
+  viewAtom,
+} from 'lib/atoms'
+import { useInventory, useLogs, useVendors, useWeather } from 'lib/swr-hooks'
+import { StockObject, VendorObject } from 'lib/types'
 
 // Components
-import Image from 'next/image'
 import Tooltip from '@mui/material/Tooltip'
 
 // Icons
@@ -25,14 +24,7 @@ import InfoIcon from '@mui/icons-material/Info'
 // REVIEW add tooltips everywhere. Have ability to turn them off.
 
 // Functions
-import {
-  getItemSku,
-  getItemDisplayName,
-  getItemQuantity,
-  getImageSrc,
-} from '@/lib/data-functions'
-import { saveLog } from '@/lib/db-functions'
-import dayjs from 'dayjs'
+import { getItemQuantity, getItemSku } from 'lib/data-functions'
 
 type ListItemProps = {
   item: StockObject

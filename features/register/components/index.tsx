@@ -3,13 +3,13 @@ import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 
 // DB
-import { alertAtom, bypassRegisterAtom, clerkAtom, pageAtom } from '@/lib/atoms'
-import { useLogs, useRegisterID } from '@/lib/swr-hooks'
-import { RegisterObject, TillObject } from '@/lib/types'
+import { alertAtom, bypassRegisterAtom, clerkAtom, pageAtom } from 'lib/atoms'
+import { useLogs, useRegisterID } from 'lib/swr-hooks'
+import { RegisterObject, TillObject } from 'lib/types'
 
 // Functions
-import { getAmountFromCashMap } from '@/lib/data-functions'
-import { saveAndOpenRegister, saveLog } from '@/lib/db-functions'
+import { getAmountFromCashMap } from 'lib/data-functions'
+import { saveAndOpenRegister, saveLog } from 'lib/db-functions'
 
 // Components
 import TextField from '@/components/inputs/text-field'

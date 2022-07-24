@@ -1,23 +1,14 @@
-// Packages
-import { useAtom } from 'jotai'
-import { useEffect, useState } from 'react'
-
-// DB
-import { pageAtom, viewAtom } from '@/lib/atoms'
-import { useHelps } from '@/lib/swr-hooks'
-import { HelpObject } from '@/lib/types'
-
-// Components
 import Modal from '@/components/modal'
-import HelpItem from './help-item'
-import HelpListItem from './help-list-item'
-
-// Functions
-import { filterHelps } from '@/lib/data-functions'
-
-// Icons
 import BackIcon from '@mui/icons-material/ArrowLeft'
 import SearchIcon from '@mui/icons-material/Search'
+import { useAtom } from 'jotai'
+import { pageAtom, viewAtom } from 'lib/atoms'
+import { useHelps } from 'lib/swr-hooks'
+import { useEffect, useState } from 'react'
+import { filterHelps } from '../lib/functions'
+import { HelpObject } from '../lib/types'
+import HelpItem from './help-item'
+import HelpListItem from './help-list-item'
 
 export default function HelpDialog() {
   // SWR
@@ -33,7 +24,7 @@ export default function HelpDialog() {
   const [helpList, setHelpList] = useState([])
 
   useEffect(() => {
-    setHelpList(filterHelps(helps, page, view, search))
+    setHelpList(filterHelps({ helps, page, view, search }))
   }, [search, page, view, helps])
 
   return (

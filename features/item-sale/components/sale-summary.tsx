@@ -1,18 +1,18 @@
 // DB
-import { useInventory } from "@/lib/swr-hooks";
-import { SaleTransactionObject, SaleItemObject } from "@/lib/types";
+import { useInventory } from 'lib/swr-hooks'
+import { SaleItemObject, SaleTransactionObject } from 'lib/types'
 
 // Functions
-import { getSaleVars } from "@/lib/data-functions";
+import { getSaleVars } from 'lib/data-functions'
 
 // Components
-import ItemListItem from "./item-list-item";
-import TransactionListItem from "./transaction-list-item";
-import dayjs from "dayjs";
+import dayjs from 'dayjs'
+import ItemListItem from './item-list-item'
+import TransactionListItem from './transaction-list-item'
 
 export default function SaleSummary({ sale }) {
   // SWR
-  const { inventory } = useInventory();
+  const { inventory } = useInventory()
 
   // Constants
   const {
@@ -22,7 +22,7 @@ export default function SaleSummary({ sale }) {
     totalPrice,
     totalPaid,
     totalPostage,
-  } = getSaleVars(sale, inventory);
+  } = getSaleVars(sale, inventory)
 
   // Functions
   function SaleItems() {
@@ -36,22 +36,22 @@ export default function SaleSummary({ sale }) {
           <div>No items in cart...</div>
         )}
       </div>
-    );
+    )
   }
 
   function TransactionItems() {
     return (
       <div
         className={`h-1/5 overflow-y-scroll mt-1 pt-1 border-t border-gray-500 ${
-          !sale?.transactions || (sale?.transactions?.length === 0 && " hidden")
+          !sale?.transactions || (sale?.transactions?.length === 0 && ' hidden')
         }`}
       >
         {sale?.transactions
           ?.sort(
             (transA: SaleTransactionObject, transB: SaleTransactionObject) => {
-              const a = dayjs(transA?.date);
-              const b = dayjs(transB?.date);
-              return a > b ? 1 : b > a ? -1 : 0;
+              const a = dayjs(transA?.date)
+              const b = dayjs(transB?.date)
+              return a > b ? 1 : b > a ? -1 : 0
             }
           )
           ?.map((transaction: SaleTransactionObject) => (
@@ -62,7 +62,7 @@ export default function SaleSummary({ sale }) {
             />
           ))}
       </div>
-    );
+    )
   }
   function SaleDetails() {
     return (
@@ -71,7 +71,7 @@ export default function SaleSummary({ sale }) {
           <div>VENDOR CUT</div>
           <div
             className={`text-right w-2/12 text-gray-600 ${
-              totalVendorCut < 0 && "text-red-400"
+              totalVendorCut < 0 && 'text-red-400'
             }`}
           >
             {`$${totalVendorCut?.toFixed(2)}`}
@@ -81,7 +81,7 @@ export default function SaleSummary({ sale }) {
           <div>STORE CUT</div>
           <div
             className={`text-right w-2/12 text-gray-600 ${
-              totalStoreCut < 0 && "text-tertiary-dark"
+              totalStoreCut < 0 && 'text-tertiary-dark'
             }`}
           >
             {`$${totalStoreCut?.toFixed(2)}`}
@@ -91,7 +91,7 @@ export default function SaleSummary({ sale }) {
           <div>POSTAGE</div>
           <div
             className={`text-right w-2/12 text-gray-600 ${
-              totalPostage < 0 && "text-tertiary-dark"
+              totalPostage < 0 && 'text-tertiary-dark'
             }`}
           >
             {`$${totalPostage?.toFixed(2)}`}
@@ -116,7 +116,7 @@ export default function SaleSummary({ sale }) {
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -127,5 +127,5 @@ export default function SaleSummary({ sale }) {
       <TransactionItems />
       <SaleDetails />
     </div>
-  );
+  )
 }

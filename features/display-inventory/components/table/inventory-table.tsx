@@ -3,9 +3,9 @@ import { useAtom } from 'jotai'
 import { useMemo } from 'react'
 
 // DB
-import { loadedItemIdAtom } from '@/lib/atoms'
-import { useInventory, useVendors } from '@/lib/swr-hooks'
-import { StockObject, VendorObject } from '@/lib/types'
+import { loadedItemIdAtom } from 'lib/atoms'
+import { useInventory, useVendors } from 'lib/swr-hooks'
+import { StockObject, VendorObject } from 'lib/types'
 
 // Functions
 

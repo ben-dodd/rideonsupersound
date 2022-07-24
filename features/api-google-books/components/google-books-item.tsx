@@ -1,5 +1,5 @@
-import { andList } from '@/lib/utils'
 import dayjs from 'dayjs'
+import { andList } from 'lib/utils'
 import { GoogleBooksItem } from '../lib/types'
 
 interface googleProps {

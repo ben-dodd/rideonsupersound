@@ -1,18 +1,18 @@
 // Packages
-import { useAtom } from "jotai";
+import { useAtom } from 'jotai'
 
 // DB
-import { sellSearchBarAtom } from "@/lib/atoms";
+import { sellSearchBarAtom } from 'lib/atoms'
 
 // Components
-import Tooltip from "@mui/material/Tooltip";
+import Tooltip from '@mui/material/Tooltip'
 
 // Icons
-import SearchIcon from "@mui/icons-material/Search";
+import SearchIcon from '@mui/icons-material/Search'
 
 export default function SellSearchBar() {
   // Atoms
-  const [search, setSearch] = useAtom(sellSearchBarAtom);
+  const [search, setSearch] = useAtom(sellSearchBarAtom)
   // REVIEW add clear icon to search bar
 
   return (
@@ -20,7 +20,7 @@ export default function SellSearchBar() {
       <Tooltip title="Search by artist, title, SKU, genre, and many more. To add a Misc. Item or a Gift Card, just type that in.">
         <div
           className={`flex items-center ring-1 ring-gray-400 w-auto bg-gray-100 hover:bg-gray-200 ${
-            search && "bg-pink-200 hover:bg-pink-300"
+            search && 'bg-pink-200 hover:bg-pink-300'
           }`}
         >
           <div className="pl-3 pr-1">
@@ -28,12 +28,12 @@ export default function SellSearchBar() {
           </div>
           <input
             className="w-full py-1 px-2 outline-none bg-transparent text-2xl"
-            value={search || ""}
+            value={search || ''}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="SEARCH…"
           />
         </div>
       </Tooltip>
     </div>
-  );
+  )
 }

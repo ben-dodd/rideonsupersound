@@ -1,19 +1,14 @@
-import { receiveStockAtom } from "@/lib/atoms";
-import {
-  getItemDisplayName,
-  getItemSkuDisplayName,
-} from "@/lib/data-functions";
-import { useAtom } from "jotai";
-import CloseIcon from "@mui/icons-material/Close";
+import CloseIcon from '@mui/icons-material/Close'
+import { useAtom } from 'jotai'
+import { receiveStockAtom } from 'lib/atoms'
+import { getItemDisplayName, getItemSkuDisplayName } from 'lib/data-functions'
 
 export default function Items() {
-  const [basket, setBasket] = useAtom(receiveStockAtom);
+  const [basket, setBasket] = useAtom(receiveStockAtom)
   const removeItem = (removeItem) => {
-    const items = basket?.items?.filter(
-      (item) => item?.key !== removeItem?.key
-    );
-    setBasket({ ...basket, items });
-  };
+    const items = basket?.items?.filter((item) => item?.key !== removeItem?.key)
+    setBasket({ ...basket, items })
+  }
   return (
     <div>
       {basket?.items?.length > 0 ? (
@@ -34,5 +29,5 @@ export default function Items() {
         <div>No items added.</div>
       )}
     </div>
-  );
+  )
 }

@@ -2,8 +2,8 @@
 import { useAtom } from 'jotai'
 
 // DB
-import { alertAtom, pageAtom } from '@/lib/atoms'
-// import { useInventory } from "@/lib/swr-hooks";
+import { alertAtom, pageAtom } from 'lib/atoms'
+// import { useInventory } from "lib/swr-hooks";
 
 // Components
 import Alert from '@mui/material/Alert'

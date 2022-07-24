@@ -1,6 +1,6 @@
-import { authoriseUrl } from '@/lib/data-functions'
-import { VendorSaleItemObject } from '@/lib/types'
 import dayjs from 'dayjs'
+import { authoriseUrl } from 'lib/data-functions'
+import { VendorSaleItemObject } from 'lib/types'
 import useSWR from 'swr'
 import { camelCase, pascalCase } from './utils'
 

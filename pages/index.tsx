@@ -1,12 +1,12 @@
-import { useAccount, useRegisterID } from "@/lib/swr-hooks";
-import { useSession } from "next-auth/client";
-import LandingPage from "views/main/landing-page";
-import SignIn from "./api/auth/signin";
+import { useAccount, useRegisterID } from 'lib/swr-hooks'
+import { useSession } from 'next-auth/client'
+import LandingPage from 'views/main/landing-page'
+import SignIn from './api/auth/signin'
 
 export default function IndexPage() {
-  const [session, sessionLoading] = useSession();
-  const { account } = useAccount(session?.user?.email);
-  useRegisterID();
+  const [session, sessionLoading] = useSession()
+  const { account } = useAccount(session?.user?.email)
+  useRegisterID()
 
   return (
     <>
@@ -24,5 +24,5 @@ export default function IndexPage() {
         <SignIn />
       )}
     </>
-  );
+  )
 }

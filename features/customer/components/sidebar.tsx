@@ -8,16 +8,16 @@ import {
   clerkAtom,
   loadedCustomerObjectAtom,
   viewAtom,
-} from '@/lib/atoms'
-import { useCustomers } from '@/lib/swr-hooks'
-import { CustomerObject, ModalButton } from '@/lib/types'
+} from 'lib/atoms'
+import { useCustomers } from 'lib/swr-hooks'
+import { CustomerObject, ModalButton } from 'lib/types'
 
 // Functions
 import {
   saveCustomerToDatabase,
   saveSystemLog,
   updateCustomerInDatabase,
-} from '@/lib/db-functions'
+} from 'lib/db-functions'
 
 // Components
 import SidebarContainer from '@/components/container/side-bar'

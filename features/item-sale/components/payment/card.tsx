@@ -4,27 +4,27 @@ import { useAtom } from 'jotai'
 import { useState } from 'react'
 
 // DB
-import { alertAtom, cartAtom, clerkAtom, viewAtom } from '@/lib/atoms'
+import { alertAtom, cartAtom, clerkAtom, viewAtom } from 'lib/atoms'
 import {
   useCustomers,
   useInventory,
   useLogs,
   useRegisterID,
-} from '@/lib/swr-hooks'
+} from 'lib/swr-hooks'
 import {
   CustomerObject,
   ModalButton,
   PaymentMethodTypes,
   SaleTransactionObject,
-} from '@/lib/types'
+} from 'lib/types'
 
 // Functions
-import { getSaleVars } from '@/lib/data-functions'
+import { getSaleVars } from 'lib/data-functions'
 
 // Components
 import TextField from '@/components/inputs/text-field'
 import Modal from '@/components/modal'
-import { saveLog } from '@/lib/db-functions'
+import { saveLog } from 'lib/db-functions'
 
 export default function Cash() {
   // Atoms

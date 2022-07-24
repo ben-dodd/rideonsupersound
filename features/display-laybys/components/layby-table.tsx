@@ -3,14 +3,14 @@ import { useAtom } from 'jotai'
 import { useMemo } from 'react'
 
 // DB
-import { loadedSaleIdAtom, pageAtom } from '@/lib/atoms'
-import { useClerks, useCustomers, useSales } from '@/lib/swr-hooks'
+import { loadedSaleIdAtom, pageAtom } from 'lib/atoms'
+import { useClerks, useCustomers, useSales } from 'lib/swr-hooks'
 import {
   ClerkObject,
   CustomerObject,
   SaleObject,
   SaleStateTypes,
-} from '@/lib/types'
+} from 'lib/types'
 
 // Components
 import TableContainer from '@/components/container/table'

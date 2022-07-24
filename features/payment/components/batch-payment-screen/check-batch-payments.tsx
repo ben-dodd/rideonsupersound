@@ -1,33 +1,33 @@
-import { Tooltip } from "@mui/material";
-import StoreCreditOnlyIcon from "@mui/icons-material/ShoppingBag";
-import NoBankDetailsIcon from "@mui/icons-material/CreditCardOff";
-import QuantityCheckIcon from "@mui/icons-material/Warning";
-import CheckIcon from "@mui/icons-material/CheckCircleOutline";
+import CheckIcon from '@mui/icons-material/CheckCircleOutline'
+import NoBankDetailsIcon from '@mui/icons-material/CreditCardOff'
+import StoreCreditOnlyIcon from '@mui/icons-material/ShoppingBag'
+import QuantityCheckIcon from '@mui/icons-material/Warning'
+import { Tooltip } from '@mui/material'
+import dayjs from 'dayjs'
+import { useRegisterID } from 'lib/swr-hooks'
+import { isValidBankAccountNumber } from 'lib/utils'
+import { useState } from 'react'
 import {
-  isValidBankAccountNumber,
-  writeEmailCSV,
   writeKiwiBankBatchFile,
-} from "@/lib/data-functions";
-import dayjs from "dayjs";
-import { useRegisterID } from "@/lib/swr-hooks";
-import { useState } from "react";
+  writePaymentNotificationEmail,
+} from '../../lib/functions'
 
 export default function CheckBatchPayments({
   vendorList,
   setKbbLoaded,
   setEmailed,
 }) {
-  const { registerID } = useRegisterID();
+  const { registerID } = useRegisterID()
   const totalPay = vendorList?.reduce(
     (prev, v) => (v?.is_checked ? parseFloat(v?.payAmount) : 0) + prev,
     0
-  );
+  )
   const vendorNum = vendorList?.reduce(
     (prev, v) => (v?.is_checked ? 1 : 0) + prev,
     0
-  );
-  const [includeUnchecked, setIncludeUnchecked] = useState(false);
-  const [includeNoBank, setIncludeNoBank] = useState(false);
+  )
+  const [includeUnchecked, setIncludeUnchecked] = useState(false)
+  const [includeNoBank, setIncludeNoBank] = useState(false)
 
   return (
     <div>
@@ -40,25 +40,25 @@ export default function CheckBatchPayments({
                 transactions: vendorList
                   ?.filter((v) => v?.is_checked)
                   ?.map((vendor: any) => ({
-                    name: vendor?.name || "",
-                    vendor_id: `${vendor?.id || ""}`,
-                    accountNumber: vendor?.bank_account_number || "",
+                    name: vendor?.name || '',
+                    vendor_id: `${vendor?.id || ''}`,
+                    accountNumber: vendor?.bank_account_number || '',
                     amount: Math.round(
-                      parseFloat(vendor?.payAmount || "0") * 100
+                      parseFloat(vendor?.payAmount || '0') * 100
                     ),
                   })),
                 batchNumber: `${registerID}`,
-                sequenceNumber: "Batch",
-              });
-              var link = document.createElement("a");
-              link.setAttribute("href", csvContent);
+                sequenceNumber: 'Batch',
+              })
+              var link = document.createElement('a')
+              link.setAttribute('href', csvContent)
               link.setAttribute(
-                "download",
-                `batch-payment-${dayjs().format("YYYY-MM-DD")}.kbb`
-              );
-              document.body.appendChild(link);
-              link.click();
-              setKbbLoaded(true);
+                'download',
+                `batch-payment-${dayjs().format('YYYY-MM-DD')}.kbb`
+              )
+              document.body.appendChild(link)
+              link.click()
+              setKbbLoaded(true)
             }}
           >
             Download KiwiBank Batch KBB
@@ -66,20 +66,20 @@ export default function CheckBatchPayments({
           <button
             className="ml-2 border p-2 rounded bg-gray-100 hover:bg-gray-200"
             onClick={() => {
-              let csvContent = writeEmailCSV(
+              let csvContent = writePaymentNotificationEmail({
                 vendorList,
                 includeUnchecked,
-                includeNoBank
-              );
-              var link = document.createElement("a");
-              link.setAttribute("href", csvContent);
+                includeNoBank,
+              })
+              var link = document.createElement('a')
+              link.setAttribute('href', csvContent)
               link.setAttribute(
-                "download",
-                `batch-payment-email-list-${dayjs().format("YYYY-MM-DD")}.csv`
-              );
-              document.body.appendChild(link);
-              link.click();
-              setEmailed(true);
+                'download',
+                `batch-payment-email-list-${dayjs().format('YYYY-MM-DD')}.csv`
+              )
+              document.body.appendChild(link)
+              link.click()
+              setEmailed(true)
             }}
           >
             Download Email List CSV
@@ -133,14 +133,14 @@ export default function CheckBatchPayments({
             ?.map((v) => {
               let invalidBankAccountNumber = !isValidBankAccountNumber(
                 v?.bank_account_number
-              );
+              )
               let negativeQuantity =
-                v?.totalItems?.filter((i) => i?.quantity < 0)?.length > 0;
+                v?.totalItems?.filter((i) => i?.quantity < 0)?.length > 0
               return (
                 <div
                   key={v?.id}
                   className={`border-b flex${
-                    parseFloat(v?.payAmount) <= 0 ? " opacity-50" : ""
+                    parseFloat(v?.payAmount) <= 0 ? ' opacity-50' : ''
                   }`}
                 >
                   <div className="w-1/2">{`[${v?.id}] ${v?.name}`}</div>
@@ -160,14 +160,14 @@ export default function CheckBatchPayments({
                     {invalidBankAccountNumber ? (
                       <Tooltip
                         title={`${
-                          v?.bank_account_number ? "Invalid" : "Missing"
+                          v?.bank_account_number ? 'Invalid' : 'Missing'
                         } Bank Account Number`}
                       >
                         <div
                           className={`${
                             v?.bank_account_number
-                              ? "text-orange-500"
-                              : "text-red-500"
+                              ? 'text-orange-500'
+                              : 'text-red-500'
                           } pl-2 flex`}
                         >
                           <NoBankDetailsIcon />
@@ -198,10 +198,10 @@ export default function CheckBatchPayments({
                     )}
                   </div>
                 </div>
-              );
+              )
             })}
         </div>
       </div>
     </div>
-  );
+  )
 }

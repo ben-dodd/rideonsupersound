@@ -1,9 +1,9 @@
-import { useStocktakeTemplates } from "@/lib/swr-hooks";
-import StocktakeTemplateListItem from "./stocktake-template-list-item";
+import { useStocktakeTemplates } from 'lib/swr-hooks'
+import StocktakeTemplateListItem from './stocktake-template-list-item'
 
 export default function StocktakeListScreen() {
   const { stocktakeTemplates, isStocktakeTemplatesLoading } =
-    useStocktakeTemplates();
+    useStocktakeTemplates()
   return (
     <div className="flex flex-col w-full">
       <div className="bg-col1 text-4xl font-bold uppercase text-white p-2 mb-1">
@@ -23,9 +23,9 @@ export default function StocktakeListScreen() {
                   stocktakeTemplate={st}
                 />
               ))
-            : "No stocktake templates found."}
+            : 'No stocktake templates found.'}
         </div>
       )}
     </div>
-  );
+  )
 }

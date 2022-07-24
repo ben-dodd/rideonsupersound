@@ -11,7 +11,7 @@ import {
   loadedSaleIdAtom,
   pageAtom,
   viewAtom,
-} from '@/lib/atoms'
+} from 'lib/atoms'
 import {
   useCustomers,
   useGiftCards,
@@ -21,16 +21,16 @@ import {
   useSaleItemsForSale,
   useSales,
   useSaleTransactionsForSale,
-} from '@/lib/swr-hooks'
-import { ModalButton, SaleItemObject, SaleObject } from '@/lib/types'
+} from 'lib/swr-hooks'
+import { ModalButton, SaleItemObject, SaleObject } from 'lib/types'
 
 // Functions
-import { getSaleVars } from '@/lib/data-functions'
+import { getSaleVars } from 'lib/data-functions'
 import {
   loadSaleToCart,
   nukeSaleInDatabase,
   saveSystemLog,
-} from '@/lib/db-functions'
+} from 'lib/db-functions'
 
 // Components
 import ScreenContainer from '@/components/container/screen'

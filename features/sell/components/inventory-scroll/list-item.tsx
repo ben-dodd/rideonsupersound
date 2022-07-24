@@ -10,9 +10,9 @@ import {
   loadedItemIdAtom,
   sellSearchBarAtom,
   viewAtom,
-} from '@/lib/atoms'
-import { useInventory, useLogs, useVendors, useWeather } from '@/lib/swr-hooks'
-import { StockObject, VendorObject } from '@/lib/types'
+} from 'lib/atoms'
+import { useInventory, useLogs, useVendors, useWeather } from 'lib/swr-hooks'
+import { StockObject, VendorObject } from 'lib/types'
 
 // Components
 import Tooltip from '@mui/material/Tooltip'
@@ -24,14 +24,14 @@ import InfoIcon from '@mui/icons-material/Info'
 // REVIEW add tooltips everywhere. Have ability to turn them off.
 
 // Functions
+import dayjs from 'dayjs'
 import {
   getImageSrc,
   getItemDisplayName,
   getItemQuantity,
   getItemSku,
-} from '@/lib/data-functions'
-import { saveLog } from '@/lib/db-functions'
-import dayjs from 'dayjs'
+} from 'lib/data-functions'
+import { saveLog } from 'lib/db-functions'
 
 type ListItemProps = {
   item: StockObject

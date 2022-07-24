@@ -1,18 +1,14 @@
 // DB
-import { useVendors } from "@/lib/swr-hooks";
+import { useVendors } from 'lib/swr-hooks'
 
 // Functions
-import {
-  getImageSrc,
-  getItemDisplayName,
-  getItemSku,
-} from "@/lib/data-functions";
+import { getImageSrc, getItemDisplayName, getItemSku } from 'lib/data-functions'
 
 export default function ItemCard({ item }) {
-  const { vendors } = useVendors();
-  const vendor = vendors?.filter((v) => v?.id === item?.vendor_id)?.[0];
+  const { vendors } = useVendors()
+  const vendor = vendors?.filter((v) => v?.id === item?.vendor_id)?.[0]
   // SWR
-  if (!item) return <div />;
+  if (!item) return <div />
 
   return (
     <div className="w-full">
@@ -20,13 +16,13 @@ export default function ItemCard({ item }) {
         <div>
           <div className="font-bold text-xl">{getItemSku(item)}</div>
           <div className="font-bold">{getItemDisplayName(item)}</div>
-          <div className="">{`${item?.section ? `${item.section} / ` : ""}${
+          <div className="">{`${item?.section ? `${item.section} / ` : ''}${
             item?.format
           } [${
-            item?.is_new ? "NEW" : item?.cond?.toUpperCase() || "USED"
+            item?.is_new ? 'NEW' : item?.cond?.toUpperCase() || 'USED'
           }]`}</div>
           <div className="text-sm">
-            {`${vendor ? `Selling for ${vendor?.name}` : ""}`}
+            {`${vendor ? `Selling for ${vendor?.name}` : ''}`}
           </div>
         </div>
         <div className="flex flex-col justify-between">
@@ -47,9 +43,9 @@ export default function ItemCard({ item }) {
         <img
           className="object-cover"
           src={getImageSrc(item)}
-          alt={item?.title || "Inventory image"}
+          alt={item?.title || 'Inventory image'}
         />
       </div>
     </div>
-  );
+  )
 }

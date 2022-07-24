@@ -1,11 +1,11 @@
 import Head from 'next/head'
 
-import { clerkAtom } from '@/lib/atoms'
-import { saveLog } from '@/lib/db-functions'
-import { useLogs } from '@/lib/swr-hooks'
-import { bg, bgLight, ClerkObject } from '@/lib/types'
 import SignOutButton from 'features/sign-in/components/sign-out-button'
 import { useAtom } from 'jotai'
+import { clerkAtom } from 'lib/atoms'
+import { saveLog } from 'lib/db-functions'
+import { useLogs } from 'lib/swr-hooks'
+import { bg, bgLight, ClerkObject } from 'lib/types'
 
 export default function SplashPage({ clerks }) {
   const { logs, mutateLogs } = useLogs()

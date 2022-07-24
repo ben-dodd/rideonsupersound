@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react'
 import Select from 'react-select'
 
 // DB
-import { clerkAtom, viewAtom } from '@/lib/atoms'
+import { clerkAtom, viewAtom } from 'lib/atoms'
 import {
   useCashGiven,
   useInventory,
@@ -13,7 +13,7 @@ import {
   useSalesJoined,
   useVendorPayments,
   useVendors,
-} from '@/lib/swr-hooks'
+} from 'lib/swr-hooks'
 import {
   ModalButton,
   StockObject,
@@ -21,11 +21,11 @@ import {
   VendorPaymentObject,
   VendorPaymentTypes,
   VendorSaleItemObject,
-} from '@/lib/types'
+} from 'lib/types'
 
 // Functions
-import { getTotalOwing } from '@/lib/data-functions'
-import { saveLog, saveVendorPaymentToDatabase } from '@/lib/db-functions'
+import { getTotalOwing } from 'lib/data-functions'
+import { saveLog, saveVendorPaymentToDatabase } from 'lib/db-functions'
 
 // Components
 import TextField from '@/components/inputs/text-field'

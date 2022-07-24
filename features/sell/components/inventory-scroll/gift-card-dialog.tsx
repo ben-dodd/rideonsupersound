@@ -9,18 +9,13 @@ import {
   clerkAtom,
   sellSearchBarAtom,
   viewAtom,
-} from '@/lib/atoms'
-import {
-  useGiftCards,
-  useInventory,
-  useLogs,
-  useWeather,
-} from '@/lib/swr-hooks'
-import { GiftCardObject, ModalButton } from '@/lib/types'
+} from 'lib/atoms'
+import { useGiftCards, useInventory, useLogs, useWeather } from 'lib/swr-hooks'
+import { GiftCardObject, ModalButton } from 'lib/types'
 
 // Functions
-import { getGeolocation, makeGiftCardCode } from '@/lib/data-functions'
-import { saveLog, saveStockToDatabase } from '@/lib/db-functions'
+import { getGeolocation, makeGiftCardCode } from 'lib/data-functions'
+import { saveLog, saveStockToDatabase } from 'lib/db-functions'
 
 // Components
 import TextField from '@/components/inputs/text-field'

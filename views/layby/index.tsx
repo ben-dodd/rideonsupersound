@@ -2,8 +2,8 @@
 import { useAtom } from 'jotai'
 
 // DB
-import { loadedSaleIdAtom, pageAtom } from '@/lib/atoms'
 import SaleItemScreen from 'features/item-sale/components/sale-item-screen'
+import { loadedSaleIdAtom, pageAtom } from 'lib/atoms'
 import LaybyTable from '../../features/display-laybys/components/layby-table'
 
 // Components

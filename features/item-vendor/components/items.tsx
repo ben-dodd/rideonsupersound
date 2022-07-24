@@ -1,68 +1,62 @@
 // Packages
-import { useState, useEffect, useMemo } from "react";
-import { useAtom } from "jotai";
-import Image from "next/image";
+import { useAtom } from 'jotai'
+import { useEffect, useMemo, useState } from 'react'
 
 // DB
+import { loadedItemIdAtom, loadedVendorIdAtom, pageAtom } from 'lib/atoms'
 import {
-  useVendors,
   useInventory,
   useSalesJoined,
   useVendorPayments,
-} from "@/lib/swr-hooks";
-import { loadedItemIdAtom, loadedVendorIdAtom, pageAtom } from "@/lib/atoms";
-import { VendorObject, StockObject } from "@/lib/types";
+  useVendors,
+} from 'lib/swr-hooks'
+import { StockObject, VendorObject } from 'lib/types'
 
 // Functions
-import {
-  getImageSrc,
-  getItemDisplayName,
-  getItemSku,
-  getVendorDetails,
-} from "@/lib/data-functions";
-import { Tooltip } from "@mui/material";
-import InfoIcon from "@mui/icons-material/Info";
+import InfoIcon from '@mui/icons-material/Info'
+import { Tooltip } from '@mui/material'
+import { getImageSrc, getItemSku, getVendorDetails } from 'lib/data-functions'
 
 export default function VendorItems() {
   // Atoms
-  const [loadedVendorId] = useAtom(loadedVendorIdAtom);
-  const [page] = useAtom(pageAtom);
+  const [loadedVendorId] = useAtom(loadedVendorIdAtom)
+  const [page] = useAtom(pageAtom)
 
   // SWR
-  const { vendors } = useVendors();
-  const { inventory } = useInventory();
-  const { sales } = useSalesJoined();
-  const { vendorPayments } = useVendorPayments();
+  const { vendors } = useVendors()
+  const { inventory } = useInventory()
+  const { sales } = useSalesJoined()
+  const { vendorPayments } = useVendorPayments()
 
   // State
-  const [vendor, setVendor]: [VendorObject, Function] = useState({});
-  const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom);
+  const [vendor, setVendor]: [VendorObject, Function] = useState({})
+  const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom)
 
   // Load
   useEffect(() => {
     setVendor(
       vendors?.filter((v: VendorObject) => v?.id === loadedVendorId[page])[0]
-    );
-  }, [loadedVendorId[page]]);
+    )
+  }, [loadedVendorId[page]])
 
   // Functions
   function StockItem({ item }) {
     return (
       <div
         className={`flex w-full mb-2 pr-2 text-black ${
-          item?.quantity < 1 ? "bg-pink-200" : "bg-gray-200"
+          item?.quantity < 1 ? 'bg-pink-200' : 'bg-gray-200'
         }`}
       >
         <div className="w-32">
           <div
             className={`w-32 h-32 relative${
-              item?.quantity < 1 ? " opacity-50" : ""
+              item?.quantity < 1 ? ' opacity-50' : ''
             }`}
           >
             <img
               className="object-cover absolute"
               src={getImageSrc(item)}
-              alt={item?.title || "Inventory image"}
+              alt={item?.title || 'Inventory image'}
             />
           </div>
           <div className="text-lg font-bold text-center bg-black text-white">
@@ -74,23 +68,23 @@ export default function VendorItems() {
             <div className="flex justify-between border-b items-center border-gray-400">
               <div>
                 <div className="font-bold text-md">{`${
-                  item?.title || "Untitled"
+                  item?.title || 'Untitled'
                 }`}</div>
-                <div className="text-md">{`${item?.artist || "Untitled"}`}</div>
+                <div className="text-md">{`${item?.artist || 'Untitled'}`}</div>
               </div>
               <div className="text-yellow-400 font-bold text-3xl">
-                {item?.needs_restock ? "PLEASE RESTOCK!" : ""}
+                {item?.needs_restock ? 'PLEASE RESTOCK!' : ''}
               </div>
             </div>
             <div className="text-sm text-green-800">{`${
-              item?.genre ? `${item.genre} / ` : ""
+              item?.genre ? `${item.genre} / ` : ''
             }${item?.format} [${
-              item?.is_new ? "NEW" : item?.cond?.toUpperCase() || "USED"
+              item?.is_new ? 'NEW' : item?.cond?.toUpperCase() || 'USED'
             }]`}</div>
           </div>
           <div className="flex justify-between items-end">
             <div className="text-xs">
-              {`${vendor ? `Selling for ${vendor?.name}` : ""}`}
+              {`${vendor ? `Selling for ${vendor?.name}` : ''}`}
             </div>
             <div className="self-center pl-8 hidden sm:inline">
               <Tooltip title="View and edit item details.">
@@ -100,7 +94,7 @@ export default function VendorItems() {
                     setLoadedItemId({ ...loadedItemId, vendors: item?.id })
                   }
                 >
-                  <InfoIcon style={{ fontSize: "40px" }} />
+                  <InfoIcon style={{ fontSize: '40px' }} />
                 </button>
               </Tooltip>
             </div>
@@ -108,19 +102,19 @@ export default function VendorItems() {
 
           <div className="flex justify-between items-end">
             <div
-              className={`text-md ${item?.quantity < 1 && "text-red-500"}`}
+              className={`text-md ${item?.quantity < 1 && 'text-red-500'}`}
             >{`${item?.quantity} in stock${
               (item?.quantity_hold || 0) + (item?.quantity_unhold || 0) > 0
                 ? `, ${-(
                     (item?.quantity_hold || 0) + (item?.quantity_unhold || 0)
                   )} on hold`
-                : ""
+                : ''
             }${
               (item?.quantity_layby || 0) + (item?.quantity_unlayby || 0) > 0
                 ? `, ${-(
                     (item?.quantity_layby || 0) + (item?.quantity_unlayby || 0)
                   )} on layby`
-                : ""
+                : ''
             }`}</div>
             <div className="text-xl pr-2">{`$${(
               (item?.total_sell || 0) / 100
@@ -128,7 +122,7 @@ export default function VendorItems() {
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   // Constants
@@ -136,7 +130,7 @@ export default function VendorItems() {
     () =>
       getVendorDetails(inventory, sales, vendorPayments, loadedVendorId[page]),
     [inventory, sales, vendorPayments, loadedVendorId[page]]
-  );
+  )
 
   return (
     <div className="flex">
@@ -157,5 +151,5 @@ export default function VendorItems() {
           ))}
       </div>
     </div>
-  );
+  )
 }

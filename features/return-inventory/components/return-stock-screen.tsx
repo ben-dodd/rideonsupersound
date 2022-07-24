@@ -3,14 +3,9 @@ import { useAtom } from 'jotai'
 import { useState } from 'react'
 
 // DB
-import { alertAtom, clerkAtom, viewAtom } from '@/lib/atoms'
-import {
-  useInventory,
-  useLogs,
-  useRegisterID,
-  useVendors,
-} from '@/lib/swr-hooks'
-import { ModalButton, StockObject, VendorObject } from '@/lib/types'
+import { alertAtom, clerkAtom, viewAtom } from 'lib/atoms'
+import { useInventory, useLogs, useRegisterID, useVendors } from 'lib/swr-hooks'
+import { ModalButton, StockObject, VendorObject } from 'lib/types'
 
 // Functions
 import {
@@ -18,8 +13,8 @@ import {
   getItemDisplayName,
   getItemSku,
   getItemSkuDisplayName,
-} from '@/lib/data-functions'
-import { returnStock } from '@/lib/db-functions'
+} from 'lib/data-functions'
+import { returnStock } from 'lib/db-functions'
 
 // Components
 import TextField from '@/components/inputs/text-field'

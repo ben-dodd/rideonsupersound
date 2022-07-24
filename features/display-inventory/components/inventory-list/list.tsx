@@ -1,12 +1,12 @@
 import { useAtom } from 'jotai'
 
 // DB
-import { useInventory, useVendors } from '@/lib/swr-hooks'
+import { useInventory, useVendors } from 'lib/swr-hooks'
 
 // Components
 import MidScreenContainer from '@/components/container/mid-screen'
-import { compactModeAtom } from '@/lib/atoms'
-import { StockObject, VendorObject } from '@/lib/types'
+import { compactModeAtom } from 'lib/atoms'
+import { StockObject, VendorObject } from 'lib/types'
 import { useMemo } from 'react'
 import InventoryActionButtons from './action-buttons'
 import CompactListItem from './compact-list-item'

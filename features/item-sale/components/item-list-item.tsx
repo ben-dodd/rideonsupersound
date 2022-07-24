@@ -1,24 +1,23 @@
 // DB
-import { useInventory } from "@/lib/swr-hooks";
-import { StockObject, SaleObject, SaleItemObject } from "@/lib/types";
-import { MouseEventHandler } from "react";
+import { useInventory } from 'lib/swr-hooks'
+import { SaleItemObject, StockObject } from 'lib/types'
+import { MouseEventHandler } from 'react'
 
 // Functions
 import {
-  getItemSku,
-  getItemDisplayName,
-  writeCartItemPriceBreakdown,
   getImageSrc,
-} from "@/lib/data-functions";
+  getItemDisplayName,
+  getItemSku,
+  writeCartItemPriceBreakdown,
+} from 'lib/data-functions'
 
 // Components
-import Image from "next/image";
 
 type SellListItemProps = {
-  saleItem: SaleItemObject;
-  selected?: boolean;
-  onClick?: MouseEventHandler;
-};
+  saleItem: SaleItemObject
+  selected?: boolean
+  onClick?: MouseEventHandler
+}
 
 export default function ItemListItem({
   saleItem,
@@ -26,18 +25,18 @@ export default function ItemListItem({
   onClick,
 }: SellListItemProps) {
   // SWR
-  const { inventory } = useInventory();
+  const { inventory } = useInventory()
   const item = inventory?.filter(
     (i: StockObject) => i.id === saleItem?.item_id
-  )?.[0];
+  )?.[0]
 
   // Functions
 
   return (
     <div
       className={`flex w-full relative pt mb-2${
-        saleItem?.is_refunded ? " opacity-50" : ""
-      }${onClick ? " cursor-pointer" : ""}${selected ? " bg-red-100" : ""}`}
+        saleItem?.is_refunded ? ' opacity-50' : ''
+      }${onClick ? ' cursor-pointer' : ''}${selected ? ' bg-red-100' : ''}`}
       onClick={onClick || null}
     >
       <div className="w-20">
@@ -45,7 +44,7 @@ export default function ItemListItem({
           <img
             className="object-cover absolute"
             src={getImageSrc(item)}
-            alt={item?.title || "Inventory image"}
+            alt={item?.title || 'Inventory image'}
           />
           {!item?.is_gift_card && !item?.is_misc_item && (
             <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white text-sm flex justify-center items-center">
@@ -58,19 +57,19 @@ export default function ItemListItem({
         <div className="text-sm pl-1">
           <div>{getItemDisplayName(item)}</div>
           {saleItem?.is_refunded ? (
-            <div className={"text-red-500"}>REFUNDED</div>
+            <div className={'text-red-500'}>REFUNDED</div>
           ) : (
             <div />
           )}
         </div>
         <div
           className={`text-red-500 self-end${
-            saleItem?.is_refunded ? " line-through" : ""
+            saleItem?.is_refunded ? ' line-through' : ''
           }`}
         >
           <div>{writeCartItemPriceBreakdown(saleItem, item)}</div>
         </div>
       </div>
     </div>
-  );
+  )
 }

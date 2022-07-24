@@ -5,7 +5,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import { CSVLink } from 'react-csv'
 
 // Types
-import { ModalButton } from '@/lib/types'
+import { ModalButton } from 'lib/types'
 import { MouseEventHandler } from 'react'
 
 interface ModalProps {

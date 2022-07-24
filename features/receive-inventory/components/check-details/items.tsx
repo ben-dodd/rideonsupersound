@@ -1,12 +1,9 @@
-import { receiveStockAtom } from "@/lib/atoms";
-import {
-  getItemDisplayName,
-  getItemSkuDisplayName,
-} from "@/lib/data-functions";
-import { useAtom } from "jotai";
+import { useAtom } from 'jotai'
+import { receiveStockAtom } from 'lib/atoms'
+import { getItemDisplayName, getItemSkuDisplayName } from 'lib/data-functions'
 
 export default function Items({ onClick }) {
-  const [basket] = useAtom(receiveStockAtom);
+  const [basket] = useAtom(receiveStockAtom)
   return (
     <div>
       {basket?.items?.length > 0 ? (
@@ -25,5 +22,5 @@ export default function Items({ onClick }) {
         <div>No items currently selected.</div>
       )}
     </div>
-  );
+  )
 }

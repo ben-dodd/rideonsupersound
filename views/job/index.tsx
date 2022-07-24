@@ -4,9 +4,9 @@ import { useCallback, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 
 // DB
-import { pageAtom } from '@/lib/atoms'
-import { useInventory, useJobs } from '@/lib/swr-hooks'
-import { StockObject, TaskObject } from '@/lib/types'
+import { pageAtom } from 'lib/atoms'
+import { useInventory, useJobs } from 'lib/swr-hooks'
+import { StockObject, TaskObject } from 'lib/types'
 
 // Components
 import Tabs from '@/components/navigation/tabs'

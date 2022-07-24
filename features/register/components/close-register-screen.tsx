@@ -3,7 +3,7 @@ import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 
 // DB
-import { alertAtom, clerkAtom, viewAtom } from '@/lib/atoms'
+import { alertAtom, clerkAtom, viewAtom } from 'lib/atoms'
 import {
   useCashGiven,
   useCashReceived,
@@ -13,12 +13,12 @@ import {
   usePettyCash,
   useRegister,
   useRegisterID,
-} from '@/lib/swr-hooks'
-import { ClerkObject, ModalButton, SaleTransactionObject } from '@/lib/types'
+} from 'lib/swr-hooks'
+import { ClerkObject, ModalButton, SaleTransactionObject } from 'lib/types'
 
 // Functions
-import { getAmountFromCashMap } from '@/lib/data-functions'
-import { saveClosedRegisterToDatabase, saveLog } from '@/lib/db-functions'
+import { getAmountFromCashMap } from 'lib/data-functions'
+import { saveClosedRegisterToDatabase, saveLog } from 'lib/db-functions'
 
 // Components
 import ScreenContainer from '@/components/container/screen'

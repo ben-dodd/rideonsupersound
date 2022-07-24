@@ -1,8 +1,8 @@
 import InventoryItemForm from '@/features/item-inventory/components/inventory-item-form'
-import { receiveStockAtom } from '@/lib/atoms'
-import { StockObject } from '@/lib/types'
 import { ChevronRight } from '@mui/icons-material'
 import { useAtom } from 'jotai'
+import { receiveStockAtom } from 'lib/atoms'
+import { StockObject } from 'lib/types'
 import { useState } from 'react'
 import { v4 as uuid } from 'uuid'
 

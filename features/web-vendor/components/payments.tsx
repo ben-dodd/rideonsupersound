@@ -1,9 +1,9 @@
-import { VendorPaymentTypes } from "@/lib/types";
-import dayjs from "dayjs";
+import dayjs from 'dayjs'
+import { VendorPaymentTypes } from 'lib/types'
 
 export default function Payments({ payments, storeCredits }) {
-  console.log(payments);
-  console.log(storeCredits);
+  console.log(payments)
+  console.log(storeCredits)
   return (
     <div className="w-full">
       <div className="bg-orange-800 text-white font-bold italic px-2 py-1 mb-2">
@@ -28,10 +28,10 @@ export default function Payments({ payments, storeCredits }) {
               >
                 <div className="w-2/12 md:w-1/12 px-1">
                   <div className="hidden md:inline">
-                    {dayjs(pay?.date).format("DD/MM/YYYY")}
+                    {dayjs(pay?.date).format('DD/MM/YYYY')}
                   </div>
                   <div className="md:hidden">
-                    {dayjs(pay?.date).format("DD/MM/YY")}
+                    {dayjs(pay?.date).format('DD/MM/YY')}
                   </div>
                 </div>
                 <div className="w-1/6 px-1 text-right">
@@ -47,14 +47,14 @@ export default function Payments({ payments, storeCredits }) {
                         (s) => s?.vendor_payment_id === pay?.id
                       )?.[0]?.item_list ||
                       pay?.note ||
-                      ""
-                    : pay?.note || ""}
+                      ''
+                    : pay?.note || ''}
                 </div>
               </div>
-            );
+            )
           })}
         </div>
       )}
     </div>
-  );
+  )
 }

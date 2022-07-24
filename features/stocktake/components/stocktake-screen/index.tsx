@@ -10,14 +10,14 @@ import {
   loadedStocktakeIdAtom,
   loadedStocktakeTemplateIdAtom,
   viewAtom,
-} from '@/lib/atoms'
+} from 'lib/atoms'
 import {
   useInventory,
   useStocktakeItemsByStocktake,
   useStocktakesByTemplate,
   useStocktakeTemplates,
-} from '@/lib/swr-hooks'
-import { ModalButton, StockObject } from '@/lib/types'
+} from 'lib/swr-hooks'
+import { ModalButton, StockObject } from 'lib/types'
 
 // Functions
 import {
@@ -25,7 +25,7 @@ import {
   saveStocktakeItemToDatabase,
   updateStocktakeInDatabase,
   updateStocktakeItemInDatabase,
-} from '@/lib/db-functions'
+} from 'lib/db-functions'
 
 // Components
 import ScreenContainer from '@/components/container/screen'

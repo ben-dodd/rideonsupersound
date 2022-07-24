@@ -3,13 +3,13 @@ import { useAtom } from 'jotai'
 import { useState } from 'react'
 
 // DB
-import { alertAtom, cartAtom, clerkAtom, viewAtom } from '@/lib/atoms'
-import { useInventory, useLogs, useSaleItemsForSale } from '@/lib/swr-hooks'
-import { ModalButton, SaleItemObject, SaleStateTypes } from '@/lib/types'
+import { alertAtom, cartAtom, clerkAtom, viewAtom } from 'lib/atoms'
+import { useInventory, useLogs, useSaleItemsForSale } from 'lib/swr-hooks'
+import { ModalButton, SaleItemObject, SaleStateTypes } from 'lib/types'
 
 // Functions
-import { writeItemList } from '@/lib/data-functions'
-import { saveLog, saveSystemLog } from '@/lib/db-functions'
+import { writeItemList } from 'lib/data-functions'
+import { saveLog, saveSystemLog } from 'lib/db-functions'
 
 // Components
 import TextField from '@/components/inputs/text-field'

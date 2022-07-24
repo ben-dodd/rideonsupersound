@@ -2,13 +2,13 @@
 import { useAtom } from 'jotai'
 
 // DB
-import { confirmModalAtom } from '@/lib/atoms'
+import { confirmModalAtom } from 'lib/atoms'
 
 // Components
 import Modal from '@/components/modal'
 
 // Types
-import { ModalButton } from '@/lib/types'
+import { ModalButton } from 'lib/types'
 
 export default function ConfirmModal() {
   // Atoms

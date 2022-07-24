@@ -3,18 +3,17 @@ import { useAtom } from 'jotai'
 import { useState } from 'react'
 
 // DB
-import { clerkAtom, viewAtom } from '@/lib/atoms'
-import { useLogs, useStockDisplay, useVendors } from '@/lib/swr-hooks'
-import { ModalButton, StockObject } from '@/lib/types'
+import { clerkAtom, viewAtom } from 'lib/atoms'
+import { useLogs, useStockDisplay, useVendors } from 'lib/swr-hooks'
+import { ModalButton, StockObject } from 'lib/types'
 
 // Functions
 import {
   filterInventory,
-  getCSVData,
   getImageSrc,
   getItemSkuDisplayName,
-} from '@/lib/data-functions'
-import { saveLog } from '@/lib/db-functions'
+} from 'lib/data-functions'
+import { saveLog } from 'lib/db-functions'
 import { v4 as uuid } from 'uuid'
 
 // Components
@@ -22,6 +21,7 @@ import Modal from '@/components/modal'
 import DeleteIcon from '@mui/icons-material/Delete'
 import SearchIcon from '@mui/icons-material/Search'
 import dayjs from 'dayjs'
+import { getLabelPrinterCSV } from '../lib/functions'
 
 export default function LabelPrintDialog() {
   // Atoms
@@ -51,7 +51,7 @@ export default function LabelPrintDialog() {
     },
     {
       type: 'ok',
-      data: getCSVData(items),
+      data: getLabelPrinterCSV(items),
       headers: [
         'SKU',
         'ARTIST',

@@ -1,73 +1,71 @@
 // Packages
-import { useState } from "react";
-import { useAtom } from "jotai";
+import { useAtom } from 'jotai'
+import { useState } from 'react'
 
 // DB
 import {
-  useCustomers,
-  useLogs,
-  useSales,
-  useSaleItems,
-  useInventory,
-  useGiftCards,
-  useRegisterID,
-} from "@/lib/swr-hooks";
-import {
+  alertAtom,
   cartAtom,
   clerkAtom,
-  viewAtom,
   confirmModalAtom,
-  alertAtom,
-} from "@/lib/atoms";
+  viewAtom,
+} from 'lib/atoms'
+import {
+  useCustomers,
+  useGiftCards,
+  useInventory,
+  useLogs,
+  useRegisterID,
+  useSales,
+} from 'lib/swr-hooks'
 
 // Functions
 import {
-  saveSaleAndPark,
   saveLog,
+  saveSaleAndPark,
   saveSaleItemsTransactionsToDatabase,
-} from "@/lib/db-functions";
+} from 'lib/db-functions'
 
 // Components
-import CircularProgress from "@mui/material/CircularProgress";
-import Tooltip from "@mui/material/Tooltip";
+import CircularProgress from '@mui/material/CircularProgress'
+import Tooltip from '@mui/material/Tooltip'
 
 // Icons
-import DiscardSaleIcon from "@mui/icons-material/Close";
-import RetrieveSaleIcon from "@mui/icons-material/FolderOpen";
-import SaveSaleIcon from "@mui/icons-material/Save";
-import { SaleStateTypes } from "@/lib/types";
+import DiscardSaleIcon from '@mui/icons-material/Close'
+import SaveSaleIcon from '@mui/icons-material/Save'
+import { SaleStateTypes } from 'lib/types'
 
 export default function ShoppingCartActions() {
   // SWR
-  const { customers } = useCustomers();
-  const { logs, mutateLogs } = useLogs();
-  const { sales, mutateSales } = useSales();
-  const { inventory, mutateInventory } = useInventory();
-  const { giftCards, mutateGiftCards } = useGiftCards();
-  const { registerID } = useRegisterID();
+  const { customers } = useCustomers()
+  const { logs, mutateLogs } = useLogs()
+  const { sales, mutateSales } = useSales()
+  const { inventory, mutateInventory } = useInventory()
+  const { giftCards, mutateGiftCards } = useGiftCards()
+  const { registerID } = useRegisterID()
 
   // Atoms
-  const [clerk] = useAtom(clerkAtom);
-  const [cart, setCart] = useAtom(cartAtom);
-  const [, setAlert] = useAtom(alertAtom);
-  const [, setConfirmModal] = useAtom(confirmModalAtom);
-  const [view, setView] = useAtom(viewAtom);
+  const [clerk] = useAtom(clerkAtom)
+  const [cart, setCart] = useAtom(cartAtom)
+  const [, setAlert] = useAtom(alertAtom)
+  const [, setConfirmModal] = useAtom(confirmModalAtom)
+  const [view, setView] = useAtom(viewAtom)
 
   // State
-  const [saveSaleLoading, setSaveSaleLoading] = useState(false);
+  const [saveSaleLoading, setSaveSaleLoading] = useState(false)
 
   // Functions
   function clearCart() {
-    setCart({ id: null, items: [] });
-    setView({ ...view, cart: false });
+    setCart({ id: null, items: [] })
+    setView({ ...view, cart: false })
   }
 
   function onClickLoadSales() {
-    setView({ ...view, loadSalesDialog: true });
+    setView({ ...view, loadSalesDialog: true })
   }
 
   async function onClickSaveSale() {
-    setSaveSaleLoading(true);
+    setSaveSaleLoading(true)
     await saveSaleAndPark(
       cart,
       clerk,
@@ -81,18 +79,18 @@ export default function ShoppingCartActions() {
       mutateInventory,
       giftCards,
       mutateGiftCards
-    );
+    )
     setAlert({
       open: true,
-      type: "success",
-      message: "SALE PARKED",
-    });
-    clearCart();
-    setSaveSaleLoading(false);
+      type: 'success',
+      message: 'SALE PARKED',
+    })
+    clearCart()
+    setSaveSaleLoading(false)
   }
 
   async function onClickContinueLayby() {
-    setSaveSaleLoading(true);
+    setSaveSaleLoading(true)
     await saveSaleItemsTransactionsToDatabase(
       { ...cart, state: SaleStateTypes.Layby },
       clerk,
@@ -103,22 +101,22 @@ export default function ShoppingCartActions() {
       mutateInventory,
       giftCards,
       mutateGiftCards
-    );
+    )
     setAlert({
       open: true,
-      type: "success",
-      message: "LAYBY CONTINUED",
-    });
-    clearCart();
-    setSaveSaleLoading(false);
+      type: 'success',
+      message: 'LAYBY CONTINUED',
+    })
+    clearCart()
+    setSaveSaleLoading(false)
   }
 
   async function onClickDiscardSale() {
     setConfirmModal({
       open: true,
-      title: "Are you sure?",
-      message: "Are you sure you want to clear the cart of all items?",
-      yesText: "DISCARD SALE",
+      title: 'Are you sure?',
+      message: 'Are you sure you want to clear the cart of all items?',
+      yesText: 'DISCARD SALE',
       action: () => {
         saveLog(
           {
@@ -127,11 +125,11 @@ export default function ShoppingCartActions() {
           },
           logs,
           mutateLogs
-        );
+        )
         setAlert({
           open: true,
-          type: "warning",
-          message: "SALE DISCARDED",
+          type: 'warning',
+          message: 'SALE DISCARDED',
           undo: () => {
             saveLog(
               {
@@ -140,14 +138,14 @@ export default function ShoppingCartActions() {
               },
               logs,
               mutateLogs
-            );
-            setCart({ ...cart });
+            )
+            setCart({ ...cart })
           },
-        });
-        clearCart();
+        })
+        clearCart()
       },
-      noText: "CANCEL",
-    });
+      noText: 'CANCEL',
+    })
   }
   return (
     <div>
@@ -161,7 +159,7 @@ export default function ShoppingCartActions() {
   </Tooltip>*/}
       <Tooltip
         title={
-          cart?.state === SaleStateTypes.Layby ? "Continue Layby" : "Park sale"
+          cart?.state === SaleStateTypes.Layby ? 'Continue Layby' : 'Park sale'
         }
       >
         <button
@@ -194,5 +192,5 @@ export default function ShoppingCartActions() {
         </Tooltip>
       )}
     </div>
-  );
+  )
 }

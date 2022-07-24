@@ -8,21 +8,21 @@ import {
   loadedCustomerObjectAtom,
   loadedHoldIdAtom,
   viewAtom,
-} from '@/lib/atoms'
-import { useCustomers, useHolds, useInventory } from '@/lib/swr-hooks'
-import { CustomerObject, HoldObject, StockObject } from '@/lib/types'
+} from 'lib/atoms'
+import { useCustomers, useHolds, useInventory } from 'lib/swr-hooks'
+import { CustomerObject, HoldObject, StockObject } from 'lib/types'
 
 // Functions
 import {
   getItemDisplayName,
   getItemSkuDisplayNameById,
-} from '@/lib/data-functions'
+} from 'lib/data-functions'
 
 // Components
 import TableContainer from '@/components/container/table'
 import Table from '@/components/table'
-import { saveSystemLog } from '@/lib/db-functions'
 import dayjs from 'dayjs'
+import { saveSystemLog } from 'lib/db-functions'
 
 export default function HoldTable() {
   // SWR

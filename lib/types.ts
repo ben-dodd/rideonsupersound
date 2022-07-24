@@ -458,13 +458,6 @@ export interface TillObject {
   ten_cent?: number
 }
 
-export interface KiwiBankTransactionObject {
-  name?: string
-  vendor_id?: string
-  amount?: number
-  accountNumber?: string
-}
-
 export interface ModalButton {
   type?: string
   onClick?: Function
@@ -475,15 +468,6 @@ export interface ModalButton {
   data?: any[]
   headers?: string[]
   fileName?: string
-}
-
-export interface HelpObject {
-  id?: number
-  title?: string
-  tags?: string
-  pages?: string
-  views?: string
-  body?: string
 }
 
 export interface OpenWeatherObject {

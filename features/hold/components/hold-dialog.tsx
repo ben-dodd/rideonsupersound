@@ -10,7 +10,7 @@ import {
   loadedHoldIdAtom,
   pageAtom,
   viewAtom,
-} from '@/lib/atoms'
+} from 'lib/atoms'
 import {
   useClerks,
   useCustomers,
@@ -19,14 +19,14 @@ import {
   useLogs,
   useRegisterID,
   useWeather,
-} from '@/lib/swr-hooks'
+} from 'lib/swr-hooks'
 import {
   ClerkObject,
   CustomerObject,
   HoldObject,
   ModalButton,
   StockObject,
-} from '@/lib/types'
+} from 'lib/types'
 
 // Functions
 import {
@@ -34,13 +34,13 @@ import {
   saveLog,
   saveSystemLog,
   updateHoldInDatabase,
-} from '@/lib/db-functions'
+} from 'lib/db-functions'
 
 // Components
 import TextField from '@/components/inputs/text-field'
 import Modal from '@/components/modal'
-import { getItemDisplayName } from '@/lib/data-functions'
 import dayjs from 'dayjs'
+import { getItemDisplayName } from 'lib/data-functions'
 import HoldListItem from './list-item'
 
 export default function HoldDialog() {

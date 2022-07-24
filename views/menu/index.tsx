@@ -1,121 +1,119 @@
 // Packages
-import { useAtom } from "jotai";
-import Image from "next/image";
+import { useAtom } from 'jotai'
 
 // DB
-import { useJobs, useInventory } from "@/lib/swr-hooks";
-import { pageAtom, cartAtom, clerkAtom, viewAtom } from "@/lib/atoms";
-import { SaleItemObject, TaskObject, StockObject, bg } from "@/lib/types";
+import { cartAtom, clerkAtom, pageAtom, viewAtom } from 'lib/atoms'
+import { useInventory, useJobs } from 'lib/swr-hooks'
+import { bg, SaleItemObject, StockObject, TaskObject } from 'lib/types'
 
 // Icons
 // import CustomersIcon from "@mui/icons-material/LocalLibrary";
-import HoldsIcon from "@mui/icons-material/PanTool";
-import InventoryIcon from "@mui/icons-material/Category";
-import LogoutIcon from "@mui/icons-material/ExitToApp";
-import SalesIcon from "@mui/icons-material/MonetizationOn";
-import SellIcon from "@mui/icons-material/LocalAtm";
-import LogsIcon from "@mui/icons-material/GridOn";
-import VendorsIcon from "@mui/icons-material/Store";
-import PaymentsIcon from "@mui/icons-material/Receipt";
-import GiftCardsIcon from "@mui/icons-material/Redeem";
-import LaybyIcon from "@mui/icons-material/DryCleaning";
-import JobsIcon from "@mui/icons-material/Task";
-import StatsIcon from "@mui/icons-material/QueryStats";
-import StocktakeIcon from "@mui/icons-material/Numbers";
-import { saveSystemLog } from "@/lib/db-functions";
+import InventoryIcon from '@mui/icons-material/Category'
+import LaybyIcon from '@mui/icons-material/DryCleaning'
+import LogoutIcon from '@mui/icons-material/ExitToApp'
+import LogsIcon from '@mui/icons-material/GridOn'
+import SellIcon from '@mui/icons-material/LocalAtm'
+import SalesIcon from '@mui/icons-material/MonetizationOn'
+import StocktakeIcon from '@mui/icons-material/Numbers'
+import HoldsIcon from '@mui/icons-material/PanTool'
+import PaymentsIcon from '@mui/icons-material/Receipt'
+import GiftCardsIcon from '@mui/icons-material/Redeem'
+import VendorsIcon from '@mui/icons-material/Store'
+import JobsIcon from '@mui/icons-material/Task'
+import { saveSystemLog } from 'lib/db-functions'
 
 // Types
 type MenuType = {
-  type: string;
-  page: string;
-  text: string;
-  badge: any;
-  class: string;
-  icon: any;
-  onClick: any;
-};
+  type: string
+  page: string
+  text: string
+  badge: any
+  class: string
+  icon: any
+  onClick: any
+}
 
 export default function Menu() {
   // Atoms
-  const [cart] = useAtom(cartAtom);
-  const [page, setPage] = useAtom(pageAtom);
-  const [view, setView] = useAtom(viewAtom);
-  const [clerk, setClerk] = useAtom(clerkAtom);
+  const [cart] = useAtom(cartAtom)
+  const [page, setPage] = useAtom(pageAtom)
+  const [view, setView] = useAtom(viewAtom)
+  const [clerk, setClerk] = useAtom(clerkAtom)
 
   // SWR
-  const { jobs } = useJobs();
-  const { inventory } = useInventory();
+  const { jobs } = useJobs()
+  const { inventory } = useInventory()
 
   // Constants
   const cartItems = cart?.items?.reduce?.(
     (accumulator: number, item: SaleItemObject) =>
       accumulator + (parseInt(item?.quantity) || 1),
     0
-  );
+  )
 
   const jobsToDo =
     (jobs?.filter?.((t: TaskObject) => !t?.is_deleted && !t?.is_completed)
       ?.length || 0) +
-    (inventory?.filter?.((i: StockObject) => i?.needs_restock)?.length || 0);
+    (inventory?.filter?.((i: StockObject) => i?.needs_restock)?.length || 0)
 
   const topMenu = [
     {
-      type: "link",
-      page: "sell",
+      type: 'link',
+      page: 'sell',
       // badge: openSales,
-      text: "SELL",
+      text: 'SELL',
       badge: cartItems,
-      class: "bg-col1-light hover:bg-col1",
+      class: 'bg-col1-light hover:bg-col1',
       // icon: <InventoryIcon />,
       icon: <SellIcon />,
     },
     {
-      type: "link",
-      page: "inventory",
-      text: "INVENTORY",
-      class: "bg-col2-light hover:bg-col2",
+      type: 'link',
+      page: 'inventory',
+      text: 'INVENTORY',
+      class: 'bg-col2-light hover:bg-col2',
       icon: <InventoryIcon />,
     },
     {
-      type: "link",
-      page: "vendors",
-      text: "VENDORS",
-      class: "bg-col3-light hover:bg-col3",
+      type: 'link',
+      page: 'vendors',
+      text: 'VENDORS',
+      class: 'bg-col3-light hover:bg-col3',
       icon: <VendorsIcon />,
     },
     {
-      type: "link",
-      page: "payments",
-      text: "PAYMENTS",
-      class: "bg-col4-light hover:bg-col4",
+      type: 'link',
+      page: 'payments',
+      text: 'PAYMENTS',
+      class: 'bg-col4-light hover:bg-col4',
       icon: <PaymentsIcon />,
     },
     {
-      type: "link",
-      page: "sales",
-      text: "SALES",
-      class: "bg-col5-light hover:bg-col5",
+      type: 'link',
+      page: 'sales',
+      text: 'SALES',
+      class: 'bg-col5-light hover:bg-col5',
       icon: <SalesIcon />,
     },
     {
-      type: "link",
-      page: "laybys",
-      text: "LAYBYS",
-      class: "bg-col6-light hover:bg-col6",
+      type: 'link',
+      page: 'laybys',
+      text: 'LAYBYS',
+      class: 'bg-col6-light hover:bg-col6',
       icon: <LaybyIcon />,
     },
     {
-      type: "link",
-      page: "holds",
-      text: "HOLDS",
-      class: "bg-col7-light hover:bg-col7",
+      type: 'link',
+      page: 'holds',
+      text: 'HOLDS',
+      class: 'bg-col7-light hover:bg-col7',
       icon: <HoldsIcon />,
     },
     {
-      type: "link",
-      page: "giftCards",
-      text: "GIFT CARDS",
-      class: "bg-col8-light hover:bg-col8",
+      type: 'link',
+      page: 'giftCards',
+      text: 'GIFT CARDS',
+      class: 'bg-col8-light hover:bg-col8',
       icon: <GiftCardsIcon />,
     },
     // {
@@ -140,21 +138,21 @@ export default function Menu() {
     //   icon: <StaffIcon />,
     // },
     // { type: "divider" },
-  ];
+  ]
   const bottomMenu = [
     {
-      type: "link",
-      page: "logs",
-      text: "LOGS",
-      class: "bg-col9-light hover:bg-col9",
+      type: 'link',
+      page: 'logs',
+      text: 'LOGS',
+      class: 'bg-col9-light hover:bg-col9',
       icon: <LogsIcon />,
     },
     {
-      type: "link",
-      page: "jobs",
-      text: "JOBS",
+      type: 'link',
+      page: 'jobs',
+      text: 'JOBS',
       badge: jobsToDo,
-      class: "bg-col10-light hover:bg-col10",
+      class: 'bg-col10-light hover:bg-col10',
       icon: <JobsIcon />,
     },
     // {
@@ -165,10 +163,10 @@ export default function Menu() {
     //   icon: <StatsIcon />,
     // },
     {
-      type: "link",
-      page: "stocktake",
-      text: "STOCKTAKE",
-      class: "bg-col1-light hover:bg-col1",
+      type: 'link',
+      page: 'stocktake',
+      text: 'STOCKTAKE',
+      class: 'bg-col1-light hover:bg-col1',
       icon: <StocktakeIcon />,
     },
     // {
@@ -179,46 +177,43 @@ export default function Menu() {
     //   icon: <SettingsIcon />,
     // },
     {
-      type: "link",
+      type: 'link',
       page: null,
       onClick: () => setClerk(null),
-      text: "SWITCH CLERK",
-      class: "bg-col2-light hover:bg-col2",
+      text: 'SWITCH CLERK',
+      class: 'bg-col2-light hover:bg-col2',
       icon: <LogoutIcon />,
     },
-  ];
+  ]
 
   return (
     <div
       className={`w-0 overflow-y-auto flex flex-col h-menu justify-between ${
         bg[clerk?.colour]
       } z-50 flex-shrink-0 whitespace-pre relative ${
-        view?.mainMenu && "w-full "
+        view?.mainMenu && 'w-full '
       }sm:w-full sm:w-icons sm:border-r lg:w-menu transition-width duration-200 `}
     >
       <ul>
         {topMenu?.map((item: MenuType, i: number) =>
-          item?.type === "divider" ? (
+          item?.type === 'divider' ? (
             <hr key={i} />
           ) : (
             <li
               key={i}
               className={`flex cursor-pointer content-center p-2 py-3 ${
                 page === item?.page
-                  ? "text-white hover:bg-black bg-black"
-                  : item?.class || ""
+                  ? 'text-white hover:bg-black bg-black'
+                  : item?.class || ''
               }`}
               onClick={
                 item?.onClick
                   ? item?.onClick
                   : () => {
-                      window.scrollTo(0, 0);
-                      saveSystemLog(
-                        `${item?.page} on menu clicked.`,
-                        clerk?.id
-                      );
-                      setPage(item?.page);
-                      setView({ ...view, mainMenu: false });
+                      window.scrollTo(0, 0)
+                      saveSystemLog(`${item?.page} on menu clicked.`, clerk?.id)
+                      setPage(item?.page)
+                      setView({ ...view, mainMenu: false })
                     }
               }
             >
@@ -252,23 +247,23 @@ export default function Menu() {
       </div>
       <ul>
         {bottomMenu?.map((item: MenuType, i: number) =>
-          item?.type === "divider" ? (
+          item?.type === 'divider' ? (
             <hr key={i} />
           ) : (
             <li
               key={i}
               className={`flex cursor-pointer content-center p-2 py-3 ${
                 page === item?.page
-                  ? "text-white hover:bg-black bg-black"
-                  : item?.class || ""
+                  ? 'text-white hover:bg-black bg-black'
+                  : item?.class || ''
               }`}
               onClick={
                 item?.onClick
                   ? item?.onClick
                   : () => {
-                      window.scrollTo(0, 0);
-                      setPage(item?.page);
-                      setView({ ...view, mainMenu: false });
+                      window.scrollTo(0, 0)
+                      setPage(item?.page)
+                      setView({ ...view, mainMenu: false })
                     }
               }
             >
@@ -290,7 +285,7 @@ export default function Menu() {
         )}
       </ul>
     </div>
-  );
+  )
 }
 // function checkResets(currentPage: string, newPage: string) {
 //   if (currentPage === "sell") {

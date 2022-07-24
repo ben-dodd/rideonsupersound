@@ -3,7 +3,7 @@ import { useAtom } from 'jotai'
 import { useState } from 'react'
 
 // DB
-import { alertAtom, cartAtom, clerkAtom, viewAtom } from '@/lib/atoms'
+import { alertAtom, cartAtom, clerkAtom, viewAtom } from 'lib/atoms'
 import {
   useCustomers,
   useGiftCards,
@@ -12,17 +12,17 @@ import {
   useRegisterID,
   useSales,
   useSaleTransactionsForSale,
-} from '@/lib/swr-hooks'
-import { CustomerObject, ModalButton, SaleStateTypes } from '@/lib/types'
+} from 'lib/swr-hooks'
+import { CustomerObject, ModalButton, SaleStateTypes } from 'lib/types'
 
 // Functions
-import { getSaleVars } from '@/lib/data-functions'
+import { getSaleVars } from 'lib/data-functions'
 import {
   saveLog,
   saveSaleAndPark,
   saveSaleItemsTransactionsToDatabase,
   saveSystemLog,
-} from '@/lib/db-functions'
+} from 'lib/db-functions'
 
 // Components
 import ScreenContainer from '@/components/container/screen'

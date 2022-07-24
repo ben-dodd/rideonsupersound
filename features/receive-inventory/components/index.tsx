@@ -8,12 +8,12 @@ import {
   confirmModalAtom,
   receiveStockAtom,
   viewAtom,
-} from '@/lib/atoms'
-import { useInventory, useRegisterID } from '@/lib/swr-hooks'
-import { ModalButton } from '@/lib/types'
+} from 'lib/atoms'
+import { useInventory, useRegisterID } from 'lib/swr-hooks'
+import { ModalButton } from 'lib/types'
 
 // Functions
-import { receiveStock, saveSystemLog } from '@/lib/db-functions'
+import { receiveStock, saveSystemLog } from 'lib/db-functions'
 
 // Components
 import ScreenContainer from '@/components/container/screen'

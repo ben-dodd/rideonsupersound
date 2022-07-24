@@ -3,26 +3,25 @@ import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 
 // DB
-import { clerkAtom, confirmModalAtom, loadedItemIdAtom } from '@/lib/atoms'
+import { clerkAtom, confirmModalAtom, loadedItemIdAtom } from 'lib/atoms'
 import {
   useInventory,
   useLogs,
   useSaleItems,
   useStockItem,
-} from '@/lib/swr-hooks'
-import { ModalButton, StockObject } from '@/lib/types'
+} from 'lib/swr-hooks'
+import { ModalButton, StockObject } from 'lib/types'
 
 // Functions
 import {
   getItemDisplayName,
   getItemSkuDisplayNameById,
-  parseJSON,
-} from '@/lib/data-functions'
+} from 'lib/data-functions'
 import {
   deleteInventoryItemFromDatabase,
   saveLog,
   updateStockItemInDatabase,
-} from '@/lib/db-functions'
+} from 'lib/db-functions'
 
 // Components
 import ScreenContainer from '@/components/container/screen'
@@ -33,6 +32,7 @@ import StockDetails from '@/features/item-inventory/components/stock-details'
 import DeleteIcon from '@mui/icons-material/Delete'
 import GoogleBooksPanel from 'features/api-google-books/components'
 import InventoryItemForm from 'features/item-inventory/components/inventory-item-form'
+import { parseJSON } from 'lib/utils'
 import PriceDetails from './price-details'
 
 export default function InventoryItemScreen({ page }) {

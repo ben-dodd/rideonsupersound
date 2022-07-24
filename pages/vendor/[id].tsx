@@ -2,7 +2,8 @@ import Payments from '@/features/web-vendor/components/payments'
 import Sales from '@/features/web-vendor/components/sales'
 import StockItem from '@/features/web-vendor/components/stock-item'
 import Tabs from '@/features/web-vendor/components/tabs'
-import { filterInventory, sumPrices } from '@/lib/data-functions'
+import dayjs from 'dayjs'
+import { filterInventory, sumPrices } from 'lib/data-functions'
 import {
   useVendorByUid,
   useVendorPaymentsByUid,
@@ -11,9 +12,8 @@ import {
   useVendorStockMovementByUid,
   useVendorStockPriceByUid,
   useVendorStoreCreditsByUid,
-} from '@/lib/swr-hooks'
-import { StockObject } from '@/lib/types'
-import dayjs from 'dayjs'
+} from 'lib/swr-hooks'
+import { StockObject } from 'lib/types'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'

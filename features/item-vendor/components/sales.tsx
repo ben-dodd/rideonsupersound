@@ -1,17 +1,17 @@
 // DB
-import { useInventory } from "@/lib/swr-hooks";
-import { StockObject, VendorSaleItemObject } from "@/lib/types";
+import { useInventory } from 'lib/swr-hooks'
+import { StockObject, VendorSaleItemObject } from 'lib/types'
 
 // Functions
-import { getCartItemPrice, getItemDisplayName } from "@/lib/data-functions";
+import { getCartItemPrice, getItemDisplayName } from 'lib/data-functions'
 
 // Components
-import dayjs from "dayjs";
-import { CSVLink } from "react-csv";
+import dayjs from 'dayjs'
+import { CSVLink } from 'react-csv'
 
 export default function VendorSales({ vendor, vendorDetails }) {
   // SWR
-  const { inventory } = useInventory();
+  const { inventory } = useInventory()
 
   return (
     <div>
@@ -20,11 +20,11 @@ export default function VendorSales({ vendor, vendorDetails }) {
           <CSVLink
             className={`bg-white hover:bg-gray-100 disabled:bg-gray-200 p-2 rounded border`}
             filename={`${vendor?.name}-sales-${dayjs().format(
-              "YYYY-MM-DD"
+              'YYYY-MM-DD'
             )}.csv`}
             data={vendorDetails?.totalSales?.map((s) => {
-              const prices = getCartItemPrice(s, null);
-              return { ...s, ...prices };
+              const prices = getCartItemPrice(s, null)
+              return { ...s, ...prices }
             })}
           >
             DOWNLOAD DATA
@@ -41,7 +41,7 @@ export default function VendorSales({ vendor, vendorDetails }) {
           <div className="border-b py-1 flex text-sm font-bold">
             <div className="w-3/12" />
             <div className="w-1/2">{`${vendorDetails?.totalSales?.length} ITEM${
-              vendorDetails?.totalSales?.length === 1 ? "" : "S"
+              vendorDetails?.totalSales?.length === 1 ? '' : 'S'
             } SOLD`}</div>
             <div className="w-1/6">
               {`$${(
@@ -56,17 +56,17 @@ export default function VendorSales({ vendor, vendorDetails }) {
           {vendorDetails?.totalSales
             ?.sort(
               (saleA: VendorSaleItemObject, saleB: VendorSaleItemObject) => {
-                const a = dayjs(saleA?.date_sale_closed);
-                const b = dayjs(saleB?.date_sale_closed);
-                return a < b ? 1 : b < a ? -1 : 0;
+                const a = dayjs(saleA?.date_sale_closed)
+                const b = dayjs(saleB?.date_sale_closed)
+                return a < b ? 1 : b < a ? -1 : 0
               }
             )
             // ?.slice(0, 5)
             ?.map((sale: VendorSaleItemObject) => {
               const stockItem: StockObject = inventory?.filter(
                 (i: StockObject) => i?.id === sale?.item_id
-              )[0];
-              const prices = getCartItemPrice(sale, null);
+              )[0]
+              const prices = getCartItemPrice(sale, null)
               return (
                 <div
                   className="border-b py-1 flex hover:bg-gray-100 text-sm"
@@ -74,37 +74,37 @@ export default function VendorSales({ vendor, vendorDetails }) {
                 >
                   <div className="w-1/12">#{sale?.id}</div>
                   <div className="font-bold w-1/6">
-                    {dayjs(sale?.date_sale_closed).format("D MMMM YYYY")}
+                    {dayjs(sale?.date_sale_closed).format('D MMMM YYYY')}
                   </div>
                   <div className="w-1/3">{`${
                     sale?.quantity
                   } x ${getItemDisplayName(stockItem)}${
-                    sale?.is_refunded ? " [REFUNDED]" : ""
+                    sale?.is_refunded ? ' [REFUNDED]' : ''
                   }`}</div>
                   <div className="w-1/6">{stockItem?.format}</div>
                   <div
                     className={`w-1/6${
-                      sale?.is_refunded ? " line-through" : ""
+                      sale?.is_refunded ? ' line-through' : ''
                     }`}
                   >
                     {`$${(prices?.totalPrice / 100)?.toFixed(2)}`}
                   </div>
                   <div
                     className={`w-1/12${
-                      sale?.is_refunded ? " line-through" : ""
+                      sale?.is_refunded ? ' line-through' : ''
                     }`}
                   >
                     {`$${(prices?.vendorPrice / 100)?.toFixed(2)}${
                       sale?.vendor_discount
                         ? ` (${sale?.vendor_discount}% DISCOUNT)`
-                        : ""
+                        : ''
                     }`}
                   </div>
                 </div>
-              );
+              )
             })}
         </div>
       )}
     </div>
-  );
+  )
 }

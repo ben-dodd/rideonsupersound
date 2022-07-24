@@ -1,39 +1,35 @@
 // Packages
-import { useMemo } from "react";
-import { useAtom } from "jotai";
+import { useAtom } from 'jotai'
+import { useMemo } from 'react'
 
 // DB
-import {
-  useInventory,
-  useSalesJoined,
-  useVendorPayments,
-} from "@/lib/swr-hooks";
-import { loadedVendorIdAtom, pageAtom } from "@/lib/atoms";
-import { VendorObject, VendorPaymentObject } from "@/lib/types";
+import { loadedVendorIdAtom, pageAtom } from 'lib/atoms'
+import { useInventory, useSalesJoined, useVendorPayments } from 'lib/swr-hooks'
+import { VendorPaymentObject } from 'lib/types'
 
 // Functions
-import { getVendorDetails } from "@/lib/data-functions";
+import { getVendorDetails } from 'lib/data-functions'
 
 // Components
-import dayjs from "dayjs";
-import { CSVLink } from "react-csv";
+import dayjs from 'dayjs'
+import { CSVLink } from 'react-csv'
 
 export default function VendorPayments({ vendor }) {
   // Atoms
-  const [loadedVendorId] = useAtom(loadedVendorIdAtom);
-  const [page] = useAtom(pageAtom);
+  const [loadedVendorId] = useAtom(loadedVendorIdAtom)
+  const [page] = useAtom(pageAtom)
 
   // SWR
-  const { inventory } = useInventory();
-  const { sales } = useSalesJoined();
-  const { vendorPayments } = useVendorPayments();
+  const { inventory } = useInventory()
+  const { sales } = useSalesJoined()
+  const { vendorPayments } = useVendorPayments()
 
   // Constants
   const vendorDetails = useMemo(
     () =>
       getVendorDetails(inventory, sales, vendorPayments, loadedVendorId[page]),
     [inventory, sales, vendorPayments, loadedVendorId[page]]
-  );
+  )
 
   return (
     <div>
@@ -42,7 +38,7 @@ export default function VendorPayments({ vendor }) {
           <CSVLink
             className={`bg-white hover:bg-gray-100 disabled:bg-gray-200 p-2 rounded border`}
             filename={`${vendor?.name}-payments-${dayjs().format(
-              "YYYY-MM-DD"
+              'YYYY-MM-DD'
             )}.csv`}
             data={vendorDetails?.totalPayments}
           >
@@ -65,7 +61,7 @@ export default function VendorPayments({ vendor }) {
             <div className="w-1/6">{`${
               vendorDetails?.totalPayments?.length
             } PAYMENT${
-              vendorDetails?.totalPayments?.length === 1 ? "" : "S"
+              vendorDetails?.totalPayments?.length === 1 ? '' : 'S'
             } MADE`}</div>
             <div className="w-1/6 text-right">
               {`$${(
@@ -80,9 +76,9 @@ export default function VendorPayments({ vendor }) {
           {vendorDetails?.totalPayments
             ?.sort(
               (debitA: VendorPaymentObject, debitB: VendorPaymentObject) => {
-                const a = dayjs(debitA?.date);
-                const b = dayjs(debitB?.date);
-                return a < b ? 1 : b < a ? -1 : 0;
+                const a = dayjs(debitA?.date)
+                const b = dayjs(debitB?.date)
+                return a < b ? 1 : b < a ? -1 : 0
               }
             )
             // ?.slice(0, 5)
@@ -93,7 +89,7 @@ export default function VendorPayments({ vendor }) {
                   key={debit?.id}
                 >
                   <div className="font-bold w-1/6">
-                    {dayjs(debit?.date).format("D MMMM YYYY")}
+                    {dayjs(debit?.date).format('D MMMM YYYY')}
                   </div>
                   <div className="w-1/2" />
                   <div className="w-1/6">{debit?.type?.toUpperCase()}</div>
@@ -109,13 +105,13 @@ export default function VendorPayments({ vendor }) {
                   <div className="w-1/6 text-right">
                     {debit?.amount
                       ? `$${(debit?.amount / 100)?.toFixed(2)}`
-                      : "N/A"}
+                      : 'N/A'}
                   </div>
                 </div>
-              );
+              )
             })}
         </div>
       )}
     </div>
-  );
+  )
 }

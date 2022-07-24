@@ -6,7 +6,7 @@ import CreateCustomerSidebar from '@/features/customer/components/sidebar'
 import HoldTable from '@/features/display-holds/components/hold-table'
 import HoldDialog from '@/features/hold/components/hold-dialog'
 import SaleItemScreen from '@/features/item-sale/components/sale-item-screen'
-import { loadedHoldIdAtom, loadedSaleIdAtom, pageAtom } from '@/lib/atoms'
+import { loadedHoldIdAtom, loadedSaleIdAtom, pageAtom } from 'lib/atoms'
 
 // Components
 

@@ -1,19 +1,19 @@
-import { viewAtom } from "@/lib/atoms";
-import { useStockMovementByStockId } from "@/lib/swr-hooks";
-import { StockObject } from "@/lib/types";
-import dayjs from "dayjs";
-import { useAtom } from "jotai";
+import dayjs from 'dayjs'
+import { useAtom } from 'jotai'
+import { viewAtom } from 'lib/atoms'
+import { useStockMovementByStockId } from 'lib/swr-hooks'
+import { StockObject } from 'lib/types'
 
 interface stockDetailsProps {
-  item: StockObject;
+  item: StockObject
 }
 
 export default function StockDetails({ item }: stockDetailsProps) {
   const { stockMovements, isStockMovementsLoading } = useStockMovementByStockId(
     item?.id
-  );
+  )
 
-  const [view, setView] = useAtom(viewAtom);
+  const [view, setView] = useAtom(viewAtom)
 
   return (
     <>
@@ -21,7 +21,7 @@ export default function StockDetails({ item }: stockDetailsProps) {
         <div className="stock-indicator__container">IN STOCK</div>
         <div
           className={`stock-indicator__number ${
-            item?.quantity <= 0 ? "bg-tertiary-light" : "bg-primary-light"
+            item?.quantity <= 0 ? 'bg-tertiary-light' : 'bg-primary-light'
           }`}
         >
           {`${item?.quantity || 0}`}
@@ -65,8 +65,8 @@ export default function StockDetails({ item }: stockDetailsProps) {
         <div
           className={`stock-indicator__number ${
             item?.quantity_adjustment < 0
-              ? "bg-tertiary-light"
-              : "bg-secondary-light"
+              ? 'bg-tertiary-light'
+              : 'bg-secondary-light'
           }`}
         >
           {`${item?.quantity_adjustment || 0}`}
@@ -92,14 +92,14 @@ export default function StockDetails({ item }: stockDetailsProps) {
                 className={`flex hover:bg-gray-200 p-2 justify-between`}
               >
                 <div className="mr-2">
-                  {dayjs(s?.date_moved).format("D MMMM YYYY, h:mm A")}
+                  {dayjs(s?.date_moved).format('D MMMM YYYY, h:mm A')}
                 </div>
                 <div
                   className={`mr-2 font-bold ${
-                    s?.quantity < 1 ? "text-red-500" : "text-blue-500"
+                    s?.quantity < 1 ? 'text-red-500' : 'text-blue-500'
                   }`}
                 >{`${
-                  s?.act === "adjustment" ? (s?.quantity < 1 ? "-" : "+") : ""
+                  s?.act === 'adjustment' ? (s?.quantity < 1 ? '-' : '+') : ''
                 }${Math.abs(s?.quantity)} ${s?.act}`}</div>
               </div>
             ))}
@@ -107,5 +107,5 @@ export default function StockDetails({ item }: stockDetailsProps) {
         )}
       </div>
     </>
-  );
+  )
 }

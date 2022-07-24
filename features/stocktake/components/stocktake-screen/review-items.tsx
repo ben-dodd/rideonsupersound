@@ -1,46 +1,29 @@
-import {
-  clerkAtom,
-  loadedStocktakeIdAtom,
-  loadedStocktakeTemplateIdAtom,
-} from "@/lib/atoms";
-import {
-  getCSVData,
-  getImageSrc,
-  getItemDisplayName,
-  getItemSku,
-  getItemSkuDisplayName,
-} from "@/lib/data-functions";
-import Image from "next/image";
-import { saveLog } from "@/lib/db-functions";
+import SearchIcon from '@mui/icons-material/Search'
+import { useAtom } from 'jotai'
+import { loadedStocktakeIdAtom, loadedStocktakeTemplateIdAtom } from 'lib/atoms'
+import { getItemSkuDisplayName } from 'lib/data-functions'
 import {
   useInventory,
-  useLogs,
   useStocktakeItemsByStocktake,
   useStocktakesByTemplate,
-  useStocktakeTemplates,
-} from "@/lib/swr-hooks";
-import dayjs from "dayjs";
-import { useAtom } from "jotai";
-import { CSVLink } from "react-csv";
-import ReviewListItem from "./review-list-item";
-import { StockObject, StocktakeItemObject } from "@/lib/types";
-import SearchIcon from "@mui/icons-material/Search";
-import { useState } from "react";
+} from 'lib/swr-hooks'
+import { StockObject, StocktakeItemObject } from 'lib/types'
+import { useState } from 'react'
+import ReviewListItem from './review-list-item'
 
 export default function ReviewItems() {
-  const [stocktakeId] = useAtom(loadedStocktakeIdAtom);
-  const [stocktakeTemplateId] = useAtom(loadedStocktakeTemplateIdAtom);
+  const [stocktakeId] = useAtom(loadedStocktakeIdAtom)
+  const [stocktakeTemplateId] = useAtom(loadedStocktakeTemplateIdAtom)
   const { stocktakes, mutateStocktakes } =
-    useStocktakesByTemplate(stocktakeTemplateId);
+    useStocktakesByTemplate(stocktakeTemplateId)
   const { stocktakeItems, mutateStocktakeItems } =
-    useStocktakeItemsByStocktake(stocktakeId);
+    useStocktakeItemsByStocktake(stocktakeId)
 
   const stocktake = stocktakes?.filter(
     (stocktake) => stocktake?.id === stocktakeId
-  )?.[0];
-  const { inventory } = useInventory();
-  const { stocktakeTemplates } = useStocktakeTemplates();
-  const [search, setSearch] = useState("");
+  )?.[0]
+  const { inventory } = useInventory()
+  const [search, setSearch] = useState('')
 
   return (
     <div>
@@ -53,7 +36,7 @@ export default function ReviewItems() {
         </div>
         <input
           className="w-full py-1 px-2 outline-none bg-transparent"
-          value={search || ""}
+          value={search || ''}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search items..."
         />
@@ -62,14 +45,14 @@ export default function ReviewItems() {
         {stocktakeItems.map((stocktakeItem: StocktakeItemObject) => {
           const stockItem: StockObject = inventory?.filter(
             (i: StockObject) => i?.id === stocktakeItem?.stock_id
-          )?.[0];
+          )?.[0]
           if (
-            search !== "" &&
+            search !== '' &&
             !getItemSkuDisplayName(stockItem)
               ?.toLowerCase?.()
               ?.includes?.(search?.toLowerCase?.())
           )
-            return <div />;
+            return <div />
           return (
             <ReviewListItem
               key={stocktakeItem?.id}
@@ -77,9 +60,9 @@ export default function ReviewItems() {
               stocktakeItem={stocktakeItem}
               stocktake={stocktake}
             />
-          );
+          )
         })}
       </div>
     </div>
-  );
+  )
 }

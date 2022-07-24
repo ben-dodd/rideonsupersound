@@ -1,12 +1,11 @@
-import { useAtom } from "jotai";
+import { useAtom } from 'jotai'
 
-import { viewAtom } from "@/lib/atoms";
+import { viewAtom } from 'lib/atoms'
 
-import AddIcon from "@mui/icons-material/Add";
-import Image from "next/image";
+import AddIcon from '@mui/icons-material/Add'
 
 export default function MiscItem() {
-  const [view, setView] = useAtom(viewAtom);
+  const [view, setView] = useAtom(viewAtom)
   return (
     <div className="flex justify-between w-full mb-2 bg-blue-100">
       <div className="flex">
@@ -15,7 +14,7 @@ export default function MiscItem() {
             <img
               className="object-cover absolute"
               src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/default.png`}
-              alt={"Misc Item"}
+              alt={'Misc Item'}
             />
           </div>
         </div>
@@ -31,9 +30,9 @@ export default function MiscItem() {
           className="icon-button-large"
           onClick={() => setView({ ...view, miscItemDialog: true })}
         >
-          <AddIcon style={{ fontSize: "40px" }} />
+          <AddIcon style={{ fontSize: '40px' }} />
         </button>
       </div>
     </div>
-  );
+  )
 }

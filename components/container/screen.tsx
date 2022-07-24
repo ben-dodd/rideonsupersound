@@ -1,23 +1,23 @@
 // DB
-import { ModalButton } from "@/lib/types";
+import { ModalButton } from 'lib/types'
 
 // Icons
-import ArrowLeft from "@mui/icons-material/ArrowLeft";
+import ArrowLeft from '@mui/icons-material/ArrowLeft'
 
 // Components
-import { CSVLink } from "react-csv";
+import { CSVLink } from 'react-csv'
 
 // Types
-import { MouseEventHandler } from "react";
-import CircularProgress from "@mui/material/CircularProgress";
+import CircularProgress from '@mui/material/CircularProgress'
+import { MouseEventHandler } from 'react'
 interface ScreenProps {
-  show: boolean;
-  closeFunction: MouseEventHandler<HTMLButtonElement>;
-  title?: string;
-  loading?: boolean;
-  buttons?: ModalButton[];
-  titleClass?: string;
-  children: JSX.Element;
+  show: boolean
+  closeFunction: MouseEventHandler<HTMLButtonElement>
+  title?: string
+  loading?: boolean
+  buttons?: ModalButton[]
+  titleClass?: string
+  children: JSX.Element
 }
 
 export default function ScreenContainer({
@@ -32,7 +32,7 @@ export default function ScreenContainer({
   return (
     <div
       className={`absolute top-0 transition-offset duration-300 ${
-        show ? "left-0" : "left-full hidden"
+        show ? 'left-0' : 'left-full hidden'
       } h-full w-full bg-yellow-200`}
     >
       {loading ? (
@@ -43,7 +43,7 @@ export default function ScreenContainer({
         <div className="screen__content">
           <div
             className={`screen__title ${
-              titleClass ? titleClass : "bg-primary-light"
+              titleClass ? titleClass : 'bg-primary-light'
             }`}
           >
             <button className="screen__back-button" onClick={closeFunction}>
@@ -55,7 +55,7 @@ export default function ScreenContainer({
           {buttons && (
             <div className="screen__button-div">
               {buttons.map((button: ModalButton, i: number) =>
-                button?.type === "div" ? (
+                button?.type === 'div' ? (
                   <div key={i} />
                 ) : button?.data && !button?.disabled ? (
                   <CSVLink
@@ -73,7 +73,7 @@ export default function ScreenContainer({
                   <button
                     key={i}
                     className={`screen__button--${button?.type}${
-                      button?.hidden ? " hidden" : ""
+                      button?.hidden ? ' hidden' : ''
                     }`}
                     onClick={() => button?.onClick()}
                     disabled={button?.disabled || button?.loading}
@@ -98,5 +98,5 @@ export default function ScreenContainer({
         </div>
       )}
     </div>
-  );
+  )
 }

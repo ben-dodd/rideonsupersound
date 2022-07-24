@@ -4,11 +4,11 @@ import { useAtom } from 'jotai'
 
 // DB
 import Tabs from '@/components/navigation/tabs'
-import { pageAtom } from '@/lib/atoms'
-import { useLogs, useStockMovements } from '@/lib/swr-hooks'
-import { LogObject, StockMovementObject } from '@/lib/types'
 import ListLog from 'features/log/components/list-log'
 import ListStockMovement from 'features/log/components/list-stock-movement'
+import { pageAtom } from 'lib/atoms'
+import { useLogs, useStockMovements } from 'lib/swr-hooks'
+import { LogObject, StockMovementObject } from 'lib/types'
 
 // Components
 

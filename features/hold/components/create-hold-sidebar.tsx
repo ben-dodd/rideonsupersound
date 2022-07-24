@@ -10,26 +10,23 @@ import {
   loadedCustomerObjectAtom,
   sellSearchBarAtom,
   viewAtom,
-} from '@/lib/atoms'
+} from 'lib/atoms'
 import {
   useCustomers,
   useInventory,
   useLogs,
   useRegisterID,
-} from '@/lib/swr-hooks'
-import { CustomerObject, ModalButton, StockObject } from '@/lib/types'
+} from 'lib/swr-hooks'
+import { CustomerObject, ModalButton, StockObject } from 'lib/types'
 
 // Functions
-import {
-  getItemQuantity,
-  getItemSkuDisplayNameById,
-} from '@/lib/data-functions'
+import { getItemQuantity, getItemSkuDisplayNameById } from 'lib/data-functions'
 import {
   addRestockTask,
   saveHoldToDatabase,
   saveLog,
   saveSystemLog,
-} from '@/lib/db-functions'
+} from 'lib/db-functions'
 
 // Components
 import SidebarContainer from '@/components/container/side-bar'

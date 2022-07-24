@@ -5,7 +5,7 @@ import { useAtom } from 'jotai'
 import { useMemo, useState } from 'react'
 
 // DB
-import { alertAtom, cartAtom, clerkAtom, viewAtom } from '@/lib/atoms'
+import { alertAtom, cartAtom, clerkAtom, viewAtom } from 'lib/atoms'
 import {
   useInventory,
   useLogs,
@@ -13,21 +13,21 @@ import {
   useSalesJoined,
   useVendorPayments,
   useVendors,
-} from '@/lib/swr-hooks'
+} from 'lib/swr-hooks'
 import {
   ModalButton,
   PaymentMethodTypes,
   SaleTransactionObject,
   VendorObject,
-} from '@/lib/types'
+} from 'lib/types'
 
 // Functions
-import { getSaleVars, getVendorDetails } from '@/lib/data-functions'
+import { getSaleVars, getVendorDetails } from 'lib/data-functions'
 
 // Components
 import TextField from '@/components/inputs/text-field'
 import Modal from '@/components/modal'
-import { saveLog } from '@/lib/db-functions'
+import { saveLog } from 'lib/db-functions'
 import Select from 'react-select'
 
 export default function Acct() {

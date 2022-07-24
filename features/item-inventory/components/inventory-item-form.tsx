@@ -2,16 +2,12 @@ import CreateableSelect from '@/components/inputs/createable-select'
 import RadioButton from '@/components/inputs/radio-button'
 import SettingsSelect from '@/components/inputs/settings-select'
 import TextField from '@/components/inputs/text-field'
-import { clerkAtom } from '@/lib/atoms'
-import {
-  getImageSrc,
-  getItemDisplayName,
-  getItemSku,
-} from '@/lib/data-functions'
-import { saveLog, saveVendorToDatabase } from '@/lib/db-functions'
-import { useLogs, useVendors } from '@/lib/swr-hooks'
-import { StockObject, VendorObject } from '@/lib/types'
 import { useAtom } from 'jotai'
+import { clerkAtom } from 'lib/atoms'
+import { getImageSrc, getItemDisplayName, getItemSku } from 'lib/data-functions'
+import { saveLog, saveVendorToDatabase } from 'lib/db-functions'
+import { useLogs, useVendors } from 'lib/swr-hooks'
+import { StockObject, VendorObject } from 'lib/types'
 
 interface inventoryProps {
   item: StockObject

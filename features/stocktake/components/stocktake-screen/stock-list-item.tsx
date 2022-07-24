@@ -1,14 +1,14 @@
 // DB
-import { useInventory } from "@/lib/swr-hooks";
-import { StockObject } from "@/lib/types";
+import { useInventory } from 'lib/swr-hooks'
+import { StockObject } from 'lib/types'
 
 // Functions
-import { getItemDisplayName } from "@/lib/data-functions";
+import { getItemDisplayName } from 'lib/data-functions'
 
 export default function StockListItem({ id }) {
   // SWR
-  const { inventory } = useInventory();
-  const item: StockObject = inventory?.filter((i) => i?.id === id)?.[0];
+  const { inventory } = useInventory()
+  const item: StockObject = inventory?.filter((i) => i?.id === id)?.[0]
 
   // Functions
 
@@ -23,5 +23,5 @@ export default function StockListItem({ id }) {
         <div>{item?.quantity}</div>
       </div>
     </div>
-  );
+  )
 }

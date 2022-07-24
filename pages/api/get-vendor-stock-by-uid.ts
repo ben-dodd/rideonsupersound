@@ -1,9 +1,9 @@
-import { StockMovementTypes } from "@/lib/types";
-import { NextApiHandler } from "next";
-import { query } from "../../lib/db";
+import { StockMovementTypes } from 'lib/types'
+import { NextApiHandler } from 'next'
+import { query } from '../../lib/db'
 
 const handler: NextApiHandler = async (req, res) => {
-  const { uid } = req.query;
+  const { uid } = req.query
   try {
     const results = await query(
       `
@@ -61,12 +61,12 @@ const handler: NextApiHandler = async (req, res) => {
         )
       `,
       uid
-    );
+    )
 
-    return res.json(results);
+    return res.json(results)
   } catch (e) {
-    res.status(500).json({ message: e.message });
+    res.status(500).json({ message: e.message })
   }
-};
+}
 
-export default handler;
+export default handler

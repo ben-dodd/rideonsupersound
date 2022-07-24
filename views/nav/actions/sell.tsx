@@ -1,22 +1,22 @@
-import { useAtom } from "jotai";
-import { clerkAtom, viewAtom } from "@/lib/atoms";
+import { useAtom } from 'jotai'
+import { clerkAtom, viewAtom } from 'lib/atoms'
 // Material UI Icons
-import AddCashIcon from "@mui/icons-material/AttachMoney";
-import TakeCashIcon from "@mui/icons-material/MoneyOff";
-import CloseRegisterIcon from "@mui/icons-material/VpnKey";
-import { saveSystemLog } from "@/lib/db-functions";
+import AddCashIcon from '@mui/icons-material/AttachMoney'
+import TakeCashIcon from '@mui/icons-material/MoneyOff'
+import CloseRegisterIcon from '@mui/icons-material/VpnKey'
+import { saveSystemLog } from 'lib/db-functions'
 
 export default function SellNavActions() {
-  const [view, setView] = useAtom(viewAtom);
-  const [clerk] = useAtom(clerkAtom);
+  const [view, setView] = useAtom(viewAtom)
+  const [clerk] = useAtom(clerkAtom)
 
   return (
     <div className="flex">
       <button
         className="icon-text-button"
         onClick={() => {
-          saveSystemLog("Sell Nav - Return Cash clicked.", clerk?.id);
-          setView({ ...view, returnCashDialog: true });
+          saveSystemLog('Sell Nav - Return Cash clicked.', clerk?.id)
+          setView({ ...view, returnCashDialog: true })
         }}
       >
         <AddCashIcon className="mr-1" />
@@ -25,8 +25,8 @@ export default function SellNavActions() {
       <button
         className="icon-text-button"
         onClick={() => {
-          saveSystemLog("Sell Nav - Take Cash clicked.", clerk?.id);
-          setView({ ...view, takeCashDialog: true });
+          saveSystemLog('Sell Nav - Take Cash clicked.', clerk?.id)
+          setView({ ...view, takeCashDialog: true })
         }}
       >
         <TakeCashIcon className="mr-1" />
@@ -35,13 +35,13 @@ export default function SellNavActions() {
       <button
         className="icon-text-button"
         onClick={() => {
-          saveSystemLog("Sell Nav - Close Register clicked.", clerk?.id);
-          setView({ ...view, closeRegisterScreen: true });
+          saveSystemLog('Sell Nav - Close Register clicked.', clerk?.id)
+          setView({ ...view, closeRegisterScreen: true })
         }}
       >
         <CloseRegisterIcon className="mr-1" />
         Close Register
       </button>
     </div>
-  );
+  )
 }

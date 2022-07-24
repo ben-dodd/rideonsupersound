@@ -1,22 +1,22 @@
-import { receiveStockAtom } from "@/lib/atoms";
-import { getItemSkuDisplayName } from "@/lib/data-functions";
-import { useInventory } from "@/lib/swr-hooks";
-import { StockObject } from "@/lib/types";
-import { useAtom } from "jotai";
-import Select from "react-select";
-import { v4 as uuid } from "uuid";
+import { useAtom } from 'jotai'
+import { receiveStockAtom } from 'lib/atoms'
+import { getItemSkuDisplayName } from 'lib/data-functions'
+import { useInventory } from 'lib/swr-hooks'
+import { StockObject } from 'lib/types'
+import Select from 'react-select'
+import { v4 as uuid } from 'uuid'
 
 export default function Vendor() {
-  const { inventory } = useInventory();
-  const [basket, setBasket] = useAtom(receiveStockAtom);
+  const { inventory } = useInventory()
+  const [basket, setBasket] = useAtom(receiveStockAtom)
   const addItem = (item: any) => {
     setBasket({
       ...basket,
       items: basket?.items
         ? [...basket?.items, { key: uuid(), item: item?.value }]
         : [{ key: uuid(), item: item?.value }],
-    });
-  };
+    })
+  }
   return (
     <div>
       <div className="helper-text mb-2">
@@ -40,5 +40,5 @@ export default function Vendor() {
         />
       </div>
     </div>
-  );
+  )
 }

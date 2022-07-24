@@ -1,26 +1,22 @@
 // Packages
 import { useAtom } from 'jotai'
 
-import { loadedItemIdAtom } from '@/lib/atoms'
+import { loadedItemIdAtom } from 'lib/atoms'
 
 // Functions
-import {
-  getImageSrc,
-  getItemDisplayName,
-  getItemSku,
-} from '@/lib/data-functions'
+import { getImageSrc, getItemDisplayName, getItemSku } from 'lib/data-functions'
 
 // Components
 import TextField from '@/components/inputs/text-field'
 
 // Icons
+import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
 import {
   deleteStocktakeItemFromDatabase,
   updateStocktakeItemInDatabase,
-} from '@/lib/db-functions'
-import { useStocktakeItemsByStocktake, useVendors } from '@/lib/swr-hooks'
-import DeleteIcon from '@mui/icons-material/Delete'
-import EditIcon from '@mui/icons-material/Edit'
+} from 'lib/db-functions'
+import { useStocktakeItemsByStocktake, useVendors } from 'lib/swr-hooks'
 
 export default function CountedListItem({
   stocktakeItem,

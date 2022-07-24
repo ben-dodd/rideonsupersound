@@ -3,9 +3,9 @@ import { useAtom } from 'jotai'
 import { useState } from 'react'
 
 // DB
-import { cartAtom, confirmModalAtom } from '@/lib/atoms'
-import { useInventory, useStockItem } from '@/lib/swr-hooks'
-import { SaleItemObject, StockObject } from '@/lib/types'
+import { cartAtom, confirmModalAtom } from 'lib/atoms'
+import { useInventory, useStockItem } from 'lib/swr-hooks'
+import { SaleItemObject, StockObject } from 'lib/types'
 
 // Functions
 import {
@@ -14,7 +14,7 @@ import {
   getItemSku,
   writeCartItemPriceBreakdown,
   writeCartItemPriceTotal,
-} from '@/lib/data-functions'
+} from 'lib/data-functions'
 
 // Components
 import TextField from '@/components/inputs/text-field'

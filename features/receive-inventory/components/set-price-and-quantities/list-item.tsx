@@ -8,8 +8,8 @@ import {
   getPriceSuggestion,
   getProfitMargin,
   getStoreCut,
-} from '@/lib/data-functions'
-import { StockObject } from '@/lib/types'
+} from 'lib/data-functions'
+import { StockObject } from 'lib/types'
 
 export default function ListItem({ receiveItem, bucket, setBucket }) {
   const item: StockObject = receiveItem?.item

@@ -3,7 +3,7 @@ import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 
 // DB
-import { clerkAtom, confirmModalAtom, viewAtom } from '@/lib/atoms'
+import { clerkAtom, confirmModalAtom, viewAtom } from 'lib/atoms'
 import {
   useCashGiven,
   useInventory,
@@ -12,8 +12,8 @@ import {
   useSalesJoined,
   useVendorPayments,
   useVendors,
-} from '@/lib/swr-hooks'
-import { ClerkObject, ModalButton } from '@/lib/types'
+} from 'lib/swr-hooks'
+import { ClerkObject, ModalButton } from 'lib/types'
 
 // Functions
 import {
@@ -21,15 +21,13 @@ import {
   saveSystemLog,
   saveVendorPaymentToDatabase,
   updateVendorLastContactedInDatabase,
-} from '@/lib/db-functions'
+} from 'lib/db-functions'
 
 // Components
 import ScreenContainer from '@/components/container/screen'
-import {
-  getVendorDetails,
-  isValidBankAccountNumber,
-} from '@/lib/data-functions'
 import dayjs from 'dayjs'
+import { getVendorDetails } from 'lib/data-functions'
+import { isValidBankAccountNumber } from 'lib/utils'
 import CheckBatchPayments from './check-batch-payments'
 import SelectBatchPayments from './select-batch-payments'
 

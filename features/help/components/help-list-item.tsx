@@ -1,9 +1,9 @@
-import { HelpObject } from "@/lib/types";
+import { HelpObject } from '../lib/types'
 
 type HoldListItemProps = {
-  help: HelpObject;
-  setHelp: Function;
-};
+  help: HelpObject
+  setHelp: Function
+}
 export default function HelpListItem({ help, setHelp }: HoldListItemProps) {
   return (
     <div
@@ -12,5 +12,5 @@ export default function HelpListItem({ help, setHelp }: HoldListItemProps) {
     >
       <div className="text-2xl">{help?.title}</div>
     </div>
-  );
+  )
 }

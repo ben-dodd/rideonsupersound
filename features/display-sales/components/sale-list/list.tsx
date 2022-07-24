@@ -1,12 +1,12 @@
 import MidScreenContainer from '@/components/container/mid-screen'
-import { salesViewClerksAtom, salesViewRangeAtom } from '@/lib/atoms'
+import dayjs from 'dayjs'
+import { useAtom } from 'jotai'
+import { salesViewClerksAtom, salesViewRangeAtom } from 'lib/atoms'
 import {
   useClerks,
   useRegisters,
   useSaleTransactionsForRange,
-} from '@/lib/swr-hooks'
-import dayjs from 'dayjs'
-import { useAtom } from 'jotai'
+} from 'lib/swr-hooks'
 import { useMemo } from 'react'
 import Filter from './filter'
 

@@ -3,7 +3,7 @@ import { useAtom } from 'jotai'
 import { useMemo } from 'react'
 
 // DB
-import { loadedVendorIdAtom } from '@/lib/atoms'
+import { loadedVendorIdAtom } from 'lib/atoms'
 import {
   useClerks,
   useCustomers,
@@ -11,11 +11,11 @@ import {
   useSalesJoined,
   useVendorPayments,
   useVendors,
-} from '@/lib/swr-hooks'
-import { ClerkObject, StockObject, VendorObject } from '@/lib/types'
+} from 'lib/swr-hooks'
+import { ClerkObject, StockObject, VendorObject } from 'lib/types'
 
 // Functions
-import { getVendorDetails } from '@/lib/data-functions'
+import { getVendorDetails } from 'lib/data-functions'
 
 // Components
 import TableContainer from '@/components/container/table'

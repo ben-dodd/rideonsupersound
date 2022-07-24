@@ -1,7 +1,5 @@
 import {
   GiftCardObject,
-  HelpObject,
-  KiwiBankTransactionObject,
   SaleItemObject,
   SaleObject,
   SaleTransactionObject,
@@ -10,10 +8,9 @@ import {
   TillObject,
   VendorPaymentObject,
   VendorSaleItemObject,
-} from '@/lib/types'
+} from 'lib/types'
 
-import dayjs from 'dayjs'
-import { isValidBankAccountNumber } from './utils'
+import { latestDate } from './utils'
 
 export function getItemSku({ id, vendor_id }: any) {
   return `${('000' + vendor_id || '').slice(-3)}/${('00000' + id || '').slice(
@@ -487,143 +484,6 @@ export function makeGiftCardCode(giftCards: GiftCardObject[]) {
 // CSV FUNCTIONS //
 //               //
 
-export function getCSVData(items) {
-  console.log(items)
-  return items?.map((item: any) => [
-    getItemSku(item),
-    item?.artist,
-    item?.title,
-    item?.is_new ? 'NEW' : 'USED',
-    `$${Math.round(item?.total_sell / 100)}`,
-    `${item?.section}${item?.section && item?.country ? '/' : ''}${
-      item?.country === 'New Zealand' ? 'NZ' : ''
-    }`,
-    `${('00000' + item?.id || '').slice(-5)}`,
-  ])
-}
-
-interface KiwiBankBatchFileProps {
-  transactions: KiwiBankTransactionObject[]
-  batchNumber: string
-  sequenceNumber: string
-}
-
-export function writeKiwiBankBatchFile({
-  transactions,
-  batchNumber,
-  sequenceNumber,
-}: KiwiBankBatchFileProps) {
-  const storeAccountNumber = '389020005748600'
-  let transactionAmount = 0
-  let transactionCount = 0
-  let hashTotal = 0
-  let kbb = [
-    [
-      1,
-      '',
-      parseInt(batchNumber?.substring(0, 2)) || '',
-      parseInt(sequenceNumber?.substring(0, 4)) || '',
-      parseInt(storeAccountNumber?.substring(0, 16)),
-      7,
-      parseInt(dayjs.utc().format('YYMMDD')),
-      parseInt(dayjs.utc().format('YYMMDD')),
-      '',
-    ],
-  ]
-  transactions
-    ?.filter((t) => isValidBankAccountNumber(t?.accountNumber) && t?.amount)
-    .forEach((transaction: KiwiBankTransactionObject) => {
-      transactionAmount += transaction?.amount
-      transactionCount += 1
-      let accountNumber = `${transaction?.accountNumber}`.replace(/\D/g, '')
-      // remove bank number
-      accountNumber = accountNumber.substring(2)
-      // remove suffix
-      accountNumber = accountNumber.slice(0, 11)
-      // add to hash total
-      hashTotal += parseInt(accountNumber)
-      kbb.push([
-        2,
-        `${transaction?.accountNumber}`.replace(/\D/g, '')?.substring(0, 16),
-        50,
-        transaction?.amount,
-        transaction?.name?.substring(0, 20),
-        'RideOn Pay',
-        `${transaction?.vendor_id} ${transaction?.name}`?.substring(0, 12),
-        '',
-        `Reg ${batchNumber}`?.substring(0, 12),
-        'Ride On Super Sound',
-        `Reg ${batchNumber}`?.substring(0, 12),
-        `${transaction?.vendor_id} ${transaction?.name}`?.substring(0, 12),
-        `Seq ${dayjs.utc().format('YYMMDD')}`?.substring(0, 12),
-      ])
-    })
-
-  let paddedHashTotal = `00000000000${hashTotal}`
-  paddedHashTotal = paddedHashTotal.slice(paddedHashTotal.length - 11)
-
-  kbb.push([3, transactionAmount, transactionCount, parseInt(paddedHashTotal)])
-
-  let csvContent = 'data:text/csv;charset=utf-8,'
-  kbb.forEach((rowArray) => {
-    let row = rowArray?.join(',')
-    csvContent += row + '\r\n'
-  })
-  return encodeURI(csvContent)
-}
-
-export function writeEmailCSV(vendors, includeUnchecked, includeNoBank) {
-  let csvContent = 'data:text/csv;charset=utf-8,'
-  csvContent +=
-    'CODE,NAME,RECIPIENT,ACCOUNT,OWING,LINK,DATE,CHECKED,VALID BANK NUM,STORE CREDIT ONLY\r\n'
-  // console.log(vendors);
-  let vendorArrays = vendors
-    ?.filter(
-      (v) =>
-        (includeUnchecked || v?.is_checked) &&
-        (includeNoBank || isValidBankAccountNumber(v?.bank_account_number))
-    )
-    ?.map((v) => [
-      v?.id,
-      v?.name,
-      v?.email,
-      v?.bank_account_number,
-      v?.payAmount,
-      `https://rideonsupersound.vercel.app/vendor/${v?.uid}`,
-      dayjs().format('DD/MM/YYYY'),
-      v?.is_checked,
-      isValidBankAccountNumber(v?.bank_account_number),
-      Boolean(v?.store_credit_only),
-    ])
-  // console.log(vendorArrays);
-  vendorArrays?.forEach((vendorArray) => {
-    let row = vendorArray?.join(',')
-    csvContent += row + '\r\n'
-  })
-  return encodeURI(csvContent)
-}
-
-//                //
-// DATE FUNCTIONS //
-//                //
-
-export function fFileDate(date?: Date | string) {
-  return date ? dayjs(date).format('YYYY-MM-DD-HH-mm-ss') : 'Invalid Date'
-}
-
-export function latestDate(dates: Date[] | string[]) {
-  return dates?.length > 0
-    ? dayjs.max(dates?.map((date: Date | string) => dayjs(date)))
-    : null
-}
-
-export function authoriseUrl(url: string) {
-  let k = process.env.NEXT_PUBLIC_SWR_API_KEY
-  if (!url || !k) return null
-  if (url?.includes('?')) return `${url}&k=${k}`
-  else return `${url}?k=${k}`
-}
-
 export function filterInventory({
   inventory,
   search,
@@ -668,61 +528,4 @@ export function filterInventory({
   //   if (b?.quantity < 1) return -1;
   //   return 0;
   // })
-}
-
-export function filterHelps(
-  helps: HelpObject[],
-  page: string,
-  view: Object,
-  search: string
-) {
-  if (!helps) return []
-  // REVIEW make search order by relevance with page or view
-  // if (!search || search === "") {
-  //   return helps.filter((help: HelpObject) => {
-  //     let res = false;
-  //     let helpMatch = `${
-  //       help?.pages?.toLowerCase() || ""
-  //     } ${help?.views?.toLowerCase()}`;
-  //     if (helpMatch?.includes(page?.toLowerCase())) res = true;
-  //     Object.entries(view)
-  //       ?.filter(([k, v]) => v)
-  //       ?.forEach(([k, v]) => {
-  //         if (helpMatch?.includes(k?.toLowerCase())) res = true;
-  //       });
-  //     return res;
-  //   });
-  // } else {
-  if (search)
-    return helps.filter((help: HelpObject) => {
-      let res = false
-      let terms = search.split(' ')
-      let helpMatch = `${
-        help?.tags?.toLowerCase() || ''
-      } ${help?.title?.toLowerCase()}`
-      terms.forEach((term: string) => {
-        if (helpMatch?.includes(term.toLowerCase())) res = true
-      })
-      return res
-    })
-  else return helps
-  // .slice(0, 50);
-  // }
-  // ?.sort((a: StockObject, b: StockObject) => {
-  //   if (!a?.quantity || !b?.quantity) return 0;
-  //   if (a?.quantity === b?.quantity) return 0;
-  //   if (a?.quantity < 1) return 1;
-  //   if (b?.quantity < 1) return -1;
-  //   return 0;
-  // })
-}
-
-export const parseJSON = (inputString, fallback) => {
-  if (inputString) {
-    try {
-      return JSON.parse(inputString)
-    } catch (e) {
-      return fallback
-    }
-  } else return null
 }

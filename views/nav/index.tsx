@@ -2,8 +2,8 @@
 import { useAtom } from 'jotai'
 
 // DB
-import { clerkAtom, pageAtom, viewAtom } from '@/lib/atoms'
-import { useRegisterID } from '@/lib/swr-hooks'
+import { clerkAtom, pageAtom, viewAtom } from 'lib/atoms'
+import { useRegisterID } from 'lib/swr-hooks'
 
 // Components
 
@@ -14,8 +14,8 @@ import TaskNavActions from './actions/task'
 import VendorNavActions from './actions/vendor'
 
 // Icons
-import { bg } from '@/lib/types'
 import HelpIcon from '@mui/icons-material/Help'
+import { bg } from 'lib/types'
 import SaleNavActions from './actions/sale'
 import StocktakeNavActions from './actions/stocktake'
 

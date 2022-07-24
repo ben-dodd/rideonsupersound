@@ -2,8 +2,8 @@
 import { useMemo } from 'react'
 
 // DB
-import { useGiftCards } from '@/lib/swr-hooks'
-import { StockObject } from '@/lib/types'
+import { useGiftCards } from 'lib/swr-hooks'
+import { StockObject } from 'lib/types'
 
 // Components
 import TableContainer from '@/components/container/table'

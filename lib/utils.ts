@@ -1,3 +1,5 @@
+import dayjs from 'dayjs'
+
 export function camelCase(str: string) {
   if (!str) return str
   return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function (match, index) {
@@ -59,4 +61,35 @@ export function convertDegToCardinal(deg: number) {
 
 export function convertMPStoKPH(mps: number) {
   return mps * 1.609
+}
+
+export const parseJSON = (inputString, fallback) => {
+  if (inputString) {
+    try {
+      return JSON.parse(inputString)
+    } catch (e) {
+      return fallback
+    }
+  } else return null
+}
+
+export function fFileDate(date?: Date | string) {
+  return date ? dayjs(date).format('YYYY-MM-DD-HH-mm-ss') : 'Invalid Date'
+}
+
+export function latestDate(dates: Date[] | string[]) {
+  return dates?.length > 0
+    ? dayjs.max(dates?.map((date: Date | string) => dayjs(date)))
+    : null
+}
+
+export function authoriseUrl(url: string) {
+  let k = process.env.NEXT_PUBLIC_SWR_API_KEY
+  if (!url || !k) return null
+  if (url?.includes('?')) return `${url}&k=${k}`
+  else return `${url}?k=${k}`
+}
+
+export function centsToDollars(cents: number) {
+  return cents / 100
 }

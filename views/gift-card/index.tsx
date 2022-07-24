@@ -2,7 +2,7 @@
 import { useAtom } from 'jotai'
 
 // DB
-import { pageAtom } from '@/lib/atoms'
+import { pageAtom } from 'lib/atoms'
 
 // Components
 import GiftCardTable from '../../features/display-gift-cards/components/gift-card-table'

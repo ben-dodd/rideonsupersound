@@ -1,22 +1,14 @@
-import {
-  getGrossProfit,
-  getImageSrc,
-  getItemSku,
-  getProfitMargin,
-} from "@/lib/data-functions";
-import { StockObject } from "@/lib/types";
-import { Tooltip } from "@mui/material";
-import Image from "next/image";
-import ChangePriceIcon from "@mui/icons-material/AutoFixNormal";
-import { useAtom } from "jotai";
-import { viewAtom } from "@/lib/atoms";
+import { useAtom } from 'jotai'
+import { viewAtom } from 'lib/atoms'
+import { getGrossProfit, getProfitMargin } from 'lib/data-functions'
+import { StockObject } from 'lib/types'
 
 interface priceDetailsProps {
-  item: StockObject;
+  item: StockObject
 }
 
 export default function PriceDetails({ item }: priceDetailsProps) {
-  const [view, setView] = useAtom(viewAtom);
+  const [view, setView] = useAtom(viewAtom)
 
   return (
     <>
@@ -26,7 +18,7 @@ export default function PriceDetails({ item }: priceDetailsProps) {
           !(
             item?.discogsItem?.priceSuggestions &&
             item?.discogsItem?.priceSuggestions[
-              item?.is_new ? "Mint (M)" : item?.cond || "Good (G)"
+              item?.is_new ? 'Mint (M)' : item?.cond || 'Good (G)'
             ]?.value
           ) ? (
             <div />
@@ -36,7 +28,7 @@ export default function PriceDetails({ item }: priceDetailsProps) {
               <div className="font-bold text-xl">
                 {`$${parseFloat(
                   item?.discogsItem?.priceSuggestions[
-                    item?.is_new ? "Mint (M)" : item?.cond || "Good (G)"
+                    item?.is_new ? 'Mint (M)' : item?.cond || 'Good (G)'
                   ]?.value
                 )?.toFixed(2)}`}
               </div>
@@ -46,25 +38,25 @@ export default function PriceDetails({ item }: priceDetailsProps) {
         <div>
           <div className="px-1 text-xs mt-2 mb-2">COST PRICE</div>
           <div className="font-bold text-xl">
-            {`$${(item?.vendor_cut / 100)?.toFixed(2)}` || "N/A"}
+            {`$${(item?.vendor_cut / 100)?.toFixed(2)}` || 'N/A'}
           </div>
         </div>
         <div>
           <div className="px-1 text-xs mt-2 mb-2">STORE CUT</div>
           <div className="font-bold text-xl">
-            {getGrossProfit(item) || "N/A"}
+            {getGrossProfit(item) || 'N/A'}
           </div>
         </div>
         <div>
           <div className="px-1 text-xs mt-2 mb-2">MARGIN</div>
           <div className="font-bold text-xl">
-            {getProfitMargin(item) || "N/A"}
+            {getProfitMargin(item) || 'N/A'}
           </div>
         </div>
         <div className="col-start-5 col-end-7">
           <div className="flex justify-center items-center p-4 bg-tertiary-dark">
             <div className="font-bold text-4xl text-white">
-              {`$${(item?.total_sell / 100)?.toFixed(2)}` || "N/A"}
+              {`$${(item?.total_sell / 100)?.toFixed(2)}` || 'N/A'}
             </div>
           </div>
           <button
@@ -76,5 +68,5 @@ export default function PriceDetails({ item }: priceDetailsProps) {
         </div>
       </div>
     </>
-  );
+  )
 }

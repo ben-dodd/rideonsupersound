@@ -1,11 +1,11 @@
 // Types
-import { ModalButton } from "@/lib/types";
+import { ModalButton } from 'lib/types'
 
 export default function SidebarContainer({ show, title, buttons, children }) {
   return (
     <div
       className={`absolute top-0 transition-offset duration-300 ${
-        show ? "left-0 sm:left-2/3" : "left-full hidden"
+        show ? 'left-0 sm:left-2/3' : 'left-full hidden'
       } h-full w-full bg-yellow-200 sm:w-1/3 sm:h-menu`}
     >
       <div className="flex flex-col justify-between h-menu px-2 bg-blue-300 text-black">
@@ -35,7 +35,7 @@ export default function SidebarContainer({ show, title, buttons, children }) {
         )}
       </div>
     </div>
-  );
+  )
 }
 
 //   show ? "left-0" : "left-full"

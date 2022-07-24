@@ -1,10 +1,10 @@
 import { useAtom } from 'jotai'
-import { clerkAtom, viewAtom } from '@/lib/atoms'
+import { clerkAtom, viewAtom } from 'lib/atoms'
 
-import ReceiveIcon from '@mui/icons-material/AssignmentReturned'
 import ReturnIcon from '@mui/icons-material/AssignmentReturn'
+import ReceiveIcon from '@mui/icons-material/AssignmentReturned'
 import PrintIcon from '@mui/icons-material/Print'
-import { saveSystemLog } from '@/lib/db-functions'
+import { saveSystemLog } from 'lib/db-functions'
 
 export default function InventoryActionButtons() {
   const [view, setView] = useAtom(viewAtom)

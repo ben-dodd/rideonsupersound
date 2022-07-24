@@ -3,12 +3,12 @@ import { useAtom } from 'jotai'
 import { useState } from 'react'
 
 // DB
-import { alertAtom, clerkAtom, viewAtom } from '@/lib/atoms'
-import { useJobs, useLogs } from '@/lib/swr-hooks'
-import { ModalButton, RoleTypes, TaskObject } from '@/lib/types'
+import { alertAtom, clerkAtom, viewAtom } from 'lib/atoms'
+import { useJobs, useLogs } from 'lib/swr-hooks'
+import { ModalButton, RoleTypes, TaskObject } from 'lib/types'
 
 // Functions
-import { saveLog, saveTaskToDatabase } from '@/lib/db-functions'
+import { saveLog, saveTaskToDatabase } from 'lib/db-functions'
 
 // Components
 import TextField from '@/components/inputs/text-field'

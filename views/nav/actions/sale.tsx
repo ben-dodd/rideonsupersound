@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai'
-import { clerkAtom, tableModeAtom, viewAtom } from '@/lib/atoms'
+import { tableModeAtom } from 'lib/atoms'
 
 import TableIcon from '@mui/icons-material/TableView'
 

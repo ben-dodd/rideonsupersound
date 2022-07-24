@@ -1,29 +1,29 @@
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
 // DB
-import { useClerks, useCustomers, useInventory } from "@/lib/swr-hooks";
-import { CustomerObject, OpenWeatherObject, SaleStateTypes } from "@/lib/types";
+import { useClerks, useCustomers, useInventory } from 'lib/swr-hooks'
+import { CustomerObject, OpenWeatherObject, SaleStateTypes } from 'lib/types'
 
 // Functions
 import {
   convertDegToCardinal,
   convertMPStoKPH,
   getSaleVars,
-} from "@/lib/data-functions";
+} from 'lib/data-functions'
 
 export default function SaleDetails({ sale }) {
-  dayjs.extend(utc);
+  dayjs.extend(utc)
   // SWR
-  const { clerks } = useClerks();
-  const { customers } = useCustomers();
-  const { inventory } = useInventory();
+  const { clerks } = useClerks()
+  const { customers } = useCustomers()
+  const { inventory } = useInventory()
 
   // State
-  const { totalRemaining } = getSaleVars(sale, inventory);
-  console.log(totalRemaining);
+  const { totalRemaining } = getSaleVars(sale, inventory)
+  console.log(totalRemaining)
 
   // Constants
-  const weather: OpenWeatherObject = jsonDecode(sale?.weather);
+  const weather: OpenWeatherObject = jsonDecode(sale?.weather)
 
   return (
     <div className="flex flex-col justify-between">
@@ -31,23 +31,23 @@ export default function SaleDetails({ sale }) {
         <div
           className={`text-2xl font-bold ${
             totalRemaining === 0
-              ? "text-primary"
+              ? 'text-primary'
               : totalRemaining < 0
-              ? "text-secondary"
-              : "text-tertiary"
+              ? 'text-secondary'
+              : 'text-tertiary'
           }`}
         >
           {sale?.state === SaleStateTypes.Completed
-            ? "SALE COMPLETED"
+            ? 'SALE COMPLETED'
             : totalRemaining === 0
-            ? "ALL PAID"
+            ? 'ALL PAID'
             : totalRemaining < 0
-            ? "CUSTOMER OWED"
-            : "LEFT TO PAY"}
+            ? 'CUSTOMER OWED'
+            : 'LEFT TO PAY'}
         </div>
         <div className="text-2xl text-red-500 font-bold text-xl">
           {totalRemaining === 0
-            ? ""
+            ? ''
             : `$${Math.abs(totalRemaining || 0)?.toFixed(2)}`}
         </div>
       </div>
@@ -56,48 +56,48 @@ export default function SaleDetails({ sale }) {
         <div className="mb-4">
           {customers?.filter(
             (c: CustomerObject) => c?.id === sale?.customer_id
-          )[0]?.name || "Customer not set"}
+          )[0]?.name || 'Customer not set'}
         </div>
         <div className="font-bold">Sale Open</div>
         <div className="mb-4">
           {sale?.date_sale_opened
-            ? `${dayjs(sale?.date_sale_opened).format("D MMMM YYYY, h:mm A")}${
+            ? `${dayjs(sale?.date_sale_opened).format('D MMMM YYYY, h:mm A')}${
                 sale?.sale_opened_by
                   ? ` (opened by ${
                       clerks
                         ? clerks.filter(
                             (clerk: any) => clerk?.id === sale?.sale_opened_by
                           )[0]?.name
-                        : "unknown clerk"
+                        : 'unknown clerk'
                     })`
-                  : ""
+                  : ''
               }`
-            : "Sale not opened"}
+            : 'Sale not opened'}
         </div>
         <div className="font-bold">Sale Close</div>
         <div className="mb-4">
           {sale?.date_sale_closed
-            ? `${dayjs(sale?.date_sale_closed).format("D MMMM YYYY, h:mm A")}${
+            ? `${dayjs(sale?.date_sale_closed).format('D MMMM YYYY, h:mm A')}${
                 sale?.sale_closed_by
                   ? ` (closed by ${
                       clerks
                         ? clerks.filter(
                             (clerk: any) => clerk?.id === sale?.sale_closed_by
                           )[0]?.name
-                        : "unknown clerk"
+                        : 'unknown clerk'
                     })`
-                  : ""
+                  : ''
               }`
-            : "Sale not closed"}
+            : 'Sale not closed'}
         </div>
         {sale?.is_mail_order ? (
           <div>
             <div className="font-bold">Postage</div>
             <div className="mb-4">
-              {sale?.postage ? `$${sale?.postage}` : "N/A"}
+              {sale?.postage ? `$${sale?.postage}` : 'N/A'}
             </div>
             <div className="font-bold">Postal Address</div>
-            <div className="mb-4">{sale?.postal_address || "N/A"}</div>
+            <div className="mb-4">{sale?.postal_address || 'N/A'}</div>
           </div>
         ) : (
           <div />
@@ -105,7 +105,7 @@ export default function SaleDetails({ sale }) {
         {sale?.note ? (
           <>
             <div className="font-bold">Notes</div>
-            <div className="mb-4">{sale?.note || "N/A"}</div>
+            <div className="mb-4">{sale?.note || 'N/A'}</div>
           </>
         ) : (
           <div />
@@ -148,13 +148,13 @@ export default function SaleDetails({ sale }) {
         )*/}
       </div>
     </div>
-  );
+  )
 }
 
 function jsonDecode(weather: any) {
-  let ret: any = weather || null;
-  while (typeof ret === "string") {
-    ret = JSON.parse(ret);
+  let ret: any = weather || null
+  while (typeof ret === 'string') {
+    ret = JSON.parse(ret)
   }
-  return ret;
+  return ret
 }

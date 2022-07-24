@@ -2,7 +2,7 @@
 import { useAtom } from 'jotai'
 
 // DB
-import { pageAtom, viewAtom } from '@/lib/atoms'
+import { pageAtom, viewAtom } from 'lib/atoms'
 
 // Components
 import ChangeStockQuantityDialog from '@/features/item-inventory/components/change-stock-quantity-dialog'

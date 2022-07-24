@@ -5,31 +5,31 @@ import { useAtom } from 'jotai'
 import { useMemo, useState } from 'react'
 
 // DB
-import { alertAtom, cartAtom, clerkAtom, viewAtom } from '@/lib/atoms'
+import { alertAtom, cartAtom, clerkAtom, viewAtom } from 'lib/atoms'
 import {
   useCustomers,
   useGiftCards,
   useInventory,
   useLogs,
   useRegisterID,
-} from '@/lib/swr-hooks'
+} from 'lib/swr-hooks'
 import {
   CustomerObject,
   GiftCardObject,
   ModalButton,
   PaymentMethodTypes,
   SaleTransactionObject,
-} from '@/lib/types'
+} from 'lib/types'
 
 import SyncIcon from '@mui/icons-material/Sync'
 
 // Functions
-import { getSaleVars, makeGiftCardCode } from '@/lib/data-functions'
+import { getSaleVars, makeGiftCardCode } from 'lib/data-functions'
 
 // Components
 import TextField from '@/components/inputs/text-field'
 import Modal from '@/components/modal'
-import { saveLog } from '@/lib/db-functions'
+import { saveLog } from 'lib/db-functions'
 
 export default function Gift() {
   dayjs.extend(UTC)

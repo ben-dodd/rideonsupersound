@@ -5,13 +5,6 @@ import { useSwipeable } from 'react-swipeable'
 // DB
 import MidScreenContainer from '@/components/container/mid-screen'
 import ChangeStockQuantityDialog from '@/features/item-inventory/components/change-stock-quantity-dialog'
-import {
-  bypassRegisterAtom,
-  loadedItemIdAtom,
-  pageAtom,
-  viewAtom,
-} from '@/lib/atoms'
-import { useRegisterID } from '@/lib/swr-hooks'
 import CreateCustomerSidebar from 'features/customer/components/sidebar'
 import CreateHoldSidebar from 'features/hold/components/create-hold-sidebar'
 import ChangePriceDialog from 'features/item-inventory/components/change-price-dialog'
@@ -26,6 +19,13 @@ import GiftCardDialog from 'features/sell/components/inventory-scroll/gift-card-
 import MiscItemDialog from 'features/sell/components/inventory-scroll/misc-item-dialog'
 import SellSearchBar from 'features/sell/components/sell-search-bar'
 import ShoppingCart from 'features/sell/components/shopping-cart'
+import {
+  bypassRegisterAtom,
+  loadedItemIdAtom,
+  pageAtom,
+  viewAtom,
+} from 'lib/atoms'
+import { useRegisterID } from 'lib/swr-hooks'
 
 // Components
 

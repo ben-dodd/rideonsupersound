@@ -1,39 +1,39 @@
-import { clerkAtom } from "@/lib/atoms";
+import dayjs from 'dayjs'
+import { useAtom } from 'jotai'
+import { clerkAtom } from 'lib/atoms'
 import {
   getCSVData,
   getImageSrc,
   getItemDisplayName,
   getItemSku,
-} from "@/lib/data-functions";
-import { saveLog } from "@/lib/db-functions";
-import { useLogs } from "@/lib/swr-hooks";
-import dayjs from "dayjs";
-import { useAtom } from "jotai";
-import { CSVLink } from "react-csv";
+} from 'lib/data-functions'
+import { saveLog } from 'lib/db-functions'
+import { useLogs } from 'lib/swr-hooks'
+import { CSVLink } from 'react-csv'
 
 export default function PrintLabel({ receivedStock }) {
-  const { logs, mutateLogs } = useLogs();
-  const [clerk] = useAtom(clerkAtom);
+  const { logs, mutateLogs } = useLogs()
+  const [clerk] = useAtom(clerkAtom)
   const totalItemCount = receivedStock?.reduce(
     (prev, curr) => prev + parseInt(curr?.quantity),
     0
-  );
+  )
 
   function getStock() {
-    let res = [];
+    let res = []
     receivedStock?.forEach((receiveItem) => {
-      [...Array(parseInt(receiveItem?.quantity))]?.forEach(() =>
+      ;[...Array(parseInt(receiveItem?.quantity))]?.forEach(() =>
         res.push(receiveItem?.item)
-      );
-    });
-    return res;
+      )
+    })
+    return res
   }
 
   return (
     <div>
       <div className="my-4 w-2/5">
         <div className="font-bold mb-4">{`Successfully received ${totalItemCount} ${
-          totalItemCount > 1 ? "items" : "item"
+          totalItemCount > 1 ? 'items' : 'item'
         }...`}</div>
         {receivedStock?.map((item) => (
           <div className="flex justify-between mb-2" key={item?.item?.id}>
@@ -44,7 +44,7 @@ export default function PrintLabel({ receivedStock }) {
                   // layout="fill"
                   // objectFit="cover"
                   src={getImageSrc(item?.item)}
-                  alt={item?.title || "Inventory image"}
+                  alt={item?.title || 'Inventory image'}
                 />
                 {!item?.item?.is_gift_card &&
                   !item?.item?.is_misc_item &&
@@ -65,12 +65,12 @@ export default function PrintLabel({ receivedStock }) {
       <CSVLink
         className={`bg-col2-dark hover:bg-col2 disabled:bg-gray-200 p-2 rounded`}
         data={getCSVData(getStock())}
-        headers={["SKU", "ARTIST", "TITLE", "NEW/USED", "SELL PRICE", "GENRE"]}
-        filename={`label-print-${dayjs().format("YYYY-MM-DD")}.csv`}
+        headers={['SKU', 'ARTIST', 'TITLE', 'NEW/USED', 'SELL PRICE', 'GENRE']}
+        filename={`label-print-${dayjs().format('YYYY-MM-DD')}.csv`}
         onClick={() =>
           saveLog(
             {
-              log: "Labels printed from receive stock dialog.",
+              log: 'Labels printed from receive stock dialog.',
               clerk_id: clerk?.id,
             },
             logs,
@@ -81,5 +81,5 @@ export default function PrintLabel({ receivedStock }) {
         PRINT LABELS
       </CSVLink>
     </div>
-  );
+  )
 }

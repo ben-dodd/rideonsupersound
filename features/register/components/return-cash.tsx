@@ -3,12 +3,12 @@ import { useAtom } from 'jotai'
 import { useState } from 'react'
 
 // DB
-import { alertAtom, clerkAtom, viewAtom } from '@/lib/atoms'
-import { useLogs, usePettyCash, useRegisterID } from '@/lib/swr-hooks'
-import { ModalButton } from '@/lib/types'
+import { alertAtom, clerkAtom, viewAtom } from 'lib/atoms'
+import { useLogs, usePettyCash, useRegisterID } from 'lib/swr-hooks'
+import { ModalButton } from 'lib/types'
 
 // Functions
-import { savePettyCashToRegister } from '@/lib/db-functions'
+import { savePettyCashToRegister } from 'lib/db-functions'
 
 // Components
 import TextField from '@/components/inputs/text-field'
