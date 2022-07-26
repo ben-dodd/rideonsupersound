@@ -3,7 +3,6 @@ import {
   camelCase,
   convertDegToCardinal,
   convertMPStoKPH,
-  isValidBankAccountNumber,
   pascalCase,
 } from './utils'
 
@@ -25,14 +24,6 @@ test('convert string to camel case', () => {
 
 test('convert array of strings to list with and', () => {
   expect(andList(['Lions', 'tigers', 'BEARS'])).toBe('Lions, tigers and BEARS')
-})
-
-test('test if string is valid bank account format', () => {
-  expect(isValidBankAccountNumber('11-7426-0024124-00')).toBe(true)
-  expect(isValidBankAccountNumber('11-7426-0024124-000')).toBe(true)
-  expect(isValidBankAccountNumber('11-74v6-0024124-000')).toBe(false)
-  expect(isValidBankAccountNumber('113-7426-0024124-000')).toBe(false)
-  expect(isValidBankAccountNumber('24.1')).toBe(false)
 })
 
 test('convert degrees to cardinal directions', () => {

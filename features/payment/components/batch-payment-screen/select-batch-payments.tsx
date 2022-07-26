@@ -4,8 +4,8 @@ import StoreCreditOnlyIcon from '@mui/icons-material/ShoppingBag'
 import QuantityCheckIcon from '@mui/icons-material/Warning'
 import { Tooltip } from '@mui/material'
 import dayjs from 'dayjs'
-import { isValidBankAccountNumber } from 'lib/data-functions'
 import { useState } from 'react'
+import { modulusCheck } from '../../lib/functions'
 
 export default function SelectBatchPayments({ vendorList, setVendorList }) {
   const [checked, setChecked] = useState(true)
@@ -20,7 +20,7 @@ export default function SelectBatchPayments({ vendorList, setVendorList }) {
   )
 
   const checkValid = (vendor) =>
-    isValidBankAccountNumber(vendor?.bank_account_number) &&
+    modulusCheck(vendor?.bank_account_number) &&
     !vendor?.store_credit_only &&
     (vendor?.totalOwing >= 2000 ||
       (dayjs().diff(vendor?.lastPaid, 'month') >= 3 &&
@@ -180,7 +180,7 @@ export default function SelectBatchPayments({ vendorList, setVendorList }) {
                       <StoreCreditOnlyIcon />
                     </Tooltip>
                   </div>
-                ) : !isValidBankAccountNumber(v?.bank_account_number) ? (
+                ) : !modulusCheck(v?.bank_account_number) ? (
                   <Tooltip
                     title={`${
                       v?.bank_account_number ? 'Invalid' : 'Missing'

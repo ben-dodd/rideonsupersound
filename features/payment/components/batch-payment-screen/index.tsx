@@ -27,7 +27,7 @@ import {
 import ScreenContainer from '@/components/container/screen'
 import dayjs from 'dayjs'
 import { getVendorDetails } from 'lib/data-functions'
-import { isValidBankAccountNumber } from 'lib/utils'
+import { modulusCheck } from '../../lib/functions'
 import CheckBatchPayments from './check-batch-payments'
 import SelectBatchPayments from './select-batch-payments'
 
@@ -92,7 +92,7 @@ export default function BatchPaymentScreen() {
   )
 
   const checkValid = (vendor) =>
-    isValidBankAccountNumber(vendor?.bank_account_number) &&
+    modulusCheck(vendor?.bank_account_number) &&
     !vendor?.store_credit_only &&
     (vendor?.totalOwing >= 2000 ||
       (dayjs().diff(vendor?.lastPaid, 'month') >= 3 &&
@@ -229,7 +229,7 @@ function completeBatchPayment(
     ?.filter(
       (v) =>
         v?.is_checked &&
-        isValidBankAccountNumber(v?.bank_account_number) &&
+        modulusCheck(v?.bank_account_number) &&
         parseFloat(v?.payAmount)
     )
     ?.forEach(async (vendor: any) => {

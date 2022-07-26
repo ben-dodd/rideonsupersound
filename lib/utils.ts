@@ -24,11 +24,6 @@ export function andList(list: string[]) {
       .replace(/@/g, ', ')
 }
 
-export function isValidBankAccountNumber(value: string) {
-  if (!value) return false
-  return /^(?:[0-9]{15}|[0-9]{16})$/.test(`${value}`.replace(/-/g, ''))
-}
-
 export function convertDegToCardinal(deg: number) {
   const cardinalDirections = {
     N: [348.75, 360],

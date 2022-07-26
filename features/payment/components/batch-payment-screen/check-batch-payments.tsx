@@ -5,9 +5,9 @@ import QuantityCheckIcon from '@mui/icons-material/Warning'
 import { Tooltip } from '@mui/material'
 import dayjs from 'dayjs'
 import { useRegisterID } from 'lib/swr-hooks'
-import { isValidBankAccountNumber } from 'lib/utils'
 import { useState } from 'react'
 import {
+  modulusCheck,
   writeKiwiBankBatchFile,
   writePaymentNotificationEmail,
 } from '../../lib/functions'
@@ -131,7 +131,7 @@ export default function CheckBatchPayments({
           {vendorList
             ?.filter((v) => v?.is_checked)
             ?.map((v) => {
-              let invalidBankAccountNumber = !isValidBankAccountNumber(
+              let invalidBankAccountNumber = !modulusCheck(
                 v?.bank_account_number
               )
               let negativeQuantity =

@@ -1,6 +1,8 @@
 import dayjs from 'dayjs'
-import { isValidBankAccountNumber } from 'lib/utils'
+import utc from 'dayjs/plugin/utc'
 import { KiwiBankTransactionObject } from './types'
+
+dayjs.extend(utc)
 
 interface KiwiBankBatchFileProps {
   transactions: KiwiBankTransactionObject[]
@@ -8,91 +10,107 @@ interface KiwiBankBatchFileProps {
   sequenceNumber: string
 }
 
+// This function writes a KBB file
 export function writeKiwiBankBatchFile({
   transactions,
   batchNumber,
   sequenceNumber,
 }: KiwiBankBatchFileProps) {
-  let transactionAmount = 0
-  let transactionCount = 0
-  let hashTotal = 0
+  let validTransactions = getValidTransactions(transactions)
+  let transactionAmount = getTotalTransactionAmount(validTransactions)
+  let transactionCount = getTotalTransactionCount(validTransactions)
+  let hashTotal = getHashTotal(validTransactions)
   let kbb = []
   kbb.push(writeKBBHeaderRecord({ batchNumber, sequenceNumber }))
-  transactions
-    ?.filter((t) => isValidBankAccountNumber(t?.accountNumber) && t?.amount)
-    .forEach((transaction: KiwiBankTransactionObject) => {
-      transactionAmount += transaction?.amount
-      transactionCount += 1
-
-      let accountNumber = `${transaction?.accountNumber}`.replace(/\D/g, '')
-      // remove bank number
-      accountNumber = accountNumber.substring(2)
-      // remove suffix
-      accountNumber = accountNumber.slice(0, 11)
-      // add to hash total
-      hashTotal += parseInt(accountNumber)
-      kbb.push(writeKBBTransactionRecord({ transaction, batchNumber }))
-    })
-
-  let paddedHashTotal = getPaddedHashTotal(hashTotal)
-
-  kbb.push(
-    writeKBBFooter({ transactionAmount, transactionCount, paddedHashTotal })
-  )
-
-  let csvContent = 'data:text/csv;charset=utf-8,'
-  kbb.forEach((rowArray) => {
-    let row = rowArray?.join(',')
-    csvContent += row + '\r\n'
+  validTransactions.forEach((transaction: KiwiBankTransactionObject) => {
+    kbb.push(writeKBBTransactionRecord({ transaction, batchNumber }))
   })
-  return encodeURI(csvContent)
+  kbb.push(writeKBBFooter({ transactionAmount, transactionCount, hashTotal }))
+  return writeOutKBBFile(kbb)
 }
 
-export function writeKBBHeaderRecord({ batchNumber, sequenceNumber }) {
+function getValidTransactions(transactions) {
+  return transactions.filter((transaction) =>
+    checkKiwibankTransactionIsValid(transaction)
+  )
+}
+
+function checkKiwibankTransactionIsValid(transaction) {
+  return modulusCheck(transaction.accountNumber) && transaction.amount > 0
+}
+
+function getTotalTransactionAmount(transactions) {
+  return transactions.reduce(
+    (sum, transaction) => sum + parseInt(transaction.amount),
+    0
+  )
+}
+
+function getTotalTransactionCount(transactions) {
+  return transactions.length
+}
+
+function getHashTotal(transactions) {
+  let hashTotal = transactions.reduce(
+    (sum, transaction) =>
+      sum +
+      parseInt(
+        `${transaction?.accountNumber}`.replace(/\D/g, '')?.slice(2, 13)
+      ),
+    0
+  )
+  return `00000000000${hashTotal}`.slice(-11)
+}
+
+function writeKBBHeaderRecord({ batchNumber, sequenceNumber }) {
   // Example: 1,,,,389016070450500,7,210216,210421,
   const storeAccountNumber = process.env.NEXT_PUBLIC_STORE_ACCOUNT_NUMBER
   return [
     1, // Record Type. 1 denotes the header. Max length 1
     '', // Auth Code. Blank for DC batches. Max length 7
-    parseInt(batchNumber?.substring(0, 2)) || '', // Batch Number. Max length 2, optional
-    parseInt(sequenceNumber?.substring(0, 4)) || '', // Batch Sequence Number. Max length 4, optional
-    parseInt(storeAccountNumber?.substring(0, 16)), // Account Number to be debited. Max length 16.
+    parseInt(batchNumber?.slice(0, 2)) || '', // Batch Number. Max length 2, optional
+    parseInt(sequenceNumber?.slice(0, 4)) || '', // Batch Sequence Number. Max length 4, optional
+    parseInt(storeAccountNumber?.slice(0, 16)), // Account Number to be debited. Max length 16.
     7, // Batch Type. Always 7 for DC batches. Max length 1.
-    parseInt(dayjs.utc().format('YYMMDD')), // Batch Due Date. YYMMDD. Max length 6. Valid date and not in the past. Can be up to 65 days in advance.
-    parseInt(dayjs.utc().format('YYMMDD')), // File Date. YYMMDD. Max length 6. Valid date and not in the future.
+    dayjs.utc().format('YYMMDD'), // Batch Due Date. YYMMDD. Max length 6. Valid date and not in the past. Can be up to 65 days in advance.
+    dayjs.utc().format('YYMMDD'), // File Date. YYMMDD. Max length 6. Valid date and not in the future.
     '', // Indicator. Not used. Left blank.
   ]
 }
 
-export function writeKBBTransactionRecord({ transaction, batchNumber }) {
+function writeKBBTransactionRecord({ transaction, batchNumber }) {
   return [
     2, // Record Type. 2 denotes transaction record. Max length 1
-    `${transaction?.accountNumber}`.replace(/\D/g, '')?.substring(0, 16), // Account number. Max 16.
-    50,
-    transaction?.amount,
-    transaction?.name?.substring(0, 20),
-    'RideOn Pay',
-    `${transaction?.vendor_id} ${transaction?.name}`?.substring(0, 12),
-    '',
-    `Reg ${batchNumber}`?.substring(0, 12),
-    'Ride On Super Sound',
-    `Reg ${batchNumber}`?.substring(0, 12),
-    `${transaction?.vendor_id} ${transaction?.name}`?.substring(0, 12),
-    `Seq ${dayjs.utc().format('YYMMDD')}`?.substring(0, 12),
+    `${transaction?.accountNumber}`.replace(/\D/g, '')?.slice(0, 16), // Account number. Max 16 (numeric only). Must pass Modulus Test (modulusCheck).
+    50, // Tran code. 50 for direct credits. Max length 2
+    transaction?.amount, // Transaction amount in cents. Max length 12
+    transaction?.name?.slice(0, 20), // Other party name. Payee name for DC. Max length 20.
+    'RideOn Pay'.slice(0, 12), // Other part reference. Max length 12.
+    `${transaction?.vendor_id} ${transaction?.name}`?.slice(0, 12), // Other party code details. Max length. 12.
+    '', // Other part alpha ref - Leave blank
+    `Reg ${batchNumber}`?.slice(0, 12), // Other party particulars. Max length 12
+    'Ride On Super Sound'.slice(0, 20), // This party name. Max length 20.
+    `Reg ${batchNumber}`?.slice(0, 12), // This party code. Max length 12.
+    `${transaction?.vendor_id} ${transaction?.name}`?.slice(0, 12), // This party reference. Max length 12.
+    `Seq ${dayjs.utc().format('YYMMDD')}`?.slice(0, 12), // This party particulars. Max length 12.
   ]
 }
 
-export function writeKBBFooter({
-  transactionAmount,
-  transactionCount,
-  paddedHashTotal,
-}) {
-  return [3, transactionAmount, transactionCount, parseInt(paddedHashTotal)]
+function writeKBBFooter({ transactionAmount, transactionCount, hashTotal }) {
+  return [
+    3, // 3 denotes the footer
+    transactionAmount, // Transaction amount. Total of type 2 records in cents. Max length 12 (numeric)
+    transactionCount, // Count of type 2 records. Max length 6 characters (numeric)
+    hashTotal, // Hash total of type 2 records. Max length 11 characters (numeric)
+  ]
 }
 
-export function getPaddedHashTotal(hashTotal) {
-  let paddedHashTotal = `00000000000${hashTotal}`
-  return paddedHashTotal.slice(paddedHashTotal.length - 11)
+function writeOutKBBFile(kbb) {
+  return encodeURI(
+    `data:text/csv;charset=utf-8,${kbb
+      .map((rowArray) => `${rowArray.join(',')}`)
+      .join('\r\n')}`
+  )
 }
 
 export function writePaymentNotificationEmail({
@@ -103,12 +121,11 @@ export function writePaymentNotificationEmail({
   let csvContent = 'data:text/csv;charset=utf-8,'
   csvContent +=
     'CODE,NAME,RECIPIENT,ACCOUNT,OWING,LINK,DATE,CHECKED,VALID BANK NUM,STORE CREDIT ONLY\r\n'
-  // console.log(vendors);
   let vendorArrays = vendors
     ?.filter(
       (v) =>
         (includeUnchecked || v?.is_checked) &&
-        (includeNoBank || isValidBankAccountNumber(v?.bank_account_number))
+        (includeNoBank || modulusCheck(v?.bank_account_number))
     )
     ?.map((v) => [
       v?.id,
@@ -119,7 +136,7 @@ export function writePaymentNotificationEmail({
       `https://rideonsupersound.vercel.app/vendor/${v?.uid}`,
       dayjs().format('DD/MM/YYYY'),
       v?.is_checked,
-      isValidBankAccountNumber(v?.bank_account_number),
+      modulusCheck(v?.bank_account_number),
       Boolean(v?.store_credit_only),
     ])
   // console.log(vendorArrays);
@@ -131,12 +148,12 @@ export function writePaymentNotificationEmail({
 }
 
 export function splitAccountNumber(accountNumber) {
-  let number = accountNumber?.replace(/\D/g, '')
+  let number = `${accountNumber}`?.replace(/\D/g, '')
   return {
-    bank: number.substring(0, 2),
-    branch: number.substring(2, 6),
-    account: number.substring(6, 13),
-    suffix: number.substring(13),
+    bank: number.slice(0, 2),
+    branch: number.slice(2, 6),
+    account: number.slice(6, 13),
+    suffix: number.slice(13),
   }
 }
 
@@ -197,7 +214,7 @@ export function modulusCheck(accountNumber) {
   }
 }
 
-export function modulusNumCheck(weightings, checkDigits, modulus = 11) {
+function modulusNumCheck(weightings, checkDigits, modulus = 11) {
   let sum = weightings.reduce(
     (summed, weighting, i) => summed + weighting * checkDigits[i],
     0
@@ -205,7 +222,7 @@ export function modulusNumCheck(weightings, checkDigits, modulus = 11) {
   return sum % modulus === 0
 }
 
-export function modulus11ACheck(accountNumberObj) {
+function modulus11ACheck(accountNumberObj) {
   // Format 11A
   //   (i) This format is used by bank numbers 01, 02, 03, 06, 09 (where branch number is not 0000), 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 27, 30, 31, 34, 36 and 38
   //   (ii) The account structure is:
@@ -223,7 +240,7 @@ export function modulus11ACheck(accountNumberObj) {
   return modulusNumCheck(weightings, checkDigits)
 }
 
-export function modulus11BCheck(accountNumberObj) {
+function modulus11BCheck(accountNumberObj) {
   // Format 11B
   //   (i) This format is used by bank 08
   //   (ii) The account structure is:
@@ -239,7 +256,7 @@ export function modulus11BCheck(accountNumberObj) {
   return modulusNumCheck(weightings, checkDigits)
 }
 
-export function modulus11CCheck(accountNumberObj) {
+function modulus11CCheck(accountNumberObj) {
   // Format 11C
   // This format is used by bank numbers, 01, 02, 03, 06, 09 (where branch number is not 0000), 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 27, 30, 31, 34, 36 and 38 but only for accounts that fall within the range 990000 - 999999.
   //   (ii) The account structure is:
@@ -256,7 +273,7 @@ export function modulus11CCheck(accountNumberObj) {
   return modulusNumCheck(weightings, checkDigits)
 }
 
-export function modulus11DCheck(accountNumberObj) {
+function modulus11DCheck(accountNumberObj) {
   // Format 11C
   // This format is reserved for use by bank 09 where the branch number is 0000
   //   (ii) The account structure is:
@@ -281,7 +298,7 @@ export function modulus11DCheck(accountNumberObj) {
   return sum % 11 === 0
 }
 
-export function modulus10ACheck(accountNumberObj) {
+function modulus10ACheck(accountNumberObj) {
   // Format 10A
   // This format is used by bank 25
   //   (ii) The account structure is:
