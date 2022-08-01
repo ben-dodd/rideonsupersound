@@ -3,8 +3,9 @@ import dayjs from 'dayjs'
 import { VendorSaleItemObject } from 'lib/types'
 import useSWR from 'swr'
 import { camelCase, pascalCase } from '../utils'
+import { reverseMysqlSafeValue } from './query'
 
-async function fetcher(url: string) {
+export async function fetcher(url: string) {
   return axios(url)
     .then((response) => response.data)
     .catch((error) => console.log(error))
@@ -19,6 +20,14 @@ export function useRead(label, query, getSingleValue = false) {
     .join('&')}`
   const { data, error, mutate } = useSWR(key, fetcher)
   console.log(key)
+  // Check any data that needs parsing
+  data?.map?.((item) => {
+    Object.entries(item).forEach((value, key) => {
+      if (value[0] === '{' || value[0] === '[')
+        item[key] = reverseMysqlSafeValue(value)
+    })
+    return item
+  })
   return {
     [camelCase(label)]: getSingleValue ? data?.[0] : data,
     [`is${pascalCase(label)}Loading`]: !error && !data,
@@ -27,35 +36,34 @@ export function useRead(label, query, getSingleValue = false) {
   }
 }
 
-export function useAccount(email: string) {
-  return useRead(
-    'account',
-    {
-      columns: 'id, email, is_admin, is_authenticated',
-      table: 'account',
-      where: `email="${email}"`,
-    },
-    true
-  )
-}
+export function useSalesJoined() {
+  const { data, error, mutate } = useSWR(`/api/get-sales-join`, fetcher)
 
-export function useAccountClerks(account_id: number) {
-  return useRead('account clerks', {
-    table: 'clerk',
-    where: `id IN (
-        SELECT clerk_id
-        FROM account_clerk
-        WHERE account_id = ${account_id}
-      )`,
-    orderBy: 'colour',
-  })
-}
+  // If any sold items have more than one "stock price" row, we need to only select the latest one
+  // (If stock prices are changed after a sale, it won't be included in the returned data)
+  // REVIEW: Make it so MYSQL only returns the latest one.
 
-export function useClerks() {
-  return useRead('clerks', {
-    table: 'clerk',
-    orderBy: 'colour',
+  let duplicates = {}
+
+  data?.forEach?.((sale: VendorSaleItemObject) => {
+    let key = `${sale?.sale_id}-${sale?.item_id}`
+    if (
+      !duplicates[key] ||
+      dayjs(duplicates[key]?.date_price_valid_from)?.isBefore(
+        dayjs(sale?.date_price_valid_from)
+      )
+    )
+      duplicates[key] = sale
   })
+
+  const totalSalesReduced = Object.values(duplicates)
+
+  return {
+    sales: totalSalesReduced,
+    isSalesLoading: !error && !data,
+    isSalesError: error,
+    mutateSales: mutate,
+  }
 }
 
 // TODO gift cards and misc items should probably be in separate table to other stock
@@ -199,25 +207,6 @@ export function useSaleItemsForSale(sale_id: number) {
   }
 }
 
-export function useVendors() {
-  return useRead('vendors', { table: 'vendor' })
-}
-
-export function useVendorPayments() {
-  return useRead('vendor payments', {
-    table: 'vendor_payment',
-    where: 'NOT is_deleted',
-  })
-}
-
-export function useVendorTotalPayments(vendor_id: number) {
-  return useRead('vendor total payments', {
-    columns: 'date, amount',
-    table: 'vendor_payment',
-    where: `vendor_id = ${vendor_id} AND NOT is_deleted`,
-  })
-}
-
 export function useVendorTotalSales(vendor_id: number) {
   const { data, error, mutate } = useSWR(
     `/api/get-vendor-total-sales?vendor_id=${vendor_id}`,
@@ -248,151 +237,6 @@ export function useVendorTotalSales(vendor_id: number) {
     isVendorTotalSalesError: error,
     mutateVendorTotalSales: mutate,
   }
-}
-
-export function useVendorFromVendorPayment(vendor_payment_id: number) {
-  return useRead('vendor', {
-    table: 'vendor',
-    where: `id IN
-  (SELECT vendor_id
-    FROM vendor_payment
-    WHERE id = ${vendor_payment_id}
-  )`,
-  })
-}
-
-export function useGiftCards() {
-  return useRead('gift cards', {
-    columns: `id, is_gift_card, gift_card_code, gift_card_amount, gift_card_remaining, gift_card_is_valid, note, date_created, date_modified`,
-    table: 'stock',
-    where: `is_gift_card AND NOT is_deleted`,
-  })
-}
-
-export function useSales() {
-  return useRead('sales', {
-    columns: `id, customer_id, state, date_sale_opened, sale_opened_by, date_sale_closed, sale_closed_by, store_cut, total_price, number_of_items, item_list, is_mail_order, postage, postal_address, weather, note`,
-    table: 'sale',
-    where: `NOT is_deleted`,
-  })
-}
-
-export function useSalesJoined() {
-  const { data, error, mutate } = useSWR(`/api/get-sales-join`, fetcher)
-
-  // If any sold items have more than one "stock price" row, we need to only select the latest one
-  // (If stock prices are changed after a sale, it won't be included in the returned data)
-  // REVIEW: Make it so MYSQL only returns the latest one.
-
-  let duplicates = {}
-
-  data?.forEach?.((sale: VendorSaleItemObject) => {
-    let key = `${sale?.sale_id}-${sale?.item_id}`
-    if (
-      !duplicates[key] ||
-      dayjs(duplicates[key]?.date_price_valid_from)?.isBefore(
-        dayjs(sale?.date_price_valid_from)
-      )
-    )
-      duplicates[key] = sale
-  })
-
-  const totalSalesReduced = Object.values(duplicates)
-
-  return {
-    sales: totalSalesReduced,
-    isSalesLoading: !error && !data,
-    isSalesError: error,
-    mutateSales: mutate,
-  }
-}
-
-export function useCustomers() {
-  return useRead('customers', { table: 'customer' })
-}
-
-export function useCustomer(customer_id: number) {
-  return useRead(
-    'customer',
-    { table: 'customer', where: `id = ${customer_id}` },
-    true
-  )
-}
-
-export function useSaleItems() {
-  return useRead('sale items', { table: 'sale_item' })
-}
-
-export function useHelps() {
-  return useRead('helps', { table: 'help', where: 'NOT is_deleted' })
-}
-
-export function useHolds() {
-  return useRead('holds', {
-    table: 'hold',
-    where: `NOT is_deleted AND date_removed_from_hold IS NULL`,
-  })
-}
-
-export function useLogs() {
-  return useRead('logs', {
-    table: 'log',
-    where: `NOT is_deleted AND NOT table_id <=> "system"`,
-    orderBy: 'date_created',
-    order: 'DESC',
-  })
-}
-
-export function useStockMovements(limit) {
-  return useRead('stock movements', {
-    table: 'stock_movement',
-    orderBy: 'date_moved',
-    order: 'DESC',
-    limit,
-  })
-}
-
-export function useStockMovementByStockId(id) {
-  return useRead('stock-movements-by-stock-id', {
-    table: 'stock_movement',
-    where: `NOT is_deleted AND
-  stock_id = ${id}`,
-    orderBy: 'date_moved',
-    order: 'DESC',
-    id: id,
-  })
-}
-
-export function useJobs() {
-  return useRead('jobs', {
-    table: 'task',
-    where: `NOT is_deleted
-  AND NOT is_completed
-  OR date_completed > date_sub(now(), interval 1 week)`,
-    orderBy: 'date_created',
-    order: 'DESC',
-    limit: 200,
-  })
-}
-
-export function useStocktakeItemsByStocktake(stocktake_id: number) {
-  return useRead('stocktake items', {
-    table: 'stocktake_item',
-    where: `NOT is_deleted
-  AND stocktake_id = ${stocktake_id}`,
-    orderBy: 'date_counted',
-    order: 'DESC',
-  })
-}
-
-export function useStocktakesByTemplate(stocktake_template_id: number) {
-  return useRead('stocktakes', {
-    table: 'stocktake',
-    where: `NOT is_deleted
-  AND stocktake_template_id = ${stocktake_template_id}`,
-    orderBy: 'date_started',
-    order: 'DESC',
-  })
 }
 
 export function useStocktakeTemplates() {
@@ -432,10 +276,202 @@ export function useStocktakeTemplates() {
   }
 }
 
+export function useAccount(email: string) {
+  return useRead(
+    'account',
+    {
+      columns: ['id', 'email', 'is_admin', 'is_authenticated'],
+      table: 'account',
+      where: `email="${email}"`,
+    },
+    true
+  )
+}
+
+export function useAccountClerks(account_id: number) {
+  return useRead('account clerks', {
+    table: 'clerk',
+    where: `id IN (
+        SELECT clerk_id
+        FROM account_clerk
+        WHERE account_id = ${account_id}
+      )`,
+    orderBy: 'colour',
+  })
+}
+
+export function useClerks() {
+  return useRead('clerks', {
+    table: 'clerk',
+    orderBy: 'colour',
+  })
+}
+
+export function useVendors() {
+  return useRead('vendors', { table: 'vendor', where: `NOT is_deleted` })
+}
+
+export function useVendorPayments() {
+  return useRead('vendor payments', {
+    table: 'vendor_payment',
+    where: 'NOT is_deleted',
+  })
+}
+
+export function useVendorTotalPayments(vendor_id: number) {
+  return useRead('vendor total payments', {
+    columns: ['date', 'amount'],
+    table: 'vendor_payment',
+    where: `vendor_id = ${vendor_id} AND NOT is_deleted`,
+  })
+}
+
+export function useVendorFromVendorPayment(vendor_payment_id: number) {
+  return useRead('vendor', {
+    table: 'vendor',
+    where: `id IN
+  (SELECT vendor_id
+    FROM vendor_payment
+    WHERE id = ${vendor_payment_id}
+  )`,
+  })
+}
+
+export function useGiftCards() {
+  return useRead('gift cards', {
+    columns: [
+      'id',
+      'is_gift_card',
+      'gift_card_code',
+      'gift_card_amount',
+      'gift_card_remaining',
+      'gift_card_is_valid',
+      'note',
+      'date_created',
+      'date_modified',
+    ],
+    table: 'stock',
+    where: `is_gift_card AND NOT is_deleted`,
+  })
+}
+
+export function useSales() {
+  return useRead('sales', {
+    columns: [
+      'id',
+      'customer_id',
+      'state',
+      'date_sale_opened',
+      'sale_opened_by',
+      'date_sale_closed',
+      'sale_closed_by',
+      'store_cut',
+      'total_price',
+      'number_of_items',
+      'item_list',
+      'is_mail_order',
+      'postage',
+      'postal_address',
+      'weather',
+      'note',
+    ],
+    table: 'sale',
+    where: `NOT is_deleted`,
+  })
+}
+
+export function useCustomers() {
+  return useRead('customers', { table: 'customer', where: `NOT is_deleted` })
+}
+
+export function useCustomer(customer_id: number) {
+  return useRead(
+    'customer',
+    { table: 'customer', where: `id = ${customer_id}` },
+    true
+  )
+}
+
+export function useSaleItems() {
+  return useRead('sale items', { table: 'sale_item' })
+}
+
+export function useHelps() {
+  return useRead('helps', { table: 'help', where: 'NOT is_deleted' })
+}
+
+export function useHolds() {
+  return useRead('holds', {
+    table: 'hold',
+    where: `NOT is_deleted AND date_removed_from_hold IS NULL`,
+  })
+}
+
+export function useLogs() {
+  return useRead('logs', {
+    table: 'log',
+    where: `NOT is_deleted AND NOT table_id <=> "system"`,
+    orderBy: 'date_created',
+    isDesc: true,
+  })
+}
+
+export function useStockMovements(limit) {
+  return useRead('stock movements', {
+    table: 'stock_movement',
+    orderBy: 'date_moved',
+    isDesc: true,
+    limit,
+  })
+}
+
+export function useStockMovementByStockId(id) {
+  return useRead('stock-movements-by-stock-id', {
+    table: 'stock_movement',
+    where: `NOT is_deleted AND
+  stock_id = ${id}`,
+    orderBy: 'date_moved',
+    isDesc: true,
+    id: id,
+  })
+}
+
+export function useJobs() {
+  return useRead('jobs', {
+    table: 'task',
+    where: `NOT is_deleted
+  AND NOT is_completed
+  OR date_completed > date_sub(now(), interval 1 week)`,
+    orderBy: 'date_created',
+    isDesc: true,
+    limit: 200,
+  })
+}
+
+export function useStocktakeItemsByStocktake(stocktake_id: number) {
+  return useRead('stocktake items', {
+    table: 'stocktake_item',
+    where: `NOT is_deleted
+  AND stocktake_id = ${stocktake_id}`,
+    orderBy: 'date_counted',
+    isDesc: true,
+  })
+}
+
+export function useStocktakesByTemplate(stocktake_template_id: number) {
+  return useRead('stocktakes', {
+    table: 'stocktake',
+    where: `NOT is_deleted
+  AND stocktake_template_id = ${stocktake_template_id}`,
+    orderBy: 'date_started',
+    isDesc: true,
+  })
+}
+
 export function useRegisterID() {
   return useRead(
     'register',
-    { columns: 'num', table: 'global', where: `id="current_register"` },
+    { columns: ['num'], table: 'global', where: `id="current_register"` },
     true
   )
 }
@@ -465,7 +501,14 @@ export function usePettyCash(register_id: number) {
 
 export function useCashGiven(register_id: number) {
   return useRead('cash given', {
-    columns: 'sale_id, clerk_id, date, payment_method, amount, change_given',
+    columns: [
+      'sale_id',
+      'clerk_id',
+      'date',
+      'payment_method',
+      'amount',
+      'change_given',
+    ],
     table: 'sale_transaction',
     where: `register_id = ${register_id} AND change_given AND NOT is_deleted`,
   })
@@ -473,7 +516,14 @@ export function useCashGiven(register_id: number) {
 
 export function useCashReceived(register_id: number) {
   return useRead('cash received', {
-    columns: 'sale_id, clerk_id, date, payment_method, amount, change_given',
+    columns: [
+      'sale_id',
+      'clerk_id',
+      'date',
+      'payment_method',
+      'amount',
+      'change_given',
+    ],
     table: 'sale_transaction',
     where: `register_id = ${register_id} AND cash_received AND NOT is_deleted`,
   })
@@ -481,7 +531,7 @@ export function useCashReceived(register_id: number) {
 
 export function useManualPayments(register_id: number) {
   return useRead('manual payments', {
-    columns: 'date, amount, clerk_id, vendor_id',
+    columns: ['date', 'amount', 'clerk_id', 'vendor_id'],
     table: 'vendor_payment',
     where: `register_id = ${register_id} AND type = 'cash'`,
   })
@@ -489,7 +539,7 @@ export function useManualPayments(register_id: number) {
 
 export function useSelect(setting_select: string) {
   return useRead('selects', {
-    columns: 'label',
+    columns: ['label'],
     table: 'select_option',
     where: `setting_select = '${setting_select}'`,
   })
@@ -497,25 +547,7 @@ export function useSelect(setting_select: string) {
 
 export function useAllSelects() {
   return useRead('selects', {
-    columns: 'label, setting_select',
+    columns: ['label', 'setting_select'],
     table: 'select_option',
   })
-}
-
-export function useWeather() {
-  let loc = 'id=2192362'
-  if (navigator?.geolocation) {
-    navigator?.geolocation?.getCurrentPosition((position) => {
-      loc = `lat=${position.coords.latitude}, lon=${position.coords.longitude}`
-    })
-  }
-  const { data, error } = useSWR(
-    `https://api.openweathermap.org/data/2.5/weather?${loc}&appid=${process.env.NEXT_PUBLIC_OPEN_WEATHER_API}&units=metric`,
-    fetcher
-  )
-  return {
-    weather: data,
-    isLoading: !error && !data,
-    isError: error,
-  }
 }

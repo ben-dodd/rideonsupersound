@@ -63,12 +63,12 @@ export function getUpdateQuery(table: string, properties: any, id: number) {
 
 interface readQueryProps {
   columns?: string | string[]
-  table: string
+  table: string | string[]
   joins?: any[]
   where?: string | any[]
-  isDesc?: boolean
-  orderBy?: string
-  limit?: number
+  isDesc?: string | string[]
+  orderBy?: string | string[]
+  limit?: string | string[]
 }
 
 export function getReadQuery({
@@ -80,90 +80,108 @@ export function getReadQuery({
   orderBy,
   limit,
 }: readQueryProps) {
-  const joinQuery = joins ? createJoinsQuery(joins, table) : null
-  const joinColumnQuery = joins ? createJoinColumnQuery(joins) : ''
-  const columnQuery = columns
-    ? `${
-        Array.isArray(columns)
-          ? columns?.map((column) => `${table}.${column}`).join(',\n')
-          : columns
-      }`
-    : '*'
-  const readQuery: string = `
-  SELECT\n${columnQuery}${joinColumnQuery} FROM ${table}${
-    joinQuery ? ` ${joinQuery}` : ''
-  }${where ? ` WHERE ${where}` : ''}${
-    orderBy ? ` ORDER BY ${orderBy}${isDesc ? ` desc` : ''}` : ''
-  }
-  ${limit ? ` LIMIT ${limit}` : ''}
-  `
+  const columnQuery = columns ? createColumnQuery(columns, table) : '*'
+  const joinQuery = createJoinsQuery(joins, table)
+  const joinColumnQuery = createJoinColumnQuery(joins)
+  const whereQuery = createWhereQuery(where)
+  const orderQuery = createOrderQuery(orderBy, isDesc)
+  const limitQuery = createLimitQuery(limit)
+  const selectQuery = createSelectQuery(
+    columnQuery,
+    joinColumnQuery,
+    table,
+    joinQuery,
+    whereQuery,
+    orderQuery,
+    limitQuery
+  )
+  const readQuery: string = selectQuery
   // console.log(readQuery)
   return readQuery
 }
 
-function createSelectQuery(columns, table, where) {
-  return `SELECT ${
-    columns
+export function createColumnQuery(columns, table) {
+  return `${
+    Array.isArray(columns)
       ? columns
-          .map((column) =>
-            typeof columns === 'object'
-              ? `${column.value}${column.as ? ` AS ${column.as}` : ''}`
-              : column
+          ?.filter((column) => !column?.columnSkip)
+          ?.map(
+            (column) =>
+              `${table}.${
+                typeof column === 'object' ? column.as || column.key : column
+              }`
           )
-          .join(', ')
-      : '*'
-  } FROM ${table}${where ? ` WHERE ${where}` : ''}`
+          .join(',\n')
+      : columns
+  }`
 }
 
 export function createJoinsQuery(joins, table) {
   return joins
-    .map(
-      (join) =>
-        `\nLEFT JOIN (${
-          join.columns
-            ? `SELECT ${join.columns
-                ?.map((column) =>
-                  typeof column === 'object'
-                    ? `${column.key}${column.as ? ` AS ${column.as}` : ''}`
-                    : column
-                )
-                ?.join(', ')} FROM `
-            : ''
-        }${join.table}${join.where ? ` WHERE ${join.where?.join(' ')}` : ''}${
-          join.groupBy ? ` GROUP BY ${join.groupBy}` : ''
-        })${join.as ? ` AS ${join.as}` : ''}${
-          join.on
-            ? ` ON ${join.as ?? join.table}.${join.on[0]} ${
-                join.on[1]
-              } ${table}.${join.on[2]}`
-            : ''
-        }`
-    )
-    .join(' ')
+    ? joins
+        .map(
+          (join) =>
+            `\nLEFT JOIN (${
+              join.columns
+                ? `SELECT ${join.columns
+                    ?.map((column) =>
+                      typeof column === 'object'
+                        ? `${column.key}${column.as ? ` AS ${column.as}` : ''}`
+                        : column
+                    )
+                    ?.join(', ')} FROM `
+                : ''
+            }${join.table}${createWhereQuery(join.where)}${
+              join.groupBy ? ` GROUP BY ${join.groupBy}` : ''
+            })${join.as ? ` AS ${join.as}` : ''}${
+              join.on
+                ? ` ON ${join.as ?? join.table}.${join.on[0]} ${
+                    join.on[1]
+                  } ${table}.${join.on[2]}`
+                : ''
+            }`
+        )
+        .join(' ')
+    : ''
 }
 
 export function createJoinColumnQuery(joins) {
-  return joins
-    ? `, ${
-        Array.isArray(joins)
-          ? joins
-              ?.map?.((join) =>
-                join.columns
-                  ?.filter((column) => !column?.columnSkip)
-                  ?.map(
-                    (column) =>
-                      `${join.as || join.table}.${
-                        typeof column === 'object'
-                          ? column.as || column.key
-                          : column
-                      }`
-                  )
-                  ?.join(',\n')
-              )
-              ?.join(',\n')
-          : joins
-      }`
+  return Array.isArray(joins)
+    ? `, ${joins
+        ?.map?.((join) =>
+          createColumnQuery(join?.columns, join?.as || join?.table)
+        )
+        ?.join(',\n')}`
     : ''
+}
+
+export function createWhereQuery(where) {
+  return where
+    ? ` WHERE ${Array.isArray(where) ? where?.join(' ') : where}`
+    : ''
+}
+
+export function createOrderQuery(orderBy, isDesc) {
+  return orderBy ? ` ORDER BY ${orderBy}${isDesc ? ` DESC` : ''}` : ''
+}
+
+export function createLimitQuery(limit) {
+  return `${!isNaN(limit) ? ` LIMIT ${limit}` : ''}`
+}
+
+export function createSelectQuery(
+  columnQuery,
+  joinColumnQuery,
+  table,
+  joinQuery,
+  whereQuery,
+  orderQuery,
+  limitQuery
+) {
+  return `
+  SELECT\n${columnQuery}${joinColumnQuery} FROM ${table}${joinQuery}
+  ${whereQuery}${orderQuery}${limitQuery}
+  `
 }
 
 /*
@@ -180,15 +198,12 @@ export function mysqlSafeValue(val: any) {
   else return val
 }
 
-export function reverseMysqlSafeValue(val: string | number) {
-  console.log(val)
+export function reverseMysqlSafeValue(val: any) {
   if (typeof val === 'number') return val
   try {
     let object = JSON.parse(val)
-    console.log(object)
     if (object && typeof object === 'object') return object
   } catch (e) {
-    console.log(e)
+    return val
   }
-  return val
 }

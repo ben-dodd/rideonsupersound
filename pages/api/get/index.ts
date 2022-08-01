@@ -4,7 +4,7 @@ import { NextApiHandler } from 'next'
 
 const handler: NextApiHandler = async (req, res) => {
   const { k, columns, table, where, orderBy, isDesc, limit } = req.query
-  const { readQuery } = getReadQuery({
+  const readQuery = getReadQuery({
     columns,
     table,
     where,

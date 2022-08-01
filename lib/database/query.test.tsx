@@ -1,6 +1,9 @@
 import { StockMovementTypes } from '../types'
 import {
   createJoinsQuery,
+  createLimitQuery,
+  createOrderQuery,
+  createWhereQuery,
   getCreateQuery,
   getDeleteQuery,
   getReadQuery,
@@ -274,6 +277,50 @@ test('read queries', () => {
   )
 })
 
+test('order queries', () => {
+  expect(createOrderQuery('dogs', '')).toBe(' ORDER BY dogs')
+  expect(createOrderQuery('trains', 'true')).toBe(' ORDER BY trains DESC')
+})
+
+test('limit queries', () => {
+  expect(createLimitQuery('bugs')).toBe('')
+  expect(createLimitQuery('15')).toBe(' LIMIT 15')
+  expect(createLimitQuery({ artist: 'Nirvana' })).toBe('')
+})
+
+test('where queries', () => {
+  const example1 = `
+    WHERE
+        (p.id = (
+          SELECT MAX(id)
+          FROM stock_price
+          WHERE stock_id = s.id
+        ) OR s.is_gift_card OR s.is_misc_item)
+    AND s.is_deleted = 0
+      `
+  const example2 = `
+    WHERE sale.id = ?
+      AND (sale_item.is_gift_card OR sale_item.is_misc_item OR stock_price.date_valid_from <= sale.date_sale_opened)
+      AND sale.is_deleted = 0
+      AND sale_item.is_deleted = 0
+  `
+  const example3 = `
+    WHERE sale_item.item_id IN
+      (SELECT id FROM stock
+        WHERE vendor_id = ?
+      )
+    AND stock_price.date_valid_from <= sale.date_sale_opened
+    AND sale.state = 'completed'
+    AND sale.is_deleted = 0
+    AND sale_item.is_deleted = 0
+  `
+  const example4 = `
+    WHERE is_deleted = 0
+  `
+  const example5 = ` WHERE id = 5`
+  expect(createWhereQuery('is_deleted = 0')).toBe(' WHERE is_deleted = 0')
+})
+
 function eraseWhiteSpace(str) {
   return str.replace(/\s+/g, ' ').trim()
 }
@@ -296,9 +343,11 @@ test('mysql safe', () => {
 
 test('reverse mysql safe', () => {
   expect(reverseMysqlSafeValue(0)).toBe(0)
-  expect(reverseMysqlSafeValue(JSON.stringify(objectExample))).toBe(
+  expect(reverseMysqlSafeValue(JSON.stringify(objectExample))).toStrictEqual(
     objectExample
   )
-  expect(reverseMysqlSafeValue(JSON.stringify(arrayExample))).toBe(arrayExample)
+  expect(reverseMysqlSafeValue(JSON.stringify(arrayExample))).toStrictEqual(
+    arrayExample
+  )
   expect(reverseMysqlSafeValue('Nirvana')).toBe('Nirvana')
 })

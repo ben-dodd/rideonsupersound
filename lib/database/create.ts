@@ -191,13 +191,13 @@ export async function createStocktakeTemplateInDatabase(
     filter_description,
     image,
     vendor_enabled,
-    vendor_list: vendor_list ? JSON.stringify(vendor_list) : null,
+    vendor_list,
     section_enabled,
-    section_list: section_list ? JSON.stringify(section_list) : null,
+    section_list,
     media_enabled,
-    media_list: media_list ? JSON.stringify(media_list) : null,
+    media_list,
     format_enabled,
-    format_list: format_list ? JSON.stringify(format_list) : null,
+    format_list,
     total_estimated,
     total_unique_estimated,
   }
@@ -233,7 +233,7 @@ export async function createSaleInDatabase(
     state,
     sale_opened_by: clerk?.id,
     date_sale_opened,
-    weather: JSON.stringify(weather),
+    weather,
     geo_latitude,
     geo_longitude,
     note,
@@ -450,7 +450,7 @@ export async function createStockItemInDatabase(
     media,
     format,
     section,
-    genre: JSON.stringify(genre),
+    genre,
     is_new,
     cond,
     country,
@@ -466,9 +466,9 @@ export async function createStockItemInDatabase(
     image_url,
     thumb_url,
     google_books_item_id,
-    googleBooksItem: JSON.stringify(googleBooksItem),
+    googleBooksItem,
     discogs_item_id,
-    discogsItem: JSON.stringify(discogsItem),
+    discogsItem,
     do_list_on_website,
     has_no_quantity,
     is_gift_card,
@@ -535,13 +535,11 @@ export async function createStockMovementInDatabase(
 export async function createSettingSelectInDatabase(
   label: string,
   setting_select: string,
-  mutate: Function
+  mutateSettings: Function
 ) {
   // const { label, setting_select } = setting
   const newSetting = { label, setting_select }
-  const insertId = await createItemInDatabase(newSetting, 'select_option')
-  mutate()
-  return insertId
+  return await createItemInDatabase(newSetting, 'select_option', mutateSettings)
 }
 
 export async function createRegisterInDatabase(register) {
