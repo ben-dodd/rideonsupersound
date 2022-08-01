@@ -36,6 +36,7 @@
     "react-loading-skeleton": "^2.1.1",
     "react-papaparse": "^4.0.2",
     "react-player": "^2.10.1",
+    "react-router-dom": "^6.3.0",
     "react-select": "^4.3.1",
     "react-swipeable": "^6.2.0",
     "react-table": "^7.8.0",
