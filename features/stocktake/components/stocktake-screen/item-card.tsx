@@ -1,5 +1,5 @@
 // DB
-import { useVendors } from 'lib/swr-hooks'
+import { useVendors } from 'lib/database/read'
 
 // Functions
 import { getImageSrc, getItemDisplayName, getItemSku } from 'lib/data-functions'

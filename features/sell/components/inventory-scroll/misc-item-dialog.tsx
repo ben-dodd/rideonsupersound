@@ -10,7 +10,7 @@ import {
   sellSearchBarAtom,
   viewAtom,
 } from 'lib/atoms'
-import { useInventory, useLogs, useWeather } from 'lib/swr-hooks'
+import { useInventory, useLogs, useWeather } from 'lib/database/read'
 import { ModalButton, StockObject } from 'lib/types'
 
 // Functions

@@ -7,8 +7,8 @@ import {
   getItemDisplayName,
   getItemSku,
 } from 'lib/data-functions'
+import { useLogs } from 'lib/database/read'
 import { saveLog } from 'lib/db-functions'
-import { useLogs } from 'lib/swr-hooks'
 import { CSVLink } from 'react-csv'
 
 export default function PrintLabel({ receivedStock }) {

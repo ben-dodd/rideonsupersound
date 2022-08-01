@@ -1,4 +1,4 @@
-import { useAccount, useRegisterID } from 'lib/swr-hooks'
+import { useAccount, useRegisterID } from 'lib/database/read'
 import { useSession } from 'next-auth/client'
 import LandingPage from 'views/main/landing-page'
 import SignIn from './api/auth/signin'

@@ -1,7 +1,7 @@
 import { useAtom } from 'jotai'
 
 // DB
-import { useInventory, useVendors } from 'lib/swr-hooks'
+import { useInventory, useVendors } from 'lib/database/read'
 
 // Components
 import MidScreenContainer from '@/components/container/mid-screen'

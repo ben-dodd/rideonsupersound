@@ -1,7 +1,7 @@
 // Packages
 
 // DB
-import { useInventory, useVendors } from 'lib/swr-hooks'
+import { useInventory, useVendors } from 'lib/database/read'
 
 // Functions
 

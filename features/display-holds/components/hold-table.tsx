@@ -9,7 +9,7 @@ import {
   loadedHoldIdAtom,
   viewAtom,
 } from 'lib/atoms'
-import { useCustomers, useHolds, useInventory } from 'lib/swr-hooks'
+import { useCustomers, useHolds, useInventory } from 'lib/database/read'
 import { CustomerObject, HoldObject, StockObject } from 'lib/types'
 
 // Functions

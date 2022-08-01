@@ -10,7 +10,12 @@ import {
   sellSearchBarAtom,
   viewAtom,
 } from 'lib/atoms'
-import { useGiftCards, useInventory, useLogs, useWeather } from 'lib/swr-hooks'
+import {
+  useGiftCards,
+  useInventory,
+  useLogs,
+  useWeather,
+} from 'lib/database/read'
 import { GiftCardObject, ModalButton } from 'lib/types'
 
 // Functions

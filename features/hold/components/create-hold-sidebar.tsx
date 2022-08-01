@@ -16,22 +16,26 @@ import {
   useInventory,
   useLogs,
   useRegisterID,
-} from 'lib/swr-hooks'
-import { CustomerObject, ModalButton, StockObject } from 'lib/types'
+} from 'lib/database/read'
+import {
+  CustomerObject,
+  ModalButton,
+  StockMovementTypes,
+  StockObject,
+} from 'lib/types'
 
 // Functions
 import { getItemQuantity, getItemSkuDisplayNameById } from 'lib/data-functions'
-import {
-  addRestockTask,
-  saveHoldToDatabase,
-  saveLog,
-  saveSystemLog,
-} from 'lib/db-functions'
+import { addRestockTask, saveLog, saveSystemLog } from 'lib/db-functions'
 
 // Components
 import SidebarContainer from '@/components/container/side-bar'
 import CreateableSelect from '@/components/inputs/createable-select'
 import TextField from '@/components/inputs/text-field'
+import {
+  createHoldInDatabase,
+  createStockMovementInDatabase,
+} from 'lib/database/create'
 import ListItem from './list-item'
 
 export default function CreateHoldSidebar() {
@@ -70,13 +74,20 @@ export default function CreateHoldSidebar() {
         if (itemQuantity > 0) {
           addRestockTask(cartItem?.item_id)
         }
-        const rowId = await saveHoldToDatabase(
+        const rowId = await createHoldInDatabase(
           cart,
           cartItem,
           holdPeriod,
           note,
           clerk,
           registerID
+        )
+        createStockMovementInDatabase(
+          item,
+          clerk,
+          registerID,
+          StockMovementTypes.Hold,
+          null
         )
         saveLog(
           {

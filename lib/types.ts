@@ -94,6 +94,7 @@ export interface CustomerObject {
   phone?: string
   postal_address?: string
   note?: string
+  created_by_clerk_id?: number
   is_deleted?: boolean
 }
 
@@ -216,6 +217,7 @@ export interface VendorPaymentObject {
   id?: number
   amount?: number
   bank_account_number?: string
+  bank_reference?: string
   batch_number?: string
   date?: string
   sequence_number?: string
@@ -422,6 +424,7 @@ export interface TaskObject {
   is_priority?: boolean
   date_completed?: string
   completed_by_clerk_id?: number
+  is_post_mail_order?: boolean
   is_deleted?: boolean
 }
 

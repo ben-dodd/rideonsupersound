@@ -3,7 +3,7 @@ import { useAtom } from 'jotai'
 
 // DB
 import { cartAtom, clerkAtom, pageAtom, viewAtom } from 'lib/atoms'
-import { useInventory, useJobs } from 'lib/swr-hooks'
+import { useInventory, useJobs } from 'lib/database/read'
 import { bg, SaleItemObject, StockObject, TaskObject } from 'lib/types'
 
 // Icons

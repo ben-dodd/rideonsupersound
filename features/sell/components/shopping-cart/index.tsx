@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 // DB
 import { alertAtom, cartAtom, clerkAtom, viewAtom } from 'lib/atoms'
-import { useInventory, useLogs } from 'lib/swr-hooks'
+import { useInventory, useLogs } from 'lib/database/read'
 import { SaleItemObject, StockObject } from 'lib/types'
 
 // Functions

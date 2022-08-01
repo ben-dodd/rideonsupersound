@@ -11,7 +11,7 @@ import {
   useSalesJoined,
   useVendorPayments,
   useVendors,
-} from 'lib/swr-hooks'
+} from 'lib/database/read'
 import { ModalButton, VendorObject } from 'lib/types'
 
 // Components

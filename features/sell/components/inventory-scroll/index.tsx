@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 
 // DB
 import { sellSearchBarAtom } from 'lib/atoms'
-import { useInventory } from 'lib/swr-hooks'
+import { useInventory } from 'lib/database/read'
 import { StockObject } from 'lib/types'
 
 // Functions

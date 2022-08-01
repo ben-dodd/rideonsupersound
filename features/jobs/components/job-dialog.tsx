@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 // DB
 import { alertAtom, clerkAtom, viewAtom } from 'lib/atoms'
-import { useJobs, useLogs } from 'lib/swr-hooks'
+import { useJobs, useLogs } from 'lib/database/read'
 import { ModalButton, RoleTypes, TaskObject } from 'lib/types'
 
 // Functions

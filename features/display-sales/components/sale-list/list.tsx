@@ -6,7 +6,7 @@ import {
   useClerks,
   useRegisters,
   useSaleTransactionsForRange,
-} from 'lib/swr-hooks'
+} from 'lib/database/read'
 import { useMemo } from 'react'
 import Filter from './filter'
 

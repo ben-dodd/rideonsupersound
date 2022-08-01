@@ -4,7 +4,11 @@ import { useMemo } from 'react'
 
 // DB
 import { loadedVendorIdAtom, pageAtom } from 'lib/atoms'
-import { useInventory, useSalesJoined, useVendorPayments } from 'lib/swr-hooks'
+import {
+  useInventory,
+  useSalesJoined,
+  useVendorPayments,
+} from 'lib/database/read'
 import { VendorPaymentObject } from 'lib/types'
 
 // Functions

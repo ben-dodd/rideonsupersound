@@ -1,5 +1,5 @@
 // DB
-import { useLogs, useVendors } from 'lib/swr-hooks'
+import { useLogs, useVendors } from 'lib/database/read'
 import { VendorObject } from 'lib/types'
 
 // Functions

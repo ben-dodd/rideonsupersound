@@ -6,7 +6,7 @@ import {
   useInventory,
   useStocktakeItemsByStocktake,
   useStocktakesByTemplate,
-} from 'lib/swr-hooks'
+} from 'lib/database/read'
 import { StockObject, StocktakeItemObject } from 'lib/types'
 import { useState } from 'react'
 import ReviewListItem from './review-list-item'

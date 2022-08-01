@@ -12,11 +12,11 @@ import TextField from '@/components/inputs/text-field'
 // Icons
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
+import { useStocktakeItemsByStocktake, useVendors } from 'lib/database/read'
 import {
   deleteStocktakeItemFromDatabase,
   updateStocktakeItemInDatabase,
 } from 'lib/db-functions'
-import { useStocktakeItemsByStocktake, useVendors } from 'lib/swr-hooks'
 
 export default function CountedListItem({
   stocktakeItem,

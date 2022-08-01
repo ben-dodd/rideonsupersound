@@ -1,5 +1,5 @@
 // DB
-import { useInventory } from 'lib/swr-hooks'
+import { useInventory } from 'lib/database/read'
 import { SaleItemObject, SaleTransactionObject } from 'lib/types'
 
 // Functions

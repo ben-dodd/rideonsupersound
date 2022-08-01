@@ -6,10 +6,10 @@ import { pageAtom, viewAtom } from 'lib/atoms'
 
 // Components
 import ChangeStockQuantityDialog from '@/features/item-inventory/components/change-stock-quantity-dialog'
+import VendorScreen from '@/features/item-vendor/components'
 import VendorTable from 'features/display-vendors/components/vendor-table'
 import ChangePriceDialog from 'features/item-inventory/components/change-price-dialog'
 import InventoryItemScreen from 'features/item-inventory/components/inventory-item-screen'
-import VendorScreen from 'pages/vendor/[id]'
 
 export default function VendorPage() {
   // Atoms

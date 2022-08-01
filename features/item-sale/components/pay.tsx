@@ -8,7 +8,7 @@ import {
   loadedCustomerObjectAtom,
   viewAtom,
 } from 'lib/atoms'
-import { useCustomers, useInventory } from 'lib/swr-hooks'
+import { useCustomers, useInventory } from 'lib/database/read'
 import { CustomerObject, SaleStateTypes } from 'lib/types'
 
 // Functions

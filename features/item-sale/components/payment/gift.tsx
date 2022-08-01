@@ -12,7 +12,7 @@ import {
   useInventory,
   useLogs,
   useRegisterID,
-} from 'lib/swr-hooks'
+} from 'lib/database/read'
 import {
   CustomerObject,
   GiftCardObject,

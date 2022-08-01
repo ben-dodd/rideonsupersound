@@ -21,7 +21,7 @@ import {
   useSaleItemsForSale,
   useSales,
   useSaleTransactionsForSale,
-} from 'lib/swr-hooks'
+} from 'lib/database/read'
 import { ModalButton, SaleItemObject, SaleObject } from 'lib/types'
 
 // Functions

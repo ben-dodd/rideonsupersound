@@ -2,11 +2,11 @@ import { useAtom } from 'jotai'
 import { clerkAtom, loadedStocktakeTemplateIdAtom, viewAtom } from 'lib/atoms'
 
 import NewIcon from '@mui/icons-material/AddBox'
+import { useStocktakeTemplates } from 'lib/database/read'
 import {
   saveStocktakeTemplateToDatabase,
   saveSystemLog,
 } from 'lib/db-functions'
-import { useStocktakeTemplates } from 'lib/swr-hooks'
 import { StocktakeTemplateObject } from 'lib/types'
 import { useState } from 'react'
 

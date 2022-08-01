@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 
 // DB
 import { alertAtom, bypassRegisterAtom, clerkAtom, pageAtom } from 'lib/atoms'
-import { useLogs, useRegisterID } from 'lib/swr-hooks'
+import { useLogs, useRegisterID } from 'lib/database/read'
 import { RegisterObject, TillObject } from 'lib/types'
 
 // Functions

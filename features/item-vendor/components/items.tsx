@@ -9,7 +9,7 @@ import {
   useSalesJoined,
   useVendorPayments,
   useVendors,
-} from 'lib/swr-hooks'
+} from 'lib/database/read'
 import { StockObject, VendorObject } from 'lib/types'
 
 // Functions

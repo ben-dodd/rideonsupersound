@@ -16,7 +16,7 @@ import {
   useRegisterID,
   useStocktakeItemsByStocktake,
   useStocktakesByTemplate,
-} from 'lib/swr-hooks'
+} from 'lib/database/read'
 import { StockObject, StocktakeItemObject } from 'lib/types'
 
 // Functions

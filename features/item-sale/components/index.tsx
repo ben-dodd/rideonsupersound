@@ -12,7 +12,7 @@ import {
   useRegisterID,
   useSales,
   useSaleTransactionsForSale,
-} from 'lib/swr-hooks'
+} from 'lib/database/read'
 import { CustomerObject, ModalButton, SaleStateTypes } from 'lib/types'
 
 // Functions

@@ -12,7 +12,7 @@ import {
   useSalesJoined,
   useVendorPayments,
   useVendors,
-} from 'lib/swr-hooks'
+} from 'lib/database/read'
 import { ClerkObject, ModalButton } from 'lib/types'
 
 // Functions

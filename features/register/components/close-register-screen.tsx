@@ -13,7 +13,7 @@ import {
   usePettyCash,
   useRegister,
   useRegisterID,
-} from 'lib/swr-hooks'
+} from 'lib/database/read'
 import { ClerkObject, ModalButton, SaleTransactionObject } from 'lib/types'
 
 // Functions

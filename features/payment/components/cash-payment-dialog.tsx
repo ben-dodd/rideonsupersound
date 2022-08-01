@@ -13,7 +13,7 @@ import {
   useSalesJoined,
   useVendorPayments,
   useVendors,
-} from 'lib/swr-hooks'
+} from 'lib/database/read'
 import { ModalButton, VendorObject, VendorPaymentTypes } from 'lib/types'
 
 // Functions

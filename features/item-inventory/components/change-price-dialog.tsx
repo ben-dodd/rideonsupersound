@@ -10,7 +10,7 @@ import {
   pageAtom,
   viewAtom,
 } from 'lib/atoms'
-import { useInventory, useLogs, useStockItem } from 'lib/swr-hooks'
+import { useInventory, useLogs, useStockItem } from 'lib/database/read'
 import { ModalButton } from 'lib/types'
 
 // Functions

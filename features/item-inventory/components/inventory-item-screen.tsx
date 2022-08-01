@@ -9,7 +9,7 @@ import {
   useLogs,
   useSaleItems,
   useStockItem,
-} from 'lib/swr-hooks'
+} from 'lib/database/read'
 import { ModalButton, StockObject } from 'lib/types'
 
 // Functions

@@ -4,7 +4,7 @@ import { useMemo } from 'react'
 
 // DB
 import { loadedSaleIdAtom, pageAtom } from 'lib/atoms'
-import { useClerks, useCustomers, useSales } from 'lib/swr-hooks'
+import { useClerks, useCustomers, useSales } from 'lib/database/read'
 import {
   ClerkObject,
   CustomerObject,

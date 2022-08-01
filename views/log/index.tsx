@@ -7,7 +7,12 @@ import Tabs from '@/components/navigation/tabs'
 import ListLog from 'features/log/components/list-log'
 import ListStockMovement from 'features/log/components/list-stock-movement'
 import { pageAtom } from 'lib/atoms'
-import { useLogs, useStockMovements } from 'lib/swr-hooks'
+import {
+  useClerks,
+  useLogs,
+  useStockDisplayMin,
+  useStockMovements,
+} from 'lib/database/read'
 import { LogObject, StockMovementObject } from 'lib/types'
 
 // Components
@@ -15,7 +20,9 @@ import { LogObject, StockMovementObject } from 'lib/types'
 export default function LogPage() {
   // SWR
   const { logs, isLogsLoading } = useLogs()
+  const { clerks } = useClerks()
   const { stockMovements, isStockMovementsLoading } = useStockMovements(200)
+  const { stockDisplay } = useStockDisplayMin()
 
   // Atoms
   const [page] = useAtom(pageAtom)
@@ -40,7 +47,9 @@ export default function LogPage() {
             <div className="loading-icon" />
           </div>
         ) : (
-          logs?.map((log: LogObject) => <ListLog log={log} key={log?.id} />)
+          logs?.map((log: LogObject) => (
+            <ListLog log={log} clerks={clerks} key={log?.id} />
+          ))
         )}
       </div>
       <div
@@ -53,7 +62,12 @@ export default function LogPage() {
           </div>
         ) : (
           stockMovements?.map((sm: StockMovementObject) => (
-            <ListStockMovement sm={sm} key={sm?.id} />
+            <ListStockMovement
+              sm={sm}
+              clerks={clerks}
+              stockDisplay={stockDisplay}
+              key={sm?.id}
+            />
           ))
         )}
       </div>

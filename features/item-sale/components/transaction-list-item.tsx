@@ -2,7 +2,7 @@
 import dayjs from 'dayjs'
 
 // DB
-import { useGiftCards, useVendorFromVendorPayment } from 'lib/swr-hooks'
+import { useGiftCards, useVendorFromVendorPayment } from 'lib/database/read'
 import {
   GiftCardObject,
   PaymentMethodTypes,

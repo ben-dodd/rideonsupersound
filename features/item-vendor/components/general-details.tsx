@@ -1,5 +1,5 @@
 // DB
-import { useClerks, useInventory, useLogs, useVendors } from 'lib/swr-hooks'
+import { useClerks, useInventory, useLogs, useVendors } from 'lib/database/read'
 import { ClerkObject } from 'lib/types'
 
 // Components

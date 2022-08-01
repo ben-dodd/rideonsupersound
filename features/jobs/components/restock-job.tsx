@@ -5,8 +5,8 @@ import {
   getItemDisplayName,
   getItemSkuDisplayNameById,
 } from 'lib/data-functions'
+import { useInventory, useLogs } from 'lib/database/read'
 import { completeRestockTask, saveLog } from 'lib/db-functions'
-import { useInventory, useLogs } from 'lib/swr-hooks'
 import { StockObject } from 'lib/types'
 
 type ListItemProps = {

@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 // DB
-import { useClerks, useCustomers, useInventory } from 'lib/swr-hooks'
+import { useClerks, useCustomers, useInventory } from 'lib/database/read'
 import { CustomerObject, OpenWeatherObject, SaleStateTypes } from 'lib/types'
 
 // Functions

@@ -5,8 +5,8 @@ import TextField from '@/components/inputs/text-field'
 import { useAtom } from 'jotai'
 import { clerkAtom } from 'lib/atoms'
 import { getImageSrc, getItemDisplayName, getItemSku } from 'lib/data-functions'
+import { useLogs, useVendors } from 'lib/database/read'
 import { saveLog, saveVendorToDatabase } from 'lib/db-functions'
-import { useLogs, useVendors } from 'lib/swr-hooks'
 import { StockObject, VendorObject } from 'lib/types'
 
 interface inventoryProps {

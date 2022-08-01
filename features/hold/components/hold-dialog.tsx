@@ -19,7 +19,7 @@ import {
   useLogs,
   useRegisterID,
   useWeather,
-} from 'lib/swr-hooks'
+} from 'lib/database/read'
 import {
   ClerkObject,
   CustomerObject,

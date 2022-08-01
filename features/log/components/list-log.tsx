@@ -1,15 +1,12 @@
 // DB
-import { useClerks } from 'lib/swr-hooks'
 import { ClerkObject, LogObject } from 'lib/types'
 
 type ListItemProps = {
   log: LogObject
+  clerks: ClerkObject[]
 }
 
-export default function ListLog({ log }: ListItemProps) {
-  // SWR
-  const { clerks } = useClerks()
-
+export default function ListLog({ log, clerks }: ListItemProps) {
   return (
     <div className="flex w-full border-b border-yellow-100 py-1 font-mono text-xs text-black">
       <div className="flex flex-col sm:flex-row w-full justify-between">

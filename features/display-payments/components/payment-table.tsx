@@ -2,7 +2,7 @@
 import { useMemo } from 'react'
 
 // DB
-import { useClerks, useVendorPayments, useVendors } from 'lib/swr-hooks'
+import { useClerks, useVendorPayments, useVendors } from 'lib/database/read'
 import { ClerkObject, VendorObject, VendorPaymentObject } from 'lib/types'
 
 // Components

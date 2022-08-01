@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 // DB
 import { cartAtom, confirmModalAtom } from 'lib/atoms'
-import { useInventory, useStockItem } from 'lib/swr-hooks'
+import { useInventory, useStockItem } from 'lib/database/read'
 import { SaleItemObject, StockObject } from 'lib/types'
 
 // Functions

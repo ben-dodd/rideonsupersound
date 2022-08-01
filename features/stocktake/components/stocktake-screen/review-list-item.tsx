@@ -12,8 +12,8 @@ import Select from 'react-select'
 // Icons
 import CheckIcon from '@mui/icons-material/CheckCircleOutline'
 import EditIcon from '@mui/icons-material/Edit'
+import { useStocktakeItemsByStocktake, useVendors } from 'lib/database/read'
 import { updateStocktakeItemInDatabase } from 'lib/db-functions'
-import { useStocktakeItemsByStocktake, useVendors } from 'lib/swr-hooks'
 import {
   StockObject,
   StocktakeItemObject,

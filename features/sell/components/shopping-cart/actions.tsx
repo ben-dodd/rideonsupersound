@@ -17,7 +17,7 @@ import {
   useLogs,
   useRegisterID,
   useSales,
-} from 'lib/swr-hooks'
+} from 'lib/database/read'
 
 // Functions
 import {

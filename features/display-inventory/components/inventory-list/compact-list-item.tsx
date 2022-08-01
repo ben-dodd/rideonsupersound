@@ -11,7 +11,12 @@ import {
   sellSearchBarAtom,
   viewAtom,
 } from 'lib/atoms'
-import { useInventory, useLogs, useVendors, useWeather } from 'lib/swr-hooks'
+import {
+  useInventory,
+  useLogs,
+  useVendors,
+  useWeather,
+} from 'lib/database/read'
 import { StockObject, VendorObject } from 'lib/types'
 
 // Components

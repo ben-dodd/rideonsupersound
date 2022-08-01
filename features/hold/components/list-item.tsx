@@ -1,4 +1,4 @@
-import { useInventory } from 'lib/swr-hooks'
+import { useInventory } from 'lib/database/read'
 
 import {
   getImageSrc,

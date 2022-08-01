@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import { useAtom } from 'jotai'
 import { viewAtom } from 'lib/atoms'
-import { useStockMovementByStockId } from 'lib/swr-hooks'
+import { useStockMovementByStockId } from 'lib/database/read'
 import { StockObject } from 'lib/types'
 
 interface stockDetailsProps {

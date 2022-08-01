@@ -2,7 +2,7 @@
 import { useMemo } from 'react'
 
 // DB
-import { useGiftCards } from 'lib/swr-hooks'
+import { useGiftCards } from 'lib/database/read'
 import { StockObject } from 'lib/types'
 
 // Components

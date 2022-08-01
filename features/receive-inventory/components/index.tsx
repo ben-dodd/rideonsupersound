@@ -9,7 +9,7 @@ import {
   receiveStockAtom,
   viewAtom,
 } from 'lib/atoms'
-import { useInventory, useRegisterID } from 'lib/swr-hooks'
+import { useInventory, useRegisterID } from 'lib/database/read'
 import { ModalButton } from 'lib/types'
 
 // Functions

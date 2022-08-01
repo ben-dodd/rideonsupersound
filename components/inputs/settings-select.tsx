@@ -1,13 +1,6 @@
-// Packages
+import { createSettingSelectInDatabase } from 'lib/database/create'
+import { useSelect } from 'lib/database/read'
 import { useState } from 'react'
-
-// DB
-import { useSelect } from 'lib/swr-hooks'
-
-// Functions
-import { saveSelectToDatabase } from 'lib/db-functions'
-
-// Components
 import Select from 'react-select'
 import CreatableSelect from 'react-select/creatable'
 
@@ -149,7 +142,7 @@ export default function SettingsSelect({
           onCreateOption={(inputValue: string) => {
             if (!isCreateDisabled) {
               setLoading(true)
-              saveSelectToDatabase(inputValue, dbField, mutateSelects)
+              createSettingSelectInDatabase(inputValue, dbField, mutateSelects)
               if (isMulti)
                 onEdit({
                   ...object,

@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 // DB
 import { alertAtom, clerkAtom, viewAtom } from 'lib/atoms'
-import { useLogs, usePettyCash, useRegisterID } from 'lib/swr-hooks'
+import { useLogs, usePettyCash, useRegisterID } from 'lib/database/read'
 import { ModalButton } from 'lib/types'
 
 // Functions

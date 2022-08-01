@@ -4,6 +4,7 @@ import StockItem from '@/features/web-vendor/components/stock-item'
 import Tabs from '@/features/web-vendor/components/tabs'
 import dayjs from 'dayjs'
 import { filterInventory, sumPrices } from 'lib/data-functions'
+import { StockObject } from 'lib/types'
 import {
   useVendorByUid,
   useVendorPaymentsByUid,
@@ -12,8 +13,7 @@ import {
   useVendorStockMovementByUid,
   useVendorStockPriceByUid,
   useVendorStoreCreditsByUid,
-} from 'lib/swr-hooks'
-import { StockObject } from 'lib/types'
+} from 'lib/vendor-swr-hooks'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
@@ -75,7 +75,7 @@ export default function VendorScreen() {
 
   useEffect(() => {
     const totalSales = vendorSales?.map((sale) => {
-      const price = vendorStockPrice?.filter(
+      const price = vendorStockPrice?.filter?.(
         (v) =>
           v?.stock_id === sale?.item_id &&
           dayjs(v?.date_valid_from)?.isBefore(dayjs(sale?.date_sale_closed))
@@ -86,7 +86,7 @@ export default function VendorScreen() {
         total_sell: price?.total_sell,
       }
     })
-    const filteredSales = totalSales?.filter((sale) =>
+    const filteredSales = totalSales?.filter?.((sale) =>
       dayjs(sale?.date_sale_closed)?.isBetween(
         dayjs(startDate),
         dayjs(endDate),
@@ -94,7 +94,7 @@ export default function VendorScreen() {
         '[]'
       )
     )
-    const filteredPayments = vendorPayments?.filter((payment) =>
+    const filteredPayments = vendorPayments?.filter?.((payment) =>
       dayjs(payment?.date)?.isBetween(
         dayjs(startDate),
         dayjs(endDate),

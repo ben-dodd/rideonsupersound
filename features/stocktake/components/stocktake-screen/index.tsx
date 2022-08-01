@@ -16,7 +16,7 @@ import {
   useStocktakeItemsByStocktake,
   useStocktakesByTemplate,
   useStocktakeTemplates,
-} from 'lib/swr-hooks'
+} from 'lib/database/read'
 import { ModalButton, StockObject } from 'lib/types'
 
 // Functions

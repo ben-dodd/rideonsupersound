@@ -15,7 +15,7 @@ import {
   useLogs,
   useRegisterID,
   useStockItem,
-} from 'lib/swr-hooks'
+} from 'lib/database/read'
 import { ModalButton, StockMovementTypes } from 'lib/types'
 
 // Functions

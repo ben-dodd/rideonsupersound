@@ -1,27 +1,18 @@
-// Packages
+import SidebarContainer from '@/components/container/side-bar'
+import TextField from '@/components/inputs/text-field'
 import { useAtom } from 'jotai'
-import { useEffect, useState } from 'react'
-
-// DB
 import {
   cartAtom,
   clerkAtom,
   loadedCustomerObjectAtom,
   viewAtom,
 } from 'lib/atoms'
-import { useCustomers } from 'lib/swr-hooks'
+import { createCustomerInDatabase } from 'lib/database/create'
+import { useCustomers } from 'lib/database/read'
+import { updateCustomerInDatabase } from 'lib/database/update'
+import { saveSystemLog } from 'lib/db-functions'
 import { CustomerObject, ModalButton } from 'lib/types'
-
-// Functions
-import {
-  saveCustomerToDatabase,
-  saveSystemLog,
-  updateCustomerInDatabase,
-} from 'lib/db-functions'
-
-// Components
-import SidebarContainer from '@/components/container/side-bar'
-import TextField from '@/components/inputs/text-field'
+import { useEffect, useState } from 'react'
 
 export default function CreateCustomerSidebar() {
   // SWR
@@ -57,7 +48,7 @@ export default function CreateCustomerSidebar() {
     saveSystemLog(`New customer (${customer?.name}) created.`, clerk?.id)
     setSubmitting(true)
     let newCustomer = { ...customer, created_by_clerk_id: clerk?.id }
-    const id = await saveCustomerToDatabase({ customer, clerk })
+    const id = await createCustomerInDatabase(customer, clerk)
     newCustomer = { ...newCustomer, id }
     mutateCustomers([...customers, newCustomer], false)
     setCart({ ...cart, customer_id: id })
@@ -67,7 +58,7 @@ export default function CreateCustomerSidebar() {
 
   async function onClickUpdateCustomer() {
     setSubmitting(true)
-    updateCustomerInDatabase(customer, customers, mutateCustomers)
+    updateCustomerInDatabase(customer, mutateCustomers, customers)
     closeSidebar()
   }
 

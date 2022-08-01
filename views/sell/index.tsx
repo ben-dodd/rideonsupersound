@@ -25,7 +25,7 @@ import {
   pageAtom,
   viewAtom,
 } from 'lib/atoms'
-import { useRegisterID } from 'lib/swr-hooks'
+import { useRegisterID } from 'lib/database/read'
 
 // Components
 

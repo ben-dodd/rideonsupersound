@@ -12,7 +12,7 @@ import {
   salesViewClerksAtom,
   salesViewRangeAtom,
 } from 'lib/atoms'
-import { useClerks } from 'lib/swr-hooks'
+import { useClerks } from 'lib/database/read'
 
 export default function Filter() {
   const { clerks } = useClerks()

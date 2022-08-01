@@ -78,12 +78,12 @@ export function latestDate(dates: Date[] | string[]) {
     : null
 }
 
-export function authoriseUrl(url: string) {
-  let k = process.env.NEXT_PUBLIC_SWR_API_KEY
-  if (!url || !k) return null
-  if (url?.includes('?')) return `${url}&k=${k}`
-  else return `${url}?k=${k}`
-}
+// export function authoriseUrl(url: string) {
+//   let k = process.env.NEXT_PUBLIC_SWR_API_KEY
+//   if (!url || !k) return null
+//   if (url?.includes('?')) return `${url}&k=${k}`
+//   else return `${url}?k=${k}`
+// }
 
 export function centsToDollars(cents: number) {
   return cents / 100

@@ -1,6 +1,6 @@
 import { useAtom } from 'jotai'
 import { clerkAtom } from 'lib/atoms'
-import { useAccount, useAccountClerks } from 'lib/swr-hooks'
+import { useAccount, useAccountClerks } from 'lib/database/read'
 import { useSession } from 'next-auth/client'
 import { useEffect } from 'react'
 
@@ -12,13 +12,14 @@ export default function LandingPage() {
   const [session] = useSession()
   const { account } = useAccount(session?.user?.email)
   // Get clerk details
-  const { clerks, isAccountClerksLoading } = useAccountClerks(account?.id)
+  const { accountClerks, isAccountClerksLoading, isAccountClerksError } =
+    useAccountClerks(account?.id)
   const [clerk, setClerk] = useAtom(clerkAtom)
 
   useEffect(() => {
     // If google account only connected to one clerk, automatically set clerk
-    if (clerks && clerks.length === 1) setClerk(clerks[0])
-  }, [clerks])
+    if (accountClerks?.length === 1) setClerk(accountClerks[0])
+  }, [accountClerks])
 
   return (
     <>
@@ -29,7 +30,7 @@ export default function LandingPage() {
       ) : clerk?.id ? (
         <MainPage />
       ) : (
-        <SplashPage clerks={clerks} />
+        <SplashPage clerks={accountClerks} />
       )}
     </>
   )

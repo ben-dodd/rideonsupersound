@@ -12,10 +12,12 @@ import {
 
 import { latestDate } from './utils'
 
-export function getItemSku({ id, vendor_id }: any) {
-  return `${('000' + vendor_id || '').slice(-3)}/${('00000' + id || '').slice(
-    -5
-  )}`
+export function getItemSku(item: StockObject) {
+  return item
+    ? `${('000' + item?.vendor_id || '').slice(-3)}/${(
+        '00000' + item?.id || ''
+      ).slice(-5)}`
+    : null
 }
 
 export function getItemDisplayName(item: StockObject | GiftCardObject) {
