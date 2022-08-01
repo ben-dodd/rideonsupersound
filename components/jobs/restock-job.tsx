@@ -1,23 +1,23 @@
 // DB
-import { useInventory, useLogs } from "@/lib/swr-hooks";
-import { StockObject } from "@/lib/types";
+import { clerkAtom } from '@/lib/atoms'
 import {
   getItemDisplayName,
   getItemSkuDisplayNameById,
-} from "@/lib/data-functions";
-import { completeRestockTask, saveLog } from "@/lib/db-functions";
-import { useAtom } from "jotai";
-import { clerkAtom } from "@/lib/atoms";
+} from '@/lib/data-functions'
+import { completeRestockTask, saveLog } from '@/lib/db-functions'
+import { useInventory, useLogs } from '@/lib/swr-hooks'
+import { StockObject } from '@/lib/types'
+import { useAtom } from 'jotai'
 
 type ListItemProps = {
-  item: StockObject;
-};
+  item: StockObject
+}
 
 export default function RestockJob({ item }: ListItemProps) {
   // SWR
-  const { inventory, mutateInventory } = useInventory();
-  const { logs, mutateLogs } = useLogs();
-  const [clerk] = useAtom(clerkAtom);
+  const { inventory, mutateInventory } = useInventory()
+  const { logs, mutateLogs } = useLogs()
+  const [clerk] = useAtom(clerkAtom)
 
   return (
     <div className={`flex w-full border-b border-yellow-100 py-1 text-sm`}>
@@ -33,8 +33,8 @@ export default function RestockJob({ item }: ListItemProps) {
                     i?.id === item?.id ? { ...item, needs_restock: false } : i
                   ),
                   false
-                );
-                completeRestockTask(item?.id);
+                )
+                completeRestockTask(item?.id)
                 saveLog(
                   {
                     log: `${getItemDisplayName(item)} restocked.`,
@@ -42,13 +42,15 @@ export default function RestockJob({ item }: ListItemProps) {
                   },
                   logs,
                   mutateLogs
-                );
+                )
               }}
             />
           </div>
-          <div>{getItemSkuDisplayNameById(item?.id, inventory)}</div>
+          <div>{`${getItemSkuDisplayNameById(item?.id, inventory)}${
+            item?.format ? ` (${item?.format})` : ''
+          }`}</div>
         </div>
       </div>
     </div>
-  );
+  )
 }
