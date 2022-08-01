@@ -9,7 +9,6 @@ import dayjs from 'dayjs'
 import { useAtom } from 'jotai'
 import { useMemo } from 'react'
 import Filter from './filter'
-import ListItem from './list-item'
 
 export default function List() {
   const [salesViewRange] = useAtom(salesViewRangeAtom)
@@ -21,8 +20,8 @@ export default function List() {
   const sortedSales = useMemo(() => {
     // Sort sales into 2D array
     // [{ day: '', sales: [{ time, sale | register }]}]
-    console.log(saleTransactions)
-    console.log(registers)
+    // console.log(saleTransactions)
+    // console.log(registers)
     let grandTotal = 0
     let saleMap = {}
     saleTransactions?.forEach?.((transaction) => {
@@ -67,6 +66,7 @@ export default function List() {
       title={'SALES'}
       titleClass={'bg-col5'}
       isLoading={isClerksLoading}
+      actionButtons={null}
     >
       <div>
         <Filter />
