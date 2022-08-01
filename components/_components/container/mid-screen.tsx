@@ -1,10 +1,18 @@
+interface midScreenContainerProps {
+  children: any
+  title?: string
+  titleClass?: string
+  isLoading?: boolean
+  actionButtons?: any
+}
+
 export default function MidScreenContainer({
   children,
   title,
   titleClass,
   isLoading,
   actionButtons,
-}) {
+}: midScreenContainerProps) {
   return (
     <div className="w-full sm:w-2/3 bg-gray-100">
       {title && (

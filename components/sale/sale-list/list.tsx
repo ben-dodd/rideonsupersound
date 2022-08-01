@@ -66,7 +66,6 @@ export default function List() {
       title={'SALES'}
       titleClass={'bg-col5'}
       isLoading={isClerksLoading}
-      actionButtons={null}
     >
       <div>
         <Filter />
