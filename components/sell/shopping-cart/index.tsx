@@ -1,90 +1,90 @@
 // Packages
-import { useState } from "react";
-import { useAtom } from "jotai";
+import { useAtom } from 'jotai'
+import { useState } from 'react'
 
 // DB
-import { useInventory, useLogs } from "@/lib/swr-hooks";
-import { cartAtom, viewAtom, clerkAtom, alertAtom } from "@/lib/atoms";
-import { StockObject, SaleItemObject } from "@/lib/types";
+import { alertAtom, cartAtom, clerkAtom, viewAtom } from '@/lib/atoms'
+import { useInventory, useLogs } from '@/lib/swr-hooks'
+import { SaleItemObject, StockObject } from '@/lib/types'
 
 // Functions
-import { getItemDisplayName, getSaleVars } from "@/lib/data-functions";
+import { getItemDisplayName, getSaleVars } from '@/lib/data-functions'
 import {
   deleteSaleFromDatabase,
   deleteSaleItemFromDatabase,
   saveLog,
-} from "@/lib/db-functions";
+} from '@/lib/db-functions'
 
 // Components
-import Tooltip from "@mui/material/Tooltip";
-import CircularProgress from "@mui/material/CircularProgress";
-import Actions from "./actions";
-import ListItem from "./list-item";
+import CircularProgress from '@mui/material/CircularProgress'
+import Tooltip from '@mui/material/Tooltip'
+import Actions from './actions'
+import ListItem from './list-item'
 
 // Icons
-import PayIcon from "@mui/icons-material/ShoppingCart";
-import HoldIcon from "@mui/icons-material/PanTool";
+import HoldIcon from '@mui/icons-material/PanTool'
+import PayIcon from '@mui/icons-material/ShoppingCart'
 
 export default function ShoppingCart() {
   // SWR
-  const { inventory } = useInventory();
-  const { logs, mutateLogs } = useLogs();
+  const { inventory } = useInventory()
+  const { logs, mutateLogs } = useLogs()
 
   // Atoms
-  const [view, setView] = useAtom(viewAtom);
-  const [clerk] = useAtom(clerkAtom);
-  const [cart, setCart] = useAtom(cartAtom);
-  const [, setAlert] = useAtom(alertAtom);
+  const [view, setView] = useAtom(viewAtom)
+  const [clerk] = useAtom(clerkAtom)
+  const [cart, setCart] = useAtom(cartAtom)
+  const [, setAlert] = useAtom(alertAtom)
 
   // State
-  const [loadingSale, setLoadingSale] = useState(false);
+  const [loadingSale, setLoadingSale] = useState(false)
 
   async function deleteCartItem(itemId: string, id: number) {
-    let updatedCartItems = cart?.items?.map((i: SaleItemObject) =>
-      i?.item_id === parseInt(itemId) ? { ...i, is_deleted: true } : i
-    );
+    let updatedCartItems = cart?.items?.filter(
+      (item: SaleItemObject) => item?.item_id !== parseInt(itemId)
+    )
     if (id)
       // Cart has been saved to the database, delete sale_item
-      deleteSaleItemFromDatabase(id);
+      deleteSaleItemFromDatabase(id)
     if (cart?.items?.length < 1 && cart?.transactions?.length < 1) {
       // No items left and no transactions, delete cart
-      setView({ ...view, cart: false });
-      deleteSaleFromDatabase(cart?.id);
+      setView({ ...view, cart: false })
+      deleteSaleFromDatabase(cart?.id)
     }
     setCart({
       ...cart,
       items: updatedCartItems,
-    });
+    })
     saveLog(
       {
         log: `${getItemDisplayName(
           inventory?.filter((i: StockObject) => i?.id === parseInt(itemId))[0]
-        )} removed from cart${id ? ` (sale #${id})` : ""}.`,
+        )} removed from cart${id ? ` (sale #${id})` : ''}.`,
         clerk_id: clerk?.id,
       },
       logs,
       mutateLogs
-    );
+    )
     setAlert({
       open: true,
-      type: "success",
+      type: 'success',
       message: `ITEM REMOVED FROM CART`,
-    });
+    })
     // setRefresh(refresh + 1);
   }
 
-  console.log(cart);
+  console.log(cart)
 
   // Constants
   const { totalPrice, totalStoreCut, totalRemaining, totalPaid } = getSaleVars(
     cart,
     inventory
-  );
+  )
 
   return (
     <div
       className={`absolute top-0 transition-offset duration-300 ${
-        view?.cart ? "left-0" : "left-full"
+        view?.cart ? 'left-0' : 'left-full'
       } sm:left-2/3 h-full w-full bg-yellow-200 sm:w-1/3 sm:h-menu`}
     >
       <div className="flex flex-col h-menu px-2 bg-gray-200 text-black">
@@ -124,10 +124,10 @@ export default function ShoppingCart() {
             <div className="self-center">TOTAL PAID</div>
             <div
               className={`self-center text-right ml-7 ${
-                totalPaid < 0 ? "text-red-500" : "text-black"
+                totalPaid < 0 ? 'text-red-500' : 'text-black'
               }`}
             >
-              {totalPaid < 0 && "-"}${Math.abs(totalPaid)?.toFixed(2)}
+              {totalPaid < 0 && '-'}${Math.abs(totalPaid)?.toFixed(2)}
             </div>
           </div>
         ) : (
@@ -152,13 +152,13 @@ export default function ShoppingCart() {
                 <div className="self-center">STORE CUT</div>
                 <div
                   className={`self-center text-right ml-7 ${
-                    totalStoreCut < 0 ? "text-red-500" : "text-black"
+                    totalStoreCut < 0 ? 'text-red-500' : 'text-black'
                   }`}
                 >
-                  {totalStoreCut < 0 && "-"}$
+                  {totalStoreCut < 0 && '-'}$
                   {cart?.items?.length > 0
                     ? Math.abs(totalStoreCut)?.toFixed(2)
-                    : "0.00"}
+                    : '0.00'}
                 </div>
               </div>
               <div className="flex justify-end mt-1">
@@ -172,7 +172,7 @@ export default function ShoppingCart() {
           <div>
             <button
               className={`w-full my-4 modal__button--${
-                totalRemaining < 0 ? "cancel" : "ok"
+                totalRemaining < 0 ? 'cancel' : 'ok'
               }`}
               disabled={loadingSale || totalRemaining === 0}
               onClick={() => setView({ ...view, saleScreen: true })}
@@ -192,5 +192,5 @@ export default function ShoppingCart() {
         </div>
       </div>
     </div>
-  );
+  )
 }
