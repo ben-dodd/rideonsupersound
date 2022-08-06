@@ -24,22 +24,3 @@ export async function returnHoldToStock(
   )
   mutateInventory()
 }
-
-export async function addRestockTask(id: number) {
-  try {
-    const res = await fetch(
-      `/api/restock-task?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id, needs_restock: true }),
-      }
-    )
-    const json = await res.json()
-    if (!res.ok) throw Error(json.message)
-  } catch (e) {
-    throw Error(e.message)
-  }
-}

@@ -1,9 +1,22 @@
+import { saveLog } from '@/features/log/lib/functions'
+import { createSaleInDatabase, createSaleItemInDatabase, createStockMovementInDatabase } from 'lib/database/create'
+import { deleteSaleFromDatabase, deleteSaleItemFromDatabase, deleteSaleTransactionFromDatabase, deleteVendorPaymentFromDatabase } from 'lib/database/delete'
+import { updateItemInDatabase, updateSaleInDatabase, updateSaleItemInDatabase } from 'lib/database/update'
 import {
+  ClerkObject,
+  CustomerObject,
+  GiftCardObject,
+  LogObject,
+  SaleObject,
+  SaleStateTypes,
   SaleTransactionObject,
+  StockMovementTypes,
   StockObject,
   VendorPaymentObject,
-  VendorSaleItemObject,
+  VendorSaleItemObject
 } from 'lib/types'
+import { addRestockTask } from '../../hold/lib/functions'
+import { getCartItemPrice, getItemQuantity } from '../../sell/lib/functions'
 
 export function getSaleVars(sale: any, inventory: StockObject[]) {
   // Sale - sale item
@@ -186,14 +199,14 @@ export async function nukeSaleInDatabase(
   sale?.items?.forEach((saleItem) => {
     deleteSaleItemFromDatabase(saleItem?.id)
     if (!saleItem?.is_refunded)
-      createStockMovementInDatabase(
-        saleItem,
+      createStockMovementInDatabase({
+        item: saleItem,
         clerk,
         registerID,
-        StockMovementTypes.Unsold,
-        'Sale nuked.',
-        sale?.id
-      )
+        act: StockMovementTypes.Unsold,
+        note: 'Sale nuked.',
+        sale_id: sale?.id
+  })
   })
   sale?.transactions?.forEach((saleTransaction) => {
     if (saleTransaction?.vendor_payment_id)
@@ -338,56 +351,34 @@ export async function saveSaleItemsTransactionsToDatabase(
 
     // Add stock movement if it's a regular stock item
     if (!item?.is_gift_card && !item?.is_misc_item) {
+      let act = StockMovementTypes.Sold
       if (cart?.state === SaleStateTypes.Completed) {
         // If it was a layby, unlayby it before marking as sold
+        let act = ''
         if (prevState === SaleStateTypes.Layby && !item?.is_gift_card) {
-          createStockMovementInDatabase(
-            item,
-            clerk,
-            registerID,
-            StockMovementTypes.Unlayby,
-            null,
-            newSaleId
-          )
+          act = StockMovementTypes.Unlayby
           quantity_layby -= 1
         }
         if (item?.is_refunded) {
           // Refund item if refunded
-          createStockMovementInDatabase(
-            item,
-            clerk,
-            registerID,
-            StockMovementTypes.Unsold,
-            null,
-            newSaleId
-          )
-        } else {
-          // Mark stock as sold
-          createStockMovementInDatabase(
-            item,
-            clerk,
-            registerID,
-            StockMovementTypes.Sold,
-            null,
-            newSaleId
-          )
+          act = StockMovementTypes.Unsold
         }
-
         // Add layby stock movement if it's a new layby
       } else if (
         cart?.state === SaleStateTypes.Layby &&
         prevState !== SaleStateTypes.Layby
       ) {
-        createStockMovementInDatabase(
-          item,
-          clerk,
-          registerID,
-          StockMovementTypes.Layby,
-          null,
-          newSaleId
-        )
+        act = StockMovementTypes.Layby
         quantity_layby += 1
       }
+      createStockMovementInDatabase({
+        item,
+        clerk,
+        registerID,
+        act,
+        sale_id: newSaleId
+    })
+    }
 
       // Update inventory item if it's a regular stock item
       mutateInventory &&
@@ -485,21 +476,6 @@ export async function addNewMailOrderTask(sale: SaleObject, customer: string) {
   }
 }
 
-export async function validateGiftCard(id: number) {
-  try {
-    const res = await fetch(
-      `/api/validate-gift-card?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id }),
-      }
-    )
-    const json = await res.json()
-    if (!res.ok) throw Error(json.message)
-  } catch (e) {
-    throw Error(e.message)
-  }
+export function validateGiftCard(id: number) {
+  updateItemInDatabase({gift_card_is_valid: 1, id}, 'stock')
 }

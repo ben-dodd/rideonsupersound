@@ -1,3 +1,16 @@
+import { saveLog } from '@/features/log/lib/functions'
+import {
+  createPettyCashInDatabase,
+  createRegisterInDatabase,
+  createTillInDatabase,
+} from '@/lib/database/create'
+import {
+  updateItemInDatabase,
+  updateRegisterInDatabase,
+} from '@/lib/database/update'
+import dayjs from 'dayjs'
+import { ClerkObject, LogObject, RegisterObject, TillObject } from 'lib/types'
+
 export function getAmountFromCashMap(till: TillObject) {
   let closeAmount: number = 0
   if (till) {
@@ -30,39 +43,23 @@ export async function saveClosedRegisterToDatabase(
   logs: LogObject[],
   mutateLogs: Function
 ) {
-  try {
-    const tillID = await createTillInDatabase(till)
-    const res = await fetch(
-      `/api/update-register?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...register,
-          id: register_id,
-          close_till_id: tillID,
-          close_date: dayjs.utc().format(),
-        }),
-      }
-    )
-    const json = await res.json()
-    if (!res.ok) throw Error(json.message)
-    saveLog(
-      {
-        log: `Register closed.`,
-        table_id: 'register',
-        row_id: json?.insertId,
-        clerk_id: register?.closed_by_id,
-      },
-      logs,
-      mutateLogs
-    )
-    setRegister(json?.insertId)
-  } catch (e) {
-    throw Error(e.message)
-  }
+  const tillID = await createTillInDatabase(till)
+  updateRegisterInDatabase({
+    id: register_id,
+    close_till_id: tillID,
+    close_date: dayjs.utc().format(),
+  })
+  saveLog(
+    {
+      log: `Register closed.`,
+      table_id: 'register',
+      row_id: register_id,
+      clerk_id: register?.closed_by_id,
+    },
+    logs,
+    mutateLogs
+  )
+  setRegister(register_id)
 }
 
 export async function saveAndOpenRegister(
@@ -125,22 +122,5 @@ export async function savePettyCashToRegister(
 }
 
 export async function setRegister(register_id: number) {
-  try {
-    const res = await fetch(
-      `/api/set-register?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          register_id: register_id,
-        }),
-      }
-    )
-    const json = await res.json()
-    if (!res.ok) throw Error(json.message)
-  } catch (e) {
-    throw Error(e.message)
-  }
+  updateItemInDatabase({ num: register_id, id: 'current_register' }, 'global')
 }

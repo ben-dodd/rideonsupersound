@@ -1,8 +1,8 @@
-import { CustomerObject } from '@/features/customer/lib/types'
 import axios from 'axios'
 // import { v4 } from 'uuid'
 import {
   ClerkObject,
+  CustomerObject,
   LogObject,
   SaleItemObject,
   SaleObject,
@@ -507,7 +507,7 @@ interface stockMovementProps {
   clerk: ClerkObject
   registerID: number
   act: string
-  note: string
+  note?: string
   sale_id?: number
   stocktake_id?: number
 }

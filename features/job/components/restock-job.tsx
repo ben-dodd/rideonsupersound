@@ -1,5 +1,8 @@
 // DB
-import { getItemDisplayName } from '@/features/inventory/features/display-inventory/lib/functions'
+import {
+  getItemDisplayName,
+  getItemSkuDisplayName,
+} from '@/features/inventory/features/display-inventory/lib/functions'
 import { saveLog } from '@/features/log/lib/functions'
 import { useAtom } from 'jotai'
 import { clerkAtom } from 'lib/atoms'
@@ -44,7 +47,7 @@ export default function RestockJob({ item }: ListItemProps) {
               }}
             />
           </div>
-          <div>{getItemSkuDisplayNameById(item?.id, inventory)}</div>
+          <div>{getItemSkuDisplayName(item?.id, inventory)}</div>
         </div>
       </div>
     </div>

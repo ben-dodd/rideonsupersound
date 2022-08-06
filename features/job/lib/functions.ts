@@ -9,6 +9,10 @@ export async function completeTask(task: TaskObject) {
   )
 }
 
+export async function addRestockTask(id: number) {
+  updateItemInDatabase({ needs_restock: 0, id }, 'stock')
+}
+
 export async function completeRestockTask(id: number) {
   updateItemInDatabase({ needs_restock: 1, id }, 'stock')
 }

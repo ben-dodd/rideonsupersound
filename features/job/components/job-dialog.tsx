@@ -8,11 +8,11 @@ import { useJobs, useLogs } from 'lib/database/read'
 import { ModalButton, RoleTypes, TaskObject } from 'lib/types'
 
 // Functions
-import { saveLog, saveTaskToDatabase } from 'lib/db-functions'
 
 // Components
 import TextField from '@/components/inputs/text-field'
 import Modal from '@/components/modal'
+import { saveLog } from '@/features/log/lib/functions'
 import dayjs from 'dayjs'
 import Select from 'react-select'
 
@@ -127,4 +127,7 @@ export default function JobDialog() {
       </div>
     </Modal>
   )
+}
+function saveTaskToDatabase(newTask: TaskObject) {
+  throw new Error('Function not implemented.')
 }
