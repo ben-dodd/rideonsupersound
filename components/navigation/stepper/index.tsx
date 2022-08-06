@@ -1,14 +1,14 @@
 interface StepperProps {
-  steps: string[];
-  value: number;
-  onChange?: Function;
-  disabled?: Boolean;
-  selectedBg?: string;
-  notSelectedBg?: string;
-  selectedText?: string;
-  notSelectedText?: string;
-  selectedTextHover?: string;
-  notSelectedTextHover?: string;
+  steps: string[]
+  value: number
+  onChange?: Function
+  disabled?: Boolean
+  selectedBg?: string
+  notSelectedBg?: string
+  selectedText?: string
+  notSelectedText?: string
+  selectedTextHover?: string
+  notSelectedTextHover?: string
 }
 
 export default function Stepper({
@@ -30,15 +30,15 @@ export default function Stepper({
           <div
             key={index}
             className={`flex items-center px-2 py-1${
-              !disabled && " cursor-pointer"
+              !disabled && ' cursor-pointer'
             }`}
             onClick={() => (disabled ? null : onChange(index))}
           >
             <div
               className={`stock-indicator__number ${
                 value === index
-                  ? selectedBg || "bg-primary-light"
-                  : notSelectedBg || "bg-secondary-light"
+                  ? selectedBg || 'bg-primary-light'
+                  : notSelectedBg || 'bg-secondary-light'
               }`}
             >
               {index + 1}
@@ -46,11 +46,11 @@ export default function Stepper({
             <div
               className={`pl-2 ${
                 value === index
-                  ? `${selectedText || "text-primary"} hover:${
-                      selectedTextHover || "text-primary-dark"
+                  ? `${selectedText || 'text-primary'} hover:${
+                      selectedTextHover || 'text-primary-dark'
                     }`
-                  : `${notSelectedText || "text-secondary"} hover:${
-                      notSelectedTextHover || "text-secondary-dark"
+                  : `${notSelectedText || 'text-secondary'} hover:${
+                      notSelectedTextHover || 'text-secondary-dark'
                     }`
               }`}
             >
@@ -60,5 +60,5 @@ export default function Stepper({
         ))}
       </div>
     </div>
-  );
+  )
 }

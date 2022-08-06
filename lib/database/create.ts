@@ -1,7 +1,8 @@
+import { CustomerObject } from '@/features/customer/lib/types'
 import axios from 'axios'
+// import { v4 } from 'uuid'
 import {
   ClerkObject,
-  CustomerObject,
   LogObject,
   SaleItemObject,
   SaleObject,
@@ -15,8 +16,7 @@ import {
   TillObject,
   VendorObject,
   VendorPaymentObject,
-} from 'lib/types'
-import { v4 as uuid } from 'uuid'
+} from '../types'
 
 async function createItemInDatabase(
   properties,
@@ -62,7 +62,7 @@ export async function createVendorInDatabase(vendor: VendorObject) {
     email_vendor,
   } = vendor
   const newVendor = {
-    uid: uuid(),
+    // uid: v4(),
     name,
     vendor_category,
     clerk_id,
@@ -502,34 +502,47 @@ export async function createStockPriceInDatabase(
   return await createItemInDatabase(newStockPrice, 'stock_price')
 }
 
-export async function createStockMovementInDatabase(
-  item: SaleItemObject,
-  clerk: ClerkObject,
-  registerID: number,
-  act: string,
-  note: string,
-  sale_id?: number,
+interface stockMovementProps {
+  item: SaleItemObject
+  clerk: ClerkObject
+  registerID: number
+  act: string
+  note: string
+  sale_id?: number
   stocktake_id?: number
-) {
+}
+
+export async function createStockMovementInDatabase({
+  item,
+  clerk,
+  registerID,
+  act,
+  note,
+  sale_id,
+  stocktake_id,
+}: stockMovementProps) {
   const newStockMovement = {
     stock_id: item?.item_id,
     clerk_id: clerk?.id,
     register_id: registerID,
-    quantity:
-      act === StockMovementTypes.Received ||
-      act === StockMovementTypes.Unhold ||
-      act === StockMovementTypes.Unlayby ||
-      act === StockMovementTypes.Found ||
-      act === StockMovementTypes.Unsold ||
-      act === StockMovementTypes.Adjustment
-        ? parseInt(item?.quantity)
-        : -parseInt(item?.quantity),
+    quantity: getQuantityByType(item?.quantity, act),
     act,
     note,
     sale_id,
     stocktake_id,
   }
   return await createItemInDatabase(newStockMovement, 'stock_movement')
+}
+
+function getQuantityByType(quantity, act) {
+  return act === StockMovementTypes.Received ||
+    act === StockMovementTypes.Unhold ||
+    act === StockMovementTypes.Unlayby ||
+    act === StockMovementTypes.Found ||
+    act === StockMovementTypes.Unsold ||
+    act === StockMovementTypes.Adjustment
+    ? parseInt(quantity)
+    : -parseInt(quantity)
 }
 
 export async function createSettingSelectInDatabase(

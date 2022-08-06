@@ -1,4 +1,3 @@
-// DB
 import { ClerkObject, LogObject } from 'lib/types'
 
 type ListItemProps = {

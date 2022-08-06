@@ -1,5 +1,6 @@
 import SidebarContainer from '@/components/container/side-bar'
 import TextField from '@/components/inputs/text-field'
+import { saveSystemLog } from '@/features/log/lib/functions'
 import { useAtom } from 'jotai'
 import {
   cartAtom,
@@ -7,12 +8,11 @@ import {
   loadedCustomerObjectAtom,
   viewAtom,
 } from 'lib/atoms'
-import { createCustomerInDatabase } from 'lib/database/create'
 import { useCustomers } from 'lib/database/read'
 import { updateCustomerInDatabase } from 'lib/database/update'
-import { saveSystemLog } from 'lib/db-functions'
-import { CustomerObject, ModalButton } from 'lib/types'
+import { ModalButton } from 'lib/types'
 import { useEffect, useState } from 'react'
+import { checkCustomerNameConflict, createCustomer } from '../lib/functions'
 
 export default function CreateCustomerSidebar() {
   // SWR
@@ -30,11 +30,7 @@ export default function CreateCustomerSidebar() {
 
   // Load
   useEffect(() => {
-    customers &&
-      !customer?.id &&
-      setNameConflict(
-        customers?.map((c: CustomerObject) => c?.name).includes(customer?.name)
-      )
+    setNameConflict(checkCustomerNameConflict(customer, customers))
   }, [customers, customer?.name])
 
   // Functions
@@ -45,13 +41,10 @@ export default function CreateCustomerSidebar() {
   }
 
   async function onClickCreateCustomer() {
-    saveSystemLog(`New customer (${customer?.name}) created.`, clerk?.id)
     setSubmitting(true)
-    let newCustomer = { ...customer, created_by_clerk_id: clerk?.id }
-    const id = await createCustomerInDatabase(customer, clerk)
-    newCustomer = { ...newCustomer, id }
+    const newCustomer = await createCustomer(customer, clerk)
     mutateCustomers([...customers, newCustomer], false)
-    setCart({ ...cart, customer_id: id })
+    setCart({ ...cart, customer_id: newCustomer?.id })
     closeSidebar()
     setSubmitting(false)
   }

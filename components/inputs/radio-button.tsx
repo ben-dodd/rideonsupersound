@@ -1,17 +1,16 @@
-// Types
 interface RadioButtonProps {
-  value: string;
-  onChange: Function;
-  inputLabel: string;
-  options: OptionProps[];
-  group: string;
-  disabled?: boolean;
+  value: string
+  onChange: Function
+  inputLabel: string
+  options: OptionProps[]
+  group: string
+  disabled?: boolean
 }
 
 interface OptionProps {
-  id: string;
-  value: string;
-  label: string;
+  id: string
+  value: string
+  label: string
 }
 
 // BUG fix radio buttons
@@ -27,7 +26,7 @@ function RadioButton({
   return (
     <div>
       {inputLabel && <label className={`input-label pb-2`}>{inputLabel}</label>}
-      <div className={"radio-button__container mb-2"}>
+      <div className={'radio-button__container mb-2'}>
         {options.map((e) => (
           <label key={e.id} id={e.id} className="radio-button__label">
             <input
@@ -44,7 +43,7 @@ function RadioButton({
         ))}
       </div>
     </div>
-  );
+  )
 }
 
-export default RadioButton;
+export default RadioButton

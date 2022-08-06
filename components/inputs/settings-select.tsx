@@ -4,7 +4,6 @@ import { useState } from 'react'
 import Select from 'react-select'
 import CreatableSelect from 'react-select/creatable'
 
-// Types
 interface SettingsSelectProps {
   object?: any
   onEdit?: Function

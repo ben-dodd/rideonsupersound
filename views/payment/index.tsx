@@ -2,10 +2,10 @@
 import { useAtom } from 'jotai'
 
 // DB
-import PaymentTable from '@/features/display-payments/components/payment-table'
-import BatchPaymentScreen from 'features/payment/components/batch-payment-screen'
-import CashPaymentDialog from 'features/payment/components/cash-payment-dialog'
-import TransferVendorPaymentDialog from 'features/payment/components/transfer-payment-dialog'
+import PaymentTable from '@/features/payment/features/display-payments/components/payment-table'
+import BatchPaymentScreen from '@/features/payment/features/payment/components/batch-payment-screen'
+import CashPaymentDialog from '@/features/payment/features/payment/components/cash-payment-dialog'
+import TransferVendorPaymentDialog from '@/features/payment/features/payment/components/transfer-payment-dialog'
 import { pageAtom, viewAtom } from 'lib/atoms'
 
 // Components

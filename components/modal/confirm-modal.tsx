@@ -1,17 +1,9 @@
-// Packages
-import { useAtom } from 'jotai'
-
-// DB
-import { confirmModalAtom } from 'lib/atoms'
-
-// Components
 import Modal from '@/components/modal'
-
-// Types
+import { useAtom } from 'jotai'
+import { confirmModalAtom } from 'lib/atoms'
 import { ModalButton } from 'lib/types'
 
 export default function ConfirmModal() {
-  // Atoms
   const [confirmModal, setConfirmModal] = useAtom(confirmModalAtom)
 
   // Functions

@@ -1,10 +1,7 @@
-// Icons
-import CloseIcon from "@mui/icons-material/Close";
-
-// Types
-import { MouseEventHandler } from "react";
+import CloseIcon from '@mui/icons-material/Close'
+import { MouseEventHandler } from 'react'
 interface CloseButtonProps {
-  closeFunction: MouseEventHandler<HTMLButtonElement>;
+  closeFunction: MouseEventHandler<HTMLButtonElement>
 }
 
 export default function CloseButton({ closeFunction }: CloseButtonProps) {
@@ -14,5 +11,5 @@ export default function CloseButton({ closeFunction }: CloseButtonProps) {
         <CloseIcon />
       </button>
     </div>
-  );
+  )
 }

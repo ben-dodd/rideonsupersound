@@ -5,7 +5,7 @@ import { useAtom } from 'jotai'
 import { pageAtom } from 'lib/atoms'
 
 // Components
-import GiftCardTable from '../../features/display-gift-cards/components/gift-card-table'
+import GiftCardTable from '../../features/inventory/features/display-gift-cards/components/gift-card-table'
 
 export default function GiftCardPage() {
   // atoms

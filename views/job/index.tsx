@@ -11,9 +11,9 @@ import { StockObject, TaskObject } from 'lib/types'
 // Components
 import Tabs from '@/components/navigation/tabs'
 import dayjs from 'dayjs'
-import TaskDialog from '../../features/jobs/components/job-dialog'
-import ListTask from '../../features/jobs/components/list-job'
-import RestockTask from '../../features/jobs/components/restock-job'
+import TaskDialog from '../../features/job/components/job-dialog'
+import ListTask from '../../features/job/components/list-job'
+import RestockTask from '../../features/job/components/restock-job'
 
 export default function JobsPage() {
   // SWR

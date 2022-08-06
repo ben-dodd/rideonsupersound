@@ -88,3 +88,7 @@ export function latestDate(dates: Date[] | string[]) {
 export function centsToDollars(cents: number) {
   return cents / 100
 }
+
+export function priceString(price: number) {
+  return `$${centsToDollars(price)?.toFixed(2)}`
+}

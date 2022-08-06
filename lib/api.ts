@@ -40,3 +40,34 @@ export function useWeather() {
     isError: error,
   }
 }
+
+export function getGeolocation() {
+  let geolocation = null
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition((position) => {
+      geolocation = {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+      }
+    })
+  }
+  return geolocation
+}
+
+export function uploadFiles(files) {
+  // const body = new FormData();
+  // body.append("file", files);
+  try {
+    fetch(`/api/upload-file?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      body: files,
+    })
+      .then((res) => res.json())
+      .then((data) => console.log(data))
+  } catch (e) {
+    throw Error(e.message)
+  }
+}

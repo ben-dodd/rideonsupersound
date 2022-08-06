@@ -86,7 +86,6 @@ export interface ClerkObject {
   date_modified?: string
   is_deleted?: number
 }
-
 export interface CustomerObject {
   id?: number
   name?: string
