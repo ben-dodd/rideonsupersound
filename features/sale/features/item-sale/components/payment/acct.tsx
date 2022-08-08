@@ -8,7 +8,6 @@ import { useMemo, useState } from 'react'
 import { alertAtom, cartAtom, clerkAtom, viewAtom } from 'lib/atoms'
 import {
   useInventory,
-  useLogs,
   useRegisterID,
   useSalesJoined,
   useVendorPayments,
@@ -21,14 +20,13 @@ import {
   VendorObject,
 } from 'lib/types'
 
-// Functions
-import { getSaleVars, getVendorDetails } from 'lib/data-functions'
-
 // Components
-import TextField from '@/components/inputs/text-field'
-import Modal from '@/components/modal'
-import { saveLog } from 'lib/db-functions'
+import TextField from 'components/inputs/text-field'
+import Modal from 'components/modal'
+import { logSalePaymentAcct } from 'features/log/lib/functions'
+import { getVendorDetails } from 'features/vendor/features/item-vendor/lib/functions'
 import Select from 'react-select'
+import { getSaleVars } from '../../lib/functions'
 
 export default function Acct() {
   dayjs.extend(UTC)
@@ -47,7 +45,6 @@ export default function Acct() {
   const { vendors } = useVendors()
   const { sales } = useSalesJoined()
   const { vendorPayments } = useVendorPayments()
-  const { logs, mutateLogs } = useLogs()
 
   const { totalRemaining } = getSaleVars(cart, inventory)
 
@@ -101,19 +98,7 @@ export default function Acct() {
         setCart({ ...cart, transactions })
         setSubmitting(false)
         setView({ ...view, acctPaymentDialog: false })
-        saveLog(
-          {
-            log: `$${parseFloat(acctPayment)?.toFixed(2)} ${
-              isRefund
-                ? `refunded on ${vendorWrapper?.value?.name} account`
-                : `account payment from vendor ${vendorWrapper?.value?.name}${
-                    cart?.id ? ` (sale #${cart?.id}).` : ''
-                  }`
-            }.`,
-          },
-          logs,
-          mutateLogs
-        )
+        logSalePaymentAcct(acctPayment, vendorWrapper, isRefund, cart, clerk)
         setAlert({
           open: true,
           type: 'success',

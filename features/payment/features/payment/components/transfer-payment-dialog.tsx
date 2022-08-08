@@ -4,7 +4,13 @@ import { useMemo, useState } from 'react'
 import Select from 'react-select'
 
 // DB
+import TextField from 'components/inputs/text-field'
+import Modal from 'components/modal'
+import dayjs from 'dayjs'
+import { logTransferVendorPayment } from 'features/log/lib/functions'
+import { getTotalOwing } from 'features/sale/features/item-sale/lib/functions'
 import { clerkAtom, viewAtom } from 'lib/atoms'
+import { createVendorPaymentInDatabase } from 'lib/database/create'
 import {
   useCashGiven,
   useInventory,
@@ -22,15 +28,6 @@ import {
   VendorPaymentTypes,
   VendorSaleItemObject,
 } from 'lib/types'
-
-// Functions
-import { getTotalOwing } from 'lib/data-functions'
-import { saveLog, saveVendorPaymentToDatabase } from 'lib/db-functions'
-
-// Components
-import TextField from '@/components/inputs/text-field'
-import Modal from '@/components/modal'
-import dayjs from 'dayjs'
 
 export default function TransferVendorPaymentDialog() {
   // SWR
@@ -118,7 +115,7 @@ export default function TransferVendorPaymentDialog() {
             type: VendorPaymentTypes.TransferFrom,
             note: notes,
           }
-          saveVendorPaymentToDatabase(vendorPayPayment).then((id) =>
+          createVendorPaymentInDatabase(vendorPayPayment).then((id) =>
             mutateVendorPayments([
               ...vendorPayments,
               { ...vendorPayPayment, id },
@@ -134,30 +131,25 @@ export default function TransferVendorPaymentDialog() {
           type: VendorPaymentTypes.TransferTo,
           note: notes,
         }
-        saveVendorPaymentToDatabase(vendorReceivePayment).then((id) => {
-          mutateVendorPayments([
-            ...vendorPayments,
-            { ...vendorReceivePayment, id },
-          ])
-          saveLog(
-            {
-              log: `$${parseFloat(payment)?.toFixed(
-                2
-              )} store credit transferred from ${
-                vendor_pay_id === 'store'
-                  ? 'R.O.S.S.'
-                  : `${vendorPay?.name} (${vendor_pay_id})`
-              } to ${vendorReceive?.name} (${vendor_receive_id || ''}).`,
-              clerk_id: clerk?.id,
-              table_id: 'vendor_payment',
-              row_id: id,
-            },
-            logs,
-            mutateLogs
-          )
-          setSubmitting(false)
-          resetAndCloseDialog()
-        })
+        createVendorPaymentInDatabase(vendorReceivePayment).then(
+          (vendorPaymentId) => {
+            mutateVendorPayments([
+              ...vendorPayments,
+              { ...vendorReceivePayment, vendorPaymentId },
+            ])
+            logTransferVendorPayment(
+              payment,
+              vendor_pay_id,
+              vendorPay,
+              vendor_receive_id,
+              vendorReceive,
+              clerk,
+              vendorPaymentId
+            )
+            setSubmitting(false)
+            resetAndCloseDialog()
+          }
+        )
       },
       disabled:
         !vendor_pay_id ||

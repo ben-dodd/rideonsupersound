@@ -20,7 +20,7 @@ import PaymentsIcon from '@mui/icons-material/Receipt'
 import GiftCardsIcon from '@mui/icons-material/Redeem'
 import VendorsIcon from '@mui/icons-material/Store'
 import JobsIcon from '@mui/icons-material/Task'
-import { saveSystemLog } from 'lib/db-functions'
+import { saveSystemLog } from 'features/log/lib/functions'
 
 // Types
 type MenuType = {
@@ -211,7 +211,10 @@ export default function Menu() {
                   ? item?.onClick
                   : () => {
                       window.scrollTo(0, 0)
-                      saveSystemLog(`${item?.page} on menu clicked.`, clerk?.id)
+                      saveSystemLog({
+                        log: `${item?.page} on menu clicked.`,
+                        clerk_id: clerk?.id,
+                      })
                       setPage(item?.page)
                       setView({ ...view, mainMenu: false })
                     }

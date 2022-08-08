@@ -3,8 +3,8 @@ import { useClerks, useInventory, useLogs, useVendors } from 'lib/database/read'
 import { ClerkObject } from 'lib/types'
 
 // Components
-import SettingsSelect from '@/components/inputs/settings-select'
-import TextField from '@/components/inputs/text-field'
+import SettingsSelect from 'components/inputs/settings-select'
+import TextField from 'components/inputs/text-field'
 import dayjs from 'dayjs'
 import { useAtom } from 'jotai'
 import {
@@ -89,14 +89,10 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
                 false
               )
               saveLog(
-                {
-                  log: `Vendor #${vendor?.id} ${vendor?.name} deleted.`,
-                  clerk_id: clerk?.id,
-                  table_id: 'vendor',
-                  row_id: vendor?.id,
-                },
-                logs,
-                mutateLogs
+                `Vendor #${vendor?.id} ${vendor?.name} deleted.`,
+                clerk?.id,
+                'vendor',
+                vendor?.id
               )
               setLoadedVendorId({ ...loadedVendorId, [page]: 0 })
             }),

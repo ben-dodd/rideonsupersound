@@ -13,21 +13,18 @@ import {
   useSales,
   useSaleTransactionsForSale,
 } from 'lib/database/read'
-import { CustomerObject, ModalButton, SaleStateTypes } from 'lib/types'
-
-// Functions
-import { getSaleVars } from 'lib/data-functions'
-import {
-  saveLog,
-  saveSaleAndPark,
-  saveSaleItemsTransactionsToDatabase,
-  saveSystemLog,
-} from 'lib/db-functions'
+import { ModalButton, SaleStateTypes } from 'lib/types'
 
 // Components
-import ScreenContainer from '@/components/container/screen'
-import CreateCustomerSidebar from '@/features/customer/components/sidebar'
+import ScreenContainer from 'components/container/screen'
 import dayjs from 'dayjs'
+import CreateCustomerSidebar from 'features/customer/components/sidebar'
+import {
+  logLaybyStarted,
+  logSaleCompleted,
+  saveSystemLog,
+} from 'features/log/lib/functions'
+import { getSaleVars, saveSaleAndPark } from '../lib/functions'
 import Pay from './pay'
 import Acct from './payment/acct'
 import Card from './payment/card'
@@ -116,25 +113,13 @@ export default function SaleScreen() {
         date_layby_started: dayjs.utc().format(),
         layby_started_by: clerk?.id,
       }
-      saveLog(
-        {
-          log: `Layby started${
-            cart?.customer_id
-              ? ` for ${
-                  customers?.filter(
-                    (c: CustomerObject) => c?.id === cart?.customer_id
-                  )[0]?.name
-                }`
-              : ''
-          } (${numberOfItems} item${
-            numberOfItems === 1 ? '' : 's'
-          } / $${totalPrice?.toFixed(2)} with $${totalRemaining?.toFixed(
-            2
-          )} left to pay).`,
-          clerk_id: clerk?.id,
-        },
-        logs,
-        mutateLogs
+      logLaybyStarted(
+        cart,
+        customers,
+        numberOfItems,
+        totalPrice,
+        totalRemaining,
+        clerk
       )
       setAlert({
         open: true,
@@ -193,16 +178,7 @@ export default function SaleScreen() {
     setCart(null)
     setView({ ...view, saleScreen: false })
     setCompleteSaleLoading(false)
-    saveLog(
-      {
-        log: `Sale #${cart?.id || saleId} completed.`,
-        clerk_id: clerk?.id,
-        table_id: 'sale',
-        row_id: cart?.id || saleId,
-      },
-      logs,
-      mutateLogs
-    )
+    logSaleCompleted(cart, saleId, clerk)
     setAlert({
       open: true,
       type: 'success',

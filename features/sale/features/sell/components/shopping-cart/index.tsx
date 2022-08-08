@@ -5,15 +5,7 @@ import { useState } from 'react'
 // DB
 import { alertAtom, cartAtom, clerkAtom, viewAtom } from 'lib/atoms'
 import { useInventory, useLogs } from 'lib/database/read'
-import { SaleItemObject, StockObject } from 'lib/types'
-
-// Functions
-import { getItemDisplayName, getSaleVars } from 'lib/data-functions'
-import {
-  deleteSaleFromDatabase,
-  deleteSaleItemFromDatabase,
-  saveLog,
-} from 'lib/db-functions'
+import { SaleItemObject } from 'lib/types'
 
 // Components
 import CircularProgress from '@mui/material/CircularProgress'
@@ -24,6 +16,15 @@ import ListItem from './list-item'
 // Icons
 import HoldIcon from '@mui/icons-material/PanTool'
 import PayIcon from '@mui/icons-material/ShoppingCart'
+import {
+  getItemById,
+  getItemDisplayName,
+} from 'features/inventory/features/display-inventory/lib/functions'
+import { saveLog } from 'features/log/lib/functions'
+import {
+  deleteSaleFromDatabase,
+  deleteSaleItemFromDatabase,
+} from 'lib/database/delete'
 
 export default function ShoppingCart() {
   // SWR
@@ -56,14 +57,10 @@ export default function ShoppingCart() {
       items: updatedCartItems,
     })
     saveLog(
-      {
-        log: `${getItemDisplayName(
-          inventory?.filter((i: StockObject) => i?.id === parseInt(itemId))[0]
-        )} removed from cart${id ? ` (sale #${id})` : ''}.`,
-        clerk_id: clerk?.id,
-      },
-      logs,
-      mutateLogs
+      `${getItemDisplayName(
+        getItemById(parseInt(itemId), inventory)
+      )} removed from cart${id ? ` (sale #${id})` : ''}.`,
+      clerk?.id
     )
     setAlert({
       open: true,

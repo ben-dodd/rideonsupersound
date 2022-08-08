@@ -15,8 +15,8 @@ import { CustomerObject, SaleStateTypes } from 'lib/types'
 import { getSaleVars } from 'lib/data-functions'
 
 // Components
-import CreateableSelect from '@/components/inputs/createable-select'
-import TextField from '@/components/inputs/text-field'
+import CreateableSelect from 'components/inputs/createable-select'
+import TextField from 'components/inputs/text-field'
 
 import ReturnIcon from '@mui/icons-material/KeyboardReturn'
 import { saveSystemLog } from 'lib/db-functions'

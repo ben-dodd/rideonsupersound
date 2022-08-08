@@ -505,9 +505,9 @@ export async function createStockPriceInDatabase(
 interface stockMovementProps {
   item: SaleItemObject
   clerk: ClerkObject
-  registerID: number
   act: string
   note?: string
+  registerID?: number
   sale_id?: number
   stocktake_id?: number
 }

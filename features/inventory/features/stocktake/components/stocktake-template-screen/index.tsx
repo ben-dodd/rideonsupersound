@@ -32,8 +32,8 @@ import {
 } from 'lib/db-functions'
 
 // Components
-import ScreenContainer from '@/components/container/screen'
-import TextField from '@/components/inputs/text-field'
+import ScreenContainer from 'components/container/screen'
+import TextField from 'components/inputs/text-field'
 import { writeStocktakeFilterDescription } from 'lib/data-functions'
 import FilterBox from './filter-box'
 import StocktakeListItem from './stocktake-list-item'

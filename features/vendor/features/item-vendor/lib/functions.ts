@@ -1,4 +1,4 @@
-import { sumPrices } from '@/features/sale/features/item-sale/lib/functions'
+import { sumPrices } from 'features/sale/features/item-sale/lib/functions'
 import {
   SaleObject,
   StockObject,

@@ -11,8 +11,8 @@ import { ModalButton } from 'lib/types'
 import { savePettyCashToRegister } from 'lib/db-functions'
 
 // Components
-import TextField from '@/components/inputs/text-field'
-import Modal from '@/components/modal'
+import TextField from 'components/inputs/text-field'
+import Modal from 'components/modal'
 
 export default function ReturnCashDialog() {
   // SWR
@@ -43,12 +43,10 @@ export default function ReturnCashDialog() {
         setSubmitting(true)
         const id = await savePettyCashToRegister(
           registerID,
-          clerk?.id,
+          clerk,
           false,
           amount,
-          notes,
-          logs,
-          mutateLogs
+          notes
         )
         setSubmitting(false)
         mutatePettyCash([...pettyCash])

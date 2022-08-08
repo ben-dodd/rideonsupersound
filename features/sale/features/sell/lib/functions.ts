@@ -1,12 +1,19 @@
-import { SaleItemObject, StockObject } from 'lib/types'
+import dayjs from 'dayjs'
+import {
+  getItemDisplayName,
+  getItemSku
+} from 'features/inventory/features/display-inventory/lib/functions'
+import { saveLog } from 'features/log/lib/functions'
+import { GiftCardObject, SaleItemObject, StockObject } from 'lib/types'
+import { priceCentsString } from 'lib/utils'
 
 export function writeCartItemPriceBreakdown(cartItem: any, item?: StockObject) {
   // Writes out the sale item in the following form:
   // 1 x V10% x R50% x $27.00
   return item?.is_gift_card
-    ? `$${(item?.gift_card_amount / 100)?.toFixed(2)} GIFT CARD`
+    ? `${priceCentsString(item?.gift_card_amount} GIFT CARD`
     : item?.is_misc_item
-    ? `${cartItem?.quantity} x $${(item?.misc_item_amount / 100).toFixed(2)}`
+    ? `${cartItem?.quantity} x ${priceCentsString(item?.misc_item_amount)}`
     : `${cartItem?.quantity}${
         parseInt(cartItem?.vendor_discount) > 0
           ? ` x V${cartItem?.vendor_discount}%`
@@ -15,17 +22,7 @@ export function writeCartItemPriceBreakdown(cartItem: any, item?: StockObject) {
         parseInt(cartItem?.store_discount) > 0
           ? ` x S${cartItem?.store_discount}%`
           : ''
-      } x $${((cartItem?.total_sell ?? item?.total_sell) / 100)?.toFixed(2)}`
-}
-
-export function writeCartItemPriceTotal(
-  cartItem: SaleItemObject,
-  item?: StockObject
-) {
-  // Writes out the sale item total applying discounts and quantity
-  // $40.00
-  const prices = getCartItemPrice(cartItem, item)
-  return `$${(prices?.totalPrice / 100)?.toFixed(2)}`
+      } x ${priceCentsString(cartItem?.total_sell ?? item?.total_sell)}`
 }
 
 export function getPrice(
@@ -40,9 +37,30 @@ export function getPrice(
   )
 }
 
-export function getCartItemPrice(cartItem: any, item: StockObject) {
-  // Gets three prices for each sale item: the vendor cut, store cut, and total
-  // Price is returned in cents
+export function getCartItemVendorCut(cartItem, item) {
+  const vendorCut: number = cartItem?.vendor_cut ?? item?.vendor_cut
+  const vendorPrice: number = getPrice(
+    vendorCut,
+    cartItem?.vendor_discount,
+    cartItem?.quantity
+  )
+  return vendorPrice
+}
+
+export function getCartItemStoreCut(cartItem, item) {
+  const vendorCut = getCartItemVendorCut(cartItem, item)
+  const storeCut: number = item?.is_misc_item
+    ? item?.misc_item_amount || 0
+    : (cartItem?.total_sell ?? item?.total_sell) - vendorCut
+  const storePrice: number = getPrice(
+    storeCut,
+    cartItem?.store_discount,
+    cartItem?.quantity
+  )
+  return storePrice
+}
+
+export function getCartItemTotal(cartItem, item) {
   const totalSell: number = !cartItem
     ? 0
     : item?.is_gift_card
@@ -50,23 +68,21 @@ export function getCartItemPrice(cartItem: any, item: StockObject) {
     : item?.is_misc_item
     ? item?.misc_item_amount || 0
     : null
-  const vendorCut: number = cartItem?.vendor_cut ?? item?.vendor_cut
-  const storeCut: number = item?.is_misc_item
-    ? item?.misc_item_amount || 0
-    : // : cartItem?.store_cut ??
-      (cartItem?.total_sell ?? item?.total_sell) - vendorCut
-  const storePrice: number = getPrice(
-    storeCut,
-    cartItem?.store_discount,
-    cartItem?.quantity
-  )
-  const vendorPrice: number = getPrice(
-    vendorCut,
-    cartItem?.vendor_discount,
-    cartItem?.quantity
-  )
+  if (totalSell) return totalSell
+  const vendorPrice: number = getCartItemVendorCut(cartItem, item)
+  const storePrice: number = getCartItemStoreCut(cartItem, item)
   const totalPrice: number = totalSell ?? storePrice + vendorPrice
-  return { storePrice, vendorPrice, totalPrice }
+  return totalPrice
+}
+
+export function getCartItemPrice(cartItem: any, item: StockObject) {
+  // Gets three prices for each sale item: the vendor cut, store cut, and total
+  // Price is returned in cents
+  return {
+    storePrice: getCartItemStoreCut(cartItem, item),
+    vendorPrice: getCartItemVendorCut(cartItem, item),
+    totalPrice: getCartItemPrice(cartItem, item),
+  }
 }
 
 export function getStoreCut(item: StockObject) {
@@ -86,50 +102,37 @@ export function getItemQuantity(
   return itemQuantity - parseInt(cartQuantity)
 }
 
-export function filterInventory({
-  inventory,
-  search,
-  slice = 50,
-  emptyReturn = false,
-}) {
-  if (!inventory) return []
-  return inventory
-    .filter((item: StockObject) => {
-      let res = true
-      if (!search || search === '') return emptyReturn
+export function filterInventory(item, searchString) {
+  if (!searchString || searchString === '') return []
+  let res = true
+  let terms = searchString.split(' ')
+  let itemMatch = `
+      ${getItemSku(item) || ''}
+      ${item?.artist || ''}
+      ${item?.title || ''}
+      ${item?.format || ''}
+      ${item?.genre || ''}
+      ${item?.country || ''}
+      ${item?.section || ''}
+      ${item?.tags ? item?.tags?.join(' ') : ''}
+      ${item?.vendor_name || ''}
+      ${item?.googleBooksItem?.volumeInfo?.authors?.join(' ') || ''}
+      ${item?.googleBooksItem?.volumeInfo?.publisher || ''}
+      ${item?.googleBooksItem?.volumeInfo?.subtitle || ''}
+      ${item?.googleBooksItem?.volumeInfo?.categories?.join(' ') || ''}
+    `
+  terms.forEach((term: string) => {
+    if (!itemMatch.toLowerCase().includes(term.toLowerCase())) res = false
+  })
 
-      if (search) {
-        let terms = search.split(' ')
-        let itemMatch = `
-        ${getItemSku(item) || ''}
-        ${item?.artist || ''}
-        ${item?.title || ''}
-        ${item?.format || ''}
-        ${item?.genre || ''}
-        ${item?.country || ''}
-        ${item?.section || ''}
-        ${item?.tags ? item?.tags?.join(' ') : ''}
-        ${item?.vendor_name || ''}
-        ${item?.googleBooksItem?.volumeInfo?.authors?.join(' ') || ''}
-        ${item?.googleBooksItem?.volumeInfo?.publisher || ''}
-        ${item?.googleBooksItem?.volumeInfo?.subtitle || ''}
-        ${item?.googleBooksItem?.volumeInfo?.categories?.join(' ') || ''}
-      `
-        terms.forEach((term: string) => {
-          if (!itemMatch.toLowerCase().includes(term.toLowerCase())) res = false
-        })
-      }
+  return res
+}
 
-      return res
-    })
-    .slice(0, slice)
-  // ?.sort((a: StockObject, b: StockObject) => {
-  //   if (!a?.quantity || !b?.quantity) return 0;
-  //   if (a?.quantity === b?.quantity) return 0;
-  //   if (a?.quantity < 1) return 1;
-  //   if (b?.quantity < 1) return -1;
-  //   return 0;
-  // })
+export function sortInventory(a: StockObject, b: StockObject) {
+  if (a?.quantity === b?.quantity) return 0
+  if (a?.quantity < 1) return 1
+  if (b?.quantity < 1) return -1
+  return 0
 }
 
 export function makeGiftCardCode(giftCards: GiftCardObject[]) {
@@ -146,4 +149,64 @@ export function makeGiftCardCode(giftCards: GiftCardObject[]) {
     }
   }
   return result
+}
+
+export function openCart(setCart, clerk, weather, geolocation) {
+  setCart({
+    id: null,
+    date_sale_opened: dayjs.utc().format(),
+    sale_opened_by: clerk?.id,
+    weather: weather,
+    geo_latitude: geolocation?.latitude,
+    geo_longitude: geolocation?.longitude,
+  })
+}
+
+function getIndexOfItemInCart(item, cart) {
+  return (
+    cart?.items?.findIndex?.((cartItem) => cartItem.item_id === item?.id) || -1
+  )
+}
+
+function addNewItemToCart(item, cart, clerk) {
+  const newItems = cart?.items || []
+  newItems.push({
+    item_id: item?.id,
+    quantity: '1',
+  })
+  saveLog(
+    `${getItemDisplayName(item)} added to cart${
+      cart?.id ? ` (sale #${cart?.id})` : ''
+    }.`,
+    clerk?.id
+  )
+  return newItems
+}
+
+function updateItemQuantityInCart(item, cart, clerk, quantity = 1) {
+  const newItems = cart?.items || []
+  const index = getIndexOfItemInCart(item, cart)
+  newItems[index].quantity = `${parseInt(newItems[index].quantity) + quantity}`
+  saveLog(
+    `${quantity} more ${getItemDisplayName(item)} added to cart${
+      cart?.id ? ` (sale #${cart?.id})` : ''
+    }.`,
+    clerk?.id
+  )
+  return newItems
+}
+
+export function addItemToCart(item, cart, setCart, clerk) {
+  const index = getIndexOfItemInCart(item, cart)
+  const newItems =
+    index < 0
+      ? addNewItemToCart(item, cart, clerk)
+      : updateItemQuantityInCart(item, cart, clerk)
+  setCart({ ...cart, items: newItems })
+}
+
+export function skuScan(inputValue, item, callbackFunction) {
+  if (inputValue?.trim() === `${('00000' + item?.id || '').slice(-5)}`) {
+    callbackFunction()
+  }
 }

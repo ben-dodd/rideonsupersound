@@ -240,7 +240,7 @@ export interface VendorObject {
   postal_address?: string
   uid?: string
   note?: string
-  last_customered?: string
+  last_contacted?: string
   store_credit_only?: boolean
   email_vendor?: boolean
   date_created?: string

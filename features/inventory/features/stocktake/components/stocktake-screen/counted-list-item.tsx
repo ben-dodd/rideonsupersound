@@ -7,7 +7,7 @@ import { loadedItemIdAtom } from 'lib/atoms'
 import { getImageSrc, getItemDisplayName, getItemSku } from 'lib/data-functions'
 
 // Components
-import TextField from '@/components/inputs/text-field'
+import TextField from 'components/inputs/text-field'
 
 // Icons
 import DeleteIcon from '@mui/icons-material/Delete'

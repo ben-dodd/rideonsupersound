@@ -13,16 +13,17 @@ import {
   getItemDisplayName,
   getItemSku,
   writeCartItemPriceBreakdown,
-  writeCartItemPriceTotal,
 } from 'lib/data-functions'
 
 // Components
-import TextField from '@/components/inputs/text-field'
+import TextField from 'components/inputs/text-field'
 
 // Icons
 import ArrowDown from '@mui/icons-material/ArrowDropDown'
 import ArrowUp from '@mui/icons-material/ArrowDropUp'
 import DeleteIcon from '@mui/icons-material/Delete'
+import { priceCentsString } from 'lib/utils'
+import { getCartItemPrice } from '../../lib/functions'
 
 type SellListItemProps = {
   index: number
@@ -173,7 +174,7 @@ export default function SellListItem({
             </div>
             <div>
               <div className="font-bold self-center">
-                {writeCartItemPriceTotal(cartItem, item)}
+                {priceCentsString(getCartItemPrice(cartItem, item))}
               </div>
               <div className="w-50 text-right">
                 <button

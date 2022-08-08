@@ -1,12 +1,9 @@
 // DB
-import {
-  getItemDisplayName,
-  getItemSkuDisplayName,
-} from '@/features/inventory/features/display-inventory/lib/functions'
-import { saveLog } from '@/features/log/lib/functions'
+import { getItemSkuDisplayName } from 'features/inventory/features/display-inventory/lib/functions'
+import { logRestockItem } from 'features/log/lib/functions'
 import { useAtom } from 'jotai'
 import { clerkAtom } from 'lib/atoms'
-import { useInventory, useLogs } from 'lib/database/read'
+import { useInventory } from 'lib/database/read'
 import { StockObject } from 'lib/types'
 import { completeRestockTask } from '../lib/functions'
 
@@ -17,7 +14,6 @@ type ListItemProps = {
 export default function RestockJob({ item }: ListItemProps) {
   // SWR
   const { inventory, mutateInventory } = useInventory()
-  const { logs, mutateLogs } = useLogs()
   const [clerk] = useAtom(clerkAtom)
 
   return (
@@ -36,18 +32,11 @@ export default function RestockJob({ item }: ListItemProps) {
                   false
                 )
                 completeRestockTask(item?.id)
-                saveLog(
-                  {
-                    log: `${getItemDisplayName(item)} restocked.`,
-                    clerk_id: clerk?.id,
-                  },
-                  logs,
-                  mutateLogs
-                )
+                logRestockItem(item, clerk)
               }}
             />
           </div>
-          <div>{getItemSkuDisplayName(item?.id, inventory)}</div>
+          <div>{getItemSkuDisplayName(item)}</div>
         </div>
       </div>
     </div>

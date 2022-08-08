@@ -1,21 +1,44 @@
-import { saveLog } from '@/features/log/lib/functions'
-import { createSaleInDatabase, createSaleItemInDatabase, createStockMovementInDatabase } from 'lib/database/create'
-import { deleteSaleFromDatabase, deleteSaleItemFromDatabase, deleteSaleTransactionFromDatabase, deleteVendorPaymentFromDatabase } from 'lib/database/delete'
-import { updateItemInDatabase, updateSaleInDatabase, updateSaleItemInDatabase } from 'lib/database/update'
+import dayjs from 'dayjs'
+import { getItemDisplayName } from 'features/inventory/features/display-inventory/lib/functions'
+import { addRestockTask } from 'features/job/lib/functions'
+import { logSaleNuked, logSaleParked } from 'features/log/lib/functions'
+import {
+  createSaleInDatabase,
+  createSaleItemInDatabase,
+  createSaleTransactionInDatabase,
+  createStockItemInDatabase,
+  createStockMovementInDatabase,
+  createVendorPaymentInDatabase,
+} from 'lib/database/create'
+import {
+  deleteSaleFromDatabase,
+  deleteSaleItemFromDatabase,
+  deleteSaleTransactionFromDatabase,
+  deleteVendorPaymentFromDatabase,
+} from 'lib/database/delete'
+import {
+  updateItemInDatabase,
+  updateSaleInDatabase,
+  updateSaleItemInDatabase,
+  updateStockItemInDatabase,
+} from 'lib/database/update'
 import {
   ClerkObject,
   CustomerObject,
   GiftCardObject,
   LogObject,
+  PaymentMethodTypes,
+  RoleTypes,
+  SaleItemObject,
   SaleObject,
   SaleStateTypes,
   SaleTransactionObject,
   StockMovementTypes,
   StockObject,
   VendorPaymentObject,
-  VendorSaleItemObject
+  VendorPaymentTypes,
+  VendorSaleItemObject,
 } from 'lib/types'
-import { addRestockTask } from '../../hold/lib/functions'
 import { getCartItemPrice, getItemQuantity } from '../../sell/lib/functions'
 
 export function getSaleVars(sale: any, inventory: StockObject[]) {
@@ -166,8 +189,6 @@ export async function loadSaleToCart(
       clerk,
       registerID,
       customers,
-      logs,
-      mutateLogs,
       sales,
       mutateSales,
       inventory,
@@ -182,20 +203,9 @@ export async function loadSaleToCart(
 export async function nukeSaleInDatabase(
   sale: SaleObject,
   clerk: ClerkObject,
-  registerID: number,
-  logs: LogObject[],
-  mutateLogs: Function
+  registerID: number
 ) {
-  saveLog(
-    {
-      log: `Sale #${sale?.id} nuked.`,
-      clerk_id: clerk?.id,
-      table_id: 'sale',
-      row_id: sale?.id,
-    },
-    logs,
-    mutateLogs
-  )
+  logSaleNuked(sale, clerk)
   sale?.items?.forEach((saleItem) => {
     deleteSaleItemFromDatabase(saleItem?.id)
     if (!saleItem?.is_refunded)
@@ -205,8 +215,8 @@ export async function nukeSaleInDatabase(
         registerID,
         act: StockMovementTypes.Unsold,
         note: 'Sale nuked.',
-        sale_id: sale?.id
-  })
+        sale_id: sale?.id,
+      })
   })
   sale?.transactions?.forEach((saleTransaction) => {
     if (saleTransaction?.vendor_payment_id)
@@ -222,8 +232,6 @@ export async function saveSaleAndPark(
   clerk: ClerkObject,
   registerID: number,
   customers: CustomerObject[],
-  logs: LogObject[],
-  mutateLogs: Function,
   sales: SaleObject[],
   mutateSales: Function,
   inventory: StockObject[],
@@ -231,7 +239,7 @@ export async function saveSaleAndPark(
   giftCards: GiftCardObject[],
   mutateGiftCards: Function
 ) {
-  const id = await saveSaleItemsTransactionsToDatabase(
+  const saleId = await saveSaleItemsTransactionsToDatabase(
     { ...cart, state: SaleStateTypes.Parked },
     clerk,
     registerID,
@@ -242,26 +250,7 @@ export async function saveSaleAndPark(
     giftCards,
     mutateGiftCards
   )
-  saveLog(
-    {
-      log: `Sale #${id} parked (${cart?.items?.length} item${
-        cart?.items?.length === 1 ? '' : 's'
-      }${
-        cart?.customer_id
-          ? ` for ${
-              customers?.filter(
-                (c: CustomerObject) => c?.id === cart?.customer_id
-              )[0]?.name
-            }.`
-          : ''
-      }).`,
-      clerk_id: clerk?.id,
-      table_id: 'sale',
-      row_id: id,
-    },
-    logs,
-    mutateLogs
-  )
+  logSaleParked(saleId, cart, customers, clerk)
   mutateInventory && mutateInventory()
 }
 
@@ -376,19 +365,18 @@ export async function saveSaleItemsTransactionsToDatabase(
         clerk,
         registerID,
         act,
-        sale_id: newSaleId
-    })
+        sale_id: newSaleId,
+      })
     }
 
-      // Update inventory item if it's a regular stock item
-      mutateInventory &&
-        mutateInventory(
-          inventory?.map((i) =>
-            i?.id === invItem?.id ? { ...invItem, quantity, quantity_layby } : i
-          ),
-          false
-        )
-    }
+    // Update inventory item if it's a regular stock item
+    mutateInventory &&
+      mutateInventory(
+        inventory?.map((i) =>
+          i?.id === invItem?.id ? { ...invItem, quantity, quantity_layby } : i
+        ),
+        false
+      )
   }
 
   //
@@ -477,5 +465,5 @@ export async function addNewMailOrderTask(sale: SaleObject, customer: string) {
 }
 
 export function validateGiftCard(id: number) {
-  updateItemInDatabase({gift_card_is_valid: 1, id}, 'stock')
+  updateItemInDatabase({ gift_card_is_valid: 1, id }, 'stock')
 }

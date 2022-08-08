@@ -1,4 +1,4 @@
-import { getItemSkuDisplayName } from '@/features/inventory/features/display-inventory/lib/functions'
+import { getItemSkuDisplayName } from 'features/inventory/features/display-inventory/lib/functions'
 import { ClerkObject, StockMovementObject, StockObject } from 'lib/types'
 
 type ListItemProps = {

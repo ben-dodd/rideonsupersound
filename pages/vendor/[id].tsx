@@ -1,8 +1,8 @@
-import Payments from '@/features/web-vendor/components/payments'
-import Sales from '@/features/web-vendor/components/sales'
-import StockItem from '@/features/web-vendor/components/stock-item'
-import Tabs from '@/features/web-vendor/components/tabs'
 import dayjs from 'dayjs'
+import Payments from 'features/web-vendor/components/payments'
+import Sales from 'features/web-vendor/components/sales'
+import StockItem from 'features/web-vendor/components/stock-item'
+import Tabs from 'features/web-vendor/components/tabs'
 import { filterInventory, sumPrices } from 'lib/data-functions'
 import { StockObject } from 'lib/types'
 import {

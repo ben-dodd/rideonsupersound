@@ -33,7 +33,7 @@ import {
 } from 'lib/db-functions'
 
 // Components
-import ScreenContainer from '@/components/container/screen'
+import ScreenContainer from 'components/container/screen'
 import SaleDetails from './sale-details'
 import SaleSummary from './sale-summary'
 

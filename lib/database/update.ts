@@ -10,6 +10,7 @@ import {
   StockObject,
   StocktakeItemObject,
   StocktakeObject,
+  StocktakeTemplateObject,
   VendorObject,
 } from 'lib/types'
 
@@ -64,7 +65,7 @@ export async function updateStocktakeInDatabase(updates: StocktakeObject) {
 }
 
 export async function updateStocktakeTemplateInDatabase(
-  updates: StockObject | GiftCardObject
+  updates: StocktakeTemplateObject
 ) {
   return await updateItemInDatabase(updates, 'stocktake_template')
 }

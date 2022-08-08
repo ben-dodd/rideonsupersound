@@ -7,13 +7,10 @@ import { alertAtom, cartAtom, clerkAtom, viewAtom } from 'lib/atoms'
 import { useInventory, useLogs, useSaleItemsForSale } from 'lib/database/read'
 import { ModalButton, SaleItemObject, SaleStateTypes } from 'lib/types'
 
-// Functions
-import { writeItemList } from 'lib/data-functions'
-import { saveLog, saveSystemLog } from 'lib/db-functions'
-
 // Components
-import TextField from '@/components/inputs/text-field'
-import Modal from '@/components/modal'
+import TextField from 'components/inputs/text-field'
+import Modal from 'components/modal'
+import { logSaleRefunded, saveSystemLog } from 'features/log/lib/functions'
 import ItemListItem from './item-list-item'
 
 export default function ReturnItemsDialog({ sale }) {
@@ -60,17 +57,7 @@ export default function ReturnItemsDialog({ sale }) {
               : cart?.state,
         })
         closeDialog()
-        saveLog(
-          {
-            log: `${writeItemList(
-              inventory,
-              items?.filter((i: SaleItemObject) => refundItems?.includes(i?.id))
-            )} refunded (sale #${sale?.id}).`,
-            clerk_id: clerk?.id,
-          },
-          logs,
-          mutateLogs
-        )
+        logSaleRefunded(inventory, items, refundItems, sale, clerk)
         setAlert({
           open: true,
           type: 'success',

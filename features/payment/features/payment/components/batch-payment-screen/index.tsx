@@ -3,7 +3,12 @@ import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 
 // DB
+import ScreenContainer from 'components/container/screen'
+import dayjs from 'dayjs'
+import { logBatchPayment, saveSystemLog } from 'features/log/lib/functions'
+import { getVendorDetails } from 'features/vendor/features/item-vendor/lib/functions'
 import { clerkAtom, confirmModalAtom, viewAtom } from 'lib/atoms'
+import { createVendorPaymentInDatabase } from 'lib/database/create'
 import {
   useCashGiven,
   useInventory,
@@ -13,20 +18,8 @@ import {
   useVendorPayments,
   useVendors,
 } from 'lib/database/read'
+import { updateVendorInDatabase } from 'lib/database/update'
 import { ClerkObject, ModalButton } from 'lib/types'
-
-// Functions
-import {
-  saveLog,
-  saveSystemLog,
-  saveVendorPaymentToDatabase,
-  updateVendorLastContactedInDatabase,
-} from 'lib/db-functions'
-
-// Components
-import ScreenContainer from '@/components/container/screen'
-import dayjs from 'dayjs'
-import { getVendorDetails } from 'lib/data-functions'
 import { modulusCheck } from '../../lib/functions'
 import CheckBatchPayments from './check-batch-payments'
 import SelectBatchPayments from './select-batch-payments'
@@ -219,7 +212,7 @@ function completeBatchPayment(
     vendorList
       ?.filter((v) => v?.is_checked)
       ?.forEach((v) => {
-        updateVendorLastContactedInDatabase({
+        updateVendorInDatabase({
           id: v?.id,
           last_contacted: dayjs.utc().format(),
         })
@@ -245,16 +238,12 @@ function completeBatchPayment(
         type: 'batch',
       }
       // console.log(vendorPayment);
-      saveVendorPaymentToDatabase(vendorPayment).then((id) => {
-        mutateVendorPayments([...vendorPayments, { ...vendorPayment, id }])
-        saveLog({
-          log: `Batch payment made to Vendor ${vendor?.name} (${
-            vendor?.id || ''
-          }).`,
-          clerk_id: clerk?.id,
-          table_id: 'vendor_payment',
-          row_id: id,
-        })
+      createVendorPaymentInDatabase(vendorPayment).then((vendorPaymentId) => {
+        mutateVendorPayments([
+          ...vendorPayments,
+          { ...vendorPayment, vendorPaymentId },
+        ])
+        logBatchPayment(vendor, clerk, vendorPaymentId)
       })
     })
 }

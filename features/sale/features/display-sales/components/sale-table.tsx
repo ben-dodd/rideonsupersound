@@ -8,8 +8,8 @@ import { useClerks, useSales } from 'lib/database/read'
 import { ClerkObject, SaleObject, SaleStateTypes } from 'lib/types'
 
 // Components
-import TableContainer from '@/components/container/table'
-import Table from '@/components/table'
+import TableContainer from 'components/container/table'
+import Table from 'components/table'
 import dayjs from 'dayjs'
 
 export default function SaleTable() {

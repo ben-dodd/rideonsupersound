@@ -10,17 +10,17 @@ import {
   sellSearchBarAtom,
   viewAtom,
 } from 'lib/atoms'
-import { useInventory, useLogs, useWeather } from 'lib/database/read'
+import { useInventory, useLogs } from 'lib/database/read'
 import { ModalButton, StockObject } from 'lib/types'
 
 // Functions
-import { getGeolocation } from 'lib/data-functions'
-import { saveLog, saveStockToDatabase } from 'lib/db-functions'
 
 // Components
-import TextField from '@/components/inputs/text-field'
-import Modal from '@/components/modal'
+import TextField from 'components/inputs/text-field'
+import Modal from 'components/modal'
 import dayjs from 'dayjs'
+import { logNewMiscItemCreated } from 'features/log/lib/functions'
+import { getGeolocation, useWeather } from 'lib/api'
 
 export default function MiscItemDialog() {
   // Atoms
@@ -85,16 +85,7 @@ export default function MiscItemDialog() {
           geo_longitude: cart?.geo_longitude || geolocation?.longitude,
         })
         setView({ ...view, miscItemDialog: false, cart: true })
-        saveLog(
-          {
-            log: `New misc item (${description}) created and added to cart.`,
-            clerk_id: clerk?.id,
-            table_id: 'stock',
-            row_id: id,
-          },
-          logs,
-          mutateLogs
-        )
+        logNewMiscItemCreated(description, clerk, id)
         setAlert({
           open: true,
           type: 'success',

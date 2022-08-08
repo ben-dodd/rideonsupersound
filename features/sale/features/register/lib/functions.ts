@@ -1,15 +1,20 @@
-import { saveLog } from '@/features/log/lib/functions'
+import dayjs from 'dayjs'
+import {
+  logCloseRegister,
+  logOpenRegister,
+  logPettyCash,
+} from 'features/log/lib/functions'
 import {
   createPettyCashInDatabase,
   createRegisterInDatabase,
   createTillInDatabase,
-} from '@/lib/database/create'
+} from 'lib/database/create'
 import {
   updateItemInDatabase,
   updateRegisterInDatabase,
-} from '@/lib/database/update'
-import dayjs from 'dayjs'
+} from 'lib/database/update'
 import { ClerkObject, LogObject, RegisterObject, TillObject } from 'lib/types'
+import { dollarsToCents } from 'lib/utils'
 
 export function getAmountFromCashMap(till: TillObject) {
   let closeAmount: number = 0
@@ -39,9 +44,7 @@ export function getAmountFromCashMap(till: TillObject) {
 export async function saveClosedRegisterToDatabase(
   register_id: number,
   register: RegisterObject,
-  till: TillObject,
-  logs: LogObject[],
-  mutateLogs: Function
+  till: TillObject
 ) {
   const tillID = await createTillInDatabase(till)
   updateRegisterInDatabase({
@@ -49,16 +52,7 @@ export async function saveClosedRegisterToDatabase(
     close_till_id: tillID,
     close_date: dayjs.utc().format(),
   })
-  saveLog(
-    {
-      log: `Register closed.`,
-      table_id: 'register',
-      row_id: register_id,
-      clerk_id: register?.closed_by_id,
-    },
-    logs,
-    mutateLogs
-  )
+  logCloseRegister(register)
   setRegister(register_id)
 }
 
@@ -75,50 +69,28 @@ export async function saveAndOpenRegister(
     open_till_id: tillID,
     open_date: dayjs.utc().format(),
   })
-  saveLog(
-    {
-      log: `Register opened.`,
-      table_id: 'register',
-      row_id: registerId,
-      clerk_id: clerk?.id,
-    },
-    logs,
-    mutateLogs
-  )
+  logOpenRegister(clerk, null, registerId)
   setRegister(registerId)
   return [{ num: registerId }]
 }
 
 export async function savePettyCashToRegister(
   registerID: number,
-  clerkID: number,
+  clerk: ClerkObject,
   isTake: boolean,
   amount: string,
-  note: string,
-  logs: LogObject[],
-  mutateLogs: Function
+  note: string
 ) {
   const pettyCash = {
     register_id: registerID,
-    clerk_id: clerkID,
-    amount: parseFloat(amount) * 100,
+    clerk_id: clerk?.id,
+    amount: dollarsToCents(amount),
     is_take: isTake,
     note,
     date: dayjs.utc().format(),
   }
-  const insertId = await createPettyCashInDatabase(pettyCash)
-  saveLog(
-    {
-      log: `$${parseFloat(amount)?.toFixed(2)} ${
-        isTake ? 'taken from till.' : 'put in till.'
-      }`,
-      table_id: 'register_petty_cash',
-      row_id: insertId,
-      clerk_id: clerkID,
-    },
-    logs,
-    mutateLogs
-  )
+  const pettyCashId = await createPettyCashInDatabase(pettyCash)
+  logPettyCash(clerk, amount, isTake, pettyCashId)
 }
 
 export async function setRegister(register_id: number) {

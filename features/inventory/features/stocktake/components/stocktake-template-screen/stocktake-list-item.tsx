@@ -56,7 +56,7 @@ export default function StocktakeListItem({ stocktake }: ListItemProps) {
         headers={["SKU", "ARTIST", "TITLE", "NEW/USED", "SELL PRICE", "GENRE"]}
         filename={`label-print-${dayjs().format("YYYY-MM-DD")}.csv`}
         onClick={() =>
-          saveLog(
+          save log(
             {
               log: "Labels printed from receive stock dialog.",
               clerk_id: clerk?.id,

@@ -42,16 +42,15 @@ export function useWeather() {
 }
 
 export function getGeolocation() {
-  let geolocation = null
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition((position) => {
-      geolocation = {
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-      }
-    })
+  if (!navigator.geolocation) {
+    console.log('Geolocation is not supported by your browser')
+    return null
+  } else {
+    return navigator.geolocation.getCurrentPosition(
+      (position) => position?.coords,
+      () => console.log('Unable to retrieve location.')
+    )
   }
-  return geolocation
 }
 
 export function uploadFiles(files) {

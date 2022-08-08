@@ -5,11 +5,11 @@ import { useAtom } from 'jotai'
 import { pageAtom, viewAtom } from 'lib/atoms'
 
 // Components
-import ChangePriceDialog from '@/features/inventory/features/item-inventory/components/change-price-dialog'
-import ChangeStockQuantityDialog from '@/features/inventory/features/item-inventory/components/change-stock-quantity-dialog'
-import InventoryItemScreen from '@/features/inventory/features/item-inventory/components/inventory-item-screen'
-import VendorTable from '@/features/vendor/features/display-vendors/components/vendor-table'
-import VendorScreen from '@/features/vendor/features/item-vendor/components'
+import ChangePriceDialog from 'features/inventory/features/item-inventory/components/change-price-dialog'
+import ChangeStockQuantityDialog from 'features/inventory/features/item-inventory/components/change-stock-quantity-dialog'
+import InventoryItemScreen from 'features/inventory/features/item-inventory/components/inventory-item-screen'
+import VendorTable from 'features/vendor/features/display-vendors/components/vendor-table'
+import VendorScreen from 'features/vendor/features/item-vendor/components'
 
 export default function VendorPage() {
   // Atoms

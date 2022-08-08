@@ -6,26 +6,18 @@ import { useState } from 'react'
 
 // DB
 import { alertAtom, cartAtom, clerkAtom, viewAtom } from 'lib/atoms'
+import { useCustomers, useInventory, useRegisterID } from 'lib/database/read'
 import {
-  useCustomers,
-  useInventory,
-  useLogs,
-  useRegisterID,
-} from 'lib/database/read'
-import {
-  CustomerObject,
   ModalButton,
   PaymentMethodTypes,
   SaleTransactionObject,
 } from 'lib/types'
 
-// Functions
-import { getSaleVars } from 'lib/data-functions'
-
 // Components
-import TextField from '@/components/inputs/text-field'
-import Modal from '@/components/modal'
-import { saveLog } from 'lib/db-functions'
+import TextField from 'components/inputs/text-field'
+import Modal from 'components/modal'
+import { logSalePaymentCash } from 'features/log/lib/functions'
+import { getSaleVars } from '../../lib/functions'
 
 export default function Cash() {
   dayjs.extend(UTC)
@@ -39,7 +31,6 @@ export default function Cash() {
   const { inventory } = useInventory()
   const { customers } = useCustomers()
   const { registerID } = useRegisterID()
-  const { logs, mutateLogs } = useLogs()
 
   const { totalRemaining } = getSaleVars(cart, inventory)
 
@@ -87,25 +78,13 @@ export default function Cash() {
         transactions.push(transaction)
         setCart({ ...cart, transactions })
         setSubmitting(false)
-        saveLog(
-          {
-            log: `$${parseFloat(cashReceived)?.toFixed(2)} ${
-              isRefund ? `cash refunded to` : `cash taken from`
-            } ${
-              cart?.customer_id
-                ? customers?.filter(
-                    (c: CustomerObject) => c?.id === cart?.customer_id
-                  )[0]?.name
-                : 'customer'
-            }${cart?.id ? ` (sale #${cart?.id}).` : ''}.${
-              parseFloat(changeToGive) > 0
-                ? ` $${changeToGive} change given.`
-                : ''
-            }`,
-            clerk_id: clerk?.id,
-          },
-          logs,
-          mutateLogs
+        logSalePaymentCash(
+          cashReceived,
+          isRefund,
+          cart,
+          customers,
+          changeToGive,
+          clerk
         )
         setView({ ...view, cashPaymentDialog: false })
         setAlert({

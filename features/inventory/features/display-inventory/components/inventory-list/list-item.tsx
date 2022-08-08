@@ -24,7 +24,7 @@ import InfoIcon from '@mui/icons-material/Info'
 // REVIEW add tooltips everywhere. Have ability to turn them off.
 
 // Functions
-import { getItemQuantity } from '@/features/sale/features/sell/lib/functions'
+import { getItemQuantity } from 'features/sale/features/sell/lib/functions'
 import {
   getHoldQuantity,
   getImageSrc,

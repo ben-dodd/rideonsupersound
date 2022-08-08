@@ -17,9 +17,9 @@ import { ClerkObject, StockObject, VendorObject } from 'lib/types'
 // Functions
 
 // Components
-import TableContainer from '@/components/container/table'
-import Table from '@/components/table'
-import { getVendorDetails } from '@/features/vendor/features/item-vendor/lib/functions'
+import TableContainer from 'components/container/table'
+import Table from 'components/table'
+import { getVendorDetails } from 'features/vendor/features/item-vendor/lib/functions'
 
 export default function VendorsScreen() {
   // Atoms

@@ -1,8 +1,7 @@
-// Packages
+import TextField from 'components/inputs/text-field'
+import Modal from 'components/modal'
+import { logChangeQuantity } from 'features/log/lib/functions'
 import { useAtom } from 'jotai'
-import { useState } from 'react'
-
-// DB
 import {
   alertAtom,
   clerkAtom,
@@ -10,21 +9,10 @@ import {
   pageAtom,
   viewAtom,
 } from 'lib/atoms'
-import {
-  useInventory,
-  useLogs,
-  useRegisterID,
-  useStockItem,
-} from 'lib/database/read'
+import { createStockMovementInDatabase } from 'lib/database/create'
+import { useInventory, useRegisterID, useStockItem } from 'lib/database/read'
 import { ModalButton, StockMovementTypes } from 'lib/types'
-
-// Functions
-import { getItemDisplayName } from 'lib/data-functions'
-import { saveLog, saveStockMovementToDatabase } from 'lib/db-functions'
-
-// Components
-import TextField from '@/components/inputs/text-field'
-import Modal from '@/components/modal'
+import { useState } from 'react'
 import Select from 'react-select'
 
 export default function ChangePriceDialog() {
@@ -40,13 +28,12 @@ export default function ChangePriceDialog() {
   const { stockItem, isStockItemLoading, mutateStockItem } = useStockItem(
     loadedItemId[page]
   )
-  const { logs, mutateLogs } = useLogs()
   const { registerID } = useRegisterID()
 
   // State
   const [movement, setMovement] = useState(StockMovementTypes?.Received)
   const [quantity, setQuantity] = useState('')
-  const [notes, setNotes] = useState('')
+  const [note, setNote] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
   const buttons: ModalButton[] = [
@@ -93,8 +80,8 @@ export default function ChangePriceDialog() {
           ],
           false
         )
-        const id = await saveStockMovementToDatabase(
-          {
+        const stockMovementId = await createStockMovementInDatabase({
+          item: {
             item_id: stockItem?.id,
             quantity:
               movement === StockMovementTypes?.Adjustment
@@ -103,37 +90,22 @@ export default function ChangePriceDialog() {
           },
           clerk,
           registerID,
-          movement,
-          notes
-        )
+          act: movement,
+          note,
+        })
         setSubmitting(false)
         setView({ ...view, changeStockQuantityDialog: false })
         setMovement(null)
         setQuantity('')
-        setNotes('')
-        saveLog(
-          {
-            log:
-              movement === StockMovementTypes?.Adjustment
-                ? `Quantity adjusted for ${getItemDisplayName(
-                    stockItem
-                  )} (${originalQuantity} => ${newQuantity})`
-                : `${
-                    parseInt(quantity) *
-                    (movement === StockMovementTypes?.Discarded ||
-                    movement === StockMovementTypes?.Lost ||
-                    movement === StockMovementTypes?.Returned
-                      ? -1
-                      : 1)
-                  } copies of ${getItemDisplayName(
-                    stockItem
-                  )} marked as ${movement}.`,
-            clerk_id: clerk?.id,
-            table_id: 'stock_movement',
-            row_id: id,
-          },
-          logs,
-          mutateLogs
+        setNote('')
+        logChangeQuantity(
+          movement,
+          stockItem,
+          quantity,
+          originalQuantity,
+          newQuantity,
+          clerk,
+          stockMovementId
         )
         setAlert({
           open: true,
@@ -197,8 +169,8 @@ export default function ChangePriceDialog() {
         />
         <TextField
           inputLabel="Notes"
-          value={notes}
-          onChange={(e: any) => setNotes(e.target.value)}
+          value={note}
+          onChange={(e: any) => setNote(e.target.value)}
           multiline
           rows={3}
         />

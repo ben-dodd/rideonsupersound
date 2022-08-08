@@ -19,8 +19,8 @@ import {
 } from 'lib/data-functions'
 
 // Components
-import TableContainer from '@/components/container/table'
-import Table from '@/components/table'
+import TableContainer from 'components/container/table'
+import Table from 'components/table'
 import dayjs from 'dayjs'
 import { saveSystemLog } from 'lib/db-functions'
 

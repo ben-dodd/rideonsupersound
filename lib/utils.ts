@@ -85,10 +85,21 @@ export function latestDate(dates: Date[] | string[]) {
 //   else return `${url}?k=${k}`
 // }
 
-export function centsToDollars(cents: number) {
+export function centsToDollars(amount: number | string) {
+  const cents = Number(amount)
   return cents / 100
 }
 
-export function priceString(price: number) {
-  return `$${centsToDollars(price)?.toFixed(2)}`
+export function dollarsToCents(amount: number | string) {
+  const dollars = Number(amount)
+  return dollars * 100
+}
+
+export function priceCentsString(cents: number | string) {
+  return `$${centsToDollars(cents)?.toFixed(2)}`
+}
+
+export function priceDollarsString(amount: number | string) {
+  const dollars = Number(amount)
+  return `$${dollars?.toFixed(2)}`
 }

@@ -1,4 +1,4 @@
-import MidScreenContainer from '@/components/container/mid-screen'
+import MidScreenContainer from 'components/container/mid-screen'
 import dayjs from 'dayjs'
 import { useAtom } from 'jotai'
 import { salesViewClerksAtom, salesViewRangeAtom } from 'lib/atoms'

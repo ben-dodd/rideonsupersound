@@ -10,24 +10,19 @@ import {
   sellSearchBarAtom,
   viewAtom,
 } from 'lib/atoms'
-import {
-  useGiftCards,
-  useInventory,
-  useLogs,
-  useWeather,
-} from 'lib/database/read'
-import { GiftCardObject, ModalButton } from 'lib/types'
-
-// Functions
-import { getGeolocation, makeGiftCardCode } from 'lib/data-functions'
-import { saveLog, saveStockToDatabase } from 'lib/db-functions'
+import { useGiftCards, useInventory, useLogs } from 'lib/database/read'
 
 // Components
-import TextField from '@/components/inputs/text-field'
-import Modal from '@/components/modal'
+import TextField from 'components/inputs/text-field'
+import Modal from 'components/modal'
 
 import SyncIcon from '@mui/icons-material/Sync'
 import dayjs from 'dayjs'
+import { logNewGiftCardCreated } from 'features/log/lib/functions'
+import { getGeolocation, useWeather } from 'lib/api'
+import { createStockItemInDatabase } from 'lib/database/create'
+import { GiftCardObject, ModalButton } from 'lib/types'
+import { makeGiftCardCode } from '../../lib/functions'
 
 export default function GiftCardDialog() {
   // Atoms
@@ -60,7 +55,9 @@ export default function GiftCardDialog() {
       onClick: async () => {
         setSubmitting(true)
         setSearch('')
-        let newGiftCard: GiftCardObject = {
+        type NewType = GiftCardObject
+
+        let newGiftCard: NewType = {
           is_gift_card: true,
           gift_card_code: giftCardCode,
           gift_card_amount: parseFloat(amount) * 100,
@@ -68,7 +65,7 @@ export default function GiftCardDialog() {
           note: notes,
           gift_card_is_valid: false,
         }
-        const id = await saveStockToDatabase(newGiftCard, clerk)
+        const id = await createStockItemInDatabase(newGiftCard, clerk)
         giftCards &&
           mutateGiftCards([...giftCards, { ...newGiftCard, id }], false)
         inventory &&
@@ -96,16 +93,7 @@ export default function GiftCardDialog() {
           geo_longitude: cart?.geo_longitude || geolocation?.longitude,
         })
         setView({ ...view, giftCardDialog: false, cart: true })
-        saveLog(
-          {
-            log: `New gift card (#${newGiftCard?.gift_card_code?.toUpperCase()}) created and added to cart.`,
-            clerk_id: clerk?.id,
-            table_id: 'stock',
-            row_id: id,
-          },
-          logs,
-          mutateLogs
-        )
+        logNewGiftCardCreated(newGiftCard, clerk, id)
         setAlert({
           open: true,
           type: 'success',

@@ -1,6 +1,6 @@
-import SidebarContainer from '@/components/container/side-bar'
-import TextField from '@/components/inputs/text-field'
-import { saveSystemLog } from '@/features/log/lib/functions'
+import SidebarContainer from 'components/container/side-bar'
+import TextField from 'components/inputs/text-field'
+import { saveSystemLog } from 'features/log/lib/functions'
 import { useAtom } from 'jotai'
 import {
   cartAtom,

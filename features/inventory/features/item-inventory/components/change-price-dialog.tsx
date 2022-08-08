@@ -1,8 +1,7 @@
-// Packages
+import TextField from 'components/inputs/text-field'
+import Modal from 'components/modal'
+import { logChangePrice } from 'features/log/lib/functions'
 import { useAtom } from 'jotai'
-import { useEffect, useState } from 'react'
-
-// DB
 import {
   alertAtom,
   clerkAtom,
@@ -10,19 +9,12 @@ import {
   pageAtom,
   viewAtom,
 } from 'lib/atoms'
-import { useInventory, useLogs, useStockItem } from 'lib/database/read'
+import { createStockPriceInDatabase } from 'lib/database/create'
+import { useInventory, useStockItem } from 'lib/database/read'
 import { ModalButton } from 'lib/types'
-
-// Functions
-import { getItemDisplayName } from 'lib/data-functions'
-import { saveLog, saveStockPriceToDatabase } from 'lib/db-functions'
-
-// Components
-import TextField from '@/components/inputs/text-field'
-import Modal from '@/components/modal'
+import { useEffect, useState } from 'react'
 
 export default function ChangePriceDialog() {
-  // Atoms
   const [loadedItemId] = useAtom(loadedItemIdAtom)
   const [clerk] = useAtom(clerkAtom)
   const [page] = useAtom(pageAtom)
@@ -34,7 +26,6 @@ export default function ChangePriceDialog() {
   const { stockItem, isStockItemLoading, mutateStockItem } = useStockItem(
     loadedItemId[page]
   )
-  const { logs, mutateLogs } = useLogs()
 
   // State
   const [totalSell, setTotalSell] = useState('')
@@ -76,7 +67,7 @@ export default function ChangePriceDialog() {
           ],
           false
         )
-        const id = await saveStockPriceToDatabase(
+        const stockPriceId = await createStockPriceInDatabase(
           stockItem?.id,
           clerk,
           totalSellNum,
@@ -85,22 +76,7 @@ export default function ChangePriceDialog() {
         )
         setSubmitting(false)
         setView({ ...view, changePriceDialog: false })
-        saveLog(
-          {
-            log: `Price for ${getItemDisplayName(stockItem)} changed from $${(
-              stockItem?.total_sell / 100
-            )?.toFixed(2)} [$${(stockItem?.vendor_cut / 100)?.toFixed(
-              2
-            )}] to $${parseFloat(totalSell)?.toFixed(2)} [$${parseFloat(
-              vendorCut
-            )?.toFixed(2)}].`,
-            clerk_id: clerk?.id,
-            table_id: 'stock_price',
-            row_id: id,
-          },
-          logs,
-          mutateLogs
-        )
+        logChangePrice(stockItem, totalSell, vendorCut, clerk, stockPriceId)
         setAlert({
           open: true,
           type: 'success',

@@ -10,8 +10,8 @@ import { StockObject } from 'lib/types'
 // Functions
 
 // Components
-import TableContainer from '@/components/container/table'
-import Table from '@/components/table'
+import TableContainer from 'components/container/table'
+import Table from 'components/table'
 import { mapInventoryItem } from '../../lib/functions'
 
 interface NumberProps {

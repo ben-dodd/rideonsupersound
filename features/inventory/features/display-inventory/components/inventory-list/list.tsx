@@ -4,7 +4,7 @@ import { useAtom } from 'jotai'
 import { useInventory, useVendors } from 'lib/database/read'
 
 // Components
-import MidScreenContainer from '@/components/container/mid-screen'
+import MidScreenContainer from 'components/container/mid-screen'
 import { compactModeAtom } from 'lib/atoms'
 import { StockObject } from 'lib/types'
 import { useMemo } from 'react'

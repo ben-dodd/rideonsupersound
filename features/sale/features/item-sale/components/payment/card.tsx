@@ -5,26 +5,18 @@ import { useState } from 'react'
 
 // DB
 import { alertAtom, cartAtom, clerkAtom, viewAtom } from 'lib/atoms'
+import { useCustomers, useInventory, useRegisterID } from 'lib/database/read'
 import {
-  useCustomers,
-  useInventory,
-  useLogs,
-  useRegisterID,
-} from 'lib/database/read'
-import {
-  CustomerObject,
   ModalButton,
   PaymentMethodTypes,
   SaleTransactionObject,
 } from 'lib/types'
 
-// Functions
-import { getSaleVars } from 'lib/data-functions'
-
 // Components
-import TextField from '@/components/inputs/text-field'
-import Modal from '@/components/modal'
-import { saveLog } from 'lib/db-functions'
+import TextField from 'components/inputs/text-field'
+import Modal from 'components/modal'
+import { logSalePaymentCard } from 'features/log/lib/functions'
+import { getSaleVars } from '../../lib/functions'
 
 export default function Cash() {
   // Atoms
@@ -36,7 +28,6 @@ export default function Cash() {
   // SWR
   const { registerID } = useRegisterID()
   const { inventory } = useInventory()
-  const { logs, mutateLogs } = useLogs()
   const { customers } = useCustomers()
 
   const { totalRemaining } = getSaleVars(cart, inventory)
@@ -78,22 +69,7 @@ export default function Cash() {
         setCart({ ...cart, transactions })
         setSubmitting(false)
         setView({ ...view, cardPaymentDialog: false })
-        saveLog(
-          {
-            log: `$${parseFloat(cardPayment)?.toFixed(2)} ${
-              isRefund ? 'refunded on card to' : 'card payment from'
-            } ${
-              cart?.customer_id
-                ? customers?.filter(
-                    (c: CustomerObject) => c?.id === cart?.customer_id
-                  )[0]?.name
-                : 'customer'
-            }${cart?.id ? ` (sale #${cart?.id}).` : ''}.`,
-            clerk_id: clerk?.id,
-          },
-          logs,
-          mutateLogs
-        )
+        logSalePaymentCard(cardPayment, isRefund, cart, customers, clerk)
         setAlert({
           open: true,
           type: 'success',

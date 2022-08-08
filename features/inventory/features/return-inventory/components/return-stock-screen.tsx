@@ -22,12 +22,12 @@ import {
 import { returnStock } from 'lib/db-functions'
 
 // Components
-import TextField from '@/components/inputs/text-field'
+import TextField from 'components/inputs/text-field'
 import Select from 'react-select'
 
 // Icons
-import ScreenContainer from '@/components/container/screen'
 import DeleteIcon from '@mui/icons-material/Delete'
+import ScreenContainer from 'components/container/screen'
 
 export default function ReturnStockScreen() {
   // SWR

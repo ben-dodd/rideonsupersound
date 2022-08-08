@@ -16,8 +16,8 @@ import { ModalButton } from 'lib/types'
 import { receiveStock, saveSystemLog } from 'lib/db-functions'
 
 // Components
-import ScreenContainer from '@/components/container/screen'
-import Stepper from '@/components/navigation/stepper'
+import ScreenContainer from 'components/container/screen'
+import Stepper from 'components/navigation/stepper'
 
 // Icons
 import SelectItems from './add-items'

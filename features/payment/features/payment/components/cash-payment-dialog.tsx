@@ -16,14 +16,13 @@ import {
 } from 'lib/database/read'
 import { ModalButton, VendorObject, VendorPaymentTypes } from 'lib/types'
 
-// Functions
-import { getVendorDetails } from 'lib/data-functions'
-import { saveLog, saveVendorPaymentToDatabase } from 'lib/db-functions'
-
 // Components
-import TextField from '@/components/inputs/text-field'
-import Modal from '@/components/modal'
+import TextField from 'components/inputs/text-field'
+import Modal from 'components/modal'
 import dayjs from 'dayjs'
+import { logCreateVendorPayment } from 'features/log/lib/functions'
+import { getVendorDetails } from 'features/vendor/features/item-vendor/lib/functions'
+import { createVendorPaymentInDatabase } from 'lib/database/create'
 
 export default function CashPaymentDialog() {
   // SWR
@@ -73,23 +72,13 @@ export default function CashPaymentDialog() {
           type: paymentType,
           note: notes,
         }
-        saveVendorPaymentToDatabase(vendorPayment).then((id) => {
-          mutateVendorPayments([...vendorPayments, { ...vendorPayment, id }])
+        createVendorPaymentInDatabase(vendorPayment).then((vendorPaymentId) => {
+          mutateVendorPayments([
+            ...vendorPayments,
+            { ...vendorPayment, vendorPaymentId },
+          ])
           if (paymentType === VendorPaymentTypes.Cash) mutateCashGiven()
-          saveLog(
-            {
-              log: `${
-                paymentType === VendorPaymentTypes.Cash
-                  ? 'Cash'
-                  : 'Direct deposit'
-              } payment made to Vendor (${vendor?.id || ''}).`,
-              clerk_id: clerk?.id,
-              table_id: 'vendor_payment',
-              row_id: id,
-            },
-            logs,
-            mutateLogs
-          )
+          logCreateVendorPayment(paymentType, vendor, clerk, vendorPaymentId)
           setSubmitting(false)
           resetAndCloseDialog()
         })

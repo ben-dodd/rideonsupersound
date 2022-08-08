@@ -13,25 +13,21 @@ import {
 import { ModalButton, StockObject } from 'lib/types'
 
 // Functions
-import {
-  getItemDisplayName,
-  getItemSkuDisplayNameById,
-} from 'lib/data-functions'
+import { getItemDisplayName } from 'lib/data-functions'
 import {
   deleteInventoryItemFromDatabase,
-  saveLog,
   updateStockItemInDatabase,
 } from 'lib/db-functions'
 
 // Components
-import ScreenContainer from '@/components/container/screen'
-import Tabs from '@/components/navigation/tabs'
+import ScreenContainer from 'components/container/screen'
+import Tabs from 'components/navigation/tabs'
 
-import DiscogsPanel from '@/features/inventory/features/api-discogs/components'
-import GoogleBooksPanel from '@/features/inventory/features/api-google-books/components'
-import InventoryItemForm from '@/features/inventory/features/item-inventory/components/inventory-item-form'
-import StockDetails from '@/features/inventory/features/item-inventory/components/stock-details'
 import DeleteIcon from '@mui/icons-material/Delete'
+import DiscogsPanel from 'features/inventory/features/api-discogs/components'
+import GoogleBooksPanel from 'features/inventory/features/api-google-books/components'
+import InventoryItemForm from 'features/inventory/features/item-inventory/components/inventory-item-form'
+import StockDetails from 'features/inventory/features/item-inventory/components/stock-details'
 import { parseJSON } from 'lib/utils'
 import PriceDetails from './price-details'
 
@@ -103,19 +99,7 @@ export default function InventoryItemScreen({ page }) {
                 inventory?.filter((i) => i?.id !== item?.id),
                 false
               )
-              saveLog(
-                {
-                  log: `${getItemSkuDisplayNameById(
-                    item?.id,
-                    inventory
-                  )} deleted.`,
-                  clerk_id: clerk?.id,
-                  table_id: 'stock',
-                  row_id: item?.id,
-                },
-                logs,
-                mutateLogs
-              )
+
               setLoadedItemId({ ...loadedItemId, [page]: 0 })
             }),
     })

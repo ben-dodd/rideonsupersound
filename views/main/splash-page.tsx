@@ -1,14 +1,12 @@
 import Head from 'next/head'
 
+import { saveLog } from 'features/log/lib/functions'
 import SignOutButton from 'features/sign-in/components/sign-out-button'
 import { useAtom } from 'jotai'
 import { clerkAtom } from 'lib/atoms'
-import { useLogs } from 'lib/database/read'
-import { saveLog } from 'lib/db-functions'
 import { bg, bgLight, ClerkObject } from 'lib/types'
 
 export default function SplashPage({ clerks }) {
-  const { logs, mutateLogs } = useLogs()
   const [, setClerk] = useAtom(clerkAtom)
 
   return (
@@ -22,25 +20,18 @@ export default function SplashPage({ clerks }) {
             CHOOSE YOUR FIGHTER
           </div>
           <div>
-            {clerks?.map((c: ClerkObject) => (
+            {clerks?.map((clerk: ClerkObject) => (
               <div
-                key={c?.id}
-                className={`${bgLight[c?.colour || 9]} hover:${
-                  bg[c?.colour || 9]
+                key={clerk?.id}
+                className={`${bgLight[clerk?.colour || 9]} hover:${
+                  bg[clerk?.colour || 9]
                 } text-center py-4 cursor-pointer font-bold text-lg`}
                 onClick={() => {
-                  setClerk(c)
-                  saveLog(
-                    {
-                      log: `${c.name} set as clerk.`,
-                      clerk_id: c?.id,
-                    },
-                    logs,
-                    mutateLogs
-                  )
+                  setClerk(clerk)
+                  saveLog(`${clerk.name} set as clerk.`, clerk?.id)
                 }}
               >
-                {c?.name?.toUpperCase()}
+                {clerk?.name?.toUpperCase()}
               </div>
             ))}
           </div>

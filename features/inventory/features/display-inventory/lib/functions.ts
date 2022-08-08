@@ -4,11 +4,7 @@ export function getItemById(item_id: number, inventory: StockObject[]) {
   return inventory?.find((i) => i?.id === item_id)
 }
 
-export function getItemSkuDisplayName(
-  item_id: number,
-  inventory: StockObject[]
-) {
-  const item = getItemById(item_id, inventory)
+export function getItemSkuDisplayName(item: StockObject) {
   return `[${getItemSku(item)}] ${getItemDisplayName(item)}`
 }
 

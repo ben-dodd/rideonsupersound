@@ -6,21 +6,19 @@ import { useState } from 'react'
 import { clerkAtom, viewAtom } from 'lib/atoms'
 import { useLogs, useStockDisplay, useVendors } from 'lib/database/read'
 import { ModalButton, StockObject } from 'lib/types'
-
-// Functions
-import {
-  filterInventory,
-  getImageSrc,
-  getItemSkuDisplayName,
-} from 'lib/data-functions'
-import { saveLog } from 'lib/db-functions'
 import { v4 as uuid } from 'uuid'
 
 // Components
-import Modal from '@/components/modal'
 import DeleteIcon from '@mui/icons-material/Delete'
 import SearchIcon from '@mui/icons-material/Search'
+import Modal from 'components/modal'
 import dayjs from 'dayjs'
+import { logPrintLabels } from 'features/log/lib/functions'
+import { filterInventory } from 'features/sale/features/sell/lib/functions'
+import {
+  getImageSrc,
+  getItemSkuDisplayName,
+} from '../../display-inventory/lib/functions'
 import { getLabelPrinterCSV } from '../lib/functions'
 
 export default function LabelPrintDialog() {
@@ -64,14 +62,7 @@ export default function LabelPrintDialog() {
       fileName: `label-print-${dayjs().format('YYYY-MM-DD')}.csv`,
       text: 'PRINT LABELS',
       onClick: () => {
-        saveLog(
-          {
-            log: 'Labels printed from label print dialog.',
-            clerk_id: clerk?.id,
-          },
-          logs,
-          mutateLogs
-        )
+        logPrintLabels(clerk, 'label print dialog')
         closeDialog()
       },
     },
@@ -118,8 +109,9 @@ export default function LabelPrintDialog() {
               />
             </div>
             <div className="overflow-y-scroll pt-2">
-              {filterInventory({ inventory: stockDisplay, search })?.map(
-                (item: StockObject) => {
+              {stockDisplay
+                ?.filter((item) => filterInventory(item, search))
+                ?.map((item: StockObject) => {
                   if (search === `${('00000' + item?.id || '').slice(-5)}`) {
                     addItem(item)
                   }
@@ -158,8 +150,7 @@ export default function LabelPrintDialog() {
                       </div>
                     </div>
                   )
-                }
-              )}
+                })}
             </div>
           </div>
           <div>

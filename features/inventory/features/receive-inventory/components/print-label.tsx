@@ -1,15 +1,14 @@
 import dayjs from 'dayjs'
+import { logPrintLabels } from 'features/log/lib/functions'
 import { useAtom } from 'jotai'
 import { clerkAtom } from 'lib/atoms'
+import { useLogs } from 'lib/database/read'
+import { CSVLink } from 'react-csv'
 import {
-  getCSVData,
   getImageSrc,
   getItemDisplayName,
   getItemSku,
-} from 'lib/data-functions'
-import { useLogs } from 'lib/database/read'
-import { saveLog } from 'lib/db-functions'
-import { CSVLink } from 'react-csv'
+} from '../../display-inventory/lib/functions'
 
 export default function PrintLabel({ receivedStock }) {
   const { logs, mutateLogs } = useLogs()
@@ -67,16 +66,7 @@ export default function PrintLabel({ receivedStock }) {
         data={getCSVData(getStock())}
         headers={['SKU', 'ARTIST', 'TITLE', 'NEW/USED', 'SELL PRICE', 'GENRE']}
         filename={`label-print-${dayjs().format('YYYY-MM-DD')}.csv`}
-        onClick={() =>
-          saveLog(
-            {
-              log: 'Labels printed from receive stock dialog.',
-              clerk_id: clerk?.id,
-            },
-            logs,
-            mutateLogs
-          )
-        }
+        onClick={() => logPrintLabels(clerk, 'receive stock dialog')}
       >
         PRINT LABELS
       </CSVLink>

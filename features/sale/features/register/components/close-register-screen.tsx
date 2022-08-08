@@ -16,14 +16,15 @@ import {
 } from 'lib/database/read'
 import { ClerkObject, ModalButton, SaleTransactionObject } from 'lib/types'
 
-// Functions
-import { getAmountFromCashMap } from 'lib/data-functions'
-import { saveClosedRegisterToDatabase, saveLog } from 'lib/db-functions'
-
 // Components
-import ScreenContainer from '@/components/container/screen'
-import TextField from '@/components/inputs/text-field'
+import ScreenContainer from 'components/container/screen'
+import TextField from 'components/inputs/text-field'
 import dayjs from 'dayjs'
+import { logCloseRegisterWithAmount } from 'features/log/lib/functions'
+import {
+  getAmountFromCashMap,
+  saveClosedRegisterToDatabase,
+} from '../lib/functions'
 import CashItem from './cash-item'
 import CashMap from './cash-map'
 
@@ -123,23 +124,9 @@ export default function CloseRegisterScreen() {
         close_discrepancy: closeDiscrepancy * 100,
         close_note: notes,
       },
-      till,
-      logs,
-      mutateLogs
+      till
     )
-    saveLog(
-      {
-        log: `Register closed with $${(closeAmount
-          ? parseFloat(closeAmount)
-          : 0
-        )?.toFixed(2)} in the till.`,
-        clerk_id: clerk?.id,
-        table_id: 'register',
-        row_id: registerID,
-      },
-      logs,
-      mutateLogs
-    )
+    logCloseRegisterWithAmount(closeAmount, clerk, registerID)
     mutateRegisterID([{ num: 0 }], false)
     setView({ ...view, closeRegisterScreen: false })
     setAlert({

@@ -28,7 +28,7 @@ import {
 } from 'lib/db-functions'
 
 // Components
-import TextField from '@/components/inputs/text-field'
+import TextField from 'components/inputs/text-field'
 import Select from 'react-select'
 
 // Icons

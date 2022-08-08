@@ -3,6 +3,11 @@ import { useAtom } from 'jotai'
 import { useState } from 'react'
 
 // DB
+import SidebarContainer from 'components/container/side-bar'
+import CreateableSelect from 'components/inputs/createable-select'
+import TextField from 'components/inputs/text-field'
+import { addRestockTask } from 'features/job/lib/functions'
+import { logCreateHold, saveSystemLog } from 'features/log/lib/functions'
 import {
   alertAtom,
   cartAtom,
@@ -11,6 +16,10 @@ import {
   sellSearchBarAtom,
   viewAtom,
 } from 'lib/atoms'
+import {
+  createHoldInDatabase,
+  createStockMovementInDatabase,
+} from 'lib/database/create'
 import {
   useCustomers,
   useInventory,
@@ -23,19 +32,7 @@ import {
   StockMovementTypes,
   StockObject,
 } from 'lib/types'
-
-// Functions
-import { getItemQuantity, getItemSkuDisplayNameById } from 'lib/data-functions'
-import { addRestockTask, saveLog, saveSystemLog } from 'lib/db-functions'
-
-// Components
-import SidebarContainer from '@/components/container/side-bar'
-import CreateableSelect from '@/components/inputs/createable-select'
-import TextField from '@/components/inputs/text-field'
-import {
-  createHoldInDatabase,
-  createStockMovementInDatabase,
-} from 'lib/database/create'
+import { getItemQuantity } from '../../sell/lib/functions'
 import ListItem from './list-item'
 
 export default function CreateHoldSidebar() {
@@ -74,7 +71,7 @@ export default function CreateHoldSidebar() {
         if (itemQuantity > 0) {
           addRestockTask(cartItem?.item_id)
         }
-        const rowId = await createHoldInDatabase(
+        const holdId = await createHoldInDatabase(
           cart,
           cartItem,
           holdPeriod,
@@ -82,29 +79,20 @@ export default function CreateHoldSidebar() {
           clerk,
           registerID
         )
-        createStockMovementInDatabase(
+        createStockMovementInDatabase({
           item,
           clerk,
           registerID,
-          StockMovementTypes.Hold,
-          null
-        )
-        saveLog(
-          {
-            log: `${getItemSkuDisplayNameById(
-              cartItem?.item_id,
-              inventory
-            )} put on hold for ${
-              customers?.filter(
-                (c: CustomerObject) => c?.id === cart?.customer_id
-              )[0]?.name
-            } for ${holdPeriod} day${holdPeriod === 1 ? '' : 's'}.`,
-            clerk_id: clerk?.id,
-            table_id: 'hold',
-            row_id: rowId,
-          },
-          logs,
-          mutateLogs
+          act: StockMovementTypes.Hold,
+        })
+        logCreateHold(
+          cart,
+          cartItem,
+          inventory,
+          customers,
+          holdPeriod,
+          clerk,
+          holdId
         )
       }
     )

@@ -311,6 +311,14 @@ export function useVendors() {
   return useRead('vendors', { table: 'vendor', where: `NOT is_deleted` })
 }
 
+export function useVendorNames() {
+  return useRead('vendors', {
+    columns: ['id', 'name'],
+    table: 'vendor',
+    where: `NOT is_deleted`,
+  })
+}
+
 export function useVendorPayments() {
   return useRead('vendor payments', {
     table: 'vendor_payment',

@@ -9,12 +9,13 @@ import { RegisterObject, TillObject } from 'lib/types'
 
 // Functions
 import { getAmountFromCashMap } from 'lib/data-functions'
-import { saveAndOpenRegister, saveLog } from 'lib/db-functions'
+import { saveAndOpenRegister } from 'lib/db-functions'
 
 // Components
-import TextField from '@/components/inputs/text-field'
 import OpenIcon from '@mui/icons-material/ShoppingCart'
 import CircularProgress from '@mui/material/CircularProgress'
+import TextField from 'components/inputs/text-field'
+import { logOpenRegister } from 'features/log/lib/functions'
 import CashMap from './cash-map'
 
 export default function OpenRegisterScreen() {
@@ -67,18 +68,7 @@ export default function OpenRegisterScreen() {
       type: 'success',
       message: 'REGISTER OPENED',
     })
-    saveLog(
-      {
-        log: `Register opened with $${
-          openAmount ? parseFloat(openAmount) : 0
-        } in the till.`,
-        clerk_id: clerk?.id,
-        table_id: 'register',
-        row_id: registerID,
-      },
-      logs,
-      mutateLogs
-    )
+    logOpenRegister(clerk, openAmount, registerID)
   }
 
   function isError(till: TillObject) {

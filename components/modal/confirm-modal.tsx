@@ -1,4 +1,4 @@
-import Modal from '@/components/modal'
+import Modal from 'components/modal'
 import { useAtom } from 'jotai'
 import { confirmModalAtom } from 'lib/atoms'
 import { ModalButton } from 'lib/types'

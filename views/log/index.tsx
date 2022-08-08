@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useAtom } from 'jotai'
 
 // DB
-import Tabs from '@/components/navigation/tabs'
+import Tabs from 'components/navigation/tabs'
 import ListLog from 'features/log/components/list-log'
 import ListStockMovement from 'features/log/components/list-stock-movement'
 import { pageAtom } from 'lib/atoms'

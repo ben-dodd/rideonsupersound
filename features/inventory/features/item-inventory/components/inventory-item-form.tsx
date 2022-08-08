@@ -1,13 +1,18 @@
-import CreateableSelect from '@/components/inputs/createable-select'
-import RadioButton from '@/components/inputs/radio-button'
-import SettingsSelect from '@/components/inputs/settings-select'
-import TextField from '@/components/inputs/text-field'
+import CreateableSelect from 'components/inputs/createable-select'
+import RadioButton from 'components/inputs/radio-button'
+import SettingsSelect from 'components/inputs/settings-select'
+import TextField from 'components/inputs/text-field'
+import { logCreateVendor } from 'features/log/lib/functions'
 import { useAtom } from 'jotai'
 import { clerkAtom } from 'lib/atoms'
-import { getImageSrc, getItemDisplayName, getItemSku } from 'lib/data-functions'
+import { createVendorInDatabase } from 'lib/database/create'
 import { useLogs, useVendors } from 'lib/database/read'
-import { saveLog, saveVendorToDatabase } from 'lib/db-functions'
 import { StockObject, VendorObject } from 'lib/types'
+import {
+  getImageSrc,
+  getItemDisplayName,
+  getItemSku,
+} from '../../display-inventory/lib/functions'
 
 interface inventoryProps {
   item: StockObject
@@ -92,18 +97,11 @@ export default function InventoryItemForm({
                 onChange={(vendorObject: any) =>
                   setItem({ ...item, vendor_id: parseInt(vendorObject?.value) })
                 }
-                onCreateOption={async (inputValue: string) => {
-                  const vendorId = await saveVendorToDatabase({
-                    name: inputValue,
+                onCreateOption={async (vendorName: string) => {
+                  const vendorId = await createVendorInDatabase({
+                    name: vendorName,
                   })
-                  saveLog(
-                    {
-                      log: `Vendor ${inputValue} (${vendorId}) created.`,
-                      clerk_id: clerk?.id,
-                    },
-                    logs,
-                    mutateLogs
-                  )
+                  logCreateVendor(clerk, vendorName, vendorId)
                   setItem({ ...item, vendor_id: vendorId })
                 }}
                 options={vendors?.map((val: VendorObject) => ({

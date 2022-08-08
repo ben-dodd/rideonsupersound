@@ -1,6 +1,6 @@
-import Modal from '@/components/modal'
 import BackIcon from '@mui/icons-material/ArrowLeft'
 import SearchIcon from '@mui/icons-material/Search'
+import Modal from 'components/modal'
 import { useAtom } from 'jotai'
 import { pageAtom, viewAtom } from 'lib/atoms'
 import { useHelps } from 'lib/database/read'

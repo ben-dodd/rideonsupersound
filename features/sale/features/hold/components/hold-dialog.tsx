@@ -18,29 +18,21 @@ import {
   useInventory,
   useLogs,
   useRegisterID,
-  useWeather,
 } from 'lib/database/read'
-import {
-  ClerkObject,
-  CustomerObject,
-  HoldObject,
-  ModalButton,
-  StockObject,
-} from 'lib/types'
-
-// Functions
-import {
-  returnHoldToStock,
-  saveLog,
-  saveSystemLog,
-  updateHoldInDatabase,
-} from 'lib/db-functions'
+import { ClerkObject, CustomerObject, HoldObject, ModalButton } from 'lib/types'
 
 // Components
-import TextField from '@/components/inputs/text-field'
-import Modal from '@/components/modal'
+import TextField from 'components/inputs/text-field'
+import Modal from 'components/modal'
 import dayjs from 'dayjs'
-import { getItemDisplayName } from 'lib/data-functions'
+import {
+  logHoldAddedToSale,
+  logRemoveFromHold,
+  saveSystemLog,
+} from 'features/log/lib/functions'
+import { useWeather } from 'lib/api'
+import { updateHoldInDatabase } from 'lib/database/update'
+import { returnHoldToStock } from '../lib/functions'
 import HoldListItem from './list-item'
 
 export default function HoldDialog() {
@@ -109,16 +101,7 @@ export default function HoldDialog() {
           registerID
         )
         closeDialog()
-        saveLog(
-          {
-            log: `${getItemDisplayName(
-              inventory?.filter((i: StockObject) => i?.id === hold?.item_id)[0]
-            )} removed from hold and added back to stock.`,
-            clerk_id: clerk?.id,
-          },
-          logs,
-          mutateLogs
-        )
+        logRemoveFromHold(hold, inventory, clerk)
         setAlert({
           open: true,
           type: 'success',
@@ -229,16 +212,7 @@ export default function HoldDialog() {
     })
     setPage('sell')
     setView({ ...view, cart: true })
-    saveLog(
-      {
-        log: `${getItemDisplayName(
-          inventory?.filter((i: StockObject) => i?.id === hold?.item_id)[0]
-        )} added to cart${cart?.id ? ` (sale #${cart?.id}) from hold` : ''}.`,
-        clerk_id: clerk?.id,
-      },
-      logs,
-      mutateLogs
-    )
+    logHoldAddedToSale(hold, inventory, cart, clerk)
     setAlert({
       open: true,
       type: 'success',

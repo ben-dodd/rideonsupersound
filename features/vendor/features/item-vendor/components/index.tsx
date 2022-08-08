@@ -15,8 +15,8 @@ import {
 import { ModalButton, VendorObject } from 'lib/types'
 
 // Components
-import ScreenContainer from '@/components/container/screen'
-import Tabs from '@/components/navigation/tabs'
+import ScreenContainer from 'components/container/screen'
+import Tabs from 'components/navigation/tabs'
 import { getVendorDetails } from 'lib/data-functions'
 import { saveVendorToDatabase, updateVendorInDatabase } from 'lib/db-functions'
 import GeneralDetails from './general-details'

@@ -11,8 +11,8 @@ import { ModalButton } from 'lib/types'
 import { savePettyCashToRegister } from 'lib/db-functions'
 
 // Components
-import TextField from '@/components/inputs/text-field'
-import Modal from '@/components/modal'
+import TextField from 'components/inputs/text-field'
+import Modal from 'components/modal'
 
 export default function TakeCashDialog() {
   // SWR

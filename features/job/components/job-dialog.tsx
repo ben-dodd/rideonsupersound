@@ -4,30 +4,23 @@ import { useState } from 'react'
 
 // DB
 import { alertAtom, clerkAtom, viewAtom } from 'lib/atoms'
-import { useJobs, useLogs } from 'lib/database/read'
+import { useJobs } from 'lib/database/read'
 import { ModalButton, RoleTypes, TaskObject } from 'lib/types'
 
 // Functions
 
 // Components
-import TextField from '@/components/inputs/text-field'
-import Modal from '@/components/modal'
-import { saveLog } from '@/features/log/lib/functions'
+import TextField from 'components/inputs/text-field'
+import Modal from 'components/modal'
 import dayjs from 'dayjs'
+import { logCreateJob } from 'features/log/lib/functions'
 import Select from 'react-select'
 
 export default function JobDialog() {
-  // Atoms
   const [clerk] = useAtom(clerkAtom)
   const [view, setView] = useAtom(viewAtom)
   const [, setAlert] = useAtom(alertAtom)
-
-  // SWR
-  // const { clerks } = useClerks();
-  const { logs, mutateLogs } = useLogs()
   const { jobs, mutateJobs } = useJobs()
-
-  // State
   const [description, setDescription] = useState('')
   const [assignedTo, setAssignedTo] = useState(null)
   const [isPriority, setIsPriority] = useState(false)
@@ -66,20 +59,11 @@ export default function JobDialog() {
           created_by_clerk_id: clerk?.id,
           date_created: dayjs.utc().format(),
         }
-        const id = await saveTaskToDatabase(newTask)
-        mutateJobs([...jobs, { ...newTask, id }], false)
+        const jobId = await saveTaskToDatabase(newTask)
+        mutateJobs([...jobs, { ...newTask, jobId }], false)
         setSubmitting(false)
         clearDialog()
-        saveLog(
-          {
-            log: `New job (${description}) created.`,
-            clerk_id: clerk?.id,
-            table_id: 'stock',
-            row_id: id,
-          },
-          logs,
-          mutateLogs
-        )
+        logCreateJob(description, clerk, jobId)
         setAlert({
           open: true,
           type: 'success',

@@ -9,7 +9,7 @@ import { useInventory, useJobs } from 'lib/database/read'
 import { StockObject, TaskObject } from 'lib/types'
 
 // Components
-import Tabs from '@/components/navigation/tabs'
+import Tabs from 'components/navigation/tabs'
 import dayjs from 'dayjs'
 import TaskDialog from '../../features/job/components/job-dialog'
 import ListTask from '../../features/job/components/list-job'

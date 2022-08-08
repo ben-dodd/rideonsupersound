@@ -14,7 +14,6 @@ import {
   useRegisterID,
 } from 'lib/database/read'
 import {
-  CustomerObject,
   GiftCardObject,
   ModalButton,
   PaymentMethodTypes,
@@ -23,13 +22,12 @@ import {
 
 import SyncIcon from '@mui/icons-material/Sync'
 
-// Functions
-import { getSaleVars, makeGiftCardCode } from 'lib/data-functions'
-
 // Components
-import TextField from '@/components/inputs/text-field'
-import Modal from '@/components/modal'
-import { saveLog } from 'lib/db-functions'
+import TextField from 'components/inputs/text-field'
+import Modal from 'components/modal'
+import { logSalePaymentGift } from 'features/log/lib/functions'
+import { makeGiftCardCode } from 'features/sale/features/sell/lib/functions'
+import { getSaleVars } from '../../lib/functions'
 
 export default function Gift() {
   dayjs.extend(UTC)
@@ -136,37 +134,16 @@ export default function Gift() {
         setCart({ ...cart, transactions })
         setSubmitting(false)
         setView({ ...view, giftPaymentDialog: false })
-        saveLog(
-          {
-            log: `$${parseFloat(giftCardPayment)?.toFixed(2)} ${
-              isRefund
-                ? `refunded with new gift card #${newGiftCardCode} to`
-                : `gift card payment from`
-            } ${
-              cart?.customer_id
-                ? customers?.filter(
-                    (c: CustomerObject) => c?.id === cart?.customer_id
-                  )[0]?.name
-                : 'customer'
-            }${cart?.id ? ` (sale #${cart?.id})` : ''}.${
-              isRefund
-                ? ''
-                : ` Gift card #${giftCardCode?.toUpperCase()}. ${
-                    leftOver < 10
-                      ? `Card taken.${
-                          leftOver > 0
-                            ? ` $${leftOver?.toFixed(
-                                2
-                              )} change given for remainder on card.`
-                            : ''
-                        }`
-                      : `$${remainingOnGiftCard?.toFixed(2)} remaining on card.`
-                  }`
-            }`,
-            clerk_id: clerk?.id,
-          },
-          logs,
-          mutateLogs
+        logSalePaymentGift(
+          giftCardPayment,
+          isRefund,
+          newGiftCardCode,
+          giftCardCode,
+          leftOver,
+          remainingOnGiftCard,
+          cart,
+          customers,
+          clerk
         )
         setAlert({
           open: true,

@@ -5,12 +5,13 @@ import { VendorObject } from 'lib/types'
 // Functions
 
 // Components
-import CreateableSelect from '@/components/inputs/createable-select'
+import CreateableSelect from 'components/inputs/createable-select'
 
 // Icons
+import { logCreateVendor } from 'features/log/lib/functions'
 import { useAtom } from 'jotai'
 import { clerkAtom, receiveStockAtom } from 'lib/atoms'
-import { saveLog, saveVendorToDatabase } from 'lib/db-functions'
+import { createVendorInDatabase } from 'lib/database/create'
 
 export default function SelectVendor() {
   const [basket, setBasket] = useAtom(receiveStockAtom)
@@ -35,16 +36,9 @@ export default function SelectVendor() {
             vendor_id: parseInt(vendorObject?.value),
           })
         }}
-        onCreateOption={async (inputValue: string) => {
-          const vendorId = await saveVendorToDatabase({ name: inputValue })
-          saveLog(
-            {
-              log: `Vendor ${inputValue} (${vendorId}) created.`,
-              clerk_id: clerk?.id,
-            },
-            logs,
-            mutateLogs
-          )
+        onCreateOption={async (vendorName: string) => {
+          const vendorId = await createVendorInDatabase({ name: vendorName })
+          logCreateVendor(clerk, vendorName, vendorId)
           setBasket({ ...basket, vendor_id: vendorId })
         }}
         options={vendors?.map((val: VendorObject) => ({

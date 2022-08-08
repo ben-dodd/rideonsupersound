@@ -3,20 +3,14 @@ import { useAtom } from 'jotai'
 
 // DB
 import {
-  alertAtom,
   cartAtom,
   clerkAtom,
   confirmModalAtom,
   loadedItemIdAtom,
   sellSearchBarAtom,
-  viewAtom,
+  viewAtom
 } from 'lib/atoms'
-import {
-  useInventory,
-  useLogs,
-  useVendors,
-  useWeather,
-} from 'lib/database/read'
+import { useVendorNames } from 'lib/database/read'
 import { StockObject, VendorObject } from 'lib/types'
 
 // Components
@@ -29,26 +23,29 @@ import InfoIcon from '@mui/icons-material/Info'
 // REVIEW add tooltips everywhere. Have ability to turn them off.
 
 // Functions
-import dayjs from 'dayjs'
 import {
+  getHoldQuantity,
   getImageSrc,
   getItemDisplayName,
-  getItemQuantity,
   getItemSku,
-} from 'lib/data-functions'
-import { saveLog } from 'lib/db-functions'
+  getLaybyQuantity
+} from 'features/inventory/features/display-inventory/lib/functions'
+import {
+  addItemToCart,
+  getItemQuantity,
+  openCart,
+  skuScan
+} from '../../lib/functions'
 
 type ListItemProps = {
   item: StockObject
-  geolocation: any
+  weather: Object
+  geolocation: Object
 }
 
-export default function ListItem({ item, geolocation }: ListItemProps) {
+export default function ListItem({ item, weather, geolocation }: ListItemProps) {
   // SWR
-  const { weather } = useWeather()
-  const { inventory } = useInventory()
-  const { vendors } = useVendors()
-  const { logs, mutateLogs } = useLogs()
+  const { vendors } = useVendorNames()
 
   // Atoms
   const [cart, setCart] = useAtom(cartAtom)
@@ -57,14 +54,12 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
   const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom)
   const [, setConfirmModal] = useAtom(confirmModalAtom)
   const [clerk] = useAtom(clerkAtom)
-  const [, setAlert] = useAtom(alertAtom)
 
   // Constants
   const itemQuantity = getItemQuantity(item, cart?.items)
-  const vendor =
-    vendors?.filter(
-      (vendor: VendorObject) => vendor?.id === item?.vendor_id
-    )[0] || null
+  const vendorName =
+    vendors?.find((vendor: VendorObject) => vendor?.id === item?.vendor_id)
+      ?.name || ''
 
   // Functions
   function clickAddToCart() {
@@ -79,51 +74,16 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
           </span>
         ),
         yesText: "YES, I'M SURE",
-        action: () => addItemToCart(),
+        action: () => handleAddItemToCart(),
       })
-    } else addItemToCart()
+    } else handleAddItemToCart()
   }
 
-  function addItemToCart() {
-    let newItems = cart?.items || []
-    let index = newItems.findIndex((cartItem) => cartItem.item_id === item?.id)
-    if (index < 0)
-      newItems.push({
-        item_id: item?.id,
-        quantity: '1',
-      })
-    else newItems[index].quantity = `${parseInt(newItems[index].quantity) + 1}`
-    setCart({
-      id: cart?.id || null,
-      date_sale_opened: cart?.date_sale_opened || dayjs.utc().format(),
-      sale_opened_by: cart?.sale_opened_by || clerk?.id,
-      items: newItems,
-      transactions: cart?.transactions || [],
-      state: cart?.state || null,
-      customer_id: cart?.customer_id || null,
-      layby_started_by: cart?.layby_started_by || null,
-      date_layby_started: cart?.date_layby_started || null,
-      weather: cart?.weather || weather,
-      geo_latitude: cart?.geo_latitude || geolocation?.latitude,
-      geo_longitude: cart?.geo_longitude || geolocation?.longitude,
-    })
+  function handleAddItemToCart() {
+    if (!cart?.date_sale_opened) openCart(setCart, clerk, weather, geolocation)
+    addItemToCart(item, cart, setCart, clerk)
     setView({ ...view, cart: true })
     setSearch('')
-    saveLog(
-      {
-        log: `${getItemDisplayName(
-          inventory?.filter((i: StockObject) => i?.id === item?.id)[0]
-        )} added to cart${cart?.id ? ` (sale #${cart?.id})` : ''}.`,
-        clerk_id: clerk?.id,
-      },
-      logs,
-      mutateLogs
-    )
-    setAlert({
-      open: true,
-      type: 'success',
-      message: `ITEM ADDED TO CART`,
-    })
   }
 
   function clickOpenInventoryModal() {
@@ -137,9 +97,8 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
   //   onDoubleClick={clickOpenInventoryModal}
   // >
 
-  if (sellSearch?.trim() === `${('00000' + item?.id || '').slice(-5)}`) {
-    addItemToCart()
-  }
+  skuScan(sellSearch, item, handleAddItemToCart)
+
   return (
     <div
       className={`flex w-full mb-2 text-black ${
@@ -155,8 +114,6 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
           <img
             className="object-cover h-imageMed"
             width="100%"
-            // layout="fill"
-            // objectFit="cover"
             src={getImageSrc(item)}
             alt={item?.title || 'Inventory image'}
           />
@@ -193,7 +150,7 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
           }]`}</div>
         </div>
         <div className="text-xs">
-          {`${vendor ? `Selling for ${vendor?.name}` : ''}`}
+          {`${vendorName ? `Selling for ${vendorName}` : ''}`}
         </div>
 
         <div className="flex justify-between items-end">
@@ -201,16 +158,12 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
             <div
               className={`text-md ${itemQuantity < 1 && 'text-red-500'}`}
             >{`${itemQuantity} in stock${
-              (item?.quantity_hold || 0) + (item?.quantity_unhold || 0) > 0
-                ? `, ${-(
-                    (item?.quantity_hold || 0) + (item?.quantity_unhold || 0)
-                  )} on hold`
+              getHoldQuantity(item) > 0
+                ? `, ${getHoldQuantity(item)} on hold`
                 : ''
             }${
-              (item?.quantity_layby || 0) + (item?.quantity_unlayby || 0) > 0
-                ? `, ${-(
-                    (item?.quantity_layby || 0) + (item?.quantity_unlayby || 0)
-                  )} on layby`
+              getLaybyQuantity(item) > 0
+                ? `, ${getLaybyQuantity(item)} on layby`
                 : ''
             }`}</div>
           </Tooltip>

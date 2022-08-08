@@ -1,3 +1,32 @@
+import dayjs from 'dayjs'
+import {
+  logStocktakeAdjustment,
+  logStocktakeKeep,
+} from 'features/log/lib/functions'
+import {
+  createStockMovementInDatabase,
+  createTaskInDatabase,
+} from 'lib/database/create'
+import {
+  updateStocktakeInDatabase,
+  updateStocktakeTemplateInDatabase,
+} from 'lib/database/update'
+import {
+  ClerkObject,
+  StockMovementTypes,
+  StockObject,
+  StocktakeItemObject,
+  StocktakeObject,
+  StocktakeReviewDecisions,
+  StocktakeStatuses,
+  StocktakeTemplateObject,
+  TaskObject,
+} from 'lib/types'
+import {
+  getItemById,
+  getItemSkuDisplayName,
+} from '../../display-inventory/lib/functions'
+
 export function writeStocktakeFilterDescription(
   stocktake: StocktakeTemplateObject
 ) {
@@ -52,23 +81,14 @@ export function processStocktake(
     if (item?.quantity_counted === item?.quantity_recorded) {
       // Do nothing
     } else if (item?.review_decision === StocktakeReviewDecisions?.keep) {
-      saveLog({
-        log: `Stock take: ${getItemSkuDisplayNameById(
-          item?.stock_id,
-          inventory
-        )}. ${item?.quantity_counted} counted, ${
-          item?.quantity_recorded
-        } in the system. System quantity kept.`,
-        clerk_id: clerk?.id,
-      })
+      logStocktakeKeep(item, inventory, clerk)
     } else if (
       item?.review_decision === StocktakeReviewDecisions?.review ||
       !item?.review_decision
     ) {
       let newTask: TaskObject = {
-        description: `Review stock take. ${getItemSkuDisplayNameById(
-          item?.stock_id,
-          inventory
+        description: `Review stock take. ${getItemSkuDisplayName(
+          getItemById(item?.stock_id, inventory)
         )}. ${item?.quantity_counted} counted, ${
           item?.quantity_recorded
         } in the system.`,
@@ -87,24 +107,17 @@ export function processStocktake(
         act = StockMovementTypes?.Lost
       else if (item?.review_decision === StocktakeReviewDecisions?.return)
         act = StockMovementTypes?.Returned
-      createStockMovementInDatabase(
-        { item_id: item?.stock_id, quantity: `${item?.quantity_difference}` },
+      createStockMovementInDatabase({
+        item: {
+          item_id: item?.stock_id,
+          quantity: `${item?.quantity_difference}`,
+        },
         clerk,
-        null,
         act,
-        'Stock take adjustment.',
-        null,
-        stocktake?.id
-      )
-      saveLog({
-        log: `Stock take: ${getItemSkuDisplayNameById(
-          item?.stock_id,
-          inventory
-        )}. ${item?.quantity_counted} counted, ${
-          item?.quantity_recorded
-        } in the system. Difference marked as ${act}.`,
-        clerk_id: clerk?.id,
+        note: 'Stock take adjustment.',
+        stocktake_id: stocktake?.id,
       })
+      logStocktakeAdjustment(item, inventory, act, clerk)
     }
   })
   updateStocktakeInDatabase({
