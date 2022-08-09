@@ -1,10 +1,10 @@
+import { clerkAtom, viewAtom } from '@lib/atoms'
 import { useAtom } from 'jotai'
-import { clerkAtom, viewAtom } from 'lib/atoms'
 
+import { saveSystemLog } from '@lib/db-functions'
 import NewIcon from '@mui/icons-material/AddBox'
 import PayIcon from '@mui/icons-material/Payment'
 import TransferIcon from '@mui/icons-material/TransferWithinAStation'
-import { saveSystemLog } from 'lib/db-functions'
 
 export default function PaymentNavActions() {
   const [view, setView] = useAtom(viewAtom)

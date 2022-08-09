@@ -1,4 +1,4 @@
-import { StockObject } from 'lib/types'
+import { StockObject } from '@lib/types'
 
 export function mapGiftCardObject(giftCard: StockObject) {
   return {

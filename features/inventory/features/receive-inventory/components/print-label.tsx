@@ -1,8 +1,8 @@
+import { logPrintLabels } from '@features/log/lib/functions'
+import { clerkAtom } from '@lib/atoms'
+import { useLogs } from '@lib/database/read'
 import dayjs from 'dayjs'
-import { logPrintLabels } from 'features/log/lib/functions'
 import { useAtom } from 'jotai'
-import { clerkAtom } from 'lib/atoms'
-import { useLogs } from 'lib/database/read'
 import { CSVLink } from 'react-csv'
 import {
   getImageSrc,

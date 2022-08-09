@@ -8,16 +8,16 @@ import {
   confirmModalAtom,
   receiveStockAtom,
   viewAtom,
-} from 'lib/atoms'
-import { useInventory, useRegisterID } from 'lib/database/read'
-import { ModalButton } from 'lib/types'
+} from '@lib/atoms'
+import { useInventory, useRegisterID } from '@lib/database/read'
+import { ModalButton } from '@lib/types'
 
 // Functions
-import { receiveStock, saveSystemLog } from 'lib/db-functions'
+import { receiveStock, saveSystemLog } from '@lib/db-functions'
 
 // Components
-import ScreenContainer from 'components/container/screen'
-import Stepper from 'components/navigation/stepper'
+import ScreenContainer from '@components/container/screen'
+import Stepper from '@components/navigation/stepper'
 
 // Icons
 import SelectItems from './add-items'

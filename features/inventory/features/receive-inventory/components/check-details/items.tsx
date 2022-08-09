@@ -1,6 +1,6 @@
+import { receiveStockAtom } from '@lib/atoms'
+import { getItemDisplayName, getItemSkuDisplayName } from '@lib/data-functions'
 import { useAtom } from 'jotai'
-import { receiveStockAtom } from 'lib/atoms'
-import { getItemDisplayName, getItemSkuDisplayName } from 'lib/data-functions'
 
 export default function Items({ onClick }) {
   const [basket] = useAtom(receiveStockAtom)

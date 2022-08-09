@@ -3,11 +3,11 @@ import { useAtom } from 'jotai'
 import { useState } from 'react'
 
 // DB
-import SidebarContainer from 'components/container/side-bar'
-import CreateableSelect from 'components/inputs/createable-select'
-import TextField from 'components/inputs/text-field'
-import { addRestockTask } from 'features/job/lib/functions'
-import { logCreateHold, saveSystemLog } from 'features/log/lib/functions'
+import SidebarContainer from '@components/container/side-bar'
+import CreateableSelect from '@components/inputs/createable-select'
+import TextField from '@components/inputs/text-field'
+import { addRestockTask } from '@features/job/lib/functions'
+import { logCreateHold, saveSystemLog } from '@features/log/lib/functions'
 import {
   alertAtom,
   cartAtom,
@@ -15,23 +15,23 @@ import {
   loadedCustomerObjectAtom,
   sellSearchBarAtom,
   viewAtom,
-} from 'lib/atoms'
+} from '@lib/atoms'
 import {
   createHoldInDatabase,
   createStockMovementInDatabase,
-} from 'lib/database/create'
+} from '@lib/database/create'
 import {
   useCustomers,
   useInventory,
   useLogs,
   useRegisterID,
-} from 'lib/database/read'
+} from '@lib/database/read'
 import {
   CustomerObject,
   ModalButton,
   StockMovementTypes,
   StockObject,
-} from 'lib/types'
+} from '@lib/types'
 import { getItemQuantity } from '../../sell/lib/functions'
 import ListItem from './list-item'
 

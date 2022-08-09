@@ -10,17 +10,17 @@ import {
   loadedItemIdAtom,
   sellSearchBarAtom,
   viewAtom,
-} from 'lib/atoms'
-import { useVendors } from 'lib/database/read'
-import { StockObject, VendorObject } from 'lib/types'
+} from '@lib/atoms'
+import { useVendors } from '@lib/database/read'
+import { StockObject, VendorObject } from '@lib/types'
 
 // Components
 import Tooltip from '@mui/material/Tooltip'
 
 // Icons
+import { getItemQuantity } from '@features/sale/features/sell/lib/functions'
 import AddIcon from '@mui/icons-material/AddCircleOutline'
 import InfoIcon from '@mui/icons-material/Info'
-import { getItemQuantity } from 'features/sale/features/sell/lib/functions'
 import {
   getHoldQuantity,
   getItemSku,

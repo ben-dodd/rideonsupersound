@@ -10,7 +10,7 @@ import {
   loadedHoldIdAtom,
   pageAtom,
   viewAtom,
-} from 'lib/atoms'
+} from '@lib/atoms'
 import {
   useClerks,
   useCustomers,
@@ -18,20 +18,25 @@ import {
   useInventory,
   useLogs,
   useRegisterID,
-} from 'lib/database/read'
-import { ClerkObject, CustomerObject, HoldObject, ModalButton } from 'lib/types'
+} from '@lib/database/read'
+import {
+  ClerkObject,
+  CustomerObject,
+  HoldObject,
+  ModalButton,
+} from '@lib/types'
 
 // Components
-import TextField from 'components/inputs/text-field'
-import Modal from 'components/modal'
-import dayjs from 'dayjs'
+import TextField from '@components/inputs/text-field'
+import Modal from '@components/modal'
 import {
   logHoldAddedToSale,
   logRemoveFromHold,
   saveSystemLog,
-} from 'features/log/lib/functions'
-import { useWeather } from 'lib/api'
-import { updateHoldInDatabase } from 'lib/database/update'
+} from '@features/log/lib/functions'
+import { useWeather } from '@lib/api'
+import { updateHoldInDatabase } from '@lib/database/update'
+import dayjs from 'dayjs'
 import { returnHoldToStock } from '../lib/functions'
 import HoldListItem from './list-item'
 

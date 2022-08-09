@@ -1,7 +1,7 @@
 // DB
+import { useClerks } from '@lib/database/read'
+import { ClerkObject, SaleTransactionObject } from '@lib/types'
 import dayjs from 'dayjs'
-import { useClerks } from 'lib/database/read'
-import { ClerkObject, SaleTransactionObject } from 'lib/types'
 
 // Types
 interface CashItemProps {

@@ -1,5 +1,5 @@
+import { receiveStockAtom } from '@lib/atoms'
 import { useAtom } from 'jotai'
-import { receiveStockAtom } from 'lib/atoms'
 import ListItem from './list-item'
 
 export default function SetPriceAndQuantities() {

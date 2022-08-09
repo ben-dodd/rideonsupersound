@@ -1,6 +1,6 @@
 // DB
-import { useInventory } from 'lib/database/read'
-import { SaleItemObject, StockObject } from 'lib/types'
+import { useInventory } from '@lib/database/read'
+import { SaleItemObject, StockObject } from '@lib/types'
 import { MouseEventHandler } from 'react'
 
 // Functions
@@ -9,7 +9,7 @@ import {
   getItemDisplayName,
   getItemSku,
   writeCartItemPriceBreakdown,
-} from 'lib/data-functions'
+} from '@lib/data-functions'
 
 // Components
 

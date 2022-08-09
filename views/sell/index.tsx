@@ -3,29 +3,29 @@ import { useAtom } from 'jotai'
 import { useSwipeable } from 'react-swipeable'
 
 // DB
-import MidScreenContainer from 'components/container/mid-screen'
-import CreateCustomerSidebar from 'features/customer/components/sidebar'
-import ChangePriceDialog from 'features/inventory/features/item-inventory/components/change-price-dialog'
-import ChangeStockQuantityDialog from 'features/inventory/features/item-inventory/components/change-stock-quantity-dialog'
-import InventoryItemScreen from 'features/inventory/features/item-inventory/components/inventory-item-screen'
-import CreateHoldSidebar from 'features/sale/features/hold/components/create-hold-sidebar'
-import SaleScreen from 'features/sale/features/item-sale/components'
-import OpenRegisterScreen from 'features/sale/features/register/components'
-import CloseRegisterScreen from 'features/sale/features/register/components/close-register-screen'
-import ReturnCashDialog from 'features/sale/features/register/components/return-cash'
-import TakeCashDialog from 'features/sale/features/register/components/take-cash'
-import InventoryScroll from 'features/sale/features/sell/components/inventory-scroll'
-import GiftCardDialog from 'features/sale/features/sell/components/inventory-scroll/gift-card-dialog'
-import MiscItemDialog from 'features/sale/features/sell/components/inventory-scroll/misc-item-dialog'
-import SellSearchBar from 'features/sale/features/sell/components/sell-search-bar'
-import ShoppingCart from 'features/sale/features/sell/components/shopping-cart'
+import MidScreenContainer from '@components/container/mid-screen'
+import CreateCustomerSidebar from '@features/customer/components/sidebar'
+import ChangePriceDialog from '@features/inventory/features/item-inventory/components/change-price-dialog'
+import ChangeStockQuantityDialog from '@features/inventory/features/item-inventory/components/change-stock-quantity-dialog'
+import InventoryItemScreen from '@features/inventory/features/item-inventory/components/inventory-item-screen'
+import CreateHoldSidebar from '@features/sale/features/hold/components/create-hold-sidebar'
+import SaleScreen from '@features/sale/features/item-sale/components'
+import OpenRegisterScreen from '@features/sale/features/register/components'
+import CloseRegisterScreen from '@features/sale/features/register/components/close-register-screen'
+import ReturnCashDialog from '@features/sale/features/register/components/return-cash'
+import TakeCashDialog from '@features/sale/features/register/components/take-cash'
+import InventoryScroll from '@features/sale/features/sell/components/inventory-scroll'
+import GiftCardDialog from '@features/sale/features/sell/components/inventory-scroll/gift-card-dialog'
+import MiscItemDialog from '@features/sale/features/sell/components/inventory-scroll/misc-item-dialog'
+import SellSearchBar from '@features/sale/features/sell/components/sell-search-bar'
+import ShoppingCart from '@features/sale/features/sell/components/shopping-cart'
 import {
   bypassRegisterAtom,
   loadedItemIdAtom,
   pageAtom,
   viewAtom,
-} from 'lib/atoms'
-import { useRegisterID } from 'lib/database/read'
+} from '@lib/atoms'
+import { useRegisterID } from '@lib/database/read'
 
 // Components
 

@@ -3,19 +3,19 @@ import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 
 // DB
-import { alertAtom, bypassRegisterAtom, clerkAtom, pageAtom } from 'lib/atoms'
-import { useLogs, useRegisterID } from 'lib/database/read'
-import { RegisterObject, TillObject } from 'lib/types'
+import { alertAtom, bypassRegisterAtom, clerkAtom, pageAtom } from '@lib/atoms'
+import { useLogs, useRegisterID } from '@lib/database/read'
+import { RegisterObject, TillObject } from '@lib/types'
 
 // Functions
-import { getAmountFromCashMap } from 'lib/data-functions'
-import { saveAndOpenRegister } from 'lib/db-functions'
+import { getAmountFromCashMap } from '@lib/data-functions'
+import { saveAndOpenRegister } from '@lib/db-functions'
 
 // Components
+import TextField from '@components/inputs/text-field'
+import { logOpenRegister } from '@features/log/lib/functions'
 import OpenIcon from '@mui/icons-material/ShoppingCart'
 import CircularProgress from '@mui/material/CircularProgress'
-import TextField from 'components/inputs/text-field'
-import { logOpenRegister } from 'features/log/lib/functions'
 import CashMap from './cash-map'
 
 export default function OpenRegisterScreen() {

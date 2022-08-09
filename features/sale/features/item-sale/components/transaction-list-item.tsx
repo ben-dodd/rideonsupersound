@@ -2,14 +2,14 @@
 import dayjs from 'dayjs'
 
 // DB
-import { useGiftCards, useVendorFromVendorPayment } from 'lib/database/read'
+import { useGiftCards, useVendorFromVendorPayment } from '@lib/database/read'
 import {
   GiftCardObject,
   PaymentMethodTypes,
   SaleObject,
   SaleTransactionObject,
   VendorObject,
-} from 'lib/types'
+} from '@lib/types'
 
 // Functions
 

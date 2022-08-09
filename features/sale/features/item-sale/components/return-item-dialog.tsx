@@ -3,14 +3,14 @@ import { useAtom } from 'jotai'
 import { useState } from 'react'
 
 // DB
-import { alertAtom, cartAtom, clerkAtom, viewAtom } from 'lib/atoms'
-import { useInventory, useLogs, useSaleItemsForSale } from 'lib/database/read'
-import { ModalButton, SaleItemObject, SaleStateTypes } from 'lib/types'
+import { alertAtom, cartAtom, clerkAtom, viewAtom } from '@lib/atoms'
+import { useInventory, useLogs, useSaleItemsForSale } from '@lib/database/read'
+import { ModalButton, SaleItemObject, SaleStateTypes } from '@lib/types'
 
 // Components
-import TextField from 'components/inputs/text-field'
-import Modal from 'components/modal'
-import { logSaleRefunded, saveSystemLog } from 'features/log/lib/functions'
+import TextField from '@components/inputs/text-field'
+import Modal from '@components/modal'
+import { logSaleRefunded, saveSystemLog } from '@features/log/lib/functions'
 import ItemListItem from './item-list-item'
 
 export default function ReturnItemsDialog({ sale }) {

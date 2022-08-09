@@ -1,9 +1,9 @@
+import { sellSearchBarAtom, viewAtom } from '@lib/atoms'
 import MiscItemIcon from '@mui/icons-material/DeviceUnknown'
 import GiftCardsIcon from '@mui/icons-material/Redeem'
 import SearchIcon from '@mui/icons-material/Search'
 import Tooltip from '@mui/material/Tooltip'
 import { useAtom } from 'jotai'
-import { sellSearchBarAtom, viewAtom } from 'lib/atoms'
 
 export default function SellSearchBar() {
   const [search, setSearch] = useAtom(sellSearchBarAtom)

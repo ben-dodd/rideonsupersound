@@ -1,9 +1,9 @@
 // DB
-import { useInventory } from 'lib/database/read'
-import { SaleItemObject, SaleTransactionObject } from 'lib/types'
+import { useInventory } from '@lib/database/read'
+import { SaleItemObject, SaleTransactionObject } from '@lib/types'
 
 // Functions
-import { getSaleVars } from 'lib/data-functions'
+import { getSaleVars } from '@lib/data-functions'
 
 // Components
 import dayjs from 'dayjs'

@@ -3,19 +3,19 @@ import { useAtom } from 'jotai'
 import { useEffect, useMemo, useState } from 'react'
 
 // DB
-import { loadedItemIdAtom, loadedVendorIdAtom, pageAtom } from 'lib/atoms'
+import { loadedItemIdAtom, loadedVendorIdAtom, pageAtom } from '@lib/atoms'
 import {
   useInventory,
   useSalesJoined,
   useVendorPayments,
   useVendors,
-} from 'lib/database/read'
-import { StockObject, VendorObject } from 'lib/types'
+} from '@lib/database/read'
+import { StockObject, VendorObject } from '@lib/types'
 
 // Functions
+import { getImageSrc, getItemSku, getVendorDetails } from '@lib/data-functions'
 import InfoIcon from '@mui/icons-material/Info'
 import { Tooltip } from '@mui/material'
-import { getImageSrc, getItemSku, getVendorDetails } from 'lib/data-functions'
 
 export default function VendorItems() {
   // Atoms

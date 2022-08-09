@@ -1,25 +1,29 @@
 // Packages
 import { useAtom } from 'jotai'
 
-import { loadedItemIdAtom } from 'lib/atoms'
+import { loadedItemIdAtom } from '@lib/atoms'
 
 // Functions
-import { getImageSrc, getItemDisplayName, getItemSku } from 'lib/data-functions'
+import {
+  getImageSrc,
+  getItemDisplayName,
+  getItemSku,
+} from '@lib/data-functions'
 
 // Components
 import Select from 'react-select'
 
 // Icons
-import CheckIcon from '@mui/icons-material/CheckCircleOutline'
-import EditIcon from '@mui/icons-material/Edit'
-import { useStocktakeItemsByStocktake, useVendors } from 'lib/database/read'
-import { updateStocktakeItemInDatabase } from 'lib/db-functions'
+import { useStocktakeItemsByStocktake, useVendors } from '@lib/database/read'
+import { updateStocktakeItemInDatabase } from '@lib/db-functions'
 import {
   StockObject,
   StocktakeItemObject,
   StocktakeObject,
   StocktakeReviewDecisions,
-} from 'lib/types'
+} from '@lib/types'
+import CheckIcon from '@mui/icons-material/CheckCircleOutline'
+import EditIcon from '@mui/icons-material/Edit'
 
 interface reviewListItemProps {
   stocktakeItem: StocktakeItemObject

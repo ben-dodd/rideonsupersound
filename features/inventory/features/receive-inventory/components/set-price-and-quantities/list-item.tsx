@@ -1,6 +1,6 @@
-import RadioButton from 'components/inputs/radio-button'
-import SettingsSelect from 'components/inputs/settings-select'
-import TextField from 'components/inputs/text-field'
+import RadioButton from '@components/inputs/radio-button'
+import SettingsSelect from '@components/inputs/settings-select'
+import TextField from '@components/inputs/text-field'
 import {
   getImageSrc,
   getItemDisplayName,
@@ -8,8 +8,8 @@ import {
   getPriceSuggestion,
   getProfitMargin,
   getStoreCut,
-} from 'lib/data-functions'
-import { StockObject } from 'lib/types'
+} from '@lib/data-functions'
+import { StockObject } from '@lib/types'
 
 export default function ListItem({ receiveItem, bucket, setBucket }) {
   const item: StockObject = receiveItem?.item

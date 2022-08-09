@@ -1,12 +1,12 @@
 import { atom } from 'jotai'
 
-import dayjs from 'dayjs'
 import {
   ClerkObject,
   ConfirmModal,
   CustomerObject,
   SaleObject,
-} from 'lib/types'
+} from '@lib/types'
+import dayjs from 'dayjs'
 
 interface PaymentDialogProps {
   method?: string

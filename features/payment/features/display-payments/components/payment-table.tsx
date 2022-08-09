@@ -2,12 +2,12 @@
 import { useMemo } from 'react'
 
 // DB
-import { useClerks, useVendorPayments, useVendors } from 'lib/database/read'
-import { VendorObject, VendorPaymentObject } from 'lib/types'
+import { useClerks, useVendorPayments, useVendors } from '@lib/database/read'
+import { VendorObject, VendorPaymentObject } from '@lib/types'
 
 // Components
-import TableContainer from 'components/container/table'
-import Table from 'components/table'
+import TableContainer from '@components/container/table'
+import Table from '@components/table'
 import dayjs from 'dayjs'
 import { mapPayment } from '../lib/functions'
 

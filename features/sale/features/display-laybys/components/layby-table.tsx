@@ -3,18 +3,18 @@ import { useAtom } from 'jotai'
 import { useMemo } from 'react'
 
 // DB
-import { loadedSaleIdAtom, pageAtom } from 'lib/atoms'
-import { useClerks, useCustomers, useSales } from 'lib/database/read'
+import { loadedSaleIdAtom, pageAtom } from '@lib/atoms'
+import { useClerks, useCustomers, useSales } from '@lib/database/read'
 import {
   ClerkObject,
   CustomerObject,
   SaleObject,
   SaleStateTypes,
-} from 'lib/types'
+} from '@lib/types'
 
 // Components
-import TableContainer from 'components/container/table'
-import Table from 'components/table'
+import TableContainer from '@components/container/table'
+import Table from '@components/table'
 import dayjs from 'dayjs'
 
 export default function LaybyTable() {

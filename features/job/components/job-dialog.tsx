@@ -3,17 +3,17 @@ import { useAtom } from 'jotai'
 import { useState } from 'react'
 
 // DB
-import { alertAtom, clerkAtom, viewAtom } from 'lib/atoms'
-import { useJobs } from 'lib/database/read'
-import { ModalButton, RoleTypes, TaskObject } from 'lib/types'
+import { alertAtom, clerkAtom, viewAtom } from '@lib/atoms'
+import { useJobs } from '@lib/database/read'
+import { ModalButton, RoleTypes, TaskObject } from '@lib/types'
 
 // Functions
 
 // Components
-import TextField from 'components/inputs/text-field'
-import Modal from 'components/modal'
+import TextField from '@components/inputs/text-field'
+import Modal from '@components/modal'
+import { logCreateJob } from '@features/log/lib/functions'
 import dayjs from 'dayjs'
-import { logCreateJob } from 'features/log/lib/functions'
 import Select from 'react-select'
 
 export default function JobDialog() {

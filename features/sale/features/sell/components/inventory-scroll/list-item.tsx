@@ -8,10 +8,10 @@ import {
   confirmModalAtom,
   loadedItemIdAtom,
   sellSearchBarAtom,
-  viewAtom
-} from 'lib/atoms'
-import { useVendorNames } from 'lib/database/read'
-import { StockObject, VendorObject } from 'lib/types'
+  viewAtom,
+} from '@lib/atoms'
+import { useVendorNames } from '@lib/database/read'
+import { StockObject, VendorObject } from '@lib/types'
 
 // Components
 import Tooltip from '@mui/material/Tooltip'
@@ -28,13 +28,13 @@ import {
   getImageSrc,
   getItemDisplayName,
   getItemSku,
-  getLaybyQuantity
-} from 'features/inventory/features/display-inventory/lib/functions'
+  getLaybyQuantity,
+} from '@features/inventory/features/display-inventory/lib/functions'
 import {
   addItemToCart,
   getItemQuantity,
   openCart,
-  skuScan
+  skuScan,
 } from '../../lib/functions'
 
 type ListItemProps = {
@@ -43,7 +43,11 @@ type ListItemProps = {
   geolocation: Object
 }
 
-export default function ListItem({ item, weather, geolocation }: ListItemProps) {
+export default function ListItem({
+  item,
+  weather,
+  geolocation,
+}: ListItemProps) {
   // SWR
   const { vendors } = useVendorNames()
 

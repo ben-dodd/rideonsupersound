@@ -1,4 +1,4 @@
-import { useStocktakeTemplates } from 'lib/database/read'
+import { useStocktakeTemplates } from '@lib/database/read'
 import StocktakeTemplateListItem from './stocktake-template-list-item'
 
 export default function StocktakeListScreen() {

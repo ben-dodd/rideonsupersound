@@ -1,7 +1,7 @@
+import { receiveStockAtom } from '@lib/atoms'
+import { getItemDisplayName, getItemSkuDisplayName } from '@lib/data-functions'
 import CloseIcon from '@mui/icons-material/Close'
 import { useAtom } from 'jotai'
-import { receiveStockAtom } from 'lib/atoms'
-import { getItemDisplayName, getItemSkuDisplayName } from 'lib/data-functions'
 
 export default function Items() {
   const [basket, setBasket] = useAtom(receiveStockAtom)

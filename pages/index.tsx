@@ -1,6 +1,6 @@
-import { useAccount, useRegisterID } from 'lib/database/read'
+import { useAccount, useRegisterID } from '@lib/database/read'
+import LandingPage from '@views/main/landing-page'
 import { useSession } from 'next-auth/client'
-import LandingPage from 'views/main/landing-page'
 import SignIn from './api/auth/signin'
 
 export default function IndexPage() {

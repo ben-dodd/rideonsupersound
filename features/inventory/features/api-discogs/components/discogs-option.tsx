@@ -1,7 +1,7 @@
+import { clerkAtom } from '@lib/atoms'
+import { saveSystemLog } from '@lib/db-functions'
+import { StockObject } from '@lib/types'
 import { useAtom } from 'jotai'
-import { clerkAtom } from 'lib/atoms'
-import { saveSystemLog } from 'lib/db-functions'
-import { StockObject } from 'lib/types'
 import { setDiscogsItemToStockItem } from '../lib/functions'
 import { DiscogsItem } from '../lib/types'
 

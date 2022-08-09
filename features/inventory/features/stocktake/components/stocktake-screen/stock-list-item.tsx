@@ -1,9 +1,9 @@
 // DB
-import { useInventory } from 'lib/database/read'
-import { StockObject } from 'lib/types'
+import { useInventory } from '@lib/database/read'
+import { StockObject } from '@lib/types'
 
 // Functions
-import { getItemDisplayName } from 'lib/data-functions'
+import { getItemDisplayName } from '@lib/data-functions'
 
 export default function StockListItem({ id }) {
   // SWR

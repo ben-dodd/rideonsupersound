@@ -1,10 +1,10 @@
 import Head from 'next/head'
 
-import { saveLog } from 'features/log/lib/functions'
-import SignOutButton from 'features/sign-in/components/sign-out-button'
+import { saveLog } from '@features/log/lib/functions'
+import SignOutButton from '@features/sign-in/components/sign-out-button'
+import { clerkAtom } from '@lib/atoms'
+import { bg, bgLight, ClerkObject } from '@lib/types'
 import { useAtom } from 'jotai'
-import { clerkAtom } from 'lib/atoms'
-import { bg, bgLight, ClerkObject } from 'lib/types'
 
 export default function SplashPage({ clerks }) {
   const [, setClerk] = useAtom(clerkAtom)

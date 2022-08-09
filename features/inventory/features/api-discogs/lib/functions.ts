@@ -1,5 +1,5 @@
-import { get } from 'lib/api'
-import { StockObject } from 'lib/types'
+import { get } from '@lib/api'
+import { StockObject } from '@lib/types'
 import { DiscogsItem } from './types'
 
 export async function getDiscogsOptions({

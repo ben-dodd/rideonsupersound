@@ -3,9 +3,9 @@ import { useAtom } from 'jotai'
 import { useState } from 'react'
 
 // DB
-import { cartAtom, confirmModalAtom } from 'lib/atoms'
-import { useInventory, useStockItem } from 'lib/database/read'
-import { SaleItemObject, StockObject } from 'lib/types'
+import { cartAtom, confirmModalAtom } from '@lib/atoms'
+import { useInventory, useStockItem } from '@lib/database/read'
+import { SaleItemObject, StockObject } from '@lib/types'
 
 // Functions
 import {
@@ -13,16 +13,16 @@ import {
   getItemDisplayName,
   getItemSku,
   writeCartItemPriceBreakdown,
-} from 'lib/data-functions'
+} from '@lib/data-functions'
 
 // Components
-import TextField from 'components/inputs/text-field'
+import TextField from '@components/inputs/text-field'
 
 // Icons
+import { priceCentsString } from '@lib/utils'
 import ArrowDown from '@mui/icons-material/ArrowDropDown'
 import ArrowUp from '@mui/icons-material/ArrowDropUp'
 import DeleteIcon from '@mui/icons-material/Delete'
-import { priceCentsString } from 'lib/utils'
 import { getCartItemPrice } from '../../lib/functions'
 
 type SellListItemProps = {

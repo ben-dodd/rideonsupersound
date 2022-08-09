@@ -2,7 +2,7 @@
 import { useAtom } from 'jotai'
 
 // DB
-import { alertAtom, pageAtom } from 'lib/atoms'
+import { alertAtom, pageAtom } from '@lib/atoms'
 // import { useInventory } from "lib/swr-hooks";
 
 // Components
@@ -10,8 +10,8 @@ import Alert from '@mui/material/Alert'
 import Slide from '@mui/material/Slide'
 import Snackbar from '@mui/material/Snackbar'
 
-import ConfirmModal from 'components/modal/confirm-modal'
-import HelpDialog from 'features/help/components'
+import ConfirmModal from '@components/modal/confirm-modal'
+import HelpDialog from '@features/help/components'
 import Head from 'next/head'
 import GiftCardPage from '../gift-card'
 import HoldsPage from '../hold'

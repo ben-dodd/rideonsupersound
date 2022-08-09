@@ -3,14 +3,14 @@ import { useAtom } from 'jotai'
 import { useState } from 'react'
 
 // DB
-import { alertAtom, clerkAtom, viewAtom } from 'lib/atoms'
+import { alertAtom, clerkAtom, viewAtom } from '@lib/atoms'
 import {
   useInventory,
   useLogs,
   useRegisterID,
   useVendors,
-} from 'lib/database/read'
-import { ModalButton, StockObject, VendorObject } from 'lib/types'
+} from '@lib/database/read'
+import { ModalButton, StockObject, VendorObject } from '@lib/types'
 
 // Functions
 import {
@@ -18,16 +18,16 @@ import {
   getItemDisplayName,
   getItemSku,
   getItemSkuDisplayName,
-} from 'lib/data-functions'
-import { returnStock } from 'lib/db-functions'
+} from '@lib/data-functions'
+import { returnStock } from '@lib/db-functions'
 
 // Components
-import TextField from 'components/inputs/text-field'
+import TextField from '@components/inputs/text-field'
 import Select from 'react-select'
 
 // Icons
+import ScreenContainer from '@components/container/screen'
 import DeleteIcon from '@mui/icons-material/Delete'
-import ScreenContainer from 'components/container/screen'
 
 export default function ReturnStockScreen() {
   // SWR

@@ -1,5 +1,5 @@
+import { SaleObject } from '@lib/types'
 import dayjs from 'dayjs'
-import { SaleObject } from 'lib/types'
 
 type ListItemProps = {
   sale: SaleObject

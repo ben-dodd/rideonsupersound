@@ -1,4 +1,4 @@
-import Tabs from 'components/navigation/tabs'
+import Tabs from '@components/navigation/tabs'
 import { useState } from 'react'
 import Csv from './csv'
 import Discogs from './discogs'

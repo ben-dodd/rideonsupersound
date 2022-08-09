@@ -1,8 +1,8 @@
+import { receiveStockAtom } from '@lib/atoms'
+import { getItemSkuDisplayName } from '@lib/data-functions'
+import { useInventory } from '@lib/database/read'
+import { StockObject } from '@lib/types'
 import { useAtom } from 'jotai'
-import { receiveStockAtom } from 'lib/atoms'
-import { getItemSkuDisplayName } from 'lib/data-functions'
-import { useInventory } from 'lib/database/read'
-import { StockObject } from 'lib/types'
 import Select from 'react-select'
 import { v4 as uuid } from 'uuid'
 

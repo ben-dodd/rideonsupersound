@@ -2,9 +2,9 @@
 import { useAtom } from 'jotai'
 
 // DB
-import StocktakeListScreen from 'features/inventory/features/stocktake/components/stocktake-list-screen'
-import StocktakeTemplateScreen from 'features/inventory/features/stocktake/components/stocktake-template-screen'
-import { loadedStocktakeTemplateIdAtom, pageAtom } from 'lib/atoms'
+import StocktakeListScreen from '@features/inventory/features/stocktake/components/stocktake-list-screen'
+import StocktakeTemplateScreen from '@features/inventory/features/stocktake/components/stocktake-template-screen'
+import { loadedStocktakeTemplateIdAtom, pageAtom } from '@lib/atoms'
 
 // Components
 // import ListStockMovement from "./list-stock-movement";

@@ -2,8 +2,8 @@ import {
   createStockItemInDatabase,
   createStockMovementInDatabase,
   createStockPriceInDatabase,
-} from 'lib/database/create'
-import { ClerkObject, StockMovementTypes } from 'lib/types'
+} from '@lib/database/create'
+import { ClerkObject, StockMovementTypes } from '@lib/types'
 import { v4 as uuid } from 'uuid'
 
 export function parseCSVItems(results: any) {

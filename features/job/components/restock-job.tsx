@@ -1,10 +1,10 @@
 // DB
-import { getItemSkuDisplayName } from 'features/inventory/features/display-inventory/lib/functions'
-import { logRestockItem } from 'features/log/lib/functions'
+import { getItemSkuDisplayName } from '@features/inventory/features/display-inventory/lib/functions'
+import { logRestockItem } from '@features/log/lib/functions'
+import { clerkAtom } from '@lib/atoms'
+import { useInventory } from '@lib/database/read'
+import { StockObject } from '@lib/types'
 import { useAtom } from 'jotai'
-import { clerkAtom } from 'lib/atoms'
-import { useInventory } from 'lib/database/read'
-import { StockObject } from 'lib/types'
 import { completeRestockTask } from '../lib/functions'
 
 type ListItemProps = {

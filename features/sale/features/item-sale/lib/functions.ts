@@ -1,7 +1,6 @@
-import dayjs from 'dayjs'
-import { getItemDisplayName } from 'features/inventory/features/display-inventory/lib/functions'
-import { addRestockTask } from 'features/job/lib/functions'
-import { logSaleNuked, logSaleParked } from 'features/log/lib/functions'
+import { getItemDisplayName } from '@features/inventory/features/display-inventory/lib/functions'
+import { addRestockTask } from '@features/job/lib/functions'
+import { logSaleNuked, logSaleParked } from '@features/log/lib/functions'
 import {
   createSaleInDatabase,
   createSaleItemInDatabase,
@@ -9,19 +8,19 @@ import {
   createStockItemInDatabase,
   createStockMovementInDatabase,
   createVendorPaymentInDatabase,
-} from 'lib/database/create'
+} from '@lib/database/create'
 import {
   deleteSaleFromDatabase,
   deleteSaleItemFromDatabase,
   deleteSaleTransactionFromDatabase,
   deleteVendorPaymentFromDatabase,
-} from 'lib/database/delete'
+} from '@lib/database/delete'
 import {
   updateItemInDatabase,
   updateSaleInDatabase,
   updateSaleItemInDatabase,
   updateStockItemInDatabase,
-} from 'lib/database/update'
+} from '@lib/database/update'
 import {
   ClerkObject,
   CustomerObject,
@@ -38,7 +37,8 @@ import {
   VendorPaymentObject,
   VendorPaymentTypes,
   VendorSaleItemObject,
-} from 'lib/types'
+} from '@lib/types'
+import dayjs from 'dayjs'
 import { getCartItemPrice, getItemQuantity } from '../../sell/lib/functions'
 
 export function getSaleVars(sale: any, inventory: StockObject[]) {

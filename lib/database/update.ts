@@ -1,4 +1,3 @@
-import axios from 'axios'
 import {
   CustomerObject,
   GiftCardObject,
@@ -12,7 +11,8 @@ import {
   StocktakeObject,
   StocktakeTemplateObject,
   VendorObject,
-} from 'lib/types'
+} from '@lib/types'
+import axios from 'axios'
 
 export async function updateItemInDatabase(
   properties: any,

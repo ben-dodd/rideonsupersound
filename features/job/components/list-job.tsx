@@ -2,10 +2,10 @@ import { useAtom } from 'jotai'
 import { useState } from 'react'
 
 // DB
+import { clerkAtom } from '@lib/atoms'
+import { useClerks, useJobs } from '@lib/database/read'
+import { ClerkObject, TaskObject } from '@lib/types'
 import dayjs from 'dayjs'
-import { clerkAtom } from 'lib/atoms'
-import { useClerks, useJobs } from 'lib/database/read'
-import { ClerkObject, TaskObject } from 'lib/types'
 import { completeTask } from '../lib/functions'
 
 type ListItemProps = {

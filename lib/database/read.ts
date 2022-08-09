@@ -1,6 +1,6 @@
+import { VendorSaleItemObject } from '@lib/types'
 import axios from 'axios'
 import dayjs from 'dayjs'
-import { VendorSaleItemObject } from 'lib/types'
 import useSWR from 'swr'
 import { camelCase, pascalCase } from '../utils'
 import { reverseMysqlSafeValue } from './query'

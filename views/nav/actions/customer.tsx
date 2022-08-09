@@ -1,5 +1,5 @@
+import { viewAtom } from '@lib/atoms'
 import { useAtom } from 'jotai'
-import { viewAtom } from 'lib/atoms'
 
 import NewIcon from '@mui/icons-material/AddBox'
 

@@ -1,7 +1,7 @@
 // DB
+import { ModalButton } from '@lib/types'
 import ArrowLeft from '@mui/icons-material/ArrowLeft'
 import CircularProgress from '@mui/material/CircularProgress'
-import { ModalButton } from 'lib/types'
 import { MouseEventHandler } from 'react'
 import { CSVLink } from 'react-csv'
 interface ScreenProps {

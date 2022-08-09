@@ -9,18 +9,18 @@ import {
   clerkAtom,
   sellSearchBarAtom,
   viewAtom,
-} from 'lib/atoms'
-import { useInventory, useLogs } from 'lib/database/read'
-import { ModalButton, StockObject } from 'lib/types'
+} from '@lib/atoms'
+import { useInventory, useLogs } from '@lib/database/read'
+import { ModalButton, StockObject } from '@lib/types'
 
 // Functions
 
 // Components
-import TextField from 'components/inputs/text-field'
-import Modal from 'components/modal'
+import TextField from '@components/inputs/text-field'
+import Modal from '@components/modal'
+import { logNewMiscItemCreated } from '@features/log/lib/functions'
+import { getGeolocation, useWeather } from '@lib/api'
 import dayjs from 'dayjs'
-import { logNewMiscItemCreated } from 'features/log/lib/functions'
-import { getGeolocation, useWeather } from 'lib/api'
 
 export default function MiscItemDialog() {
   // Atoms

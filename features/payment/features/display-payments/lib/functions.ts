@@ -1,4 +1,4 @@
-import { ClerkObject, VendorPaymentObject } from 'lib/types'
+import { ClerkObject, VendorPaymentObject } from '@lib/types'
 
 export function mapPayment(
   vendorPayment: VendorPaymentObject,

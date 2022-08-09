@@ -3,18 +3,18 @@ import { useAtom } from 'jotai'
 import { useState } from 'react'
 
 // DB
-import { clerkAtom, viewAtom } from 'lib/atoms'
-import { useLogs, useStockDisplay, useVendors } from 'lib/database/read'
-import { ModalButton, StockObject } from 'lib/types'
+import { clerkAtom, viewAtom } from '@lib/atoms'
+import { useLogs, useStockDisplay, useVendors } from '@lib/database/read'
+import { ModalButton, StockObject } from '@lib/types'
 import { v4 as uuid } from 'uuid'
 
 // Components
+import Modal from '@components/modal'
+import { logPrintLabels } from '@features/log/lib/functions'
+import { filterInventory } from '@features/sale/features/sell/lib/functions'
 import DeleteIcon from '@mui/icons-material/Delete'
 import SearchIcon from '@mui/icons-material/Search'
-import Modal from 'components/modal'
 import dayjs from 'dayjs'
-import { logPrintLabels } from 'features/log/lib/functions'
-import { filterInventory } from 'features/sale/features/sell/lib/functions'
 import {
   getImageSrc,
   getItemSkuDisplayName,

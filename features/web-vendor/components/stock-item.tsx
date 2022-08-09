@@ -1,4 +1,4 @@
-import { getImageSrc, getItemSku } from 'lib/data-functions'
+import { getImageSrc, getItemSku } from '@lib/data-functions'
 
 export default function StockItem({ item }) {
   return (

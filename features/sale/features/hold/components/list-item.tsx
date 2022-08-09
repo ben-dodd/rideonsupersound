@@ -1,12 +1,12 @@
-import { useInventory } from 'lib/database/read'
+import { useInventory } from '@lib/database/read'
 
 import {
   getImageSrc,
   getItemDisplayName,
   getItemSku,
   writeCartItemPriceBreakdown,
-} from 'lib/data-functions'
-import { SaleItemObject, StockObject } from 'lib/types'
+} from '@lib/data-functions'
+import { SaleItemObject, StockObject } from '@lib/types'
 
 type HoldListItemProps = {
   cartItem: SaleItemObject

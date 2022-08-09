@@ -1,5 +1,5 @@
-import { getItemSku } from 'lib/data-functions'
-import { centsToDollars } from 'lib/utils'
+import { getItemSku } from '@features/inventory/features/display-inventory/lib/functions'
+import { centsToDollars } from '@lib/utils'
 
 export function getLabelPrinterCSV(items) {
   return items?.map((item: any) => [

@@ -1,11 +1,11 @@
-import { sumPrices } from 'features/sale/features/item-sale/lib/functions'
+import { sumPrices } from '@features/sale/features/item-sale/lib/functions'
 import {
   SaleObject,
   StockObject,
   VendorPaymentObject,
   VendorSaleItemObject,
-} from 'lib/types'
-import { latestDate } from 'lib/utils'
+} from '@lib/types'
+import { latestDate } from '@lib/utils'
 
 export function getVendorDetails(
   inventory: StockObject[],

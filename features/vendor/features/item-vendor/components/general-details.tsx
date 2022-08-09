@@ -1,19 +1,24 @@
 // DB
-import { useClerks, useInventory, useLogs, useVendors } from 'lib/database/read'
-import { ClerkObject } from 'lib/types'
+import {
+  useClerks,
+  useInventory,
+  useLogs,
+  useVendors,
+} from '@lib/database/read'
+import { ClerkObject } from '@lib/types'
 
 // Components
-import SettingsSelect from 'components/inputs/settings-select'
-import TextField from 'components/inputs/text-field'
-import dayjs from 'dayjs'
-import { useAtom } from 'jotai'
+import SettingsSelect from '@components/inputs/settings-select'
+import TextField from '@components/inputs/text-field'
 import {
   clerkAtom,
   confirmModalAtom,
   loadedVendorIdAtom,
   pageAtom,
-} from 'lib/atoms'
-import { deleteVendorFromDatabase, saveLog } from 'lib/db-functions'
+} from '@lib/atoms'
+import { deleteVendorFromDatabase, saveLog } from '@lib/db-functions'
+import dayjs from 'dayjs'
+import { useAtom } from 'jotai'
 import Select from 'react-select'
 import MaskedInput from 'react-text-mask'
 

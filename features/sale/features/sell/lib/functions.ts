@@ -1,17 +1,17 @@
-import dayjs from 'dayjs'
 import {
   getItemDisplayName,
-  getItemSku
-} from 'features/inventory/features/display-inventory/lib/functions'
-import { saveLog } from 'features/log/lib/functions'
-import { GiftCardObject, SaleItemObject, StockObject } from 'lib/types'
-import { priceCentsString } from 'lib/utils'
+  getItemSku,
+} from '@features/inventory/features/display-inventory/lib/functions'
+import { saveLog } from '@features/log/lib/functions'
+import { GiftCardObject, SaleItemObject, StockObject } from '@lib/types'
+import { priceCentsString } from '@lib/utils'
+import dayjs from 'dayjs'
 
 export function writeCartItemPriceBreakdown(cartItem: any, item?: StockObject) {
   // Writes out the sale item in the following form:
   // 1 x V10% x R50% x $27.00
   return item?.is_gift_card
-    ? `${priceCentsString(item?.gift_card_amount} GIFT CARD`
+    ? `${priceCentsString(item?.gift_card_amount)} GIFT CARD`
     : item?.is_misc_item
     ? `${cartItem?.quantity} x ${priceCentsString(item?.misc_item_amount)}`
     : `${cartItem?.quantity}${

@@ -1,20 +1,20 @@
-import dayjs from 'dayjs'
 import {
   logCloseRegister,
   logOpenRegister,
   logPettyCash,
-} from 'features/log/lib/functions'
+} from '@features/log/lib/functions'
 import {
   createPettyCashInDatabase,
   createRegisterInDatabase,
   createTillInDatabase,
-} from 'lib/database/create'
+} from '@lib/database/create'
 import {
   updateItemInDatabase,
   updateRegisterInDatabase,
-} from 'lib/database/update'
-import { ClerkObject, LogObject, RegisterObject, TillObject } from 'lib/types'
-import { dollarsToCents } from 'lib/utils'
+} from '@lib/database/update'
+import { ClerkObject, LogObject, RegisterObject, TillObject } from '@lib/types'
+import { dollarsToCents } from '@lib/utils'
+import dayjs from 'dayjs'
 
 export function getAmountFromCashMap(till: TillObject) {
   let closeAmount: number = 0

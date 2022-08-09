@@ -1,18 +1,18 @@
-import dayjs from 'dayjs'
 import {
   getItemById,
   getItemDisplayName,
   getItemSkuDisplayName,
-} from 'features/inventory/features/display-inventory/lib/functions'
-import { writeItemList } from 'features/sale/features/item-sale/lib/functions'
-import { createLogInDatabase } from 'lib/database/create'
+} from '@features/inventory/features/display-inventory/lib/functions'
+import { writeItemList } from '@features/sale/features/item-sale/lib/functions'
+import { createLogInDatabase } from '@lib/database/create'
 import {
   CustomerObject,
   SaleItemObject,
   StockMovementTypes,
   VendorPaymentTypes,
-} from 'lib/types'
-import { priceCentsString, priceDollarsString } from 'lib/utils'
+} from '@lib/types'
+import { priceCentsString, priceDollarsString } from '@lib/utils'
+import dayjs from 'dayjs'
 
 export async function saveSystemLog(log: string, clerk_id: number) {
   saveLog(log, clerk_id, 'system')

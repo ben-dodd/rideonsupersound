@@ -1,5 +1,5 @@
-import { query } from 'lib/database/db'
-import { StockMovementTypes } from 'lib/types'
+import { query } from '@lib/database/db'
+import { StockMovementTypes } from '@lib/types'
 import { NextApiHandler } from 'next'
 
 const handler: NextApiHandler = async (req, res) => {

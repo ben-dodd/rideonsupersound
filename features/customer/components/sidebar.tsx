@@ -1,16 +1,16 @@
-import SidebarContainer from 'components/container/side-bar'
-import TextField from 'components/inputs/text-field'
-import { saveSystemLog } from 'features/log/lib/functions'
-import { useAtom } from 'jotai'
+import SidebarContainer from '@components/container/side-bar'
+import TextField from '@components/inputs/text-field'
+import { saveSystemLog } from '@features/log/lib/functions'
 import {
   cartAtom,
   clerkAtom,
   loadedCustomerObjectAtom,
   viewAtom,
-} from 'lib/atoms'
-import { useCustomers } from 'lib/database/read'
-import { updateCustomerInDatabase } from 'lib/database/update'
-import { ModalButton } from 'lib/types'
+} from '@lib/atoms'
+import { useCustomers } from '@lib/database/read'
+import { updateCustomerInDatabase } from '@lib/database/update'
+import { ModalButton } from '@lib/types'
+import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 import { checkCustomerNameConflict, createCustomer } from '../lib/functions'
 

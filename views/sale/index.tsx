@@ -2,10 +2,10 @@
 import { useAtom } from 'jotai'
 
 // DB
-import SaleList from 'features/sale/features/display-sales/components/sale-list'
-import SaleTable from 'features/sale/features/display-sales/components/sale-table'
-import SaleItemScreen from 'features/sale/features/item-sale/components/sale-item-screen'
-import { loadedSaleIdAtom, pageAtom, tableModeAtom } from 'lib/atoms'
+import SaleList from '@features/sale/features/display-sales/components/sale-list'
+import SaleTable from '@features/sale/features/display-sales/components/sale-table'
+import SaleItemScreen from '@features/sale/features/item-sale/components/sale-item-screen'
+import { loadedSaleIdAtom, pageAtom, tableModeAtom } from '@lib/atoms'
 
 // Components
 

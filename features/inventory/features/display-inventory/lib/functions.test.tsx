@@ -26,6 +26,6 @@ describe('Inventory Display', () => {
   test('Get layby quantity', () => {
     expect(
       getLaybyQuantity({ quantity_layby: null, quantity_unlayby: null })
-    ).toBe(0)
+    ).toBe(0 || -0)
   })
 })

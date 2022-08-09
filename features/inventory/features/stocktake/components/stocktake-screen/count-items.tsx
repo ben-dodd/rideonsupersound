@@ -9,26 +9,26 @@ import {
   loadedStocktakeIdAtom,
   loadedStocktakeTemplateIdAtom,
   viewAtom,
-} from 'lib/atoms'
+} from '@lib/atoms'
 import {
   useInventory,
   useLogs,
   useRegisterID,
   useStocktakeItemsByStocktake,
   useStocktakesByTemplate,
-} from 'lib/database/read'
-import { StockObject, StocktakeItemObject } from 'lib/types'
+} from '@lib/database/read'
+import { StockObject, StocktakeItemObject } from '@lib/types'
 
 // Functions
-import { getItemSkuDisplayName } from 'lib/data-functions'
+import { getItemSkuDisplayName } from '@lib/data-functions'
 import {
   saveStocktakeItemToDatabase,
   updateStocktakeInDatabase,
   updateStocktakeItemInDatabase,
-} from 'lib/db-functions'
+} from '@lib/db-functions'
 
 // Components
-import TextField from 'components/inputs/text-field'
+import TextField from '@components/inputs/text-field'
 import Select from 'react-select'
 
 // Icons

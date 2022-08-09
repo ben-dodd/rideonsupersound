@@ -3,7 +3,7 @@ import { useAtom } from 'jotai'
 import { useEffect, useMemo, useState } from 'react'
 
 // DB
-import { loadedVendorIdAtom, pageAtom } from 'lib/atoms'
+import { loadedVendorIdAtom, pageAtom } from '@lib/atoms'
 import {
   useClerks,
   useCustomers,
@@ -11,14 +11,14 @@ import {
   useSalesJoined,
   useVendorPayments,
   useVendors,
-} from 'lib/database/read'
-import { ModalButton, VendorObject } from 'lib/types'
+} from '@lib/database/read'
+import { ModalButton, VendorObject } from '@lib/types'
 
 // Components
-import ScreenContainer from 'components/container/screen'
-import Tabs from 'components/navigation/tabs'
-import { getVendorDetails } from 'lib/data-functions'
-import { saveVendorToDatabase, updateVendorInDatabase } from 'lib/db-functions'
+import ScreenContainer from '@components/container/screen'
+import Tabs from '@components/navigation/tabs'
+import { getVendorDetails } from '@lib/data-functions'
+import { saveVendorToDatabase, updateVendorInDatabase } from '@lib/db-functions'
 import GeneralDetails from './general-details'
 import VendorItems from './items'
 import VendorPayments from './payments'

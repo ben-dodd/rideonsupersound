@@ -9,7 +9,7 @@ import {
   clerkAtom,
   confirmModalAtom,
   viewAtom,
-} from 'lib/atoms'
+} from '@lib/atoms'
 import {
   useCustomers,
   useGiftCards,
@@ -17,23 +17,23 @@ import {
   useLogs,
   useRegisterID,
   useSales,
-} from 'lib/database/read'
+} from '@lib/database/read'
 
 // Functions
 import {
   saveLog,
   saveSaleAndPark,
   saveSaleItemsTransactionsToDatabase,
-} from 'lib/db-functions'
+} from '@lib/db-functions'
 
 // Components
 import CircularProgress from '@mui/material/CircularProgress'
 import Tooltip from '@mui/material/Tooltip'
 
 // Icons
+import { SaleStateTypes } from '@lib/types'
 import DiscardSaleIcon from '@mui/icons-material/Close'
 import SaveSaleIcon from '@mui/icons-material/Save'
-import { SaleStateTypes } from 'lib/types'
 
 export default function ShoppingCartActions() {
   // SWR

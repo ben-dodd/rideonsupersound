@@ -1,13 +1,13 @@
+import { clerkAtom, loadedStocktakeTemplateIdAtom, viewAtom } from '@lib/atoms'
 import { useAtom } from 'jotai'
-import { clerkAtom, loadedStocktakeTemplateIdAtom, viewAtom } from 'lib/atoms'
 
-import NewIcon from '@mui/icons-material/AddBox'
-import { useStocktakeTemplates } from 'lib/database/read'
+import { useStocktakeTemplates } from '@lib/database/read'
 import {
   saveStocktakeTemplateToDatabase,
   saveSystemLog,
-} from 'lib/db-functions'
-import { StocktakeTemplateObject } from 'lib/types'
+} from '@lib/db-functions'
+import { StocktakeTemplateObject } from '@lib/types'
+import NewIcon from '@mui/icons-material/AddBox'
 import { useState } from 'react'
 
 export default function StocktakeNavActions() {

@@ -1,8 +1,8 @@
+import { clerkAtom, loadedVendorIdAtom } from '@lib/atoms'
 import { useAtom } from 'jotai'
-import { clerkAtom, loadedVendorIdAtom } from 'lib/atoms'
 
+import { saveSystemLog } from '@lib/db-functions'
 import NewIcon from '@mui/icons-material/AddBox'
-import { saveSystemLog } from 'lib/db-functions'
 
 export default function VendorNavActions() {
   const [loadedVendorId, setLoadedVendorId] = useAtom(loadedVendorIdAtom)

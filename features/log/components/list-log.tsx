@@ -1,4 +1,4 @@
-import { ClerkObject, LogObject } from 'lib/types'
+import { ClerkObject, LogObject } from '@lib/types'
 
 type ListItemProps = {
   log: LogObject

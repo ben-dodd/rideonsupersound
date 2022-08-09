@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react'
 import Select from 'react-select'
 
 // DB
-import { clerkAtom, viewAtom } from 'lib/atoms'
+import { clerkAtom, viewAtom } from '@lib/atoms'
 import {
   useCashGiven,
   useInventory,
@@ -13,16 +13,16 @@ import {
   useSalesJoined,
   useVendorPayments,
   useVendors,
-} from 'lib/database/read'
-import { ModalButton, VendorObject, VendorPaymentTypes } from 'lib/types'
+} from '@lib/database/read'
+import { ModalButton, VendorObject, VendorPaymentTypes } from '@lib/types'
 
 // Components
-import TextField from 'components/inputs/text-field'
-import Modal from 'components/modal'
+import TextField from '@components/inputs/text-field'
+import Modal from '@components/modal'
+import { logCreateVendorPayment } from '@features/log/lib/functions'
+import { getVendorDetails } from '@features/vendor/features/item-vendor/lib/functions'
+import { createVendorPaymentInDatabase } from '@lib/database/create'
 import dayjs from 'dayjs'
-import { logCreateVendorPayment } from 'features/log/lib/functions'
-import { getVendorDetails } from 'features/vendor/features/item-vendor/lib/functions'
-import { createVendorPaymentInDatabase } from 'lib/database/create'
 
 export default function CashPaymentDialog() {
   // SWR

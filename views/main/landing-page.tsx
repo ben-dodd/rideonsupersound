@@ -1,6 +1,6 @@
+import { clerkAtom } from '@lib/atoms'
+import { useAccount, useAccountClerks } from '@lib/database/read'
 import { useAtom } from 'jotai'
-import { clerkAtom } from 'lib/atoms'
-import { useAccount, useAccountClerks } from 'lib/database/read'
 import { useSession } from 'next-auth/client'
 import { useEffect } from 'react'
 

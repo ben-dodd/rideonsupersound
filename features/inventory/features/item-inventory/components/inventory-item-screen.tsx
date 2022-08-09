@@ -3,32 +3,32 @@ import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 
 // DB
-import { clerkAtom, confirmModalAtom, loadedItemIdAtom } from 'lib/atoms'
+import { clerkAtom, confirmModalAtom, loadedItemIdAtom } from '@lib/atoms'
 import {
   useInventory,
   useLogs,
   useSaleItems,
   useStockItem,
-} from 'lib/database/read'
-import { ModalButton, StockObject } from 'lib/types'
+} from '@lib/database/read'
+import { ModalButton, StockObject } from '@lib/types'
 
 // Functions
-import { getItemDisplayName } from 'lib/data-functions'
+import { getItemDisplayName } from '@lib/data-functions'
 import {
   deleteInventoryItemFromDatabase,
   updateStockItemInDatabase,
-} from 'lib/db-functions'
+} from '@lib/db-functions'
 
 // Components
-import ScreenContainer from 'components/container/screen'
-import Tabs from 'components/navigation/tabs'
+import ScreenContainer from '@components/container/screen'
+import Tabs from '@components/navigation/tabs'
 
+import DiscogsPanel from '@features/inventory/features/api-discogs/components'
+import GoogleBooksPanel from '@features/inventory/features/api-google-books/components'
+import InventoryItemForm from '@features/inventory/features/item-inventory/components/inventory-item-form'
+import StockDetails from '@features/inventory/features/item-inventory/components/stock-details'
+import { parseJSON } from '@lib/utils'
 import DeleteIcon from '@mui/icons-material/Delete'
-import DiscogsPanel from 'features/inventory/features/api-discogs/components'
-import GoogleBooksPanel from 'features/inventory/features/api-google-books/components'
-import InventoryItemForm from 'features/inventory/features/item-inventory/components/inventory-item-form'
-import StockDetails from 'features/inventory/features/item-inventory/components/stock-details'
-import { parseJSON } from 'lib/utils'
 import PriceDetails from './price-details'
 
 export default function InventoryItemScreen({ page }) {

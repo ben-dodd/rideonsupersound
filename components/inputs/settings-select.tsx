@@ -1,5 +1,5 @@
-import { createSettingSelectInDatabase } from 'lib/database/create'
-import { useSelect } from 'lib/database/read'
+import { createSettingSelectInDatabase } from '@lib/database/create'
+import { useSelect } from '@lib/database/read'
 import { useState } from 'react'
 import Select from 'react-select'
 import CreatableSelect from 'react-select/creatable'

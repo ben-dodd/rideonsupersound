@@ -1,4 +1,10 @@
 import {
+  salesViewAtom,
+  salesViewClerksAtom,
+  salesViewRangeAtom,
+} from '@lib/atoms'
+import { useClerks } from '@lib/database/read'
+import {
   CalendarViewDay,
   CalendarViewMonth,
   CalendarViewWeek,
@@ -7,12 +13,6 @@ import {
 import { Chip, IconButton, Tooltip } from '@mui/material'
 import dayjs from 'dayjs'
 import { useAtom } from 'jotai'
-import {
-  salesViewAtom,
-  salesViewClerksAtom,
-  salesViewRangeAtom,
-} from 'lib/atoms'
-import { useClerks } from 'lib/database/read'
 
 export default function Filter() {
   const { clerks } = useClerks()

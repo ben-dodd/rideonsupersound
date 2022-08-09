@@ -3,15 +3,15 @@ import { useAtom } from 'jotai'
 import { useMemo } from 'react'
 
 // DB
-import { loadedItemIdAtom } from 'lib/atoms'
-import { useInventory, useVendors } from 'lib/database/read'
-import { StockObject } from 'lib/types'
+import { loadedItemIdAtom } from '@lib/atoms'
+import { useInventory, useVendors } from '@lib/database/read'
+import { StockObject } from '@lib/types'
 
 // Functions
 
 // Components
-import TableContainer from 'components/container/table'
-import Table from 'components/table'
+import TableContainer from '@components/container/table'
+import Table from '@components/table'
 import { mapInventoryItem } from '../../lib/functions'
 
 interface NumberProps {

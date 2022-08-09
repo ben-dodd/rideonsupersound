@@ -3,7 +3,7 @@ import { useAtom } from 'jotai'
 import { useMemo } from 'react'
 
 // DB
-import { loadedVendorIdAtom } from 'lib/atoms'
+import { loadedVendorIdAtom } from '@lib/atoms'
 import {
   useClerks,
   useCustomers,
@@ -11,15 +11,15 @@ import {
   useSalesJoined,
   useVendorPayments,
   useVendors,
-} from 'lib/database/read'
-import { ClerkObject, StockObject, VendorObject } from 'lib/types'
+} from '@lib/database/read'
+import { ClerkObject, StockObject, VendorObject } from '@lib/types'
 
 // Functions
 
 // Components
-import TableContainer from 'components/container/table'
-import Table from 'components/table'
-import { getVendorDetails } from 'features/vendor/features/item-vendor/lib/functions'
+import TableContainer from '@components/container/table'
+import Table from '@components/table'
+import { getVendorDetails } from '@features/vendor/features/item-vendor/lib/functions'
 
 export default function VendorsScreen() {
   // Atoms

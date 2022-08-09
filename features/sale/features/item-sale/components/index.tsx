@@ -3,7 +3,7 @@ import { useAtom } from 'jotai'
 import { useState } from 'react'
 
 // DB
-import { alertAtom, cartAtom, clerkAtom, viewAtom } from 'lib/atoms'
+import { alertAtom, cartAtom, clerkAtom, viewAtom } from '@lib/atoms'
 import {
   useCustomers,
   useGiftCards,
@@ -12,18 +12,18 @@ import {
   useRegisterID,
   useSales,
   useSaleTransactionsForSale,
-} from 'lib/database/read'
-import { ModalButton, SaleStateTypes } from 'lib/types'
+} from '@lib/database/read'
+import { ModalButton, SaleStateTypes } from '@lib/types'
 
 // Components
-import ScreenContainer from 'components/container/screen'
-import dayjs from 'dayjs'
-import CreateCustomerSidebar from 'features/customer/components/sidebar'
+import ScreenContainer from '@components/container/screen'
+import CreateCustomerSidebar from '@features/customer/components/sidebar'
 import {
   logLaybyStarted,
   logSaleCompleted,
   saveSystemLog,
-} from 'features/log/lib/functions'
+} from '@features/log/lib/functions'
+import dayjs from 'dayjs'
 import { getSaleVars, saveSaleAndPark } from '../lib/functions'
 import Pay from './pay'
 import Acct from './payment/acct'
