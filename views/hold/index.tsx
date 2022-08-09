@@ -1,17 +1,12 @@
-// Packages
 import { useAtom } from 'jotai'
 
-// DB
 import CreateCustomerSidebar from '@features/customer/components/sidebar'
 import HoldTable from '@features/sale/features/display-holds/components/hold-table'
 import HoldDialog from '@features/sale/features/hold/components/hold-dialog'
 import SaleItemScreen from '@features/sale/features/item-sale/components/sale-item-screen'
 import { loadedHoldIdAtom, loadedSaleIdAtom, pageAtom } from '@lib/atoms'
 
-// Components
-
 export default function HoldsPage() {
-  // Atoms
   const [page] = useAtom(pageAtom)
   const [loadedHoldId] = useAtom(loadedHoldIdAtom)
   const [loadedSaleId] = useAtom(loadedSaleIdAtom)

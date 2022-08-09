@@ -1,10 +1,9 @@
+import { saveSystemLog } from '@features/log/lib/functions'
 import { clerkAtom, viewAtom } from '@lib/atoms'
-import { useAtom } from 'jotai'
-// Material UI Icons
-import { saveSystemLog } from '@lib/db-functions'
 import AddCashIcon from '@mui/icons-material/AttachMoney'
 import TakeCashIcon from '@mui/icons-material/MoneyOff'
 import CloseRegisterIcon from '@mui/icons-material/VpnKey'
+import { useAtom } from 'jotai'
 
 export default function SellNavActions() {
   const [view, setView] = useAtom(viewAtom)

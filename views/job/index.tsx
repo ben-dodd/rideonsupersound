@@ -1,54 +1,16 @@
-// Packages
 import { useAtom } from 'jotai'
-import { useCallback, useState } from 'react'
-import { useDropzone } from 'react-dropzone'
+import { useState } from 'react'
 
-// DB
 import { pageAtom } from '@lib/atoms'
-import { useInventory, useJobs } from '@lib/database/read'
-import { StockObject, TaskObject } from '@lib/types'
 
-// Components
 import Tabs from '@components/navigation/tabs'
-import dayjs from 'dayjs'
 import TaskDialog from '../../features/job/components/job-dialog'
-import ListTask from '../../features/job/components/list-job'
-import RestockTask from '../../features/job/components/restock-job'
+import JobView from './job-view'
+import RestockTaskView from './restock-task-view'
 
 export default function JobsPage() {
-  // SWR
-  const { jobs, isJobsLoading } = useJobs()
-  const { inventory, isInventoryLoading } = useInventory()
-
-  // Atoms
   const [page] = useAtom(pageAtom)
   const [tab, setTab] = useState(0)
-
-  const onDrop = useCallback((acceptedFiles) => {
-    // Do something with the files
-    if (acceptedFiles.length > 1) {
-      // setAlert({
-      //   message: `IMAGE UPLOAD FAILED. ONLY ONE IMAGE PERMITTED FOR PRODUCT.`,
-      //   type: "error",
-      // })
-    } else {
-      let file = acceptedFiles[0]
-      if (!file.type.includes('image')) {
-        // setAlert({
-        //   message: "IMAGE UPLOAD FAILED. FILE NOT AN IMAGE.",
-        //   type: "error",
-        // })
-      } else {
-        // uploadFiles({
-        //   file,
-        //   storagePath: "inventory/",
-        //   callback: ({ path, url }) => {
-        //     setItem({ ...item, imageRef: path, image: url });
-        //   },
-      }
-    }
-  }, [])
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
 
   return (
     <>
@@ -67,86 +29,14 @@ export default function JobsPage() {
             onChange={setTab}
           />
           <div hidden={tab !== 0}>
-            {isInventoryLoading ? (
-              <div className="w-full flex h-full">
-                <div className="loading-icon" />
-              </div>
-            ) : (
-              inventory
-                ?.filter((item: StockObject) => item?.needs_restock)
-                .map((item: StockObject) => (
-                  <RestockTask item={item} key={item?.id} />
-                ))
-            )}
+            <RestockTaskView />
           </div>
           <div hidden={tab !== 1}>
-            {isJobsLoading ? (
-              <div className="w-full flex h-full">
-                <div className="loading-icon" />
-              </div>
-            ) : (
-              jobs
-                ?.filter((job) => job?.is_post_mail_order)
-                ?.sort((jobA: TaskObject, jobB: TaskObject) => {
-                  if (jobA?.is_completed && !jobB?.is_completed) return 1
-                  else if (jobB?.is_completed && !jobA?.is_completed) return -1
-                  else if (jobA?.is_completed) {
-                    return dayjs(jobA?.date_completed).isAfter(
-                      jobB.date_completed
-                    )
-                      ? -1
-                      : 1
-                  } else if (jobA?.is_priority && !jobB?.is_priority) return -1
-                  else if (jobB?.is_priority && !jobA?.is_priority) return 1
-                  else
-                    return dayjs(jobA?.date_created).isAfter(jobB?.date_created)
-                      ? -1
-                      : 1
-                })
-                ?.map((task: TaskObject) => (
-                  <ListTask task={task} key={task?.id} />
-                ))
-            )}
+            <JobView filter={(job) => job?.is_post_mail_order} />
           </div>
           <div hidden={tab !== 2}>
-            {isJobsLoading ? (
-              <div className="w-full flex h-full">
-                <div className="loading-icon" />
-              </div>
-            ) : (
-              jobs
-                ?.filter((job) => !job?.is_post_mail_order)
-                ?.sort((jobA: TaskObject, jobB: TaskObject) => {
-                  if (jobA?.is_completed && !jobB?.is_completed) return 1
-                  else if (jobB?.is_completed && !jobA?.is_completed) return -1
-                  else if (jobA?.is_completed) {
-                    return dayjs(jobA?.date_completed).isAfter(
-                      jobB.date_completed
-                    )
-                      ? -1
-                      : 1
-                  } else if (jobA?.is_priority && !jobB?.is_priority) return -1
-                  else if (jobB?.is_priority && !jobA?.is_priority) return 1
-                  else
-                    return dayjs(jobA?.date_created).isAfter(jobB?.date_created)
-                      ? -1
-                      : 1
-                })
-                ?.map((task: TaskObject) => (
-                  <ListTask task={task} key={task?.id} />
-                ))
-            )}
+            <JobView filter={(job) => !job?.is_post_mail_order} />
           </div>
-          {/*<div hidden={tab !== 2}>
-            <div {...getRootProps()}>
-              <input {...getInputProps()} />
-              {isDragActive ? (
-                <p>Drop the files here ...</p>
-              ) : (
-                <p>Drag 'n' drop some files here, or click to select files</p>
-              )}
-            </div>
-          </div>*/}
         </div>
       </div>
       <TaskDialog />

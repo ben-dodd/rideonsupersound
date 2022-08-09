@@ -1,17 +1,11 @@
-// Packages
-import { useAtom } from 'jotai'
-
-// DB
 import PaymentTable from '@features/payment/features/display-payments/components/payment-table'
 import BatchPaymentScreen from '@features/payment/features/payment/components/batch-payment-screen'
 import CashPaymentDialog from '@features/payment/features/payment/components/cash-payment-dialog'
 import TransferVendorPaymentDialog from '@features/payment/features/payment/components/transfer-payment-dialog'
 import { pageAtom, viewAtom } from '@lib/atoms'
-
-// Components
+import { useAtom } from 'jotai'
 
 export default function PaymentsPage() {
-  // Atoms
   const [page] = useAtom(pageAtom)
   const [view] = useAtom(viewAtom)
   return (
@@ -21,7 +15,6 @@ export default function PaymentsPage() {
       }`}
     >
       {page === 'payments' && <PaymentTable />}
-      {/* {view?.batchVendorPaymentDialog && <BatchPaymentDialog />} */}
       {view?.cashVendorPaymentDialog && <CashPaymentDialog />}
       {view?.batchVendorPaymentScreen && <BatchPaymentScreen />}
       {view?.transferVendorPaymentDialog && <TransferVendorPaymentDialog />}

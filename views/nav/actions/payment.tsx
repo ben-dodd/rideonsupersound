@@ -1,7 +1,7 @@
 import { clerkAtom, viewAtom } from '@lib/atoms'
 import { useAtom } from 'jotai'
 
-import { saveSystemLog } from '@lib/db-functions'
+import { saveSystemLog } from '@features/log/lib/functions'
 import NewIcon from '@mui/icons-material/AddBox'
 import PayIcon from '@mui/icons-material/Payment'
 import TransferIcon from '@mui/icons-material/TransferWithinAStation'

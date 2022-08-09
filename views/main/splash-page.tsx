@@ -1,14 +1,10 @@
 import Head from 'next/head'
 
-import { saveLog } from '@features/log/lib/functions'
 import SignOutButton from '@features/sign-in/components/sign-out-button'
-import { clerkAtom } from '@lib/atoms'
-import { bg, bgLight, ClerkObject } from '@lib/types'
-import { useAtom } from 'jotai'
+import { ClerkObject } from '@lib/types'
+import ClerkListItem from './clerk-list-item'
 
 export default function SplashPage({ clerks }) {
-  const [, setClerk] = useAtom(clerkAtom)
-
   return (
     <>
       <Head>
@@ -21,18 +17,7 @@ export default function SplashPage({ clerks }) {
           </div>
           <div>
             {clerks?.map((clerk: ClerkObject) => (
-              <div
-                key={clerk?.id}
-                className={`${bgLight[clerk?.colour || 9]} hover:${
-                  bg[clerk?.colour || 9]
-                } text-center py-4 cursor-pointer font-bold text-lg`}
-                onClick={() => {
-                  setClerk(clerk)
-                  saveLog(`${clerk.name} set as clerk.`, clerk?.id)
-                }}
-              >
-                {clerk?.name?.toUpperCase()}
-              </div>
+              <ClerkListItem clerk={clerk} />
             ))}
           </div>
           <SignOutButton />

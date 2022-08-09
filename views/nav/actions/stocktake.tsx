@@ -1,11 +1,9 @@
 import { clerkAtom, loadedStocktakeTemplateIdAtom, viewAtom } from '@lib/atoms'
 import { useAtom } from 'jotai'
 
+import { saveSystemLog } from '@features/log/lib/functions'
+import { createStocktakeTemplateInDatabase } from '@lib/database/create'
 import { useStocktakeTemplates } from '@lib/database/read'
-import {
-  saveStocktakeTemplateToDatabase,
-  saveSystemLog,
-} from '@lib/db-functions'
 import { StocktakeTemplateObject } from '@lib/types'
 import NewIcon from '@mui/icons-material/AddBox'
 import { useState } from 'react'
@@ -30,7 +28,9 @@ export default function StocktakeNavActions() {
           let newStocktakeTemplate: StocktakeTemplateObject = {
             format_enabled: true,
           }
-          const id = await saveStocktakeTemplateToDatabase(newStocktakeTemplate)
+          const id = await createStocktakeTemplateInDatabase(
+            newStocktakeTemplate
+          )
           mutateStocktakeTemplates(
             [{ id, format_enabled: true, name: '' }, ...stocktakeTemplates],
             false

@@ -1,14 +1,5 @@
-// Packages
-import { useAtom } from 'jotai'
-
-// DB
 import { alertAtom, pageAtom } from '@lib/atoms'
-// import { useInventory } from "lib/swr-hooks";
-
-// Components
-import Alert from '@mui/material/Alert'
-import Slide from '@mui/material/Slide'
-import Snackbar from '@mui/material/Snackbar'
+import { useAtom } from 'jotai'
 
 import ConfirmModal from '@components/modal/confirm-modal'
 import HelpDialog from '@features/help/components'
@@ -26,10 +17,10 @@ import SalesPage from '../sale'
 import SellPage from '../sell'
 import StocktakePage from '../stocktake'
 import VendorPage from '../vendor'
+import SnackAlert from './alert'
 
 export default function MainPage() {
-  // Atoms
-  const [alert, setAlert] = useAtom(alertAtom)
+  const [alert] = useAtom(alertAtom)
   const [page] = useAtom(pageAtom)
 
   // Load necessary data
@@ -59,39 +50,7 @@ export default function MainPage() {
         </div>
         <HelpDialog />
         <ConfirmModal />
-        {/* ALERTS */}
-        {alert?.open && (
-          <Snackbar
-            open={alert?.open}
-            onClose={() => setAlert(null)}
-            autoHideDuration={alert?.type === 'info' ? 2000 : 4000}
-            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            TransitionComponent={Slide}
-            transitionDuration={{
-              enter: 50,
-              exit: 200,
-            }}
-          >
-            <Alert
-              severity={alert?.type || 'info'}
-              action={
-                alert.undo ? (
-                  <button
-                    className="bg-white p-2"
-                    onClick={() => {
-                      alert?.undo()
-                      setAlert(null)
-                    }}
-                  >
-                    UNDO
-                  </button>
-                ) : null
-              }
-            >
-              {alert?.message || ''}
-            </Alert>
-          </Snackbar>
-        )}
+        {alert?.open && <SnackAlert />}
       </div>
     </>
   )

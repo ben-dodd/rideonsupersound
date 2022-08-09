@@ -1,8 +1,3 @@
-// Packages
-import { useAtom } from 'jotai'
-import { useSwipeable } from 'react-swipeable'
-
-// DB
 import MidScreenContainer from '@components/container/mid-screen'
 import CreateCustomerSidebar from '@features/customer/components/sidebar'
 import ChangePriceDialog from '@features/inventory/features/item-inventory/components/change-price-dialog'
@@ -26,15 +21,12 @@ import {
   viewAtom,
 } from '@lib/atoms'
 import { useRegisterID } from '@lib/database/read'
-
-// Components
+import { useAtom } from 'jotai'
+import { useSwipeable } from 'react-swipeable'
 
 export default function SellPage() {
-  // SWR
   const { registerID } = useRegisterID()
   const [loadedItemId] = useAtom(loadedItemIdAtom)
-
-  // Atoms
   const [view, setView] = useAtom(viewAtom)
   const [page] = useAtom(pageAtom)
   const [bypassRegister] = useAtom(bypassRegisterAtom)

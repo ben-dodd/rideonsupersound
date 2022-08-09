@@ -1,11 +1,7 @@
-// Packages
 import { useAtom } from 'jotai'
 
-// DB
 import { clerkAtom, pageAtom, viewAtom } from '@lib/atoms'
 import { useRegisterID } from '@lib/database/read'
-
-// Components
 
 import InventoryNavActions from './actions/inventory'
 import PaymentNavActions from './actions/payment'
@@ -13,7 +9,6 @@ import SellNavActions from './actions/sell'
 import TaskNavActions from './actions/task'
 import VendorNavActions from './actions/vendor'
 
-// Icons
 import { bg } from '@lib/types'
 import HelpIcon from '@mui/icons-material/Help'
 import SaleNavActions from './actions/sale'
@@ -46,7 +41,6 @@ export default function Nav() {
               height="42px"
               width="493px"
             />
-            {/*<div>{page?.toUpperCase()}</div>*/}
           </div>
         </div>
         <div className="flex mr-2">

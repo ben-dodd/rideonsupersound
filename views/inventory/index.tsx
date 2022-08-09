@@ -1,7 +1,5 @@
-// Packages
 import { useAtom } from 'jotai'
 
-// DB
 import InventoryList from '@features/inventory/features/display-inventory/components/inventory-list'
 import InventoryTable from '@features/inventory/features/display-inventory/components/table/inventory-table'
 import ChangePriceDialog from '@features/inventory/features/item-inventory/components/change-price-dialog'
@@ -12,10 +10,7 @@ import ReceiveStockScreen from '@features/inventory/features/receive-inventory/c
 import ReturnStockScreen from '@features/inventory/features/return-inventory/components/return-stock-screen'
 import { pageAtom, tableModeAtom, viewAtom } from '@lib/atoms'
 
-// Components
-
 export default function InventoryPage() {
-  // Atoms
   const [page] = useAtom(pageAtom)
   const [view] = useAtom(viewAtom)
   const [tableMode] = useAtom(tableModeAtom)

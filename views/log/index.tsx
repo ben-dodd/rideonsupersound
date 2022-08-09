@@ -1,30 +1,11 @@
-import { useState } from 'react'
-// Packages
-import { useAtom } from 'jotai'
-
-// DB
 import Tabs from '@components/navigation/tabs'
-import ListLog from '@features/log/components/list-log'
-import ListStockMovement from '@features/log/components/list-stock-movement'
 import { pageAtom } from '@lib/atoms'
-import {
-  useClerks,
-  useLogs,
-  useStockDisplayMin,
-  useStockMovements,
-} from '@lib/database/read'
-import { LogObject, StockMovementObject } from '@lib/types'
-
-// Components
+import { useAtom } from 'jotai'
+import { useState } from 'react'
+import { LogView } from './log-view'
+import { StockMovementView } from './stock-movement-view'
 
 export default function LogPage() {
-  // SWR
-  const { logs, isLogsLoading } = useLogs()
-  const { clerks } = useClerks()
-  const { stockMovements, isStockMovementsLoading } = useStockMovements(200)
-  const { stockDisplay } = useStockDisplayMin()
-
-  // Atoms
   const [page] = useAtom(pageAtom)
   const [tab, setTab] = useState(0)
 
@@ -42,34 +23,13 @@ export default function LogPage() {
         hidden={tab !== 0}
         className="h-menu w-full overflow-y-scroll px-2 bg-white"
       >
-        {isLogsLoading ? (
-          <div className="w-full flex h-full">
-            <div className="loading-icon" />
-          </div>
-        ) : (
-          logs?.map((log: LogObject) => (
-            <ListLog log={log} clerks={clerks} key={log?.id} />
-          ))
-        )}
+        <LogView />
       </div>
       <div
         hidden={tab !== 1}
         className="h-menu w-full overflow-y-scroll px-2 bg-white"
       >
-        {isStockMovementsLoading ? (
-          <div className="w-full flex h-full">
-            <div className="loading-icon" />
-          </div>
-        ) : (
-          stockMovements?.map((sm: StockMovementObject) => (
-            <ListStockMovement
-              sm={sm}
-              clerks={clerks}
-              stockDisplay={stockDisplay}
-              key={sm?.id}
-            />
-          ))
-        )}
+        <StockMovementView />
       </div>
     </div>
   )
