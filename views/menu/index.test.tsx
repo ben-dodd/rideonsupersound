@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react'
+// import { act } from 'react-dom/test-utils'
 import Menu from './index'
 
-jest.mock('axios')
+// jest.mock('axios')
 
 describe('Menu', () => {
   it('renders an image', () => {

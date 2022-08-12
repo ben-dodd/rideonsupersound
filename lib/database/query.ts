@@ -66,7 +66,7 @@ interface readQueryProps {
   table: string | string[]
   joins?: any[]
   where?: string | any[]
-  isDesc?: string | string[]
+  isDesc?: boolean
   orderBy?: string | string[]
   limit?: string | string[]
 }
@@ -108,7 +108,11 @@ export function createColumnQuery(columns, table) {
           ?.map(
             (column) =>
               `${table}.${
-                typeof column === 'object' ? column.as || column.key : column
+                typeof column === 'object'
+                  ? column?.key?.includes?.('(')
+                    ? `${column.as}`
+                    : `${column.key}${column.as ? ` AS ${column.as}` : ''}`
+                  : column
               }`
           )
           .join(',\n')
@@ -119,28 +123,36 @@ export function createColumnQuery(columns, table) {
 export function createJoinsQuery(joins, table) {
   return joins
     ? joins
-        .map(
-          (join) =>
-            `\nLEFT JOIN (${
-              join.columns
-                ? `SELECT ${join.columns
-                    ?.map((column) =>
-                      typeof column === 'object'
-                        ? `${column.key}${column.as ? ` AS ${column.as}` : ''}`
-                        : column
-                    )
-                    ?.join(', ')} FROM `
-                : ''
-            }${join.table}${createWhereQuery(join.where)}${
-              join.groupBy ? ` GROUP BY ${join.groupBy}` : ''
-            })${join.as ? ` AS ${join.as}` : ''}${
-              join.on
-                ? ` ON ${join.as ?? join.table}.${join.on[0]} ${
-                    join.on[1]
-                  } ${table}.${join.on[2]}`
-                : ''
-            }`
-        )
+        .map((join) => {
+          const selectQuery =
+            join?.columns?.filter(
+              (column) =>
+                column?.key?.includes?.('(') || column?.includes?.('(')
+            ).length > 0
+          return selectQuery
+            ? `\nLEFT JOIN (${
+                join.columns
+                  ? `SELECT ${join.columns
+                      ?.map((column) =>
+                        typeof column === 'object'
+                          ? `${column.key}${
+                              column.as ? ` AS ${column.as}` : ''
+                            }`
+                          : column
+                      )
+                      ?.join(', ')} FROM `
+                  : ''
+              }${join.table}${createWhereQuery(join.where)}${
+                join.groupBy ? ` GROUP BY ${join.groupBy}` : ''
+              })${join.as ? ` AS ${join.as}` : ''}${
+                join.on ? ` ON ${join.on}` : ''
+              }`
+            : `\nLEFT JOIN ${join.table}${createWhereQuery(join.where)}${
+                join.groupBy ? ` GROUP BY ${join.groupBy}` : ''
+              }${join.as ? ` AS ${join.as}` : ''}${
+                join.on ? ` ON ${join.on}` : ''
+              }`
+        })
         .join(' ')
     : ''
 }
@@ -157,7 +169,7 @@ export function createJoinColumnQuery(joins) {
 
 export function createWhereQuery(where) {
   return where
-    ? ` WHERE ${Array.isArray(where) ? where?.join(' ') : where}`
+    ? ` WHERE ${Array.isArray(where) ? where?.join(' AND ') : where}`
     : ''
 }
 
@@ -166,7 +178,7 @@ export function createOrderQuery(orderBy, isDesc) {
 }
 
 export function createLimitQuery(limit) {
-  return `${!isNaN(limit) ? ` LIMIT ${limit}` : ''}`
+  return `${limit && !isNaN(limit) ? ` LIMIT ${limit}` : ''}`
 }
 
 export function createSelectQuery(

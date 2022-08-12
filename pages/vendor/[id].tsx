@@ -1,8 +1,9 @@
+import { sumPrices } from '@features/sale/features/item-sale/lib/functions'
+import { filterInventory } from '@features/sale/features/sell/lib/functions'
 import Payments from '@features/web-vendor/components/payments'
 import Sales from '@features/web-vendor/components/sales'
 import StockItem from '@features/web-vendor/components/stock-item'
 import Tabs from '@features/web-vendor/components/tabs'
-import { filterInventory, sumPrices } from '@lib/data-functions'
 import { StockObject } from '@lib/types'
 import {
   useVendorByUid,
@@ -126,7 +127,6 @@ export default function VendorScreen() {
           <div
             style={{
               width: '1000px',
-              // minWidth: "380px",
               marginLeft: 'auto',
               marginRight: 'auto',
             }}
@@ -213,21 +213,18 @@ export default function VendorScreen() {
                   onChange={(e) => setStockSearch(e.target.value)}
                   placeholder="Search.."
                 />
-                {filterInventory({
-                  inventory: vendorStock?.sort(
-                    (a: StockObject, b: StockObject) => {
-                      if (a?.quantity === b?.quantity) return 0
-                      if (a?.quantity < 1) return 1
-                      if (b?.quantity < 1) return -1
-                      return 0
-                    }
-                  ),
-                  search: stockSearch,
-                  slice: 1000,
-                  emptyReturn: true,
-                })?.map((item: StockObject) => (
-                  <StockItem key={item.id} item={item} />
-                ))}
+                {vendorStock
+                  .filter((item) => filterInventory(item, stockSearch))
+                  ?.sort((a: StockObject, b: StockObject) => {
+                    if (a?.quantity === b?.quantity) return 0
+                    if (a?.quantity < 1) return 1
+                    if (b?.quantity < 1) return -1
+                    return 0
+                  })
+                  .slice(1000)
+                  ?.map((item: StockObject) => (
+                    <StockItem key={item.id} item={item} />
+                  ))}
               </div>
             </div>
           </div>

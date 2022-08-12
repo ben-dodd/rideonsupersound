@@ -103,3 +103,7 @@ export function priceDollarsString(amount: number | string) {
   const dollars = Number(amount)
   return `$${dollars?.toFixed(2)}`
 }
+
+export function eraseWhiteSpace(str) {
+  return str.replace(/\s+/g, ' ').trim()
+}
