@@ -17,8 +17,9 @@ import { ModalButton, VendorObject } from '@lib/types'
 // Components
 import ScreenContainer from '@components/container/screen'
 import Tabs from '@components/navigation/tabs'
-import { getVendorDetails } from '@lib/data-functions'
-import { saveVendorToDatabase, updateVendorInDatabase } from '@lib/db-functions'
+import { createVendorInDatabase } from '@lib/database/create'
+import { updateVendorInDatabase } from '@lib/database/update'
+import { getVendorDetails } from '../lib/functions'
 import GeneralDetails from './general-details'
 import VendorItems from './items'
 import VendorPayments from './payments'
@@ -74,7 +75,7 @@ export default function VendorScreen() {
       onClick: async () => {
         if (loadedVendorId[page] < 0) {
           setIsLoading(true)
-          const newVendorId = await saveVendorToDatabase(vendor)
+          const newVendorId = await createVendorInDatabase(vendor)
           mutateVendors([...vendors, { ...vendor, id: newVendorId }])
           setLoadedVendorId({ ...loadedVendorId, [page]: 0 })
           setVendor(null)

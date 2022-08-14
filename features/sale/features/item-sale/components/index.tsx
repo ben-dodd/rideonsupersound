@@ -79,8 +79,6 @@ export default function SaleScreen() {
       clerk,
       registerID,
       customers,
-      logs,
-      mutateLogs,
       sales,
       mutateSales,
       inventory,

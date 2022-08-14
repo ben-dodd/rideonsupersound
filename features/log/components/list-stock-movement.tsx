@@ -1,4 +1,7 @@
-import { getItemSkuDisplayName } from '@features/inventory/features/display-inventory/lib/functions'
+import {
+  getItemById,
+  getItemSkuDisplayName,
+} from '@features/inventory/features/display-inventory/lib/functions'
 import { ClerkObject, StockMovementObject, StockObject } from '@lib/types'
 
 type ListItemProps = {
@@ -28,7 +31,7 @@ export default function ListStockMovement({
           <div className="uppercase pr-4 w-1/12">{sm?.act}</div>
           <div className="font-bold pr-4 w-1/12">{sm?.quantity} x</div>
           <div className="w-7/12">
-            {getItemSkuDisplayName(sm?.stock_id, stockDisplay)}
+            {getItemSkuDisplayName(getItemById(sm?.stock_id, stockDisplay))}
           </div>
         </div>
       </div>

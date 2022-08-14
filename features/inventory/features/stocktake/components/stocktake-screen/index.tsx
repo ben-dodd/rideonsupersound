@@ -19,17 +19,14 @@ import {
 } from '@lib/database/read'
 import { ModalButton, StockObject } from '@lib/types'
 
-// Functions
-import {
-  processStocktake,
-  saveStocktakeItemToDatabase,
-  updateStocktakeInDatabase,
-  updateStocktakeItemInDatabase,
-} from '@lib/db-functions'
-
-// Components
 import ScreenContainer from '@components/container/screen'
 import InventoryItemScreen from '@features/inventory/features/item-inventory/components/inventory-item-screen'
+import { createStocktakeItemInDatabase } from '@lib/database/create'
+import {
+  updateStocktakeInDatabase,
+  updateStocktakeItemInDatabase,
+} from '@lib/database/update'
+import { processStocktake } from '../../lib/functions'
 import CountItems from './count-items'
 import ReviewItems from './review-items'
 
@@ -126,7 +123,7 @@ export default function StocktakeScreen() {
     //   return a?.quantity_difference - b?.quantity_difference;
     // });
     mutateStocktakeItems(newCountedItems, false)
-    missedItems?.forEach((i) => saveStocktakeItemToDatabase(i))
+    missedItems?.forEach((i) => createStocktakeItemInDatabase(i))
   }
 
   const completedButtons: ModalButton[] = [

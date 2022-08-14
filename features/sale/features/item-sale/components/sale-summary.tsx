@@ -2,11 +2,9 @@
 import { useInventory } from '@lib/database/read'
 import { SaleItemObject, SaleTransactionObject } from '@lib/types'
 
-// Functions
-import { getSaleVars } from '@lib/data-functions'
-
 // Components
 import dayjs from 'dayjs'
+import { getSaleVars } from '../lib/functions'
 import ItemListItem from './item-list-item'
 import TransactionListItem from './transaction-list-item'
 

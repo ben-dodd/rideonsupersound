@@ -3,19 +3,17 @@ import { useAtom } from 'jotai'
 
 import { loadedItemIdAtom } from '@lib/atoms'
 
-// Functions
-import {
-  getImageSrc,
-  getItemDisplayName,
-  getItemSku,
-} from '@lib/data-functions'
-
 // Components
 import Select from 'react-select'
 
 // Icons
+import {
+  getImageSrc,
+  getItemDisplayName,
+  getItemSku,
+} from '@features/inventory/features/display-inventory/lib/functions'
 import { useStocktakeItemsByStocktake, useVendors } from '@lib/database/read'
-import { updateStocktakeItemInDatabase } from '@lib/db-functions'
+import { updateStocktakeItemInDatabase } from '@lib/database/update'
 import {
   StockObject,
   StocktakeItemObject,

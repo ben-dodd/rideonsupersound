@@ -1,8 +1,11 @@
-// Packages
-import { useAtom } from 'jotai'
-import { useMemo } from 'react'
-
-// DB
+import TableContainer from '@components/container/table'
+import Table from '@components/table'
+import {
+  getItemById,
+  getItemDisplayName,
+  getItemSkuDisplayName,
+} from '@features/inventory/features/display-inventory/lib/functions'
+import { saveSystemLog } from '@features/log/lib/functions'
 import {
   clerkAtom,
   loadedCustomerObjectAtom,
@@ -11,18 +14,9 @@ import {
 } from '@lib/atoms'
 import { useCustomers, useHolds, useInventory } from '@lib/database/read'
 import { CustomerObject, HoldObject, StockObject } from '@lib/types'
-
-// Functions
-import {
-  getItemDisplayName,
-  getItemSkuDisplayNameById,
-} from '@lib/data-functions'
-
-// Components
-import TableContainer from '@components/container/table'
-import Table from '@components/table'
-import { saveSystemLog } from '@lib/db-functions'
 import dayjs from 'dayjs'
+import { useAtom } from 'jotai'
+import { useMemo } from 'react'
 
 export default function HoldTable() {
   // SWR
@@ -48,7 +42,7 @@ export default function HoldTable() {
           return {
             id: h?.id,
             hold: h,
-            holdName: getItemSkuDisplayNameById(h?.item_id, inventory),
+            holdName: getItemSkuDisplayName(getItemById(h?.item_id, inventory)),
             expiryDate: dayjs(h?.date_from).add(h?.hold_period, 'day'),
             customer: c,
             name: c?.name,

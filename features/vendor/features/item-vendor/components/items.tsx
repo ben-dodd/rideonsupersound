@@ -13,9 +13,13 @@ import {
 import { StockObject, VendorObject } from '@lib/types'
 
 // Functions
-import { getImageSrc, getItemSku, getVendorDetails } from '@lib/data-functions'
+import {
+  getImageSrc,
+  getItemSku,
+} from '@features/inventory/features/display-inventory/lib/functions'
 import InfoIcon from '@mui/icons-material/Info'
 import { Tooltip } from '@mui/material'
+import { getVendorDetails } from '../lib/functions'
 
 export default function VendorItems() {
   // Atoms

@@ -24,20 +24,18 @@ import {
 } from '@lib/database/read'
 import { ModalButton, SaleItemObject, SaleObject } from '@lib/types'
 
-// Functions
-import { getSaleVars } from '@lib/data-functions'
-import {
-  loadSaleToCart,
-  nukeSaleInDatabase,
-  saveSystemLog,
-} from '@lib/db-functions'
-
 // Components
 import ScreenContainer from '@components/container/screen'
 import SaleDetails from './sale-details'
 import SaleSummary from './sale-summary'
 
+import { saveSystemLog } from '@features/log/lib/functions'
 import DeleteIcon from '@mui/icons-material/Delete'
+import {
+  getSaleVars,
+  loadSaleToCart,
+  nukeSaleInDatabase,
+} from '../lib/functions'
 
 // TODO add returns to sale items
 // TODO refund dialog like PAY, refund with store credit, cash or card
@@ -122,7 +120,7 @@ export default function SaleItemScreen() {
 
   async function nukeSale() {
     saveSystemLog('SALE NUKED', clerk?.id)
-    await nukeSaleInDatabase(sale, clerk, registerID, logs, mutateLogs)
+    await nukeSaleInDatabase(sale, clerk, registerID)
     setSale(null)
     setLoadedSaleId({ ...loadedSaleId, [page]: null })
   }

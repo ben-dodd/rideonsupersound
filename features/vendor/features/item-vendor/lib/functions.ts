@@ -1,6 +1,7 @@
 import { sumPrices } from '@features/sale/features/item-sale/lib/functions'
 import {
   SaleObject,
+  SaleTransactionObject,
   StockObject,
   VendorPaymentObject,
   VendorSaleItemObject,

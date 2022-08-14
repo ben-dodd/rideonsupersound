@@ -1,12 +1,11 @@
-import { useInventory } from '@lib/database/read'
-
 import {
   getImageSrc,
   getItemDisplayName,
   getItemSku,
-  writeCartItemPriceBreakdown,
-} from '@lib/data-functions'
+} from '@features/inventory/features/display-inventory/lib/functions'
+import { useInventory } from '@lib/database/read'
 import { SaleItemObject, StockObject } from '@lib/types'
+import { writeCartItemPriceBreakdown } from '../../sell/lib/functions'
 
 type HoldListItemProps = {
   cartItem: SaleItemObject

@@ -25,21 +25,17 @@ import {
   StocktakeTemplateObject,
 } from '@lib/types'
 
-// Functions
-import {
-  saveStocktakeToDatabase,
-  updateStocktakeTemplateInDatabase,
-} from '@lib/db-functions'
-
 // Components
 import ScreenContainer from '@components/container/screen'
 import TextField from '@components/inputs/text-field'
-import { writeStocktakeFilterDescription } from '@lib/data-functions'
 import FilterBox from './filter-box'
 import StocktakeListItem from './stocktake-list-item'
 
+import { createStocktakeInDatabase } from '@lib/database/create'
+import { updateStocktakeTemplateInDatabase } from '@lib/database/update'
 import AddIcon from '@mui/icons-material/Add'
 import dayjs from 'dayjs'
+import { writeStocktakeFilterDescription } from '../../lib/functions'
 import StocktakeScreen from '../stocktake-screen'
 
 export default function StocktakeTemplateScreen() {
@@ -211,7 +207,7 @@ export default function StocktakeTemplateScreen() {
                       total_unique_estimated:
                         stocktakeTemplate?.total_unique_estimated,
                     }
-                    const id = await saveStocktakeToDatabase(newStocktake)
+                    const id = await createStocktakeInDatabase(newStocktake)
                     mutateStocktakes(
                       [{ ...newStocktake, id }, ...stocktakes],
                       false

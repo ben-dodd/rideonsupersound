@@ -16,12 +16,13 @@ import {
   loadedVendorIdAtom,
   pageAtom,
 } from '@lib/atoms'
-import { deleteVendorFromDatabase, saveLog } from '@lib/db-functions'
 import dayjs from 'dayjs'
 import { useAtom } from 'jotai'
 import Select from 'react-select'
 import MaskedInput from 'react-text-mask'
 
+import { saveLog } from '@features/log/lib/functions'
+import { deleteVendorFromDatabase } from '@lib/database/delete'
 import DeleteIcon from '@mui/icons-material/Delete'
 
 export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {

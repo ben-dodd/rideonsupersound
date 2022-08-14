@@ -9,6 +9,7 @@ import {
   getItemDisplayName,
   getItemSku,
 } from '../../display-inventory/lib/functions'
+import { getLabelPrinterCSV } from '../../print-labels/lib/functions'
 
 export default function PrintLabel({ receivedStock }) {
   const { logs, mutateLogs } = useLogs()
@@ -63,7 +64,7 @@ export default function PrintLabel({ receivedStock }) {
       </div>
       <CSVLink
         className={`bg-col2-dark hover:bg-col2 disabled:bg-gray-200 p-2 rounded`}
-        data={getCSVData(getStock())}
+        data={getLabelPrinterCSV(getStock())}
         headers={['SKU', 'ARTIST', 'TITLE', 'NEW/USED', 'SELL PRICE', 'GENRE']}
         filename={`label-print-${dayjs().format('YYYY-MM-DD')}.csv`}
         onClick={() => logPrintLabels(clerk, 'receive stock dialog')}

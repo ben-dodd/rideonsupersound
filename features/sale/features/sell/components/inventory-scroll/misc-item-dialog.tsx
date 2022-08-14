@@ -20,6 +20,7 @@ import TextField from '@components/inputs/text-field'
 import Modal from '@components/modal'
 import { logNewMiscItemCreated } from '@features/log/lib/functions'
 import { getGeolocation, useWeather } from '@lib/api'
+import { createStockItemInDatabase } from '@lib/database/create'
 import dayjs from 'dayjs'
 
 export default function MiscItemDialog() {
@@ -62,7 +63,7 @@ export default function MiscItemDialog() {
           misc_item_amount: parseFloat(amount) * 100,
           note: notes,
         }
-        const id = await saveStockToDatabase(newMiscItem, clerk)
+        const id = await createStockItemInDatabase(newMiscItem, clerk)
         mutateInventory([...inventory, { ...newMiscItem, id }], false)
         setSubmitting(false)
         clearDialog()

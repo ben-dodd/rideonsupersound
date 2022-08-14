@@ -12,15 +12,6 @@ import {
 } from '@lib/database/read'
 import { ModalButton, StockObject, VendorObject } from '@lib/types'
 
-// Functions
-import {
-  getImageSrc,
-  getItemDisplayName,
-  getItemSku,
-  getItemSkuDisplayName,
-} from '@lib/data-functions'
-import { returnStock } from '@lib/db-functions'
-
 // Components
 import TextField from '@components/inputs/text-field'
 import Select from 'react-select'
@@ -28,6 +19,13 @@ import Select from 'react-select'
 // Icons
 import ScreenContainer from '@components/container/screen'
 import DeleteIcon from '@mui/icons-material/Delete'
+import {
+  getImageSrc,
+  getItemDisplayName,
+  getItemSku,
+  getItemSkuDisplayName,
+} from '../../display-inventory/lib/functions'
+import { returnStock } from '../lib/functions'
 
 export default function ReturnStockScreen() {
   // SWR

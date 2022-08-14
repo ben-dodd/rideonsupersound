@@ -3,13 +3,8 @@ import utc from 'dayjs/plugin/utc'
 // DB
 import { useClerks, useCustomers, useInventory } from '@lib/database/read'
 import { CustomerObject, OpenWeatherObject, SaleStateTypes } from '@lib/types'
-
-// Functions
-import {
-  convertDegToCardinal,
-  convertMPStoKPH,
-  getSaleVars,
-} from '@lib/data-functions'
+import { convertDegToCardinal, convertMPStoKPH } from '@lib/utils'
+import { getSaleVars } from '../lib/functions'
 
 export default function SaleDetails({ sale }) {
   dayjs.extend(utc)

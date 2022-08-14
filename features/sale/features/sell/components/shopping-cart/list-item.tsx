@@ -7,23 +7,23 @@ import { cartAtom, confirmModalAtom } from '@lib/atoms'
 import { useInventory, useStockItem } from '@lib/database/read'
 import { SaleItemObject, StockObject } from '@lib/types'
 
-// Functions
-import {
-  getImageSrc,
-  getItemDisplayName,
-  getItemSku,
-  writeCartItemPriceBreakdown,
-} from '@lib/data-functions'
-
 // Components
 import TextField from '@components/inputs/text-field'
 
 // Icons
+import {
+  getImageSrc,
+  getItemDisplayName,
+  getItemSku,
+} from '@features/inventory/features/display-inventory/lib/functions'
 import { priceCentsString } from '@lib/utils'
 import ArrowDown from '@mui/icons-material/ArrowDropDown'
 import ArrowUp from '@mui/icons-material/ArrowDropUp'
 import DeleteIcon from '@mui/icons-material/Delete'
-import { getCartItemPrice } from '../../lib/functions'
+import {
+  getCartItemPrice,
+  writeCartItemPriceBreakdown,
+} from '../../lib/functions'
 
 type SellListItemProps = {
   index: number

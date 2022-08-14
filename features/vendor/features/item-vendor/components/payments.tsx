@@ -11,12 +11,10 @@ import {
 } from '@lib/database/read'
 import { VendorPaymentObject } from '@lib/types'
 
-// Functions
-import { getVendorDetails } from '@lib/data-functions'
-
 // Components
 import dayjs from 'dayjs'
 import { CSVLink } from 'react-csv'
+import { getVendorDetails } from '../lib/functions'
 
 export default function VendorPayments({ vendor }) {
   // Atoms

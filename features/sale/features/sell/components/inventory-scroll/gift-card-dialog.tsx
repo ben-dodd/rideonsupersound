@@ -19,7 +19,7 @@ import Modal from '@components/modal'
 import { logNewGiftCardCreated } from '@features/log/lib/functions'
 import { getGeolocation, useWeather } from '@lib/api'
 import { createStockItemInDatabase } from '@lib/database/create'
-import { GiftCardObject, ModalButton } from '@lib/types'
+import { ModalButton } from '@lib/types'
 import SyncIcon from '@mui/icons-material/Sync'
 import dayjs from 'dayjs'
 import { makeGiftCardCode } from '../../lib/functions'
@@ -55,9 +55,8 @@ export default function GiftCardDialog() {
       onClick: async () => {
         setSubmitting(true)
         setSearch('')
-        type NewType = GiftCardObject
 
-        let newGiftCard: NewType = {
+        let newGiftCard = {
           is_gift_card: true,
           gift_card_code: giftCardCode,
           gift_card_amount: parseFloat(amount) * 100,

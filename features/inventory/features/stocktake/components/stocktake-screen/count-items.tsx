@@ -19,19 +19,17 @@ import {
 } from '@lib/database/read'
 import { StockObject, StocktakeItemObject } from '@lib/types'
 
-// Functions
-import { getItemSkuDisplayName } from '@lib/data-functions'
-import {
-  saveStocktakeItemToDatabase,
-  updateStocktakeInDatabase,
-  updateStocktakeItemInDatabase,
-} from '@lib/db-functions'
-
 // Components
 import TextField from '@components/inputs/text-field'
 import Select from 'react-select'
 
 // Icons
+import { getItemSkuDisplayName } from '@features/inventory/features/display-inventory/lib/functions'
+import { createStocktakeItemInDatabase } from '@lib/database/create'
+import {
+  updateStocktakeInDatabase,
+  updateStocktakeItemInDatabase,
+} from '@lib/database/update'
 import SearchIcon from '@mui/icons-material/Search'
 import dayjs from 'dayjs'
 import CountedListItem from './counted-list-item'
@@ -97,7 +95,7 @@ export default function CountItems() {
         counted_by: clerk?.id,
         date_counted: dayjs.utc().format(),
       }
-      saveStocktakeItemToDatabase(countedItem)
+      createStocktakeItemInDatabase(countedItem)
     }
     let countData = stocktakeItems || []
     let newCountedItems = [

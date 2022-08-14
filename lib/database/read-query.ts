@@ -47,6 +47,13 @@ export function getVendorNamesQuery() {
   }
 }
 
+export function getVendorByUidQuery(vendor_id: number) {
+  return {
+    table: 'vendor',
+    where: `uid = ${vendor_id}`,
+  }
+}
+
 export function getVendorFromVendorPaymentQuery(vendor_payment_id: number) {
   return {
     table: 'vendor',
@@ -86,6 +93,26 @@ export function getVendorTotalPaymentsQuery(vendor_id: number) {
     columns: ['date', 'amount'],
     table: 'vendor_payment',
     where: `vendor_id = ${vendor_id} AND NOT is_deleted`,
+  }
+}
+
+export function getVendorPaymentsByVendorUid(vendor_uid: string) {
+  return {
+    table: 'vendor_payment',
+    where: [
+      `NOT is_deleted`,
+      `vendor_id = (SELECT id FROM vendor WHERE uid = '${vendor_uid}')`,
+    ],
+    orderBy: 'date',
+    isDesc: 'true',
+  }
+}
+
+export function getVendorStoreCreditByVendorUid(vendor_uid: string) {
+  return {
+    table: 'sale',
+    columns: 'item_list',
+    innerJoin: [{}],
   }
 }
 
@@ -284,6 +311,40 @@ export function getSaleTransactionsForSaleQuery(sale_id) {
   }
 }
 
+export function getSalesByVendorUid(vendor_uid: string) {
+  return {
+    table: 'sale_item',
+    columns: [
+      'sale_id',
+      'item_id',
+      'quantity',
+      'is_refunded',
+      'store_discount',
+      'vendor_discount',
+    ],
+    joins: [
+      {
+        table: 'sale',
+        columns: ['date_sale_closed'],
+        on: `sale.id = sale_item.sale_id`,
+      },
+      {
+        table: 'stock',
+        columns: ['vendor_id'],
+        on: `stock.id = sale_item.item_id`,
+      },
+    ],
+    where: [
+      `sale.state = 'completed'`,
+      `NOT sale.is_deleted`,
+      `NOT sale_item.is_deleted`,
+      `stock.vendor_id = (SELECT id FROM vendor WHERE uid = '${vendor_uid}')`,
+    ],
+    orderBy: `sale.date_sale_closed`,
+    isDesc: 'true',
+  }
+}
+
 export function getHoldsQuery() {
   return {
     table: 'hold',
@@ -312,15 +373,16 @@ export function getStockMovementJoins(types) {
   })
 }
 
-export function getStockQuery(stock_id?, vendor_id?) {
+export function getStockQuery(stock_id?, vendor_id?, vendor_uid?) {
   const where = [
+    'NOT is_deleted',
     `(p.id = (
   SELECT MAX(id)
   FROM stock_price
   WHERE stock_id = stock.id
 ) OR stock.is_gift_card OR stock.is_misc_item)`,
   ]
-  let columns = ['*']
+  let columns = []
   if (stock_id) {
     where.unshift(`id = ${stock_id}`)
   } else {
@@ -406,6 +468,10 @@ export function getStockQuery(stock_id?, vendor_id?) {
   }
 
   if (vendor_id) where.unshift(`stock.vendor_id = ${vendor_id}`)
+  if (vendor_uid)
+    where.unshift(
+      `vendor_id = (SELECT id FROM vendor WHERE uid = '${vendor_uid}')`
+    )
   return {
     columns,
     table: 'stock',
@@ -472,6 +538,45 @@ export function getGiftCardsQuery() {
     ],
     table: 'stock',
     where: `is_gift_card AND NOT is_deleted`,
+  }
+}
+
+export function getStockPriceByVendorUid(vendorUid: string) {
+  return {
+    table: 'stock_price',
+    where: `stock_id IN (SELECT id FROM stock WHERE vendor_id=(SELECT id FROM vendor WHERE uid = '${vendorUid}'))`,
+    orderBy: 'date_valid_from',
+    isDesc: 'true',
+  }
+}
+
+export function getStockMovementsQuery(limit?) {
+  return {
+    table: 'stock_movement',
+    orderBy: 'date_moved',
+    isDesc: 'true',
+    limit,
+  }
+}
+
+export function getStockMovementByStockIdQuery(id: number) {
+  return {
+    table: 'stock_movement',
+    where: [`NOT is_deleted`, `stock_id = ${id}`],
+    orderBy: 'date_moved',
+    isDesc: 'true',
+    id: id,
+  }
+}
+
+export function getStockMovementByVendorUid(vendorUid: string) {
+  return {
+    table: 'stock_movement',
+    where: [
+      `NOT is_deleted`,
+      `stock_id IN (SELECT id FROM stock WHERE vendor_id=(SELECT id FROM vendor WHERE uid = '${vendorUid}'))`,
+    ],
+    orderBy: 'date_moved',
   }
 }
 
@@ -552,56 +657,47 @@ export function getJobsQuery() {
   OR date_completed > date_sub(now(), interval 1 week)`,
     ],
     orderBy: 'date_created',
-    isDesc: true,
+    isDesc: 'true',
     // limit: 200,
   }
 }
 
-export function getStockMovementsQuery(limit) {
-  return {
-    table: 'stock_movement',
-    orderBy: 'date_moved',
-    isDesc: true,
-    limit,
-  }
-}
-
-export function getStockMovementByStockIdQuery(id) {
-  return {
-    table: 'stock_movement',
-    where: `NOT is_deleted AND
-  stock_id = ${id}`,
-    orderBy: 'date_moved',
-    isDesc: true,
-    id: id,
-  }
-}
+/*
+ *  STOCKTAKE QUERIES
+ */
 
 export function getStocktakeItemsByStocktakeQuery(stocktake_id: number) {
   return {
     table: 'stocktake_item',
-    where: `NOT is_deleted
-AND stocktake_id = ${stocktake_id}`,
+    where: [`NOT is_deleted`, `stocktake_id = ${stocktake_id}`],
     orderBy: 'date_counted',
-    isDesc: true,
+    isDesc: 'true',
   }
 }
 
 export function getStocktakesByTemplateQuery(stocktake_template_id: number) {
   return {
     table: 'stocktake',
-    where: `NOT is_deleted
-  AND stocktake_template_id = ${stocktake_template_id}`,
+    where: [
+      `NOT is_deleted`,
+      `stocktake_template_id = ${stocktake_template_id}`,
+    ],
     orderBy: 'date_started',
-    isDesc: true,
+    isDesc: 'true',
   }
 }
 
-export function getSelectQuery(setting_select: string) {
+export function getStocktakesQuery() {
   return {
-    columns: ['label'],
-    table: 'select_option',
-    where: `setting_select = '${setting_select}'`,
+    table: 'stocktake',
+    where: `NOT is_deleted`,
+  }
+}
+
+export function getStocktakeTemplatesQuery() {
+  return {
+    table: 'stocktake_template',
+    where: `NOT is_deleted`,
   }
 }
 
@@ -616,6 +712,14 @@ export function getAllSelectsQuery() {
   }
 }
 
+export function getSelectQuery(setting_select: string) {
+  return {
+    columns: ['label'],
+    table: 'select_option',
+    where: `setting_select = '${setting_select}'`,
+  }
+}
+
 export function getHelpsQuery() {
   return { table: 'help', where: 'NOT is_deleted' }
 }
@@ -625,7 +729,7 @@ export function getLogsQuery(limit?) {
     table: 'log',
     where: `NOT is_deleted AND NOT table_id <=> 'system'`,
     orderBy: 'date_created',
-    isDesc: true,
+    isDesc: 'true',
     limit: limit || null,
   }
 }

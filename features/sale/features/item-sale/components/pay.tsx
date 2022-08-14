@@ -11,15 +11,12 @@ import {
 import { useCustomers, useInventory } from '@lib/database/read'
 import { CustomerObject, SaleStateTypes } from '@lib/types'
 
-// Functions
-import { getSaleVars } from '@lib/data-functions'
-
 // Components
 import CreateableSelect from '@components/inputs/createable-select'
 import TextField from '@components/inputs/text-field'
-
-import { saveSystemLog } from '@lib/db-functions'
+import { saveSystemLog } from '@features/log/lib/functions'
 import ReturnIcon from '@mui/icons-material/KeyboardReturn'
+import { getSaleVars } from '../lib/functions'
 
 export default function Pay() {
   // Atoms

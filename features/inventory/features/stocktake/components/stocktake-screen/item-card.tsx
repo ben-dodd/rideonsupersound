@@ -1,12 +1,10 @@
 // DB
-import { useVendors } from '@lib/database/read'
-
-// Functions
 import {
   getImageSrc,
   getItemDisplayName,
   getItemSku,
-} from '@lib/data-functions'
+} from '@features/inventory/features/display-inventory/lib/functions'
+import { useVendors } from '@lib/database/read'
 
 export default function ItemCard({ item }) {
   const { vendors } = useVendors()

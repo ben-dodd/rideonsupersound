@@ -1,8 +1,6 @@
-// Packages
-import { useAtom } from 'jotai'
-import { useState } from 'react'
-
-// DB
+import ScreenContainer from '@components/container/screen'
+import Stepper from '@components/navigation/stepper'
+import { saveSystemLog } from '@features/log/lib/functions'
 import {
   clerkAtom,
   confirmModalAtom,
@@ -11,15 +9,9 @@ import {
 } from '@lib/atoms'
 import { useInventory, useRegisterID } from '@lib/database/read'
 import { ModalButton } from '@lib/types'
-
-// Functions
-import { receiveStock, saveSystemLog } from '@lib/db-functions'
-
-// Components
-import ScreenContainer from '@components/container/screen'
-import Stepper from '@components/navigation/stepper'
-
-// Icons
+import { useAtom } from 'jotai'
+import { useState } from 'react'
+import { receiveStock } from '../lib/functions'
 import SelectItems from './add-items'
 import CheckDetails from './check-details'
 import PrintLabel from './print-label'

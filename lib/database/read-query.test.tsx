@@ -24,19 +24,33 @@ import {
   getSaleByIdQuery,
   getSaleInventoryQuery,
   getSaleItemsQuery,
+  getSalesByVendorUid,
   getSalesJoinedQuery,
   getSalesQuery,
   getSaleTransactionsForRangeQuery,
   getSaleTransactionsForSaleQuery,
   getSaleWithItemsQuery,
+  getStockMovementByStockIdQuery,
+  getStockMovementByVendorUid,
   getStockMovementJoins,
+  getStockMovementsQuery,
+  getStockPriceByVendorUid,
   getStockQuery,
+  getStocktakeItemsByStocktakeQuery,
+  getStocktakesByTemplateQuery,
+  getStocktakesQuery,
+  getStocktakeTemplatesQuery,
+  getVendorByUidQuery,
   getVendorFromVendorPaymentQuery,
   getVendorNamesQuery,
+  getVendorPaymentsByVendorUid,
   getVendorPaymentsQuery,
   getVendorsQuery,
+  getVendorStoreCreditByVendorUid,
   getVendorTotalPaymentsQuery,
 } from './read-query'
+
+const vendorUid = 'd6a53cd6-937a-4348-a760-c1b821385ee1'
 
 describe('ACCOUNT/CLERKS QUERIES', () => {
   test('get account from email', () => {
@@ -87,6 +101,15 @@ describe('VENDOR QUERIES', () => {
   test('get vendor names', () => {
     const expected = `SELECT vendor.id, vendor.name FROM vendor WHERE NOT is_deleted`
     expect(eraseWhiteSpace(getReadQuery(getVendorNamesQuery()))).toBe(
+      eraseWhiteSpace(expected)
+    )
+  })
+
+  test('get vendor by uid', () => {
+    const vendorId = 666
+    const expected = `SELECT * FROM vendor
+    WHERE uid = ${vendorId}`
+    expect(eraseWhiteSpace(getReadQuery(getVendorByUidQuery(vendorId)))).toBe(
       eraseWhiteSpace(expected)
     )
   })
@@ -148,6 +171,30 @@ AND NOT is_deleted`
     expect(
       eraseWhiteSpace(getReadQuery(getVendorTotalPaymentsQuery(vendor_id)))
     ).toBe(eraseWhiteSpace(getVendorTotalPaymentsQueryExpected))
+  })
+
+  test('get vendor payment by uid', () => {
+    const expected = `SELECT * FROM vendor_payment
+    WHERE NOT is_deleted AND
+    vendor_id = (SELECT id FROM vendor WHERE uid = '${vendorUid}')
+      ORDER BY date DESC`
+    expect(
+      eraseWhiteSpace(getReadQuery(getVendorPaymentsByVendorUid(vendorUid)))
+    ).toBe(eraseWhiteSpace(expected))
+  })
+
+  test('get store credit by vendor uid', () => {
+    const expected = `SELECT sale.item_list, payment.vendor_payment_id
+    FROM sale INNER JOIN
+      (SELECT sale_id, vendor_payment_id FROM sale_transaction
+        WHERE vendor_payment_id IN
+          (SELECT id FROM vendor_payment WHERE vendor_id = (
+            SELECT id FROM vendor WHERE uid = ${vendorUid}
+            ))) AS payment
+        ON sale.id = payment.sale_id`
+    expect(
+      eraseWhiteSpace(getReadQuery(getVendorStoreCreditByVendorUid(vendorUid)))
+    ).toBe(eraseWhiteSpace(expected))
   })
 })
 
@@ -310,6 +357,58 @@ describe('SALE QUERIES', () => {
     ).toBe(eraseWhiteSpace(expected))
   })
 
+  test('get sales for vendor', () => {
+    const expected = `SELECT
+    sale_item.sale_id,
+    sale_item.item_id,
+    sale_item.quantity,
+    sale_item.vendor_discount,
+    sale_item.store_discount,
+    stock_price.vendor_cut,
+    stock_price.total_sell,
+    stock_price.date_valid_from AS date_price_valid_from,
+    sale.date_sale_opened,
+    sale.date_sale_closed
+  FROM sale_item
+  LEFT JOIN sale
+    ON sale.id = sale_item.sale_id
+  LEFT JOIN stock_price
+    ON stock_price.stock_id = sale_item.item_id
+  WHERE sale_item.item_id IN
+    (SELECT id FROM stock
+      WHERE vendor_id = ?
+    )
+  AND stock_price.date_valid_from <= sale.date_sale_opened
+  AND sale.state = 'completed'
+  AND sale.is_deleted = 0
+  AND sale_item.is_deleted = 0`
+  })
+
+  test('get sales by vendor uid', () => {
+    const expected = `SELECT
+    sale_item.sale_id,
+    sale_item.item_id,
+    sale_item.quantity,
+    sale_item.is_refunded,
+    sale_item.store_discount,
+    sale_item.vendor_discount,
+    sale.date_sale_closed,
+    stock.vendor_id
+  FROM sale_item
+  LEFT JOIN sale
+    ON sale.id = sale_item.sale_id    
+  LEFT JOIN stock
+    ON stock.id = sale_item.item_id
+  WHERE sale.state = 'completed'
+  AND NOT sale.is_deleted
+  AND NOT sale_item.is_deleted
+  AND stock.vendor_id = (SELECT id FROM vendor WHERE uid = '${vendorUid}')
+    ORDER BY sale.date_sale_closed DESC`
+    expect(eraseWhiteSpace(getReadQuery(getSalesByVendorUid(vendorUid)))).toBe(
+      eraseWhiteSpace(expected)
+    )
+  })
+
   test('get all holds', () => {
     const expected = `SELECT *
     FROM hold
@@ -339,6 +438,7 @@ describe('STOCK QUERIES', () => {
       expected
     )
   })
+
   test('get all stock', () => {
     const expected = `
     SELECT
@@ -511,6 +611,71 @@ describe('STOCK QUERIES', () => {
     )
   })
 
+  test('get stock by vendor uid', () => {
+    const expected = `SELECT
+    stock.id,
+    stock.vendor_id,
+    stock.artist,
+    stock.title,
+    stock.display_as,
+    stock.media,
+    stock.format,
+    stock.section,
+    stock.country,
+    stock.is_new,
+    stock.cond,
+    stock.image_url,
+    stock.is_gift_card,
+    stock.gift_card_code,
+    stock.gift_card_amount,
+    stock.gift_card_remaining,
+    stock.gift_card_is_valid,
+    stock.is_misc_item,
+    stock.misc_item_description,
+    stock.misc_item_amount,
+    stock.needs_restock,
+    stock.is_deleted,
+    q.quantity,
+    hol.quantity_hold,
+    lay.quantity_layby,
+    sol.quantity_sold,
+    p.vendor_cut,
+    p.total_sell
+  FROM stock
+  LEFT JOIN
+    (SELECT stock_id, SUM(quantity) AS quantity FROM stock_movement GROUP BY stock_id) AS q
+    ON q.stock_id = stock.id
+  LEFT JOIN
+    (SELECT stock_id, SUM(quantity) AS quantity_hold FROM stock_movement WHERE act = '${StockMovementTypes.Hold}' GROUP BY stock_id) AS hol
+    ON hol.stock_id = stock.id
+  LEFT JOIN
+    (SELECT stock_id, SUM(quantity) AS quantity_layby FROM stock_movement WHERE act = '${StockMovementTypes.Layby}' GROUP BY stock_id) AS lay
+    ON lay.stock_id = stock.id
+  LEFT JOIN
+    (SELECT stock_id, SUM(quantity) AS quantity_sold FROM stock_movement WHERE act = '${StockMovementTypes.Sold}' GROUP BY stock_id) AS sol
+    ON sol.stock_id = stock.id
+  LEFT JOIN stock_price AS p ON p.stock_id = stock.id
+  WHERE vendor_id = (SELECT id FROM vendor WHERE uid = '${vendorUid}')
+  AND NOT is_deleted
+    AND (p.id = (
+        SELECT MAX(id)
+        FROM stock_price
+        WHERE stock_id = stock.id
+     ) OR stock.is_gift_card OR stock.is_misc_item)`
+    expect(
+      eraseWhiteSpace(getReadQuery(getStockQuery(null, null, vendorUid)))
+    ).toBe(eraseWhiteSpace(expected))
+  })
+
+  test('get stock price by vendor uid', () => {
+    const expected = `SELECT * FROM stock_price
+    WHERE stock_id IN (SELECT id FROM stock WHERE vendor_id=(SELECT id FROM vendor WHERE uid = '${vendorUid}'))
+      ORDER BY date_valid_from DESC`
+    expect(
+      eraseWhiteSpace(getReadQuery(getStockPriceByVendorUid(vendorUid)))
+    ).toBe(eraseWhiteSpace(expected))
+  })
+
   test('get sale inventory', () => {
     const expected = `SELECT
   stock.id,
@@ -561,6 +726,41 @@ describe('STOCK QUERIES', () => {
     expect(eraseWhiteSpace(getReadQuery(getGiftCardsQuery()))).toBe(
       eraseWhiteSpace(expected)
     )
+  })
+
+  test('get all stock movments', () => {
+    const limit = 100
+    const expected = `SELECT *
+    FROM stock_movement
+    ORDER BY date_moved DESC`
+    const expectedLimit = `SELECT * FROM stock_movement ORDER BY date_moved DESC LIMIT ${limit}`
+    expect(eraseWhiteSpace(getReadQuery(getStockMovementsQuery()))).toBe(
+      eraseWhiteSpace(expected)
+    )
+    expect(eraseWhiteSpace(getReadQuery(getStockMovementsQuery(limit)))).toBe(
+      eraseWhiteSpace(expectedLimit)
+    )
+  })
+
+  test('get stock movements for stock item', () => {
+    const stockId = 100
+    const expected = `SELECT * FROM stock_movement
+    WHERE NOT is_deleted AND
+    stock_id = ${stockId}
+    ORDER BY date_moved DESC`
+    expect(
+      eraseWhiteSpace(getReadQuery(getStockMovementByStockIdQuery(stockId)))
+    ).toBe(eraseWhiteSpace(expected))
+  })
+
+  test('get stock movements by vendor uid', () => {
+    const expected = `SELECT * FROM stock_movement
+    WHERE NOT is_deleted AND
+    stock_id IN (SELECT id FROM stock WHERE vendor_id=(SELECT id FROM vendor WHERE uid = '${vendorUid}'))
+    ORDER BY date_moved`
+    expect(
+      eraseWhiteSpace(getReadQuery(getStockMovementByVendorUid(vendorUid)))
+    ).toBe(eraseWhiteSpace(expected))
   })
 })
 
@@ -663,6 +863,50 @@ describe('JOBS QUERIES', () => {
     OR date_completed > date_sub(now(), interval 1 week)
     ORDER BY date_created DESC`
     expect(eraseWhiteSpace(getReadQuery(getJobsQuery()))).toBe(
+      eraseWhiteSpace(expected)
+    )
+  })
+})
+
+describe('STOCKTAKE QUERIES', () => {
+  test('get stock items by stocktake', () => {
+    const stocktakeId = 1
+    const expected = `SELECT * FROM stocktake_item
+    WHERE NOT is_deleted
+    AND stocktake_id = ${stocktakeId}
+    ORDER BY date_counted DESC`
+    expect(
+      eraseWhiteSpace(
+        getReadQuery(getStocktakeItemsByStocktakeQuery(stocktakeId))
+      )
+    ).toBe(eraseWhiteSpace(expected))
+  })
+
+  test('get all stocktake templates', () => {
+    const expected = `SELECT *
+    FROM stocktake_template
+    WHERE NOT is_deleted`
+    expect(eraseWhiteSpace(getReadQuery(getStocktakeTemplatesQuery()))).toBe(
+      eraseWhiteSpace(expected)
+    )
+  })
+
+  test('get stocktakes by template', () => {
+    const templateId = 1
+    const expected = `SELECT * FROM stocktake
+    WHERE NOT is_deleted
+    AND stocktake_template_id = ${templateId}
+    ORDER BY date_started DESC`
+    expect(
+      eraseWhiteSpace(getReadQuery(getStocktakesByTemplateQuery(templateId)))
+    ).toBe(eraseWhiteSpace(expected))
+  })
+
+  test('get all stocktakes', () => {
+    const expected = `SELECT *
+    FROM stocktake
+    WHERE NOT is_deleted`
+    expect(eraseWhiteSpace(getReadQuery(getStocktakesQuery()))).toBe(
       eraseWhiteSpace(expected)
     )
   })

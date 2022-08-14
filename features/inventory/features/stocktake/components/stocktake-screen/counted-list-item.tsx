@@ -3,22 +3,18 @@ import { useAtom } from 'jotai'
 
 import { loadedItemIdAtom } from '@lib/atoms'
 
-// Functions
-import {
-  getImageSrc,
-  getItemDisplayName,
-  getItemSku,
-} from '@lib/data-functions'
-
 // Components
 import TextField from '@components/inputs/text-field'
 
 // Icons
-import { useStocktakeItemsByStocktake, useVendors } from '@lib/database/read'
 import {
-  deleteStocktakeItemFromDatabase,
-  updateStocktakeItemInDatabase,
-} from '@lib/db-functions'
+  getImageSrc,
+  getItemDisplayName,
+  getItemSku,
+} from '@features/inventory/features/display-inventory/lib/functions'
+import { deleteStocktakeItemFromDatabase } from '@lib/database/delete'
+import { useStocktakeItemsByStocktake, useVendors } from '@lib/database/read'
+import { updateStocktakeItemInDatabase } from '@lib/database/update'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
 

@@ -1,5 +1,8 @@
+import {
+  getGrossProfit,
+  getProfitMargin,
+} from '@features/sale/features/item-sale/lib/functions'
 import { viewAtom } from '@lib/atoms'
-import { getGrossProfit, getProfitMargin } from '@lib/data-functions'
 import { StockObject } from '@lib/types'
 import { useAtom } from 'jotai'
 

@@ -1,5 +1,5 @@
+import { getItemSkuDisplayName } from '@features/inventory/features/display-inventory/lib/functions'
 import { receiveStockAtom } from '@lib/atoms'
-import { getItemSkuDisplayName } from '@lib/data-functions'
 import { useInventory } from '@lib/database/read'
 import { StockObject } from '@lib/types'
 import { useAtom } from 'jotai'

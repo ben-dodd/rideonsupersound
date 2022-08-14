@@ -19,18 +19,16 @@ import {
   useSales,
 } from '@lib/database/read'
 
-// Functions
-import {
-  saveLog,
-  saveSaleAndPark,
-  saveSaleItemsTransactionsToDatabase,
-} from '@lib/db-functions'
-
 // Components
 import CircularProgress from '@mui/material/CircularProgress'
 import Tooltip from '@mui/material/Tooltip'
 
 // Icons
+import { saveLog } from '@features/log/lib/functions'
+import {
+  saveSaleAndPark,
+  saveSaleItemsTransactionsToDatabase,
+} from '@features/sale/features/item-sale/lib/functions'
 import { SaleStateTypes } from '@lib/types'
 import DiscardSaleIcon from '@mui/icons-material/Close'
 import SaveSaleIcon from '@mui/icons-material/Save'
@@ -71,8 +69,6 @@ export default function ShoppingCartActions() {
       clerk,
       registerID,
       customers,
-      logs,
-      mutateLogs,
       sales,
       mutateSales,
       inventory,
@@ -91,7 +87,7 @@ export default function ShoppingCartActions() {
 
   async function onClickContinueLayby() {
     setSaveSaleLoading(true)
-    await saveSaleItemsTransactionsToDatabase(
+    saveSaleItemsTransactionsToDatabase(
       { ...cart, state: SaleStateTypes.Layby },
       clerk,
       registerID,

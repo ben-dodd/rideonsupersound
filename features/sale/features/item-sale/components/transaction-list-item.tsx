@@ -8,7 +8,6 @@ import {
   PaymentMethodTypes,
   SaleObject,
   SaleTransactionObject,
-  VendorObject,
 } from '@lib/types'
 
 // Functions
@@ -19,18 +18,12 @@ type TransactionListItemProps = {
   sale: SaleObject
 }
 
-type UseVendorProps = {
-  vendor: VendorObject
-}
-
 export default function TransactionListItem({
   transaction,
 }: TransactionListItemProps) {
   // SWR
   const { giftCards } = useGiftCards()
-  const { vendor }: UseVendorProps = useVendorFromVendorPayment(
-    transaction?.vendor_payment_id
-  )
+  const { vendor } = useVendorFromVendorPayment(transaction?.vendor_payment_id)
 
   const giftCard = giftCards?.filter(
     (g: GiftCardObject) => g?.id === transaction?.gift_card_id

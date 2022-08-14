@@ -66,7 +66,7 @@ interface readQueryProps {
   table: string | string[]
   joins?: any[]
   where?: string | any[]
-  isDesc?: boolean
+  isDesc?: string | string[]
   orderBy?: string | string[]
   limit?: string | string[]
 }
