@@ -1,34 +1,31 @@
 // Packages
-import { useAtom } from "jotai";
+import { useAtom } from 'jotai'
 
 // DB
-import { pageAtom, tableModeAtom, viewAtom } from "@/lib/atoms";
+import { pageAtom, tableModeAtom, viewAtom } from '@/lib/atoms'
 
 // Components
-import InventoryTable from "./inventory-table";
-import InventoryItemScreen from "./inventory-item-screen";
-import ChangePriceDialog from "./change-price-dialog";
-import ChangeStockQuantityDialog from "./change-stock-quantity-dialog";
-import ReceiveStockScreen from "./receive-stock-screen";
-import ReturnStockScreen from "./return-stock-screen";
-import LabelPrintDialog from "./label-print-dialog";
-import Tabs from "../_components/navigation/tabs";
-import { useState } from "react";
-import InventoryList from "./inventory-list";
+import ChangePriceDialog from './change-price-dialog'
+import ChangeStockQuantityDialog from './change-stock-quantity-dialog'
+import InventoryItemScreen from './inventory-item-screen'
+import InventoryTable from './inventory-table'
+import LabelPrintDialog from './label-print-dialog'
+import ReceiveStockScreen from './receive-stock-screen'
+import ReturnStockScreen from './return-stock-screen'
 
 export default function InventoryScreen() {
   // Atoms
-  const [page] = useAtom(pageAtom);
-  const [view] = useAtom(viewAtom);
-  const [tableMode] = useAtom(tableModeAtom);
+  const [page] = useAtom(pageAtom)
+  const [view] = useAtom(viewAtom)
+  const [tableMode] = useAtom(tableModeAtom)
   return (
     <div
       className={`flex relative overflow-x-hidden ${
-        page !== "inventory" ? "hidden" : ""
+        page !== 'inventory' ? 'hidden' : ''
       }`}
     >
-      {page === "inventory" && tableMode && <InventoryTable />}
-      {page === "inventory" && !tableMode && <InventoryList />}
+      {page === 'inventory' && <InventoryTable />}
+      {/* {page === "inventory" && !tableMode && <InventoryList />} */}
       <InventoryItemScreen page="inventory" />
       {view?.changePriceDialog && <ChangePriceDialog />}
       {view?.changeStockQuantityDialog && <ChangeStockQuantityDialog />}
@@ -36,5 +33,5 @@ export default function InventoryScreen() {
       {view?.returnStockScreen && <ReturnStockScreen />}
       {view?.labelPrintDialog && <LabelPrintDialog />}
     </div>
-  );
+  )
 }
