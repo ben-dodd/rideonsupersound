@@ -49,19 +49,19 @@ export default function List() {
             item_list: transaction?.item_list,
             total_price: transaction?.total_price,
             store_cut: transaction?.store_cut,
-            store_fraction: transaction?.store_cut / transaction?.total_price,
+            store_fraction:
+              (transaction?.store_cut || 0) / (transaction?.total_price || 1),
             number_of_items: transaction?.number_of_items,
             transactions: [],
           }
+        const transactionStoreCut =
+          (transaction.amount || 0) *
+          ((transaction?.store_cut || 0) / (transaction?.total_price || 1))
         saleMap[day].sales[transaction?.sale_id].transactions.push(transaction)
-        saleMap[day].storeCut +=
-          transaction.amount *
-          (transaction?.store_cut / transaction?.total_price)
+        saleMap[day].storeCut += transactionStoreCut
         saleMap[day].total += transaction.amount
         grandTotal += transaction.amount
-        storeCut +=
-          transaction.amount *
-          (transaction?.store_cut / transaction?.total_price)
+        storeCut += transactionStoreCut
       }
     })
     registers?.forEach?.((register) => {
