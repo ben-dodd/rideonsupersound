@@ -23,7 +23,10 @@ const handler: NextApiHandler = async (req, res) => {
         sale_transaction.gift_card_change,
         sale_transaction.register_id,
         sale_transaction.is_refund,
-        sale.item_list
+        sale.item_list,
+        sale.total_price,
+        sale.store_cut,
+        sale.number_of_items
       FROM sale_transaction
       LEFT JOIN sale
         ON sale.id = sale_transaction.sale_id

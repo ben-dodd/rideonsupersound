@@ -1,5 +1,8 @@
-import MidScreenContainer from '@/components/_components/container/mid-screen'
-import { salesViewClerksAtom, salesViewRangeAtom } from '@/lib/atoms'
+import {
+  loadedSaleIdAtom,
+  salesViewClerksAtom,
+  salesViewRangeAtom,
+} from '@/lib/atoms'
 import {
   useClerks,
   useRegisters,
@@ -13,6 +16,7 @@ import Filter from './filter'
 export default function List() {
   const [salesViewRange] = useAtom(salesViewRangeAtom)
   const [salesViewClerks] = useAtom(salesViewClerksAtom)
+  const [loadedSaleId, setLoadedSaleId] = useAtom(loadedSaleIdAtom)
   const { saleTransactions, isSaleTransactionsLoading } =
     useSaleTransactionsForRange(salesViewRange)
   const { registers, isRegistersLoading } = useRegisters(salesViewRange)
@@ -23,6 +27,7 @@ export default function List() {
     // console.log(saleTransactions)
     // console.log(registers)
     let grandTotal = 0
+    let storeCut = 0
     let saleMap = {}
     saleTransactions?.forEach?.((transaction) => {
       if (
@@ -31,16 +36,32 @@ export default function List() {
       ) {
         let day = dayjs(transaction?.date)?.format('YYYY-MM-DD')
         if (saleMap?.[day] === undefined)
-          saleMap[day] = { day, sales: {}, registers: [], total: 0 }
+          saleMap[day] = {
+            day,
+            sales: {},
+            registers: [],
+            storeCut: 0,
+            total: 0,
+          }
         if (saleMap?.[day]?.sales[transaction?.sale_id] === undefined)
           saleMap[day].sales[transaction?.sale_id] = {
             id: transaction?.sale_id,
             item_list: transaction?.item_list,
+            total_price: transaction?.total_price,
+            store_cut: transaction?.store_cut,
+            store_fraction: transaction?.store_cut / transaction?.total_price,
+            number_of_items: transaction?.number_of_items,
             transactions: [],
           }
         saleMap[day].sales[transaction?.sale_id].transactions.push(transaction)
+        saleMap[day].storeCut +=
+          transaction.amount *
+          (transaction?.store_cut / transaction?.total_price)
         saleMap[day].total += transaction.amount
         grandTotal += transaction.amount
+        storeCut +=
+          transaction.amount *
+          (transaction?.store_cut / transaction?.total_price)
       }
     })
     registers?.forEach?.((register) => {
@@ -51,79 +72,96 @@ export default function List() {
       if (saleMap?.[closeDay] !== undefined)
         saleMap[closeDay].registers.push({ ...register, type: 'close' })
     })
-    console.log(Object.values(saleMap))
+    // console.log(Object.values(saleMap))
 
     let saleArray = Object.values(saleMap)?.map((saleDay: any) => {
-      console.log(saleDay)
       return { ...saleDay, sales: Object.values(saleDay.sales) }
     })
-
-    console.log(saleArray)
-    return { grandTotal, saleArray }
+    return { grandTotal, storeCut, saleArray }
   }, [saleTransactions, registers, salesViewClerks])
   return (
-    <MidScreenContainer
-      title={'SALES'}
-      titleClass={'bg-col5'}
-      isLoading={isClerksLoading}
-    >
-      <div>
-        <Filter />
-        <div className="h-dialog overflow-y-scroll px-2">
-          {isSaleTransactionsLoading ||
-          isRegistersLoading ||
-          isClerksLoading ? (
-            <div className="loading-screen">
-              <div className="loading-icon" />
-            </div>
-          ) : sortedSales?.saleArray?.length === 0 ? (
-            <div className="font-bold text-sm my-8 text-center">
-              NO SALES FOR THIS PERIOD
-            </div>
-          ) : (
-            sortedSales?.saleArray?.map((saleDay) => (
-              <div key={saleDay?.day}>
-                <div className="border-b border-black border-double font-bold mb-2 mt-8">
-                  {dayjs(saleDay?.day).format('dddd, MMMM D, YYYY')}
-                </div>
-                {saleDay?.sales?.map?.((sale: any) => (
+    <div>
+      <Filter />
+      <div className="h-dialog overflow-y-scroll px-2">
+        {isSaleTransactionsLoading || isRegistersLoading || isClerksLoading ? (
+          <div className="loading-screen">
+            <div className="loading-icon" />
+          </div>
+        ) : sortedSales?.saleArray?.length === 0 ? (
+          <div className="font-bold text-sm my-8 text-center">
+            NO SALES FOR THIS PERIOD
+          </div>
+        ) : (
+          sortedSales?.saleArray?.map((saleDay) => (
+            <div key={saleDay?.day}>
+              <div className="border-b border-black border-double font-bold mb-2 mt-8">
+                {dayjs(saleDay?.day).format('dddd, MMMM D, YYYY')}
+              </div>
+              {saleDay?.sales?.map?.((sale: any) => {
+                console.log(sale)
+                return (
                   <div className="flex border-b border-gray-500 border-dotted">
-                    <div className="w-5/12">{`[${sale?.id}] ${sale?.item_list}`}</div>
+                    <div
+                      className="w-5/12 cursor-pointer"
+                      onClick={() =>
+                        setLoadedSaleId({ ...loadedSaleId, sales: sale?.id })
+                      }
+                    >{`[${sale?.id}] ${sale?.item_list}`}</div>
                     <div className="w-7/12 text-right">
-                      {sale?.transactions?.map((transaction) => (
-                        <div className="flex">
-                          <div className="w-1/4">
-                            {dayjs(transaction?.date).format('h:mm A')}
+                      {sale?.transactions?.map((transaction) => {
+                        return (
+                          <div className="flex">
+                            <div className="w-1/5">
+                              {dayjs(transaction?.date).format('h:mm A')}
+                            </div>
+                            <div className="w-1/5">
+                              {
+                                clerks?.filter(
+                                  (clerk) => clerk?.id === transaction.clerk_id
+                                )?.[0]?.name
+                              }
+                            </div>
+                            <div className="w-1/5">
+                              {transaction?.payment_method?.toUpperCase?.()}
+                            </div>
+                            <div className="w-1/5 text-right">{`$${(
+                              (transaction?.amount / 100) *
+                              sale?.store_fraction
+                            )?.toFixed(2)}`}</div>
+                            <div className="w-1/5 text-right">{`$${(
+                              transaction?.amount / 100
+                            )?.toFixed(2)}`}</div>
                           </div>
-                          <div className="w-1/4">
-                            {
-                              clerks?.filter(
-                                (clerk) => clerk?.id === transaction.clerk_id
-                              )?.[0]?.name
-                            }
-                          </div>
-                          <div className="w-1/4">
-                            {transaction?.payment_method?.toUpperCase?.()}
-                          </div>
-                          <div className="w-1/4 text-right">{`$${(
-                            transaction?.amount / 100
-                          )?.toFixed(2)}`}</div>
-                        </div>
-                      ))}
+                        )
+                      })}
                     </div>
                   </div>
-                ))}
-                <div className="border-t border-black font-bold mb-8 mt-2 w-full text-right">{`$${(
-                  saleDay?.total / 100
-                )?.toFixed(2)}`}</div>
+                )
+              })}
+              <div className="flex border-t border-black font-bold mb-8 mt-2 w-full">
+                <div className="w-5/12"></div>
+                <div className="w-7/12 flex">
+                  <div className="w-3/5"></div>
+                  <div className="w-1/5 text-right">{`$${(
+                    saleDay?.storeCut / 100
+                  )?.toFixed(2)}`}</div>
+                  <div className="w-1/5 text-right">{`$${(
+                    saleDay?.total / 100
+                  )?.toFixed(2)}`}</div>
+                </div>
               </div>
-            ))
-          )}
-        </div>
-        <div className="bg-col5 w-full text-right font-bold text-lg pt-2 border-t-2 px-2">{`GRAND TOTAL $${(
-          sortedSales?.grandTotal / 100
-        ).toFixed(2)}`}</div>
+            </div>
+          ))
+        )}
       </div>
-    </MidScreenContainer>
+      <div className="bg-col5 w-full text-right font-bold text-lg pt-2 border-t-2 px-2">{`STORE CUT $${(
+        sortedSales?.storeCut / 100
+      ).toFixed(2)} // VENDOR SALES $${(
+        (sortedSales?.grandTotal - sortedSales?.storeCut) /
+        100
+      ).toFixed(2)} // GRAND TOTAL $${(sortedSales?.grandTotal / 100).toFixed(
+        2
+      )}`}</div>
+    </div>
   )
 }

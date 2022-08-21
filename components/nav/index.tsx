@@ -2,24 +2,22 @@
 import { useAtom } from 'jotai'
 
 // DB
+import { clerkAtom, pageAtom, viewAtom } from '@/lib/atoms'
 import { useRegisterID } from '@/lib/swr-hooks'
-import { clerkAtom, pageAtom, tableModeAtom, viewAtom } from '@/lib/atoms'
 
 // Components
-import Image from 'next/image'
-import Hamburger from '@/components/_components/icon/hamburger'
 
-import SellNavActions from './actions/sell'
 import InventoryNavActions from './actions/inventory'
 import PaymentNavActions from './actions/payment'
-import VendorNavActions from './actions/vendor'
+import SellNavActions from './actions/sell'
 import TaskNavActions from './actions/task'
+import VendorNavActions from './actions/vendor'
 
 // Icons
-import HelpIcon from '@mui/icons-material/Help'
 import { bg } from '@/lib/types'
-import StocktakeNavActions from './actions/stocktake'
+import HelpIcon from '@mui/icons-material/Help'
 import SaleNavActions from './actions/sale'
+import StocktakeNavActions from './actions/stocktake'
 
 // REVIEW fix all actions and clean up files
 
@@ -58,7 +56,7 @@ export default function Nav() {
           {page === 'payments' && <PaymentNavActions />}
           {page === 'jobs' && <TaskNavActions />}
           {page === 'stocktake' && <StocktakeNavActions />}
-          {page === 'sale' && <SaleNavActions />}
+          {page === 'sales' && <SaleNavActions />}
           <button
             onClick={() => setView({ ...view, helpDialog: true })}
             className="text-brown-dark hover:text-brown"
