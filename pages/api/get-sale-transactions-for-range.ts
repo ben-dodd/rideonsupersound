@@ -1,8 +1,9 @@
+import dayjs from 'dayjs'
 import { NextApiHandler } from 'next'
 import { query } from '../../lib/db'
 
 const handler: NextApiHandler = async (req, res) => {
-  const { start_date, end_date, k } = req.query
+  const { start_date, end_date, k }: any = req.query
   try {
     if (!k || k !== process.env.NEXT_PUBLIC_SWR_API_KEY)
       return res.status(401).json({ message: 'Resource Denied.' })
@@ -36,7 +37,10 @@ const handler: NextApiHandler = async (req, res) => {
       AND sale_transaction.is_deleted = 0
       ORDER BY sale_transaction.date
       `,
-      [`${start_date}`, `${end_date}`]
+      [
+        `${dayjs(start_date, 'YYYY-MM-DD').format('YYYY-MM-DD hh:mm:ss')}`,
+        `${dayjs(end_date, 'YYYY-MM-DD').format('YYYY-MM-DD hh:mm:ss')}`,
+      ]
       // [`${view}`, `${start_date}`, `${end_date}`, `${clerks}`]
 
       // ${clerks !== 'null' ? `AND sale_opened_by IN (?)` : ''}

@@ -19,7 +19,6 @@ export default function Filter() {
   const [salesView, setSalesView] = useAtom(salesViewAtom)
   const [salesViewRange, setSalesViewRange] = useAtom(salesViewRangeAtom)
   const [salesViewClerks, setSalesViewClerks] = useAtom(salesViewClerksAtom)
-  console.log(salesViewRange)
   return (
     <div>
       <div className="flex items-center my-2">

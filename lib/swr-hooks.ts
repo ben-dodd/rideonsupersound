@@ -1,7 +1,7 @@
-import useSWR from 'swr'
-import { authoriseUrl, parseJSON } from '@/lib/data-functions'
+import { authoriseUrl } from '@/lib/data-functions'
 import { VendorSaleItemObject } from '@/lib/types'
 import dayjs from 'dayjs'
+import useSWR from 'swr'
 
 async function fetcher(url: string) {
   return window.fetch(authoriseUrl(url)).then((res) => {
