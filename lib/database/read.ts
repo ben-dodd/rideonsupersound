@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { useAuth0 } from '@auth0/auth0-react'
 
 import useSWR from 'swr'
 import { camelCase, pascalCase } from '../utils'
@@ -45,8 +46,17 @@ import {
   getVendorTotalPaymentsQuery,
 } from './read-query'
 
-async function fetcher(url: string) {
-  return axios(url)
+export async function fetcher(url: string, scope?: string) {
+  const { getAccessTokenSilently } = useAuth0()
+  const token = await getAccessTokenSilently({
+    audience: process.env.AUTH0_AUDIENCE,
+    scope: scope || 'read:stock',
+  })
+  return axios(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
     .then((response) => response.data)
     .catch((error) => console.log(error))
 }

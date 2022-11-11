@@ -1,7 +1,8 @@
+'use client'
 import { clerkAtom } from '@lib/atoms'
 import { useAccount, useAccountClerks } from '@lib/database/read'
 import { useAtom } from 'jotai'
-import { useSession } from 'next-auth/client'
+import { useAuth0 } from '@auth0/auth0-react'
 import { useEffect } from 'react'
 
 import MainPage from './main-page'
@@ -9,8 +10,9 @@ import SplashPage from './splash-page'
 
 export default function LandingPage() {
   // Get google auth details
-  const [session] = useSession()
-  const { account } = useAccount(session?.user?.email)
+  const { user } = useAuth0()
+  console.log(user)
+  const { account } = useAccount(user?.email)
   // Get clerk details
   const { accountClerks, isAccountClerksLoading, isAccountClerksError } =
     useAccountClerks(account?.id)

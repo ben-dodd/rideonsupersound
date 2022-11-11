@@ -14,7 +14,7 @@ const customJestConfig = {
   moduleDirectories: ['node_modules', __dirname],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   testEnvironment: 'jest-environment-jsdom',
-  testURL: 'http://localhost:8080',
+  testEnvironmentOptions: { url: 'http://localhost:8080' },
   // roots: ['<rootDir>/.'],
   // transform: {
   //   '^.+\\.tsx?$': 'ts-jest',
