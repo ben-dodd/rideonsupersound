@@ -47,11 +47,12 @@ import {
 } from './read-query'
 
 export async function fetcher(url: string, scope?: string) {
-  const { getAccessTokenSilently } = useAuth0()
-  const token = await getAccessTokenSilently({
-    audience: process.env.AUTH0_AUDIENCE,
-    scope: scope || 'read:stock',
-  })
+  // const { getAccessTokenSilently } = useAuth0()
+  // const token = await getAccessTokenSilently({
+  //   audience: process.env.AUTH0_AUDIENCE,
+  //   scope: scope || 'read:stock',
+  // })
+  const token = '1234'
   return axios(url, {
     headers: {
       Authorization: `Bearer ${token}`,

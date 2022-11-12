@@ -185,10 +185,11 @@ function Table({
       <div className="overflow-x-scroll w-full">
         <table {...getTableProps()} className="table-auto w-full">
           <thead className="sticky">
-            {headerGroups.map((headerGroup) => (
-              <tr {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column) => (
+            {headerGroups.map((headerGroup, i) => (
+              <tr key={i} {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column, i) => (
                   <th
+                    key={i}
                     className={`border border-white ${
                       color
                         ? `${color} hover:${colorDark}`
@@ -227,12 +228,13 @@ function Table({
             ))}
           </thead>
           <tbody {...getTableBodyProps()}>
-            {page.map((row) => {
+            {page.map((row, i) => {
               // {rows.map((row) => {
               prepareRow(row)
               let rowProps = row.getRowProps()
               return (
                 <tr
+                  key={i}
                   {...rowProps}
                   className={`${
                     row?.cells[2]?.value === SaleStateTypes.Completed ||
@@ -267,10 +269,10 @@ function Table({
           </tbody>
           {showFooter && (
             <tfoot>
-              {footerGroups.map((group) => (
-                <tr {...group.getFooterGroupProps()}>
-                  {group.headers.map((column) => (
-                    <td {...column.getFooterProps()}>
+              {footerGroups.map((group, i) => (
+                <tr key={i} {...group.getFooterGroupProps()}>
+                  {group.headers.map((column, i) => (
+                    <td key={i} {...column.getFooterProps()}>
                       <b>{column.render('Footer')}</b>
                     </td>
                   ))}

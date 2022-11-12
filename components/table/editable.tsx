@@ -1,12 +1,12 @@
 // Packages
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect } from 'react'
 import {
   useTable,
   usePagination,
   useResizeColumns,
   useBlockLayout,
   useSortBy,
-} from "react-table";
+} from 'react-table'
 
 const EditableCell = ({
   value: initialValue,
@@ -15,33 +15,33 @@ const EditableCell = ({
   updateData,
 }) => {
   // Keep and update the state of the cell
-  const [value, setValue] = useState(initialValue);
+  const [value, setValue] = useState(initialValue)
   const onChange = (e) => {
-    setValue(e.target.value);
-  };
+    setValue(e.target.value)
+  }
 
   // Only update the external data when the input is blurred
   const onBlur = () => {
-    updateData(index, id, value);
-  };
+    updateData(index, id, value)
+  }
 
   // If the initial value is changed externally, sync it up with our state
   useEffect(() => {
-    setValue(initialValue);
-  }, [initialValue]);
+    setValue(initialValue)
+  }, [initialValue])
 
-  return <input value={value} onChange={onChange} onBlur={onBlur} />;
-};
+  return <input value={value} onChange={onChange} onBlur={onBlur} />
+}
 
 interface TableProps {
-  color?: string;
-  data?: any[];
-  columns?: any[];
-  updateData?: Function;
-  skipPageReset?: boolean;
-  showFooter?: boolean;
-  heading?: string;
-  sortOptions?: any;
+  color?: string
+  data?: any[]
+  columns?: any[]
+  updateData?: Function
+  skipPageReset?: boolean
+  showFooter?: boolean
+  heading?: string
+  sortOptions?: any
 }
 
 function EditableTable({
@@ -60,7 +60,7 @@ function EditableTable({
       minWidth: 30,
     }),
     []
-  );
+  )
 
   const {
     getTableProps,
@@ -82,13 +82,13 @@ function EditableTable({
     useResizeColumns,
     useSortBy,
     usePagination
-  );
+  )
 
   return (
     <div className="ml-1">
       <div
         className={`flex justify-between items-center px-2 mb-1 ${
-          color ? `bg-${color}` : ""
+          color ? `bg-${color}` : ''
         }`}
       >
         {heading ? (
@@ -100,24 +100,25 @@ function EditableTable({
       <div className="overflow-x-scroll w-full">
         <table {...getTableProps()} className="table-auto w-full">
           <thead className="sticky">
-            {headerGroups.map((headerGroup) => (
-              <tr {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column) => (
+            {headerGroups.map((headerGroup, i) => (
+              <tr key={i} {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column, i) => (
                   <th
+                    key={i}
                     className={`border border-white ${
                       color
                         ? `bg-${color} hover:bg-${color}-dark`
-                        : "bg-gray-500 hover:bg-gray-800"
+                        : 'bg-gray-500 hover:bg-gray-800'
                     } text-left px-2 truncate`}
                     {...column.getHeaderProps(column.getSortByToggleProps())}
                   >
-                    {column.render("Header")}
+                    {column.render('Header')}
                     <span>
                       {column.isSorted
                         ? column.isSortedDesc
-                          ? " ↓"
-                          : " ↑"
-                        : ""}
+                          ? ' ↓'
+                          : ' ↑'
+                        : ''}
                     </span>
                     <div
                       className="inline-block w-1 z-10 h-full absolute right-0 top-0 translate-x-1/2 cursor-resize"
@@ -129,32 +130,33 @@ function EditableTable({
             ))}
           </thead>
           <tbody {...getTableBodyProps()}>
-            {page.map((row) => {
-              prepareRow(row);
-              let rowProps = row.getRowProps();
+            {page.map((row, i) => {
+              prepareRow(row)
+              let rowProps = row.getRowProps()
               return (
-                <tr {...rowProps}>
-                  {row.cells.map((cell) => {
+                <tr key={i} {...rowProps}>
+                  {row.cells.map((cell, i) => {
                     return (
                       <td
+                        key={i}
                         className="border border-gray-200 border p-1 truncate"
                         {...cell.getCellProps()}
                       >
-                        {cell.render("Cell")}
+                        {cell.render('Cell')}
                       </td>
-                    );
+                    )
                   })}
                 </tr>
-              );
+              )
             })}
           </tbody>
           {showFooter && (
             <tfoot>
-              {footerGroups.map((group) => (
-                <tr {...group.getFooterGroupProps()}>
-                  {group.headers.map((column) => (
-                    <td {...column.getFooterProps()}>
-                      <b>{column.render("Footer")}</b>
+              {footerGroups.map((group, i) => (
+                <tr key={i} {...group.getFooterGroupProps()}>
+                  {group.headers.map((column, i) => (
+                    <td key={i} {...column.getFooterProps()}>
+                      <b>{column.render('Footer')}</b>
                     </td>
                   ))}
                 </tr>
@@ -200,7 +202,7 @@ function EditableTable({
         </button>
       </div>*/}
     </div>
-  );
+  )
 }
 
-export default EditableTable;
+export default EditableTable
