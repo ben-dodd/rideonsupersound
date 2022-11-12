@@ -1,7 +1,4 @@
 module.exports = {
-  experimental: {
-    appDir: true,
-  },
   images: {
     domains: [
       'localhost',
@@ -10,6 +7,9 @@ module.exports = {
       'i.discogs.com',
       'books.google.com',
     ],
+  },
+  eslint: {
+    dirs: ['components', 'features', 'lib', 'pages', 'views'],
   },
   async rewrites() {
     return [

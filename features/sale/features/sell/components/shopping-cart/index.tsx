@@ -25,6 +25,7 @@ import {
 } from '@lib/database/delete'
 import HoldIcon from '@mui/icons-material/PanTool'
 import PayIcon from '@mui/icons-material/ShoppingCart'
+import { getSaleVars } from '@features/sale/features/item-sale/lib/functions'
 
 export default function ShoppingCart() {
   // SWR

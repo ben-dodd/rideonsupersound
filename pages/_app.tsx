@@ -14,9 +14,12 @@ import isLeapYear from 'dayjs/plugin/isLeapYear'
 import tz from 'dayjs/plugin/timezone'
 import relative from 'dayjs/plugin/relativeTime'
 import isBetween from 'dayjs/plugin/isBetween'
+import { useEffect, useState } from 'react'
 // import "dayjs/locale/en-nz";
 
 function MyApp({ Component, pageProps }) {
+  const [origin, setOrigin] = useState('http://localhost:3000')
+  useEffect(() => setOrigin(window.location.origin), [])
   dayjs.extend(utc)
   // dayjs.extend(duration);
   dayjs.extend(isLeapYear)
@@ -30,7 +33,7 @@ function MyApp({ Component, pageProps }) {
     <Auth0Provider
       domain={process.env.NEXT_PUBLIC_AUTH0_ISSUER}
       clientId={process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID}
-      redirectUri={window.location.origin}
+      redirectUri={origin}
     >
       <JotaiProvider>
         <Component {...pageProps} />

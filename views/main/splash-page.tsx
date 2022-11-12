@@ -16,8 +16,8 @@ export default function SplashPage({ clerks }) {
             CHOOSE YOUR FIGHTER
           </div>
           <div>
-            {clerks?.map((clerk: ClerkObject) => (
-              <ClerkListItem clerk={clerk} />
+            {clerks?.map((clerk: ClerkObject, i) => (
+              <ClerkListItem key={i} clerk={clerk} />
             ))}
           </div>
           <SignOutButton />

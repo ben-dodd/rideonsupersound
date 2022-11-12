@@ -1,20 +1,17 @@
-export default function IndexPage() {
-  const [session, sessionLoading] = useSession()
-  const { account } = useAccount(session?.user?.email)
-  useRegisterID()
+import { useAuth0 } from '@auth0/auth0-react'
+import LandingPage from '@views/main/landing-page'
+import SignIn from './api/auth/signin'
 
+export default function IndexPage() {
+  const { isLoading, isAuthenticated } = useAuth0()
   return (
     <>
-      {sessionLoading ? (
+      {isLoading ? (
         <div className="flex h-screen w-screen">
           <div className="loading-icon" />
         </div>
-      ) : session ? (
-        account?.is_authenticated ? (
-          <LandingPage />
-        ) : (
-          <SignIn />
-        )
+      ) : isAuthenticated ? (
+        <LandingPage />
       ) : (
         <SignIn />
       )}
