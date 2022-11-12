@@ -2,7 +2,7 @@ import 'primereact/resources/themes/lara-light-indigo/theme.css' //theme
 import 'primereact/resources/primereact.min.css' //core css
 import 'primeicons/primeicons.css' //icons
 import '../styles/index.css'
-import { Provider as NextAuthProvider } from 'next-auth/client'
+import { Auth0Provider } from '@auth0/auth0-react'
 import { Provider as JotaiProvider } from 'jotai'
 // import { SessionProvider } from "next-auth/react";
 
@@ -27,30 +27,15 @@ function MyApp({ Component, pageProps }) {
   // dayjs.locale("en-nz");
 
   return (
-    <NextAuthProvider
-      // Provider options are not required but can be useful in situations where
-      // you have a short session maxAge time. Shown here with default values.
-      options={{
-        // Client Max Age controls how often the useSession in the client should
-        // customer the server to sync the session state. Value in seconds.
-        // e.g.
-        // * 0  - Disabled (always use cache value)
-        // * 60 - Sync session state with server if it's older than 60 seconds
-        clientMaxAge: 0,
-        // Keep Alive tells windows / tabs that are signed in to keep sending
-        // a keep alive request (which extends the current session expiry) to
-        // prevent sessions in open windows from expiring. Value in seconds.
-        //
-        // Note: If a session has expired when keep alive is triggered, all open
-        // windows / tabs will be updated to reflect the user is signed out.
-        keepAlive: 0,
-      }}
-      session={pageProps.session}
+    <Auth0Provider
+      domain={process.env.NEXT_PUBLIC_AUTH0_ISSUER}
+      clientId={process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID}
+      redirectUri={window.location.origin}
     >
       <JotaiProvider>
         <Component {...pageProps} />
       </JotaiProvider>
-    </NextAuthProvider>
+    </Auth0Provider>
   )
 }
 
