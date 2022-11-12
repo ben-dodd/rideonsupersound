@@ -7,8 +7,9 @@ import { useAuth0 } from '@auth0/auth0-react'
 export default function IndexPage() {
   const { user, isAuthenticated, isLoading, loginWithRedirect } = useAuth0()
   // const { account } = useAccount(user?.email)
-  useRegisterID()
-  loginWithRedirect()
+  console.log(user)
+  // useRegisterID()
+  !isAuthenticated && !user && !isLoading && loginWithRedirect()
 
   return (
     <>
