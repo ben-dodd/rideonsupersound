@@ -3,6 +3,7 @@ import 'primereact/resources/primereact.min.css' //core css
 import 'primeicons/primeicons.css' //icons
 import '../styles/index.css'
 import { Auth0Provider } from '@auth0/auth0-react'
+import { UserProvider } from '@auth0/nextjs-auth0'
 import { Provider as JotaiProvider } from 'jotai'
 // import { SessionProvider } from "next-auth/react";
 
@@ -29,16 +30,21 @@ function MyApp({ Component, pageProps }) {
   dayjs.extend(isBetween)
   // dayjs.locale("en-nz");
 
+  const { user } = pageProps
+
   return (
-    <Auth0Provider
-      domain={process.env.NEXT_PUBLIC_AUTH0_ISSUER}
-      clientId={process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID}
-      redirectUri={origin}
-    >
+    // <Auth0Provider
+    //   domain={process.env.NEXT_PUBLIC_AUTH0_ISSUER}
+    //   clientId={process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID}
+    //   audience={process.env.NEXT_PUBLIC_AUTH0_AUDIENCE}
+    //   redirectUri={origin}
+    // >
+    <UserProvider user={user}>
       <JotaiProvider>
         <Component {...pageProps} />
       </JotaiProvider>
-    </Auth0Provider>
+    </UserProvider>
+    // </Auth0Provider>
   )
 }
 
