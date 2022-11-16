@@ -1,16 +1,20 @@
-import { useAuth0 } from '@auth0/auth0-react'
+import SignOutButton from '@features/sign-in/components/sign-out-button'
 import LandingPage from '@views/main/landing-page'
 import SignIn from './api/auth/signin'
+import { useUser } from '@auth0/nextjs-auth0'
 
 export default function IndexPage() {
-  const { isLoading, isAuthenticated } = useAuth0()
+  const { user, error, isLoading } = useUser()
+  console.log('hi')
+  console.log(user)
   return (
     <>
       {isLoading ? (
         <div className="flex h-screen w-screen">
           <div className="loading-icon" />
+          <SignOutButton />
         </div>
-      ) : isAuthenticated ? (
+      ) : user ? (
         <LandingPage />
       ) : (
         <SignIn />

@@ -1,13 +1,8 @@
-import { useAuth0 } from '@auth0/auth0-react'
-
+import Link from 'next/link'
 export default function SignOutButton() {
-  const { logout } = useAuth0()
   return (
-    <button
-      className="bg-white hover:bg-gray-200 text-black mx-auto rounded px-8 py-2 mt-4 mb-8"
-      onClick={() => logout()}
-    >
-      Sign Out
+    <button className="bg-white hover:bg-gray-200 text-black mx-auto rounded px-8 py-2 mt-4 mb-8">
+      <Link href="/api/auth/logout">Sign Out</Link>
     </button>
   )
 }
