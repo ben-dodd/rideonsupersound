@@ -11,10 +11,12 @@ import { StockObject } from '@/lib/types'
 import TextField from '@/components/_components/inputs/text-field'
 import SettingsSelect from '@/components/_components/inputs/settings-select'
 import RadioButton from '@/components/_components/inputs/radio-button'
+import { useState } from 'react'
 
 export default function ListItem({ receiveItem, bucket, setBucket }) {
   const item: StockObject = receiveItem?.item
   const priceSuggestion = getPriceSuggestion(item)
+
   const profitMargin = getProfitMargin({
     total_sell: parseFloat(
       receiveItem?.total_sell ||
@@ -25,6 +27,7 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
         (item?.vendor_cut ? `${item?.vendor_cut / 100}` : '')
     ),
   })
+
   const storeCut = getStoreCut({
     total_sell: parseFloat(
       receiveItem?.total_sell ||
@@ -67,7 +70,11 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
             inputLabel="CONDITION"
             group={`${receiveItem?.key}isNew`}
             value={
-              item?.is_new === null ? null : item?.is_new ? 'true' : 'false'
+              item?.is_new === null || item?.is_new === undefined
+                ? 'true'
+                : item?.is_new
+                ? 'true'
+                : 'false'
             }
             onChange={(value: string) =>
               setBucket({
@@ -221,7 +228,7 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
             // inputType="number"
             error={parseInt(receiveItem?.quantity) < 1}
             min={0}
-            value={`${receiveItem?.quantity || ''}`}
+            value={`${receiveItem?.quantity || '1'}`}
             onChange={(e: any) =>
               setBucket({
                 ...bucket,

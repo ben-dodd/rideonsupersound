@@ -1,25 +1,25 @@
 // Packages
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react'
 
 // Functions
-import { getGoogleBooksOptionsByItem } from "@/lib/data-functions";
+import { getGoogleBooksOptionsByItem } from '@/lib/data-functions'
 
 // Components
-import Image from "next/image";
+import Image from 'next/image'
 
 // Icons
-import SyncIcon from "@mui/icons-material/Sync";
-import { StockObject } from "@/lib/types";
-import GoogleBooksItem from "./google-books-item";
-import GoogleBooksOption from "./google-books-option";
-import { saveSystemLog } from "@/lib/db-functions";
-import { useAtom } from "jotai";
-import { clerkAtom } from "@/lib/atoms";
+import SyncIcon from '@mui/icons-material/Sync'
+import { StockObject } from '@/lib/types'
+import GoogleBooksItem from './google-books-item'
+import GoogleBooksOption from './google-books-option'
+import { saveSystemLog } from '@/lib/db-functions'
+import { useAtom } from 'jotai'
+import { clerkAtom } from '@/lib/atoms'
 
 interface inventoryProps {
-  item: StockObject;
-  setItem: Function;
-  disabled?: boolean;
+  item: StockObject
+  setItem: Function
+  disabled?: boolean
 }
 
 export default function GoogleBooksPanel({
@@ -28,35 +28,26 @@ export default function GoogleBooksPanel({
   disabled,
 }: inventoryProps) {
   // State
-  const [googleBooksOptions, setGoogleBooksOptions] = useState(null);
+  const [googleBooksOptions, setGoogleBooksOptions] = useState(null)
 
   // Constants
-  const googleBooksItem = item?.googleBooksItem;
-  const [clerk] = useAtom(clerkAtom);
+  const googleBooksItem = item?.googleBooksItem
+  const [clerk] = useAtom(clerkAtom)
 
   // Load
   useEffect(() => {
     if (
-      item?.media === "Literature" &&
+      item?.media === 'Literature' &&
       !Boolean(item?.googleBooksItem) &&
       (Boolean(item?.artist) || Boolean(item?.title))
     )
-      handleGetGoogleBooksOptions();
-  }, [item]);
+      handleGetGoogleBooksOptions()
+  }, [item])
 
   const handleGetGoogleBooksOptions = async () => {
-    const options = await getGoogleBooksOptionsByItem(item);
-    setGoogleBooksOptions(options);
-  };
-
-  const handleGoogleBooksOptionClick = (googleBooksItem) => {
-    saveSystemLog(`Googlebooks Option clicked.`, clerk?.id);
-    setItem({
-      ...item,
-      image_url: googleBooksItem?.volumeInfo?.imageLinks?.thumbnail || null,
-      googleBooksItem,
-    });
-  };
+    const options = await getGoogleBooksOptionsByItem(item)
+    setGoogleBooksOptions(options)
+  }
 
   return (
     <div className="flex flex-col h-inventory">
@@ -71,9 +62,9 @@ export default function GoogleBooksPanel({
           className="icon-text-button hover:bg-blue-100"
           disabled={disabled}
           onClick={() => {
-            saveSystemLog("Googlebooks Sync clicked.", clerk?.id);
-            setItem({ ...item, googleBooksItem: null });
-            handleGetGoogleBooksOptions();
+            saveSystemLog('Googlebooks Sync clicked.', clerk?.id)
+            setItem({ ...item, googleBooksItem: null })
+            handleGetGoogleBooksOptions()
           }}
         >
           <SyncIcon /> Refresh GoogleBooks Search
@@ -88,7 +79,8 @@ export default function GoogleBooksPanel({
               <GoogleBooksOption
                 key={i}
                 opt={opt}
-                handleGoogleBooksOptionClick={handleGoogleBooksOptionClick}
+                item={item}
+                setItem={setItem}
               />
             ))}
           </div>
@@ -98,5 +90,5 @@ export default function GoogleBooksPanel({
       </div>
       <div />
     </div>
-  );
+  )
 }

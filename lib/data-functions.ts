@@ -600,6 +600,38 @@ export async function getGoogleBooksOptionsByItem(item: StockObject) {
   }
 }
 
+export async function getGoogleBooksOptionsByKeyword(keyword: string) {
+  try {
+    const res = await fetch(
+      `https://www.googleapis.com/books/v1/volumes?q=${
+        keyword?.replace(' ', '+') || ''
+      }&key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`
+    )
+    const data = await res.text()
+    if (!res.ok) throw Error()
+    let json = JSON.parse(data)
+    return json?.items || []
+  } catch (e) {
+    throw Error(e.message)
+  }
+}
+
+export async function getGoogleBooksOptionsByBarcode(barcode: string) {
+  try {
+    const res = await fetch(
+      `https://www.googleapis.com/books/v1/volumes?q=${barcode || ''}&key=${
+        process.env.NEXT_PUBLIC_GOOGLE_API_KEY
+      }`
+    )
+    const data = await res.text()
+    if (!res.ok) throw Error()
+    let json = JSON.parse(data)
+    return json?.items || []
+  } catch (e) {
+    throw Error(e.message)
+  }
+}
+
 export function isMoneyFormat(value: string) {
   return !value || /^((\d+\.?|\.(?=\d))?\d{0,2})$/.test(value)
 }

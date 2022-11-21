@@ -1,22 +1,24 @@
-import { useState } from "react";
-import Tabs from "@/components/_components/navigation/tabs";
-import Discogs from "./discogs";
-import Csv from "./csv";
-import Form from "./form";
-import Vendor from "./vendor";
-import Items from "./items";
+import { useState } from 'react'
+import Tabs from '@/components/_components/navigation/tabs'
+import Discogs from './discogs'
+import Csv from './csv'
+import Form from './form'
+import Vendor from './vendor'
+import Items from './items'
+import GoogleBooks from './googlebooks'
 
 export default function SelectItems() {
-  const [mode, setMode] = useState(0);
+  const [mode, setMode] = useState(0)
 
   return (
     <div className="w-full">
       <Tabs
         tabs={[
-          "Add Existing Items",
-          "Add New Items",
-          "CSV Import",
-          "Discogs Scanner",
+          'Add Existing Items',
+          'Add New Items',
+          'CSV Import',
+          'Discogs Scanner',
+          'GoogleBooks Scanner',
         ]}
         value={mode}
         onChange={setMode}
@@ -35,11 +37,14 @@ export default function SelectItems() {
           <div hidden={mode !== 3}>
             <Discogs />
           </div>
+          <div hidden={mode !== 4}>
+            <GoogleBooks />
+          </div>
         </div>
         <div className="w-2/5">
           <Items />
         </div>
       </div>
     </div>
-  );
+  )
 }

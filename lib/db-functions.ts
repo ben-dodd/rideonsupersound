@@ -1620,7 +1620,7 @@ export async function receiveStock(
         saveStockMovementToDatabase(
           {
             item_id: receiveItem?.item?.id,
-            quantity: receiveItem?.quantity,
+            quantity: receiveItem?.quantity || 1,
           },
           clerk,
           registerID,
@@ -1629,11 +1629,15 @@ export async function receiveStock(
         )
         receivedStock.push({
           item: receiveItem?.item,
-          quantity: receiveItem?.quantity,
+          quantity: receiveItem?.quantity || 1,
         })
       } else {
         const newStockID = await saveStockToDatabase(
-          { ...receiveItem?.item, vendor_id: basket?.vendor_id },
+          {
+            ...receiveItem?.item,
+            is_new: receiveItem?.item?.is_new || 1,
+            vendor_id: basket?.vendor_id,
+          },
           clerk
         )
         saveStockPriceToDatabase(
@@ -1646,7 +1650,7 @@ export async function receiveStock(
         saveStockMovementToDatabase(
           {
             item_id: newStockID,
-            quantity: receiveItem?.quantity,
+            quantity: receiveItem?.quantity || 1,
           },
           clerk,
           registerID,
@@ -1656,11 +1660,12 @@ export async function receiveStock(
         receivedStock.push({
           item: {
             ...receiveItem?.item,
+            is_new: receiveItem?.item?.is_new || 1,
             vendor_id: basket?.vendor_id,
             total_sell: parseFloat(receiveItem?.total_sell) * 100,
             id: newStockID,
           },
-          quantity: receiveItem?.quantity,
+          quantity: receiveItem?.quantity || 1,
         })
       }
     })

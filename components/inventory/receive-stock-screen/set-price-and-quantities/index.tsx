@@ -1,9 +1,10 @@
-import { receiveStockAtom } from "@/lib/atoms";
-import { useAtom } from "jotai";
-import ListItem from "./list-item";
+import { receiveStockAtom } from '@/lib/atoms'
+import { useAtom } from 'jotai'
+import ListItem from './list-item'
 
 export default function SetPriceAndQuantities() {
-  const [bucket, setBucket] = useAtom(receiveStockAtom);
+  const [bucket, setBucket] = useAtom(receiveStockAtom)
+  console.log(bucket)
   return (
     <div>
       <div className="help-text">
@@ -19,5 +20,5 @@ export default function SetPriceAndQuantities() {
         />
       ))}
     </div>
-  );
+  )
 }
