@@ -22,4 +22,4 @@ const apiRoute = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 }
 
-export default requireScope('clerk', apiRoute)
+export default requireScope('read:clerk', apiRoute)
