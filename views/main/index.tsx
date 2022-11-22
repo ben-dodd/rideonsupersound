@@ -10,23 +10,18 @@ import InventoryPage from '../inventory'
 import JobsPage from '../job'
 import LaybyPage from '../layby'
 import LogPage from '../log'
-import Menu from '../menu'
+import Menu from '../../components/menu'
 import Nav from '../nav'
 import PaymentsPage from '../payment'
 import SalesPage from '../sale'
 import SellPage from '../sell'
 import StocktakePage from '../stocktake'
 import VendorPage from '../vendor'
-import SnackAlert from './alert'
+import SnackAlert from '../../components/alert'
 
 export default function MainPage() {
   const [alert] = useAtom(alertAtom)
   const [page] = useAtom(pageAtom)
-
-  // Load necessary data
-  // useInventory();
-  // BUG fix bug where inventory doesn't load. make all pages load until all data there, e.g. in tables
-
   return (
     <>
       <Head>

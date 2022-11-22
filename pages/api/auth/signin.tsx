@@ -1,9 +1,10 @@
 import Image from 'next/image'
 import Head from 'next/head'
-
-import SignInButton from 'features/sign-in/components/sign-in-button'
+import { useUser } from '@auth0/nextjs-auth0'
+import Link from 'next/link'
 
 export default function SignIn() {
+  const { user } = useUser()
   return (
     <>
       <Head>
@@ -18,7 +19,19 @@ export default function SignIn() {
             width={200}
           />
         </div>
-        <SignInButton />
+        <Link
+          className="mx-auto"
+          href={`/api/auth/${user ? 'logout' : 'login'}`}
+        >
+          <button className="bg-black hover:bg-gray-900 text-white mx-auto rounded px-8 py-2 mt-4 mb-8 transform">
+            {user ? 'Try Again' : 'Sign In'}
+          </button>
+        </Link>
+        {user && (
+          <div className="text-center text-sm">
+            {`The email ${user.email} is not authenticated. Please contact the system admin.`}
+          </div>
+        )}
       </div>
     </>
   )

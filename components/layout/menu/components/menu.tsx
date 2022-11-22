@@ -117,7 +117,7 @@ export default function Menu({ badges }) {
     },
     {
       type: 'link',
-      page: null,
+      page: '/api/auth/logout',
       onClick: () => setClerk(null),
       text: 'SWITCH CLERK',
       class: 'bg-col2-light hover:bg-col2',

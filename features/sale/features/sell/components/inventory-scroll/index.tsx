@@ -12,7 +12,7 @@ import MiscItem from './misc-item'
 export default function InventoryScroll() {
   const maxItemsInList = 50
   const { inventory, isInventoryLoading } = useInventory()
-  const weather = useWeather()
+  // const weather = useWeather()
   const [search] = useAtom(sellSearchBarAtom)
   const [geolocation, setGeolocation] = useState(null)
 
