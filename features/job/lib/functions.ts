@@ -1,5 +1,5 @@
-import { updateItemInDatabase } from '@lib/database/update'
-import { TaskObject } from '@lib/types'
+import { updateItemInDatabase } from 'lib/database/update'
+import { TaskObject } from 'lib/types'
 
 export async function completeTask(task: TaskObject) {
   const { date_completed, completed_by_clerk_id, id } = task

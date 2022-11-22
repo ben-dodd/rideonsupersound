@@ -1,5 +1,5 @@
-import { StockMovementTypes } from '@lib/types'
-import { eraseWhiteSpace } from '@lib/utils'
+import { StockMovementTypes } from 'lib/types'
+import { eraseWhiteSpace } from 'lib/utils'
 import dayjs from 'dayjs'
 import { getReadQuery } from './query'
 import {

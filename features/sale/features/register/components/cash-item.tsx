@@ -1,6 +1,6 @@
 // DB
-import { useClerks } from '@lib/database/read'
-import { ClerkObject, SaleTransactionObject } from '@lib/types'
+import { useClerks } from 'lib/database/read'
+import { ClerkObject, SaleTransactionObject } from 'lib/types'
 import dayjs from 'dayjs'
 
 // Types

@@ -1,4 +1,4 @@
-import { query } from '@lib/database/db'
+import { query } from 'lib/database/db'
 import { NextApiHandler } from 'next'
 
 const handler: NextApiHandler = async (req, res) => {

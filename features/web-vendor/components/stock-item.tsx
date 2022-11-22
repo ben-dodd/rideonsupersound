@@ -1,7 +1,7 @@
 import {
   getImageSrc,
   getItemSku,
-} from '@features/inventory/features/display-inventory/lib/functions'
+} from 'features/inventory/features/display-inventory/lib/functions'
 
 export default function StockItem({ item }) {
   return (

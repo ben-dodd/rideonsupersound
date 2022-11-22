@@ -2,8 +2,8 @@ import {
   salesViewAtom,
   salesViewClerksAtom,
   salesViewRangeAtom,
-} from '@lib/atoms'
-import { useClerks } from '@lib/database/read'
+} from 'lib/atoms'
+import { useClerks } from 'lib/database/read'
 import {
   CalendarViewDay,
   CalendarViewMonth,

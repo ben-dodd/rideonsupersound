@@ -1,5 +1,5 @@
 // Components
-import TextField from '@components/inputs/text-field'
+import TextField from 'components/inputs/text-field'
 
 export default function CashMap({ till, setTill }) {
   // Functions

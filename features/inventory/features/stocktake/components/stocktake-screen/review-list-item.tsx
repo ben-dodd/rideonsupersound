@@ -1,7 +1,7 @@
 // Packages
 import { useAtom } from 'jotai'
 
-import { loadedItemIdAtom } from '@lib/atoms'
+import { loadedItemIdAtom } from 'lib/atoms'
 
 // Components
 import Select from 'react-select'
@@ -11,15 +11,15 @@ import {
   getImageSrc,
   getItemDisplayName,
   getItemSku,
-} from '@features/inventory/features/display-inventory/lib/functions'
-import { useStocktakeItemsByStocktake, useVendors } from '@lib/database/read'
-import { updateStocktakeItemInDatabase } from '@lib/database/update'
+} from 'features/inventory/features/display-inventory/lib/functions'
+import { useStocktakeItemsByStocktake, useVendors } from 'lib/database/read'
+import { updateStocktakeItemInDatabase } from 'lib/database/update'
 import {
   StockObject,
   StocktakeItemObject,
   StocktakeObject,
   StocktakeReviewDecisions,
-} from '@lib/types'
+} from 'lib/types'
 import CheckIcon from '@mui/icons-material/CheckCircleOutline'
 import EditIcon from '@mui/icons-material/Edit'
 

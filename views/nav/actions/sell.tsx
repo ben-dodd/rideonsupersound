@@ -1,5 +1,5 @@
-import { saveSystemLog } from '@features/log/lib/functions'
-import { clerkAtom, viewAtom } from '@lib/atoms'
+import { saveSystemLog } from 'features/log/lib/functions'
+import { clerkAtom, viewAtom } from 'lib/atoms'
 import AddCashIcon from '@mui/icons-material/AttachMoney'
 import TakeCashIcon from '@mui/icons-material/MoneyOff'
 import CloseRegisterIcon from '@mui/icons-material/VpnKey'

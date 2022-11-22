@@ -8,7 +8,7 @@ import {
   loadedStocktakeIdAtom,
   loadedStocktakeTemplateIdAtom,
   viewAtom,
-} from '@lib/atoms'
+} from 'lib/atoms'
 import {
   useAllSelects,
   useInventory,
@@ -16,23 +16,23 @@ import {
   useStocktakesByTemplate,
   useStocktakeTemplates,
   useVendors,
-} from '@lib/database/read'
+} from 'lib/database/read'
 import {
   ModalButton,
   StockObject,
   StocktakeObject,
   StocktakeStatuses,
   StocktakeTemplateObject,
-} from '@lib/types'
+} from 'lib/types'
 
 // Components
-import ScreenContainer from '@components/container/screen'
-import TextField from '@components/inputs/text-field'
+import ScreenContainer from 'components/container/screen'
+import TextField from 'components/inputs/text-field'
 import FilterBox from './filter-box'
 import StocktakeListItem from './stocktake-list-item'
 
-import { createStocktakeInDatabase } from '@lib/database/create'
-import { updateStocktakeTemplateInDatabase } from '@lib/database/update'
+import { createStocktakeInDatabase } from 'lib/database/create'
+import { updateStocktakeTemplateInDatabase } from 'lib/database/update'
 import AddIcon from '@mui/icons-material/Add'
 import dayjs from 'dayjs'
 import { writeStocktakeFilterDescription } from '../../lib/functions'

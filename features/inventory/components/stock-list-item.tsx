@@ -1,13 +1,13 @@
-import { getItemQuantity } from '@features/sale/features/sell/lib/functions'
+import { getItemQuantity } from 'features/sale/features/sell/lib/functions'
 import {
   alertAtom,
   cartAtom,
   clerkAtom,
   confirmModalAtom,
   loadedItemIdAtom,
-} from '@lib/atoms'
-import { useVendors } from '@lib/database/read'
-import { StockObject, VendorObject } from '@lib/types'
+} from 'lib/atoms'
+import { useVendors } from 'lib/database/read'
+import { StockObject, VendorObject } from 'lib/types'
 import AddIcon from '@mui/icons-material/AddCircleOutline'
 import InfoIcon from '@mui/icons-material/Info'
 import Tooltip from '@mui/material/Tooltip'

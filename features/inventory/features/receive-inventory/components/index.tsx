@@ -1,14 +1,14 @@
-import ScreenContainer from '@components/container/screen'
-import Stepper from '@components/navigation/stepper'
-import { saveSystemLog } from '@features/log/lib/functions'
+import ScreenContainer from 'components/container/screen'
+import Stepper from 'components/navigation/stepper'
+import { saveSystemLog } from 'features/log/lib/functions'
 import {
   clerkAtom,
   confirmModalAtom,
   receiveStockAtom,
   viewAtom,
-} from '@lib/atoms'
-import { useInventory, useRegisterID } from '@lib/database/read'
-import { ModalButton } from '@lib/types'
+} from 'lib/atoms'
+import { useInventory, useRegisterID } from 'lib/database/read'
+import { ModalButton } from 'lib/types'
 import { useAtom } from 'jotai'
 import { useState } from 'react'
 import { receiveStock } from '../lib/functions'

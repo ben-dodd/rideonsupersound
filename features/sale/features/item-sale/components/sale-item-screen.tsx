@@ -11,7 +11,7 @@ import {
   loadedSaleIdAtom,
   pageAtom,
   viewAtom,
-} from '@lib/atoms'
+} from 'lib/atoms'
 import {
   useCustomers,
   useGiftCards,
@@ -21,15 +21,15 @@ import {
   useSaleItemsForSale,
   useSales,
   useSaleTransactionsForSale,
-} from '@lib/database/read'
-import { ModalButton, SaleItemObject, SaleObject } from '@lib/types'
+} from 'lib/database/read'
+import { ModalButton, SaleItemObject, SaleObject } from 'lib/types'
 
 // Components
-import ScreenContainer from '@components/container/screen'
+import ScreenContainer from 'components/container/screen'
 import SaleDetails from './sale-details'
 import SaleSummary from './sale-summary'
 
-import { saveSystemLog } from '@features/log/lib/functions'
+import { saveSystemLog } from 'features/log/lib/functions'
 import DeleteIcon from '@mui/icons-material/Delete'
 import {
   getSaleVars,

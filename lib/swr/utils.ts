@@ -7,13 +7,15 @@ const verifyJwt = NextJwtVerifier({
   audience: process.env.AUTH0_AUDIENCE,
 })
 
-export const requireScope = (scope: string, apiRoute: NextApiHandler) =>
-  verifyJwt(async (req: NextAuthenticatedApiRequest, res) => {
+export const requireScope = (scope: string, apiRoute: NextApiHandler) => {
+  console.log('calling require scope')
+  return verifyJwt(async (req: NextAuthenticatedApiRequest, res) => {
     const { claims } = req.identityContext
+    console.log(claims)
     if (
       !claims ||
-      !claims.scope ||
-      (claims.scope as string).indexOf(scope) === -1
+      !claims.permissions ||
+      (claims.permissions as string).indexOf(scope) === -1
     ) {
       return res.status(403).json({
         error: 'access_denied',
@@ -22,3 +24,4 @@ export const requireScope = (scope: string, apiRoute: NextApiHandler) =>
     }
     return apiRoute(req, res) as void
   })
+}

@@ -3,9 +3,9 @@ import {
   getImageSrc,
   getItemDisplayName,
   getItemSku,
-} from '@features/inventory/features/display-inventory/lib/functions'
-import { useInventory } from '@lib/database/read'
-import { SaleItemObject, StockObject } from '@lib/types'
+} from 'features/inventory/features/display-inventory/lib/functions'
+import { useInventory } from 'lib/database/read'
+import { SaleItemObject, StockObject } from 'lib/types'
 import { MouseEventHandler } from 'react'
 import { writeCartItemPriceBreakdown } from '../../sell/lib/functions'
 

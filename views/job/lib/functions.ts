@@ -1,4 +1,4 @@
-import { TaskObject } from '@lib/types'
+import { TaskObject } from 'lib/types'
 import dayjs from 'dayjs'
 
 export function sortJobs(jobA: TaskObject, jobB: TaskObject) {

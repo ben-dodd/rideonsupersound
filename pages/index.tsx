@@ -1,5 +1,5 @@
-import SignOutButton from '@features/sign-in/components/sign-out-button'
-import LandingPage from '@views/main/landing-page'
+import SignOutButton from 'features/sign-in/components/sign-out-button'
+import LandingPage from 'views/main/landing-page'
 import SignIn from './api/auth/signin'
 import { useUser } from '@auth0/nextjs-auth0'
 

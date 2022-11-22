@@ -10,22 +10,22 @@ import {
   loadedStocktakeIdAtom,
   loadedStocktakeTemplateIdAtom,
   viewAtom,
-} from '@lib/atoms'
+} from 'lib/atoms'
 import {
   useInventory,
   useStocktakeItemsByStocktake,
   useStocktakesByTemplate,
   useStocktakeTemplates,
-} from '@lib/database/read'
-import { ModalButton, StockObject } from '@lib/types'
+} from 'lib/database/read'
+import { ModalButton, StockObject } from 'lib/types'
 
-import ScreenContainer from '@components/container/screen'
-import InventoryItemScreen from '@features/inventory/features/item-inventory/components/inventory-item-screen'
-import { createStocktakeItemInDatabase } from '@lib/database/create'
+import ScreenContainer from 'components/container/screen'
+import InventoryItemScreen from 'features/inventory/features/item-inventory/components/inventory-item-screen'
+import { createStocktakeItemInDatabase } from 'lib/database/create'
 import {
   updateStocktakeInDatabase,
   updateStocktakeItemInDatabase,
-} from '@lib/database/update'
+} from 'lib/database/update'
 import { processStocktake } from '../../lib/functions'
 import CountItems from './count-items'
 import ReviewItems from './review-items'

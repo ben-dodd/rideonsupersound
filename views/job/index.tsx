@@ -1,9 +1,9 @@
 import { useAtom } from 'jotai'
 import { useState } from 'react'
 
-import { pageAtom } from '@lib/atoms'
+import { pageAtom } from 'lib/atoms'
 
-import Tabs from '@components/navigation/tabs'
+import Tabs from 'components/navigation/tabs'
 import TaskDialog from '../../features/job/components/job-dialog'
 import JobView from './job-view'
 import RestockTaskView from './restock-task-view'

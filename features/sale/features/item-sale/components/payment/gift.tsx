@@ -5,28 +5,28 @@ import { useAtom } from 'jotai'
 import { useMemo, useState } from 'react'
 
 // DB
-import { alertAtom, cartAtom, clerkAtom, viewAtom } from '@lib/atoms'
+import { alertAtom, cartAtom, clerkAtom, viewAtom } from 'lib/atoms'
 import {
   useCustomers,
   useGiftCards,
   useInventory,
   useLogs,
   useRegisterID,
-} from '@lib/database/read'
+} from 'lib/database/read'
 import {
   GiftCardObject,
   ModalButton,
   PaymentMethodTypes,
   SaleTransactionObject,
-} from '@lib/types'
+} from 'lib/types'
 
 import SyncIcon from '@mui/icons-material/Sync'
 
 // Components
-import TextField from '@components/inputs/text-field'
-import Modal from '@components/modal'
-import { logSalePaymentGift } from '@features/log/lib/functions'
-import { makeGiftCardCode } from '@features/sale/features/sell/lib/functions'
+import TextField from 'components/inputs/text-field'
+import Modal from 'components/modal'
+import { logSalePaymentGift } from 'features/log/lib/functions'
+import { makeGiftCardCode } from 'features/sale/features/sell/lib/functions'
 import { getSaleVars } from '../../lib/functions'
 
 export default function Gift() {

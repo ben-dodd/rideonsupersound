@@ -9,27 +9,27 @@ import {
   loadedStocktakeIdAtom,
   loadedStocktakeTemplateIdAtom,
   viewAtom,
-} from '@lib/atoms'
+} from 'lib/atoms'
 import {
   useInventory,
   useLogs,
   useRegisterID,
   useStocktakeItemsByStocktake,
   useStocktakesByTemplate,
-} from '@lib/database/read'
-import { StockObject, StocktakeItemObject } from '@lib/types'
+} from 'lib/database/read'
+import { StockObject, StocktakeItemObject } from 'lib/types'
 
 // Components
-import TextField from '@components/inputs/text-field'
+import TextField from 'components/inputs/text-field'
 import Select from 'react-select'
 
 // Icons
-import { getItemSkuDisplayName } from '@features/inventory/features/display-inventory/lib/functions'
-import { createStocktakeItemInDatabase } from '@lib/database/create'
+import { getItemSkuDisplayName } from 'features/inventory/features/display-inventory/lib/functions'
+import { createStocktakeItemInDatabase } from 'lib/database/create'
 import {
   updateStocktakeInDatabase,
   updateStocktakeItemInDatabase,
-} from '@lib/database/update'
+} from 'lib/database/update'
 import SearchIcon from '@mui/icons-material/Search'
 import dayjs from 'dayjs'
 import CountedListItem from './counted-list-item'

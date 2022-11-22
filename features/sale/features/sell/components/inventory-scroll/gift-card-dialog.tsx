@@ -9,17 +9,17 @@ import {
   clerkAtom,
   sellSearchBarAtom,
   viewAtom,
-} from '@lib/atoms'
-import { useGiftCards, useInventory, useLogs } from '@lib/database/read'
+} from 'lib/atoms'
+import { useGiftCards, useInventory, useLogs } from 'lib/database/read'
 
 // Components
-import TextField from '@components/inputs/text-field'
-import Modal from '@components/modal'
+import TextField from 'components/inputs/text-field'
+import Modal from 'components/modal'
 
-import { logNewGiftCardCreated } from '@features/log/lib/functions'
-import { getGeolocation, useWeather } from '@lib/api'
-import { createStockItemInDatabase } from '@lib/database/create'
-import { ModalButton } from '@lib/types'
+import { logNewGiftCardCreated } from 'features/log/lib/functions'
+import { getGeolocation, useWeather } from 'lib/api'
+import { createStockItemInDatabase } from 'lib/database/create'
+import { ModalButton } from 'lib/types'
 import SyncIcon from '@mui/icons-material/Sync'
 import dayjs from 'dayjs'
 import { makeGiftCardCode } from '../../lib/functions'

@@ -1,4 +1,4 @@
-import { get } from '@lib/api'
+import { get } from 'lib/api'
 
 export async function getGoogleBooksOptionsByItem({ artist, title }: any) {
   return get(

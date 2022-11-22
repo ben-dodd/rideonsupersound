@@ -3,24 +3,24 @@ import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 
 // DB
-import ScreenContainer from '@components/container/screen'
-import Tabs from '@components/navigation/tabs'
-import { clerkAtom, confirmModalAtom, loadedItemIdAtom } from '@lib/atoms'
+import ScreenContainer from 'components/container/screen'
+import Tabs from 'components/navigation/tabs'
+import { clerkAtom, confirmModalAtom, loadedItemIdAtom } from 'lib/atoms'
 import {
   useInventory,
   useLogs,
   useSaleItems,
   useStockItem,
-} from '@lib/database/read'
-import { ModalButton, StockObject } from '@lib/types'
+} from 'lib/database/read'
+import { ModalButton, StockObject } from 'lib/types'
 
-import DiscogsPanel from '@features/inventory/features/api-discogs/components'
-import GoogleBooksPanel from '@features/inventory/features/api-google-books/components'
-import InventoryItemForm from '@features/inventory/features/item-inventory/components/inventory-item-form'
-import StockDetails from '@features/inventory/features/item-inventory/components/stock-details'
-import { deleteInventoryItemFromDatabase } from '@lib/database/delete'
-import { updateStockItemInDatabase } from '@lib/database/update'
-import { parseJSON } from '@lib/utils'
+import DiscogsPanel from 'features/inventory/features/api-discogs/components'
+import GoogleBooksPanel from 'features/inventory/features/api-google-books/components'
+import InventoryItemForm from 'features/inventory/features/item-inventory/components/inventory-item-form'
+import StockDetails from 'features/inventory/features/item-inventory/components/stock-details'
+import { deleteInventoryItemFromDatabase } from 'lib/database/delete'
+import { updateStockItemInDatabase } from 'lib/database/update'
+import { parseJSON } from 'lib/utils'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { getItemDisplayName } from '../../display-inventory/lib/functions'
 import PriceDetails from './price-details'

@@ -1,8 +1,8 @@
 // DB
-import { getItemDisplayName } from '@features/inventory/features/display-inventory/lib/functions'
-import { getCartItemPrice } from '@features/sale/features/sell/lib/functions'
-import { useInventory } from '@lib/database/read'
-import { StockObject, VendorSaleItemObject } from '@lib/types'
+import { getItemDisplayName } from 'features/inventory/features/display-inventory/lib/functions'
+import { getCartItemPrice } from 'features/sale/features/sell/lib/functions'
+import { useInventory } from 'lib/database/read'
+import { StockObject, VendorSaleItemObject } from 'lib/types'
 
 // Components
 import dayjs from 'dayjs'

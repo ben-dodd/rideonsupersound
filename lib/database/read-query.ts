@@ -1,4 +1,4 @@
-import { StockMovementTypes } from '@lib/types'
+import { StockMovementTypes } from 'lib/types'
 
 /*
  *  ACCOUNT/CLERK QUERIES

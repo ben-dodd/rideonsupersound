@@ -1,4 +1,4 @@
-import { VendorPaymentTypes } from '@lib/types'
+import { VendorPaymentTypes } from 'lib/types'
 import dayjs from 'dayjs'
 
 export default function Payments({ payments, storeCredits }) {

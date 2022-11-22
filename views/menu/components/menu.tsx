@@ -1,7 +1,7 @@
 // Packages
-import { saveSystemLog } from '@features/log/lib/functions'
-import { clerkAtom, pageAtom, viewAtom } from '@lib/atoms'
-import { bg } from '@lib/types'
+import { saveSystemLog } from 'features/log/lib/functions'
+import { clerkAtom, pageAtom, viewAtom } from 'lib/atoms'
+import { bg } from 'lib/types'
 import InventoryIcon from '@mui/icons-material/Category'
 import LaybyIcon from '@mui/icons-material/DryCleaning'
 import LogoutIcon from '@mui/icons-material/ExitToApp'

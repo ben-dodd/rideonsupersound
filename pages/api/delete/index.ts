@@ -1,5 +1,5 @@
-import { query } from '@lib/database/db'
-import { getDeleteQuery } from '@lib/database/query'
+import { query } from 'lib/database/db'
+import { getDeleteQuery } from 'lib/database/query'
 import { NextApiHandler } from 'next'
 
 const handler: NextApiHandler = async (req, res) => {

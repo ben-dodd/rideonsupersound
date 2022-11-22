@@ -1,19 +1,19 @@
-import TableContainer from '@components/container/table'
-import Table from '@components/table'
+import TableContainer from 'components/container/table'
+import Table from 'components/table'
 import {
   getItemById,
   getItemDisplayName,
   getItemSkuDisplayName,
-} from '@features/inventory/features/display-inventory/lib/functions'
-import { saveSystemLog } from '@features/log/lib/functions'
+} from 'features/inventory/features/display-inventory/lib/functions'
+import { saveSystemLog } from 'features/log/lib/functions'
 import {
   clerkAtom,
   loadedCustomerObjectAtom,
   loadedHoldIdAtom,
   viewAtom,
-} from '@lib/atoms'
-import { useCustomers, useHolds, useInventory } from '@lib/database/read'
-import { CustomerObject, HoldObject, StockObject } from '@lib/types'
+} from 'lib/atoms'
+import { useCustomers, useHolds, useInventory } from 'lib/database/read'
+import { CustomerObject, HoldObject, StockObject } from 'lib/types'
 import dayjs from 'dayjs'
 import { useAtom } from 'jotai'
 import { useMemo } from 'react'

@@ -1,9 +1,9 @@
-import CloseButton from '@components/button/close-button'
-import ModalBase from '@components/modal/base'
+import CloseButton from 'components/button/close-button'
+import ModalBase from 'components/modal/base'
 import CircularProgress from '@mui/material/CircularProgress'
 import { CSVLink } from 'react-csv'
 
-import { ModalButton } from '@lib/types'
+import { ModalButton } from 'lib/types'
 import { MouseEventHandler } from 'react'
 
 interface ModalProps {

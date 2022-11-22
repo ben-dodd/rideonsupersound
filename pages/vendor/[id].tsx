@@ -1,10 +1,10 @@
-import { sumPrices } from '@features/sale/features/item-sale/lib/functions'
-import { filterInventory } from '@features/sale/features/sell/lib/functions'
-import Payments from '@features/web-vendor/components/payments'
-import Sales from '@features/web-vendor/components/sales'
-import StockItem from '@features/web-vendor/components/stock-item'
-import Tabs from '@features/web-vendor/components/tabs'
-import { StockObject } from '@lib/types'
+import { sumPrices } from 'features/sale/features/item-sale/lib/functions'
+import { filterInventory } from 'features/sale/features/sell/lib/functions'
+import Payments from 'features/web-vendor/components/payments'
+import Sales from 'features/web-vendor/components/sales'
+import StockItem from 'features/web-vendor/components/stock-item'
+import Tabs from 'features/web-vendor/components/tabs'
+import { StockObject } from 'lib/types'
 import {
   useVendorByUid,
   useVendorPaymentsByUid,
@@ -13,7 +13,7 @@ import {
   useVendorStockMovementByUid,
   useVendorStockPriceByUid,
   useVendorStoreCreditsByUid,
-} from '@lib/vendor-swr-hooks'
+} from 'lib/vendor-swr-hooks'
 import dayjs from 'dayjs'
 import Head from 'next/head'
 import { useRouter } from 'next/router'

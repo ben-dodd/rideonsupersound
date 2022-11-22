@@ -1,5 +1,6 @@
 import connection from './conn'
 
 export function getClerk(sub, db = connection) {
-  return db('clerk').where({ sub })
+  console.log('calling get clerk')
+  return db('clerk').where({ sub }).first()
 }

@@ -1,16 +1,16 @@
 // DB
-import { useLogs, useVendors } from '@lib/database/read'
-import { VendorObject } from '@lib/types'
+import { useLogs, useVendors } from 'lib/database/read'
+import { VendorObject } from 'lib/types'
 
 // Functions
 
 // Components
-import CreateableSelect from '@components/inputs/createable-select'
+import CreateableSelect from 'components/inputs/createable-select'
 
 // Icons
-import { logCreateVendor } from '@features/log/lib/functions'
-import { clerkAtom, receiveStockAtom } from '@lib/atoms'
-import { createVendorInDatabase } from '@lib/database/create'
+import { logCreateVendor } from 'features/log/lib/functions'
+import { clerkAtom, receiveStockAtom } from 'lib/atoms'
+import { createVendorInDatabase } from 'lib/database/create'
 import { useAtom } from 'jotai'
 
 export default function SelectVendor() {

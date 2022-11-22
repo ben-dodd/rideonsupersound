@@ -1,4 +1,4 @@
-import { eraseWhiteSpace } from '@lib/utils'
+import { eraseWhiteSpace } from 'lib/utils'
 import { StockMovementTypes } from '../types'
 import {
   createJoinsQuery,

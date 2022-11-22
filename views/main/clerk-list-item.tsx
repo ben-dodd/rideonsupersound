@@ -1,6 +1,6 @@
-import { saveLog } from '@features/log/lib/functions'
-import { clerkAtom } from '@lib/atoms'
-import { bg, bgLight } from '@lib/types'
+import { saveLog } from 'features/log/lib/functions'
+import { clerkAtom } from 'lib/atoms'
+import { bg, bgLight } from 'lib/types'
 import { useAtom } from 'jotai'
 
 export default function ClerkListItem(clerk) {

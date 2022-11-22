@@ -1,7 +1,7 @@
 import Head from 'next/head'
 
-import SignOutButton from '@features/sign-in/components/sign-out-button'
-import { ClerkObject } from '@lib/types'
+import SignOutButton from 'features/sign-in/components/sign-out-button'
+import { ClerkObject } from 'lib/types'
 import ClerkListItem from './clerk-list-item'
 
 export default function SplashPage({ clerks }) {

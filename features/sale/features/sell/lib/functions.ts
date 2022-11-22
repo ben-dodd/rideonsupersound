@@ -1,10 +1,10 @@
 import {
   getItemDisplayName,
   getItemSku,
-} from '@features/inventory/features/display-inventory/lib/functions'
-import { saveLog } from '@features/log/lib/functions'
-import { GiftCardObject, SaleItemObject, StockObject } from '@lib/types'
-import { priceCentsString } from '@lib/utils'
+} from 'features/inventory/features/display-inventory/lib/functions'
+import { saveLog } from 'features/log/lib/functions'
+import { GiftCardObject, SaleItemObject, StockObject } from 'lib/types'
+import { priceCentsString } from 'lib/utils'
 import dayjs from 'dayjs'
 
 export function writeCartItemPriceBreakdown(cartItem: any, item?: StockObject) {

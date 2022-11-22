@@ -1,4 +1,4 @@
-import { andList } from '@lib/utils'
+import { andList } from 'lib/utils'
 import dayjs from 'dayjs'
 import { GoogleBooksItem } from '../lib/types'
 

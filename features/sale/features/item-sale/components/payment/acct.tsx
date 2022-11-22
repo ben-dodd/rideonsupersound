@@ -5,26 +5,26 @@ import { useAtom } from 'jotai'
 import { useMemo, useState } from 'react'
 
 // DB
-import { alertAtom, cartAtom, clerkAtom, viewAtom } from '@lib/atoms'
+import { alertAtom, cartAtom, clerkAtom, viewAtom } from 'lib/atoms'
 import {
   useInventory,
   useRegisterID,
   useSalesJoined,
   useVendorPayments,
   useVendors,
-} from '@lib/database/read'
+} from 'lib/database/read'
 import {
   ModalButton,
   PaymentMethodTypes,
   SaleTransactionObject,
   VendorObject,
-} from '@lib/types'
+} from 'lib/types'
 
 // Components
-import TextField from '@components/inputs/text-field'
-import Modal from '@components/modal'
-import { logSalePaymentAcct } from '@features/log/lib/functions'
-import { getVendorDetails } from '@features/vendor/features/item-vendor/lib/functions'
+import TextField from 'components/inputs/text-field'
+import Modal from 'components/modal'
+import { logSalePaymentAcct } from 'features/log/lib/functions'
+import { getVendorDetails } from 'features/vendor/features/item-vendor/lib/functions'
 import Select from 'react-select'
 import { getSaleVars } from '../../lib/functions'
 

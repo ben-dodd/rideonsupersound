@@ -1,5 +1,5 @@
 // DB
-import { ModalButton } from '@lib/types'
+import { ModalButton } from 'lib/types'
 import ArrowLeft from '@mui/icons-material/ArrowLeft'
 import CircularProgress from '@mui/material/CircularProgress'
 import { MouseEventHandler } from 'react'

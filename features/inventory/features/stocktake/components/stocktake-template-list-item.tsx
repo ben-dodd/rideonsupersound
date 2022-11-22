@@ -1,8 +1,8 @@
 import { useAtom } from 'jotai'
 
 // DB
-import { loadedStocktakeTemplateIdAtom, viewAtom } from '@lib/atoms'
-import { StocktakeStatuses, StocktakeTemplateObject } from '@lib/types'
+import { loadedStocktakeTemplateIdAtom, viewAtom } from 'lib/atoms'
+import { StocktakeStatuses, StocktakeTemplateObject } from 'lib/types'
 import dayjs from 'dayjs'
 
 type ListItemProps = {

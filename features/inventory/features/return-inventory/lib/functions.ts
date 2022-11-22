@@ -1,11 +1,11 @@
-import { logReturnStock } from '@features/log/lib/functions'
-import { createStockMovementInDatabase } from '@lib/database/create'
+import { logReturnStock } from 'features/log/lib/functions'
+import { createStockMovementInDatabase } from 'lib/database/create'
 import {
   ClerkObject,
   LogObject,
   StockMovementTypes,
   StockObject,
-} from '@lib/types'
+} from 'lib/types'
 
 export function returnStock(
   vendorId: number,

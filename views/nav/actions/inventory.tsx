@@ -1,4 +1,4 @@
-import { compactModeAtom, tableModeAtom } from '@lib/atoms'
+import { compactModeAtom, tableModeAtom } from 'lib/atoms'
 import { useAtom } from 'jotai'
 
 import TableIcon from '@mui/icons-material/TableView'

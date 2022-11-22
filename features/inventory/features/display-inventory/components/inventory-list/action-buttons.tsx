@@ -1,7 +1,7 @@
-import { clerkAtom, viewAtom } from '@lib/atoms'
+import { clerkAtom, viewAtom } from 'lib/atoms'
 import { useAtom } from 'jotai'
 
-import { saveSystemLog } from '@features/log/lib/functions'
+import { saveSystemLog } from 'features/log/lib/functions'
 import ReturnIcon from '@mui/icons-material/AssignmentReturn'
 import ReceiveIcon from '@mui/icons-material/AssignmentReturned'
 import PrintIcon from '@mui/icons-material/Print'

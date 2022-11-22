@@ -3,12 +3,12 @@ import { useAtom } from 'jotai'
 import { useMemo } from 'react'
 
 // DB
-import { loadedSaleIdAtom, pageAtom } from '@lib/atoms'
-import { useClerks, useSales } from '@lib/database/read'
-import { ClerkObject, SaleObject, SaleStateTypes } from '@lib/types'
+import { loadedSaleIdAtom, pageAtom } from 'lib/atoms'
+import { useClerks, useSales } from 'lib/database/read'
+import { ClerkObject, SaleObject, SaleStateTypes } from 'lib/types'
 
 // Components
-import TableContainer from '@components/container/table'
+import TableContainer from 'components/container/table'
 import dayjs from 'dayjs'
 import List from './list'
 

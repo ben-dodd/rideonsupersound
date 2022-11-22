@@ -1,7 +1,21 @@
 {
-  "extends": "next/core-web-vitals",
+  "plugins": ["import"],
+  "extends": [
+    "next/core-web-vitals",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript"
+  ],
   "rules": {
     // Other rules
     "@next/next/no-img-element": "off"
+  },
+  "settings": {
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"]
+    },
+    "import/resolver": {
+      "typescript": {}
+    }
   }
 }

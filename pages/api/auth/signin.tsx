@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import Head from 'next/head'
 
-import SignInButton from '@features/sign-in/components/sign-in-button'
+import SignInButton from 'features/sign-in/components/sign-in-button'
 
 export default function SignIn() {
   return (

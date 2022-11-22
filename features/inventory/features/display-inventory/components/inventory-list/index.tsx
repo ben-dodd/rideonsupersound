@@ -1,12 +1,12 @@
 // Packages
 
 // DB
-import { useInventory, useVendors } from '@lib/database/read'
+import { useInventory, useVendors } from 'lib/database/read'
 
 // Functions
 
 // Components
-import TableContainer from '@components/container/table'
+import TableContainer from 'components/container/table'
 import List from './list'
 
 export default function InventoryList() {

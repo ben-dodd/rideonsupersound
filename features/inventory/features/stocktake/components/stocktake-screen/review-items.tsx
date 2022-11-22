@@ -1,14 +1,11 @@
-import { getItemSkuDisplayName } from '@features/inventory/features/display-inventory/lib/functions'
-import {
-  loadedStocktakeIdAtom,
-  loadedStocktakeTemplateIdAtom,
-} from '@lib/atoms'
+import { getItemSkuDisplayName } from 'features/inventory/features/display-inventory/lib/functions'
+import { loadedStocktakeIdAtom, loadedStocktakeTemplateIdAtom } from 'lib/atoms'
 import {
   useInventory,
   useStocktakeItemsByStocktake,
   useStocktakesByTemplate,
-} from '@lib/database/read'
-import { StockObject, StocktakeItemObject } from '@lib/types'
+} from 'lib/database/read'
+import { StockObject, StocktakeItemObject } from 'lib/types'
 import SearchIcon from '@mui/icons-material/Search'
 import { useAtom } from 'jotai'
 import { useState } from 'react'

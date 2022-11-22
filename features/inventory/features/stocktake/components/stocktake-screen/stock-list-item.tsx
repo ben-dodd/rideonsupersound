@@ -1,7 +1,7 @@
 // DB
-import { getItemDisplayName } from '@features/inventory/features/display-inventory/lib/functions'
-import { useInventory } from '@lib/database/read'
-import { StockObject } from '@lib/types'
+import { getItemDisplayName } from 'features/inventory/features/display-inventory/lib/functions'
+import { useInventory } from 'lib/database/read'
+import { StockObject } from 'lib/types'
 
 export default function StockListItem({ id }) {
   // SWR

@@ -1,5 +1,5 @@
-import { getItemDisplayName } from '@features/inventory/features/display-inventory/lib/functions'
-import { receiveStockAtom } from '@lib/atoms'
+import { getItemDisplayName } from 'features/inventory/features/display-inventory/lib/functions'
+import { receiveStockAtom } from 'lib/atoms'
 import { ChevronRight } from '@mui/icons-material'
 import { useAtom } from 'jotai'
 import { useState } from 'react'

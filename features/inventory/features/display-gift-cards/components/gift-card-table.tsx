@@ -2,12 +2,12 @@
 import { useMemo } from 'react'
 
 // DB
-import { useGiftCards } from '@lib/database/read'
-import { StockObject } from '@lib/types'
+import { useGiftCards } from 'lib/database/read'
+import { StockObject } from 'lib/types'
 
 // Components
-import TableContainer from '@components/container/table'
-import Table from '@components/table'
+import TableContainer from 'components/container/table'
+import Table from 'components/table'
 import dayjs from 'dayjs'
 import { mapGiftCardObject } from '../lib/functions'
 

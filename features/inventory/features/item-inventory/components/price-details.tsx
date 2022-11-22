@@ -1,9 +1,9 @@
 import {
   getGrossProfit,
   getProfitMargin,
-} from '@features/sale/features/item-sale/lib/functions'
-import { viewAtom } from '@lib/atoms'
-import { StockObject } from '@lib/types'
+} from 'features/sale/features/item-sale/lib/functions'
+import { viewAtom } from 'lib/atoms'
+import { StockObject } from 'lib/types'
 import { useAtom } from 'jotai'
 
 interface priceDetailsProps {

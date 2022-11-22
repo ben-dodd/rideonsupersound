@@ -1,4 +1,4 @@
-import { StockObject } from '@lib/types'
+import { StockObject } from 'lib/types'
 import {
   getDiscogsItem,
   getDiscogsItemArtistDetails,

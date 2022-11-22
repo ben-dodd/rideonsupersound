@@ -1,20 +1,20 @@
 // Packages
 import { useAtom } from 'jotai'
 
-import { loadedItemIdAtom } from '@lib/atoms'
+import { loadedItemIdAtom } from 'lib/atoms'
 
 // Components
-import TextField from '@components/inputs/text-field'
+import TextField from 'components/inputs/text-field'
 
 // Icons
 import {
   getImageSrc,
   getItemDisplayName,
   getItemSku,
-} from '@features/inventory/features/display-inventory/lib/functions'
-import { deleteStocktakeItemFromDatabase } from '@lib/database/delete'
-import { useStocktakeItemsByStocktake, useVendors } from '@lib/database/read'
-import { updateStocktakeItemInDatabase } from '@lib/database/update'
+} from 'features/inventory/features/display-inventory/lib/functions'
+import { deleteStocktakeItemFromDatabase } from 'lib/database/delete'
+import { useStocktakeItemsByStocktake, useVendors } from 'lib/database/read'
+import { updateStocktakeItemInDatabase } from 'lib/database/update'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
 

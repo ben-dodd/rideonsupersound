@@ -1,6 +1,6 @@
-import ListTask from '@features/job/components/list-job'
-import { useJobs } from '@lib/database/read'
-import { TaskObject } from '@lib/types'
+import ListTask from 'features/job/components/list-job'
+import { useJobs } from 'lib/database/read'
+import { TaskObject } from 'lib/types'
 import { sortJobs } from './lib/functions'
 
 export default function JobView(filter) {

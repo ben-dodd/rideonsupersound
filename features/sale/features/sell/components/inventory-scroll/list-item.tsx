@@ -9,9 +9,9 @@ import {
   loadedItemIdAtom,
   sellSearchBarAtom,
   viewAtom,
-} from '@lib/atoms'
-import { useVendorNames } from '@lib/database/read'
-import { StockObject, VendorObject } from '@lib/types'
+} from 'lib/atoms'
+import { useVendorNames } from 'lib/database/read'
+import { StockObject, VendorObject } from 'lib/types'
 
 // Components
 import Tooltip from '@mui/material/Tooltip'
@@ -29,7 +29,7 @@ import {
   getItemDisplayName,
   getItemSku,
   getLaybyQuantity,
-} from '@features/inventory/features/display-inventory/lib/functions'
+} from 'features/inventory/features/display-inventory/lib/functions'
 import {
   addItemToCart,
   getItemQuantity,

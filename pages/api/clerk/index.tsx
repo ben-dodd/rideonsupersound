@@ -1,18 +1,17 @@
-import { getClerk } from '@lib/database/clerk'
-import { NextApiRequest, NextApiResponse } from 'next'
-import { requireScope } from '@lib/swr/utils'
+import { getClerk } from 'lib/database/clerk'
+import { NextApiResponse } from 'next'
+import { requireScope } from 'lib/swr/utils'
+import { NextAuthenticatedApiRequest } from '@serverless-jwt/next/dist/types'
 
-const apiRoute = async (req: NextApiRequest, res: NextApiResponse) => {
+const apiRoute = async (
+  req: NextAuthenticatedApiRequest,
+  res: NextApiResponse
+) => {
   try {
-    fetch(`/api/auth/me`)
-      .then((data) => data.json())
-      .then((user) => {
-        console.log(user)
-        return getClerk(user?.sub)
-      })
-      .then((data) => {
-        res.status(200).json(data)
-      })
+    return getClerk(req?.identityContext?.claims?.sub).then((data) => {
+      console.log(data)
+      res.status(200).json(data)
+    })
   } catch (error) {
     console.error(error)
     res.status(error.status || 500).json({
@@ -22,4 +21,4 @@ const apiRoute = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 }
 
-export default requireScope('read:clerk', apiRoute)
+export default requireScope('clerk', apiRoute)

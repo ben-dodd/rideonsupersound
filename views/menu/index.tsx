@@ -1,7 +1,7 @@
-import { cartAtom } from '@lib/atoms'
-import { useJobs } from '@lib/database/read'
-import { useInventory } from '@lib/database/read'
-import { SaleItemObject, StockObject, TaskObject } from '@lib/types'
+import { cartAtom } from 'lib/atoms'
+import { useJobs } from 'lib/database/read'
+import { useInventory } from 'lib/database/read'
+import { SaleItemObject, StockObject, TaskObject } from 'lib/types'
 import { useAtom } from 'jotai'
 import Menu from './components/menu'
 

@@ -8,6 +8,7 @@ export default async function handler(req, res) {
     const { accessToken } = await getAccessToken(req, res, {
       scopes,
     })
+    // const { accessToken } = await getAccessToken(req, res)
     console.log(accessToken)
     res.json(accessToken)
   } catch (error) {

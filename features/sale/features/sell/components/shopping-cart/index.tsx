@@ -3,9 +3,9 @@ import { useAtom } from 'jotai'
 import { useState } from 'react'
 
 // DB
-import { alertAtom, cartAtom, clerkAtom, viewAtom } from '@lib/atoms'
-import { useInventory, useLogs } from '@lib/database/read'
-import { SaleItemObject } from '@lib/types'
+import { alertAtom, cartAtom, clerkAtom, viewAtom } from 'lib/atoms'
+import { useInventory, useLogs } from 'lib/database/read'
+import { SaleItemObject } from 'lib/types'
 
 // Components
 import CircularProgress from '@mui/material/CircularProgress'
@@ -17,15 +17,15 @@ import ListItem from './list-item'
 import {
   getItemById,
   getItemDisplayName,
-} from '@features/inventory/features/display-inventory/lib/functions'
-import { saveLog } from '@features/log/lib/functions'
+} from 'features/inventory/features/display-inventory/lib/functions'
+import { saveLog } from 'features/log/lib/functions'
 import {
   deleteSaleFromDatabase,
   deleteSaleItemFromDatabase,
-} from '@lib/database/delete'
+} from 'lib/database/delete'
 import HoldIcon from '@mui/icons-material/PanTool'
 import PayIcon from '@mui/icons-material/ShoppingCart'
-import { getSaleVars } from '@features/sale/features/item-sale/lib/functions'
+import { getSaleVars } from 'features/sale/features/item-sale/lib/functions'
 
 export default function ShoppingCart() {
   // SWR

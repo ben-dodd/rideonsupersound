@@ -1,4 +1,4 @@
-import { andList } from '@lib/utils'
+import { andList } from 'lib/utils'
 import dayjs from 'dayjs'
 
 export default function GoogleBooksOption({

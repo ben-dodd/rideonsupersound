@@ -5,18 +5,18 @@ import { useAtom } from 'jotai'
 import { useState } from 'react'
 
 // DB
-import { alertAtom, cartAtom, clerkAtom, viewAtom } from '@lib/atoms'
-import { useCustomers, useInventory, useRegisterID } from '@lib/database/read'
+import { alertAtom, cartAtom, clerkAtom, viewAtom } from 'lib/atoms'
+import { useCustomers, useInventory, useRegisterID } from 'lib/database/read'
 import {
   ModalButton,
   PaymentMethodTypes,
   SaleTransactionObject,
-} from '@lib/types'
+} from 'lib/types'
 
 // Components
-import TextField from '@components/inputs/text-field'
-import Modal from '@components/modal'
-import { logSalePaymentCash } from '@features/log/lib/functions'
+import TextField from 'components/inputs/text-field'
+import Modal from 'components/modal'
+import { logSalePaymentCash } from 'features/log/lib/functions'
 import { getSaleVars } from '../../lib/functions'
 
 export default function Cash() {

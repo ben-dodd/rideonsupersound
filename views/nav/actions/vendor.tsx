@@ -1,5 +1,5 @@
-import { saveSystemLog } from '@features/log/lib/functions'
-import { clerkAtom, loadedVendorIdAtom } from '@lib/atoms'
+import { saveSystemLog } from 'features/log/lib/functions'
+import { clerkAtom, loadedVendorIdAtom } from 'lib/atoms'
 import NewIcon from '@mui/icons-material/AddBox'
 import { useAtom } from 'jotai'
 

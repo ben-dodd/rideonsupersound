@@ -1,10 +1,10 @@
-import ListStockMovement from '@features/log/components/list-stock-movement'
+import ListStockMovement from 'features/log/components/list-stock-movement'
 import {
   useClerks,
   useStockDisplayMin,
   useStockMovements,
-} from '@lib/database/read'
-import { StockMovementObject } from '@lib/types'
+} from 'lib/database/read'
+import { StockMovementObject } from 'lib/types'
 
 export function StockMovementView() {
   const { clerks } = useClerks()

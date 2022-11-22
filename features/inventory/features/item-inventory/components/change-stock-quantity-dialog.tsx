@@ -1,16 +1,16 @@
-import TextField from '@components/inputs/text-field'
-import Modal from '@components/modal'
-import { logChangeQuantity } from '@features/log/lib/functions'
+import TextField from 'components/inputs/text-field'
+import Modal from 'components/modal'
+import { logChangeQuantity } from 'features/log/lib/functions'
 import {
   alertAtom,
   clerkAtom,
   loadedItemIdAtom,
   pageAtom,
   viewAtom,
-} from '@lib/atoms'
-import { createStockMovementInDatabase } from '@lib/database/create'
-import { useInventory, useRegisterID, useStockItem } from '@lib/database/read'
-import { ModalButton, StockMovementTypes } from '@lib/types'
+} from 'lib/atoms'
+import { createStockMovementInDatabase } from 'lib/database/create'
+import { useInventory, useRegisterID, useStockItem } from 'lib/database/read'
+import { ModalButton, StockMovementTypes } from 'lib/types'
 import { useAtom } from 'jotai'
 import { useState } from 'react'
 import Select from 'react-select'

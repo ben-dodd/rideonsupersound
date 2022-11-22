@@ -1,6 +1,6 @@
-import RestockTask from '@features/job/components/restock-job'
-import { useInventory } from '@lib/database/read'
-import { StockObject } from '@lib/types'
+import RestockTask from 'features/job/components/restock-job'
+import { useInventory } from 'lib/database/read'
+import { StockObject } from 'lib/types'
 
 export default function RestockTaskView() {
   const { inventory, isInventoryLoading } = useInventory()

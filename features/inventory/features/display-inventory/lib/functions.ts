@@ -1,4 +1,4 @@
-import { GiftCardObject, StockObject, VendorObject } from '@lib/types'
+import { GiftCardObject, StockObject, VendorObject } from 'lib/types'
 
 export function getItemById(item_id: number, inventory: StockObject[]) {
   return inventory?.find((i) => i?.id === item_id)

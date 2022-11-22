@@ -1,4 +1,4 @@
-import { useRegisterID } from '@lib/database/read'
+import { useRegisterID } from 'lib/database/read'
 import CheckIcon from '@mui/icons-material/CheckCircleOutline'
 import NoBankDetailsIcon from '@mui/icons-material/CreditCardOff'
 import StoreCreditOnlyIcon from '@mui/icons-material/ShoppingBag'

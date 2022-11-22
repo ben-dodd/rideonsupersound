@@ -1,8 +1,8 @@
 import {
   getItemDisplayName,
   getItemSkuDisplayName,
-} from '@features/inventory/features/display-inventory/lib/functions'
-import { receiveStockAtom } from '@lib/atoms'
+} from 'features/inventory/features/display-inventory/lib/functions'
+import { receiveStockAtom } from 'lib/atoms'
 import { useAtom } from 'jotai'
 
 export default function Items({ onClick }) {

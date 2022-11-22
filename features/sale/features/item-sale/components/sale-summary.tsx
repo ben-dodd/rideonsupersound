@@ -1,6 +1,6 @@
 // DB
-import { useInventory } from '@lib/database/read'
-import { SaleItemObject, SaleTransactionObject } from '@lib/types'
+import { useInventory } from 'lib/database/read'
+import { SaleItemObject, SaleTransactionObject } from 'lib/types'
 
 // Components
 import dayjs from 'dayjs'

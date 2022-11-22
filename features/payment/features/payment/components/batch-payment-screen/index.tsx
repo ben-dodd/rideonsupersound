@@ -3,11 +3,11 @@ import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 
 // DB
-import ScreenContainer from '@components/container/screen'
-import { logBatchPayment, saveSystemLog } from '@features/log/lib/functions'
-import { getVendorDetails } from '@features/vendor/features/item-vendor/lib/functions'
-import { clerkAtom, confirmModalAtom, viewAtom } from '@lib/atoms'
-import { createVendorPaymentInDatabase } from '@lib/database/create'
+import ScreenContainer from 'components/container/screen'
+import { logBatchPayment, saveSystemLog } from 'features/log/lib/functions'
+import { getVendorDetails } from 'features/vendor/features/item-vendor/lib/functions'
+import { clerkAtom, confirmModalAtom, viewAtom } from 'lib/atoms'
+import { createVendorPaymentInDatabase } from 'lib/database/create'
 import {
   useCashGiven,
   useInventory,
@@ -16,9 +16,9 @@ import {
   useSalesJoined,
   useVendorPayments,
   useVendors,
-} from '@lib/database/read'
-import { updateVendorInDatabase } from '@lib/database/update'
-import { ClerkObject, ModalButton } from '@lib/types'
+} from 'lib/database/read'
+import { updateVendorInDatabase } from 'lib/database/update'
+import { ClerkObject, ModalButton } from 'lib/types'
 import dayjs from 'dayjs'
 import { modulusCheck } from '../../lib/functions'
 import CheckBatchPayments from './check-batch-payments'

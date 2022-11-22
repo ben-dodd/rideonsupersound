@@ -1,5 +1,5 @@
-import SaleItemScreen from '@features/sale/features/item-sale/components/sale-item-screen'
-import { loadedSaleIdAtom, pageAtom } from '@lib/atoms'
+import SaleItemScreen from 'features/sale/features/item-sale/components/sale-item-screen'
+import { loadedSaleIdAtom, pageAtom } from 'lib/atoms'
 import { useAtom } from 'jotai'
 import LaybyTable from '../../features/sale/features/display-laybys/components/layby-table'
 

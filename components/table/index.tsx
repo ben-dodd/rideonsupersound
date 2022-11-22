@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 
-import { SaleStateTypes } from '@lib/types'
+import { SaleStateTypes } from 'lib/types'
 
 // Material UI Components
 import {

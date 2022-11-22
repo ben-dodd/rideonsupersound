@@ -1,4 +1,4 @@
-import TextField from '@components/inputs/text-field'
+import TextField from 'components/inputs/text-field'
 import NoBankDetailsIcon from '@mui/icons-material/CreditCardOff'
 import StoreCreditOnlyIcon from '@mui/icons-material/ShoppingBag'
 import QuantityCheckIcon from '@mui/icons-material/Warning'

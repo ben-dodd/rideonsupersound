@@ -1,4 +1,4 @@
-import { alertAtom } from '@lib/atoms'
+import { alertAtom } from 'lib/atoms'
 import Alert from '@mui/material/Alert'
 import Slide from '@mui/material/Slide'
 import Snackbar from '@mui/material/Snackbar'

@@ -1,7 +1,7 @@
 import { useAtom } from 'jotai'
 
-import { clerkAtom, pageAtom, viewAtom } from '@lib/atoms'
-import { useRegisterID } from '@lib/database/read'
+import { clerkAtom, pageAtom, viewAtom } from 'lib/atoms'
+import { useRegisterID } from 'lib/database/read'
 
 import InventoryNavActions from './actions/inventory'
 import PaymentNavActions from './actions/payment'
@@ -9,7 +9,7 @@ import SellNavActions from './actions/sell'
 import TaskNavActions from './actions/task'
 import VendorNavActions from './actions/vendor'
 
-import { bg } from '@lib/types'
+import { bg } from 'lib/types'
 import HelpIcon from '@mui/icons-material/Help'
 import SaleNavActions from './actions/sale'
 import StocktakeNavActions from './actions/stocktake'

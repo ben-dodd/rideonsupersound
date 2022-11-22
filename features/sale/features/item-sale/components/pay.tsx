@@ -7,14 +7,14 @@ import {
   clerkAtom,
   loadedCustomerObjectAtom,
   viewAtom,
-} from '@lib/atoms'
-import { useCustomers, useInventory } from '@lib/database/read'
-import { CustomerObject, SaleStateTypes } from '@lib/types'
+} from 'lib/atoms'
+import { useCustomers, useInventory } from 'lib/database/read'
+import { CustomerObject, SaleStateTypes } from 'lib/types'
 
 // Components
-import CreateableSelect from '@components/inputs/createable-select'
-import TextField from '@components/inputs/text-field'
-import { saveSystemLog } from '@features/log/lib/functions'
+import CreateableSelect from 'components/inputs/createable-select'
+import TextField from 'components/inputs/text-field'
+import { saveSystemLog } from 'features/log/lib/functions'
 import ReturnIcon from '@mui/icons-material/KeyboardReturn'
 import { getSaleVars } from '../lib/functions'
 

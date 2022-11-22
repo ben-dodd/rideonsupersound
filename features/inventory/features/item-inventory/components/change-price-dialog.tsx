@@ -1,16 +1,16 @@
-import TextField from '@components/inputs/text-field'
-import Modal from '@components/modal'
-import { logChangePrice } from '@features/log/lib/functions'
+import TextField from 'components/inputs/text-field'
+import Modal from 'components/modal'
+import { logChangePrice } from 'features/log/lib/functions'
 import {
   alertAtom,
   clerkAtom,
   loadedItemIdAtom,
   pageAtom,
   viewAtom,
-} from '@lib/atoms'
-import { createStockPriceInDatabase } from '@lib/database/create'
-import { useInventory, useStockItem } from '@lib/database/read'
-import { ModalButton } from '@lib/types'
+} from 'lib/atoms'
+import { createStockPriceInDatabase } from 'lib/database/create'
+import { useInventory, useStockItem } from 'lib/database/read'
+import { ModalButton } from 'lib/types'
 import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 

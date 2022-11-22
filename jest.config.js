@@ -22,10 +22,10 @@ const customJestConfig = {
   moduleNameMapper: {
     'node_modules/(.*)': '<rootDir>/node_modules/$1',
     './(.*)$/': '<rootDir>/$1',
-    '@components/(.*)': '<rootDir>/components/$1',
-    '@lib/(.*)': '<rootDir>/lib/$1',
-    '@features/(.*)': '<rootDir>/features/$1',
-    '@views/(.*)': '<rootDir>/views/$1',
+    'components/(.*)': '<rootDir>/components/$1',
+    'lib/(.*)': '<rootDir>/lib/$1',
+    'features/(.*)': '<rootDir>/features/$1',
+    'views/(.*)': '<rootDir>/views/$1',
   },
 }
 

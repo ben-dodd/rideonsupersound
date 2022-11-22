@@ -1,4 +1,4 @@
-import { receiveStockAtom } from '@lib/atoms'
+import { receiveStockAtom } from 'lib/atoms'
 import { useAtom } from 'jotai'
 import ListItem from './list-item'
 

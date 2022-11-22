@@ -1,5 +1,5 @@
-import Tabs from '@components/navigation/tabs'
-import { pageAtom } from '@lib/atoms'
+import Tabs from 'components/navigation/tabs'
+import { pageAtom } from 'lib/atoms'
 import { useAtom } from 'jotai'
 import { useState } from 'react'
 import { LogView } from './log-view'

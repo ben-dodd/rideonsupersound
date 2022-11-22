@@ -5,7 +5,7 @@ import {
   ConfirmModal,
   CustomerObject,
   SaleObject,
-} from '@lib/types'
+} from 'lib/types'
 import dayjs from 'dayjs'
 
 interface PaymentDialogProps {

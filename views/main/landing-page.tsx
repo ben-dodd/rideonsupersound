@@ -1,13 +1,13 @@
 'use client'
-import { clerkAtom } from '@lib/atoms'
-import { useAccount, useAccountClerks } from '@lib/database/read'
+import { clerkAtom } from 'lib/atoms'
+import { useAccount, useAccountClerks } from 'lib/database/read'
 import { useAtom } from 'jotai'
 import { useEffect } from 'react'
 
 import MainPage from './main-page'
 import SplashPage from './splash-page'
 import { useUser } from '@auth0/nextjs-auth0'
-import { useClerk } from '@lib/swr/clerk'
+import { useClerk } from 'lib/swr/clerk'
 
 export default function LandingPage() {
   // Get google auth details

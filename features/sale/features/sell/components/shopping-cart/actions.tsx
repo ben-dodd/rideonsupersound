@@ -9,7 +9,7 @@ import {
   clerkAtom,
   confirmModalAtom,
   viewAtom,
-} from '@lib/atoms'
+} from 'lib/atoms'
 import {
   useCustomers,
   useGiftCards,
@@ -17,19 +17,19 @@ import {
   useLogs,
   useRegisterID,
   useSales,
-} from '@lib/database/read'
+} from 'lib/database/read'
 
 // Components
 import CircularProgress from '@mui/material/CircularProgress'
 import Tooltip from '@mui/material/Tooltip'
 
 // Icons
-import { saveLog } from '@features/log/lib/functions'
+import { saveLog } from 'features/log/lib/functions'
 import {
   saveSaleAndPark,
   saveSaleItemsTransactionsToDatabase,
-} from '@features/sale/features/item-sale/lib/functions'
-import { SaleStateTypes } from '@lib/types'
+} from 'features/sale/features/item-sale/lib/functions'
+import { SaleStateTypes } from 'lib/types'
 import DiscardSaleIcon from '@mui/icons-material/Close'
 import SaveSaleIcon from '@mui/icons-material/Save'
 

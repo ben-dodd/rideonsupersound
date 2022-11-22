@@ -1,10 +1,10 @@
-import { clerkAtom, loadedStocktakeTemplateIdAtom, viewAtom } from '@lib/atoms'
+import { clerkAtom, loadedStocktakeTemplateIdAtom, viewAtom } from 'lib/atoms'
 import { useAtom } from 'jotai'
 
-import { saveSystemLog } from '@features/log/lib/functions'
-import { createStocktakeTemplateInDatabase } from '@lib/database/create'
-import { useStocktakeTemplates } from '@lib/database/read'
-import { StocktakeTemplateObject } from '@lib/types'
+import { saveSystemLog } from 'features/log/lib/functions'
+import { createStocktakeTemplateInDatabase } from 'lib/database/create'
+import { useStocktakeTemplates } from 'lib/database/read'
+import { StocktakeTemplateObject } from 'lib/types'
 import NewIcon from '@mui/icons-material/AddBox'
 import { useState } from 'react'
 

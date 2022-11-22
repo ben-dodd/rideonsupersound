@@ -3,7 +3,7 @@ import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 
 // DB
-import { alertAtom, clerkAtom, viewAtom } from '@lib/atoms'
+import { alertAtom, clerkAtom, viewAtom } from 'lib/atoms'
 import {
   useCashGiven,
   useCashReceived,
@@ -13,13 +13,13 @@ import {
   usePettyCash,
   useRegister,
   useRegisterID,
-} from '@lib/database/read'
-import { ClerkObject, ModalButton, SaleTransactionObject } from '@lib/types'
+} from 'lib/database/read'
+import { ClerkObject, ModalButton, SaleTransactionObject } from 'lib/types'
 
 // Components
-import ScreenContainer from '@components/container/screen'
-import TextField from '@components/inputs/text-field'
-import { logCloseRegisterWithAmount } from '@features/log/lib/functions'
+import ScreenContainer from 'components/container/screen'
+import TextField from 'components/inputs/text-field'
+import { logCloseRegisterWithAmount } from 'features/log/lib/functions'
 import dayjs from 'dayjs'
 import {
   getAmountFromCashMap,

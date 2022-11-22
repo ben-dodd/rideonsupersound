@@ -1,4 +1,4 @@
-import { sellSearchBarAtom, viewAtom } from '@lib/atoms'
+import { sellSearchBarAtom, viewAtom } from 'lib/atoms'
 import MiscItemIcon from '@mui/icons-material/DeviceUnknown'
 import GiftCardsIcon from '@mui/icons-material/Redeem'
 import SearchIcon from '@mui/icons-material/Search'

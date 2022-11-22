@@ -1,6 +1,6 @@
-import ListLog from '@features/log/components/list-log'
-import { useClerks, useLogs } from '@lib/database/read'
-import { LogObject } from '@lib/types'
+import ListLog from 'features/log/components/list-log'
+import { useClerks, useLogs } from 'lib/database/read'
+import { LogObject } from 'lib/types'
 
 export function LogView() {
   const { clerks } = useClerks()

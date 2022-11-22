@@ -1,15 +1,15 @@
-import RadioButton from '@components/inputs/radio-button'
-import SettingsSelect from '@components/inputs/settings-select'
-import TextField from '@components/inputs/text-field'
-import { getPriceSuggestion } from '@features/inventory/features/api-discogs/lib/functions'
+import RadioButton from 'components/inputs/radio-button'
+import SettingsSelect from 'components/inputs/settings-select'
+import TextField from 'components/inputs/text-field'
+import { getPriceSuggestion } from 'features/inventory/features/api-discogs/lib/functions'
 import {
   getImageSrc,
   getItemDisplayName,
   getItemSku,
-} from '@features/inventory/features/display-inventory/lib/functions'
-import { getProfitMargin } from '@features/sale/features/item-sale/lib/functions'
-import { getStoreCut } from '@features/sale/features/sell/lib/functions'
-import { StockObject } from '@lib/types'
+} from 'features/inventory/features/display-inventory/lib/functions'
+import { getProfitMargin } from 'features/sale/features/item-sale/lib/functions'
+import { getStoreCut } from 'features/sale/features/sell/lib/functions'
+import { StockObject } from 'lib/types'
 
 export default function ListItem({ receiveItem, bucket, setBucket }) {
   const item: StockObject = receiveItem?.item
