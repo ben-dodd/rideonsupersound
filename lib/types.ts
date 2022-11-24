@@ -257,63 +257,63 @@ export interface VendorObject {
 export interface StockObject {
   id?: number
   sku?: string
-  vendor_id?: number
-  vendor_name?: string
+  vendorId?: number
+  vendorName?: string
   artist?: string
   title?: string
-  display_as?: string
+  displayAs?: string
   media?: string
   format?: string
   section?: string
   genre?: string[] | string
-  is_new?: number
+  isNew?: number
   cond?: string
   country?: string
-  release_year?: string
+  releaseYear?: string
   barcode?: string
   publisher?: string
   colour?: string
   size?: string
   description?: string
   note?: string
-  image_id?: string
-  image_url?: string
-  thumb_url?: string
-  google_books_item_id?: number
-  discogs_item_id?: number
-  do_list_on_website?: number
-  has_no_quantity?: number
-  date_created?: string
-  date_last_stocktake?: string
-  date_modified?: string
-  is_deleted?: number
-  vendor_cut?: number
-  total_sell?: number
+  imageId?: string
+  imageUrl?: string
+  thumbUrl?: string
+  googleBooksItemId?: number
+  discogsItemId?: number
+  doListOnWebsite?: number
+  hasNoQuantity?: number
+  dateCreated?: string
+  dateLastStocktake?: string
+  dateModified?: string
+  isDeleted?: number
+  vendorCut?: number
+  totalSell?: number
   quantity?: number
-  quantity_received?: number
-  quantity_returned?: number
-  quantity_lost?: number
-  quantity_found?: number
-  quantity_discarded?: number
-  quantity_layby?: number
-  quantity_unlayby?: number
-  quantity_hold?: number
-  quantity_unhold?: number
-  quantity_sold?: number
-  quantity_unsold?: number
-  quantity_adjustment?: number
+  quantityReceived?: number
+  quantityReturned?: number
+  quantityLost?: number
+  quantityFound?: number
+  quantityDiscarded?: number
+  quantityLayby?: number
+  quantityUnlayby?: number
+  quantityHold?: number
+  quantityUnhold?: number
+  quantitySold?: number
+  quantityUnsold?: number
+  quantityAdjustment?: number
   tags?: string[]
-  is_gift_card?: boolean
-  gift_card_code?: string
-  gift_card_amount?: number
-  gift_card_remaining?: number
-  gift_card_is_valid?: boolean
-  is_misc_item?: boolean
-  misc_item_description?: string
-  misc_item_amount?: number
+  isGiftCard?: boolean
+  giftCardCode?: string
+  giftCardAmount?: number
+  giftCardRemaining?: number
+  giftCardIsValid?: boolean
+  isMiscItem?: boolean
+  miscItemDescription?: string
+  miscItemAmount?: number
   googleBooksItem?: any
   discogsItem?: any
-  needs_restock?: boolean
+  needsRestock?: boolean
 }
 
 export interface StockPriceObject {
@@ -328,25 +328,25 @@ export interface StockPriceObject {
 
 export interface GiftCardObject {
   id?: number
-  is_gift_card?: boolean
-  gift_card_code?: string
-  gift_card_amount?: number
-  gift_card_remaining?: number
+  isGiftCard?: boolean
+  giftCardCode?: string
+  giftCardAmount?: number
+  giftCardRemaining?: number
   note?: string
-  gift_card_is_valid?: boolean
-  date_created?: string
-  date_modified?: string
-  is_deleted?: boolean
+  giftCardIsValid?: boolean
+  dateCreated?: string
+  dateModified?: string
+  isDeleted?: boolean
 }
 
 export interface LogObject {
   id?: number
   log: string
-  clerk_id?: number
-  table_id?: string
-  row_id?: number
-  date_created?: string
-  is_deleted?: boolean
+  clerkId?: number
+  tableId?: string
+  rowId?: number
+  dateCreated?: string
+  isDeleted?: boolean
 }
 
 export interface StockMovementObject {

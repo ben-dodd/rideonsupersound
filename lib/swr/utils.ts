@@ -9,10 +9,8 @@ const verifyJwt = NextJwtVerifier({
 })
 
 export const requireScope = (scope: string, apiRoute: NextApiHandler) => {
-  console.log('calling require scope')
   return verifyJwt(async (req: NextAuthenticatedApiRequest, res) => {
     const { claims } = req.identityContext
-    console.log(claims)
     if (
       !claims ||
       !claims.permissions ||

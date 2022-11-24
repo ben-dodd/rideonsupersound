@@ -13,15 +13,18 @@ import { bg } from 'lib/types'
 import HelpIcon from '@mui/icons-material/Help'
 import SaleNavActions from './actions/sale'
 import StocktakeNavActions from './actions/stocktake'
+import { useUser } from '@auth0/nextjs-auth0'
+import { useClerk } from 'lib/swr/clerk'
 
 // REVIEW fix all actions and clean up files
 
 export default function Nav() {
   // SWR
   const { registerID } = useRegisterID()
+  const { user } = useUser()
 
   // Atoms
-  const [clerk] = useAtom(clerkAtom)
+  const { clerk } = useClerk(user?.sub)
   const [page] = useAtom(pageAtom)
   const [view, setView] = useAtom(viewAtom)
 

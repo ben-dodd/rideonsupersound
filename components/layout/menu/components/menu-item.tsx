@@ -14,7 +14,7 @@ export default function MenuItem({ item, page, defaultOnClick }) {
       }`}
       onClick={item?.onClick || defaultOnClick}
     >
-      <Link href={item?.page}>
+      <Link href={item?.page} className="flex">
         <div className="pr-6">
           {item?.badge ? (
             <div className="relative">

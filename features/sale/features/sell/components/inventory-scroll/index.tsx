@@ -8,10 +8,13 @@ import { filterInventory, sortInventory } from '../../lib/functions'
 import GiftCardItem from './gift-card-item'
 import ListItem from './list-item'
 import MiscItem from './misc-item'
+import Loading from 'components/loading'
+import { useStockList } from 'lib/swr/stock'
 
 export default function InventoryScroll() {
   const maxItemsInList = 50
-  const { inventory, isInventoryLoading } = useInventory()
+  const { stockList, isStockListLoading } = useStockList()
+  console.log(stockList)
   // const weather = useWeather()
   const [search] = useAtom(sellSearchBarAtom)
   const [geolocation, setGeolocation] = useState(null)
@@ -22,15 +25,13 @@ export default function InventoryScroll() {
 
   return (
     <div className="h-inventory overflow-y-scroll px-2">
-      {isInventoryLoading ? (
-        <div className="w-full flex h-full">
-          <div className="loading-icon" />
-        </div>
+      {isStockListLoading ? (
+        <Loading />
       ) : search ? (
         <>
           {'gift card'.includes(search) && <GiftCardItem />}
           {'misc item'.includes(search) && <MiscItem />}
-          {inventory
+          {stockList
             ?.filter((item) => filterInventory(item, search))
             ?.sort(sortInventory)
             ?.slice(0, maxItemsInList)
@@ -38,7 +39,8 @@ export default function InventoryScroll() {
               <ListItem
                 item={item}
                 key={item?.id}
-                weather={weather}
+                // weather={weather}
+                weather={null}
                 geolocation={geolocation}
               />
             )) || []}

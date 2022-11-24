@@ -62,7 +62,7 @@ export default function ListItem({
   // Constants
   const itemQuantity = getItemQuantity(item, cart?.items)
   const vendorName =
-    vendors?.find((vendor: VendorObject) => vendor?.id === item?.vendor_id)
+    vendors?.find((vendor: VendorObject) => vendor?.id === item?.vendorId)
       ?.name || ''
 
   // Functions
@@ -137,10 +137,10 @@ export default function ListItem({
             </div>
             <div
               className={`${
-                item?.needs_restock ? 'text-yellow-400' : 'text-red-400'
+                item?.needsRestock ? 'text-yellow-400' : 'text-red-400'
               } font-bold text-3xl`}
             >
-              {item?.needs_restock
+              {item?.needsRestock
                 ? 'PLEASE RESTOCK!'
                 : itemQuantity < 1
                 ? 'OUT OF STOCK'
@@ -150,7 +150,7 @@ export default function ListItem({
           <div className="text-sm text-green-800">{`${
             item?.section ? `${item.section} / ` : ''
           }${item?.format} [${
-            item?.is_new ? 'NEW' : item?.cond?.toUpperCase() || 'USED'
+            item?.isNew ? 'NEW' : item?.cond?.toUpperCase() || 'USED'
           }]`}</div>
         </div>
         <div className="text-xs">
@@ -173,7 +173,7 @@ export default function ListItem({
           </Tooltip>
           <Tooltip title="You can change the price in the item details screen.">
             <div className="text-xl">{`$${(
-              (item?.total_sell || 0) / 100
+              (item?.totalSell || 0) / 100
             )?.toFixed(2)}`}</div>
           </Tooltip>
         </div>
@@ -192,7 +192,7 @@ export default function ListItem({
         <Tooltip title="Add item to sale.">
           <button
             className="icon-button-large text-black hover:text-blue-500"
-            disabled={!item?.total_sell}
+            disabled={!item?.totalSell}
             onClick={clickAddToCart}
           >
             <AddIcon style={{ fontSize: '40px' }} />

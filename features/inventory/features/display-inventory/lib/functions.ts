@@ -10,7 +10,7 @@ export function getItemSkuDisplayName(item: StockObject) {
 
 export function getItemSku(item: StockObject) {
   return item
-    ? `${('000' + item?.vendor_id || '').slice(-3)}/${(
+    ? `${('000' + item?.vendorId || '').slice(-3)}/${(
         '00000' + item?.id || ''
       ).slice(-5)}`
     : null
@@ -19,8 +19,8 @@ export function getItemSku(item: StockObject) {
 export function getItemDisplayName(item: StockObject | GiftCardObject) {
   // Add special cases e.g. for comics
   // Might be better as a span component
-  if (item?.is_gift_card)
-    return `Gift Card [${item?.gift_card_code?.toUpperCase()}]`
+  if (item?.isGiftCard)
+    return `Gift Card [${item?.giftCardCode?.toUpperCase()}]`
   let inventoryItem: any = item
   if (inventoryItem?.is_misc_item) return inventoryItem?.misc_item_description
   if (inventoryItem?.display_as) return inventoryItem?.display_as
@@ -33,8 +33,8 @@ export function getItemDisplayName(item: StockObject | GiftCardObject) {
 
 export function getImageSrc(item: StockObject) {
   let src = 'default'
-  if (item?.image_url) return item.image_url
-  if (item?.is_gift_card) src = 'giftCard'
+  if (item?.imageUrl) return item.imageUrl
+  if (item?.isGiftCard) src = 'giftCard'
   if (item?.format === 'Zine') src = 'zine'
   else if (item?.format === 'Comics') src = 'comic'
   else if (item?.format === 'Book') src = 'book'

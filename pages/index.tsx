@@ -4,6 +4,7 @@ import { useClerk } from 'lib/swr/clerk'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
+import Loading from 'components/loading'
 
 export default function IndexPage() {
   const { user, isLoading } = useUser()
@@ -19,22 +20,5 @@ export default function IndexPage() {
   const router = useRouter()
   if (clerk?.id) router.push('sell')
 
-  return (
-    <>
-      {loading ? (
-        <div className="flex h-screen w-screen">
-          {/* <div className="loading-icon" /> */}
-          <Image
-            className="m-auto inline-block"
-            src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/loading.gif`}
-            alt="Loading"
-            width={200}
-            height={200}
-          />
-        </div>
-      ) : (
-        <SignIn />
-      )}
-    </>
-  )
+  return <>{loading ? <Loading type="pyramid" size="full" /> : <SignIn />}</>
 }
