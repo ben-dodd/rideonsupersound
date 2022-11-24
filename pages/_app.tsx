@@ -29,11 +29,11 @@ function MyApp({ Component, pageProps }) {
   dayjs.extend(isBetween)
   // dayjs.locale("en-nz");
 
+  const getLayout = Component.getLayout || ((page) => page)
+
   return (
     <UserProvider>
-      <JotaiProvider>
-        <Component {...pageProps} />
-      </JotaiProvider>
+      <JotaiProvider>{getLayout(<Component {...pageProps} />)}</JotaiProvider>
     </UserProvider>
   )
 }

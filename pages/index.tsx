@@ -3,6 +3,7 @@ import { useUser } from '@auth0/nextjs-auth0'
 import { useClerk } from 'lib/swr/clerk'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 
 export default function IndexPage() {
   const { user, isLoading } = useUser()
@@ -22,7 +23,14 @@ export default function IndexPage() {
     <>
       {loading ? (
         <div className="flex h-screen w-screen">
-          <div className="loading-icon" />
+          {/* <div className="loading-icon" /> */}
+          <Image
+            className="m-auto inline-block"
+            src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/loading.gif`}
+            alt="Loading"
+            width={200}
+            height={200}
+          />
         </div>
       ) : (
         <SignIn />

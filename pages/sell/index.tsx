@@ -23,9 +23,11 @@ import {
 import { useRegisterID } from 'lib/database/read'
 import { useAtom } from 'jotai'
 import { useSwipeable } from 'react-swipeable'
-import { getSession, withPageAuthRequired } from '@auth0/nextjs-auth0'
+import { getServerSidePropsWrapper, getSession } from '@auth0/nextjs-auth0'
+import { checkRole } from 'lib/swr/utils'
+import Layout from 'components/layout'
 
-export default function SellPage() {
+function SellPage() {
   const { registerID } = useRegisterID()
   const [loadedItemId] = useAtom(loadedItemIdAtom)
   const [view, setView] = useAtom(viewAtom)
@@ -81,11 +83,12 @@ export default function SellPage() {
   )
 }
 
-export const getServerSideProps = withPageAuthRequired({
-  async getServerSideProps(ctx) {
-    // access the user session
-    const session = getSession(ctx.req, ctx.res)
-    console.log(session)
-    return { props: { customProp: 'bar' } }
-  },
+export const getServerSideProps = getServerSidePropsWrapper(async (ctx) => {
+  const session = getSession(ctx.req, ctx.res)
+  return checkRole('Clerk', session)
 })
+
+export default SellPage
+SellPage.getLayout = function getLayout(page) {
+  return <Layout>{page}</Layout>
+}
