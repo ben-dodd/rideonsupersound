@@ -75,26 +75,26 @@ export interface ClerkObject {
   name?: string
   colour?: number
   password?: string
-  full_name?: string
+  fullName?: string
   email?: string
   phone?: string
-  image_id?: number
+  imageId?: number
   note?: string
-  is_admin?: number
-  is_current?: number
-  date_created?: string
-  date_modified?: string
-  is_deleted?: number
+  isAdmin?: number
+  isCurrent?: number
+  dateCreated?: string
+  dateModified?: string
+  isDeleted?: number
 }
 export interface CustomerObject {
   id?: number
   name?: string
   email?: string
   phone?: string
-  postal_address?: string
+  postalAddress?: string
   note?: string
-  created_by_clerk_id?: number
-  is_deleted?: boolean
+  createdByClerkId?: number
+  isDeleted?: boolean
 }
 
 export interface ConfirmModal {
@@ -112,140 +112,140 @@ export interface ConfirmModal {
 
 export interface SaleObject {
   id?: number
-  customer_id?: number
+  customerId?: number
   state?: SaleStateTypes
-  date_sale_opened?: any
-  sale_opened_by?: number
-  date_sale_closed?: any
-  sale_closed_by?: number
-  date_layby_started?: any
-  layby_started_by?: number
-  store_cut?: number
-  total_price?: number
-  number_of_items?: number
-  item_list?: string
-  is_mail_order?: boolean
+  dateSaleOpened?: any
+  saleOpenedBy?: number
+  dateSaleClosed?: any
+  saleClosedBy?: number
+  dateLaybyStarted?: any
+  laybyStartedBy?: number
+  storeCut?: number
+  totalPrice?: number
+  numberOfItems?: number
+  itemList?: string
+  isMailOrder?: boolean
   postage?: number
-  postal_address?: string
-  cash_note?: string
+  postalAddress?: string
+  cashNote?: string
   note?: string
   weather?: any
-  geo_latitude?: number
-  geo_longitude?: number
-  is_deleted?: boolean
+  geoLatitude?: number
+  geoLongitude?: number
+  isDeleted?: boolean
   items?: SaleItemObject[]
   transactions?: SaleTransactionObject[]
 }
 
 export interface SaleItemObject {
   id?: number
-  sale_id?: number
-  item_id?: number
+  saleId?: number
+  itemId?: number
   quantity?: string
-  vendor_discount?: string
-  store_discount?: string
-  is_gift_card?: boolean
-  is_misc_item?: boolean
+  vendorDiscount?: string
+  storeDiscount?: string
+  isGiftCard?: boolean
+  isMiscItem?: boolean
   note?: string
-  is_refunded?: boolean
-  refund_note?: string
-  date_refunded?: string
-  is_deleted?: boolean
-  total_sell?: number
-  vendor_cut?: number
-  store_cut?: number
+  isRefunded?: boolean
+  refundNote?: string
+  dateRefunded?: string
+  isDeleted?: boolean
+  totalSell?: number
+  vendorCut?: number
+  storeCut?: number
 }
 
 export interface SaleTransactionObject {
   id?: number
-  sale_id: number
-  clerk_id: number
+  saleId: number
+  clerkId: number
   date?: string
-  payment_method: PaymentMethodTypes
+  paymentMethod: PaymentMethodTypes
   amount: number
-  cash_received?: number
-  change_given?: number
-  vendor_payment_id?: number
-  gift_card_id?: number
-  gift_card_remaining?: number
-  gift_card_taken?: boolean
-  gift_card_change?: number
+  cashReceived?: number
+  changeGiven?: number
+  vendorPayment?: number
+  giftCardId?: number
+  giftCardRemaining?: number
+  giftCardTaken?: boolean
+  giftCardChange?: number
   register_id?: number
-  is_refund?: boolean
-  is_deleted?: boolean
+  isRefund?: boolean
+  isDeleted?: boolean
   vendor?: VendorObject
-  gift_card_update?: GiftCardObject
+  giftCardUpdate?: GiftCardObject
 }
 
 export interface HoldObject {
   id?: number
-  customer_id?: number
-  item_id?: number
+  customerId?: number
+  itemId?: number
   quantity?: number
-  vendor_discount?: number
-  store_discount?: number
-  hold_period?: number
-  date_from?: string
-  started_by?: number
-  date_removed_from_hold?: string
-  removed_from_hold_by?: number
-  is_sold?: boolean
+  vendorDiscount?: number
+  storeDiscount?: number
+  holdPeriod?: number
+  dateFrom?: string
+  startedBy?: number
+  dateRemovedFromHold?: string
+  removedFromHoldBy?: number
+  isSold?: boolean
   note?: string
-  date_created?: string
-  date_modified?: string
-  is_deleted?: boolean
+  dateCreated?: string
+  dateModified?: string
+  isDeleted?: boolean
   overdue?: boolean
 }
 
 export interface VendorSaleItemObject {
   id?: number
-  sale_id?: number
-  item_id?: number
+  saleId?: number
+  itemId?: number
   quantity?: number
-  vendor_discount?: number
-  store_discount?: number
-  vendor_cut?: number
-  total_sell?: number
-  date_price_valid_from?: string
-  date_sale_opened?: string
-  date_sale_closed?: string
-  is_refunded?: boolean
+  vendorDiscount?: number
+  storeDiscount?: number
+  vendorCut?: number
+  totalSell?: number
+  datePriceValidFrom?: string
+  dateSaleOpened?: string
+  dateSaleClosed?: string
+  isRefunded?: boolean
 }
 
 export interface VendorPaymentObject {
   id?: number
   amount?: number
-  bank_account_number?: string
-  bank_reference?: string
-  batch_number?: string
+  bankAccountNumber?: string
+  bankReference?: string
+  batchNumber?: string
   date?: string
-  sequence_number?: string
-  clerk_id?: number
-  vendor_id?: number
-  register_id?: number
+  sequenceNumber?: string
+  clerkId?: number
+  vendorId?: number
+  registerId?: number
   type?: string
   note?: string
-  is_deleted?: boolean
+  isDeleted?: boolean
 }
 
 export interface VendorObject {
   id?: number
   name?: string
-  vendor_category?: string
-  clerk_id?: number
-  bank_account_number?: string
-  contact_name?: string
+  vendorCategory?: string
+  clerkId?: number
+  bankAccountNumber?: string
+  contactName?: string
   email?: string
   phone?: string
-  postal_address?: string
+  postalAddress?: string
   uid?: string
   note?: string
-  last_contacted?: string
-  store_credit_only?: boolean
-  email_vendor?: boolean
-  date_created?: string
-  date_modified?: string
-  is_deleted?: boolean
+  lastContacted?: string
+  storeCreditOnly?: boolean
+  emailVendor?: boolean
+  dateCreated?: string
+  dateModified?: string
+  isDeleted?: boolean
   totalSell?: number
   totalPaid?: number
   totalOwing?: number
@@ -318,11 +318,11 @@ export interface StockObject {
 
 export interface StockPriceObject {
   id?: number
-  stock_id?: number
-  clerk_id?: number
-  vendor_cut?: number
-  total_sell?: number
-  date_valid_from?: string
+  stockId?: number
+  clerkId?: number
+  vendorCut?: number
+  totalSell?: number
+  dateValidFrom?: string
   note?: string
 }
 
@@ -351,113 +351,113 @@ export interface LogObject {
 
 export interface StockMovementObject {
   id?: number
-  stock_id?: number
-  clerk_id?: number
+  stockId?: number
+  clerkId?: number
   quantity?: number
-  sale_id?: number
-  register_id?: number
-  stocktake_id?: number
+  saleId?: number
+  registerId?: number
+  stocktakeId?: number
   act?: string
   note?: string
-  date_moved?: string
+  dateMoved?: string
 }
 
 export interface StocktakeObject {
   id?: number
-  stocktake_template_id?: number
-  date_started?: string
-  started_by?: number
-  date_closed?: string
-  closed_by?: number
-  date_cancelled?: string
-  cancelled_by?: number
-  total_counted?: number
-  total_unique_counted?: number
-  total_estimated?: number
-  total_unique_estimated?: number
-  is_deleted?: boolean
+  stocktakeTemplateId?: number
+  dateStarted?: string
+  startedBy?: number
+  dateClosed?: string
+  closedBy?: number
+  dateCancelled?: string
+  cancelledBy?: number
+  totalCounted?: number
+  totalUniqueCounted?: number
+  totalEstimated?: number
+  totalUniqueEstimated?: number
+  isDeleted?: boolean
 }
 
 export interface StocktakeItemObject {
   id?: string
-  stock_id?: number
-  stocktake_id?: number
-  quantity_counted?: number
-  quantity_recorded?: number
-  quantity_difference?: number
-  review_decision?: string
-  date_counted?: string
-  counted_by?: number
-  do_check_details?: boolean
-  is_deleted?: boolean
+  stockId?: number
+  stocktakeId?: number
+  quantityCounted?: number
+  quantityRecorded?: number
+  quantityDifference?: number
+  reviewDecision?: string
+  dateCounted?: string
+  countedBy?: number
+  doCheckDetails?: boolean
+  isDeleted?: boolean
 }
 
 export interface StocktakeTemplateObject {
   id?: number
   name?: string
-  filter_description?: string
+  filterDescription?: string
   image?: number
-  vendor_enabled?: boolean
-  vendor_list?: [any] | any
-  section_enabled?: boolean
-  section_list?: [string] | any
-  media_enabled?: boolean
-  media_list?: [string] | any
-  format_enabled?: boolean
-  format_list?: [string] | any
-  last_completed?: string
+  vendorEnabled?: boolean
+  vendorList?: [any] | any
+  sectionEnabled?: boolean
+  sectionList?: [string] | any
+  mediaEnabled?: boolean
+  mediaList?: [string] | any
+  formatEnabled?: boolean
+  formatList?: [string] | any
+  lastCompleted?: string
   status?: string
-  is_deleted?: boolean
-  total_estimated?: number
-  total_unique_estimated?: number
+  isDeleted?: boolean
+  totalEstimated?: number
+  totalUniqueEstimated?: number
 }
 
 export interface TaskObject {
   id?: number
   description?: string
-  date_created?: string
-  created_by_clerk_id?: number
-  assigned_to?: string
-  assigned_to_clerk_id?: number
-  is_completed?: boolean
-  is_priority?: boolean
-  date_completed?: string
-  completed_by_clerk_id?: number
-  is_post_mail_order?: boolean
-  is_deleted?: boolean
+  dateCreated?: string
+  createdByClerkId?: number
+  assignedTo?: string
+  assignedToClerkId?: number
+  isCompleted?: boolean
+  isPriority?: boolean
+  dateCompleted?: string
+  completedByClerkId?: number
+  isPostMailOrder?: boolean
+  isDeleted?: boolean
 }
 
 export interface RegisterObject {
   id?: number
-  opened_by_id?: number
-  open_date?: string
-  open_amount?: number
-  open_note?: string
-  open_till_id?: number
-  closed_by_id?: number
-  close_date?: string
-  close_till_id?: number
-  close_amount?: number
-  close_petty_balance?: number
-  close_cash_given?: number
-  close_manual_payments?: number
-  close_expected_amount?: number
-  close_discrepancy?: number
-  close_note?: string
+  openedById?: number
+  openDate?: string
+  openAmount?: number
+  openNote?: string
+  openTillId?: number
+  closedById?: number
+  closeDate?: string
+  closeTillId?: number
+  closeAmount?: number
+  closePettyBalance?: number
+  closeCashGiven?: number
+  closeManualPayments?: number
+  closeExpectedAmount?: number
+  closeDiscrepancy?: number
+  closeNote?: string
 }
 
 export interface TillObject {
   id?: number
-  one_hundred_dollar?: number
-  fifty_dollar?: number
-  twenty_dollar?: number
-  ten_dollar?: number
-  five_dollar?: number
-  two_dollar?: number
-  one_dollar?: number
-  fifty_cent?: number
-  twenty_cent?: number
-  ten_cent?: number
+  oneHundredDollar?: number
+  fiftyDollar?: number
+  twentyDollar?: number
+  tenDollar?: number
+  fiveDollar?: number
+  twoDollar?: number
+  oneDollar?: number
+  fiftyCent?: number
+  twentyCent?: number
+  tenCent?: number
 }
 
 export interface ModalButton {
@@ -515,6 +515,12 @@ interface WeatherObject {
   main?: string
   description?: string
   icon?: string
+}
+export interface AlertProps {
+  open: boolean
+  type?: 'error' | 'info' | 'success' | 'warning'
+  message?: string
+  undo?: Function
 }
 
 export const bgDark = [

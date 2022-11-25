@@ -1,8 +1,5 @@
 import { getGeolocation, useWeather } from 'lib/api'
-import { sellSearchBarAtom } from 'lib/atoms'
-import { useInventory } from 'lib/database/read'
 import { StockObject } from 'lib/types'
-import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 import { filterInventory, sortInventory } from '../../lib/functions'
 import GiftCardItem from './gift-card-item'
@@ -11,12 +8,11 @@ import MiscItem from './misc-item'
 import Loading from 'components/loading'
 import { useStockList } from 'lib/swr/stock'
 
-export default function InventoryScroll() {
+export default function InventoryScroll({ search }: { search: string }) {
   const maxItemsInList = 50
   const { stockList, isStockListLoading } = useStockList()
   console.log(stockList)
   // const weather = useWeather()
-  const [search] = useAtom(sellSearchBarAtom)
   const [geolocation, setGeolocation] = useState(null)
 
   useEffect(() => {

@@ -26,11 +26,14 @@ import {
 import HoldIcon from '@mui/icons-material/PanTool'
 import PayIcon from '@mui/icons-material/ShoppingCart'
 import { getSaleVars } from 'features/sale/features/item-sale/lib/functions'
+import { useStockList } from 'lib/swr/stock'
+import { useStore } from 'lib/store'
 
 export default function ShoppingCart() {
   // SWR
-  const { inventory } = useInventory()
+  const { stockList } = useStockList()
   const { logs, mutateLogs } = useLogs()
+  const { cart } = useStore()
 
   // Atoms
   const [view, setView] = useAtom(viewAtom)

@@ -1,5 +1,5 @@
 import { NextApiHandler } from 'next'
-import { query } from '../../../lib/database/db'
+import { query } from '../../../lib/database/utils/db'
 
 const handler: NextApiHandler = async (req, res) => {
   try {

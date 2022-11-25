@@ -1,4 +1,4 @@
-import { query } from 'lib/database/db'
+import { query } from 'lib/database/utils/db'
 import { getReadQuery } from 'lib/database/query'
 import { NextApiHandler } from 'next'
 

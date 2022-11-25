@@ -141,7 +141,7 @@ export function makeGiftCardCode(giftCards: GiftCardObject[]) {
   let result = ''
   while (
     result === '' ||
-    giftCards?.map((g: GiftCardObject) => g?.gift_card_code).includes(result)
+    giftCards?.map((g: GiftCardObject) => g?.giftCardCode).includes(result)
   ) {
     result = ''
     for (var i = 0; i < 6; i++) {

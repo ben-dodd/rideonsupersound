@@ -1,4 +1,4 @@
-import testConn from './testConn'
+import testConn from './utils/testConn'
 
 const {
   getTodos,

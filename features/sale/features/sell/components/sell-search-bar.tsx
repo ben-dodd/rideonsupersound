@@ -1,15 +1,18 @@
-import { sellSearchBarAtom, viewAtom } from 'lib/atoms'
 import MiscItemIcon from '@mui/icons-material/DeviceUnknown'
 import GiftCardsIcon from '@mui/icons-material/Redeem'
 import SearchIcon from '@mui/icons-material/Search'
 import Tooltip from '@mui/material/Tooltip'
-import { useAtom } from 'jotai'
+import { useStore } from 'lib/store'
+import { ViewProps } from 'lib/store/types'
 
-export default function SellSearchBar() {
-  const [search, setSearch] = useAtom(sellSearchBarAtom)
-  const [view, setView] = useAtom(viewAtom)
-  // REVIEW add clear icon to search bar
-
+export default function SellSearchBar({
+  search,
+  setSearch,
+}: {
+  search: string
+  setSearch: Function
+}) {
+  const { openView } = useStore()
   return (
     <div className="h-search py-2 px-2 mr-2 mb-4 flex">
       <Tooltip title="Search by artist, title, SKU, genre, and many more. To add a Misc. Item or a Gift Card, just type that in.">
@@ -31,14 +34,14 @@ export default function SellSearchBar() {
       </Tooltip>
       <button
         className="icon-text-button"
-        onClick={() => setView({ ...view, miscItemDialog: true })}
+        onClick={() => openView(ViewProps.miscItemDialog)}
       >
         <MiscItemIcon className="mr-1" />
         Misc. Item
       </button>
       <button
         className="icon-text-button"
-        onClick={() => setView({ ...view, giftCardDialog: true })}
+        onClick={() => openView(ViewProps.giftCardDialog)}
       >
         <GiftCardsIcon className="mr-1" />
         Gift Card

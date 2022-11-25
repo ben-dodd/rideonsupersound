@@ -1,4 +1,4 @@
-import connection from './conn'
+import connection from './utils/conn'
 
 export function getStockList(db = connection) {
   return db('stock')

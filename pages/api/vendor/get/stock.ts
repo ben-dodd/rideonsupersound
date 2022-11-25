@@ -1,4 +1,4 @@
-import { query } from 'lib/database/db'
+import { query } from 'lib/database/utils/db'
 import { StockMovementTypes } from 'lib/types'
 import { NextApiHandler } from 'next'
 

@@ -14,58 +14,44 @@ import GiftCardDialog from 'features/sale/features/sell/components/inventory-scr
 import MiscItemDialog from 'features/sale/features/sell/components/inventory-scroll/misc-item-dialog'
 import SellSearchBar from 'features/sale/features/sell/components/sell-search-bar'
 import ShoppingCart from 'features/sale/features/sell/components/shopping-cart'
-import {
-  bypassRegisterAtom,
-  loadedItemIdAtom,
-  pageAtom,
-  viewAtom,
-} from 'lib/atoms'
 import { useRegisterID } from 'lib/database/read'
-import { useAtom } from 'jotai'
 import { useSwipeable } from 'react-swipeable'
-import { getServerSidePropsWrapper, getSession } from '@auth0/nextjs-auth0'
-import { checkRole } from 'lib/swr/utils'
-import Layout from 'components/layout'
+import { useStore } from 'lib/store'
+import { ViewProps } from 'lib/store/types'
+import { useState } from 'react'
 
-function SellPage() {
+export default function SellPage() {
   const { registerID } = useRegisterID()
-  const [loadedItemId] = useAtom(loadedItemIdAtom)
-  const [view, setView] = useAtom(viewAtom)
-  const [page] = useAtom(pageAtom)
-  const [bypassRegister] = useAtom(bypassRegisterAtom)
+  const { loadedItemId, view, openView, closeView, bypassRegister } = useStore()
+  const [search, setSearch] = useState('')
 
   const handlers = useSwipeable({
     onSwipedRight: () =>
       view?.saleScreen
-        ? setView({ ...view, saleScreen: false })
+        ? closeView(ViewProps.saleScreen)
         : view?.createCustomer
-        ? setView({ ...view, createCustomer: false })
+        ? closeView(ViewProps.createCustomer)
         : view?.createHold
-        ? setView({ ...view, createHold: false })
+        ? closeView(ViewProps.createHold)
         : view?.cart
-        ? setView({ ...view, cart: false })
+        ? closeView(ViewProps.cart)
         : null,
-    onSwipedLeft: () => (!view?.cart ? setView({ ...view, cart: true }) : null),
+    onSwipedLeft: () => (!view?.cart ? openView(ViewProps.cart) : null),
     preventDefaultTouchmoveEvent: true,
   })
 
   return registerID === 0 && !bypassRegister ? (
     <OpenRegisterScreen />
   ) : (
-    <div
-      className={`flex relative overflow-x-hidden ${
-        page !== 'sell' || (registerID < 1 && !bypassRegister) ? 'hidden' : ''
-      }`}
-      {...handlers}
-    >
+    <div className={`flex relative overflow-x-hidden`} {...handlers}>
       <MidScreenContainer
         title={null}
         titleClass={''}
         isLoading={false}
         actionButtons={undefined}
       >
-        <SellSearchBar />
-        <InventoryScroll />
+        <SellSearchBar search={search} setSearch={setSearch} />
+        <InventoryScroll search={search} />
       </MidScreenContainer>
       <ShoppingCart />
       <CreateHoldSidebar />
@@ -81,14 +67,4 @@ function SellPage() {
       {view?.takeCashDialog && <TakeCashDialog />}
     </div>
   )
-}
-
-export const getServerSideProps = getServerSidePropsWrapper(async (ctx) => {
-  const session = getSession(ctx.req, ctx.res)
-  return checkRole('Clerk', session)
-})
-
-export default SellPage
-SellPage.getLayout = function getLayout(page) {
-  return <Layout>{page}</Layout>
 }
