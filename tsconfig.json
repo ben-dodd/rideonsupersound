@@ -27,6 +27,19 @@
       }
     ]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  // "ts-node": {
+  //   // these options are overrides used only by ts-node
+  //   "compilerOptions": {
+  //     "module": "commonjs"
+  //   }
+  // },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "lib/database/import.js",
+    "lib/database/import.js"
+  ],
   "exclude": ["node_modules"]
 }

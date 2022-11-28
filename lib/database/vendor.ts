@@ -1,5 +1,5 @@
 import { VendorObject } from 'lib/types'
-import connection from './utils/conn'
+import connection from './conn'
 import { prepareItemForDatabase } from './utils/helpers'
 
 const fullVendorQuery = (db) =>

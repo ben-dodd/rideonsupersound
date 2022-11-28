@@ -1,4 +1,5 @@
-import connection from './utils/conn'
+// import connection from './conn'
+const connection = require('./conn')
 
 export function getStockList(db = connection) {
   return db('stock')
