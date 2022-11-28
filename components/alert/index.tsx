@@ -1,15 +1,14 @@
-import { alertAtom } from 'lib/atoms'
 import Alert from '@mui/material/Alert'
 import Slide from '@mui/material/Slide'
 import Snackbar from '@mui/material/Snackbar'
-import { useAtom } from 'jotai'
+import { useAppStore } from 'lib/store'
 
 export default function SnackAlert() {
-  const [alert, setAlert] = useAtom(alertAtom)
+  const { alert, closeAlert } = useAppStore()
   return (
     <Snackbar
       open={alert?.open}
-      onClose={() => setAlert(null)}
+      onClose={closeAlert}
       autoHideDuration={alert?.type === 'info' ? 2000 : 4000}
       anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       TransitionComponent={Slide}
@@ -26,7 +25,7 @@ export default function SnackAlert() {
               className="bg-white p-2"
               onClick={() => {
                 alert?.undo()
-                setAlert(null)
+                closeAlert()
               }}
             >
               UNDO

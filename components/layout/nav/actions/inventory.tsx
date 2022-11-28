@@ -1,16 +1,14 @@
-import { compactModeAtom, tableModeAtom } from 'lib/atoms'
-import { useAtom } from 'jotai'
-
 import TableIcon from '@mui/icons-material/TableView'
 import CompactIcon from '@mui/icons-material/ViewCompact'
+import { useAppStore } from 'lib/store'
 
 export default function InventoryNavActions() {
-  const [tableMode, setTableMode] = useAtom(tableModeAtom)
-  const [compactMode, setCompactMode] = useAtom(compactModeAtom)
+  const { compactMode, tableMode, toggleTableMode, toggleCompactMode } =
+    useAppStore()
   return (
     <div className="flex">
       <button
-        onClick={() => setCompactMode(!compactMode)}
+        onClick={toggleCompactMode}
         className={`text-brown-dark hover:text-brown mr-2 ${
           !compactMode && 'opacity-50'
         }`}
@@ -18,7 +16,7 @@ export default function InventoryNavActions() {
         <CompactIcon />
       </button>
       <button
-        onClick={() => setTableMode(!tableMode)}
+        onClick={toggleTableMode}
         className={`text-brown-dark hover:text-brown mr-2 ${
           !tableMode && 'opacity-50'
         }`}

@@ -1,6 +1,3 @@
-import { useAtom } from 'jotai'
-
-import { clerkAtom, pageAtom, viewAtom } from 'lib/atoms'
 import { useRegisterID } from 'lib/database/read'
 
 import InventoryNavActions from './actions/inventory'
@@ -15,6 +12,9 @@ import SaleNavActions from './actions/sale'
 import StocktakeNavActions from './actions/stocktake'
 import { useUser } from '@auth0/nextjs-auth0'
 import { useClerk } from 'lib/swr/clerk'
+import { ViewProps } from 'lib/store/types'
+import { useAppStore } from 'lib/store'
+import { useRouter } from 'next/router'
 
 // REVIEW fix all actions and clean up files
 
@@ -25,8 +25,9 @@ export default function Nav() {
 
   // Atoms
   const { clerk } = useClerk(user?.sub)
-  const [page] = useAtom(pageAtom)
-  const [view, setView] = useAtom(viewAtom)
+  const { openView } = useAppStore()
+  const router = useRouter()
+  const page = router.pathname
 
   return (
     <nav className={`py-2 ${bg[clerk?.colour]} text-white h-nav`}>
@@ -55,7 +56,7 @@ export default function Nav() {
           {page === 'stocktake' && <StocktakeNavActions />}
           {page === 'sale' && <SaleNavActions />}
           <button
-            onClick={() => setView({ ...view, helpDialog: true })}
+            onClick={() => openView(ViewProps.helpDialog)}
             className="text-brown-dark hover:text-brown"
           >
             <HelpIcon />

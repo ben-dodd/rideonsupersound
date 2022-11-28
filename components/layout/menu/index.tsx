@@ -1,9 +1,8 @@
-import { cartAtom } from 'lib/atoms'
-import { useJobs } from 'lib/database/read'
-import { useInventory } from 'lib/database/read'
-import { SaleItemObject, StockObject, TaskObject } from 'lib/types'
-import { useAtom } from 'jotai'
+import { SaleItemObject } from 'lib/types'
 import Menu from './components/menu'
+import { useAppStore } from 'lib/store'
+import { useRestockList } from 'lib/swr/stock'
+import { useJobsToDo } from 'lib/swr/jobs'
 
 // Types
 type MenuType = {
@@ -17,10 +16,9 @@ type MenuType = {
 }
 
 export default function MenuView() {
-  const [cart] = useAtom(cartAtom)
-
-  const { jobs } = useJobs()
-  const { inventory } = useInventory()
+  const { cart } = useAppStore()
+  const { jobsToDo } = useJobsToDo()
+  const { restockList } = useRestockList()
 
   const numCartItems = cart?.items?.reduce?.(
     (accumulator: number, item: SaleItemObject) =>
@@ -28,10 +26,7 @@ export default function MenuView() {
     0
   )
 
-  const numJobsToDo =
-    (jobs?.filter?.((t: TaskObject) => !t?.is_deleted && !t?.is_completed)
-      ?.length || 0) +
-    (inventory?.filter?.((i: StockObject) => i?.needs_restock)?.length || 0)
+  const numJobsToDo = (jobsToDo?.length || 0) + (restockList?.length || 0)
 
   return <Menu badges={{ numCartItems, numJobsToDo }} />
 }

@@ -1,21 +1,20 @@
-import { clerkAtom, loadedStocktakeTemplateIdAtom, viewAtom } from 'lib/atoms'
-import { useAtom } from 'jotai'
-
 import { saveSystemLog } from 'features/log/lib/functions'
 import { createStocktakeTemplateInDatabase } from 'lib/database/create'
 import { useStocktakeTemplates } from 'lib/database/read'
 import { StocktakeTemplateObject } from 'lib/types'
 import NewIcon from '@mui/icons-material/AddBox'
 import { useState } from 'react'
+import { useUser } from '@auth0/nextjs-auth0'
+import { useClerk } from 'lib/swr/clerk'
+import { ViewProps } from 'lib/store/types'
+import { useAppStore } from 'lib/store'
 
 export default function StocktakeNavActions() {
-  const [view, setView] = useAtom(viewAtom)
+  const { user } = useUser()
+  const { clerk } = useClerk(user?.sub)
+  const { openView, setLoadedStocktakeTemplateId } = useAppStore()
   const { stocktakeTemplates, mutateStocktakeTemplates } =
     useStocktakeTemplates()
-  const [, setLoadedStocktakeTemplateId] = useAtom(
-    loadedStocktakeTemplateIdAtom
-  )
-  const [clerk] = useAtom(clerkAtom)
   const [isLoading, setIsLoading] = useState(false)
   return (
     <div className="flex">
@@ -26,7 +25,7 @@ export default function StocktakeNavActions() {
           setIsLoading(true)
           saveSystemLog('Stocktake Nav - New Stocktake clicked.', clerk?.id)
           let newStocktakeTemplate: StocktakeTemplateObject = {
-            format_enabled: true,
+            formatEnabled: true,
           }
           const id = await createStocktakeTemplateInDatabase(
             newStocktakeTemplate
@@ -36,7 +35,7 @@ export default function StocktakeNavActions() {
             false
           )
           setLoadedStocktakeTemplateId(id)
-          setView({ ...view, stocktakeTemplateScreen: true })
+          openView(ViewProps.stocktakeTemplateScreen)
           setIsLoading(false)
         }}
       >

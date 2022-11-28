@@ -53,8 +53,18 @@ export interface StoreState {
   salesView?: string
   salesViewRange?: any
   salesViewClerks?: number[]
+  tableMode?: boolean
+  compactMode?: boolean
   openView: (view: ViewProps) => void
   closeView: (view: ViewProps) => void
+  openConfirm: (confirm: any) => void
+  closeConfirm: () => void
+  setAlert: (alert: any) => void
+  closeAlert: () => void
+  toggleTableMode: () => void
+  toggleCompactMode: () => void
+  setLoadedStocktakeTemplateId: (id: number) => void
+  setLoadedVendorId: (id: number) => void
   // setStockItems: (stockItems: StockItem[]) => void
   // addStockItems: (stockItems: StockItem[]) => void
   // fetchStockItems: () => void

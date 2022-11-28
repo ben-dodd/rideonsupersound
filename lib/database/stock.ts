@@ -31,3 +31,18 @@ export function getStockList(db = connection) {
       `(stock_price.id = (SELECT MAX(id) FROM stock_price WHERE stock_id = stock.id))`
     )
 }
+
+export function getRestockList(db = connection) {
+  return db('stock')
+    .select(
+      'id',
+      'vendor_id as vendorId',
+      'artist',
+      'title',
+      'media',
+      'format',
+      'section'
+    )
+    .where(`needs_restock`, 1)
+    .andWhere('is_deleted', 0)
+}

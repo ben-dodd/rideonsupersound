@@ -5,13 +5,13 @@ import HelpDialog from 'features/help/components'
 import ConfirmModal from 'components/modal/confirm-modal'
 import SnackAlert from 'components/alert'
 import { useAtom } from 'jotai'
-import { alertAtom } from 'lib/atoms'
 import { useUser } from '@auth0/nextjs-auth0'
 import { useClerk } from 'lib/swr/clerk'
 import Loading from 'components/loading'
+import { useAppStore } from 'lib/store'
 
 export default function Layout({ children }) {
-  const [alert] = useAtom(alertAtom)
+  const { alert } = useAppStore()
   const { user } = useUser()
   const { isClerkLoading } = useClerk(user?.sub)
   return isClerkLoading ? (

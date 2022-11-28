@@ -1,17 +1,14 @@
-import { viewAtom } from 'lib/atoms'
-import { useAtom } from 'jotai'
-
 import NewIcon from '@mui/icons-material/AddBox'
+import { useAppStore } from 'lib/store'
+import { ViewProps } from 'lib/store/types'
 
 export default function CustomerNavActions() {
-  const [view, setView] = useAtom(viewAtom)
+  const { openView } = useAppStore()
   return (
     <div className="flex">
       <button
         className="icon-text-button"
-        onClick={() => {
-          setView({ ...view, createCustomer: true })
-        }}
+        onClick={() => openView(ViewProps.createCustomer)}
       >
         <NewIcon className="mr-1" />
         New Customer

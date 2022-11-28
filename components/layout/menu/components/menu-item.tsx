@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
-export default function MenuItem({ item, page, defaultOnClick }) {
+export default function MenuItem({ item, defaultOnClick }) {
   const router = useRouter()
   return item?.type === 'divider' ? (
     <hr />

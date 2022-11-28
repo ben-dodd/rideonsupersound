@@ -3,6 +3,7 @@ import dayjs from 'dayjs'
 import produce from 'immer'
 import request from 'superagent'
 import { StoreState } from './types'
+import ConfirmModal from 'components/modal/confirm-modal'
 
 type WithSelectors<S> = S extends { getState: () => infer T }
   ? S & { use: { [K in keyof T]: () => T[K] } }
@@ -29,7 +30,7 @@ export const errorHandler = (method: string, route: string) => (err: any) => {
   }
 }
 
-export const useStore = createSelectors(
+export const useAppStore = createSelectors(
   create<StoreState>((set, get) => ({
     view: {},
     cart: { id: null },
@@ -52,20 +53,24 @@ export const useStore = createSelectors(
       endDate: dayjs().format('YYYY-MM-DD'),
     },
     salesViewClerks: [],
-    openView: (view) => {
-      set(
-        produce((draft) => {
-          draft.view[view] = true
-        })
-      )
-    },
-    closeView: (view) => {
-      set(
-        produce((draft) => {
-          draft.view[view] = false
-        })
-      )
-    },
+    tableMode: false,
+    compactMode: false,
+    openView: (view) => set(produce((draft) => (draft.view[view] = true))),
+    closeView: (view) => set(produce((draft) => (draft.view[view] = false))),
+    openConfirm: (confirm) =>
+      set(produce((draft) => (draft.confirmModal = confirm))),
+    closeConfirm: () =>
+      set(produce((draft) => (draft.confirmModal = { open: false }))),
+    setAlert: (alert) => set(produce((draft) => (draft.alert = alert))),
+    closeAlert: () => set(produce((draft) => (draft.alert = null))),
+    toggleCompactMode: () =>
+      set(produce((draft) => (draft.compactMode = !get().compactMode))),
+    toggleTableMode: () =>
+      set(produce((draft) => (draft.tableMode = !get().tableMode))),
+    setLoadedStocktakeTemplateId: (id) =>
+      set(produce((draft) => (draft.loadedStocktakeTemplateId = id))),
+    setLoadedVendorId: (id) =>
+      set(produce((draft) => (draft.loadedVendorId = id))),
   }))
 )
 

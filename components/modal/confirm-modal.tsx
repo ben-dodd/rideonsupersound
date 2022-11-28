@@ -1,15 +1,15 @@
 import Modal from 'components/modal'
-import { confirmModalAtom } from 'lib/atoms'
 import { ModalButton } from 'lib/types'
 import { useAtom } from 'jotai'
+import { useAppStore } from 'lib/store'
 
 export default function ConfirmModal() {
-  const [confirmModal, setConfirmModal] = useAtom(confirmModalAtom)
+  const { confirmModal, closeConfirm } = useAppStore()
 
   // Functions
   function closeModal() {
-    setConfirmModal({ ...confirmModal, open: false })
-    setTimeout(() => setConfirmModal({ open: false }), 200)
+    closeConfirm()
+    setTimeout(closeConfirm, 200)
   }
 
   // Buttons
@@ -23,7 +23,7 @@ export default function ConfirmModal() {
       text: confirmModal?.yesText || 'OK',
       onClick: () => {
         confirmModal?.action()
-        closeModal()
+        closeConfirm()
       },
       type: 'ok',
     },
@@ -31,7 +31,7 @@ export default function ConfirmModal() {
   return (
     <Modal
       open={confirmModal?.open}
-      closeFunction={closeModal}
+      closeFunction={closeConfirm}
       title={confirmModal?.title || 'CONFIRM'}
       buttons={buttons}
     >

@@ -1,6 +1,5 @@
 // Packages
 import { saveSystemLog } from 'features/log/lib/functions'
-import { clerkAtom, pageAtom, viewAtom } from 'lib/atoms'
 import { bg } from 'lib/types'
 import InventoryIcon from '@mui/icons-material/Category'
 import LaybyIcon from '@mui/icons-material/DryCleaning'
@@ -14,9 +13,13 @@ import PaymentsIcon from '@mui/icons-material/Receipt'
 import GiftCardsIcon from '@mui/icons-material/Redeem'
 import VendorsIcon from '@mui/icons-material/Store'
 import JobsIcon from '@mui/icons-material/Task'
-import { useAtom } from 'jotai'
 import MenuItem from './menu-item'
 import PyramidImage from './pyramid-image'
+import { useRouter } from 'next/router'
+import { useAppStore } from 'lib/store'
+import { useClerk } from 'lib/swr/clerk'
+import { useUser } from '@auth0/nextjs-auth0'
+import { ViewProps } from 'lib/store/types'
 
 type MenuType = {
   type: string
@@ -29,9 +32,10 @@ type MenuType = {
 }
 
 export default function Menu({ badges }) {
-  const [page, setPage] = useAtom(pageAtom)
-  const [view, setView] = useAtom(viewAtom)
-  const [clerk, setClerk] = useAtom(clerkAtom)
+  const router = useRouter()
+  const { view, closeView } = useAppStore()
+  const { user } = useUser()
+  const { clerk } = useClerk(user?.sub)
 
   const topMenu = [
     {
@@ -118,7 +122,6 @@ export default function Menu({ badges }) {
     {
       type: 'link',
       page: '/api/auth/logout',
-      onClick: () => setClerk(null),
       text: 'SWITCH CLERK',
       class: 'bg-col2-light hover:bg-col2',
       icon: <LogoutIcon />,
@@ -128,8 +131,8 @@ export default function Menu({ badges }) {
   const defaultOnClick = (item) => {
     window.scrollTo(0, 0)
     saveSystemLog(`${item?.page} on menu clicked.`, clerk?.id)
-    setPage(item?.page)
-    setView({ ...view, mainMenu: false })
+    router.push(item?.page)
+    closeView(ViewProps.mainMenu)
   }
 
   return (
@@ -142,23 +145,13 @@ export default function Menu({ badges }) {
     >
       <ul>
         {topMenu?.map((item: MenuType, i: number) => (
-          <MenuItem
-            key={i}
-            item={item}
-            page={page}
-            defaultOnClick={defaultOnClick}
-          />
+          <MenuItem key={i} item={item} defaultOnClick={defaultOnClick} />
         ))}
       </ul>
       <PyramidImage />
       <ul>
         {bottomMenu?.map((item: MenuType, i: number) => (
-          <MenuItem
-            key={i}
-            item={item}
-            page={page}
-            defaultOnClick={defaultOnClick}
-          />
+          <MenuItem key={i} item={item} defaultOnClick={defaultOnClick} />
         ))}
       </ul>
     </div>
