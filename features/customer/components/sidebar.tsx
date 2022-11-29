@@ -1,29 +1,25 @@
 import SidebarContainer from 'components/container/side-bar'
 import TextField from 'components/inputs/text-field'
 import { saveSystemLog } from 'features/log/lib/functions'
-import {
-  cartAtom,
-  clerkAtom,
-  loadedCustomerObjectAtom,
-  viewAtom,
-} from 'lib/atoms'
-import { useCustomers } from 'lib/database/read'
 import { updateCustomerInDatabase } from 'lib/database/update'
 import { ModalButton } from 'lib/types'
-import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
-import { checkCustomerNameConflict, createCustomer } from '../lib/functions'
+import { checkCustomerNameConflict } from '../lib/functions'
+import { useCustomers } from 'lib/api/customer'
+import { useClerk } from 'lib/api/clerk'
+import { useAppStore } from 'lib/store'
+import { ViewProps } from 'lib/store/types'
 
 export default function CreateCustomerSidebar() {
-  // SWR
+  const { clerk } = useClerk()
   const { customers, mutateCustomers } = useCustomers()
-
-  // Atoms
-  const [cart, setCart] = useAtom(cartAtom)
-  const [view, setView] = useAtom(viewAtom)
-  const [clerk] = useAtom(clerkAtom)
-  const [customer, setCustomer] = useAtom(loadedCustomerObjectAtom)
-
+  const {
+    view,
+    cart: { customer },
+    setCustomer,
+    resetCustomer,
+    closeView,
+  } = useAppStore()
   // State
   const [nameConflict, setNameConflict] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -36,15 +32,15 @@ export default function CreateCustomerSidebar() {
   // Functions
   function closeSidebar() {
     saveSystemLog('New customer sidebar closed.', clerk?.id)
-    setCustomer(null)
-    setView({ ...view, createCustomer: false })
+    resetCustomer()
+    closeView(ViewProps.createCustomer)
   }
 
   async function onClickCreateCustomer() {
     setSubmitting(true)
     const newCustomer = await createCustomer(customer, clerk)
     mutateCustomers([...customers, newCustomer], false)
-    setCart({ ...cart, customer_id: newCustomer?.id })
+    setCustomer({ customerId: newCustomer?.id })
     closeSidebar()
     setSubmitting(false)
   }
@@ -83,41 +79,31 @@ export default function CreateCustomerSidebar() {
         errorText="Name already exists."
         displayOnly={Boolean(customer?.id)}
         value={customer?.name || ''}
-        onChange={(e: any) =>
-          setCustomer({ ...customer, name: e.target.value })
-        }
+        onChange={(e: any) => setCustomer({ name: e.target.value })}
       />
       <TextField
         inputLabel="Email"
         value={customer?.email || ''}
-        onChange={(e: any) =>
-          setCustomer({ ...customer, email: e.target.value })
-        }
+        onChange={(e: any) => setCustomer({ email: e.target.value })}
       />
       <TextField
         inputLabel="Phone"
         value={customer?.phone || ''}
-        onChange={(e: any) =>
-          setCustomer({ ...customer, phone: e.target.value })
-        }
+        onChange={(e: any) => setCustomer({ phone: e.target.value })}
       />
       <TextField
         inputLabel="Postal Address"
         multiline
         rows={4}
-        value={customer?.postal_address || ''}
-        onChange={(e: any) =>
-          setCustomer({ ...customer, postal_address: e.target.value })
-        }
+        value={customer?.postalAddress || ''}
+        onChange={(e: any) => setCustomer({ postalAddress: e.target.value })}
       />
       <TextField
         inputLabel="Notes"
         multiline
         rows={4}
         value={customer?.note || ''}
-        onChange={(e: any) =>
-          setCustomer({ ...customer, note: e.target.value })
-        }
+        onChange={(e: any) => setCustomer({ note: e.target.value })}
       />
     </SidebarContainer>
   )

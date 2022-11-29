@@ -1,19 +1,10 @@
-// Packages
-import { useAtom } from 'jotai'
 import { useState } from 'react'
-
-// DB
-import { alertAtom, cartAtom, clerkAtom, viewAtom } from 'lib/atoms'
 import { useInventory, useLogs } from 'lib/database/read'
 import { SaleItemObject } from 'lib/types'
-
-// Components
 import CircularProgress from '@mui/material/CircularProgress'
 import Tooltip from '@mui/material/Tooltip'
 import Actions from './actions'
 import ListItem from './list-item'
-
-// Icons
 import {
   getItemById,
   getItemDisplayName,
@@ -26,38 +17,34 @@ import {
 import HoldIcon from '@mui/icons-material/PanTool'
 import PayIcon from '@mui/icons-material/ShoppingCart'
 import { getSaleVars } from 'features/sale/features/item-sale/lib/functions'
-import { useStockList } from 'lib/swr/stock'
-import { useStore } from 'lib/store'
+import { useStockList } from 'lib/api/stock'
+import { useAppStore } from 'lib/store'
+import { useClerk } from 'lib/api/clerk'
+import { ViewProps } from 'lib/store/types'
 
 export default function ShoppingCart() {
-  // SWR
+  const { cart, view, setCart, setAlert, resetCart, closeView, openView } =
+    useAppStore()
   const { stockList } = useStockList()
   const { logs, mutateLogs } = useLogs()
-  const { cart } = useStore()
-
-  // Atoms
-  const [view, setView] = useAtom(viewAtom)
-  const [clerk] = useAtom(clerkAtom)
-  const [cart, setCart] = useAtom(cartAtom)
-  const [, setAlert] = useAtom(alertAtom)
+  const { clerk } = useClerk()
 
   // State
   const [loadingSale, setLoadingSale] = useState(false)
 
   async function deleteCartItem(itemId: string, id: number) {
     let updatedCartItems = cart?.items?.map((i: SaleItemObject) =>
-      i?.item_id === parseInt(itemId) ? { ...i, is_deleted: true } : i
+      i?.itemId === parseInt(itemId) ? { ...i, isDeleted: true } : i
     )
     if (id)
       // Cart has been saved to the database, delete sale_item
       deleteSaleItemFromDatabase(id)
     if (cart?.items?.length < 1 && cart?.transactions?.length < 1) {
       // No items left and no transactions, delete cart
-      setView({ ...view, cart: false })
+      closeView(ViewProps.cart)
       deleteSaleFromDatabase(cart?.id)
     }
     setCart({
-      ...cart,
       items: updatedCartItems,
     })
     saveLog(
@@ -105,10 +92,10 @@ export default function ShoppingCart() {
         <div className="flex-grow overflow-x-hidden overflow-y-scroll">
           {cart?.items?.length > 0 ? (
             cart.items
-              .filter((cartItem: SaleItemObject) => !cartItem?.is_deleted)
+              .filter((cartItem: SaleItemObject) => !cartItem?.isDeleted)
               .map((cartItem, i) => (
                 <ListItem
-                  key={cartItem?.item_id}
+                  key={cartItem?.itemId}
                   index={i}
                   cartItem={cartItem}
                   deleteCartItem={deleteCartItem}
@@ -143,7 +130,7 @@ export default function ShoppingCart() {
                 loadingSale ||
                 totalRemaining === 0
               }
-              onClick={() => setView({ ...view, createHold: true })}
+              onClick={() => openView(ViewProps.createHold)}
             >
               <HoldIcon className="mr-2" />
               HOLD
@@ -176,7 +163,7 @@ export default function ShoppingCart() {
                 totalRemaining < 0 ? 'cancel' : 'ok'
               }`}
               disabled={loadingSale || totalRemaining === 0}
-              onClick={() => setView({ ...view, saleScreen: true })}
+              onClick={() => openView(ViewProps.saleScreen)}
             >
               {loadingSale ? (
                 <span className="pr-4">

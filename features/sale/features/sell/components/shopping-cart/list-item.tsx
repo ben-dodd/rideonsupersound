@@ -1,16 +1,7 @@
-// Packages
-import { useAtom } from 'jotai'
 import { useState } from 'react'
-
-// DB
-import { cartAtom, confirmModalAtom } from 'lib/atoms'
 import { useInventory, useStockItem } from 'lib/database/read'
 import { SaleItemObject, StockObject } from 'lib/types'
-
-// Components
 import TextField from 'components/inputs/text-field'
-
-// Icons
 import {
   getImageSrc,
   getItemDisplayName,
@@ -24,6 +15,7 @@ import {
   getCartItemPrice,
   writeCartItemPriceBreakdown,
 } from '../../lib/functions'
+import { useAppStore } from 'lib/store'
 
 type SellListItemProps = {
   index: number
@@ -36,32 +28,23 @@ export default function SellListItem({
   cartItem,
   deleteCartItem,
 }: SellListItemProps) {
-  // SWR
+  const { openConfirm, setCartItem } = useAppStore()
   const { inventory } = useInventory()
-  const { stockItem } = useStockItem(cartItem?.item_id)
-
-  // Atoms
-  const [cart, setCart] = useAtom(cartAtom)
-  const [, setConfirmModal] = useAtom(confirmModalAtom)
-
-  // State
+  const { stockItem } = useStockItem(cartItem?.itemId)
   const [expanded, setExpanded] = useState(false)
   const item = inventory?.filter(
-    (i: StockObject) => i.id === cartItem?.item_id
+    (i: StockObject) => i.id === cartItem?.itemId
   )?.[0]
 
   // Functions
   function onChangeCart(e: any, property: string) {
-    let newCart = { ...cart }
-    if (newCart?.items && newCart?.items[index])
-      newCart.items[index][property] = e.target.value
-    setCart(newCart)
+    setCartItem(index, { [property]: e.target.value })
   }
 
   function onChangeQuantity(e: any) {
     if (stockItem?.quantity < parseInt(e?.target?.value)) {
       const newQuantity = e?.target?.value
-      setConfirmModal({
+      openConfirm({
         open: true,
         title: 'Are you sure you want to add to cart?',
         styledMessage: (
@@ -143,8 +126,8 @@ export default function SellListItem({
                 max={100}
                 inputType="number"
                 endAdornment="%"
-                error={parseInt(cartItem?.vendor_discount) > 100}
-                valueNum={parseInt(cartItem?.vendor_discount)}
+                error={parseInt(cartItem?.vendorDiscount) > 100}
+                valueNum={parseInt(cartItem?.vendorDiscount)}
                 onChange={(e: any) => onChangeCart(e, 'vendor_discount')}
               />
               <TextField
@@ -154,8 +137,8 @@ export default function SellListItem({
                 max={100}
                 inputType="number"
                 endAdornment="%"
-                error={parseInt(cartItem?.store_discount) > 100}
-                valueNum={parseInt(cartItem?.store_discount)}
+                error={parseInt(cartItem?.storeDiscount) > 100}
+                valueNum={parseInt(cartItem?.storeDiscount)}
                 onChange={(e: any) => onChangeCart(e, 'store_discount')}
               />
             </div>
@@ -179,7 +162,7 @@ export default function SellListItem({
               <div className="w-50 text-right">
                 <button
                   className="py-2 text-tertiary hover:text-tertiary-dark"
-                  onClick={() => deleteCartItem(cartItem?.item_id)}
+                  onClick={() => deleteCartItem(cartItem?.itemId)}
                 >
                   <DeleteIcon />
                 </button>

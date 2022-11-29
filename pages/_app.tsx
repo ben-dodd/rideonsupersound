@@ -2,7 +2,6 @@ import 'primereact/resources/themes/lara-light-indigo/theme.css' //theme
 import 'primereact/resources/primereact.min.css' //core css
 import 'primeicons/primeicons.css' //icons
 import '../styles/index.css'
-import { Provider as JotaiProvider } from 'jotai'
 import { UserProvider } from '@auth0/nextjs-auth0'
 // import { SessionProvider } from "next-auth/react";
 
@@ -31,11 +30,7 @@ function MyApp({ Component, pageProps }) {
 
   const getLayout = Component.getLayout || ((page) => page)
 
-  return (
-    <UserProvider>
-      <JotaiProvider>{getLayout(<Component {...pageProps} />)}</JotaiProvider>
-    </UserProvider>
-  )
+  return <UserProvider>{getLayout(<Component {...pageProps} />)}</UserProvider>
 }
 
 export default MyApp

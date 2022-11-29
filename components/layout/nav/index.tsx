@@ -10,8 +10,7 @@ import { bg } from 'lib/types'
 import HelpIcon from '@mui/icons-material/Help'
 import SaleNavActions from './actions/sale'
 import StocktakeNavActions from './actions/stocktake'
-import { useUser } from '@auth0/nextjs-auth0'
-import { useClerk } from 'lib/swr/clerk'
+import { useClerk } from 'lib/api/clerk'
 import { ViewProps } from 'lib/store/types'
 import { useAppStore } from 'lib/store'
 import { useRouter } from 'next/router'
@@ -21,10 +20,9 @@ import { useRouter } from 'next/router'
 export default function Nav() {
   // SWR
   const { registerID } = useRegisterID()
-  const { user } = useUser()
 
   // Atoms
-  const { clerk } = useClerk(user?.sub)
+  const { clerk } = useClerk()
   const { openView } = useAppStore()
   const router = useRouter()
   const page = router.pathname

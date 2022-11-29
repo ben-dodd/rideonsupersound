@@ -1,8 +1,8 @@
 import { SaleItemObject } from 'lib/types'
 import Menu from './components/menu'
 import { useAppStore } from 'lib/store'
-import { useRestockList } from 'lib/swr/stock'
-import { useJobsToDo } from 'lib/swr/jobs'
+import { useRestockList } from 'lib/api/stock'
+import { useJobsToDo } from 'lib/api/jobs'
 
 // Types
 type MenuType = {

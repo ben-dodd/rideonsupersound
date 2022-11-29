@@ -1,21 +1,9 @@
-// Packages
-import { useAtom } from 'jotai'
 import { useState } from 'react'
-
-// DB
 import SidebarContainer from 'components/container/side-bar'
 import CreateableSelect from 'components/inputs/createable-select'
 import TextField from 'components/inputs/text-field'
 import { addRestockTask } from 'features/job/lib/functions'
 import { logCreateHold, saveSystemLog } from 'features/log/lib/functions'
-import {
-  alertAtom,
-  cartAtom,
-  clerkAtom,
-  loadedCustomerObjectAtom,
-  sellSearchBarAtom,
-  viewAtom,
-} from 'lib/atoms'
 import {
   createHoldInDatabase,
   createStockMovementInDatabase,
@@ -34,23 +22,31 @@ import {
 } from 'lib/types'
 import { getItemQuantity } from '../../sell/lib/functions'
 import ListItem from './list-item'
+import { useAppStore } from 'lib/store'
+import { useUser } from '@auth0/nextjs-auth0'
+import { useClerk } from 'lib/api/clerk'
+import { ViewProps } from 'lib/store/types'
 
 export default function CreateHoldSidebar() {
-  // SWR
+  const {
+    cart,
+    view,
+    setAlert,
+    setCart,
+    setCustomer,
+    resetCart,
+    resetSellSearchBar,
+    openView,
+    closeView,
+  } = useAppStore()
+  const { user } = useUser()
+  const { clerk } = useClerk(user?.sub)
+
   const { customers } = useCustomers()
   const { inventory } = useInventory()
   const { logs, mutateLogs } = useLogs()
   const { registerID } = useRegisterID()
 
-  // Atoms
-  const [cart, setCart] = useAtom(cartAtom)
-  const [, setAlert] = useAtom(alertAtom)
-  const [, setCustomer] = useAtom(loadedCustomerObjectAtom)
-  const [view, setView] = useAtom(viewAtom)
-  const [, setSearch] = useAtom(sellSearchBarAtom)
-  const [clerk] = useAtom(clerkAtom)
-
-  // State
   const [holdPeriod, setHoldPeriod] = useState(30)
   const [note, setNote] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -65,11 +61,11 @@ export default function CreateHoldSidebar() {
       // Create hold for each item
       async (cartItem) => {
         const item = inventory?.filter(
-          (i: StockObject) => i?.id === cartItem?.item_id
+          (i: StockObject) => i?.id === cartItem?.itemId
         )[0]
         const itemQuantity = getItemQuantity(item, cart?.items)
         if (itemQuantity > 0) {
-          addRestockTask(cartItem?.item_id)
+          addRestockTask(cartItem?.itemId)
         }
         const holdId = await createHoldInDatabase(
           cart,
@@ -100,16 +96,17 @@ export default function CreateHoldSidebar() {
       open: true,
       type: 'success',
       message: `ITEM${cart?.items?.length === 1 ? '' : 'S'} PUT ON HOLD FOR ${(
-        customers?.filter((c: CustomerObject) => c?.id === cart?.customer_id)[0]
+        customers?.filter((c: CustomerObject) => c?.id === cart?.customerId)[0]
           ?.name || ''
       ).toUpperCase()}.`,
     })
 
     // Reset vars and return to inventory scroll
     setSubmitting(false)
-    setSearch(null)
-    setCart(null)
-    setView({ ...view, cart: false, createHold: false })
+    resetSellSearchBar()
+    resetCart()
+    closeView(ViewProps.cart)
+    closeView(ViewProps.createHold)
   }
 
   const buttons: ModalButton[] = [
@@ -117,7 +114,8 @@ export default function CreateHoldSidebar() {
       type: 'cancel',
       onClick: () => {
         saveSystemLog('New hold cancelled.', clerk?.id)
-        setView({ ...view, cart: false, createHold: false })
+        closeView(ViewProps.cart)
+        closeView(ViewProps.createHold)
       },
       text: 'CANCEL',
     },
@@ -125,7 +123,7 @@ export default function CreateHoldSidebar() {
       type: 'ok',
       onClick: onClickConfirmHold,
       disabled:
-        !cart?.customer_id ||
+        !cart?.customerId ||
         Object.keys(cart?.items || {}).length === 0 ||
         !holdPeriod,
       text: submitting ? 'HOLDING...' : 'CONFIRM HOLD',
@@ -151,23 +149,20 @@ export default function CreateHoldSidebar() {
         <CreateableSelect
           inputLabel="Select customer"
           fieldRequired
-          value={cart?.customer_id}
+          value={cart?.customerId}
           label={
             customers?.filter(
-              (c: CustomerObject) => c?.id === cart?.customer_id
+              (c: CustomerObject) => c?.id === cart?.customerId
             )[0]?.name || ''
           }
           onChange={(customerObject: any) => {
             saveSystemLog('New hold sidebar - Customer selected.', clerk?.id)
-            setCart({
-              ...cart,
-              customer_id: parseInt(customerObject?.value),
-            })
+            setCart({ customerId: parseInt(customerObject?.value) })
           }}
           onCreateOption={(inputValue: string) => {
             saveSystemLog('New hold sidebar - Customer created.', clerk?.id)
             setCustomer({ name: inputValue })
-            setView({ ...view, createCustomer: true })
+            openView(ViewProps.createCustomer)
           }}
           options={customers?.map((val: CustomerObject) => ({
             value: val?.id,

@@ -1,13 +1,10 @@
 import { saveSystemLog } from 'features/log/lib/functions'
 import NewIcon from '@mui/icons-material/AddBox'
-import { useAtom } from 'jotai'
-import { useUser } from '@auth0/nextjs-auth0'
-import { useClerk } from 'lib/swr/clerk'
+import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 
 export default function VendorNavActions() {
-  const { user } = useUser()
-  const { clerk } = useClerk(user?.sub)
+  const { clerk } = useClerk()
   const { loadedVendorId, setLoadedVendorId } = useAppStore()
   // Change to create vendor dialog
   return (

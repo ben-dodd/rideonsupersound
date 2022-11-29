@@ -22,12 +22,12 @@ const fullVendorQuery = (db) =>
     'uid'
   )
 
-export function createVendor(vendor: VendorObject, db = connection) {
+export function dbCreateVendor(vendor: VendorObject, db = connection) {
   const insertData = prepareItemForDatabase(vendor)
   return db.insert(insertData).into('vendor')
 }
 
-export function getVendors(db = connection) {
+export function dbGetVendors(db = connection) {
   return db('vendor')
     .select(
       'id',
@@ -46,29 +46,29 @@ export function getVendors(db = connection) {
     .where({ is_deleted: 0 })
 }
 
-export function getVendorNames(db = connection) {
+export function dbGetVendorNames(db = connection) {
   return db('vendor').select('id', 'name').where({ is_deleted: 0 })
 }
 
-export function getVendor(id, db = connection) {
+export function dbGetVendor(id, db = connection) {
   return fullVendorQuery(db).where({ id }).andWhere({ is_deleted: 0 }).first()
 }
 
-export function getVendorByUid(uid, db = connection) {
+export function dbGetVendorByUid(uid, db = connection) {
   return fullVendorQuery(db).where({ uid }).andWhere({ is_deleted: 0 }).first()
 }
 
-export function getVendorFromVendorPayment(vendorPaymentId, db = connection) {
+export function dbGetVendorFromVendorPayment(vendorPaymentId, db = connection) {
   return fullVendorQuery(db)
     .join('vendor_payment', 'vendor_payment.id', vendorPaymentId)
     .first()
 }
 
-export function updateVendor(vendor, id, db = connection) {
+export function dbUpdateVendor(vendor, id, db = connection) {
   const insertData = prepareItemForDatabase(vendor)
   return db('vendor').where({ id }).update(insertData)
 }
 
-export function deleteVendor(id, db = connection) {
+export function dbDeleteVendor(id, db = connection) {
   return db('vendor').del().where({ id })
 }

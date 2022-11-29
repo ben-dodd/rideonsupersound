@@ -1,5 +1,5 @@
 import connection from './conn'
 
-export function getClerk(sub, db = connection) {
+export function dbGetClerk(sub, db = connection) {
   return db('clerk').where({ sub }).first()
 }

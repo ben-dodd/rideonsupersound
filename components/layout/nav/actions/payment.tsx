@@ -2,14 +2,12 @@ import { saveSystemLog } from 'features/log/lib/functions'
 import NewIcon from '@mui/icons-material/AddBox'
 import PayIcon from '@mui/icons-material/Payment'
 import TransferIcon from '@mui/icons-material/TransferWithinAStation'
-import { useClerk } from 'lib/swr/clerk'
-import { useUser } from '@auth0/nextjs-auth0'
+import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 
 export default function PaymentNavActions() {
-  const { user } = useUser()
-  const { clerk } = useClerk(user?.sub)
+  const { clerk } = useClerk()
   const { openView } = useAppStore()
   return (
     <div className="flex">

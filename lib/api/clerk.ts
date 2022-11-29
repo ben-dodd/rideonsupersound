@@ -1,5 +1,5 @@
 import useData from '.'
 
-export function useClerk(sub: string) {
+export function useClerk() {
   return useData(`clerk`, 'clerk')
 }

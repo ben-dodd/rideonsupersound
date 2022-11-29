@@ -1,7 +1,14 @@
 // Components
 import TextField from 'components/inputs/text-field'
+import { TillObject } from 'lib/types'
 
-export default function CashMap({ till, setTill }) {
+export default function CashMap({
+  till,
+  setTill,
+}: {
+  till: TillObject
+  setTill: Function
+}) {
   // Functions
   function isError(val: string) {
     return val && (isNaN(parseInt(val)) || parseInt(val) < 0)
@@ -16,28 +23,28 @@ export default function CashMap({ till, setTill }) {
           divClass="text-3xl"
           inputClass="w-full"
           selectOnFocus
-          error={isError(till?.one_hundred_dollar)}
-          value={till?.one_hundred_dollar}
+          error={isError(`${till?.oneHundredDollar}`)}
+          value={`${till?.oneHundredDollar}`}
           onChange={(e: any) =>
-            setTill({ ...till, one_hundred_dollar: e.target.value })
+            setTill({ ...till, oneHundredDollar: e.target.value })
           }
         />
         <TextField
           inputLabel="$50s"
           divClass="text-3xl"
           selectOnFocus
-          value={till?.fifty_dollar}
-          error={isError(till?.fifty_dollar)}
+          value={`${till?.fiftyDollar}`}
+          error={isError(`${till?.fiftyDollar}`)}
           onChange={(e: any) =>
-            setTill({ ...till, fifty_dollar: e.target.value })
+            setTill({ ...till, fiftyDollar: e.target.value })
           }
         />
         <TextField
           inputLabel="$20s"
           divClass="text-3xl"
           selectOnFocus
-          value={till?.twenty_dollar}
-          error={isError(till?.twenty_dollar)}
+          value={`${till?.twentyDollar}`}
+          error={isError(`${till?.twentyDollar}`)}
           onChange={(e: any) =>
             setTill({ ...till, twenty_dollar: e.target.value })
           }

@@ -1,15 +1,4 @@
-// Packages
-import { useAtom } from 'jotai'
 import { useState } from 'react'
-
-// DB
-import {
-  alertAtom,
-  cartAtom,
-  clerkAtom,
-  confirmModalAtom,
-  viewAtom,
-} from 'lib/atoms'
 import {
   useCustomers,
   useGiftCards,
@@ -18,12 +7,8 @@ import {
   useRegisterID,
   useSales,
 } from 'lib/database/read'
-
-// Components
 import CircularProgress from '@mui/material/CircularProgress'
 import Tooltip from '@mui/material/Tooltip'
-
-// Icons
 import { saveLog } from 'features/log/lib/functions'
 import {
   saveSaleAndPark,
@@ -32,8 +17,21 @@ import {
 import { SaleStateTypes } from 'lib/types'
 import DiscardSaleIcon from '@mui/icons-material/Close'
 import SaveSaleIcon from '@mui/icons-material/Save'
+import { useClerk } from 'lib/api/clerk'
+import { useAppStore } from 'lib/store'
+import { ViewProps } from 'lib/store/types'
 
 export default function ShoppingCartActions() {
+  const { clerk } = useClerk()
+  const {
+    cart,
+    setCart,
+    setAlert,
+    openConfirm,
+    openView,
+    closeView,
+    resetCart,
+  } = useAppStore()
   // SWR
   const { customers } = useCustomers()
   const { logs, mutateLogs } = useLogs()
@@ -42,24 +40,17 @@ export default function ShoppingCartActions() {
   const { giftCards, mutateGiftCards } = useGiftCards()
   const { registerID } = useRegisterID()
 
-  // Atoms
-  const [clerk] = useAtom(clerkAtom)
-  const [cart, setCart] = useAtom(cartAtom)
-  const [, setAlert] = useAtom(alertAtom)
-  const [, setConfirmModal] = useAtom(confirmModalAtom)
-  const [view, setView] = useAtom(viewAtom)
-
   // State
   const [saveSaleLoading, setSaveSaleLoading] = useState(false)
 
   // Functions
   function clearCart() {
-    setCart({ id: null, items: [] })
-    setView({ ...view, cart: false })
+    resetCart()
+    closeView(ViewProps.cart)
   }
 
   function onClickLoadSales() {
-    setView({ ...view, loadSalesDialog: true })
+    openView(ViewProps.loadSalesDialog)
   }
 
   async function onClickSaveSale() {
@@ -108,7 +99,7 @@ export default function ShoppingCartActions() {
   }
 
   async function onClickDiscardSale() {
-    setConfirmModal({
+    openConfirm({
       open: true,
       title: 'Are you sure?',
       message: 'Are you sure you want to clear the cart of all items?',

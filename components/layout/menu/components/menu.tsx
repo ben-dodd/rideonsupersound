@@ -17,8 +17,7 @@ import MenuItem from './menu-item'
 import PyramidImage from './pyramid-image'
 import { useRouter } from 'next/router'
 import { useAppStore } from 'lib/store'
-import { useClerk } from 'lib/swr/clerk'
-import { useUser } from '@auth0/nextjs-auth0'
+import { useClerk } from 'lib/api/clerk'
 import { ViewProps } from 'lib/store/types'
 
 type MenuType = {
@@ -34,8 +33,7 @@ type MenuType = {
 export default function Menu({ badges }) {
   const router = useRouter()
   const { view, closeView } = useAppStore()
-  const { user } = useUser()
-  const { clerk } = useClerk(user?.sub)
+  const { clerk } = useClerk()
 
   const topMenu = [
     {

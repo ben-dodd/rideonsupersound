@@ -4,14 +4,12 @@ import { useStocktakeTemplates } from 'lib/database/read'
 import { StocktakeTemplateObject } from 'lib/types'
 import NewIcon from '@mui/icons-material/AddBox'
 import { useState } from 'react'
-import { useUser } from '@auth0/nextjs-auth0'
-import { useClerk } from 'lib/swr/clerk'
+import { useClerk } from 'lib/api/clerk'
 import { ViewProps } from 'lib/store/types'
 import { useAppStore } from 'lib/store'
 
 export default function StocktakeNavActions() {
-  const { user } = useUser()
-  const { clerk } = useClerk(user?.sub)
+  const { clerk } = useClerk()
   const { openView, setLoadedStocktakeTemplateId } = useAppStore()
   const { stocktakeTemplates, mutateStocktakeTemplates } =
     useStocktakeTemplates()

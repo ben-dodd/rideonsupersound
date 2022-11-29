@@ -1,25 +1,21 @@
 // Packages
 import TextField from 'components/inputs/text-field'
 import { logOpenRegister } from 'features/log/lib/functions'
-import { alertAtom, bypassRegisterAtom, clerkAtom, pageAtom } from 'lib/atoms'
 import { useLogs, useRegisterID } from 'lib/database/read'
 import { RegisterObject, TillObject } from 'lib/types'
 import OpenIcon from '@mui/icons-material/ShoppingCart'
 import CircularProgress from '@mui/material/CircularProgress'
-import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 import { getAmountFromCashMap, saveAndOpenRegister } from '../lib/functions'
 import CashMap from './cash-map'
+import { useAppStore } from 'lib/store'
+import { useClerk } from 'lib/api/clerk'
 
 export default function OpenRegisterScreen() {
+  const { clerk } = useClerk()
   const { registerID, mutateRegisterID } = useRegisterID()
   const { logs, mutateLogs } = useLogs()
-
-  // Atoms
-  const [, setAlert] = useAtom(alertAtom)
-  const [clerk] = useAtom(clerkAtom)
-  const [page] = useAtom(pageAtom)
-  const [, setBypassRegister] = useAtom(bypassRegisterAtom)
+  const { setAlert } = useAppStore()
 
   // State
   const [till, setTill] = useState({})
@@ -38,9 +34,9 @@ export default function OpenRegisterScreen() {
   // Functions
   async function openRegister() {
     const register: RegisterObject = {
-      opened_by_id: clerk?.id,
-      open_amount: openAmount ? parseFloat(openAmount) * 100 : 0,
-      open_note: notes || null,
+      openedById: clerk?.id,
+      openAmount: openAmount ? parseFloat(openAmount) * 100 : 0,
+      openNote: notes || null,
     }
     setLoading(true)
     // Save register to DB and mutate register with returned ID number

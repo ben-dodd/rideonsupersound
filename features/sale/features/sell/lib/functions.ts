@@ -7,22 +7,25 @@ import { GiftCardObject, SaleItemObject, StockObject } from 'lib/types'
 import { priceCentsString } from 'lib/utils'
 import dayjs from 'dayjs'
 
-export function writeCartItemPriceBreakdown(cartItem: any, item?: StockObject) {
+export function writeCartItemPriceBreakdown(
+  cartItem: SaleItemObject,
+  item?: StockObject
+) {
   // Writes out the sale item in the following form:
   // 1 x V10% x R50% x $27.00
-  return item?.is_gift_card
-    ? `${priceCentsString(item?.gift_card_amount)} GIFT CARD`
-    : item?.is_misc_item
-    ? `${cartItem?.quantity} x ${priceCentsString(item?.misc_item_amount)}`
+  return item?.isGiftCard
+    ? `${priceCentsString(item?.giftCardAmount)} GIFT CARD`
+    : item?.isMiscItem
+    ? `${cartItem?.quantity} x ${priceCentsString(item?.miscItemAmount)}`
     : `${cartItem?.quantity}${
-        parseInt(cartItem?.vendor_discount) > 0
-          ? ` x V${cartItem?.vendor_discount}%`
+        parseInt(cartItem?.vendorDiscount) > 0
+          ? ` x V${cartItem?.vendorDiscount}%`
           : ''
       }${
-        parseInt(cartItem?.store_discount) > 0
-          ? ` x S${cartItem?.store_discount}%`
+        parseInt(cartItem?.storeDiscount) > 0
+          ? ` x S${cartItem?.storeDiscount}%`
           : ''
-      } x ${priceCentsString(cartItem?.total_sell ?? item?.total_sell)}`
+      } x ${priceCentsString(cartItem?.totalSell ?? item?.totalSell)}`
 }
 
 export function getPrice(
@@ -37,11 +40,11 @@ export function getPrice(
   )
 }
 
-export function getCartItemVendorCut(cartItem, item) {
-  const vendorCut: number = cartItem?.vendor_cut ?? item?.vendor_cut
+export function getCartItemVendorCut(cartItem: SaleItemObject, item) {
+  const vendorCut: number = cartItem?.vendorCut ?? item?.vendorCut
   const vendorPrice: number = getPrice(
     vendorCut,
-    cartItem?.vendor_discount,
+    cartItem?.vendorDiscount,
     cartItem?.quantity
   )
   return vendorPrice
@@ -63,8 +66,8 @@ export function getCartItemStoreCut(cartItem, item) {
 export function getCartItemTotal(cartItem, item) {
   const totalSell: number = !cartItem
     ? 0
-    : item?.is_gift_card
-    ? item?.gift_card_amount || 0
+    : item?.isGiftCard
+    ? item?.giftCardAmount || 0
     : item?.is_misc_item
     ? item?.misc_item_amount || 0
     : null

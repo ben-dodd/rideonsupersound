@@ -113,6 +113,7 @@ export interface ConfirmModal {
 export interface SaleObject {
   id?: number
   customerId?: number
+  customer?: CustomerObject
   state?: SaleStateTypes
   dateSaleOpened?: any
   saleOpenedBy?: number

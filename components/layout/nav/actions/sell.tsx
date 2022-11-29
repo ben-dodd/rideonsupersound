@@ -2,15 +2,12 @@ import { saveSystemLog } from 'features/log/lib/functions'
 import AddCashIcon from '@mui/icons-material/AttachMoney'
 import TakeCashIcon from '@mui/icons-material/MoneyOff'
 import CloseRegisterIcon from '@mui/icons-material/VpnKey'
-import { useAtom } from 'jotai'
-import { useUser } from '@auth0/nextjs-auth0'
-import { useClerk } from 'lib/swr/clerk'
+import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 
 export default function SellNavActions() {
-  const { user } = useUser()
-  const { clerk } = useClerk(user?.sub)
+  const { clerk } = useClerk()
   const { openView } = useAppStore()
 
   return (

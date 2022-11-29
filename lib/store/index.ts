@@ -1,9 +1,7 @@
 import create, { State, StoreApi, UseBoundStore } from 'zustand'
 import dayjs from 'dayjs'
 import produce from 'immer'
-import request from 'superagent'
 import { StoreState } from './types'
-import ConfirmModal from 'components/modal/confirm-modal'
 
 type WithSelectors<S> = S extends { getState: () => infer T }
   ? S & { use: { [K in keyof T]: () => T[K] } }
@@ -33,14 +31,13 @@ export const errorHandler = (method: string, route: string) => (err: any) => {
 export const useAppStore = createSelectors(
   create<StoreState>((set, get) => ({
     view: {},
-    cart: { id: null },
+    cart: { id: null, customer: {} },
     loadedItemId: {},
     loadedVendorId: {},
     loadedHoldId: {},
     loadedSaleId: {},
     loadedStocktakeId: 0,
     loadedStocktakeTemplateId: 0,
-    loadedCustomerObjectAtom: {},
     createableCustomerName: '',
     sellSearchBar: '',
     confirmModal: { open: false },
@@ -63,6 +60,35 @@ export const useAppStore = createSelectors(
       set(produce((draft) => (draft.confirmModal = { open: false }))),
     setAlert: (alert) => set(produce((draft) => (draft.alert = alert))),
     closeAlert: () => set(produce((draft) => (draft.alert = null))),
+    setCart: (update) =>
+      set(
+        produce((draft) =>
+          Object.entries(update).forEach(
+            ([key, value]) => (draft.cart.key = value)
+          )
+        )
+      ),
+    setCartItem: (id, update) =>
+      set(
+        produce((draft) =>
+          Object.entries(update).forEach(
+            ([key, value]) => (draft.cart.items[id][key] = value)
+          )
+        )
+      ),
+    setCustomer: (update) =>
+      set(
+        produce((draft) =>
+          Object.entries(update).forEach(
+            ([key, value]) => (draft.cart.customer[key] = value)
+          )
+        )
+      ),
+    resetCart: () =>
+      set(produce((draft) => (draft.cart = { id: null, customer: {} }))),
+    resetCustomer: () => set(produce((draft) => (draft.cart.customer = {}))),
+    resetSellSearchBar: () =>
+      set(produce((draft) => (draft.sellSearchBar = ''))),
     toggleCompactMode: () =>
       set(produce((draft) => (draft.compactMode = !get().compactMode))),
     toggleTableMode: () =>

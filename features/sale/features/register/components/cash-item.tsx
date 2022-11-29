@@ -20,7 +20,7 @@ export default function CashItem({
 
   // Constants
   const transactionBy = clerks?.filter(
-    (c: ClerkObject) => c?.id === transaction?.clerk_id
+    (c: ClerkObject) => c?.id === transaction?.clerkId
   )[0]?.name
   const date = dayjs(transaction?.date).format('H:mm A, D MMMM YYYY')
 

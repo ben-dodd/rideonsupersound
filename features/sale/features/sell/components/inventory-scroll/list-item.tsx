@@ -1,28 +1,7 @@
-// Packages
-import { useAtom } from 'jotai'
-
-// DB
-import {
-  cartAtom,
-  clerkAtom,
-  confirmModalAtom,
-  loadedItemIdAtom,
-  sellSearchBarAtom,
-  viewAtom,
-} from 'lib/atoms'
-import { useVendorNames } from 'lib/database/read'
 import { StockObject, VendorObject } from 'lib/types'
-
-// Components
 import Tooltip from '@mui/material/Tooltip'
-
-// Icons
 import AddIcon from '@mui/icons-material/AddCircleOutline'
 import InfoIcon from '@mui/icons-material/Info'
-
-// REVIEW add tooltips everywhere. Have ability to turn them off.
-
-// Functions
 import {
   getHoldQuantity,
   getImageSrc,
@@ -36,6 +15,11 @@ import {
   openCart,
   skuScan,
 } from '../../lib/functions'
+import { useVendorNames } from 'lib/api/vendor'
+import { useAppStore } from 'lib/store'
+import { useClerk } from 'lib/api/clerk'
+import { ViewProps } from 'lib/store/types'
+import { useRouter } from 'next/router'
 
 type ListItemProps = {
   item: StockObject
@@ -48,27 +32,29 @@ export default function ListItem({
   weather,
   geolocation,
 }: ListItemProps) {
-  // SWR
-  const { vendors } = useVendorNames()
-
-  // Atoms
-  const [cart, setCart] = useAtom(cartAtom)
-  const [sellSearch, setSearch] = useAtom(sellSearchBarAtom)
-  const [view, setView] = useAtom(viewAtom)
-  const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom)
-  const [, setConfirmModal] = useAtom(confirmModalAtom)
-  const [clerk] = useAtom(clerkAtom)
+  const { vendorNames } = useVendorNames()
+  const { clerk } = useClerk()
+  const {
+    cart,
+    sellSearchBar,
+    view,
+    openView,
+    openConfirm,
+    setCart,
+    resetSellSearchBar,
+  } = useAppStore()
+  const router = useRouter()
 
   // Constants
   const itemQuantity = getItemQuantity(item, cart?.items)
   const vendorName =
-    vendors?.find((vendor: VendorObject) => vendor?.id === item?.vendorId)
+    vendorNames?.find((vendor: VendorObject) => vendor?.id === item?.vendorId)
       ?.name || ''
 
   // Functions
   function clickAddToCart() {
     if (itemQuantity < 1) {
-      setConfirmModal({
+      openConfirm({
         open: true,
         title: 'Are you sure you want to add to cart?',
         styledMessage: (
@@ -84,15 +70,12 @@ export default function ListItem({
   }
 
   function handleAddItemToCart() {
-    if (!cart?.date_sale_opened) openCart(setCart, clerk, weather, geolocation)
+    if (!cart?.dateSaleOpened) openCart(setCart, clerk, weather, geolocation)
     addItemToCart(item, cart, setCart, clerk)
-    setView({ ...view, cart: true })
-    setSearch('')
+    openView(ViewProps.cart)
+    resetSellSearchBar()
   }
 
-  function clickOpenInventoryModal() {
-    setLoadedItemId({ ...loadedItemId, sell: item?.id })
-  }
   // REVIEW Add in way for mobile view to add items and access info
   // Disable mobile only for now
   // <div
@@ -101,7 +84,7 @@ export default function ListItem({
   //   onDoubleClick={clickOpenInventoryModal}
   // >
 
-  skuScan(sellSearch, item, handleAddItemToCart)
+  skuScan(sellSearchBar, item, handleAddItemToCart)
 
   return (
     <div
@@ -182,7 +165,7 @@ export default function ListItem({
         <Tooltip title="View and edit item details.">
           <button
             className="icon-button-large text-black hover:text-blue-500"
-            onClick={clickOpenInventoryModal}
+            onClick={() => router.push(`/stock/${item?.id}`)}
           >
             <InfoIcon style={{ fontSize: '40px' }} />
           </button>

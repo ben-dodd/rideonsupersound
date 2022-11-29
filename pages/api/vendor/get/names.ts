@@ -1,5 +1,5 @@
 import { NextApiResponse } from 'next'
-import { requireScope } from 'lib/swr/utils'
+import { requireScope } from 'lib/api/utils'
 import { NextAuthenticatedApiRequest } from '@serverless-jwt/next/dist/types'
 import { createVendorNames } from 'lib/database/vendor'
 

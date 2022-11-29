@@ -1,16 +1,13 @@
 import useSWR from 'swr'
 import { camelCase, pascalCase } from '../utils'
+import { request } from 'superagent'
 
 export default function useData(url: string, label: string) {
   const { data, error, mutate } = useSWR(url, async () =>
-    fetch(`/api/auth/jwt`)
+    request(`/api/auth/jwt`)
       .then((response) => response.json())
       .then((accessToken) =>
-        fetch(`/api/${url}`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        })
+        request(`/api/${url}`).set('Authorization', `Bearer ${accessToken}`)
       )
       .then((res) => res.json())
   )

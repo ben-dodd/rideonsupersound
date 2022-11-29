@@ -6,7 +6,7 @@ import GiftCardItem from './gift-card-item'
 import ListItem from './list-item'
 import MiscItem from './misc-item'
 import Loading from 'components/loading'
-import { useStockList } from 'lib/swr/stock'
+import { useStockList } from 'lib/api/stock'
 
 export default function InventoryScroll({ search }: { search: string }) {
   const maxItemsInList = 50

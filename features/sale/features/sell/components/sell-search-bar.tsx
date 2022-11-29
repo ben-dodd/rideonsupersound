@@ -2,7 +2,7 @@ import MiscItemIcon from '@mui/icons-material/DeviceUnknown'
 import GiftCardsIcon from '@mui/icons-material/Redeem'
 import SearchIcon from '@mui/icons-material/Search'
 import Tooltip from '@mui/material/Tooltip'
-import { useStore } from 'lib/store'
+import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 
 export default function SellSearchBar({
@@ -12,7 +12,7 @@ export default function SellSearchBar({
   search: string
   setSearch: Function
 }) {
-  const { openView } = useStore()
+  const { openView } = useAppStore()
   return (
     <div className="h-search py-2 px-2 mr-2 mb-4 flex">
       <Tooltip title="Search by artist, title, SKU, genre, and many more. To add a Misc. Item or a Gift Card, just type that in.">

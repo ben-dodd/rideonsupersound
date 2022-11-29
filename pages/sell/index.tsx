@@ -16,13 +16,13 @@ import SellSearchBar from 'features/sale/features/sell/components/sell-search-ba
 import ShoppingCart from 'features/sale/features/sell/components/shopping-cart'
 import { useRegisterID } from 'lib/database/read'
 import { useSwipeable } from 'react-swipeable'
-import { useStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useState } from 'react'
+import { useAppStore } from 'lib/store'
 
 export default function SellPage() {
   const { registerID } = useRegisterID()
-  const { loadedItemId, view, openView, closeView, bypassRegister } = useStore()
+  const { view, openView, closeView, bypassRegister } = useAppStore()
   const [search, setSearch] = useState('')
 
   const handlers = useSwipeable({
@@ -59,7 +59,6 @@ export default function SellPage() {
       {view?.saleScreen && <SaleScreen />}
       {view?.miscItemDialog && <MiscItemDialog />}
       {view?.giftCardDialog && <GiftCardDialog />}
-      {loadedItemId && <InventoryItemScreen page="sell" />}
       {view?.changePriceDialog && <ChangePriceDialog />}
       {view?.changeStockQuantityDialog && <ChangeStockQuantityDialog />}
       {view?.closeRegisterScreen && <CloseRegisterScreen />}

@@ -1,6 +1,6 @@
 import connection from './conn'
 
-export function getJobsToDo(db = connection) {
+export function dbGetJobsToDo(db = connection) {
   return db('task')
     .select('id')
     .where('is_completed', 0)

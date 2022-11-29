@@ -1,6 +1,6 @@
 const connection = require('conn')
 
-export function getLogs(limit?, db = connection) {
+export function dbGetLogs(limit?, db = connection) {
   return db('log')
     .where({ is_deleted: 0 })
     .andWhereNot({ table_id: 'system' })

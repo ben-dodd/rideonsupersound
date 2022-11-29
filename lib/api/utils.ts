@@ -1,4 +1,4 @@
-import { Session, UserProfile, useUser } from '@auth0/nextjs-auth0'
+import { Session } from '@auth0/nextjs-auth0'
 import { NextJwtVerifier } from '@serverless-jwt/next'
 import { NextAuthenticatedApiRequest } from '@serverless-jwt/next/dist/types'
 import { NextApiHandler } from 'next'

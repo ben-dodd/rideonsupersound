@@ -1,43 +1,31 @@
-// Packages
-import { useAtom } from 'jotai'
 import { useState } from 'react'
-
-// DB
-import {
-  alertAtom,
-  cartAtom,
-  clerkAtom,
-  sellSearchBarAtom,
-  viewAtom,
-} from 'lib/atoms'
 import { useInventory, useLogs } from 'lib/database/read'
 import { ModalButton, StockObject } from 'lib/types'
-
-// Functions
-
-// Components
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
 import { logNewMiscItemCreated } from 'features/log/lib/functions'
 import { getGeolocation, useWeather } from 'lib/api'
 import { createStockItemInDatabase } from 'lib/database/create'
 import dayjs from 'dayjs'
+import { useClerk } from 'lib/api/clerk'
+import { useAppStore } from 'lib/store'
+import { ViewProps } from 'lib/store/types'
 
 export default function MiscItemDialog() {
-  // Atoms
-  const [clerk] = useAtom(clerkAtom)
-  const [view, setView] = useAtom(viewAtom)
-  const [, setAlert] = useAtom(alertAtom)
-  const [cart, setCart] = useAtom(cartAtom)
-  const [, setSearch] = useAtom(sellSearchBarAtom)
-
-  // SWR
+  const { clerk } = useClerk()
+  const {
+    cart,
+    view,
+    setCart,
+    setAlert,
+    openView,
+    closeView,
+    resetSellSearchBar,
+  } = useAppStore()
   const { logs, mutateLogs } = useLogs()
   const { inventory, mutateInventory } = useInventory()
   const geolocation = getGeolocation()
   const { weather } = useWeather()
-
-  // State
   const [description, setDescription] = useState('')
   const [amount, setAmount] = useState('')
   const [notes, setNotes] = useState('')
@@ -56,11 +44,11 @@ export default function MiscItemDialog() {
       loading: submitting,
       onClick: async () => {
         setSubmitting(true)
-        setSearch('')
+        resetSellSearchBar()
         let newMiscItem: StockObject = {
-          is_misc_item: true,
-          misc_item_description: description,
-          misc_item_amount: parseFloat(amount) * 100,
+          isMiscItem: true,
+          miscItemDescription: description,
+          miscItemAmount: parseFloat(amount) * 100,
           note: notes,
         }
         const id = await createStockItemInDatabase(newMiscItem, clerk)
@@ -71,21 +59,22 @@ export default function MiscItemDialog() {
         // Add to cart
         let newItems = cart?.items || []
         newItems.push({
-          item_id: id,
+          itemId: id,
           quantity: '1',
-          is_misc_item: true,
+          isMiscItem: true,
         })
         setCart({
           id: cart?.id || null,
           // REVIEW check the date to string thing works ok
-          date_sale_opened: cart?.date_sale_opened || dayjs.utc().format(),
-          sale_opened_by: cart?.sale_opened_by || clerk?.id,
+          date_sale_opened: cart?.dateSaleOpened || dayjs.utc().format(),
+          sale_opened_by: cart?.saleOpenedBy || clerk?.id,
           items: newItems,
           weather: cart?.weather || weather,
-          geo_latitude: cart?.geo_latitude || geolocation?.latitude,
-          geo_longitude: cart?.geo_longitude || geolocation?.longitude,
+          geo_latitude: cart?.geoLatitude || geolocation?.latitude,
+          geo_longitude: cart?.geoLongitude || geolocation?.longitude,
         })
-        setView({ ...view, miscItemDialog: false, cart: true })
+        closeView(ViewProps.miscItemDialog)
+        openView(ViewProps.cart)
         logNewMiscItemCreated(description, clerk, id)
         setAlert({
           open: true,
@@ -102,7 +91,7 @@ export default function MiscItemDialog() {
       open={view?.miscItemDialog}
       closeFunction={() => {
         clearDialog()
-        setView({ ...view, miscItemDialog: false })
+        closeView(ViewProps.miscItemDialog)
       }}
       title={'CREATE MISC ITEM'}
       buttons={buttons}

@@ -1,21 +1,7 @@
-// Packages
-import { useAtom } from 'jotai'
 import { useState } from 'react'
-
-// DB
-import {
-  alertAtom,
-  cartAtom,
-  clerkAtom,
-  sellSearchBarAtom,
-  viewAtom,
-} from 'lib/atoms'
 import { useGiftCards, useInventory, useLogs } from 'lib/database/read'
-
-// Components
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
-
 import { logNewGiftCardCreated } from 'features/log/lib/functions'
 import { getGeolocation, useWeather } from 'lib/api'
 import { createStockItemInDatabase } from 'lib/database/create'
@@ -23,16 +9,21 @@ import { ModalButton } from 'lib/types'
 import SyncIcon from '@mui/icons-material/Sync'
 import dayjs from 'dayjs'
 import { makeGiftCardCode } from '../../lib/functions'
+import { useClerk } from 'lib/api/clerk'
+import { useAppStore } from 'lib/store'
+import { ViewProps } from 'lib/store/types'
 
 export default function GiftCardDialog() {
-  // Atoms
-  const [clerk] = useAtom(clerkAtom)
-  const [view, setView] = useAtom(viewAtom)
-  const [, setAlert] = useAtom(alertAtom)
-  const [cart, setCart] = useAtom(cartAtom)
-  const [, setSearch] = useAtom(sellSearchBarAtom)
-
-  // SWR
+  const { clerk } = useClerk()
+  const {
+    view,
+    cart,
+    setAlert,
+    setCart,
+    resetSellSearchBar,
+    openView,
+    closeView,
+  } = useAppStore()
   const { giftCards, mutateGiftCards } = useGiftCards()
   const { logs, mutateLogs } = useLogs()
   const { inventory, mutateInventory } = useInventory()
@@ -54,7 +45,7 @@ export default function GiftCardDialog() {
       loading: submitting,
       onClick: async () => {
         setSubmitting(true)
-        setSearch('')
+        resetSellSearchBar()
 
         let newGiftCard = {
           is_gift_card: true,
@@ -77,21 +68,22 @@ export default function GiftCardDialog() {
         // Add to cart
         let newItems = cart?.items || []
         newItems.push({
-          item_id: id,
+          itemId: id,
           quantity: '1',
-          is_gift_card: true,
+          isGiftCard: true,
         })
         setCart({
           id: cart?.id || null,
           // REVIEW check the date to string thing works ok
-          date_sale_opened: cart?.date_sale_opened || dayjs.utc().format(),
-          sale_opened_by: cart?.sale_opened_by || clerk?.id,
+          date_sale_opened: cart?.dateSaleOpened || dayjs.utc().format(),
+          sale_opened_by: cart?.saleOpenedBy || clerk?.id,
           items: newItems,
           weather: cart?.weather || weather,
-          geo_latitude: cart?.geo_latitude || geolocation?.latitude,
-          geo_longitude: cart?.geo_longitude || geolocation?.longitude,
+          geo_latitude: cart?.geoLatitude || geolocation?.latitude,
+          geo_longitude: cart?.geoLongitude || geolocation?.longitude,
         })
-        setView({ ...view, giftCardDialog: false, cart: true })
+        closeView(ViewProps.giftCardDialog)
+        openView(ViewProps.cart)
         logNewGiftCardCreated(newGiftCard, clerk, id)
         setAlert({
           open: true,
@@ -106,7 +98,7 @@ export default function GiftCardDialog() {
   return (
     <Modal
       open={view?.giftCardDialog}
-      closeFunction={() => setView({ ...view, giftCardDialog: false })}
+      closeFunction={() => closeView(ViewProps.giftCardDialog)}
       title={'CREATE GIFT CARD'}
       buttons={buttons}
     >

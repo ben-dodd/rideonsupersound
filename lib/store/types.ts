@@ -43,7 +43,6 @@ export interface StoreState {
   loadedSaleId?: any
   loadedStocktakeId?: number
   loadedStocktakeTemplateId?: number
-  loadedCustomerObjectAtom?: CustomerObject
   createableCustomerName?: string
   sellSearchBar?: string
   confirmModal?: ConfirmModal
@@ -61,6 +60,12 @@ export interface StoreState {
   closeConfirm: () => void
   setAlert: (alert: any) => void
   closeAlert: () => void
+  setCart: (update: any) => void
+  setCartItem: (id: number, update: any) => void
+  setCustomer: (update: any) => void
+  resetCart: () => void
+  resetCustomer: () => void
+  resetSellSearchBar: () => void
   toggleTableMode: () => void
   toggleCompactMode: () => void
   setLoadedStocktakeTemplateId: (id: number) => void
