@@ -1,6 +1,6 @@
 // const testCon = require('../testConn')
 import testCon from '../testConn'
-import { getClerk } from '../clerk'
+import { dbGetClerk } from '../clerk'
 
 // const { getClerk } = require('../clerk')
 
@@ -12,7 +12,7 @@ afterAll(() => testCon.destroy())
 
 describe('getClerk', () => {
   it('get clerk that matches the sub', () => {
-    return getClerk('abc', testCon).then((clerk) => {
+    return dbGetClerk('abc', testCon).then((clerk) => {
       expect(clerk?.name).toBe('Ben')
     })
   })
