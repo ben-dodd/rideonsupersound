@@ -1,11 +1,6 @@
-// Packages
 import dayjs from 'dayjs'
 import UTC from 'dayjs/plugin/utc'
-import { useAtom } from 'jotai'
 import { useMemo, useState } from 'react'
-
-// DB
-import { alertAtom, cartAtom, clerkAtom, viewAtom } from 'lib/atoms'
 import {
   useCustomers,
   useGiftCards,
@@ -28,14 +23,14 @@ import Modal from 'components/modal'
 import { logSalePaymentGift } from 'features/log/lib/functions'
 import { makeGiftCardCode } from 'features/sale/features/sell/lib/functions'
 import { getSaleVars } from '../../lib/functions'
+import { useClerk } from 'lib/api/clerk'
+import { useAppStore } from 'lib/store'
+import { ViewProps } from 'lib/store/types'
 
 export default function Gift() {
   dayjs.extend(UTC)
-  // Atoms
-  const [clerk] = useAtom(clerkAtom)
-  const [view, setView] = useAtom(viewAtom)
-  const [cart, setCart] = useAtom(cartAtom)
-  const [, setAlert] = useAtom(alertAtom)
+  const { clerk } = useClerk()
+  const { view, cart, closeView, setAlert, addCartTransaction } = useAppStore()
 
   // SWR
   const { giftCards, mutateGiftCards } = useGiftCards()
@@ -56,12 +51,12 @@ export default function Gift() {
     console.log('Gift card changed')
     let gc: GiftCardObject = giftCards?.filter(
       (giftCard: GiftCardObject) =>
-        giftCard?.gift_card_code === giftCardCode.toUpperCase()
+        giftCard?.giftCardCode === giftCardCode.toUpperCase()
     )[0]
-    console.log(gc?.gift_card_remaining)
+    console.log(gc?.giftCardRemaining)
     console.log(totalRemaining)
-    if (gc?.gift_card_remaining / 100 < totalRemaining)
-      setGiftCardPayment(`${Math.abs(gc.gift_card_remaining / 100).toFixed(2)}`)
+    if (gc?.giftCardRemaining / 100 < totalRemaining)
+      setGiftCardPayment(`${Math.abs(gc.giftCardRemaining / 100).toFixed(2)}`)
     return gc
   }, [giftCardCode, giftCards])
 
@@ -71,7 +66,7 @@ export default function Gift() {
   const [submitting, setSubmitting] = useState(false)
 
   // Constants
-  const remainingOnGiftCard = giftCard?.gift_card_remaining / 100
+  const remainingOnGiftCard = giftCard?.giftCardRemaining / 100
   const leftOver: number = remainingOnGiftCard - parseFloat(giftCardPayment)
 
   const buttons: ModalButton[] = [
@@ -84,56 +79,54 @@ export default function Gift() {
         giftCardPayment === '' ||
         isNaN(parseFloat(giftCardPayment)) ||
         (!isRefund &&
-          (!giftCard || !giftCard?.gift_card_is_valid || leftOver < 0)),
+          (!giftCard || !giftCard?.giftCardIsValid || leftOver < 0)),
       loading: submitting,
       onClick: () => {
         setSubmitting(true)
         let giftCardUpdate: GiftCardObject = {}
         if (isRefund) {
           giftCardUpdate = {
-            is_gift_card: true,
-            gift_card_code: newGiftCardCode,
-            gift_card_amount: parseFloat(giftCardPayment) * 100,
-            gift_card_remaining: parseFloat(giftCardPayment) * 100,
+            isGiftCard: true,
+            giftCardCode: newGiftCardCode,
+            giftCardAmount: parseFloat(giftCardPayment) * 100,
+            giftCardRemaining: parseFloat(giftCardPayment) * 100,
             note: `Gift card created as refund payment${
               cart?.id ? ` for sale #${cart?.id}` : ''
             }.`,
-            gift_card_is_valid: true,
+            giftCardIsValid: true,
           }
         } else {
           giftCardUpdate = { ...giftCard }
-          giftCardUpdate.gift_card_remaining = leftOver * 100
+          giftCardUpdate.giftCardRemaining = leftOver * 100
           if (leftOver < 10) {
-            giftCardUpdate.gift_card_is_valid = false
-            giftCardUpdate.gift_card_remaining = 0
+            giftCardUpdate.giftCardIsValid = false
+            giftCardUpdate.giftCardRemaining = 0
           }
         }
         let transaction: SaleTransactionObject = {
           date: dayjs.utc().format(),
-          sale_id: cart?.id,
-          clerk_id: clerk?.id,
-          payment_method: PaymentMethodTypes.GiftCard,
+          saleId: cart?.id,
+          clerkId: clerk?.id,
+          paymentMethod: PaymentMethodTypes.GiftCard,
           amount: isRefund
             ? parseFloat(giftCardPayment) * -100
             : parseFloat(giftCardPayment) * 100,
-          register_id: registerID,
-          gift_card_update: giftCardUpdate,
-          is_refund: isRefund,
+          registerId: registerID,
+          giftCardUpdate: giftCardUpdate,
+          isRefund: isRefund,
         }
         if (!isRefund) {
           transaction = {
             ...transaction,
-            gift_card_id: giftCardUpdate?.id,
-            gift_card_taken: giftCardUpdate?.gift_card_is_valid,
-            gift_card_remaining: giftCardUpdate?.gift_card_remaining,
-            gift_card_change: leftOver < 10 ? leftOver * 100 : 0,
+            giftCardId: giftCardUpdate?.id,
+            giftCardTaken: giftCardUpdate?.giftCardIsValid,
+            giftCardRemaining: giftCardUpdate?.giftCardRemaining,
+            giftCardChange: leftOver < 10 ? leftOver * 100 : 0,
           }
         }
-        let transactions = cart?.transactions || []
-        transactions.push(transaction)
-        setCart({ ...cart, transactions })
+        addCartTransaction(transaction)
         setSubmitting(false)
-        setView({ ...view, giftPaymentDialog: false })
+        closeView(ViewProps.giftPaymentDialog)
         logSalePaymentGift(
           giftCardPayment,
           isRefund,
@@ -161,7 +154,7 @@ export default function Gift() {
   return (
     <Modal
       open={view?.giftPaymentDialog}
-      closeFunction={() => setView({ ...view, giftPaymentDialog: false })}
+      closeFunction={() => closeView(ViewProps.giftPaymentDialog)}
       title={isRefund ? `GIFT CARD REFUND` : `GIFT CARD PAYMENT`}
       buttons={buttons}
     >
@@ -224,7 +217,7 @@ export default function Gift() {
             `${isRefund ? 'REFUND AMOUNT' : 'PAYMENT'} TOO HIGH`
           ) : isRefund ? (
             `ALL GOOD!`
-          ) : !giftCard?.gift_card_is_valid ? (
+          ) : !giftCard?.giftCardIsValid ? (
             `GIFT CARD IS NOT VALID`
           ) : remainingOnGiftCard < parseFloat(giftCardPayment) ? (
             `NOT ENOUGH ON CARD`

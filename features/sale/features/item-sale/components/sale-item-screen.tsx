@@ -1,17 +1,4 @@
-// Packages
-import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
-
-// DB
-import {
-  alertAtom,
-  cartAtom,
-  clerkAtom,
-  confirmModalAtom,
-  loadedSaleIdAtom,
-  pageAtom,
-  viewAtom,
-} from 'lib/atoms'
 import {
   useCustomers,
   useGiftCards,
@@ -36,27 +23,26 @@ import {
   loadSaleToCart,
   nukeSaleInDatabase,
 } from '../lib/functions'
+import { useAppStore } from 'lib/store'
+import { useClerk } from 'lib/api/clerk'
+import { useRouter } from 'next/router'
 
 // TODO add returns to sale items
 // TODO refund dialog like PAY, refund with store credit, cash or card
 
 export default function SaleItemScreen() {
-  // Atoms
-  const [loadedSaleId, setLoadedSaleId] = useAtom(loadedSaleIdAtom)
-  const [clerk] = useAtom(clerkAtom)
-  const [cart, setCart] = useAtom(cartAtom)
-  const [, setAlert] = useAtom(alertAtom)
-  const [view, setView] = useAtom(viewAtom)
-  const [page, setPage] = useAtom(pageAtom)
-  const [, setConfirmModal] = useAtom(confirmModalAtom)
+  const router = useRouter()
+  const { id } = router.query
+  const { clerk } = useClerk()
+  const { cart, setCart, openConfirm } = useAppStore()
 
   // SWR
   const { customers } = useCustomers()
   const { inventory, mutateInventory } = useInventory()
   const { giftCards, mutateGiftCards } = useGiftCards()
-  const { items, isSaleItemsLoading } = useSaleItemsForSale(loadedSaleId[page])
+  const { items, isSaleItemsLoading } = useSaleItemsForSale(Number(id))
   const { transactions, isSaleTransactionsLoading } =
-    useSaleTransactionsForSale(loadedSaleId[page])
+    useSaleTransactionsForSale(Number(id))
   const { sales, mutateSales } = useSales()
   const { logs, mutateLogs } = useLogs()
   const { registerID } = useRegisterID()
@@ -74,14 +60,14 @@ export default function SaleItemScreen() {
     setSaleLoading(true)
     if (!isSaleItemsLoading && !isSaleTransactionsLoading) {
       let loadedSale =
-        sales?.filter((s: SaleObject) => s?.id === loadedSaleId[page])[0] || {}
+        sales?.filter((s: SaleObject) => s?.id === Number(id))[0] || {}
       loadedSale.items = items
       loadedSale.transactions = transactions
       console.log(loadedSale)
       setSale(loadedSale)
       setSaleLoading(false)
     }
-  }, [loadedSaleId[page], isSaleItemsLoading, isSaleTransactionsLoading])
+  }, [isSaleItemsLoading, isSaleTransactionsLoading])
 
   // TODO make sale info screen for LAYBY and SALES screen that needs to be activated to go to the SELL screen. So only one active sale will be present at a time.
   // BUG fix bug where close register screen appears (pressing TAB) - have fixed by just hiding sidebars and screens
@@ -112,17 +98,15 @@ export default function SaleItemScreen() {
       mutateGiftCards
     )
     setLoadToCartLoading(false)
-    setSale(null)
-    setLoadedSaleId({ ...loadedSaleId, [page]: null })
-    setView({ ...view, saleScreen: true })
-    setPage('sell')
+    router.push('sell/')
+    // setView({ ...view, saleScreen: true })
   }
 
   async function nukeSale() {
     saveSystemLog('SALE NUKED', clerk?.id)
     await nukeSaleInDatabase(sale, clerk, registerID)
     setSale(null)
-    setLoadedSaleId({ ...loadedSaleId, [page]: null })
+    router.back()
   }
 
   // Constants
@@ -155,9 +139,6 @@ export default function SaleItemScreen() {
     },
   ]
 
-  const titleClass =
-    page === 'sell' ? 'bg-col1' : page === 'sales' ? 'bg-col5' : 'bg-col6'
-
   return (
     <>
       <ScreenContainer
@@ -169,7 +150,7 @@ export default function SaleItemScreen() {
         loading={saleLoading}
         buttons={
           sale?.items?.filter(
-            (s: SaleItemObject) => !s?.is_refunded && !s?.is_deleted
+            (s: SaleItemObject) => !s?.isRefunded && !s?.isDeleted
           )?.length > 0
             ? buttons
             : null
@@ -187,7 +168,7 @@ export default function SaleItemScreen() {
                 className="p-1 border border-black hover:bg-tertiary rounded-xl mt-2"
                 onClick={() => {
                   saveSystemLog('NUKE SALE clicked.', clerk?.id)
-                  setConfirmModal({
+                  openConfirm({
                     open: true,
                     title: 'Are you sure you want to delete this sale?',
                     styledMessage: (

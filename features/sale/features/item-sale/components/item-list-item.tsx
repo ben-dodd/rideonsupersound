@@ -25,7 +25,7 @@ export default function ItemListItem({
   // SWR
   const { inventory } = useInventory()
   const item = inventory?.filter(
-    (i: StockObject) => i.id === saleItem?.item_id
+    (i: StockObject) => i.id === saleItem?.itemId
   )?.[0]
 
   // Functions
@@ -33,7 +33,7 @@ export default function ItemListItem({
   return (
     <div
       className={`flex w-full relative pt mb-2${
-        saleItem?.is_refunded ? ' opacity-50' : ''
+        saleItem?.isRefunded ? ' opacity-50' : ''
       }${onClick ? ' cursor-pointer' : ''}${selected ? ' bg-red-100' : ''}`}
       onClick={onClick || null}
     >
@@ -54,7 +54,7 @@ export default function ItemListItem({
       <div className="flex flex-col w-full py-2 pl-2 justify-between">
         <div className="text-sm pl-1">
           <div>{getItemDisplayName(item)}</div>
-          {saleItem?.is_refunded ? (
+          {saleItem?.isRefunded ? (
             <div className={'text-red-500'}>REFUNDED</div>
           ) : (
             <div />
@@ -62,7 +62,7 @@ export default function ItemListItem({
         </div>
         <div
           className={`text-red-500 self-end${
-            saleItem?.is_refunded ? ' line-through' : ''
+            saleItem?.isRefunded ? ' line-through' : ''
           }`}
         >
           <div>{writeCartItemPriceBreakdown(saleItem, item)}</div>

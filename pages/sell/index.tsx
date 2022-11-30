@@ -2,7 +2,6 @@ import MidScreenContainer from 'components/container/mid-screen'
 import CreateCustomerSidebar from 'features/customer/components/sidebar'
 import ChangePriceDialog from 'features/inventory/features/item-inventory/components/change-price-dialog'
 import ChangeStockQuantityDialog from 'features/inventory/features/item-inventory/components/change-stock-quantity-dialog'
-import InventoryItemScreen from 'features/inventory/features/item-inventory/components/inventory-item-screen'
 import CreateHoldSidebar from 'features/sale/features/hold/components/create-hold-sidebar'
 import SaleScreen from 'features/sale/features/item-sale/components'
 import OpenRegisterScreen from 'features/sale/features/register/components'
@@ -56,7 +55,6 @@ export default function SellPage() {
       <ShoppingCart />
       <CreateHoldSidebar />
       <CreateCustomerSidebar />
-      {view?.saleScreen && <SaleScreen />}
       {view?.miscItemDialog && <MiscItemDialog />}
       {view?.giftCardDialog && <GiftCardDialog />}
       {view?.changePriceDialog && <ChangePriceDialog />}

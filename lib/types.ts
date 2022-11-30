@@ -171,7 +171,7 @@ export interface SaleTransactionObject {
   giftCardRemaining?: number
   giftCardTaken?: boolean
   giftCardChange?: number
-  register_id?: number
+  registerId?: number
   isRefund?: boolean
   isDeleted?: boolean
   vendor?: VendorObject

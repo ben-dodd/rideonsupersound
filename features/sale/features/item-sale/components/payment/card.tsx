@@ -1,10 +1,5 @@
-// Packages
 import dayjs from 'dayjs'
-import { useAtom } from 'jotai'
 import { useState } from 'react'
-
-// DB
-import { alertAtom, cartAtom, clerkAtom, viewAtom } from 'lib/atoms'
 import { useCustomers, useInventory, useRegisterID } from 'lib/database/read'
 import {
   ModalButton,
@@ -17,22 +12,18 @@ import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
 import { logSalePaymentCard } from 'features/log/lib/functions'
 import { getSaleVars } from '../../lib/functions'
+import { useClerk } from 'lib/api/clerk'
+import { useAppStore } from 'lib/store'
+import { ViewProps } from 'lib/store/types'
 
 export default function Cash() {
-  // Atoms
-  const [clerk] = useAtom(clerkAtom)
-  const [view, setView] = useAtom(viewAtom)
-  const [cart, setCart] = useAtom(cartAtom)
-  const [, setAlert] = useAtom(alertAtom)
-
-  // SWR
+  const { clerk } = useClerk()
+  const { view, cart, closeView, setAlert, addCartTransaction } = useAppStore()
   const { registerID } = useRegisterID()
   const { inventory } = useInventory()
   const { customers } = useCustomers()
 
   const { totalRemaining } = getSaleVars(cart, inventory)
-
-  // State
   const [submitting, setSubmitting] = useState(false)
   const isRefund = totalRemaining < 0
   const [cardPayment, setCardPayment] = useState(
@@ -55,20 +46,18 @@ export default function Cash() {
         setSubmitting(true)
         let transaction: SaleTransactionObject = {
           date: dayjs.utc().format(),
-          sale_id: cart?.id,
-          clerk_id: clerk?.id,
-          payment_method: PaymentMethodTypes.Card,
+          saleId: cart?.id,
+          clerkId: clerk?.id,
+          paymentMethod: PaymentMethodTypes.Card,
           amount: isRefund
             ? parseFloat(cardPayment) * -100
             : parseFloat(cardPayment) * 100,
-          register_id: registerID,
-          is_refund: isRefund,
+          registerId: registerID,
+          isRefund: isRefund,
         }
-        let transactions = cart?.transactions || []
-        transactions.push(transaction)
-        setCart({ ...cart, transactions })
+        addCartTransaction(transaction)
         setSubmitting(false)
-        setView({ ...view, cardPaymentDialog: false })
+        closeView(ViewProps.cardPaymentDialog)
         logSalePaymentCard(cardPayment, isRefund, cart, customers, clerk)
         setAlert({
           open: true,
@@ -85,7 +74,7 @@ export default function Cash() {
   return (
     <Modal
       open={view?.cardPaymentDialog}
-      closeFunction={() => setView({ ...view, cardPaymentDialog: false })}
+      closeFunction={() => closeView(ViewProps.cardPaymentDialog)}
       title={isRefund ? `CARD REFUND` : `CARD PAYMENT`}
       buttons={buttons}
     >

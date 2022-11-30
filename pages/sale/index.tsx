@@ -1,9 +1,4 @@
-// Packages
-import { useAtom } from 'jotai'
 import { useState } from 'react'
-
-// DB
-import { alertAtom, cartAtom, clerkAtom, viewAtom } from 'lib/atoms'
 import {
   useCustomers,
   useGiftCards,
@@ -24,33 +19,33 @@ import {
   saveSystemLog,
 } from 'features/log/lib/functions'
 import dayjs from 'dayjs'
-import { getSaleVars, saveSaleAndPark } from '../lib/functions'
-import Pay from './pay'
-import Acct from './payment/acct'
-import Card from './payment/card'
-import Cash from './payment/cash'
-import Gift from './payment/gift'
-import ReturnItemDialog from './return-item-dialog'
-import SaleSummary from './sale-summary'
+import { useAppStore } from 'lib/store'
+import { useClerk } from 'lib/api/clerk'
+import { useRouter } from 'next/router'
+import SaleSummary from 'features/sale/features/item-sale/components/sale-summary'
+import Pay from 'features/sale/features/item-sale/components/pay'
+import Acct from 'features/sale/features/item-sale/components/payment/acct'
+import Card from 'features/sale/features/item-sale/components/payment/card'
+import Gift from 'features/sale/features/item-sale/components/payment/gift'
+import Cash from 'features/sale/features/item-sale/components/payment/cash'
+import ReturnItemDialog from 'features/sale/features/item-sale/components/return-item-dialog'
+import {
+  getSaleVars,
+  saveSaleAndPark,
+} from 'features/sale/features/item-sale/lib/functions'
 
 // TODO add returns to sale items
 // TODO refund dialog like PAY, refund with store credit, cash or card
 
 export default function SaleScreen() {
-  // Atoms
-  const [cart, setCart] = useAtom(cartAtom)
-  const [clerk] = useAtom(clerkAtom)
-  const [, setAlert] = useAtom(alertAtom)
-  const [view, setView] = useAtom(viewAtom)
-
-  // SWR
+  const router = useRouter()
+  const { cart, view, resetCart, setAlert } = useAppStore()
+  const { clerk } = useClerk()
   const { customers } = useCustomers()
-  // const { stockSaleVars, mutateStockSaleVars } = useStockSaleVars();
   const { inventory, mutateInventory } = useInventory()
   const { isSaleTransactionsLoading } = useSaleTransactionsForSale(cart?.id)
   const { sales, mutateSales } = useSales()
   const { giftCards, mutateGiftCards } = useGiftCards()
-  const { logs, mutateLogs } = useLogs()
   const { registerID } = useRegisterID()
 
   // State
@@ -91,8 +86,8 @@ export default function SaleScreen() {
       type: 'success',
       message: 'SALE PARKED',
     })
-    setCart(null)
-    setView({ ...view, saleScreen: false })
+    resetCart()
+    router.back()
     setParkSaleLoading(false)
   }
 
@@ -108,8 +103,8 @@ export default function SaleScreen() {
       laybySale = {
         ...laybySale,
         state: SaleStateTypes.Layby,
-        date_layby_started: dayjs.utc().format(),
-        layby_started_by: clerk?.id,
+        dateLaybyStarted: dayjs.utc().format(),
+        laybyStartedBy: clerk?.id,
       }
       logLaybyStarted(
         cart,
@@ -139,8 +134,8 @@ export default function SaleScreen() {
     )
     // close dialog
     setLaybyLoading(false)
-    setView({ ...view, saleScreen: false })
-    setCart(null)
+    resetCart()
+    router.back()
   }
 
   async function clickCompleteSale() {
@@ -149,15 +144,15 @@ export default function SaleScreen() {
     // Update sale to 'complete', add date_sale_closed, sale_closed_by
     let completedSale = {
       ...cart,
-      postal_address: cart?.is_mail_order
-        ? cart?.postal_address ||
-          customers?.filter((c) => c?.id === cart?.customer_id)[0]
-            ?.postal_address ||
+      postal_address: cart?.isMailOrder
+        ? cart?.postalAddress ||
+          customers?.filter((c) => c?.id === cart?.customerId)[0]
+            ?.postalAddress ||
           null
         : null,
       state: SaleStateTypes.Completed,
-      sale_closed_by: clerk?.id,
-      date_sale_closed: dayjs.utc().format(),
+      saleClosedBy: clerk?.id,
+      dateSaleClosed: dayjs.utc().format(),
     }
 
     const saleId = await saveSaleItemsTransactionsToDatabase(
@@ -171,10 +166,10 @@ export default function SaleScreen() {
       giftCards,
       mutateGiftCards,
       cart?.state,
-      customers?.filter((c) => c?.id === cart?.customer_id)[0]?.name
+      customers?.filter((c) => c?.id === cart?.customerId)[0]?.name
     )
-    setCart(null)
-    setView({ ...view, saleScreen: false })
+    resetCart()
+    router.back()
     setCompleteSaleLoading(false)
     logSaleCompleted(cart, saleId, clerk)
     setAlert({
@@ -191,8 +186,8 @@ export default function SaleScreen() {
       type: 'cancel',
       onClick: () => {
         saveSystemLog('DISCARD SALE clicked.', clerk?.id)
-        setCart(null)
-        setView({ ...view, saleScreen: false })
+        resetCart()
+        router.back()
       },
       disabled: Boolean(cart?.transactions) || totalRemaining === 0,
       text:
@@ -202,7 +197,7 @@ export default function SaleScreen() {
       type: 'alt2',
       onClick: () => {
         saveSystemLog('CHANGE ITEMS clicked.', clerk?.id)
-        setView({ ...view, saleScreen: false })
+        router.back()
       },
       disabled: totalRemaining === 0,
       loading: addMoreItemsLoading,
@@ -218,7 +213,7 @@ export default function SaleScreen() {
     {
       type: 'alt1',
       onClick: clickLayby,
-      disabled: laybyLoading || !cart?.customer_id || totalRemaining <= 0,
+      disabled: laybyLoading || !cart?.customerId || totalRemaining <= 0,
       loading: laybyLoading,
       text:
         cart?.state === SaleStateTypes.Layby ? 'CONTINUE LAYBY' : 'START LAYBY',
@@ -246,7 +241,7 @@ export default function SaleScreen() {
                 'Sale screen closed. Total remaining === 0. Cart set to null.',
                 clerk?.id
               )
-              setCart(null)
+              resetCart()
             } else {
               saveSystemLog(
                 'Sale screen closed. Total remaining === 0. Sale completed.',
@@ -256,7 +251,7 @@ export default function SaleScreen() {
             }
           }
           saveSystemLog('Sale screen closed. Total remaining not 0.', clerk?.id)
-          setView({ ...view, saleScreen: false })
+          router.back()
         }}
         title={`${cart?.id ? `SALE #${cart?.id}` : `NEW SALE`} [${
           cart?.state ? cart?.state.toUpperCase() : 'IN PROGRESS'
@@ -284,13 +279,3 @@ export default function SaleScreen() {
     </>
   )
 }
-
-// TODO fix parked sale bug, make it easier to delete parked sales
-
-// hidden sm:flex items-start overflow-auto
-
-// <div className="sm:hidden flex flex-col justify-between px-2">
-//   <Pay />
-//   <SaleSummary />
-//   <Action />
-// </div>

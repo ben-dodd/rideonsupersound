@@ -23,18 +23,18 @@ export default function TransactionListItem({
 }: TransactionListItemProps) {
   // SWR
   const { giftCards } = useGiftCards()
-  const { vendor } = useVendorFromVendorPayment(transaction?.vendor_payment_id)
+  const { vendor } = useVendorFromVendorPayment(transaction?.vendorPayment)
 
   const giftCard = giftCards?.filter(
-    (g: GiftCardObject) => g?.id === transaction?.gift_card_id
+    (g: GiftCardObject) => g?.id === transaction?.giftCardId
   )[0]
 
   return (
     <div
       className={`flex justify-end items-center mt-2 mb-3 ${
-        transaction?.is_deleted
+        transaction?.isDeleted
           ? 'line-through text-gray-400'
-          : transaction?.is_refund
+          : transaction?.isRefund
           ? 'text-red-500'
           : 'text-blue-500'
       }`}
@@ -44,46 +44,44 @@ export default function TransactionListItem({
       </div>
       <div className="w-1/4">
         {(
-          `${transaction?.payment_method}${
-            transaction?.is_refund ? ' REFUND' : ''
+          `${transaction?.paymentMethod}${
+            transaction?.isRefund ? ' REFUND' : ''
           }` || 'OTHER'
         ).toUpperCase()}
       </div>
       <div className="w-1/4">
         <div className="text-right">
           $
-          {(transaction?.is_refund
+          {(transaction?.isRefund
             ? transaction?.amount / -100
             : transaction?.amount / 100 || 0
           )?.toFixed(2)}
         </div>
         <div className="text-right text-xs">
-          {transaction?.payment_method === PaymentMethodTypes.Cash
-            ? transaction?.is_refund
+          {transaction?.paymentMethod === PaymentMethodTypes.Cash
+            ? transaction?.isRefund
               ? ''
-              : transaction?.change_given
-              ? `($${(transaction.change_given / 100)?.toFixed(2)} CHANGE)`
+              : transaction?.changeGiven
+              ? `($${(transaction.changeGiven / 100)?.toFixed(2)} CHANGE)`
               : '(NO CHANGE)'
-            : transaction?.payment_method === PaymentMethodTypes.Account
+            : transaction?.paymentMethod === PaymentMethodTypes.Account
             ? `[${(
                 vendor?.name ||
                 transaction?.vendor?.name ||
                 ''
               ).toUpperCase()}]`
-            : transaction?.payment_method === PaymentMethodTypes.GiftCard
-            ? transaction?.gift_card_taken
-              ? transaction?.change_given
-                ? `CARD TAKEN, $${(
-                    transaction?.gift_card_change / 100
-                  )?.toFixed(2)} CHANGE [${(
-                    giftCard?.gift_card_code || ''
-                  ).toUpperCase()}]`
+            : transaction?.paymentMethod === PaymentMethodTypes.GiftCard
+            ? transaction?.giftCardTaken
+              ? transaction?.changeGiven
+                ? `CARD TAKEN, $${(transaction?.giftCardChange / 100)?.toFixed(
+                    2
+                  )} CHANGE [${(giftCard?.gift_card_code || '').toUpperCase()}]`
                 : `CARD TAKEN [${(
                     giftCard?.gift_card_code || ''
                   ).toUpperCase()}]`
               : `[${(
                   giftCard?.gift_card_code ||
-                  transaction?.gift_card_update?.gift_card_code ||
+                  transaction?.giftCardUpdate?.giftCardCode ||
                   ''
                 ).toUpperCase()}]`
             : ''}

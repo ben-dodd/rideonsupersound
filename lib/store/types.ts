@@ -1,4 +1,9 @@
-import { ConfirmModal, CustomerObject, SaleObject, AlertProps } from 'lib/types'
+import {
+  ConfirmModal,
+  SaleObject,
+  AlertProps,
+  SaleTransactionObject,
+} from 'lib/types'
 
 export interface StoreState {
   view: {
@@ -61,6 +66,7 @@ export interface StoreState {
   setAlert: (alert: any) => void
   closeAlert: () => void
   setCart: (update: any) => void
+  addCartTransaction: (transaction: SaleTransactionObject) => void
   setCartItem: (id: number, update: any) => void
   setCustomer: (update: any) => void
   resetCart: () => void
@@ -70,21 +76,6 @@ export interface StoreState {
   toggleCompactMode: () => void
   setLoadedStocktakeTemplateId: (id: number) => void
   setLoadedVendorId: (id: number) => void
-  // setStockItems: (stockItems: StockItem[]) => void
-  // addStockItems: (stockItems: StockItem[]) => void
-  // fetchStockItems: () => void
-  // getSelection: () => any[]
-  // getSelectionAsText: () => string
-  // setSchema: (schema: any) => void
-  // setCell: (cellRef: number[], value: string) => void
-  // setCellRange: (valueMatrix: any[][]) => void
-  // clearCellRange: () => void
-  // clickCell: (cellRef: number[], shiftKey: boolean) => void
-  // selectByDrag: (evt: any) => void
-  // selectByKeyboard: (evt: any) => void
-  // clearSelection: () => void
-  // setInitialWidthRatios: (widthRatios: number[]) => void
-  // setWidthRatios: (index: number, widthOffset: number) => void
 }
 
 export enum ViewProps {

@@ -1,26 +1,17 @@
-// Packages
-import { useAtom } from 'jotai'
 import { useState } from 'react'
-
-// DB
-import { alertAtom, cartAtom, clerkAtom, viewAtom } from 'lib/atoms'
 import { useInventory, useLogs, useSaleItemsForSale } from 'lib/database/read'
 import { ModalButton, SaleItemObject, SaleStateTypes } from 'lib/types'
-
-// Components
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
 import { logSaleRefunded, saveSystemLog } from 'features/log/lib/functions'
 import ItemListItem from './item-list-item'
+import { useClerk } from 'lib/api/clerk'
+import { useAppStore } from 'lib/store'
+import { ViewProps } from 'lib/store/types'
 
 export default function ReturnItemsDialog({ sale }) {
-  // Atoms
-  const [clerk] = useAtom(clerkAtom)
-  const [view, setView] = useAtom(viewAtom)
-  const [, setAlert] = useAtom(alertAtom)
-  const [cart, setCart] = useAtom(cartAtom)
-
-  // SWR
+  const { clerk } = useClerk()
+  const { cart, view, setCart, closeView, setAlert } = useAppStore()
   const { items, mutateSaleItems } = useSaleItemsForSale(sale?.id)
   const { logs, mutateLogs } = useLogs()
   const { inventory } = useInventory()
@@ -31,7 +22,7 @@ export default function ReturnItemsDialog({ sale }) {
   const [submitting, setSubmitting] = useState(false)
 
   function closeDialog() {
-    setView({ ...view, returnItemDialog: false })
+    closeView(ViewProps.returnItemDialog)
     setRefundItems([])
     setNotes('')
   }
@@ -45,11 +36,10 @@ export default function ReturnItemsDialog({ sale }) {
         saveSystemLog('RETURN ITEMS - OK clicked.', clerk?.id)
         const updatedCartItems = cart?.items?.map((item: SaleItemObject) =>
           refundItems.includes(item?.id)
-            ? { ...item, is_refunded: true, refund_note: notes }
+            ? { ...item, isRefunded: true, refundNote: notes }
             : item
         )
         setCart({
-          ...cart,
           items: updatedCartItems,
           state:
             cart?.state === SaleStateTypes.Completed
@@ -82,7 +72,7 @@ export default function ReturnItemsDialog({ sale }) {
         <div className="help-text">Select items to return.</div>
         {items
           ?.filter(
-            (item: SaleItemObject) => !item?.is_deleted && !item?.is_refunded
+            (item: SaleItemObject) => !item?.isDeleted && !item?.isRefunded
           )
           ?.map((item: SaleItemObject) => (
             <div className="flex" key={item?.id}>

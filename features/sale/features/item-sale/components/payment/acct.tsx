@@ -1,11 +1,6 @@
-// Packages
 import dayjs from 'dayjs'
 import UTC from 'dayjs/plugin/utc'
-import { useAtom } from 'jotai'
 import { useMemo, useState } from 'react'
-
-// DB
-import { alertAtom, cartAtom, clerkAtom, viewAtom } from 'lib/atoms'
 import {
   useInventory,
   useRegisterID,
@@ -27,14 +22,14 @@ import { logSalePaymentAcct } from 'features/log/lib/functions'
 import { getVendorDetails } from 'features/vendor/features/item-vendor/lib/functions'
 import Select from 'react-select'
 import { getSaleVars } from '../../lib/functions'
+import { useClerk } from 'lib/api/clerk'
+import { useAppStore } from 'lib/store'
+import { ViewProps } from 'lib/store/types'
 
 export default function Acct() {
   dayjs.extend(UTC)
-  // Atoms
-  const [clerk] = useAtom(clerkAtom)
-  const [view, setView] = useAtom(viewAtom)
-  const [cart, setCart] = useAtom(cartAtom)
-  const [, setAlert] = useAtom(alertAtom)
+  const { clerk } = useClerk()
+  const { view, cart, closeView, setAlert, addCartTransaction } = useAppStore()
 
   // State
   const [vendorWrapper, setVendorWrapper] = useState(null)
@@ -83,21 +78,19 @@ export default function Acct() {
         setSubmitting(true)
         let transaction: SaleTransactionObject = {
           date: dayjs.utc().format(),
-          sale_id: cart?.id,
-          clerk_id: clerk?.id,
-          payment_method: PaymentMethodTypes.Account,
+          saleId: cart?.id,
+          clerkId: clerk?.id,
+          paymentMethod: PaymentMethodTypes.Account,
           amount: isRefund
             ? parseFloat(acctPayment) * -100
             : parseFloat(acctPayment) * 100,
-          register_id: registerID,
+          registerId: registerID,
           vendor: vendorWrapper?.value,
-          is_refund: isRefund,
+          isRefund: isRefund,
         }
-        let transactions = cart?.transactions || []
-        transactions.push(transaction)
-        setCart({ ...cart, transactions })
+        addCartTransaction(transaction)
         setSubmitting(false)
-        setView({ ...view, acctPaymentDialog: false })
+        closeView(ViewProps.acctPaymentDialog)
         logSalePaymentAcct(acctPayment, vendorWrapper, isRefund, cart, clerk)
         setAlert({
           open: true,
@@ -114,7 +107,7 @@ export default function Acct() {
   return (
     <Modal
       open={view?.acctPaymentDialog}
-      closeFunction={() => setView({ ...view, acctPaymentDialog: false })}
+      closeFunction={() => closeView(ViewProps.acctPaymentDialog)}
       title={isRefund ? `ACCOUNT REFUND` : `ACCOUNT PAYMENT`}
       buttons={buttons}
     >

@@ -2,11 +2,16 @@ import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 // DB
 import { useClerks, useCustomers, useInventory } from 'lib/database/read'
-import { CustomerObject, OpenWeatherObject, SaleStateTypes } from 'lib/types'
+import {
+  CustomerObject,
+  OpenWeatherObject,
+  SaleObject,
+  SaleStateTypes,
+} from 'lib/types'
 import { convertDegToCardinal, convertMPStoKPH } from 'lib/utils'
 import { getSaleVars } from '../lib/functions'
 
-export default function SaleDetails({ sale }) {
+export default function SaleDetails({ sale }: { sale: SaleObject }) {
   dayjs.extend(utc)
   // SWR
   const { clerks } = useClerks()
@@ -50,18 +55,18 @@ export default function SaleDetails({ sale }) {
         <div className="font-bold">Customer</div>
         <div className="mb-4">
           {customers?.filter(
-            (c: CustomerObject) => c?.id === sale?.customer_id
+            (c: CustomerObject) => c?.id === sale?.customerId
           )[0]?.name || 'Customer not set'}
         </div>
         <div className="font-bold">Sale Open</div>
         <div className="mb-4">
-          {sale?.date_sale_opened
-            ? `${dayjs(sale?.date_sale_opened).format('D MMMM YYYY, h:mm A')}${
-                sale?.sale_opened_by
+          {sale?.dateSaleOpened
+            ? `${dayjs(sale?.dateSaleOpened).format('D MMMM YYYY, h:mm A')}${
+                sale?.saleOpenedBy
                   ? ` (opened by ${
                       clerks
                         ? clerks.filter(
-                            (clerk: any) => clerk?.id === sale?.sale_opened_by
+                            (clerk: any) => clerk?.id === sale?.saleOpenedBy
                           )[0]?.name
                         : 'unknown clerk'
                     })`
@@ -71,13 +76,13 @@ export default function SaleDetails({ sale }) {
         </div>
         <div className="font-bold">Sale Close</div>
         <div className="mb-4">
-          {sale?.date_sale_closed
-            ? `${dayjs(sale?.date_sale_closed).format('D MMMM YYYY, h:mm A')}${
-                sale?.sale_closed_by
+          {sale?.dateSaleClosed
+            ? `${dayjs(sale?.dateSaleClosed).format('D MMMM YYYY, h:mm A')}${
+                sale?.saleClosedBy
                   ? ` (closed by ${
                       clerks
                         ? clerks.filter(
-                            (clerk: any) => clerk?.id === sale?.sale_closed_by
+                            (clerk: any) => clerk?.id === sale?.saleClosedBy
                           )[0]?.name
                         : 'unknown clerk'
                     })`
@@ -85,14 +90,14 @@ export default function SaleDetails({ sale }) {
               }`
             : 'Sale not closed'}
         </div>
-        {sale?.is_mail_order ? (
+        {sale?.isMailOrder ? (
           <div>
             <div className="font-bold">Postage</div>
             <div className="mb-4">
               {sale?.postage ? `$${sale?.postage}` : 'N/A'}
             </div>
             <div className="font-bold">Postal Address</div>
-            <div className="mb-4">{sale?.postal_address || 'N/A'}</div>
+            <div className="mb-4">{sale?.postalAddress || 'N/A'}</div>
           </div>
         ) : (
           <div />

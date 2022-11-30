@@ -1,29 +1,17 @@
-// Packages
-import { useAtom } from 'jotai'
-
-// DB
-import {
-  cartAtom,
-  clerkAtom,
-  loadedCustomerObjectAtom,
-  viewAtom,
-} from 'lib/atoms'
 import { useCustomers, useInventory } from 'lib/database/read'
 import { CustomerObject, SaleStateTypes } from 'lib/types'
-
-// Components
 import CreateableSelect from 'components/inputs/createable-select'
 import TextField from 'components/inputs/text-field'
 import { saveSystemLog } from 'features/log/lib/functions'
 import ReturnIcon from '@mui/icons-material/KeyboardReturn'
 import { getSaleVars } from '../lib/functions'
+import { useClerk } from 'lib/api/clerk'
+import { useAppStore } from 'lib/store'
+import { ViewProps } from 'lib/store/types'
 
 export default function Pay() {
-  // Atoms
-  const [cart, setCart] = useAtom(cartAtom)
-  const [, setCustomer] = useAtom(loadedCustomerObjectAtom)
-  const [clerk] = useAtom(clerkAtom)
-  const [view, setView] = useAtom(viewAtom)
+  const { clerk } = useClerk()
+  const { view, cart, openView, setCart } = useAppStore()
 
   // SWR
   const { customers } = useCustomers()
@@ -67,7 +55,7 @@ export default function Pay() {
           className="square-button"
           onClick={() => {
             saveSystemLog('CASH PAYMENT clicked.', clerk?.id)
-            setView({ ...view, cashPaymentDialog: true })
+            openView(ViewProps.cashPaymentDialog)
           }}
           disabled={totalRemaining === 0}
         >
@@ -77,7 +65,7 @@ export default function Pay() {
           className="square-button"
           onClick={() => {
             saveSystemLog('CARD PAYMENT clicked.', clerk?.id)
-            setView({ ...view, cardPaymentDialog: true })
+            openView(ViewProps.cardPaymentDialog)
           }}
           disabled={totalRemaining === 0}
         >
@@ -87,7 +75,7 @@ export default function Pay() {
           className="square-button"
           onClick={() => {
             saveSystemLog('ACCT PAYMENT clicked.', clerk?.id)
-            setView({ ...view, acctPaymentDialog: true })
+            openView(ViewProps.acctPaymentDialog)
           }}
           disabled={totalRemaining === 0}
         >
@@ -97,7 +85,7 @@ export default function Pay() {
           className="square-button"
           onClick={() => {
             saveSystemLog('GIFT PAYMENT clicked.', clerk?.id)
-            setView({ ...view, giftPaymentDialog: true })
+            openView(ViewProps.giftPaymentDialog)
           }}
           disabled={totalRemaining === 0}
         >
@@ -111,12 +99,12 @@ export default function Pay() {
       >
         {cart?.state === SaleStateTypes.Layby ? (
           <div className="mt-2">
-            {cart?.customer_id ? (
+            {cart?.customerId ? (
               <div>
                 <div className="font-bold">Customer</div>
                 <div>
                   {customers?.filter(
-                    (c: CustomerObject) => c?.id === cart?.customer_id
+                    (c: CustomerObject) => c?.id === cart?.customerId
                   )[0]?.name || ''}
                 </div>
               </div>
@@ -131,10 +119,10 @@ export default function Pay() {
             </div>
             <CreateableSelect
               inputLabel="Select customer"
-              value={cart?.customer_id}
+              value={cart?.customerId}
               label={
                 customers?.filter(
-                  (c: CustomerObject) => c?.id === cart?.customer_id
+                  (c: CustomerObject) => c?.id === cart?.customerId
                 )[0]?.name || ''
               }
               onChange={(customerObject: any) => {
@@ -150,7 +138,7 @@ export default function Pay() {
                   clerk?.id
                 )
                 setCustomer({ name: inputValue })
-                setView({ ...view, createCustomer: true })
+                openView(ViewProps.createCustomer)
               }}
               options={customers?.map((val: CustomerObject) => ({
                 value: val?.id,
@@ -161,41 +149,37 @@ export default function Pay() {
         )}
         <div className="flex mt-2">
           <input
-            disabled={!cart?.customer_id}
+            disabled={!cart?.customerId}
             className="cursor-pointer"
             type="checkbox"
-            checked={cart?.is_mail_order}
+            checked={cart?.isMailOrder}
             onChange={() => {
               saveSystemLog('SALE SCREEN - IS MAIL ORDER clicked.', clerk?.id)
-              setCart((s) => ({ ...s, is_mail_order: !s?.is_mail_order }))
+              setCart({ isMailOrder: !cart?.isMailOrder })
             }}
           />
           <div className="ml-2">Mail order</div>
         </div>
-        {cart?.is_mail_order ? (
+        {cart?.isMailOrder ? (
           <div>
             <TextField
               inputLabel="Postage Fee"
               startAdornment="$"
               inputType="number"
               valueNum={cart?.postage}
-              onChange={(e: any) =>
-                setCart({ ...cart, postage: e.target.value })
-              }
+              onChange={(e: any) => setCart({ postage: e.target.value })}
             />
             <TextField
               inputLabel="Postal Address"
               multiline
               value={
-                cart?.postal_address ||
+                cart?.postalAddress ||
                 customers?.filter(
-                  (c: CustomerObject) => c?.id === cart?.customer_id
-                )[0]?.postal_address ||
+                  (c: CustomerObject) => c?.id === cart?.customerId
+                )[0]?.postalAddress ||
                 ''
               }
-              onChange={(e: any) =>
-                setCart({ ...cart, postal_address: e.target.value })
-              }
+              onChange={(e: any) => setCart({ postalAddress: e.target.value })}
             />
           </div>
         ) : (
@@ -212,7 +196,7 @@ export default function Pay() {
         <div>
           <button
             className="icon-text-button ml-0"
-            onClick={() => setView({ ...view, returnItemDialog: true })}
+            onClick={() => openView(ViewProps.returnItemDialog)}
             disabled={cart?.items?.length < 1}
           >
             <ReturnIcon className="mr-1" /> Return Items

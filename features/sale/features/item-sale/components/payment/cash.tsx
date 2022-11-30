@@ -1,11 +1,6 @@
-// Packages
 import dayjs from 'dayjs'
 import UTC from 'dayjs/plugin/utc'
-import { useAtom } from 'jotai'
 import { useState } from 'react'
-
-// DB
-import { alertAtom, cartAtom, clerkAtom, viewAtom } from 'lib/atoms'
 import { useCustomers, useInventory, useRegisterID } from 'lib/database/read'
 import {
   ModalButton,
@@ -18,14 +13,14 @@ import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
 import { logSalePaymentCash } from 'features/log/lib/functions'
 import { getSaleVars } from '../../lib/functions'
+import { useClerk } from 'lib/api/clerk'
+import { useAppStore } from 'lib/store'
+import { ViewProps } from 'lib/store/types'
 
 export default function Cash() {
   dayjs.extend(UTC)
-  // Atoms
-  const [clerk] = useAtom(clerkAtom)
-  const [view, setView] = useAtom(viewAtom)
-  const [cart, setCart] = useAtom(cartAtom)
-  const [, setAlert] = useAtom(alertAtom)
+  const { clerk } = useClerk()
+  const { view, cart, closeView, setAlert, addCartTransaction } = useAppStore()
 
   // SWR
   const { inventory } = useInventory()
@@ -57,26 +52,24 @@ export default function Cash() {
         setSubmitting(true)
         let transaction: SaleTransactionObject = {
           date: dayjs.utc().format(),
-          sale_id: cart?.id,
-          clerk_id: clerk?.id,
-          payment_method: PaymentMethodTypes.Cash,
+          saleId: cart?.id,
+          clerkId: clerk?.id,
+          paymentMethod: PaymentMethodTypes.Cash,
           amount: isRefund
             ? parseFloat(cashReceived) * -100
             : parseFloat(cashReceived) >= totalRemaining
             ? totalRemaining * 100
             : parseFloat(cashReceived) * 100,
-          cash_received: parseFloat(cashReceived) * 100,
-          change_given: isRefund
+          cashReceived: parseFloat(cashReceived) * 100,
+          changeGiven: isRefund
             ? null
             : parseFloat(cashReceived) > totalRemaining
             ? (parseFloat(cashReceived) - totalRemaining) * 100
             : null,
-          register_id: registerID,
-          is_refund: isRefund,
+          registerId: registerID,
+          isRefund: isRefund,
         }
-        let transactions = cart?.transactions || []
-        transactions.push(transaction)
-        setCart({ ...cart, transactions })
+        addCartTransaction(transaction)
         setSubmitting(false)
         logSalePaymentCash(
           cashReceived,
@@ -86,7 +79,7 @@ export default function Cash() {
           changeToGive,
           clerk
         )
-        setView({ ...view, cashPaymentDialog: false })
+        closeView(ViewProps.cashPaymentDialog)
         setAlert({
           open: true,
           type: 'success',
@@ -108,7 +101,7 @@ export default function Cash() {
   return (
     <Modal
       open={view?.cashPaymentDialog}
-      closeFunction={() => setView({ ...view, cashPaymentDialog: false })}
+      closeFunction={() => closeView(ViewProps.cashPaymentDialog)}
       title={isRefund ? `CASH REFUND` : `CASH PAYMENT`}
       buttons={buttons}
     >
