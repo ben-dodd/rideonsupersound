@@ -13,19 +13,13 @@ import { ModalButton, SaleItemObject, SaleObject } from 'lib/types'
 
 // Components
 import ScreenContainer from 'components/container/screen'
-import SaleDetails from './sale-details'
-import SaleSummary from './sale-summary'
 
 import { saveSystemLog } from 'features/log/lib/functions'
 import DeleteIcon from '@mui/icons-material/Delete'
-import {
-  getSaleVars,
-  loadSaleToCart,
-  nukeSaleInDatabase,
-} from '../lib/functions'
 import { useAppStore } from 'lib/store'
 import { useClerk } from 'lib/api/clerk'
 import { useRouter } from 'next/router'
+import { getSaleVars } from 'features/sale/features/item-sale/lib/functions'
 
 // TODO add returns to sale items
 // TODO refund dialog like PAY, refund with store credit, cash or card
@@ -142,21 +136,15 @@ export default function SaleItemScreen() {
   return (
     <>
       <ScreenContainer
-        show={loadedSaleId[page]}
-        closeFunction={() => setLoadedSaleId({ ...loadedSaleId, [page]: null })}
-        title={`SALE #${sale?.id} [${
-          sale?.state ? sale?.state.toUpperCase() : 'IN PROGRESS'
-        }]`}
+        title={`SALE #${sale?.id} [${sale?.state ? sale?.state.toUpperCase() : 'IN PROGRESS'}]`}
         loading={saleLoading}
-        buttons={
-          sale?.items?.filter(
-            (s: SaleItemObject) => !s?.isRefunded && !s?.isDeleted
-          )?.length > 0
-            ? buttons
-            : null
-        }
-        titleClass={titleClass}
-      >
+        buttons={sale?.items?.filter(
+          (s: SaleItemObject) => !s?.isRefunded && !s?.isDeleted
+        )?.length > 0
+          ? buttons
+          : null}
+        titleClass={titleClass} show={false} children={undefined}      >
+        <div>
         <div className="flex items-start overflow-auto w-full">
           <div className="w-2/3">
             <SaleSummary sale={sale} />
@@ -187,8 +175,7 @@ export default function SaleItemScreen() {
               </button>
             </div>
           </div>
-        </div>
-      </ScreenContainer>
+        </div></div>
     </>
   )
 }

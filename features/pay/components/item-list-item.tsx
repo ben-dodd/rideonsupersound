@@ -7,7 +7,7 @@ import {
 import { useInventory } from 'lib/database/read'
 import { SaleItemObject, StockObject } from 'lib/types'
 import { MouseEventHandler } from 'react'
-import { writeCartItemPriceBreakdown } from '../../sell/lib/functions'
+import { writeCartItemPriceBreakdown } from '../../sale/features/sell/lib/functions'
 
 // Components
 

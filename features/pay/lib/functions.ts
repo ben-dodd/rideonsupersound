@@ -39,7 +39,6 @@ import {
   VendorSaleItemObject,
 } from 'lib/types'
 import dayjs from 'dayjs'
-import { getCartItemPrice, getItemQuantity } from '../../sell/lib/functions'
 
 export function getSaleVars(sale: any, inventory: StockObject[]) {
   // Sale - sale item
@@ -49,7 +48,7 @@ export function getSaleVars(sale: any, inventory: StockObject[]) {
   // console.log(totalStoreCut);
   const totalPriceUnrounded =
     sumPrices(
-      sale?.items?.filter((s) => !s?.is_refunded),
+      sale?.items?.filter((s) => !s?.isRefunded),
       inventory,
       'totalPrice'
     ) / 100 // Total Amount of Sale in dollars
@@ -71,7 +70,7 @@ export function getSaleVars(sale: any, inventory: StockObject[]) {
     totalVendorCut,
     totalRemaining,
     numberOfItems: sale?.items
-      ?.filter((item) => !item.is_refunded && !item?.is_deleted)
+      ?.filter((item) => !item.isRefunded && !item?.isDeleted)
       ?.reduce((acc, item) => acc + parseInt(item?.quantity), 0), // Total number of items in sale
     itemList: writeItemList(inventory, sale?.items), // List of items written in full
   }
@@ -84,14 +83,14 @@ export function sumPrices(
 ) {
   if (!saleItems) return 0
   return saleItems
-    ?.filter((s) => !s?.is_refunded)
+    ?.filter((s) => !s?.isRefunded)
     ?.reduce((acc, saleItem) => {
       // Dont bother getting inventory item if not needed
       let item: StockObject =
-        saleItem?.total_sell && saleItem?.vendor_cut && saleItem?.store_cut
+        saleItem?.totalSell && saleItem?.vendorCut && saleItem?.storeCut
           ? null
           : inventory?.filter(
-              (i: StockObject) => i?.id === saleItem?.item_id
+              (i: StockObject) => i?.id === saleItem?.itemId
             )?.[0]
       const prices = getCartItemPrice(saleItem, item)
       return (acc += prices?.[field])
@@ -101,7 +100,7 @@ export function sumPrices(
 export function getTotalPaid(saleTransactions: SaleTransactionObject[]) {
   if (!saleTransactions) return 0
   return saleTransactions
-    ?.filter((transaction) => !transaction.is_deleted)
+    ?.filter((transaction) => !transaction.isDeleted)
     ?.reduce((acc, transaction) => acc + transaction?.amount, 0)
 }
 
@@ -117,7 +116,7 @@ export function getTotalOwing(
   const totalSell: any = totalSales?.reduce(
     (acc: number, sale: VendorSaleItemObject) =>
       acc +
-      (sale?.quantity * sale?.vendor_cut * (100 - sale?.vendor_discount || 0)) /
+      (sale?.quantity * sale?.vendorCut * (100 - sale?.vendorDiscount || 0)) /
         100,
     0
   )
@@ -125,15 +124,15 @@ export function getTotalOwing(
 }
 
 export function getGrossProfit(item: StockObject) {
-  let sellNum = item?.total_sell / 100 || 0,
-    costNum = item?.vendor_cut / 100 || 0
+  let sellNum = item?.totalSell / 100 || 0,
+    costNum = item?.vendorCut / 100 || 0
   if (sellNum > 0) return `$${(sellNum - costNum)?.toFixed(2)}`
   else return ''
 }
 
 export function getProfitMargin(item: StockObject) {
-  let sellNum = item?.total_sell || 0,
-    costNum = item?.vendor_cut || 0
+  let sellNum = item?.totalSell || 0,
+    costNum = item?.vendorCut || 0
   if (sellNum > 0)
     return `${(((sellNum - costNum) / sellNum) * 100)?.toFixed(1)}%`
   else return ''
@@ -145,19 +144,19 @@ export function writeItemList(
 ) {
   if (items && inventory) {
     return items
-      .filter((item: SaleItemObject) => !item?.is_deleted)
+      .filter((item: SaleItemObject) => !item?.isDeleted)
       .map((item: SaleItemObject) => {
         let stockItem: StockObject = inventory?.filter(
-          (i) => i?.id === item?.item_id
+          (i) => i?.id === item?.itemId
         )[0]
-        if (item?.is_gift_card) {
-          return `Gift Card [${stockItem?.gift_card_code}]`
+        if (item?.isGiftCard) {
+          return `Gift Card [${stockItem?.giftCardCode}]`
         } else {
           let cartQuantity = item?.quantity || 1
           let str = ''
           if (cartQuantity > 1) str = `${cartQuantity} x `
           str = str + getItemDisplayName(stockItem)
-          if (item?.is_refunded) str = str + ' [REFUNDED]'
+          if (item?.isRefunded) str = str + ' [REFUNDED]'
           return str
         }
       })
@@ -181,7 +180,7 @@ export async function loadSaleToCart(
   giftCards: GiftCardObject[],
   mutateGiftCards: Function
 ) {
-  if (cart?.date_sale_opened && (cart?.items || cart?.id !== sale?.id)) {
+  if (cart?.dateSaleOpened && (cart?.items || cart?.id !== sale?.id)) {
     // Cart is loaded with a different sale or
     // Cart has been started but not loaded into sale
     await saveSaleAndPark(
@@ -208,7 +207,7 @@ export async function nukeSaleInDatabase(
   logSaleNuked(sale, clerk)
   sale?.items?.forEach((saleItem) => {
     deleteSaleItemFromDatabase(saleItem?.id)
-    if (!saleItem?.is_refunded)
+    if (!saleItem?.isRefunded)
       createStockMovementInDatabase({
         item: saleItem,
         clerk,
@@ -219,8 +218,8 @@ export async function nukeSaleInDatabase(
       })
   })
   sale?.transactions?.forEach((saleTransaction) => {
-    if (saleTransaction?.vendor_payment_id)
-      deleteVendorPaymentFromDatabase(saleTransaction?.vendor_payment_id)
+    if (saleTransaction?.vendorPayment)
+      deleteVendorPaymentFromDatabase(saleTransaction?.vendorPayment)
     deleteSaleTransactionFromDatabase(saleTransaction?.id)
   })
   // deleteStockMovementsFromDatabase(sale?.id);
@@ -273,7 +272,7 @@ export async function saveSaleItemsTransactionsToDatabase(
   )
   let newSale = {
     ...cart,
-    store_cut: totalStoreCut * 100,
+    storeCut: totalStoreCut * 100,
     total_price: totalItemPrice * 100,
     number_of_items: numberOfItems,
     item_list: itemList,
@@ -297,7 +296,7 @@ export async function saveSaleItemsTransactionsToDatabase(
     )
   }
 
-  if (newSale?.is_mail_order && cart?.state === SaleStateTypes.Completed) {
+  if (newSale?.isMailOrder && cart?.state === SaleStateTypes.Completed) {
     addNewMailOrderTask(newSale, customer)
   }
 
@@ -306,26 +305,26 @@ export async function saveSaleItemsTransactionsToDatabase(
   //
   for (const item of cart?.items) {
     let invItem = inventory?.filter(
-      (i: StockObject) => i?.id === item?.item_id
+      (i: StockObject) => i?.id === item?.itemId
     )?.[0]
     // Check whether inventory item needs restocking
     const quantity = getItemQuantity(invItem, cart?.items)
-    let quantity_layby = invItem?.quantity_layby || 0
+    let quantityLayby = invItem?.quantityLayby || 0
     // let quantity_sold = invItem?.quantity_sold || 0;
     if (quantity > 0) {
-      invItem.needs_restock = true
+      invItem.needsRestock = true
       addRestockTask(invItem?.id)
     }
 
     // If sale is complete, validate gift card
-    if (cart?.state === SaleStateTypes.Completed && item?.is_gift_card) {
+    if (cart?.state === SaleStateTypes.Completed && item?.isGiftCard) {
       // Add to collection
-      invItem.gift_card_is_valid = true
+      invItem.giftCardIsValid = true
       mutateGiftCards(
         giftCards?.map((gc) => (gc?.id === invItem?.id ? invItem : gc)),
         false
       )
-      validateGiftCard(item?.item_id)
+      validateGiftCard(item?.itemId)
     }
 
     // Add or update Sale Item
@@ -339,16 +338,16 @@ export async function saveSaleItemsTransactionsToDatabase(
     }
 
     // Add stock movement if it's a regular stock item
-    if (!item?.is_gift_card && !item?.is_misc_item) {
+    if (!item?.isGiftCard && !item?.isMiscItem) {
       let act = StockMovementTypes.Sold
       if (cart?.state === SaleStateTypes.Completed) {
         // If it was a layby, unlayby it before marking as sold
         let act = ''
-        if (prevState === SaleStateTypes.Layby && !item?.is_gift_card) {
+        if (prevState === SaleStateTypes.Layby && !item?.isGiftCard) {
           act = StockMovementTypes.Unlayby
-          quantity_layby -= 1
+          quantityLayby -= 1
         }
-        if (item?.is_refunded) {
+        if (item?.isRefunded) {
           // Refund item if refunded
           act = StockMovementTypes.Unsold
         }
@@ -358,7 +357,7 @@ export async function saveSaleItemsTransactionsToDatabase(
         prevState !== SaleStateTypes.Layby
       ) {
         act = StockMovementTypes.Layby
-        quantity_layby += 1
+        quantityLayby += 1
       }
       createStockMovementInDatabase({
         item,
@@ -373,7 +372,7 @@ export async function saveSaleItemsTransactionsToDatabase(
     mutateInventory &&
       mutateInventory(
         inventory?.map((i) =>
-          i?.id === invItem?.id ? { ...invItem, quantity, quantity_layby } : i
+          i?.id === invItem?.id ? { ...invItem, quantity, quantityLayby } : i
         ),
         false
       )
@@ -400,40 +399,40 @@ export async function saveSaleTransaction(
   giftCards: GiftCardObject[],
   mutateGiftCards: Function
 ) {
-  if (transaction?.payment_method === PaymentMethodTypes.Account) {
+  if (transaction?.paymentMethod === PaymentMethodTypes.Account) {
     // Add account payment as a store payment to the vendor
     let vendorPaymentId = null
     const vendorPayment = {
       amount: transaction?.amount,
-      clerk_id: transaction?.clerk_id,
-      vendor_id: transaction?.vendor?.id,
-      type: transaction?.is_refund
+      clerkId: transaction?.clerkId,
+      vendorId: transaction?.vendor?.id,
+      type: transaction?.isRefund
         ? VendorPaymentTypes.SaleRefund
         : VendorPaymentTypes.Sale,
       date: dayjs.utc().format(),
-      register_id: transaction?.register_id,
+      registerId: transaction?.registerId,
     }
     vendorPaymentId = await createVendorPaymentInDatabase(vendorPayment)
-    transaction = { ...transaction, vendor_payment_id: vendorPaymentId }
+    transaction = { ...transaction, vendorPayment: vendorPaymentId }
   }
   let giftCardId = null
-  if (transaction?.payment_method === PaymentMethodTypes.GiftCard) {
-    if (transaction?.is_refund) {
+  if (transaction?.paymentMethod === PaymentMethodTypes.GiftCard) {
+    if (transaction?.isRefund) {
       // Gift card is new, create new one
       giftCardId = await createStockItemInDatabase(
-        transaction?.gift_card_update,
+        transaction?.giftCardUpdate,
         clerk
       )
     } else {
       // Update gift card
-      updateStockItemInDatabase(transaction?.gift_card_update)
+      updateStockItemInDatabase(transaction?.giftCardUpdate)
     }
     const otherGiftCards = giftCards?.filter(
-      (g: GiftCardObject) => g?.id !== transaction?.gift_card_update?.id
+      (g: GiftCardObject) => g?.id !== transaction?.giftCardUpdate?.id
     )
-    mutateGiftCards([...otherGiftCards, transaction?.gift_card_update], false)
+    mutateGiftCards([...otherGiftCards, transaction?.giftCardUpdate], false)
   }
-  if (giftCardId) transaction = { ...transaction, gift_card_id: giftCardId }
+  if (giftCardId) transaction = { ...transaction, giftCardId }
   createSaleTransactionInDatabase(transaction)
 }
 
@@ -447,10 +446,10 @@ export async function addNewMailOrderTask(sale: SaleObject, customer: string) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          description: `Post Sale ${sale?.id} (${sale?.item_list}) to ${
+          description: `Post Sale ${sale?.id} (${sale?.itemList}) to ${
             `${customer}\n` || ''
-          }${sale?.postal_address}`,
-          created_by_clerk_id: sale?.sale_opened_by,
+          }${sale?.postalAddress}`,
+          created_by_clerkId: sale?.saleOpenedBy,
           assigned_to: RoleTypes?.MC,
           date_created: dayjs.utc().format(),
           is_post_mail_order: 1,
@@ -465,5 +464,5 @@ export async function addNewMailOrderTask(sale: SaleObject, customer: string) {
 }
 
 export function validateGiftCard(id: number) {
-  updateItemInDatabase({ gift_card_is_valid: 1, id }, 'stock')
+  updateItemInDatabase({ giftCardIsValid: 1, id }, 'stock')
 }
