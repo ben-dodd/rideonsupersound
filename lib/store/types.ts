@@ -3,6 +3,7 @@ import {
   SaleObject,
   AlertProps,
   SaleTransactionObject,
+  SaleItemObject,
 } from 'lib/types'
 
 export interface StoreState {
@@ -67,6 +68,7 @@ export interface StoreState {
   closeAlert: () => void
   setCart: (update: any) => void
   addCartTransaction: (transaction: SaleTransactionObject) => void
+  addCartItem: (newItem: SaleItemObject) => void
   setCartItem: (id: number, update: any) => void
   setCustomer: (update: any) => void
   resetCart: () => void

@@ -10,16 +10,13 @@ import {
 import CircularProgress from '@mui/material/CircularProgress'
 import Tooltip from '@mui/material/Tooltip'
 import { saveLog } from 'features/log/lib/functions'
-import {
-  saveSaleAndPark,
-  saveSaleItemsTransactionsToDatabase,
-} from 'features/sale/features/item-sale/lib/functions'
 import { SaleStateTypes } from 'lib/types'
 import DiscardSaleIcon from '@mui/icons-material/Close'
 import SaveSaleIcon from '@mui/icons-material/Save'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
+import { saveSaleAndPark } from 'features/pay/lib/functions'
 
 export default function ShoppingCartActions() {
   const { clerk } = useClerk()

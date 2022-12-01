@@ -1,3 +1,5 @@
+import { js2mysql, mysql2js } from './utils/helpers'
+
 // import connection from './conn'
 const connection = require('./conn')
 
@@ -77,4 +79,24 @@ export function dbGetStockItem(id, db = connection) {
     .andWhereRaw(
       `(stock_price.id = (SELECT MAX(id) FROM stock_price WHERE stock_id = stock.id))`
     )
+}
+
+export function dbGetGiftCards(db = connection) {
+  return db('stock')
+    .select(
+      'id',
+      'is_gift_card',
+      'gift_card_code',
+      'gift_card_remaining',
+      'gift_card_is_valid',
+      'note',
+      'date_created',
+      'date_modified'
+    )
+    .where('is_gift_card', 1)
+    .andWhere('is_deleted', 0)
+}
+
+export function dbCreateStockItem(stockItem, db = connection) {
+  return db('stock').insert(js2mysql(stockItem))
 }

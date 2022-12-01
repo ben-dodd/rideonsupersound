@@ -1,18 +1,21 @@
-import { snakeCase } from 'lodash'
+import { snakeCase, transform, camelCase, isObject, isArray } from 'lodash'
 
-export function prepareItemForDatabase(item: any) {
-  let insertData = null
-  if (Array.isArray(item))
-    insertData = item.map((entry) => convertKeysToSnakeCase(entry))
-  else insertData = convertKeysToSnakeCase(item)
-  return insertData
-}
+export const js2mysql = (obj: any) => convertKeyCase(obj, 'snakeCase')
 
-export function convertKeysToSnakeCase(map: any) {
-  if (typeof map === 'object') {
-    let newMap = {}
-    Object.entries(map).map(([key, value]) => (newMap[snakeCase(key)] = value))
-  } else {
-    return map
-  }
+export const mysql2js = (obj: any) => convertKeyCase(obj, 'camelCase')
+
+export const convertKeyCase = (
+  obj: any,
+  keyCase: 'camelCase' | 'snakeCase'
+) => {
+  transform(obj, (acc, value, key, target) => {
+    const convertedKey = isArray(target)
+      ? key
+      : keyCase === 'camelCase'
+      ? camelCase(String(key))
+      : keyCase === 'snakeCase'
+      ? snakeCase(String(key))
+      : key
+    acc[convertedKey] = isObject(value) ? convertKeyCase(value, keyCase) : value
+  })
 }

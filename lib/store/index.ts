@@ -68,12 +68,13 @@ export const useAppStore = createSelectors(
           )
         )
       ),
+    addCartItem: (newItem) =>
+      set(produce((draft) => draft.cart.items.push(newItem))),
     setCartItem: (id, update) =>
       set(
-        produce((draft) =>
-          Object.entries(update).forEach(
-            ([key, value]) => (draft.cart.items[id][key] = value)
-          )
+        produce(
+          (draft) =>
+            (draft.cart.items[id] = { ...get().cart.items[id], ...update })
         )
       ),
     setCustomer: (update) =>

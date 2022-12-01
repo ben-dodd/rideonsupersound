@@ -9,38 +9,22 @@ import {
   getItemSku,
   getLaybyQuantity,
 } from 'features/inventory/features/display-inventory/lib/functions'
-import {
-  addItemToCart,
-  getItemQuantity,
-  openCart,
-  skuScan,
-} from '../../lib/functions'
+import { getItemQuantity, skuScan } from '../../lib/functions'
 import { useVendorNames } from 'lib/api/vendor'
 import { useAppStore } from 'lib/store'
 import { useClerk } from 'lib/api/clerk'
 import { ViewProps } from 'lib/store/types'
 import { useRouter } from 'next/router'
 
-type ListItemProps = {
-  item: StockObject
-  weather: Object
-  geolocation: Object
-}
-
-export default function ListItem({
-  item,
-  weather,
-  geolocation,
-}: ListItemProps) {
+export default function ListItem({ item }: { item: StockObject }) {
   const { vendorNames } = useVendorNames()
   const { clerk } = useClerk()
   const {
     cart,
     sellSearchBar,
-    view,
     openView,
     openConfirm,
-    setCart,
+    addCartItem,
     resetSellSearchBar,
   } = useAppStore()
   const router = useRouter()
@@ -70,19 +54,12 @@ export default function ListItem({
   }
 
   function handleAddItemToCart() {
-    if (!cart?.dateSaleOpened) openCart(setCart, clerk, weather, geolocation)
-    addItemToCart(item, cart, setCart, clerk)
+    // if (!cart?.dateSaleOpened) openCart(setCart, clerk, weather, geolocation)
+    // TODO open cart if not already open
+    addCartItem({ id: item?.id, quantity: '1' })
     openView(ViewProps.cart)
     resetSellSearchBar()
   }
-
-  // REVIEW Add in way for mobile view to add items and access info
-  // Disable mobile only for now
-  // <div
-  //   className="flex w-full mb-2 bg-blue-100 relative"
-  //   onClick={clickAddToCart}
-  //   onDoubleClick={clickOpenInventoryModal}
-  // >
 
   skuScan(sellSearchBar, item, handleAddItemToCart)
 

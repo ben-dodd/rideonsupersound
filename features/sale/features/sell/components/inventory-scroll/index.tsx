@@ -2,9 +2,7 @@ import { getGeolocation, useWeather } from 'lib/api'
 import { StockObject } from 'lib/types'
 import { useEffect, useState } from 'react'
 import { filterInventory, sortInventory } from '../../lib/functions'
-import GiftCardItem from './gift-card-item'
 import ListItem from './list-item'
-import MiscItem from './misc-item'
 import Loading from 'components/loading'
 import { useStockList } from 'lib/api/stock'
 
@@ -25,20 +23,12 @@ export default function InventoryScroll({ search }: { search: string }) {
         <Loading />
       ) : search ? (
         <>
-          {'gift card'.includes(search) && <GiftCardItem />}
-          {'misc item'.includes(search) && <MiscItem />}
           {stockList
             ?.filter((item) => filterInventory(item, search))
             ?.sort(sortInventory)
             ?.slice(0, maxItemsInList)
             ?.map((item: StockObject) => (
-              <ListItem
-                item={item}
-                key={item?.id}
-                // weather={weather}
-                weather={null}
-                geolocation={geolocation}
-              />
+              <ListItem item={item} key={item?.id} />
             )) || []}
         </>
       ) : (

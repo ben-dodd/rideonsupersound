@@ -1,6 +1,7 @@
 import useSWR from 'swr'
 import { camelCase, pascalCase } from '../utils'
 import { request } from 'superagent'
+import { mysql2js } from 'lib/database/utils/helpers'
 
 export default function useData(url: string, label: string) {
   const { data, error, mutate } = useSWR(url, async () =>
@@ -9,7 +10,7 @@ export default function useData(url: string, label: string) {
       .then((accessToken) =>
         request(`/api/${url}`).set('Authorization', `Bearer ${accessToken}`)
       )
-      .then((res) => res.json())
+      .then((res) => mysql2js(res.json()))
   )
   return {
     [camelCase(label)]: data,
