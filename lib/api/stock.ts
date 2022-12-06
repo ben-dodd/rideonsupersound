@@ -1,7 +1,7 @@
 import { saveSystemLog } from 'features/log/lib/functions'
 import { request } from 'superagent'
 import { ClerkObject, StockObject } from 'lib/types'
-import useData from '.'
+import useData from './'
 
 export function useStockList() {
   return useData(`stock`, 'stockList')

@@ -18,6 +18,7 @@ export default function IndexPage() {
 
   const router = useRouter()
   if (clerk?.id) router.push('sell')
+  console.log(clerk)
 
   return <>{loading ? <Loading type="pyramid" size="full" /> : <SignIn />}</>
 }

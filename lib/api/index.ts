@@ -1,16 +1,24 @@
 import useSWR from 'swr'
 import { camelCase, pascalCase } from '../utils'
-import { request } from 'superagent'
 import { mysql2js } from 'lib/database/utils/helpers'
+import axios from 'axios'
 
 export default function useData(url: string, label: string) {
   const { data, error, mutate } = useSWR(url, async () =>
-    request(`/api/auth/jwt`)
-      .then((response) => response.json())
+    axios(`/api/auth/jwt`)
+      .then((response) => response.data)
       .then((accessToken) =>
-        request(`/api/${url}`).set('Authorization', `Bearer ${accessToken}`)
+        axios({
+          url: `/api/${url}`,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
       )
-      .then((res) => mysql2js(res.json()))
+      .then((res) => {
+        console.log(res.data)
+        return mysql2js(res.data)
+      })
   )
   return {
     [camelCase(label)]: data,

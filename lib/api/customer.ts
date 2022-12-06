@@ -1,6 +1,6 @@
 import { saveSystemLog } from 'features/log/lib/functions'
 import { ClerkObject, CustomerObject } from 'lib/types'
-import useData from '.'
+import useData from './'
 import request from 'superagent'
 
 export function useCustomers() {
