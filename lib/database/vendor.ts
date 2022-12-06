@@ -1,6 +1,6 @@
 import { VendorObject } from 'lib/types'
 import connection from './conn'
-import { prepareItemForDatabase } from './utils/helpers'
+import { js2mysql } from './utils/helpers'
 
 const fullVendorQuery = (db) =>
   db('vendor').select(
@@ -65,7 +65,7 @@ export function dbGetVendorFromVendorPayment(vendorPaymentId, db = connection) {
 }
 
 export function dbUpdateVendor(vendor, id, db = connection) {
-  const insertData = prepareItemForDatabase(vendor)
+  const insertData = js2mysql(vendor)
   return db('vendor').where({ id }).update(insertData)
 }
 

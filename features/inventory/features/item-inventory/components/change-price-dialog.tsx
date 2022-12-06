@@ -1,31 +1,24 @@
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
 import { logChangePrice } from 'features/log/lib/functions'
-import {
-  alertAtom,
-  clerkAtom,
-  loadedItemIdAtom,
-  pageAtom,
-  viewAtom,
-} from 'lib/atoms'
 import { createStockPriceInDatabase } from 'lib/database/create'
 import { useInventory, useStockItem } from 'lib/database/read'
 import { ModalButton } from 'lib/types'
-import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
+import { useClerk } from 'lib/api/clerk'
+import { useAppStore } from 'lib/store'
+import { ViewProps } from 'lib/store/types'
+import { useRouter } from 'next/router'
 
 export default function ChangePriceDialog() {
-  const [loadedItemId] = useAtom(loadedItemIdAtom)
-  const [clerk] = useAtom(clerkAtom)
-  const [page] = useAtom(pageAtom)
-  const [view, setView] = useAtom(viewAtom)
-  const [, setAlert] = useAtom(alertAtom)
+  const { clerk } = useClerk()
+  const { view, closeView, setAlert } = useAppStore()
+  const router = useRouter()
+  const id = router.query.id
 
   // SWR
   const { inventory, mutateInventory } = useInventory()
-  const { stockItem, isStockItemLoading, mutateStockItem } = useStockItem(
-    loadedItemId[page]
-  )
+  const { stockItem, isStockItemLoading, mutateStockItem } = useStockItem(id)
 
   // State
   const [totalSell, setTotalSell] = useState('')
@@ -75,7 +68,7 @@ export default function ChangePriceDialog() {
           notes
         )
         setSubmitting(false)
-        setView({ ...view, changePriceDialog: false })
+        closeView(ViewProps.changePriceDialog)
         logChangePrice(stockItem, totalSell, vendorCut, clerk, stockPriceId)
         setAlert({
           open: true,
@@ -90,7 +83,7 @@ export default function ChangePriceDialog() {
   return (
     <Modal
       open={view?.changePriceDialog}
-      closeFunction={() => setView({ ...view, changePriceDialog: false })}
+      closeFunction={() => closeView(ViewProps.changePriceDialog)}
       title={'CHANGE STOCK PRICE'}
       buttons={buttons}
       loading={isStockItemLoading}

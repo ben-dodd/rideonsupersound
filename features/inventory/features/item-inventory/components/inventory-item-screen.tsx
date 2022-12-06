@@ -1,11 +1,9 @@
 // Packages
-import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 
 // DB
 import ScreenContainer from 'components/container/screen'
 import Tabs from 'components/navigation/tabs'
-import { clerkAtom, confirmModalAtom, loadedItemIdAtom } from 'lib/atoms'
 import {
   useInventory,
   useLogs,
@@ -24,18 +22,20 @@ import { parseJSON } from 'lib/utils'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { getItemDisplayName } from '../../display-inventory/lib/functions'
 import PriceDetails from './price-details'
+import { useAppStore } from 'lib/store'
+import { useRouter } from 'next/router'
+import { useClerk } from 'lib/api/clerk'
 
 export default function InventoryItemScreen({ page }) {
-  // Atoms
-  const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom)
-  const [, setConfirmModal] = useAtom(confirmModalAtom)
+  const { openConfirm} = useAppStore()
+  const router = useRouter()
 
   // SWR
-  const { stockItem, isStockItemLoading } = useStockItem(loadedItemId[page])
+  const { stockItem, isStockItemLoading } = useStockItem(router.query.id
   const { inventory, mutateInventory } = useInventory()
   const { saleItems } = useSaleItems()
   const { logs, mutateLogs } = useLogs()
-  const [clerk] = useAtom(clerkAtom)
+  const { clerk } = useClerk()
 
   // State
   const [item, setItem]: [StockObject, Function] = useState(null)

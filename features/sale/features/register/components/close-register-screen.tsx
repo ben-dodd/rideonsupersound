@@ -1,19 +1,4 @@
-// Packages
-import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
-
-// DB
-import { alertAtom, clerkAtom, viewAtom } from 'lib/atoms'
-import {
-  useCashGiven,
-  useCashReceived,
-  useClerks,
-  useLogs,
-  useManualPayments,
-  usePettyCash,
-  useRegister,
-  useRegisterID,
-} from 'lib/database/read'
 import { ClerkObject, ModalButton, SaleTransactionObject } from 'lib/types'
 
 // Components
@@ -27,28 +12,28 @@ import {
 } from '../lib/functions'
 import CashItem from './cash-item'
 import CashMap from './cash-map'
+import { useClerk, useClerks } from 'lib/api/clerk'
+import { useAppStore } from 'lib/store'
+import { ViewProps } from 'lib/store/types'
+import { useLogs } from 'lib/api/log'
+import { useCurrentRegister } from 'lib/api/register'
 
 export default function CloseRegisterScreen() {
   // SWR
   const { clerks, isClerksLoading } = useClerks()
   const { logs, mutateLogs } = useLogs()
-  const { registerID, mutateRegisterID } = useRegisterID()
-  const { register, isRegisterLoading } = useRegister(registerID)
-  const { pettyCash, isPettyCashLoading, mutatePettyCash } = usePettyCash(
-    register?.id || 0
-  )
-  const { cashGiven, isCashGivenLoading, mutateCashGiven } = useCashGiven(
-    register?.id || 0
-  )
+  const { currentRegister, isCurrentRegisterLoading } = useCurrentRegister()
+  const { pettyCash, isPettyCashLoading, mutatePettyCash } =
+    useCurrentPettyCash()
+  const { cashGiven, isCashGivenLoading, mutateCashGiven } =
+    useCurrentCashGiven()
   const { cashReceived, isCashReceivedLoading, mutateCashReceived } =
-    useCashReceived(register?.id || 0)
+    useCurrentCashReceived()
   const { manualPayments, isManualPaymentsLoading, mutateManualPayments } =
-    useManualPayments(register?.id || 0)
+    useCurrentManualPayments()
 
-  // Atoms
-  const [clerk] = useAtom(clerkAtom)
-  const [view, setView] = useAtom(viewAtom)
-  const [, setAlert] = useAtom(alertAtom)
+  const { clerk } = useClerk()
+  const { view, closeView, setAlert } = useAppStore()
 
   // State
   const [till, setTill] = useState({})
@@ -84,13 +69,13 @@ export default function CloseRegisterScreen() {
   const closeCashGiven =
     cashGiven?.reduce(
       (acc: number, transaction: SaleTransactionObject) =>
-        acc + transaction?.change_given,
+        acc + transaction?.changeGiven,
       0
     ) / 100
   const closeCashReceived =
     cashReceived?.reduce(
       (acc: number, transaction: SaleTransactionObject) =>
-        acc + transaction?.cash_received,
+        acc + transaction?.cashReceived,
       0
     ) / 100
   const closeManualPayments =
@@ -113,22 +98,22 @@ export default function CloseRegisterScreen() {
   // Functions
   async function closeRegister() {
     saveClosedRegisterToDatabase(
-      registerID,
+      currentRegister?.id,
       {
-        close_amount: parseFloat(closeAmount) * 100,
-        closed_by_id: clerk?.id,
-        close_petty_balance: closePettyBalance * 100,
-        close_cash_given: closeCashGiven * 100,
-        close_manual_payments: closeManualPayments * 100,
-        close_expected_amount: closeExpectedAmount * 100,
-        close_discrepancy: closeDiscrepancy * 100,
-        close_note: notes,
+        closeAmount: parseFloat(closeAmount) * 100,
+        closedById: clerk?.id,
+        closePettyBalance: closePettyBalance * 100,
+        closeCashGiven: closeCashGiven * 100,
+        closeManualPayments: closeManualPayments * 100,
+        closeExpectedAmount: closeExpectedAmount * 100,
+        closeDiscrepancy: closeDiscrepancy * 100,
+        closeNote: notes,
       },
       till
     )
-    logCloseRegisterWithAmount(closeAmount, clerk, registerID)
+    logCloseRegisterWithAmount(closeAmount, clerk, currentRegister?.id)
     mutateRegisterID([{ num: 0 }], false)
-    setView({ ...view, closeRegisterScreen: false })
+    closeView(ViewProps.closeRegisterScreen)
     setAlert({
       open: true,
       type: 'success',
@@ -145,7 +130,7 @@ export default function CloseRegisterScreen() {
   const buttons: ModalButton[] = [
     {
       type: 'cancel',
-      onClick: () => setView({ ...view, closeRegisterScreen: false }),
+      onClick: () => closeView(ViewProps.closeRegisterScreen),
       disabled: invalidCloseAmount,
       text: 'CANCEL',
     },
@@ -160,8 +145,8 @@ export default function CloseRegisterScreen() {
   return (
     <ScreenContainer
       show={view?.closeRegisterScreen}
-      closeFunction={() => setView({ ...view, closeRegisterScreen: false })}
-      title={`Close Register #${registerID} [opened by ${openedBy} at ${openedOn}]`}
+      closeFunction={() => closeView(ViewProps.closeRegisterScreen)}
+      title={`Close Register #${currentRegister?.id} [opened by ${openedBy} at ${openedOn}]`}
       loading={
         isClerksLoading ||
         isCashGivenLoading ||

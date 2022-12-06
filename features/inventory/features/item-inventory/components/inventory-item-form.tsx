@@ -3,7 +3,6 @@ import RadioButton from 'components/inputs/radio-button'
 import SettingsSelect from 'components/inputs/settings-select'
 import TextField from 'components/inputs/text-field'
 import { logCreateVendor } from 'features/log/lib/functions'
-import { clerkAtom } from 'lib/atoms'
 import { createVendorInDatabase } from 'lib/database/create'
 import { useLogs, useVendors } from 'lib/database/read'
 import { StockObject, VendorObject } from 'lib/types'
@@ -13,6 +12,7 @@ import {
   getItemDisplayName,
   getItemSku,
 } from '../../display-inventory/lib/functions'
+import { useClerk } from 'lib/api/clerk'
 
 interface inventoryProps {
   item: StockObject
@@ -29,7 +29,7 @@ export default function InventoryItemForm({
     setItem({ ...item, [e.target.name]: e.target.value })
   const { vendors } = useVendors()
   const { logs, mutateLogs } = useLogs()
-  const [clerk] = useAtom(clerkAtom)
+  const { clerk } = useClerk()
 
   // const vendor = useMemo(
   //   () =>

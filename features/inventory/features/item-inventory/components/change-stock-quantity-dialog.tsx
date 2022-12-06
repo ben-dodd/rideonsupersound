@@ -1,33 +1,25 @@
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
 import { logChangeQuantity } from 'features/log/lib/functions'
-import {
-  alertAtom,
-  clerkAtom,
-  loadedItemIdAtom,
-  pageAtom,
-  viewAtom,
-} from 'lib/atoms'
+import { useClerk } from 'lib/api/clerk'
 import { createStockMovementInDatabase } from 'lib/database/create'
 import { useInventory, useRegisterID, useStockItem } from 'lib/database/read'
+import { useAppStore } from 'lib/store'
+import { ViewProps } from 'lib/store/types'
 import { ModalButton, StockMovementTypes } from 'lib/types'
-import { useAtom } from 'jotai'
+import { useRouter } from 'next/router'
 import { useState } from 'react'
 import Select from 'react-select'
 
-export default function ChangePriceDialog() {
-  // Atoms
-  const [loadedItemId] = useAtom(loadedItemIdAtom)
-  const [clerk] = useAtom(clerkAtom)
-  const [page] = useAtom(pageAtom)
-  const [view, setView] = useAtom(viewAtom)
-  const [, setAlert] = useAtom(alertAtom)
+export default function changeStockQuantityDialog() {
+  const { clerk } = useClerk()
+  const { view, closeView, setAlert } = useAppStore()
+  const router = useRouter()
+  const id = router.query.id
 
   // SWR
   const { inventory, mutateInventory } = useInventory()
-  const { stockItem, isStockItemLoading, mutateStockItem } = useStockItem(
-    loadedItemId[page]
-  )
+  const { stockItem, isStockItemLoading, mutateStockItem } = useStockItem(id)
   const { registerID } = useRegisterID()
 
   // State
@@ -94,7 +86,7 @@ export default function ChangePriceDialog() {
           note,
         })
         setSubmitting(false)
-        setView({ ...view, changeStockQuantityDialog: false })
+        closeView(ViewProps.changeStockQuantityDialog)
         setMovement(null)
         setQuantity('')
         setNote('')
@@ -124,9 +116,7 @@ export default function ChangePriceDialog() {
   return (
     <Modal
       open={view?.changeStockQuantityDialog}
-      closeFunction={() =>
-        setView({ ...view, changeStockQuantityDialog: false })
-      }
+      closeFunction={() => closeView(ViewProps.changeStockQuantityDialog)}
       title={'CHANGE STOCK QUANTITY'}
       buttons={buttons}
       loading={isStockItemLoading}

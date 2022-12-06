@@ -8,8 +8,7 @@ export default function useData(url: string, label: string) {
     axios(`/api/auth/jwt`)
       .then((response) => response.data)
       .then((accessToken) =>
-        axios({
-          url: `/api/${url}`,
+        axios(`/api/${url}`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
