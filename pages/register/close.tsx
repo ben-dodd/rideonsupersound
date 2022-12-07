@@ -1,22 +1,19 @@
 import { useEffect, useState } from 'react'
 import { ClerkObject, ModalButton, SaleTransactionObject } from 'lib/types'
-
-// Components
-import ScreenContainer from 'components/container/screen'
 import TextField from 'components/inputs/text-field'
 import { logCloseRegisterWithAmount } from 'features/log/lib/functions'
 import dayjs from 'dayjs'
-import {
-  getAmountFromCashMap,
-  saveClosedRegisterToDatabase,
-} from '../lib/functions'
-import CashItem from './cash-item'
-import CashMap from './cash-map'
 import { useClerk, useClerks } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useLogs } from 'lib/api/log'
 import { useCashUp, useCurrentRegister } from 'lib/api/register'
+import {
+  getAmountFromCashMap,
+  saveClosedRegisterToDatabase,
+} from 'features/sale/features/register/lib/functions'
+import CashMap from 'features/sale/features/register/components/cash-map'
+import CashItem from 'features/sale/features/register/components/cash-item'
 
 export default function CloseRegisterScreen() {
   // SWR
@@ -128,14 +125,15 @@ export default function CloseRegisterScreen() {
   ]
 
   return (
-    <ScreenContainer
-      show={view?.closeRegisterScreen}
-      closeFunction={() => closeView(ViewProps.closeRegisterScreen)}
-      title={`Close Register #${currentRegister?.id} [opened by ${openedBy} at ${openedOn}]`}
-      loading={isClerksLoading || isCashUpLoading}
-      buttons={buttons}
-      titleClass="bg-col1"
-    >
+    // <ScreenContainer
+    //   show={view?.closeRegisterScreen}
+    //   closeFunction={() => closeView(ViewProps.closeRegisterScreen)}
+    //   title={`Close Register #${currentRegister?.id} [opened by ${openedBy} at ${openedOn}]`}
+    //   loading={isClerksLoading || isCashUpLoading}
+    //   buttons={buttons}
+    //   titleClass="bg-col1"
+    // >
+    <div>
       <div className="flex">
         <div className="w-1/2 mr-12">
           <div className="flex mb-4">
@@ -275,6 +273,6 @@ export default function CloseRegisterScreen() {
           )}
         </div>
       </div>
-    </ScreenContainer>
+    </div>
   )
 }

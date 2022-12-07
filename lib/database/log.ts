@@ -1,4 +1,4 @@
-const connection = require('conn')
+import connection from './conn'
 
 export function dbGetLogs(limit?, db = connection) {
   return db('log')

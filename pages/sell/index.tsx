@@ -15,11 +15,14 @@ import { useSwipeable } from 'react-swipeable'
 import { ViewProps } from 'lib/store/types'
 import { useState } from 'react'
 import { useAppStore } from 'lib/store'
+import { useCurrentRegister } from 'lib/api/register'
+import { useRouter } from 'next/router'
 
 export default function SellPage() {
-  const { registerID } = useRegisterID()
+  const { currentRegister, isCurrentRegisterLoading } = useCurrentRegister()
   const { view, openView, closeView, bypassRegister } = useAppStore()
   const [search, setSearch] = useState('')
+  const router = useRouter()
 
   const handlers = useSwipeable({
     onSwipedRight: () =>
@@ -36,14 +39,15 @@ export default function SellPage() {
     preventDefaultTouchmoveEvent: true,
   })
 
-  return registerID === 0 && !bypassRegister ? (
-    <OpenRegisterScreen />
-  ) : (
+  if (!currentRegister && !isCurrentRegisterLoading)
+    router.push('/register/open')
+
+  return (
     <div className={`flex relative overflow-x-hidden`} {...handlers}>
       <MidScreenContainer
         title={null}
         titleClass={''}
-        isLoading={false}
+        isLoading={isCurrentRegisterLoading}
         actionButtons={undefined}
       >
         <SellSearchBar search={search} setSearch={setSearch} />

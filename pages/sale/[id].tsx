@@ -135,7 +135,7 @@ export default function SaleItemScreen() {
 
   return (
     <>
-      <ScreenContainer
+      {/* <ScreenContainer
         title={`SALE #${sale?.id} [${sale?.state ? sale?.state.toUpperCase() : 'IN PROGRESS'}]`}
         loading={saleLoading}
         buttons={sale?.items?.filter(
@@ -143,8 +143,8 @@ export default function SaleItemScreen() {
         )?.length > 0
           ? buttons
           : null}
-        titleClass={titleClass} show={false} children={undefined}      >
-        <div>
+        titleClass={titleClass} show={false} children={undefined}      > */}
+      <div>
         <div className="flex items-start overflow-auto w-full">
           <div className="w-2/3">
             <SaleSummary sale={sale} />
@@ -175,7 +175,8 @@ export default function SaleItemScreen() {
               </button>
             </div>
           </div>
-        </div></div>
+        </div>
+      </div>
     </>
   )
 }

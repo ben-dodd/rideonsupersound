@@ -16,11 +16,11 @@ import {
 } from 'lib/database/delete'
 import HoldIcon from '@mui/icons-material/PanTool'
 import PayIcon from '@mui/icons-material/ShoppingCart'
-import { getSaleVars } from 'features/sale/features/item-sale/lib/functions'
 import { useStockList } from 'lib/api/stock'
 import { useAppStore } from 'lib/store'
 import { useClerk } from 'lib/api/clerk'
 import { ViewProps } from 'lib/store/types'
+import { getSaleVars } from 'features/pay/lib/functions'
 
 export default function ShoppingCart() {
   const { cart, view, setCart, setAlert, resetCart, closeView, openView } =

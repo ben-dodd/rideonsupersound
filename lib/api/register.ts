@@ -1,4 +1,4 @@
-import useData from '.'
+import useData from './'
 
 export function useRegister(register_id) {
   return useData(`register/${register_id}`, 'register')
@@ -10,4 +10,8 @@ export function useRegisters() {
 
 export function useCurrentRegister() {
   return useData(`register/current`, 'currentRegister')
+}
+
+export function useCashUp() {
+  return useData(`register/cashup`, 'cashUp')
 }

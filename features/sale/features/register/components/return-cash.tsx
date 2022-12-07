@@ -1,27 +1,20 @@
-// Packages
-import { useAtom } from 'jotai'
 import { useState } from 'react'
-
-// DB
-import { alertAtom, clerkAtom, viewAtom } from 'lib/atoms'
-import { useLogs, usePettyCash, useRegisterID } from 'lib/database/read'
+import { useLogs, usePettyCash } from 'lib/database/read'
 import { ModalButton } from 'lib/types'
-
-// Components
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
 import { savePettyCashToRegister } from '../lib/functions'
+import { useClerk } from 'lib/api/clerk'
+import { useAppStore } from 'lib/store'
+import { ViewProps } from 'lib/store/types'
+import { useCurrentRegister } from 'lib/api/register'
 
 export default function ReturnCashDialog() {
-  // SWR
-  const { registerID } = useRegisterID()
-  const { pettyCash, mutatePettyCash } = usePettyCash(registerID)
+  const { currentRegister } = useCurrentRegister()
+  const { pettyCash, mutatePettyCash } = usePettyCash(currentRegister?.id)
   const { logs, mutateLogs } = useLogs()
-
-  // Atoms
-  const [clerk] = useAtom(clerkAtom)
-  const [view, setView] = useAtom(viewAtom)
-  const [, setAlert] = useAtom(alertAtom)
+  const { clerk } = useClerk()
+  const { view, closeView, setAlert } = useAppStore()
 
   // State
   const [amount, setAmount] = useState('0')
@@ -40,7 +33,7 @@ export default function ReturnCashDialog() {
       onClick: async () => {
         setSubmitting(true)
         const id = await savePettyCashToRegister(
-          registerID,
+          currentRegister?.id,
           clerk,
           false,
           amount,
@@ -48,7 +41,7 @@ export default function ReturnCashDialog() {
         )
         setSubmitting(false)
         mutatePettyCash([...pettyCash])
-        setView({ ...view, returnCashDialog: false })
+        closeView(ViewProps.returnCashDialog)
         setAmount('0')
         setNotes('')
         setAlert({
@@ -66,7 +59,7 @@ export default function ReturnCashDialog() {
   return (
     <Modal
       open={view?.returnCashDialog}
-      closeFunction={() => setView({ ...view, returnCashDialog: false })}
+      closeFunction={() => closeView(ViewProps.returnCashDialog)}
       title={'ADD CASH'}
       buttons={buttons}
     >

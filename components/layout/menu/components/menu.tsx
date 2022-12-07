@@ -127,7 +127,7 @@ export default function Menu({ badges }) {
   ]
 
   const defaultOnClick = (item) => {
-    window.scrollTo(0, 0)
+    // window.scrollTo(0, 0)
     saveSystemLog(`${item?.page} on menu clicked.`, clerk?.id)
     router.push(item?.page)
     closeView(ViewProps.mainMenu)

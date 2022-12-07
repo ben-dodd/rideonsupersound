@@ -76,6 +76,7 @@ export interface StoreState {
   resetSellSearchBar: () => void
   toggleTableMode: () => void
   toggleCompactMode: () => void
+  toggleBypassRegister: () => void
   setLoadedStocktakeTemplateId: (id: number) => void
   setLoadedVendorId: (id: number) => void
 }

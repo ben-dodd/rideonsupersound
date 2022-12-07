@@ -1,22 +1,21 @@
 import Modal from 'components/modal'
-import { pageAtom, viewAtom } from 'lib/atoms'
-import { useHelps } from 'lib/database/read'
 import BackIcon from '@mui/icons-material/ArrowLeft'
 import SearchIcon from '@mui/icons-material/Search'
-import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 import { filterHelps } from '../lib/functions'
 import { HelpObject } from '../lib/types'
 import HelpItem from './help-item'
 import HelpListItem from './help-list-item'
+import { useHelps } from 'lib/api/help'
+import { useAppStore } from 'lib/store'
+import { useRouter } from 'next/router'
+import { ViewProps } from 'lib/store/types'
 
 export default function HelpDialog() {
-  // SWR
   const { helps, isHelpsLoading } = useHelps()
-
-  // Atoms
-  const [view, setView] = useAtom(viewAtom)
-  const [page] = useAtom(pageAtom)
+  const { view, closeView } = useAppStore()
+  const router = useRouter()
+  const page = router.pathname
 
   // State
   const [search, setSearch] = useState('')
@@ -31,7 +30,7 @@ export default function HelpDialog() {
     <Modal
       open={view?.helpDialog}
       closeFunction={() => {
-        setView({ ...view, helpDialog: false })
+        closeView(ViewProps.helpDialog)
         setHelp(null)
         setSearch('')
       }}

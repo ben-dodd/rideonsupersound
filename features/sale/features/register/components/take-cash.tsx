@@ -1,27 +1,20 @@
-// Packages
-import { useAtom } from 'jotai'
 import { useState } from 'react'
-
-// DB
-import { alertAtom, clerkAtom, viewAtom } from 'lib/atoms'
 import { useLogs, usePettyCash, useRegisterID } from 'lib/database/read'
 import { ModalButton } from 'lib/types'
-
-// Components
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
 import { savePettyCashToRegister } from '../lib/functions'
+import { useClerk } from 'lib/api/clerk'
+import { useAppStore } from 'lib/store'
+import { ViewProps } from 'lib/store/types'
+import { useCurrentRegister } from 'lib/api/register'
 
 export default function TakeCashDialog() {
-  // SWR
-  const { registerID } = useRegisterID()
-  const { mutatePettyCash } = usePettyCash(registerID)
+  const { currentRegister } = useCurrentRegister()
+  const { mutatePettyCash } = usePettyCash(currentRegister?.id)
   const { logs, mutateLogs } = useLogs()
-
-  // Atoms
-  const [clerk] = useAtom(clerkAtom)
-  const [, setAlert] = useAtom(alertAtom)
-  const [view, setView] = useAtom(viewAtom)
+  const { clerk } = useClerk()
+  const { view, closeView, setAlert } = useAppStore()
 
   // State
   const [amount, setAmount] = useState('0')
@@ -40,17 +33,15 @@ export default function TakeCashDialog() {
       onClick: async () => {
         setSubmitting(true)
         await savePettyCashToRegister(
-          registerID,
+          currentRegister?.id,
           clerk?.id,
           true,
           amount,
-          notes,
-          logs,
-          mutateLogs
+          notes
         )
         mutatePettyCash()
         setSubmitting(false)
-        setView({ ...view, takeCashDialog: false })
+        closeView(ViewProps.takeCashDialog)
         setAmount('0')
         setNotes('')
         setAlert({
@@ -68,7 +59,7 @@ export default function TakeCashDialog() {
   return (
     <Modal
       open={view?.takeCashDialog}
-      closeFunction={() => setView({ ...view, takeCashDialog: false })}
+      closeFunction={() => closeView(ViewProps.takeCashDialog)}
       title={'TAKE CASH'}
       buttons={buttons}
     >

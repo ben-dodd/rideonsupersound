@@ -14,6 +14,7 @@ import tz from 'dayjs/plugin/timezone'
 import relative from 'dayjs/plugin/relativeTime'
 import isBetween from 'dayjs/plugin/isBetween'
 import { useEffect, useState } from 'react'
+import Layout from 'components/layout'
 // import "dayjs/locale/en-nz";
 
 function MyApp({ Component, pageProps }) {
@@ -28,7 +29,7 @@ function MyApp({ Component, pageProps }) {
   dayjs.extend(isBetween)
   // dayjs.locale("en-nz");
 
-  const getLayout = Component.getLayout || ((page) => page)
+  const getLayout = Component.getLayout || ((page) => <Layout>{page}</Layout>)
 
   return <UserProvider>{getLayout(<Component {...pageProps} />)}</UserProvider>
 }
