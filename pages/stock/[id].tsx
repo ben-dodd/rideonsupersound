@@ -1,10 +1,6 @@
 // Packages
-import { useEffect, useState } from 'react'
-
-// DB
-import ScreenContainer from 'components/container/screen'
+import { useState } from 'react'
 import Tabs from 'components/navigation/tabs'
-import { useLogs, useSaleItems } from 'lib/database/read'
 import { ModalButton, StockObject } from 'lib/types'
 
 import DiscogsPanel from 'features/inventory/features/api-discogs/components'
@@ -13,44 +9,43 @@ import InventoryItemForm from 'features/inventory/features/item-inventory/compon
 import StockDetails from 'features/inventory/features/item-inventory/components/stock-details'
 import { deleteInventoryItemFromDatabase } from 'lib/database/delete'
 import { updateStockItemInDatabase } from 'lib/database/update'
-import { parseJSON } from 'lib/utils'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { useRouter } from 'next/router'
 import { useAppStore } from 'lib/store'
 import { useStockItem } from 'lib/api/stock'
 import PriceDetails from 'features/inventory/features/item-inventory/components/price-details'
+import Loading from 'components/loading'
+import Layout from 'components/layout'
 
 export default function InventoryItemScreen() {
   const router = useRouter()
   const { id } = router.query
   const { openConfirm } = useAppStore()
   const { stockItem, isStockItemLoading } = useStockItem(`${id}`)
-  const { saleItems } = useSaleItems()
-  const { logs, mutateLogs } = useLogs()
+  // const { logs, mutateLogs } = useLogs()
+
+  console.log(stockItem)
 
   // State
   const [item, setItem]: [StockObject, Function] = useState(null)
   const [tab, setTab] = useState(0)
 
-  // Load
-  useEffect(() => {
-    setTab[0]
-    let newItem = { ...stockItem }
-    // Parse JSON fields
-    newItem.discogsItem = parseJSON(
-      newItem?.discogsItem,
-      newItem?.discogsItem || null
-    )
-    newItem.googleBooksItem = parseJSON(
-      newItem?.googleBooksItem,
-      newItem?.googleBooksItem || null
-    )
-    newItem.genre = parseJSON(newItem?.genre, [newItem?.genre] || null)
-    setItem(newItem)
-  }, [stockItem])
-
-  const itemIsPartOfSale =
-    saleItems?.filter((s) => s?.item_id === item?.id)?.length > 0
+  // // Load
+  // useEffect(() => {
+  //   setTab[0]
+  //   let newItem = { ...stockItem }
+  //   // Parse JSON fields
+  //   newItem.discogsItem = parseJSON(
+  //     newItem?.discogsItem,
+  //     newItem?.discogsItem || null
+  //   )
+  //   newItem.googleBooksItem = parseJSON(
+  //     newItem?.googleBooksItem,
+  //     newItem?.googleBooksItem || null
+  //   )
+  //   newItem.genre = parseJSON(newItem?.genre, [newItem?.genre] || null)
+  //   setItem(newItem)
+  // }, [stockItem])
 
   // Functions
   function onClickDelete() {
@@ -60,7 +55,7 @@ export default function InventoryItemScreen() {
       title: 'Are you sure you want to delete this item?',
       styledMessage: (
         <div>
-          {itemIsPartOfSale ? (
+          {stockItem?.saleItemId ? (
             <>
               <div className="text-red-500 text-lg text-center p-2 border-red-500">
                 SORRY
@@ -112,17 +107,9 @@ export default function InventoryItemScreen() {
     },
   ]
 
-  return (
-    // <ScreenContainer
-    //   show={Boolean(loadedItemId[page])}
-    //   closeFunction={() => {
-    //     setLoadedItemId({ ...loadedItemId, [page]: 0 })
-    //   }}
-    //   title={getItemDisplayName(item)}
-    //   loading={isStockItemLoading}
-    //   buttons={buttons}
-    //   titleClass={titleClass}
-    // >
+  return isStockItemLoading ? (
+    <Loading />
+  ) : (
     <div>
       <div className="flex flex-col w-full">
         <Tabs
@@ -168,14 +155,15 @@ export default function InventoryItemScreen() {
             )
           }
         >
-          <DiscogsPanel item={item} setItem={setItem} />
+          {/* <DiscogsPanel item={item} setItem={setItem} /> */}
         </div>
         <div hidden={!(tab === 1 && item?.media === 'Literature')}>
-          <GoogleBooksPanel item={item} setItem={setItem} />
+          {/* <GoogleBooksPanel item={item} setItem={setItem} /> */}
         </div>
         <div hidden={tab !== 2}>Item Sale Details</div>
       </div>
     </div>
-    // </ScreenContainer>
   )
 }
+
+InventoryItemScreen.getLayout = (page) => <Layout>{page}</Layout>

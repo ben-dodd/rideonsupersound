@@ -1,16 +1,16 @@
-import { js2mysql, mysql2js } from './utils/helpers'
-
-// import connection from './conn'
+import { js2mysql } from './utils/helpers'
 const connection = require('./conn')
 
 export function dbGetStockList(db = connection) {
   return db('stock')
     .join('stock_movement', 'stock.id', '=', 'stock_movement.stock_id')
     .join('stock_price', 'stock.id', '=', 'stock_price.stock_id')
+    .join('vendor', 'stock.vendor_id', '=', 'vendor.id')
     .groupBy('stock.id')
     .select(
       'stock.id',
       'stock.vendor_id as vendorId',
+      'vendor.name as vendorName',
       'stock.artist',
       'stock.title',
       'stock.display_as as displayAs',
@@ -51,34 +51,22 @@ export function dbGetRestockList(db = connection) {
 
 export function dbGetStockItem(id, db = connection) {
   return db('stock')
-    .join('stock_movement', 'stock.id', '=', 'stock_movement.stock_id')
-    .join('stock_price', 'stock.id', '=', 'stock_price.stock_id')
-    .groupBy('stock.id')
-    .select(
-      'stock.id',
-      'stock.vendor_id as vendorId',
-      'stock.artist',
-      'stock.title',
-      'stock.display_as as displayAs',
-      'stock.media',
-      'stock.format',
-      'stock.section',
-      'stock.country',
-      'stock.is_new as isNew',
-      'stock.cond',
-      'stock.image_url as imageUrl',
-      'stock.needs_restock as needsRestock',
-      'stock_price.vendor_cut as vendorCut',
-      'stock_price.total_sell as totalSell'
-    )
-    .sum('stock_movement.quantity as quantity')
-    .where(`stock.id`, Number(id))
-    .where(`stock.is_deleted`, 0)
-    .andWhere(`stock.is_misc_item`, 0)
-    .andWhere(`stock.is_gift_card`, 0)
-    .andWhereRaw(
-      `(stock_price.id = (SELECT MAX(id) FROM stock_price WHERE stock_id = stock.id))`
-    )
+    .where('stock.id', id)
+    .first()
+    .then(async (stockItem) => {
+      const sales = await db('sale_item')
+        .join('sale', 'sale_item.sale_id', 'sale.id')
+        .where(`item_id`, stockItem?.id)
+      const stockMovements = await db('stock_movement').where(
+        `stock_id`,
+        stockItem?.id
+      )
+      const stockPrices = await db('stock_price').where(
+        `stock_id`,
+        stockItem?.id
+      )
+      return { ...stockItem, sales, stockMovements, stockPrices }
+    })
 }
 
 export function dbGetGiftCards(db = connection) {

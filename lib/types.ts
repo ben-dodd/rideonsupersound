@@ -315,6 +315,9 @@ export interface StockObject {
   googleBooksItem?: any
   discogsItem?: any
   needsRestock?: boolean
+  stockMovements?: any[]
+  sales?: any[]
+  prices?: any[]
 }
 
 export interface StockPriceObject {

@@ -1,11 +1,4 @@
 import { getItemQuantity } from 'features/sale/features/sell/lib/functions'
-import {
-  alertAtom,
-  cartAtom,
-  clerkAtom,
-  confirmModalAtom,
-  loadedItemIdAtom,
-} from 'lib/atoms'
 import { useVendors } from 'lib/database/read'
 import { StockObject, VendorObject } from 'lib/types'
 import AddIcon from '@mui/icons-material/AddCircleOutline'
@@ -18,6 +11,7 @@ import {
   getItemSku,
   getLaybyQuantity,
 } from '../features/display-inventory/lib/functions'
+import { useAppStore } from 'lib/store'
 
 type ListItemProps = {
   item: StockObject
@@ -25,10 +19,7 @@ type ListItemProps = {
 
 export default function StockListItem({ item }: ListItemProps) {
   const { vendors } = useVendors()
-
-  // Atoms
-  const [cart, setCart] = useAtom(cartAtom)
-  const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom)
+  const { cart } = useAppStore()
   const [, setConfirmModal] = useAtom(confirmModalAtom)
   const [clerk] = useAtom(clerkAtom)
   const [, setAlert] = useAtom(alertAtom)

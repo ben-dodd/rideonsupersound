@@ -72,3 +72,11 @@ export function dbUpdateVendor(vendor, id, db = connection) {
 export function dbDeleteVendor(id, db = connection) {
   return db('vendor').del().where({ id })
 }
+
+export function dbGetVendorIdFromUid(vendorUid, db = connection) {
+  return db('vendor')
+    .select('id')
+    .where({ uid: vendorUid })
+    .first()
+    .then((vendor) => vendor?.id)
+}

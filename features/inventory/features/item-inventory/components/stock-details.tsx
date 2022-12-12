@@ -1,19 +1,24 @@
-import { viewAtom } from 'lib/atoms'
-import { useStockMovementByStockId } from 'lib/database/read'
 import { StockObject } from 'lib/types'
 import dayjs from 'dayjs'
-import { useAtom } from 'jotai'
+import { useAppStore } from 'lib/store'
+import { ViewProps } from 'lib/store/types'
+import {
+  getAdjustmentQuantity,
+  getDiscardedLostQuantity,
+  getInStockQuantity,
+  getLaybyHoldQuantity,
+  getReceivedQuantity,
+  getRefundedQuantity,
+  getReturnedQuantity,
+  getSoldQuantity,
+} from 'features/inventory/lib/functions'
 
 interface stockDetailsProps {
   item: StockObject
 }
 
 export default function StockDetails({ item }: stockDetailsProps) {
-  const { stockMovements, isStockMovementsLoading } = useStockMovementByStockId(
-    item?.id
-  )
-
-  const [view, setView] = useAtom(viewAtom)
+  const { openView } = useAppStore()
 
   return (
     <>
@@ -24,69 +29,56 @@ export default function StockDetails({ item }: stockDetailsProps) {
             item?.quantity <= 0 ? 'bg-tertiary-light' : 'bg-primary-light'
           }`}
         >
-          {`${item?.quantity || 0}`}
+          {`${getInStockQuantity(item)}`}
         </div>
         <div className="stock-indicator__container">RECEIVED</div>
         <div className="stock-indicator__number bg-secondary-light">
-          {`${item?.quantity_received || 0}`}
+          {`${getReceivedQuantity(item)}`}
         </div>
         <div className="stock-indicator__container">SOLD</div>
         <div className="stock-indicator__number bg-secondary-light">
-          {`${Math.abs(item?.quantity_sold || 0)}`}
+          {`${getSoldQuantity(item)}`}
         </div>
         <div className="stock-indicator__container">RETURNED</div>
         <div className="stock-indicator__number bg-secondary-light">
-          {`${Math.abs(item?.quantity_returned || 0)}`}
+          {`${getReturnedQuantity(item)}`}
         </div>
         <div className="stock-indicator__container">LAYBY/HOLD</div>
         <div className="stock-indicator__number bg-secondary-light">
-          {`${
-            (item?.quantity_layby +
-              item?.quantity_hold +
-              item?.quantity_unlayby +
-              item?.quantity_unhold) *
-            -1
-          }`}
+          {`${getLaybyHoldQuantity(item)}`}
         </div>
         <div className="stock-indicator__container">DISCARD/LOST</div>
         <div className="stock-indicator__number bg-secondary-light">
-          {`${
-            (item?.quantity_discarded +
-              item?.quantity_lost +
-              item?.quantity_found) *
-            -1
-          }`}
+          {`${getDiscardedLostQuantity(item)}`}
         </div>
         <div className="stock-indicator__container">REFUNDED</div>
         <div className="stock-indicator__number bg-secondary-light">
-          {`${Math.abs(item?.quantity_unsold || 0)}`}
+          {`${getRefundedQuantity(item)}`}
         </div>
         <div className="stock-indicator__container">ADJUSTMENT</div>
         <div
           className={`stock-indicator__number ${
-            item?.quantity_adjustment < 0
+            item?.quantityAdjustment < 0
               ? 'bg-tertiary-light'
               : 'bg-secondary-light'
           }`}
         >
-          {`${item?.quantity_adjustment || 0}`}
+          {`${getAdjustmentQuantity(item)}`}
         </div>
       </div>
       <button
-        onClick={() => setView({ ...view, changeStockQuantityDialog: true })}
+        onClick={() => openView(ViewProps.changeStockQuantityDialog)}
         className="bg-brown-dark hover:bg-brown p-2 w-full text-white"
       >
         CHANGE STOCK LEVEL
       </button>
       <div className="font-bold py-2">Stock Movement Logs</div>
       <div className="h-dialogsm overflow-y-scroll">
-        {isStockMovementsLoading ? (
-          <div>Loading...</div>
-        ) : stockMovements?.length === 0 ? (
+        {item?.stockMovements?.length === 0 ? (
           <div>No stock movements found.</div>
         ) : (
           <div>
-            {stockMovements?.map((s) => (
+            {item?.stockMovements?.map((s) => (
               <div
                 key={s?.id}
                 className={`flex hover:bg-gray-200 p-2 justify-between`}

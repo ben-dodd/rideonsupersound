@@ -8,12 +8,7 @@ import {
   createHoldInDatabase,
   createStockMovementInDatabase,
 } from 'lib/database/create'
-import {
-  useCustomers,
-  useInventory,
-  useLogs,
-  useRegisterID,
-} from 'lib/database/read'
+import { useInventory, useLogs, useRegisterID } from 'lib/database/read'
 import {
   CustomerObject,
   ModalButton,
@@ -26,6 +21,7 @@ import { useAppStore } from 'lib/store'
 import { useUser } from '@auth0/nextjs-auth0'
 import { useClerk } from 'lib/api/clerk'
 import { ViewProps } from 'lib/store/types'
+import { useCustomers } from 'lib/api/customer'
 
 export default function CreateHoldSidebar() {
   const {
@@ -39,8 +35,7 @@ export default function CreateHoldSidebar() {
     openView,
     closeView,
   } = useAppStore()
-  const { user } = useUser()
-  const { clerk } = useClerk(user?.sub)
+  const { clerk } = useClerk()
 
   const { customers } = useCustomers()
   const { inventory } = useInventory()

@@ -29,7 +29,7 @@ function MyApp({ Component, pageProps }) {
   dayjs.extend(isBetween)
   // dayjs.locale("en-nz");
 
-  const getLayout = Component.getLayout || ((page) => <Layout>{page}</Layout>)
+  const getLayout = Component.getLayout || ((page) => page)
 
   return <UserProvider>{getLayout(<Component {...pageProps} />)}</UserProvider>
 }

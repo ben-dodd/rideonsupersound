@@ -89,8 +89,8 @@ export function getCartItemPrice(cartItem: any, item: StockObject) {
 }
 
 export function getStoreCut(item: StockObject) {
-  if (!item?.total_sell || !item?.vendor_cut) return 0
-  return item?.total_sell - item?.vendor_cut
+  if (!item?.totalSell || !item?.vendorCut) return 0
+  return item?.totalSell - item?.vendorCut
 }
 
 export function getItemQuantity(
@@ -98,7 +98,7 @@ export function getItemQuantity(
   saleItems: SaleItemObject[]
 ) {
   const saleItem = saleItems?.filter(
-    (i: SaleItemObject) => i?.item_id === item?.id
+    (i: SaleItemObject) => i?.itemId === item?.id
   )[0]
   const cartQuantity = saleItem?.quantity || '0'
   const itemQuantity = item?.quantity || 0
@@ -118,7 +118,7 @@ export function filterInventory(item, searchString) {
       ${item?.country || ''}
       ${item?.section || ''}
       ${item?.tags ? item?.tags?.join(' ') : ''}
-      ${item?.vendor_name || ''}
+      ${item?.vendorName || ''}
       ${item?.googleBooksItem?.volumeInfo?.authors?.join(' ') || ''}
       ${item?.googleBooksItem?.volumeInfo?.publisher || ''}
       ${item?.googleBooksItem?.volumeInfo?.subtitle || ''}

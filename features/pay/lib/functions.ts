@@ -39,6 +39,10 @@ import {
   VendorSaleItemObject,
 } from 'lib/types'
 import dayjs from 'dayjs'
+import {
+  getCartItemPrice,
+  getItemQuantity,
+} from 'features/sale/features/sell/lib/functions'
 
 export function getSaleVars(sale: any, inventory: StockObject[]) {
   // Sale - sale item

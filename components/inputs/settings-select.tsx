@@ -1,6 +1,6 @@
+import { useSetting } from 'lib/api/settings'
 import { createSettingSelectInDatabase } from 'lib/database/create'
-import { useSelect } from 'lib/database/read'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import Select from 'react-select'
 import CreatableSelect from 'react-select/creatable'
 
@@ -33,24 +33,23 @@ export default function SettingsSelect({
   delimiter,
   className,
 }: SettingsSelectProps) {
-  // SWR
-  const { selects, isSelectsLoading, mutateSelects } = useSelect(dbField)
-  // State
+  const { selects, isSelectsLoading, mutateSelects } = useSetting(dbField)
   const [isLoading, setLoading] = useState(false)
-  const options = sorted
-    ? selects
-        ?.map((s) => s?.label)
-        ?.sort()
-        ?.map((opt: string) => ({
-          value: opt,
-          label: opt,
-        }))
-    : selects
-        ?.map((s) => s?.label)
-        ?.map((opt: string) => ({
-          value: opt,
-          label: opt,
-        }))
+  const options = useMemo(
+    () =>
+      sorted
+        ? selects?.sort()?.map((opt: string) => ({
+            value: opt,
+            label: opt,
+          }))
+        : selects?.map((opt: string) => ({
+            value: opt,
+            label: opt,
+          })),
+    [sorted, selects]
+  )
+  console.log(options)
+  console.log(selects)
 
   return (
     <div className={className}>

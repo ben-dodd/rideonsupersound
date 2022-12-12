@@ -9,7 +9,7 @@ import Loading from 'components/loading'
 import { useAppStore } from 'lib/store'
 
 export default function Layout({ children }) {
-  const { alert } = useAppStore()
+  const { alert, view, confirmModal } = useAppStore()
   const { isClerkLoading } = useClerk()
   return isClerkLoading ? (
     <Loading type="pyramid" size="full" />
@@ -21,9 +21,9 @@ export default function Layout({ children }) {
       <Nav />
       <div className="flex h-menu relative overflow-y-hidden">
         <Menu />
-        <div className="h-full w-full absolute sm:static">{children}</div>
-        <HelpDialog />
-        <ConfirmModal />
+        <div className="h-full w-full absolute sm:static p-2">{children}</div>
+        {view?.helpDialog && <HelpDialog />}
+        {confirmModal?.open && <ConfirmModal />}
         {alert?.open && <SnackAlert />}
       </div>
     </>

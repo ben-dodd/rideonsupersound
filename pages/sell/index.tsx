@@ -1,4 +1,3 @@
-import MidScreenContainer from 'components/container/mid-screen'
 import CreateCustomerSidebar from 'features/customer/components/sidebar'
 import CreateHoldSidebar from 'features/sale/features/hold/components/create-hold-sidebar'
 import OpenRegisterScreen from 'features/sale/features/register/components'
@@ -17,6 +16,7 @@ import { useState } from 'react'
 import { useAppStore } from 'lib/store'
 import { useCurrentRegister } from 'lib/api/register'
 import { useRouter } from 'next/router'
+import Layout from 'components/layout'
 
 export default function SellPage() {
   const { currentRegister, isCurrentRegisterLoading } = useCurrentRegister()
@@ -44,16 +44,11 @@ export default function SellPage() {
 
   return (
     <div className={`flex relative overflow-x-hidden`} {...handlers}>
-      <MidScreenContainer
-        title={null}
-        titleClass={''}
-        isLoading={isCurrentRegisterLoading}
-        actionButtons={undefined}
-      >
+      <div className="w-full sm:w-2/3 bg-gray-100">
         <SellSearchBar search={search} setSearch={setSearch} />
         <InventoryScroll search={search} />
-      </MidScreenContainer>
-      <ShoppingCart />
+      </div>
+      {/* <ShoppingCart /> */}
       <CreateHoldSidebar />
       <CreateCustomerSidebar />
       {view?.miscItemDialog && <MiscItemDialog />}
@@ -64,3 +59,5 @@ export default function SellPage() {
     </div>
   )
 }
+
+SellPage.getLayout = (page) => <Layout>{page}</Layout>

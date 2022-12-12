@@ -14,10 +14,7 @@ export default function useData(url: string, label: string) {
           },
         })
       )
-      .then((res) => {
-        console.log(res.data)
-        return mysql2js(res.data)
-      })
+      .then((res) => mysql2js(res.data))
   )
   return {
     [camelCase(label)]: data,

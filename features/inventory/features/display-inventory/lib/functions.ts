@@ -22,8 +22,8 @@ export function getItemDisplayName(item: StockObject | GiftCardObject) {
   if (item?.isGiftCard)
     return `Gift Card [${item?.giftCardCode?.toUpperCase()}]`
   let inventoryItem: any = item
-  if (inventoryItem?.is_misc_item) return inventoryItem?.misc_item_description
-  if (inventoryItem?.display_as) return inventoryItem?.display_as
+  if (inventoryItem?.isMiscItem) return inventoryItem?.miscItemDescription
+  if (inventoryItem?.displayAs) return inventoryItem?.displayAs
   if (!inventoryItem || !(inventoryItem?.artist || inventoryItem?.title))
     return 'Untitled'
   return `${inventoryItem?.title || ''}${
@@ -53,36 +53,36 @@ export function mapInventoryItem(item: StockObject, vendors: VendorObject[]) {
     id: item?.id,
     title: item?.title || '-',
     artist: item?.artist || '-',
-    vendor: `[${('000' + item?.vendor_id || '').slice(-3)}] ${
-      vendors?.filter((v: VendorObject) => v?.id === item?.vendor_id)?.[0]?.name
+    vendor: `[${('000' + item?.vendorId || '').slice(-3)}] ${
+      vendors?.filter((v: VendorObject) => v?.id === item?.vendorId)?.[0]?.name
     }`,
     section: `${item?.section || ''}${
       item?.section && item?.country === 'New Zealand' ? '/' : ''
     }${item?.country === 'New Zealand' ? 'NZ' : ''}`,
     media: item?.media || '-',
     format: item?.format || '-',
-    cost: item?.vendor_cut ? item?.vendor_cut / 100 : 0,
+    cost: item?.vendorCut ? item?.vendorCut / 100 : 0,
     store:
-      item?.vendor_cut && item?.total_sell
-        ? (item.total_sell - item.vendor_cut) / 100
+      item?.vendorCut && item?.totalSell
+        ? (item.totalSell - item.vendorCut) / 100
         : 0,
-    sell: item?.total_sell ? item?.total_sell / 100 : 0,
+    sell: item?.totalSell ? item?.totalSell / 100 : 0,
     profitMargin:
-      item?.total_sell && item?.vendor_cut && item?.total_sell > 0
-        ? ((item?.total_sell - item?.vendor_cut) / item?.total_sell) * 100
+      item?.totalSell && item?.vendorCut && item?.totalSell > 0
+        ? ((item?.totalSell - item?.vendorCut) / item?.totalSell) * 100
         : 0,
     quantity: item?.quantity || 0,
-    quantityReceived: item?.quantity_received || 0,
+    quantityReceived: item?.quantityReceived || 0,
     quantityHoldLayby: getHoldQuantity(item) + getLaybyQuantity(item),
-    quantityReturned: Math.abs(item?.quantity_returned || 0),
-    quantitySold: Math.abs(item?.quantity_sold || 0),
+    quantityReturned: Math.abs(item?.quantityReturned || 0),
+    quantitySold: Math.abs(item?.quantitySold || 0),
   }
 }
 
 export function getHoldQuantity(item: StockObject) {
-  return ((item?.quantity_hold || 0) + (item?.quantity_unhold || 0)) * -1
+  return ((item?.quantityHold || 0) + (item?.quantityUnhold || 0)) * -1
 }
 
 export function getLaybyQuantity(item: StockObject) {
-  return ((item?.quantity_layby || 0) + (item?.quantity_unlayby || 0)) * -1
+  return ((item?.quantityLayby || 0) + (item?.quantityUnlayby || 0)) * -1
 }

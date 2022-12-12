@@ -38,7 +38,9 @@ export default function PriceDetails({ item }: priceDetailsProps) {
         <div>
           <div className="px-1 text-xs mt-2 mb-2">COST PRICE</div>
           <div className="font-bold text-xl">
-            {`$${(item?.vendorCut / 100)?.toFixed(2)}` || 'N/A'}
+            {item?.vendorCut
+              ? `$${(item?.vendorCut / 100)?.toFixed(2)}`
+              : 'N/A'}
           </div>
         </div>
         <div>
@@ -56,7 +58,9 @@ export default function PriceDetails({ item }: priceDetailsProps) {
         <div className="col-start-5 col-end-7">
           <div className="flex justify-center items-center p-4 bg-tertiary-dark">
             <div className="font-bold text-4xl text-white">
-              {`$${(item?.totalSell / 100)?.toFixed(2)}` || 'N/A'}
+              {item?.totalSell
+                ? `$${(item?.totalSell / 100)?.toFixed(2)}`
+                : 'N/A'}
             </div>
           </div>
           <button

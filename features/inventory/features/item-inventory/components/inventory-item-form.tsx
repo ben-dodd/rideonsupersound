@@ -4,15 +4,14 @@ import SettingsSelect from 'components/inputs/settings-select'
 import TextField from 'components/inputs/text-field'
 import { logCreateVendor } from 'features/log/lib/functions'
 import { createVendorInDatabase } from 'lib/database/create'
-import { useLogs, useVendors } from 'lib/database/read'
 import { StockObject, VendorObject } from 'lib/types'
-import { useAtom } from 'jotai'
 import {
   getImageSrc,
   getItemDisplayName,
   getItemSku,
 } from '../../display-inventory/lib/functions'
 import { useClerk } from 'lib/api/clerk'
+import { useVendors } from 'lib/api/vendor'
 
 interface inventoryProps {
   item: StockObject
@@ -28,25 +27,12 @@ export default function InventoryItemForm({
   const handleChange = (e) =>
     setItem({ ...item, [e.target.name]: e.target.value })
   const { vendors } = useVendors()
-  const { logs, mutateLogs } = useLogs()
+  // const { logs, mutateLogs } = useLogs()
   const { clerk } = useClerk()
-
-  // const vendor = useMemo(
-  //   () =>
-  //     (vendors &&
-  //       vendors.filter(
-  //         (vendor: VendorObject) => vendor?.id === item?.vendor_id
-  //       )[0]) ||
-  //     null,
-  //   [item?.vendor_id]
-  // );
-
-  // console.log(item);
 
   return (
     <div>
       <div className="flex justify-start w-full">
-        {/* IMAGE */}
         <div className="pr-2 w-52 mr-2">
           <div className="w-52 h-52 relative">
             <img
@@ -61,7 +47,6 @@ export default function InventoryItemForm({
             )}
           </div>
         </div>
-        {/* MAIN DETAILS */}
         <div className="w-full">
           <TextField
             value={item?.artist || ''}
@@ -76,22 +61,22 @@ export default function InventoryItemForm({
             disabled={disabled}
           />
           <TextField
-            value={item?.display_as || getItemDisplayName(item)}
+            value={item?.displayAs || getItemDisplayName(item)}
             onChange={(e: any) =>
-              setItem({ ...item, display_as: e.target.value })
+              setItem({ ...item, displayAs: e.target.value })
             }
             inputLabel="DISPLAY NAME"
             disabled={disabled}
           />
-          {item?.vendor_id && (
+          {item?.vendorId && (
             <div>
               <CreateableSelect
                 inputLabel="SELLING FOR VENDOR"
                 fieldRequired
-                value={item?.vendor_id}
+                value={item?.vendorId}
                 label={
                   vendors?.filter(
-                    (v: VendorObject) => v?.id === item?.vendor_id
+                    (v: VendorObject) => v?.id === item?.vendorId
                   )?.[0]?.name || ''
                 }
                 onChange={(vendorObject: any) =>
@@ -161,10 +146,10 @@ export default function InventoryItemForm({
       ) : (
         <div className="flex items-end">
           <RadioButton
-            key={`isNew${item?.is_new}`}
+            key={`isNew${item?.isNew}`}
             inputLabel="CONDITION"
             group="isNew"
-            value={item?.is_new ? 'true' : 'false'}
+            value={item?.isNew ? 'true' : 'false'}
             onChange={(value: string) =>
               setItem({ ...item, is_new: value === 'true' ? 1 : 0 })
             }
@@ -210,23 +195,6 @@ export default function InventoryItemForm({
         dbField="genre"
         isDisabled={disabled}
       />
-      {/* <div className="gap-2 items-center justify-center">
-        <TextField
-          id="release_year"
-          inputLabel="RELEASE YEAR"
-          value={item?.release_year || ""}
-          onChange={handleChange}
-          disabled={disabled}
-        />
-      </div> */}
-      {/* <SettingsSelect
-        object={item}
-        onEdit={setItem}
-        isMulti
-        inputLabel="TAGS"
-        dbField="tag"
-        isDisabled={disabled}
-      /> */}
       <TextField
         id="description"
         inputLabel="DESCRIPTION / NOTES"
@@ -235,22 +203,14 @@ export default function InventoryItemForm({
         multiline
         disabled={disabled}
       />
-      {/* <TextField
-        id="note"
-        inputLabel="NOTES"
-        value={item?.note || ""}
-        onChange={handleChange}
-        multiline
-        disabled={disabled}
-      /> */}
       <div className="grid grid-cols-3 mt-4 gap-2">
         <div className="flex items-center">
           <input
             type="checkbox"
             className="cursor-pointer"
-            checked={item?.do_list_on_website === 0 ? false : true}
+            checked={item?.doListOnWebsite === 0 ? false : true}
             onChange={(e) =>
-              setItem({ ...item, do_list_on_website: e.target.checked ? 1 : 0 })
+              setItem({ ...item, doListOnWebsite: e.target.checked ? 1 : 0 })
             }
           />
           <div className="ml-2">List on website</div>
@@ -259,9 +219,9 @@ export default function InventoryItemForm({
           <input
             type="checkbox"
             className="cursor-pointer"
-            checked={item?.has_no_quantity === 1 ? true : false}
+            checked={item?.hasNoQuantity === 1 ? true : false}
             onChange={(e) =>
-              setItem({ ...item, has_no_quantity: e.target.checked ? 1 : 0 })
+              setItem({ ...item, hasNoQuantity: e.target.checked ? 1 : 0 })
             }
           />
           <div className="ml-2">

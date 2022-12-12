@@ -1,5 +1,3 @@
-import { useRegisterID } from 'lib/database/read'
-
 import InventoryNavActions from './actions/inventory'
 import PaymentNavActions from './actions/payment'
 import SellNavActions from './actions/sell'
@@ -14,12 +12,14 @@ import { useClerk } from 'lib/api/clerk'
 import { ViewProps } from 'lib/store/types'
 import { useAppStore } from 'lib/store'
 import { useRouter } from 'next/router'
+import { useCurrentRegister } from 'lib/api/register'
 
 // REVIEW fix all actions and clean up files
 
 export default function Nav() {
   // SWR
-  const { registerID } = useRegisterID()
+  // const { registerID } = useRegisterID()
+  const { currentRegister } = useCurrentRegister()
 
   // Atoms
   const { clerk } = useClerk()
@@ -46,7 +46,7 @@ export default function Nav() {
           </div>
         </div>
         <div className="flex mr-2">
-          {page === 'sell' && registerID > 0 && <SellNavActions />}
+          {page === 'sell' && currentRegister?.id > 0 && <SellNavActions />}
           {page === 'inventory' && <InventoryNavActions />}
           {page === 'vendors' && <VendorNavActions />}
           {page === 'payments' && <PaymentNavActions />}

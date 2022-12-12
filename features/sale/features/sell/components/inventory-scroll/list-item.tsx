@@ -1,4 +1,4 @@
-import { StockObject, VendorObject } from 'lib/types'
+import { StockObject } from 'lib/types'
 import Tooltip from '@mui/material/Tooltip'
 import AddIcon from '@mui/icons-material/AddCircleOutline'
 import InfoIcon from '@mui/icons-material/Info'
@@ -10,15 +10,11 @@ import {
   getLaybyQuantity,
 } from 'features/inventory/features/display-inventory/lib/functions'
 import { getItemQuantity, skuScan } from '../../lib/functions'
-import { useVendorNames } from 'lib/api/vendor'
 import { useAppStore } from 'lib/store'
-import { useClerk } from 'lib/api/clerk'
 import { ViewProps } from 'lib/store/types'
 import { useRouter } from 'next/router'
 
 export default function ListItem({ item }: { item: StockObject }) {
-  const { vendorNames } = useVendorNames()
-  const { clerk } = useClerk()
   const {
     cart,
     sellSearchBar,
@@ -29,11 +25,7 @@ export default function ListItem({ item }: { item: StockObject }) {
   } = useAppStore()
   const router = useRouter()
 
-  // Constants
   const itemQuantity = getItemQuantity(item, cart?.items)
-  const vendorName =
-    vendorNames?.find((vendor: VendorObject) => vendor?.id === item?.vendorId)
-      ?.name || ''
 
   // Functions
   function clickAddToCart() {
@@ -113,9 +105,7 @@ export default function ListItem({ item }: { item: StockObject }) {
             item?.isNew ? 'NEW' : item?.cond?.toUpperCase() || 'USED'
           }]`}</div>
         </div>
-        <div className="text-xs">
-          {`${vendorName ? `Selling for ${vendorName}` : ''}`}
-        </div>
+        <div className="text-xs">{`Selling for ${item?.vendorName}`}</div>
 
         <div className="flex justify-between items-end">
           <Tooltip title="Go to the INVENTORY screen to receive or return items.">

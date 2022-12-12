@@ -4,14 +4,9 @@ import useSWR from 'swr'
 import { camelCase, pascalCase } from '../utils'
 import { reverseMysqlSafeValue } from './query'
 import {
-  getAccountClerksQuery,
-  getAccountQuery,
   getAllSelectsQuery,
   getCashGivenQuery,
   getCashReceivedQuery,
-  getClerksQuery,
-  getCustomerQuery,
-  getCustomersQuery,
   getGiftCardsQuery,
   getHelpsQuery,
   getHoldsQuery,
@@ -22,12 +17,6 @@ import {
   getRegisterIDQuery,
   getRegisterQuery,
   getRegistersQuery,
-  getSaleByIdQuery,
-  getSaleItemsByIdQuery,
-  getSaleItemsQuery,
-  getSalesJoinedQuery,
-  getSalesQuery,
-  getSaleTransactionsByIdQuery,
   getSaleTransactionsForRangeQuery,
   getSaleTransactionsForSaleQuery,
   getSaleWithItemsQuery,
@@ -38,11 +27,6 @@ import {
   getStocktakeItemsByStocktakeQuery,
   getStocktakesByTemplateQuery,
   getStocktakeTemplatesQuery,
-  getVendorFromVendorPaymentQuery,
-  getVendorNamesQuery,
-  getVendorPaymentsQuery,
-  getVendorsQuery,
-  getVendorTotalPaymentsQuery,
 } from './read-query'
 
 export async function fetcher(url: string, scope?: string) {
@@ -86,67 +70,12 @@ export function useRead(label, query, getSingleValue = false) {
   }
 }
 
-export function useAccount(email: string) {
-  return useRead('account', getAccountQuery(email), true)
-}
-
-export function useAccountClerks(account_id: number) {
-  return useRead('account clerks', getAccountClerksQuery(account_id))
-}
-
-export function useClerks() {
-  return useRead('clerks', getClerksQuery())
-}
-
-export function useVendors() {
-  return useRead('vendors', getVendorsQuery())
-}
-
-export function useVendorNames() {
-  return useRead('vendors', getVendorNamesQuery())
-}
-
-export function useVendorPayments() {
-  return useRead('vendor payments', getVendorPaymentsQuery())
-}
-
-export function useVendorTotalPayments(vendor_id: number) {
-  return useRead(
-    'vendor total payments',
-    getVendorTotalPaymentsQuery(vendor_id)
-  )
-}
-
-export function useVendorFromVendorPayment(vendor_payment_id: number) {
-  return useRead('vendor', getVendorFromVendorPaymentQuery(vendor_payment_id))
-}
-
 export function useGiftCards() {
   return useRead('gift cards', getGiftCardsQuery())
 }
 
-export function useSales() {
-  return useRead('sales', getSalesQuery())
-}
-
 export function useSaleItemsWithSales() {
   return useRead('saleItems', getSaleWithItemsQuery())
-}
-
-export function useSaleById(sale_id: number) {
-  return useRead('sale', getSaleByIdQuery(sale_id))
-}
-
-export function useCustomers() {
-  return useRead('customers', getCustomersQuery())
-}
-
-export function useCustomer(customer_id: number) {
-  return useRead('customer', getCustomerQuery(customer_id), true)
-}
-
-export function useSaleItems() {
-  return useRead('sale items', getSaleItemsQuery())
 }
 
 export function useSaleItemsTransactions(sale_id: number) {
