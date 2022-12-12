@@ -12,12 +12,13 @@ import {
   getReturnedQuantity,
   getSoldQuantity,
 } from 'features/inventory/lib/functions'
+import { useRouter } from 'next/router'
+import { useStockItem } from 'lib/api/stock'
 
-interface stockDetailsProps {
-  item: StockObject
-}
-
-export default function StockDetails({ item }: stockDetailsProps) {
+export default function StockDetails() {
+  const router = useRouter()
+  const { id } = router.query
+  const { stockItem, isStockItemLoading } = useStockItem(`${id}`)
   const { openView } = useAppStore()
 
   return (
@@ -26,44 +27,44 @@ export default function StockDetails({ item }: stockDetailsProps) {
         <div className="stock-indicator__container">IN STOCK</div>
         <div
           className={`stock-indicator__number ${
-            item?.quantity <= 0 ? 'bg-tertiary-light' : 'bg-primary-light'
+            stockItem?.quantity <= 0 ? 'bg-tertiary-light' : 'bg-primary-light'
           }`}
         >
-          {`${getInStockQuantity(item)}`}
+          {`${getInStockQuantity(stockItem)}`}
         </div>
         <div className="stock-indicator__container">RECEIVED</div>
         <div className="stock-indicator__number bg-secondary-light">
-          {`${getReceivedQuantity(item)}`}
+          {`${getReceivedQuantity(stockItem)}`}
         </div>
         <div className="stock-indicator__container">SOLD</div>
         <div className="stock-indicator__number bg-secondary-light">
-          {`${getSoldQuantity(item)}`}
+          {`${getSoldQuantity(stockItem)}`}
         </div>
         <div className="stock-indicator__container">RETURNED</div>
         <div className="stock-indicator__number bg-secondary-light">
-          {`${getReturnedQuantity(item)}`}
+          {`${getReturnedQuantity(stockItem)}`}
         </div>
         <div className="stock-indicator__container">LAYBY/HOLD</div>
         <div className="stock-indicator__number bg-secondary-light">
-          {`${getLaybyHoldQuantity(item)}`}
+          {`${getLaybyHoldQuantity(stockItem)}`}
         </div>
         <div className="stock-indicator__container">DISCARD/LOST</div>
         <div className="stock-indicator__number bg-secondary-light">
-          {`${getDiscardedLostQuantity(item)}`}
+          {`${getDiscardedLostQuantity(stockItem)}`}
         </div>
         <div className="stock-indicator__container">REFUNDED</div>
         <div className="stock-indicator__number bg-secondary-light">
-          {`${getRefundedQuantity(item)}`}
+          {`${getRefundedQuantity(stockItem)}`}
         </div>
         <div className="stock-indicator__container">ADJUSTMENT</div>
         <div
           className={`stock-indicator__number ${
-            item?.quantityAdjustment < 0
+            stockItem?.quantityAdjustment < 0
               ? 'bg-tertiary-light'
               : 'bg-secondary-light'
           }`}
         >
-          {`${getAdjustmentQuantity(item)}`}
+          {`${getAdjustmentQuantity(stockItem)}`}
         </div>
       </div>
       <button
@@ -74,11 +75,11 @@ export default function StockDetails({ item }: stockDetailsProps) {
       </button>
       <div className="font-bold py-2">Stock Movement Logs</div>
       <div className="h-dialogsm overflow-y-scroll">
-        {item?.stockMovements?.length === 0 ? (
+        {stockItem?.stockMovements?.length === 0 ? (
           <div>No stock movements found.</div>
         ) : (
           <div>
-            {item?.stockMovements?.map((s) => (
+            {stockItem?.stockMovements?.map((s) => (
               <div
                 key={s?.id}
                 className={`flex hover:bg-gray-200 p-2 justify-between`}

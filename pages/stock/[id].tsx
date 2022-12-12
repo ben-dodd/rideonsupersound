@@ -25,9 +25,6 @@ export default function InventoryItemScreen() {
   // const { logs, mutateLogs } = useLogs()
 
   console.log(stockItem)
-
-  // State
-  const [item, setItem]: [StockObject, Function] = useState(null)
   const [tab, setTab] = useState(0)
 
   // // Load
@@ -70,17 +67,18 @@ export default function InventoryItemScreen() {
           )}
         </div>
       ),
-      yesText: itemIsPartOfSale ? 'OK' : "YES, I'M SURE",
-      action: itemIsPartOfSale
-        ? () => {}
-        : async () =>
-            deleteInventoryItemFromDatabase(item?.id)?.then(() => {
-              // mutateInventory(
-              //   inventory?.filter((i) => i?.id !== item?.id),
-              //   false
-              // )
-              router.back()
-            }),
+      yesText: stockItem?.sales?.length > 0 ? 'OK' : "YES, I'M SURE",
+      action:
+        stockItem?.sales?.length > 0
+          ? () => {}
+          : async () =>
+              deleteInventoryItemFromDatabase(stockItem?.id)?.then(() => {
+                // mutateInventory(
+                //   inventory?.filter((i) => i?.id !== item?.id),
+                //   false
+                // )
+                router.back()
+              }),
     })
   }
 
@@ -99,7 +97,7 @@ export default function InventoryItemScreen() {
         //   ),
         //   false
         // )
-        updateStockItemInDatabase(item)
+        updateStockItemInDatabase(stockItem)
         router.back()
         // setTimeout(() => setItem(null), 1000);
       },
@@ -114,11 +112,11 @@ export default function InventoryItemScreen() {
       <div className="flex flex-col w-full">
         <Tabs
           tabs={
-            item?.media === 'Mixed'
+            stockItem?.media === 'Mixed'
               ? ['General Information', 'Discogs', 'GoogleBooks']
-              : item?.media === 'Audio'
+              : stockItem?.media === 'Audio'
               ? ['General Information', 'Discogs']
-              : item?.media === 'Literature'
+              : stockItem?.media === 'Literature'
               ? ['General Information', 'GoogleBooks']
               : ['General Information']
           }
@@ -128,11 +126,11 @@ export default function InventoryItemScreen() {
         <div hidden={tab !== 0}>
           <div className="flex">
             <div className="w-1/2">
-              <InventoryItemForm item={item} setItem={setItem} />
+              <InventoryItemForm />
             </div>
             <div className="w-1/2 ml-4">
-              <PriceDetails item={item} />
-              <StockDetails item={item} />
+              <PriceDetails />
+              <StockDetails />
             </div>
           </div>
           <div className="flex justify-start py-2">

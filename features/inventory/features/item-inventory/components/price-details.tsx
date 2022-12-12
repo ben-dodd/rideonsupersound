@@ -1,24 +1,24 @@
 import { getGrossProfit, getProfitMargin } from 'features/pay/lib/functions'
+import { useStockItem } from 'lib/api/stock'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
-import { StockObject } from 'lib/types'
+import { useRouter } from 'next/router'
 
-interface priceDetailsProps {
-  item: StockObject
-}
-
-export default function PriceDetails({ item }: priceDetailsProps) {
+export default function PriceDetails() {
+  const router = useRouter()
+  const { id } = router.query
+  const { stockItem, isStockItemLoading } = useStockItem(`${id}`)
   const { view, openView } = useAppStore()
 
   return (
     <>
       <div className="grid grid-cols-6 gap-2 mt-4 mb-4">
         <div>
-          {(!item?.isNew && !item?.cond) ||
+          {(!stockItem?.isNew && !stockItem?.cond) ||
           !(
-            item?.discogsItem?.priceSuggestions &&
-            item?.discogsItem?.priceSuggestions[
-              item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)'
+            stockItem?.discogsItem?.priceSuggestions &&
+            stockItem?.discogsItem?.priceSuggestions[
+              stockItem?.isNew ? 'Mint (M)' : stockItem?.cond || 'Good (G)'
             ]?.value
           ) ? (
             <div />
@@ -27,8 +27,10 @@ export default function PriceDetails({ item }: priceDetailsProps) {
               <div className="px-1 text-xs mt-2 mb-2">DISCOGS</div>
               <div className="font-bold text-xl">
                 {`$${parseFloat(
-                  item?.discogsItem?.priceSuggestions[
-                    item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)'
+                  stockItem?.discogsItem?.priceSuggestions[
+                    stockItem?.isNew
+                      ? 'Mint (M)'
+                      : stockItem?.cond || 'Good (G)'
                   ]?.value
                 )?.toFixed(2)}`}
               </div>
@@ -38,28 +40,28 @@ export default function PriceDetails({ item }: priceDetailsProps) {
         <div>
           <div className="px-1 text-xs mt-2 mb-2">COST PRICE</div>
           <div className="font-bold text-xl">
-            {item?.vendorCut
-              ? `$${(item?.vendorCut / 100)?.toFixed(2)}`
+            {stockItem?.vendorCut
+              ? `$${(stockItem?.vendorCut / 100)?.toFixed(2)}`
               : 'N/A'}
           </div>
         </div>
         <div>
           <div className="px-1 text-xs mt-2 mb-2">STORE CUT</div>
           <div className="font-bold text-xl">
-            {getGrossProfit(item) || 'N/A'}
+            {getGrossProfit(stockItem) || 'N/A'}
           </div>
         </div>
         <div>
           <div className="px-1 text-xs mt-2 mb-2">MARGIN</div>
           <div className="font-bold text-xl">
-            {getProfitMargin(item) || 'N/A'}
+            {getProfitMargin(stockItem) || 'N/A'}
           </div>
         </div>
         <div className="col-start-5 col-end-7">
           <div className="flex justify-center items-center p-4 bg-tertiary-dark">
             <div className="font-bold text-4xl text-white">
-              {item?.totalSell
-                ? `$${(item?.totalSell / 100)?.toFixed(2)}`
+              {stockItem?.totalSell
+                ? `$${(stockItem?.totalSell / 100)?.toFixed(2)}`
                 : 'N/A'}
             </div>
           </div>

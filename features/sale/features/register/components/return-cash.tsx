@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useLogs, usePettyCash } from 'lib/database/read'
 import { ModalButton } from 'lib/types'
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
@@ -11,8 +10,8 @@ import { useCurrentRegister } from 'lib/api/register'
 
 export default function ReturnCashDialog() {
   const { currentRegister } = useCurrentRegister()
-  const { pettyCash, mutatePettyCash } = usePettyCash(currentRegister?.id)
-  const { logs, mutateLogs } = useLogs()
+  // const { pettyCash, mutatePettyCash } = usePettyCash(currentRegister?.id)
+  // const { logs, mutateLogs } = useLogs()
   const { clerk } = useClerk()
   const { view, closeView, setAlert } = useAppStore()
 
@@ -40,7 +39,7 @@ export default function ReturnCashDialog() {
           notes
         )
         setSubmitting(false)
-        mutatePettyCash([...pettyCash])
+        // mutatePettyCash([...pettyCash])
         closeView(ViewProps.returnCashDialog)
         setAmount('0')
         setNotes('')
