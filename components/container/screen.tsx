@@ -26,70 +26,58 @@ export default function ScreenContainer({
 }: ScreenProps) {
   const router = useRouter()
   const routerBack = () => router.back()
-  return (
-    <div
-      className={`absolute top-0 transition-offset duration-300 ${
-        show ? 'left-0' : 'left-full hidden'
-      } h-full w-full bg-yellow-200`}
-    >
-      {loading ? (
-        <div className="loading-screen">
-          <div className="loading-icon" />
-        </div>
-      ) : (
-        <div className="screen__content">
-          <div className={`screen__title ${titleClass || 'bg-primary-light'}`}>
-            <button
-              className="screen__back-button"
-              onClick={closeFunction || routerBack}
-            >
-              <ArrowLeft />
-            </button>
-            {title}
-          </div>
-          <div className="screen__body">{children}</div>
-          {buttons && (
-            <div className="screen__button-div">
-              {buttons.map((button: ModalButton, i: number) =>
-                button?.type === 'div' ? (
-                  <div key={i} />
-                ) : button?.data && !button?.disabled ? (
-                  <CSVLink
-                    key={i}
-                    className={`screen__button--${button?.type}`}
-                    data={button?.data}
-                    headers={button?.headers}
-                    filename={button?.fileName}
-                    onClick={() => button?.onClick()}
-                    enclosingCharacter=""
-                  >
-                    {button?.text}
-                  </CSVLink>
+  return loading ? (
+    <div className="loading-screen">
+      <div className="loading-icon" />
+    </div>
+  ) : (
+    <div className="screen__content">
+      <div className={`screen__title ${titleClass || 'bg-primary-light'}`}>
+        <button
+          className="screen__back-button"
+          onClick={closeFunction || routerBack}
+        >
+          <ArrowLeft />
+        </button>
+        {title}
+      </div>
+      <div className="screen__body">{children}</div>
+      {buttons && (
+        <div className="screen__button-div">
+          {buttons.map((button: ModalButton, i: number) =>
+            button?.type === 'div' ? (
+              <div key={i} />
+            ) : button?.data && !button?.disabled ? (
+              <CSVLink
+                key={i}
+                className={`screen__button--${button?.type}`}
+                data={button?.data}
+                headers={button?.headers}
+                filename={button?.fileName}
+                onClick={() => button?.onClick()}
+                enclosingCharacter=""
+              >
+                {button?.text}
+              </CSVLink>
+            ) : (
+              <button
+                key={i}
+                className={`screen__button--${button?.type}${
+                  button?.hidden ? ' hidden' : ''
+                }`}
+                onClick={() => button?.onClick()}
+                disabled={button?.disabled || button?.loading}
+              >
+                {button?.loading ? (
+                  <span className="pr-4">
+                    <CircularProgress color="inherit" thickness={5} size={18} />
+                  </span>
                 ) : (
-                  <button
-                    key={i}
-                    className={`screen__button--${button?.type}${
-                      button?.hidden ? ' hidden' : ''
-                    }`}
-                    onClick={() => button?.onClick()}
-                    disabled={button?.disabled || button?.loading}
-                  >
-                    {button?.loading ? (
-                      <span className="pr-4">
-                        <CircularProgress
-                          color="inherit"
-                          thickness={5}
-                          size={18}
-                        />
-                      </span>
-                    ) : (
-                      <span />
-                    )}
-                    {button?.text}
-                  </button>
-                )
-              )}
-            </div>
+                  <span />
+                )}
+                {button?.text}
+              </button>
+            )
           )}
         </div>
       )}

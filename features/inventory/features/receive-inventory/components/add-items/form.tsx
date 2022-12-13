@@ -1,4 +1,4 @@
-import InventoryItemForm from 'features/inventory/features/item-inventory/components/inventory-item-form'
+import InventoryItemForm from 'features/inventory/features/item-stock/components/stock-item-form'
 import { receiveStockAtom } from 'lib/atoms'
 import { StockObject } from 'lib/types'
 import { ChevronRight } from '@mui/icons-material'
