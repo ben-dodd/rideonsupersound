@@ -4,9 +4,10 @@ import ArrowLeft from '@mui/icons-material/ArrowLeft'
 import CircularProgress from '@mui/material/CircularProgress'
 import { MouseEventHandler } from 'react'
 import { CSVLink } from 'react-csv'
+import { useRouter } from 'next/router'
 interface ScreenProps {
-  show: boolean
-  closeFunction: MouseEventHandler<HTMLButtonElement>
+  show?: boolean
+  closeFunction?: any
   title?: string
   loading?: boolean
   buttons?: ModalButton[]
@@ -15,7 +16,7 @@ interface ScreenProps {
 }
 
 export default function ScreenContainer({
-  show,
+  show = true,
   closeFunction,
   title,
   loading,
@@ -23,6 +24,8 @@ export default function ScreenContainer({
   titleClass,
   children,
 }: ScreenProps) {
+  const router = useRouter()
+  const routerBack = () => router.back()
   return (
     <div
       className={`absolute top-0 transition-offset duration-300 ${
@@ -35,12 +38,11 @@ export default function ScreenContainer({
         </div>
       ) : (
         <div className="screen__content">
-          <div
-            className={`screen__title ${
-              titleClass ? titleClass : 'bg-primary-light'
-            }`}
-          >
-            <button className="screen__back-button" onClick={closeFunction}>
+          <div className={`screen__title ${titleClass || 'bg-primary-light'}`}>
+            <button
+              className="screen__back-button"
+              onClick={closeFunction || routerBack}
+            >
               <ArrowLeft />
             </button>
             {title}

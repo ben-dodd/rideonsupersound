@@ -21,7 +21,7 @@ export default function Layout({ children }) {
       <Nav />
       <div className="flex h-menu relative overflow-y-hidden">
         <Menu />
-        <div className="h-full w-full absolute sm:static p-2">{children}</div>
+        <div className="h-full w-full absolute sm:static">{children}</div>
         {view?.helpDialog && <HelpDialog />}
         {confirmModal?.open && <ConfirmModal />}
         {alert?.open && <SnackAlert />}
