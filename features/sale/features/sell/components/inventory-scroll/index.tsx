@@ -1,10 +1,10 @@
-import { getGeolocation, useWeather } from 'lib/api'
 import { StockObject } from 'lib/types'
 import { useEffect, useState } from 'react'
 import { filterInventory, sortInventory } from '../../lib/functions'
 import ListItem from './list-item'
 import Loading from 'components/loading'
 import { useStockList } from 'lib/api/stock'
+import { getGeolocation } from 'lib/api/external'
 
 export default function InventoryScroll({ search }: { search: string }) {
   const maxItemsInList = 50

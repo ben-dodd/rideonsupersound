@@ -69,6 +69,10 @@ export function dbGetStockItem(id, db = connection) {
     })
 }
 
+export function dbGetStockItems(itemIds, db = connection) {
+  return Promise.all(itemIds?.map((itemId) => dbGetStockItem(itemId, db)))
+}
+
 export function dbGetGiftCards(db = connection) {
   return db('stock')
     .select(

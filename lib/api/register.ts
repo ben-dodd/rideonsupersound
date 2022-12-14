@@ -8,10 +8,10 @@ export function useRegisters() {
   return useData(`register`, 'registers')
 }
 
-export function useCurrentRegister() {
-  return useData(`register/current`, 'currentRegister')
+export function useCurrentRegisterId() {
+  return useData(`register/id`, 'registerId')
 }
 
-export function useCashUp() {
-  return useData(`register/cashup`, 'cashUp')
+export function useCurrentRegister() {
+  return useData(`register/current`, 'currentRegister')
 }

@@ -48,7 +48,7 @@ export default function SellPage() {
         <SellSearchBar search={search} setSearch={setSearch} />
         <InventoryScroll search={search} />
       </div>
-      {/* <ShoppingCart /> */}
+      <ShoppingCart />
       <CreateHoldSidebar />
       <CreateCustomerSidebar />
       {view?.miscItemDialog && <MiscItemDialog />}

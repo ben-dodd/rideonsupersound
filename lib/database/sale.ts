@@ -1,4 +1,5 @@
 import connection from './conn'
+import { js2mysql } from './utils/helpers'
 
 export function dbGetAllSales(db = connection) {
   return db('sale')
@@ -57,7 +58,7 @@ export function dbGetAllSalesAndItems(db = connection) {
     .andWhere(`sale_item.is_deleted`, 0)
 }
 
-export function dbGetSaleById(id, db = connection) {
+export function dbGetSale(id, db = connection) {
   return db('sale').where({ id }).first()
 }
 
@@ -71,4 +72,20 @@ export function getSaleTransactionsBySaleId(saleId, db = connection) {
 
 export function getAllSaleItems(db = connection) {
   return db('sale_item')
+}
+
+export function dbCreateSale(sale, db = connection) {
+  return db('sale').insert(js2mysql(sale))
+}
+
+export function dbUpdateSale(id, update, db = connection) {
+  return db('sale').where({ id }).update(js2mysql(update))
+}
+
+export function dbCreateSaleItem(sale, db = connection) {
+  return db('sale_item').insert(js2mysql(sale))
+}
+
+export function dbUpdateSaleItem(id, update, db = connection) {
+  return db('sale_item').where({ id }).update(js2mysql(update))
 }

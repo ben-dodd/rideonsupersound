@@ -1,24 +1,17 @@
-// DB
-import { useClerks } from 'lib/database/read'
 import { ClerkObject, SaleTransactionObject } from 'lib/types'
 import dayjs from 'dayjs'
-
-// Types
-interface CashItemProps {
-  transaction: SaleTransactionObject
-  field?: string
-  negative?: boolean
-}
+import { useClerks } from 'lib/api/clerk'
 
 export default function CashItem({
   transaction,
   field,
   negative,
-}: CashItemProps) {
-  // SWR
+}: {
+  transaction: SaleTransactionObject
+  field?: string
+  negative?: boolean
+}) {
   const { clerks } = useClerks()
-
-  // Constants
   const transactionBy = clerks?.filter(
     (c: ClerkObject) => c?.id === transaction?.clerkId
   )[0]?.name

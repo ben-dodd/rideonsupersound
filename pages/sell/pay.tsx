@@ -1,11 +1,9 @@
 import { useState } from 'react'
 import {
-  useCustomers,
   useGiftCards,
   useInventory,
   useLogs,
   useRegisterID,
-  useSales,
   useSaleTransactionsForSale,
 } from 'lib/database/read'
 import { ModalButton, SaleStateTypes } from 'lib/types'
@@ -33,6 +31,7 @@ import {
   getSaleVars,
   saveSaleAndPark,
 } from 'features/sale/features/item-sale/lib/functions'
+import { useCustomers } from 'lib/api/customer'
 
 // TODO add returns to sale items
 // TODO refund dialog like PAY, refund with store credit, cash or card

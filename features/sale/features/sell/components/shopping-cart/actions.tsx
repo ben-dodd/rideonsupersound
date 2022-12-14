@@ -1,12 +1,4 @@
 import { useState } from 'react'
-import {
-  useCustomers,
-  useGiftCards,
-  useInventory,
-  useLogs,
-  useRegisterID,
-  useSales,
-} from 'lib/database/read'
 import CircularProgress from '@mui/material/CircularProgress'
 import Tooltip from '@mui/material/Tooltip'
 import { saveLog } from 'features/log/lib/functions'
@@ -17,6 +9,9 @@ import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { saveSaleAndPark } from 'features/pay/lib/functions'
+import { useCustomers } from 'lib/api/customer'
+import { useLogs } from 'lib/api/log'
+import { useCurrentRegisterId } from 'lib/api/register'
 
 export default function ShoppingCartActions() {
   const { clerk } = useClerk()
@@ -32,10 +27,10 @@ export default function ShoppingCartActions() {
   // SWR
   const { customers } = useCustomers()
   const { logs, mutateLogs } = useLogs()
-  const { sales, mutateSales } = useSales()
-  const { inventory, mutateInventory } = useInventory()
-  const { giftCards, mutateGiftCards } = useGiftCards()
-  const { registerID } = useRegisterID()
+  // const { sales, mutateSales } = useSales()
+  // const { inventory, mutateInventory } = useInventory()
+  // const { giftCards, mutateGiftCards } = useGiftCards()
+  const { registerID } = useCurrentRegisterId()
 
   // State
   const [saveSaleLoading, setSaveSaleLoading] = useState(false)

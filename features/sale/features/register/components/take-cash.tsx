@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useLogs, usePettyCash, useRegisterID } from 'lib/database/read'
 import { ModalButton } from 'lib/types'
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
@@ -11,8 +10,6 @@ import { useCurrentRegister } from 'lib/api/register'
 
 export default function TakeCashDialog() {
   const { currentRegister } = useCurrentRegister()
-  const { mutatePettyCash } = usePettyCash(currentRegister?.id)
-  const { logs, mutateLogs } = useLogs()
   const { clerk } = useClerk()
   const { view, closeView, setAlert } = useAppStore()
 
@@ -39,7 +36,7 @@ export default function TakeCashDialog() {
           amount,
           notes
         )
-        mutatePettyCash()
+        // mutatePettyCash()
         setSubmitting(false)
         closeView(ViewProps.takeCashDialog)
         setAmount('0')

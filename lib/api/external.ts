@@ -1,6 +1,6 @@
 import axios from 'axios'
 import useSWR from 'swr'
-import { fetcher } from './database/read'
+import useData from './external'
 
 export function get(url, params = {}, callback = null) {
   return axios(url, params)
@@ -30,15 +30,10 @@ export function useWeather() {
       loc = `lat=${position.coords.latitude}, lon=${position.coords.longitude}`
     })
   }
-  const { data, error } = useSWR(
+  return useData(
     `https://api.openweathermap.org/data/2.5/weather?${loc}&appid=${process.env.NEXT_PUBLIC_OPEN_WEATHER_API}&units=metric`,
-    fetcher
+    'weather'
   )
-  return {
-    weather: data,
-    isLoading: !error && !data,
-    isError: error,
-  }
 }
 
 export function getGeolocation() {

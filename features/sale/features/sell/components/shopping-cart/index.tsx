@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useInventory, useLogs } from 'lib/database/read'
 import { SaleItemObject } from 'lib/types'
 import CircularProgress from '@mui/material/CircularProgress'
 import Tooltip from '@mui/material/Tooltip'
@@ -20,13 +19,13 @@ import { useStockList } from 'lib/api/stock'
 import { useAppStore } from 'lib/store'
 import { useClerk } from 'lib/api/clerk'
 import { ViewProps } from 'lib/store/types'
-import { getSaleVars } from 'features/pay/lib/functions'
+import { useSaleVars } from 'features/pay/lib/functions'
 
 export default function ShoppingCart() {
   const { cart, view, setCart, setAlert, resetCart, closeView, openView } =
     useAppStore()
   const { stockList } = useStockList()
-  const { logs, mutateLogs } = useLogs()
+  // const { logs, mutateLogs } = useLogs()
   const { clerk } = useClerk()
 
   // State
@@ -47,12 +46,12 @@ export default function ShoppingCart() {
     setCart({
       items: updatedCartItems,
     })
-    saveLog(
-      `${getItemDisplayName(
-        getItemById(parseInt(itemId), inventory)
-      )} removed from cart${id ? ` (sale #${id})` : ''}.`,
-      clerk?.id
-    )
+    // saveLog(
+    //   `${getItemDisplayName(
+    //     getItemById(parseInt(itemId), inventory)
+    //   )} removed from cart${id ? ` (sale #${id})` : ''}.`,
+    //   clerk?.id
+    // )
     setAlert({
       open: true,
       type: 'success',
@@ -64,10 +63,8 @@ export default function ShoppingCart() {
   console.log(cart)
 
   // Constants
-  const { totalPrice, totalStoreCut, totalRemaining, totalPaid } = getSaleVars(
-    cart,
-    inventory
-  )
+  const { totalPrice, totalStoreCut, totalRemaining, totalPaid } =
+    useSaleVars(cart)
 
   return (
     <div
