@@ -1,10 +1,4 @@
-// Packages
-import { useAtom } from 'jotai'
 import { useMemo } from 'react'
-
-// DB
-import { loadedSaleIdAtom, pageAtom } from 'lib/atoms'
-import { useClerks, useCustomers, useSales } from 'lib/database/read'
 import {
   ClerkObject,
   CustomerObject,

@@ -1,8 +1,5 @@
-// Packages
 import dayjs from 'dayjs'
-
-// DB
-import { useGiftCards, useVendorFromVendorPayment } from 'lib/database/read'
+import { useGiftCards } from 'lib/api/stock'
 import {
   GiftCardObject,
   PaymentMethodTypes,
@@ -25,9 +22,9 @@ export default function TransactionListItem({
   const { giftCards } = useGiftCards()
   const { vendor } = useVendorFromVendorPayment(transaction?.vendorPayment)
 
-  const giftCard = giftCards?.filter(
+  const giftCard = giftCards?.find(
     (g: GiftCardObject) => g?.id === transaction?.giftCardId
-  )[0]
+  )
 
   return (
     <div

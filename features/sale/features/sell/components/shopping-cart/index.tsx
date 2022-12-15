@@ -19,7 +19,7 @@ import { useStockList } from 'lib/api/stock'
 import { useAppStore } from 'lib/store'
 import { useClerk } from 'lib/api/clerk'
 import { ViewProps } from 'lib/store/types'
-import { useSaleVars } from 'features/pay/lib/functions'
+import { useSaleProperties } from 'lib/hooks'
 
 export default function ShoppingCart() {
   const { cart, view, setCart, setAlert, resetCart, closeView, openView } =
@@ -64,7 +64,7 @@ export default function ShoppingCart() {
 
   // Constants
   const { totalPrice, totalStoreCut, totalRemaining, totalPaid } =
-    useSaleVars(cart)
+    useSaleProperties(cart)
 
   return (
     <div

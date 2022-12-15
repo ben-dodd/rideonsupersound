@@ -1,9 +1,9 @@
 import { getItemDisplayName } from 'features/inventory/features/display-inventory/lib/functions'
-import { useInventory } from 'lib/database/read'
+import { useStockList } from 'lib/api/stock'
 import { StockObject } from 'lib/types'
 
 export default function StockListItem({ id }) {
-  const { inventory } = useInventory()
+  const { inventory } = useStockList()
   const item: StockObject = inventory?.filter((i) => i?.id === id)?.[0]
 
   return (

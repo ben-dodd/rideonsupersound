@@ -27,11 +27,9 @@ import Card from 'features/pay/components/payment/card'
 import Gift from 'features/pay/components/payment/gift'
 import Cash from 'features/pay/components/payment/cash'
 import ReturnItemDialog from 'features/pay/components/return-item-dialog'
-import {
-  getSaleVars,
-  saveSaleAndPark,
-} from 'features/sale/features/item-sale/lib/functions'
+import { saveSaleAndPark } from 'features/sale/features/item-sale/lib/functions'
 import { useCustomers } from 'lib/api/customer'
+import { useSaleProperties } from 'lib/hooks'
 
 // TODO add returns to sale items
 // TODO refund dialog like PAY, refund with store credit, cash or card
@@ -59,10 +57,7 @@ export default function SaleScreen() {
   // BUG why are some sales showing items as separate line items, not 2x quantity
   // TODO refunding items, then adding the same item again
 
-  const { totalRemaining, totalPrice, numberOfItems } = getSaleVars(
-    cart,
-    inventory
-  )
+  const { totalRemaining, totalPrice, numberOfItems } = useSaleProperties(cart)
 
   // Functions
   async function clickParkSale() {

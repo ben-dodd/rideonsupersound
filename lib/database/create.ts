@@ -507,29 +507,29 @@ interface stockMovementProps {
   clerk: ClerkObject
   act: string
   note?: string
-  registerID?: number
-  sale_id?: number
-  stocktake_id?: number
+  registerId?: number
+  saleId?: number
+  stocktakeId?: number
 }
 
 export async function createStockMovementInDatabase({
   item,
   clerk,
-  registerID,
+  registerId,
   act,
   note,
-  sale_id,
-  stocktake_id,
+  saleId,
+  stocktakeId,
 }: stockMovementProps) {
   const newStockMovement = {
-    stock_id: item?.item_id,
+    stock_id: item?.itemId,
     clerk_id: clerk?.id,
-    register_id: registerID,
+    registerId,
     quantity: getQuantityByType(item?.quantity, act),
     act,
     note,
-    sale_id,
-    stocktake_id,
+    saleId,
+    stocktakeId,
   }
   return await createItemInDatabase(newStockMovement, 'stock_movement')
 }

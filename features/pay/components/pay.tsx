@@ -1,24 +1,19 @@
-import { useCustomers, useInventory } from 'lib/database/read'
 import { CustomerObject, SaleStateTypes } from 'lib/types'
 import CreateableSelect from 'components/inputs/createable-select'
 import TextField from 'components/inputs/text-field'
 import { saveSystemLog } from 'features/log/lib/functions'
 import ReturnIcon from '@mui/icons-material/KeyboardReturn'
-import { getSaleVars } from '../lib/functions'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
+import { useCustomers } from 'lib/api/customer'
+import { useSaleProperties } from 'lib/hooks'
 
 export default function Pay() {
   const { clerk } = useClerk()
-  const { view, cart, openView, setCart } = useAppStore()
-
-  // SWR
+  const { cart, openView, setCart, setCustomer } = useAppStore()
+  const { totalRemaining } = useSaleProperties(cart)
   const { customers } = useCustomers()
-  const { inventory } = useInventory()
-
-  // State
-  const { totalRemaining } = getSaleVars(cart, inventory)
   return (
     <div className="flex flex-col justify-between">
       <div className="flex justify-between my-2">

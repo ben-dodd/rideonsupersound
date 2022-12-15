@@ -7,6 +7,10 @@ export function useJobsToDo() {
   return useData(`job/todo`, 'jobsToDo')
 }
 
+export function useJobs() {
+  return useData(`job`, 'jobs')
+}
+
 export async function createMailOrderTask(sale: SaleObject, customer: string) {
   return axios
     .post(`/api/job`, {

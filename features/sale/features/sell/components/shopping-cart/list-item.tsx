@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useInventory, useStockItem } from 'lib/database/read'
 import { SaleItemObject, StockObject } from 'lib/types'
 import TextField from 'components/inputs/text-field'
 import {
@@ -16,6 +15,7 @@ import {
   writeCartItemPriceBreakdown,
 } from '../../lib/functions'
 import { useAppStore } from 'lib/store'
+import { useStockItem, useStockList } from 'lib/api/stock'
 
 type SellListItemProps = {
   index: number
@@ -29,8 +29,8 @@ export default function SellListItem({
   deleteCartItem,
 }: SellListItemProps) {
   const { openConfirm, setCartItem } = useAppStore()
-  const { inventory } = useInventory()
-  const { stockItem } = useStockItem(cartItem?.itemId)
+  const { inventory } = useStockList()
+  const { stockItem } = useStockItem(`${cartItem?.itemId}`)
   const [expanded, setExpanded] = useState(false)
   const item = inventory?.filter(
     (i: StockObject) => i.id === cartItem?.itemId

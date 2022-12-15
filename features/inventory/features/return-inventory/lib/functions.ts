@@ -14,9 +14,9 @@ export function returnStock(
   clerk: ClerkObject,
   registerID: number,
   inventory: StockObject[],
-  mutateInventory: Function,
-  logs: LogObject[],
-  mutateLogs: Function
+  mutateInventory: Function
+  // logs: LogObject[],
+  // mutateLogs: Function
 ) {
   if (vendorId && returnItems?.length > 0) {
     const itemIds = returnItems?.map((returnItem) => parseInt(returnItem?.id))
@@ -33,13 +33,12 @@ export function returnStock(
         updatedInventoryItems.push({
           ...stockItem,
           quantity_returned:
-            (stockItem?.quantity_returned || 0) +
-            parseInt(returnItem?.quantity),
+            (stockItem?.quantityReturned || 0) + parseInt(returnItem?.quantity),
           quantity: (stockItem?.quantity || 0) - parseInt(returnItem?.quantity),
         })
         createStockMovementInDatabase({
           item: {
-            item_id: parseInt(returnItem?.id),
+            itemId: parseInt(returnItem?.id),
             quantity: `${returnItem?.quantity}`,
           },
           clerk,

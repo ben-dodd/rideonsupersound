@@ -1,38 +1,28 @@
-// Packages
-import { useAtom } from 'jotai'
 import { useMemo } from 'react'
-
-// DB
-import { loadedItemIdAtom } from 'lib/atoms'
-import { useInventory, useVendors } from 'lib/database/read'
 import { StockObject } from 'lib/types'
-
-// Functions
-
-// Components
 import TableContainer from 'components/container/table'
 import Table from 'components/table'
 import { mapInventoryItem } from '../../lib/functions'
+import { useStockList } from 'lib/api/stock'
+import { useVendors } from 'lib/api/vendor'
 
 interface NumberProps {
   value: number
 }
 
 export default function InventoryTable() {
-  // SWR
-  const { inventory, isInventoryLoading } = useInventory()
+  const { inventory, isInventoryLoading } = useStockList()
   const { vendors, isVendorsLoading } = useVendors()
 
-  // Atoms
-  const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom)
+  // // Atoms
+  // const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom)
 
   // Constants
   const data = useMemo(
     () =>
       inventory
         ?.filter(
-          (t: StockObject) =>
-            !t?.is_deleted && !t?.is_gift_card && !t?.is_misc_item
+          (t: StockObject) => !t?.isDeleted && !t?.isGiftCard && !t?.isMiscItem
         )
         .map((t: StockObject) => mapInventoryItem(t, vendors)),
     [inventory, vendors]
@@ -47,11 +37,12 @@ export default function InventoryTable() {
         Cell: (params: any) => (
           <span
             className="cursor-pointer underline"
-            onClick={() =>
-              setLoadedItemId({
-                ...loadedItemId,
-                inventory: params?.row?.original?.id,
-              })
+            onClick={
+              () => null
+              // setLoadedItemId({
+              //   ...loadedItemId,
+              //   inventory: params?.row?.original?.id,
+              // })
             }
           >
             {params?.value}

@@ -1,17 +1,5 @@
 // Packages
-import { useAtom } from 'jotai'
 import { useEffect, useMemo, useState } from 'react'
-
-// DB
-import { loadedVendorIdAtom, pageAtom } from 'lib/atoms'
-import {
-  useClerks,
-  useCustomers,
-  useInventory,
-  useSalesJoined,
-  useVendorPayments,
-  useVendors,
-} from 'lib/database/read'
 import { ModalButton, VendorObject } from 'lib/types'
 
 // Components
@@ -24,17 +12,21 @@ import GeneralDetails from './general-details'
 import VendorItems from './items'
 import VendorPayments from './payments'
 import VendorSales from './sales'
+import { useVendors } from 'lib/api/vendor'
+import { useClerks } from 'lib/api/clerk'
+import { useCustomers } from 'lib/api/customer'
+import { useStockList } from 'lib/api/stock'
 
 export default function VendorScreen() {
   // Atoms
-  const [loadedVendorId, setLoadedVendorId] = useAtom(loadedVendorIdAtom)
-  const [page] = useAtom(pageAtom)
+  // const [loadedVendorId, setLoadedVendorId] = useAtom(loadedVendorIdAtom)
+  // const [page] = useAtom(pageAtom)
 
   // SWR
   const { vendors, mutateVendors, isVendorsLoading } = useVendors()
   const { isClerksLoading } = useClerks()
   const { isCustomersLoading } = useCustomers()
-  const { inventory, isInventoryLoading } = useInventory()
+  const { inventory, isInventoryLoading } = useStockList()
   const { sales, isSalesLoading } = useSalesJoined()
   const { vendorPayments, isVendorPaymentsLoading } = useVendorPayments()
 

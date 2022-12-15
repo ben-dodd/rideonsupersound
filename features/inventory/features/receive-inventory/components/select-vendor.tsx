@@ -1,22 +1,15 @@
-// DB
-import { useLogs, useVendors } from 'lib/database/read'
 import { VendorObject } from 'lib/types'
-
-// Functions
-
-// Components
 import CreateableSelect from 'components/inputs/createable-select'
-
-// Icons
 import { logCreateVendor } from 'features/log/lib/functions'
-import { clerkAtom, receiveStockAtom } from 'lib/atoms'
 import { createVendorInDatabase } from 'lib/database/create'
-import { useAtom } from 'jotai'
+import { useAppStore } from 'lib/store'
+import { useClerk } from 'lib/api/clerk'
+import { useVendors } from 'lib/api/vendor'
 
 export default function SelectVendor() {
-  const [basket, setBasket] = useAtom(receiveStockAtom)
-  const [clerk] = useAtom(clerkAtom)
-  const { logs, mutateLogs } = useLogs()
+  const { receiveStock, setReceiveStock } = useAppStore()
+  const { clerk } = useClerk()
+  // const { logs, mutateLogs } = useLogs()
   const { vendors } = useVendors()
 
   return (
@@ -25,21 +18,21 @@ export default function SelectVendor() {
       <CreateableSelect
         inputLabel="Select vendor"
         fieldRequired
-        value={basket?.vendor_id}
+        value={receiveStock?.vendor_id}
         label={
-          vendors?.filter((v: VendorObject) => v?.id === basket?.vendor_id)[0]
-            ?.name || ''
+          vendors?.filter(
+            (v: VendorObject) => v?.id === receiveStock?.vendor_id
+          )[0]?.name || ''
         }
         onChange={(vendorObject: any) => {
-          setBasket({
-            ...basket,
+          setReceiveStock({
             vendor_id: parseInt(vendorObject?.value),
           })
         }}
         onCreateOption={async (vendorName: string) => {
           const vendorId = await createVendorInDatabase({ name: vendorName })
           logCreateVendor(clerk, vendorName, vendorId)
-          setBasket({ ...basket, vendor_id: vendorId })
+          setReceiveStock({ vendor_id: vendorId })
         }}
         options={vendors?.map((val: VendorObject) => ({
           value: val?.id,

@@ -1,18 +1,10 @@
-// DB
-import { useInventory } from 'lib/database/read'
 import { SaleItemObject, SaleTransactionObject } from 'lib/types'
-
-// Components
 import dayjs from 'dayjs'
-import { getSaleVars } from '../lib/functions'
 import ItemListItem from './item-list-item'
 import TransactionListItem from './transaction-list-item'
+import { useSaleProperties } from 'lib/hooks'
 
-export default function SaleSummary({ sale }) {
-  // SWR
-  const { inventory } = useInventory()
-
-  // Constants
+export default async function SaleSummary({ sale }) {
   const {
     totalRemaining,
     totalStoreCut,
@@ -20,7 +12,7 @@ export default function SaleSummary({ sale }) {
     totalPrice,
     totalPaid,
     totalPostage,
-  } = getSaleVars(sale, inventory)
+  } = await useSaleProperties(sale)
 
   // Functions
   function SaleItems() {
@@ -28,7 +20,7 @@ export default function SaleSummary({ sale }) {
       <div className={`h-2/5 overflow-y-scroll`}>
         {sale?.items?.length > 0 ? (
           sale?.items?.map((saleItem: SaleItemObject) => (
-            <ItemListItem key={saleItem?.item_id} saleItem={saleItem} />
+            <ItemListItem key={saleItem?.itemId} saleItem={saleItem} />
           ))
         ) : (
           <div>No items in cart...</div>

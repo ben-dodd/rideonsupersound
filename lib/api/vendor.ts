@@ -7,3 +7,7 @@ export function useVendors() {
 export function useVendorNames() {
   return useData(`vendor/names`, 'vendorNames')
 }
+
+export function useVendorFromVendorPayment(vendorPaymentId) {
+  return useData(`vendor/payment/${vendorPaymentId}`, 'vendor')
+}

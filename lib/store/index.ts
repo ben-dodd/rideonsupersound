@@ -2,6 +2,7 @@ import create, { State, StoreApi, UseBoundStore } from 'zustand'
 import dayjs from 'dayjs'
 import produce from 'immer'
 import { StoreState } from './types'
+import { v4 as uuid } from 'uuid'
 
 type WithSelectors<S> = S extends { getState: () => infer T }
   ? S & { use: { [K in keyof T]: () => T[K] } }
@@ -106,6 +107,20 @@ export const useAppStore = createSelectors(
       set(
         produce((draft) => {
           draft.cart.items[id] = { ...get().cart.items[id], ...update }
+        })
+      ),
+    setReceiveStock: (update) =>
+      set(
+        produce((draft) => {
+          Object.entries(update).forEach(
+            ([key, value]) => (draft.receiveStock.key = value)
+          )
+        })
+      ),
+    addReceiveStockItem: (newItem) =>
+      set(
+        produce((draft) => {
+          draft.cart.items.push({ key: uuid(), item: newItem })
         })
       ),
     setCustomer: (update) =>

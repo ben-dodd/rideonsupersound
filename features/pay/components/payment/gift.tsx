@@ -2,13 +2,6 @@ import dayjs from 'dayjs'
 import UTC from 'dayjs/plugin/utc'
 import { useMemo, useState } from 'react'
 import {
-  useCustomers,
-  useGiftCards,
-  useInventory,
-  useLogs,
-  useRegisterID,
-} from 'lib/database/read'
-import {
   GiftCardObject,
   ModalButton,
   PaymentMethodTypes,
@@ -22,10 +15,10 @@ import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
 import { logSalePaymentGift } from 'features/log/lib/functions'
 import { makeGiftCardCode } from 'features/sale/features/sell/lib/functions'
-import { getSaleVars } from '../../lib/functions'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
+import { useSaleProperties } from 'lib/hooks'
 
 export default function Gift() {
   dayjs.extend(UTC)
@@ -39,7 +32,7 @@ export default function Gift() {
   const { customers } = useCustomers()
   const { logs, mutateLogs } = useLogs()
 
-  const { totalRemaining } = getSaleVars(cart, inventory)
+  const { totalRemaining } = useSaleProperties(cart)
 
   // State
   const isRefund = totalRemaining < 0

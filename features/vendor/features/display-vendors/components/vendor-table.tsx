@@ -1,17 +1,4 @@
-// Packages
-import { useAtom } from 'jotai'
 import { useMemo } from 'react'
-
-// DB
-import { loadedVendorIdAtom } from 'lib/atoms'
-import {
-  useClerks,
-  useCustomers,
-  useInventory,
-  useSalesJoined,
-  useVendorPayments,
-  useVendors,
-} from 'lib/database/read'
 import { ClerkObject, StockObject, VendorObject } from 'lib/types'
 
 // Functions

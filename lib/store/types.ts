@@ -71,6 +71,8 @@ export interface StoreState {
   addCartItem: (newItem: SaleItemObject) => void
   setCartItem: (id: number, update: any) => void
   setCustomer: (update: any) => void
+  setReceiveStock: (update: any) => void
+  addReceiveStockItem: (newItem: any) => void
   resetCart: () => void
   resetCustomer: () => void
   resetSellSearchBar: () => void

@@ -1,10 +1,9 @@
-// DB
 import {
   getImageSrc,
   getItemDisplayName,
   getItemSku,
 } from 'features/inventory/features/display-inventory/lib/functions'
-import { useVendors } from 'lib/database/read'
+import { useVendors } from 'lib/api/vendor'
 
 export default function ItemCard({ item }) {
   const { vendors } = useVendors()

@@ -92,3 +92,15 @@ export function dbGetGiftCards(db = connection) {
 export function dbCreateStockItem(stockItem, db = connection) {
   return db('stock').insert(js2mysql(stockItem))
 }
+
+export function dbUpdateStockItem(id, update, db = connection) {
+  return db('stock').where({ id }).update(js2mysql(update))
+}
+
+export function dbCreateStockMovement(stockMovement, db = connection) {
+  return db('stock_movement').insert(js2mysql(stockMovement))
+}
+
+export function dbGetStocktakeTemplates(db = connection) {
+  return db('stocktake_template').where(`is_deleted`, 0)
+}

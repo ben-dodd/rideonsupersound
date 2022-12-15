@@ -1,34 +1,25 @@
-import { useAtom } from 'jotai'
 import { useState } from 'react'
-
-// DB
-import { clerkAtom } from 'lib/atoms'
-import { useClerks, useJobs } from 'lib/database/read'
 import { ClerkObject, TaskObject } from 'lib/types'
 import dayjs from 'dayjs'
 import { completeTask } from '../lib/functions'
+import { useClerk, useClerks } from 'lib/api/clerk'
 
 type ListItemProps = {
   task: TaskObject
 }
 
 export default function ListJob({ task }: ListItemProps) {
-  // SWR
   const { clerks } = useClerks()
-  const { jobs, mutateJobs } = useJobs()
-
-  // Atoms
-  const [clerk] = useAtom(clerkAtom)
-
-  // State
-  const [checked, setChecked] = useState(task?.is_completed)
+  // const { jobs, mutateJobs } = useJobs()
+  const { clerk } = useClerk()
+  const [checked, setChecked] = useState(task?.isCompleted)
 
   return (
     <div
       className={`flex w-full border-b border-yellow-100 py-1 text-sm${
-        task?.is_completed
+        task?.isCompleted
           ? ' bg-gray-200 text-gray-600'
-          : task?.is_priority
+          : task?.isPriority
           ? ' bg-red-100 text-black font-bold'
           : ' text-black'
       }`}
@@ -43,22 +34,22 @@ export default function ListJob({ task }: ListItemProps) {
               disabled={checked}
               onChange={() => {
                 setChecked(!checked)
-                const otherJobs = jobs?.filter(
-                  (t: TaskObject) => t?.id !== task?.id
-                )
+                // const otherJobs = jobs?.filter(
+                //   (t: TaskObject) => t?.id !== task?.id
+                // )
                 const completedTask = {
                   ...task,
                   date_completed: dayjs.utc().format(),
                   completed_by_clerk_id: clerk?.id,
                   is_completed: true,
                 }
-                mutateJobs([...otherJobs, completedTask], false)
+                // mutateJobs([...otherJobs, completedTask], false)
                 completeTask(completedTask)
               }}
             />
           </div>
           <div className="font-bold pr-4 text-pink-600">
-            {dayjs(task?.date_created).format('D MMMM YYYY, h:mm A')}
+            {dayjs(task?.dateCreated).format('D MMMM YYYY, h:mm A')}
           </div>
         </div>
         <div className={`w-4/12 ${checked ? 'line-through' : ''}`}>
@@ -71,19 +62,19 @@ export default function ListJob({ task }: ListItemProps) {
             )[0]?.name
           }`}</div>*/}
         <div className="w-3/12">
-          {task?.assigned_to ? (
-            <div>{`Assigned to ${task?.assigned_to}`}</div>
+          {task?.assignedTo ? (
+            <div>{`Assigned to ${task?.assignedTo}`}</div>
           ) : (
             <div />
           )}
         </div>
         <div className="w-3/12 text-right">
-          {task?.completed_by_clerk_id
+          {task?.completedByClerkId
             ? `Completed by ${
                 clerks?.filter(
-                  (c: ClerkObject) => c?.id === task?.completed_by_clerk_id
+                  (c: ClerkObject) => c?.id === task?.completedByClerkId
                 )[0]?.name
-              } (${dayjs(task?.date_completed).format('D MMMM YYYY, h:mm A')})`
+              } (${dayjs(task?.dateCompleted).format('D MMMM YYYY, h:mm A')})`
             : ''}
         </div>
       </div>

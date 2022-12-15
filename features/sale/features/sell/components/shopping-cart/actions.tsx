@@ -8,10 +8,7 @@ import SaveSaleIcon from '@mui/icons-material/Save'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
-import { saveSaleAndPark } from 'features/pay/lib/functions'
-import { useCustomers } from 'lib/api/customer'
-import { useLogs } from 'lib/api/log'
-import { useCurrentRegisterId } from 'lib/api/register'
+import { saveSale } from 'lib/api/sale'
 
 export default function ShoppingCartActions() {
   const { clerk } = useClerk()
@@ -24,18 +21,8 @@ export default function ShoppingCartActions() {
     closeView,
     resetCart,
   } = useAppStore()
-  // SWR
-  const { customers } = useCustomers()
-  const { logs, mutateLogs } = useLogs()
-  // const { sales, mutateSales } = useSales()
-  // const { inventory, mutateInventory } = useInventory()
-  // const { giftCards, mutateGiftCards } = useGiftCards()
-  const { registerID } = useCurrentRegisterId()
-
-  // State
   const [saveSaleLoading, setSaveSaleLoading] = useState(false)
 
-  // Functions
   function clearCart() {
     resetCart()
     closeView(ViewProps.cart)
@@ -47,18 +34,7 @@ export default function ShoppingCartActions() {
 
   async function onClickSaveSale() {
     setSaveSaleLoading(true)
-    await saveSaleAndPark(
-      cart,
-      clerk,
-      registerID,
-      customers,
-      sales,
-      mutateSales,
-      inventory,
-      mutateInventory,
-      giftCards,
-      mutateGiftCards
-    )
+    await saveSale({ ...cart, state: SaleStateTypes.Parked }, cart?.state)
     setAlert({
       open: true,
       type: 'success',
@@ -70,17 +46,7 @@ export default function ShoppingCartActions() {
 
   async function onClickContinueLayby() {
     setSaveSaleLoading(true)
-    saveSaleItemsTransactionsToDatabase(
-      { ...cart, state: SaleStateTypes.Layby },
-      clerk,
-      registerID,
-      sales,
-      mutateSales,
-      inventory,
-      mutateInventory,
-      giftCards,
-      mutateGiftCards
-    )
+    saveSale({ ...cart, state: SaleStateTypes.Layby }, cart?.state)
     setAlert({
       open: true,
       type: 'success',
@@ -114,14 +80,6 @@ export default function ShoppingCartActions() {
   }
   return (
     <div>
-      {/*<Tooltip title="Load parked sales and laybys">
-        <button
-          className={"icon-button-small-white relative"}
-          onClick={onClickLoadSales}
-        >
-          <RetrieveSaleIcon />
-        </button>
-  </Tooltip>*/}
       <Tooltip
         title={
           cart?.state === SaleStateTypes.Layby ? 'Continue Layby' : 'Park sale'

@@ -1,16 +1,6 @@
-// DB
-import { useClerks, useInventory, useLogs, useVendors } from 'lib/database/read'
 import { ClerkObject } from 'lib/types'
-
-// Components
 import SettingsSelect from 'components/inputs/settings-select'
 import TextField from 'components/inputs/text-field'
-import {
-  clerkAtom,
-  confirmModalAtom,
-  loadedVendorIdAtom,
-  pageAtom,
-} from 'lib/atoms'
 import dayjs from 'dayjs'
 import { useAtom } from 'jotai'
 import Select from 'react-select'
@@ -19,15 +9,18 @@ import MaskedInput from 'react-text-mask'
 import { saveLog } from 'features/log/lib/functions'
 import { deleteVendorFromDatabase } from 'lib/database/delete'
 import DeleteIcon from '@mui/icons-material/Delete'
+import { useClerk, useClerks } from 'lib/api/clerk'
+import { useAppStore } from 'lib/store'
+import { useVendors } from 'lib/api/vendor'
 
 export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
   // SWR
   const { clerks } = useClerks()
-  const [clerk] = useAtom(clerkAtom)
-  const [, setConfirmModal] = useAtom(confirmModalAtom)
-  const [loadedVendorId, setLoadedVendorId] = useAtom(loadedVendorIdAtom)
-  const [page] = useAtom(pageAtom)
-  const { logs, mutateLogs } = useLogs()
+  const { clerk } = useClerk()
+  const { setConfirm } = useAppStore()
+  // const [loadedVendorId, setLoadedVendorId] = useAtom(loadedVendorIdAtom)
+  // const [page] = useAtom(pageAtom)
+  // const { logs, mutateLogs } = useLogs()
   const { vendors, mutateVendors } = useVendors()
   const { inventory } = useInventory()
 

@@ -2,8 +2,9 @@ import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
 import { logChangeQuantity } from 'features/log/lib/functions'
 import { useClerk } from 'lib/api/clerk'
+import { useCurrentRegisterId } from 'lib/api/register'
+import { useStockItem, useStockList } from 'lib/api/stock'
 import { createStockMovementInDatabase } from 'lib/database/create'
-import { useInventory, useRegisterID, useStockItem } from 'lib/database/read'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { ModalButton, StockMovementTypes } from 'lib/types'
@@ -11,18 +12,17 @@ import { useRouter } from 'next/router'
 import { useState } from 'react'
 import Select from 'react-select'
 
-export default function changeStockQuantityDialog() {
+export default function ChangeStockQuantityDialog() {
   const { clerk } = useClerk()
   const { view, closeView, setAlert } = useAppStore()
   const router = useRouter()
   const id = router.query.id
 
-  // SWR
-  const { inventory, mutateInventory } = useInventory()
-  const { stockItem, isStockItemLoading, mutateStockItem } = useStockItem(id)
-  const { registerID } = useRegisterID()
-
-  // State
+  const { inventory, mutateInventory } = useStockList()
+  const { stockItem, isStockItemLoading, mutateStockItem } = useStockItem(
+    `${id}`
+  )
+  const { registerId } = useCurrentRegisterId()
   const [movement, setMovement] = useState(StockMovementTypes?.Received)
   const [quantity, setQuantity] = useState('')
   const [note, setNote] = useState('')
@@ -74,14 +74,14 @@ export default function changeStockQuantityDialog() {
         )
         const stockMovementId = await createStockMovementInDatabase({
           item: {
-            item_id: stockItem?.id,
+            itemId: stockItem?.id,
             quantity:
               movement === StockMovementTypes?.Adjustment
                 ? adjustment?.toString()
                 : quantity,
           },
           clerk,
-          registerID,
+          registerId,
           act: movement,
           note,
         })

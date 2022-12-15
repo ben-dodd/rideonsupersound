@@ -1,14 +1,7 @@
-// Packages
-import { useAtom } from 'jotai'
 import { useState } from 'react'
-
-// DB
-import { clerkAtom, viewAtom } from 'lib/atoms'
-import { useLogs, useStockDisplay, useVendors } from 'lib/database/read'
 import { ModalButton, StockObject } from 'lib/types'
 import { v4 as uuid } from 'uuid'
 
-// Components
 import Modal from 'components/modal'
 import { logPrintLabels } from 'features/log/lib/functions'
 import { filterInventory } from 'features/sale/features/sell/lib/functions'
@@ -20,16 +13,20 @@ import {
   getItemSkuDisplayName,
 } from '../../display-inventory/lib/functions'
 import { getLabelPrinterCSV } from '../lib/functions'
+import { useAppStore } from 'lib/store'
+import { useClerk } from 'lib/api/clerk'
+import { useStockList } from 'lib/api/stock'
+import { useVendors } from 'lib/api/vendor'
+import { ViewProps } from 'lib/store/types'
 
 export default function LabelPrintDialog() {
-  // Atoms
-  const [view, setView] = useAtom(viewAtom)
-  const [clerk] = useAtom(clerkAtom)
+  const { view, closeView } = useAppStore()
+  const { clerk } = useClerk()
 
   // SWR
-  const { stockDisplay } = useStockDisplay()
+  const { stockDisplay } = useStockList()
   const { vendors } = useVendors()
-  const { logs, mutateLogs } = useLogs()
+  // const { logs, mutateLogs } = useLogs()
 
   // State
   const [search, setSearch] = useState('')
@@ -37,7 +34,7 @@ export default function LabelPrintDialog() {
 
   function closeDialog() {
     setItems([])
-    setView({ ...view, labelPrintDialog: false })
+    closeView(ViewProps.labelPrintDialog)
   }
 
   // Constants
@@ -116,7 +113,7 @@ export default function LabelPrintDialog() {
                     addItem(item)
                   }
                   const vendor = vendors?.filter(
-                    (v) => v?.id === item?.vendor_id
+                    (v) => v?.id === item?.vendorId
                   )?.[0]
                   return (
                     <div
@@ -140,7 +137,7 @@ export default function LabelPrintDialog() {
                         <div className="text-sm">{`${
                           item?.section ? `${item.section} / ` : ''
                         }${item?.format} [${
-                          item?.is_new
+                          item?.isNew
                             ? 'NEW'
                             : item?.cond?.toUpperCase() || 'USED'
                         }]`}</div>

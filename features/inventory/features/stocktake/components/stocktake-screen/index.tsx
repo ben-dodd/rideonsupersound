@@ -1,26 +1,7 @@
-// Packages
-import { useAtom } from 'jotai'
 import { useState } from 'react'
-
-// DB
-import {
-  clerkAtom,
-  confirmModalAtom,
-  loadedItemIdAtom,
-  loadedStocktakeIdAtom,
-  loadedStocktakeTemplateIdAtom,
-  viewAtom,
-} from 'lib/atoms'
-import {
-  useInventory,
-  useStocktakeItemsByStocktake,
-  useStocktakesByTemplate,
-  useStocktakeTemplates,
-} from 'lib/database/read'
 import { ModalButton, StockObject } from 'lib/types'
 
 import ScreenContainer from 'components/container/screen'
-import InventoryItemScreen from 'features/inventory/features/item-inventory/components/inventory-item-screen'
 import { createStocktakeItemInDatabase } from 'lib/database/create'
 import {
   updateStocktakeInDatabase,

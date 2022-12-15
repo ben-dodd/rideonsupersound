@@ -1,17 +1,11 @@
-// Packages
-
-// DB
-import { useInventory, useVendors } from 'lib/database/read'
-
-// Functions
-
-// Components
 import TableContainer from 'components/container/table'
+import { useStockList } from 'lib/api/stock'
+import { useVendors } from 'lib/api/vendor'
 import List from './list'
 
 export default function InventoryList() {
   // SWR
-  const { inventory, isInventoryLoading } = useInventory()
+  const { inventory, isInventoryLoading } = useStockList()
   const { vendors, isVendorsLoading } = useVendors()
 
   // Todo add filters

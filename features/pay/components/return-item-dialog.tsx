@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useInventory, useLogs, useSaleItemsForSale } from 'lib/database/read'
 import { ModalButton, SaleItemObject, SaleStateTypes } from 'lib/types'
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
@@ -8,13 +7,14 @@ import ItemListItem from './item-list-item'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
+import { useSaleItemsForSale } from 'lib/api/sale'
 
 export default function ReturnItemsDialog({ sale }) {
   const { clerk } = useClerk()
   const { cart, view, setCart, closeView, setAlert } = useAppStore()
   const { items, mutateSaleItems } = useSaleItemsForSale(sale?.id)
-  const { logs, mutateLogs } = useLogs()
-  const { inventory } = useInventory()
+  // const { logs, mutateLogs } = useLogs()
+  // const { inventory } = useInventory()
 
   // State
   const [refundItems, setRefundItems] = useState([])
@@ -47,7 +47,7 @@ export default function ReturnItemsDialog({ sale }) {
               : cart?.state,
         })
         closeDialog()
-        logSaleRefunded(inventory, items, refundItems, sale, clerk)
+        // logSaleRefunded(inventory, items, refundItems, sale, clerk)
         setAlert({
           open: true,
           type: 'success',

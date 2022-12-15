@@ -1,13 +1,6 @@
 import ScreenContainer from 'components/container/screen'
 import Stepper from 'components/navigation/stepper'
 import { saveSystemLog } from 'features/log/lib/functions'
-import {
-  clerkAtom,
-  confirmModalAtom,
-  receiveStockAtom,
-  viewAtom,
-} from 'lib/atoms'
-import { useInventory, useRegisterID } from 'lib/database/read'
 import { ModalButton } from 'lib/types'
 import { useAtom } from 'jotai'
 import { useState } from 'react'
@@ -17,8 +10,10 @@ import CheckDetails from './check-details'
 import PrintLabel from './print-label'
 import SelectVendor from './select-vendor'
 import SetPriceAndQuantities from './set-price-and-quantities'
+import { useAppStore } from 'lib/store'
 
 export default function ReceiveStockScreen() {
+  const { receiveStock, setReceiveStock } = useAppStore()
   // Atoms
   const [basket, setBasket] = useAtom(receiveStockAtom)
   const [, setConfirmModal] = useAtom(confirmModalAtom)

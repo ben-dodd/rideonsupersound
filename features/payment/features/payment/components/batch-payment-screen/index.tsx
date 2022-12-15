@@ -6,46 +6,38 @@ import { useEffect, useState } from 'react'
 import ScreenContainer from 'components/container/screen'
 import { logBatchPayment, saveSystemLog } from 'features/log/lib/functions'
 import { getVendorDetails } from 'features/vendor/features/item-vendor/lib/functions'
-import { clerkAtom, confirmModalAtom, viewAtom } from 'lib/atoms'
 import { createVendorPaymentInDatabase } from 'lib/database/create'
-import {
-  useCashGiven,
-  useInventory,
-  useLogs,
-  useRegisterID,
-  useSalesJoined,
-  useVendorPayments,
-  useVendors,
-} from 'lib/database/read'
 import { updateVendorInDatabase } from 'lib/database/update'
 import { ClerkObject, ModalButton } from 'lib/types'
 import dayjs from 'dayjs'
 import { modulusCheck } from '../../lib/functions'
 import CheckBatchPayments from './check-batch-payments'
 import SelectBatchPayments from './select-batch-payments'
+import { useAppStore } from 'lib/store'
+import { useCurrentRegister, useCurrentRegisterId } from 'lib/api/register'
+import { useClerk } from 'lib/api/clerk'
+import { useVendors } from 'lib/api/vendor'
+import { ViewProps } from 'lib/store/types'
 
 // Icons
 
 export default function BatchPaymentScreen() {
-  // Atoms
-  const [view, setView] = useAtom(viewAtom)
+  const { view, closeView, openConfirm } = useAppStore()
+  const { registerId } = useCurrentRegisterId()
+  const { clerk } = useClerk()
 
-  // SWR
-  const { registerID } = useRegisterID()
-  const [clerk] = useAtom(clerkAtom)
   const { inventory, isInventoryLoading } = useInventory()
   const { sales, isSalesLoading } = useSalesJoined()
   const { vendorPayments, isVendorPaymentsLoading, mutateVendorPayments } =
     useVendorPayments()
-  const { cashGiven, mutateCashGiven } = useCashGiven(registerID)
+  const { currentRegister } = useCurrentRegister()
   const { vendors, isVendorsLoading } = useVendors()
-  const { logs, mutateLogs } = useLogs()
+  // const { logs, mutateLogs } = useLogs()
 
   const [vendorList, setVendorList] = useState([])
   const [stage, setStage] = useState(0)
   const [kbbLoaded, setKbbLoaded] = useState(false)
   const [emailed, setEmailed] = useState(false)
-  const [, setConfirmModal] = useAtom(confirmModalAtom)
 
   useEffect(
     () => {
@@ -121,13 +113,13 @@ export default function BatchPaymentScreen() {
             disabled: !kbbLoaded,
             onClick: () => {
               if (!emailed) {
-                setConfirmModal({
+                openConfirm({
                   open: true,
                   title: 'Hang On!',
                   styledMessage: (
                     <span>
-                      You haven't downloaded the Email CSV. Are you sure you
-                      want to close the page?
+                      {`You haven't downloaded the Email CSV. Are you sure you
+                      want to close the page?`}
                     </span>
                   ),
                   yesText: "YES, I'M SURE",
@@ -136,11 +128,11 @@ export default function BatchPaymentScreen() {
                       `Batch Payment closed without Emailing`,
                       clerk?.id
                     )
-                    setView({ ...view, batchVendorPaymentScreen: false })
+                    closeView(ViewProps.batchVendorPaymentScreen)
                     completeBatchPayment(
                       vendorList,
                       clerk,
-                      registerID,
+                      registerId,
                       emailed,
                       vendorPayments,
                       mutateVendorPayments
@@ -149,11 +141,11 @@ export default function BatchPaymentScreen() {
                 })
               } else {
                 saveSystemLog(`Batch Payment closed with Emailing`, clerk?.id)
-                setView({ ...view, batchVendorPaymentScreen: false })
+                closeView(ViewProps.batchVendorPaymentScreen)
                 completeBatchPayment(
                   vendorList,
                   clerk,
-                  registerID,
+                  registerId,
                   emailed,
                   vendorPayments,
                   mutateVendorPayments
@@ -166,9 +158,7 @@ export default function BatchPaymentScreen() {
   return (
     <ScreenContainer
       show={view?.batchVendorPaymentScreen}
-      closeFunction={() =>
-        setView({ ...view, batchVendorPaymentScreen: false })
-      }
+      closeFunction={() => closeView(ViewProps.batchVendorPaymentScreen)}
       title={'BATCH PAYMENTS'}
       buttons={buttons}
       titleClass="bg-col4"
@@ -214,7 +204,7 @@ function completeBatchPayment(
       ?.forEach((v) => {
         updateVendorInDatabase({
           id: v?.id,
-          last_contacted: dayjs.utc().format(),
+          lastContacted: dayjs.utc().format(),
         })
       })
   }

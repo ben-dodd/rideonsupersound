@@ -1,15 +1,11 @@
-// Packages
 import { useMemo } from 'react'
-
-// DB
-import { useClerks, useVendorPayments, useVendors } from 'lib/database/read'
 import { VendorObject, VendorPaymentObject } from 'lib/types'
 
-// Components
 import TableContainer from 'components/container/table'
 import Table from 'components/table'
 import dayjs from 'dayjs'
 import { mapPayment } from '../lib/functions'
+import { useVendors } from 'lib/api/vendor'
 
 export default function PaymentTable() {
   // SWR

@@ -11,10 +11,10 @@ import {
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
 import { logSalePaymentCard } from 'features/log/lib/functions'
-import { getSaleVars } from '../../lib/functions'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
+import { useSaleProperties } from 'lib/hooks'
 
 export default function Cash() {
   const { clerk } = useClerk()
@@ -23,7 +23,7 @@ export default function Cash() {
   const { inventory } = useInventory()
   const { customers } = useCustomers()
 
-  const { totalRemaining } = getSaleVars(cart, inventory)
+  const { totalRemaining } = useSaleProperties(cart)
   const [submitting, setSubmitting] = useState(false)
   const isRefund = totalRemaining < 0
   const [cardPayment, setCardPayment] = useState(

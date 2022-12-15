@@ -39,7 +39,7 @@ export default function CreateHoldSidebar() {
   const { customers } = useCustomers()
   // const { inventory } = useInventory()
   // const { logs, mutateLogs } = useLogs()
-  const { registerID } = useCurrentRegisterId()
+  const { registerId } = useCurrentRegisterId()
 
   const [holdPeriod, setHoldPeriod] = useState(30)
   const [note, setNote] = useState('')
@@ -67,12 +67,12 @@ export default function CreateHoldSidebar() {
           holdPeriod,
           note,
           clerk,
-          registerID
+          registerId
         )
         createStockMovementInDatabase({
           item,
           clerk,
-          registerID,
+          registerId,
           act: StockMovementTypes.Hold,
         })
         logCreateHold(

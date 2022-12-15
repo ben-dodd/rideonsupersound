@@ -1,5 +1,5 @@
 import ListTask from 'features/job/components/list-job'
-import { useJobs } from 'lib/database/read'
+import { useJobs } from 'lib/api/jobs'
 import { TaskObject } from 'lib/types'
 import { sortJobs } from './lib/functions'
 

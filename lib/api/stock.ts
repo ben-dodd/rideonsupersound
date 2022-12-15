@@ -11,7 +11,7 @@ export function useStockItem(id: string) {
   return useData(`stock/${id}`, 'stockItem')
 }
 
-export function useSaleItems(items: SaleItemObject[]) {
+export function useSaleStockItems(items: SaleItemObject[]) {
   return useData(
     `stock/items?items=${items?.map((item) => item?.itemId)?.join('+')}`,
     'saleItems'
@@ -37,4 +37,8 @@ export function createStockItem(stockItem: StockObject, clerk: ClerkObject) {
       saveSystemLog(`New stock (${id}) created.`, clerk?.id)
       return { ...stockItem, id }
     })
+}
+
+export function useStocktakeTemplates() {
+  return useData(`stocktake/template`, 'stocktakeTemplates')
 }

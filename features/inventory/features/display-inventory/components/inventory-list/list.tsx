@@ -1,11 +1,7 @@
-import { useAtom } from 'jotai'
-
-// DB
-import { useInventory, useVendors } from 'lib/database/read'
-
-// Components
 import MidScreenContainer from 'components/container/mid-screen'
-import { compactModeAtom } from 'lib/atoms'
+import { useStockList } from 'lib/api/stock'
+import { useVendors } from 'lib/api/vendor'
+import { useAppStore } from 'lib/store'
 import { StockObject } from 'lib/types'
 import { useMemo } from 'react'
 import { mapInventoryItem } from '../../lib/functions'
@@ -14,18 +10,18 @@ import CompactListItem from './compact-list-item'
 import ListItem from './list-item'
 
 export default function List() {
-  // SWR
-  const { inventory, isInventoryLoading } = useInventory()
+  // // SWR
+  const { inventory, isInventoryLoading } = useStockList()
   const { vendors, isVendorsLoading } = useVendors()
-  const [compactMode] = useAtom(compactModeAtom)
+  const { compactMode } = useAppStore()
+  // const [compactMode] = useAtom(compactModeAtom)
 
   // Constants
   const data = useMemo(
     () =>
       inventory
         ?.filter(
-          (t: StockObject) =>
-            !t?.is_deleted && !t?.is_gift_card && !t?.is_misc_item
+          (t: StockObject) => !t?.isDeleted && !t?.isGiftCard && !t?.isMiscItem
         )
         .map((t: StockObject) => mapInventoryItem(t, vendors)),
     [inventory, vendors]

@@ -2,46 +2,36 @@ import dayjs from 'dayjs'
 import UTC from 'dayjs/plugin/utc'
 import { useMemo, useState } from 'react'
 import {
-  useInventory,
-  useRegisterID,
-  useSalesJoined,
-  useVendorPayments,
-  useVendors,
-} from 'lib/database/read'
-import {
   ModalButton,
   PaymentMethodTypes,
   SaleTransactionObject,
   VendorObject,
 } from 'lib/types'
-
-// Components
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
 import { logSalePaymentAcct } from 'features/log/lib/functions'
 import { getVendorDetails } from 'features/vendor/features/item-vendor/lib/functions'
 import Select from 'react-select'
-import { getSaleVars } from '../../lib/functions'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
+import { useCurrentRegisterId } from 'lib/api/register'
+import { useStockList } from 'lib/api/stock'
+import { useVendors } from 'lib/api/vendor'
+import { useSaleProperties } from 'lib/hooks'
 
 export default function Acct() {
   dayjs.extend(UTC)
   const { clerk } = useClerk()
   const { view, cart, closeView, setAlert, addCartTransaction } = useAppStore()
-
-  // State
   const [vendorWrapper, setVendorWrapper] = useState(null)
-
-  // SWR
-  const { registerID } = useRegisterID()
-  const { inventory } = useInventory()
+  const { registerId } = useCurrentRegisterId()
+  const { inventory } = useStockList()
   const { vendors } = useVendors()
   const { sales } = useSalesJoined()
   const { vendorPayments } = useVendorPayments()
 
-  const { totalRemaining } = getSaleVars(cart, inventory)
+  const { totalRemaining } = useSaleProperties(cart)
 
   // State
   const isRefund = totalRemaining < 0
@@ -84,7 +74,7 @@ export default function Acct() {
           amount: isRefund
             ? parseFloat(acctPayment) * -100
             : parseFloat(acctPayment) * 100,
-          registerId: registerID,
+          registerId,
           vendor: vendorWrapper?.value,
           isRefund: isRefund,
         }

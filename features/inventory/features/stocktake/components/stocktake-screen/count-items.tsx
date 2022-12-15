@@ -1,25 +1,6 @@
-// Packages
 import { useAtom } from 'jotai'
 import { useState } from 'react'
-
-// DB
-import {
-  alertAtom,
-  clerkAtom,
-  loadedStocktakeIdAtom,
-  loadedStocktakeTemplateIdAtom,
-  viewAtom,
-} from 'lib/atoms'
-import {
-  useInventory,
-  useLogs,
-  useRegisterID,
-  useStocktakeItemsByStocktake,
-  useStocktakesByTemplate,
-} from 'lib/database/read'
 import { StockObject, StocktakeItemObject } from 'lib/types'
-
-// Components
 import TextField from 'components/inputs/text-field'
 import Select from 'react-select'
 
@@ -34,29 +15,30 @@ import SearchIcon from '@mui/icons-material/Search'
 import dayjs from 'dayjs'
 import CountedListItem from './counted-list-item'
 import ItemCard from './item-card'
+import { useStockList } from 'lib/api/stock'
+import { useClerk } from 'lib/api/clerk'
+import { useAppStore } from 'lib/store'
+import { ViewProps } from 'lib/store/types'
 
 export default function CountItems() {
   // SWR
-  const { inventory, mutateInventory } = useInventory()
-  const [stocktakeId] = useAtom(loadedStocktakeIdAtom)
-  const [stocktakeTemplateId] = useAtom(loadedStocktakeTemplateIdAtom)
-  const { stocktakes, mutateStocktakes } =
-    useStocktakesByTemplate(stocktakeTemplateId)
-  const { stocktakeItems, mutateStocktakeItems } =
-    useStocktakeItemsByStocktake(stocktakeId)
+  const { inventory, mutateInventory } = useStockList()
+  // const [stocktakeId] = useAtom(loadedStocktakeIdAtom)
+  // const [stocktakeTemplateId] = useAtom(loadedStocktakeTemplateIdAtom)
+  // const { stocktakes, mutateStocktakes } =
+  //   useStocktakesByTemplate(stocktakeTemplateId)
+  // const { stocktakeItems, mutateStocktakeItems } =
+  //   useStocktakeItemsByStocktake(stocktakeId)
 
-  const stocktake = stocktakes?.filter(
-    (stocktake) => stocktake?.id === stocktakeId
-  )?.[0]
-  const { logs, mutateLogs } = useLogs()
-  const { registerID } = useRegisterID()
+  // const stocktake = stocktakes?.filter(
+  //   (stocktake) => stocktake?.id === stocktakeId
+  // )?.[0]
+  // const { logs, mutateLogs } = useLogs()
+  // const { registerID } = useRegisterID()
   const [inputValue, setInputValue] = useState('')
   const [scanInput, setScanInput] = useState('')
-
-  // Atoms
-  const [clerk] = useAtom(clerkAtom)
-  const [view, setView] = useAtom(viewAtom)
-  const [, setAlert] = useAtom(alertAtom)
+  const { clerk } = useClerk()
+  const { view, closeView } = useAppStore()
 
   // State
   const [lastAddedItem, setLastAddedItem] = useState(null)
@@ -65,7 +47,7 @@ export default function CountItems() {
   const [isLoading, setIsLoading] = useState(false)
 
   function closeFunction() {
-    setView({ ...view, stocktakeScreen: false })
+    closeView(ViewProps.stocktakeScreen)
   }
 
   function addCountedItem(item_id) {
@@ -78,22 +60,22 @@ export default function CountItems() {
     )?.[0]
     setLastAddedItem(stockItem)
     if (countedItem) {
-      countedItem.quantity_counted += 1
-      countedItem.quantity_difference = countedItem?.quantity_difference + 1
-      countedItem.counted_by = clerk?.id
-      countedItem.date_counted = dayjs.utc().format()
-      countedItem.review_decision = null
+      countedItem.quantityCounted += 1
+      countedItem.quantityDifference = countedItem?.quantityDifference + 1
+      countedItem.countedBy = clerk?.id
+      countedItem.dateCounted = dayjs.utc().format()
+      countedItem.reviewDecision = null
       updateStocktakeItemInDatabase(countedItem)
     } else {
       countedItem = {
         id: `${stocktake?.id}-${item_id}`,
-        stock_id: item_id,
-        stocktake_id: stocktake?.id,
-        quantity_counted: 1,
-        quantity_recorded: stockItem?.quantity || 0,
-        quantity_difference: 1 - (stockItem?.quantity || 0),
-        counted_by: clerk?.id,
-        date_counted: dayjs.utc().format(),
+        stockId: item_id,
+        stocktakeId: stocktake?.id,
+        quantityCounted: 1,
+        quantityRecorded: stockItem?.quantity || 0,
+        quantityDifference: 1 - (stockItem?.quantity || 0),
+        countedBy: clerk?.id,
+        dateCounted: dayjs.utc().format(),
       }
       createStocktakeItemInDatabase(countedItem)
     }
@@ -102,20 +84,20 @@ export default function CountItems() {
       countedItem,
       ...countData.filter((i) => i?.id !== countedItem?.id),
     ]
-    mutateStocktakeItems(newCountedItems, false)
-    const newStocktake = {
-      ...stocktake,
-      total_counted: newCountedItems?.reduce(
-        (prev, curr) => prev + curr?.quantity_counted,
-        0
-      ),
-      total_unique_counted: newCountedItems?.length,
-    }
-    updateStocktakeInDatabase(newStocktake)
-    mutateStocktakes(
-      stocktakes?.map((st) => (st?.id === stocktakeId ? newStocktake : st)),
-      false
-    )
+    // mutateStocktakeItems(newCountedItems, false)
+    // const newStocktake = {
+    //   ...stocktake,
+    //   total_counted: newCountedItems?.reduce(
+    //     (prev, curr) => prev + curr?.quantity_counted,
+    //     0
+    //   ),
+    //   total_unique_counted: newCountedItems?.length,
+    // }
+    // updateStocktakeInDatabase(newStocktake)
+    // mutateStocktakes(
+    //   stocktakes?.map((st) => (st?.id === stocktakeId ? newStocktake : st)),
+    //   false
+    // )
     setIsLoading(false)
   }
 

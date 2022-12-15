@@ -1,14 +1,4 @@
 import { useEffect, useState } from 'react'
-import {
-  useCustomers,
-  useGiftCards,
-  useInventory,
-  useLogs,
-  useRegisterID,
-  useSaleItemsForSale,
-  useSales,
-  useSaleTransactionsForSale,
-} from 'lib/database/read'
 import { ModalButton, SaleItemObject, SaleObject } from 'lib/types'
 
 // Components
@@ -19,7 +9,12 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import { useAppStore } from 'lib/store'
 import { useClerk } from 'lib/api/clerk'
 import { useRouter } from 'next/router'
-import { getSaleVars } from 'features/sale/features/item-sale/lib/functions'
+import { useCustomers } from 'lib/api/customer'
+import { useGiftCards, useStockList } from 'lib/api/stock'
+import { useCurrentRegisterId } from 'lib/api/register'
+import SaleSummary from 'features/pay/components/sale-summary'
+import SaleDetails from 'features/pay/components/sale-details'
+import { useSaleProperties } from 'lib/hooks'
 
 // TODO add returns to sale items
 // TODO refund dialog like PAY, refund with store credit, cash or card
@@ -32,14 +27,14 @@ export default function SaleItemScreen() {
 
   // SWR
   const { customers } = useCustomers()
-  const { inventory, mutateInventory } = useInventory()
+  const { inventory, mutateInventory } = useStockList()
   const { giftCards, mutateGiftCards } = useGiftCards()
   const { items, isSaleItemsLoading } = useSaleItemsForSale(Number(id))
   const { transactions, isSaleTransactionsLoading } =
     useSaleTransactionsForSale(Number(id))
   const { sales, mutateSales } = useSales()
-  const { logs, mutateLogs } = useLogs()
-  const { registerID } = useRegisterID()
+  // const { logs, mutateLogs } = useLogs()
+  const { registerId } = useCurrentRegisterId()
 
   // State
   const [saleLoading, setSaleLoading] = useState(false)
@@ -69,7 +64,7 @@ export default function SaleItemScreen() {
   // BUG dates are wrong on vercel
   // BUG why are some sales showing items as separate line items, not 2x quantity
 
-  const { totalRemaining } = getSaleVars(sale, inventory)
+  const { totalRemaining } = useSaleProperties(sale)
 
   // Functions
   async function loadSale() {
@@ -80,7 +75,7 @@ export default function SaleItemScreen() {
       setCart,
       sale,
       clerk,
-      registerID,
+      registerId,
       customers,
       logs,
       mutateLogs,

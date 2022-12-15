@@ -1,14 +1,4 @@
-// Packages
-import { useAtom } from 'jotai'
 import { useMemo } from 'react'
-
-// DB
-import { loadedVendorIdAtom, pageAtom } from 'lib/atoms'
-import {
-  useInventory,
-  useSalesJoined,
-  useVendorPayments,
-} from 'lib/database/read'
 import { VendorPaymentObject } from 'lib/types'
 
 // Components
@@ -18,7 +8,7 @@ import { getVendorDetails } from '../lib/functions'
 
 export default function VendorPayments({ vendor }) {
   // Atoms
-  const [loadedVendorId] = useAtom(loadedVendorIdAtom)
+  // const [loadedVendorId] = useAtom(loadedVendorIdAtom)
   const [page] = useAtom(pageAtom)
 
   // SWR

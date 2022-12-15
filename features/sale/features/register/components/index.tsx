@@ -1,7 +1,6 @@
 // Packages
 import TextField from 'components/inputs/text-field'
 import { logOpenRegister } from 'features/log/lib/functions'
-import { useLogs, useRegisterID } from 'lib/database/read'
 import { RegisterObject, TillObject } from 'lib/types'
 import OpenIcon from '@mui/icons-material/ShoppingCart'
 import CircularProgress from '@mui/material/CircularProgress'

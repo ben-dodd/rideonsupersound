@@ -1,24 +1,4 @@
-// Packages
-import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
-
-// DB
-import {
-  alertAtom,
-  cartAtom,
-  clerkAtom,
-  loadedHoldIdAtom,
-  pageAtom,
-  viewAtom,
-} from 'lib/atoms'
-import {
-  useClerks,
-  useCustomers,
-  useHolds,
-  useInventory,
-  useLogs,
-  useRegisterID,
-} from 'lib/database/read'
 import { ClerkObject, CustomerObject, HoldObject, ModalButton } from 'lib/types'
 
 // Components
@@ -29,11 +9,16 @@ import {
   logRemoveFromHold,
   saveSystemLog,
 } from 'features/log/lib/functions'
-import { useWeather } from 'lib/api'
 import { updateHoldInDatabase } from 'lib/database/update'
 import dayjs from 'dayjs'
 import { returnHoldToStock } from '../lib/functions'
 import HoldListItem from './list-item'
+import { useWeather } from 'lib/api/external'
+import { useAppStore } from 'lib/store'
+import { useClerk, useClerks } from 'lib/api/clerk'
+import { useCustomers } from 'lib/api/customer'
+import { useCurrentRegisterId } from 'lib/api/register'
+import { ViewProps } from 'lib/store/types'
 
 export default function HoldDialog() {
   const { weather } = useWeather()
@@ -52,21 +37,16 @@ export default function HoldDialog() {
       )
     }
   }, [])
-  // Atoms
-  const [view, setView] = useAtom(viewAtom)
-  const [, setAlert] = useAtom(alertAtom)
-  const [loadedHoldId, setLoadedHoldId] = useAtom(loadedHoldIdAtom)
-  const [clerk] = useAtom(clerkAtom)
-  const [page, setPage] = useAtom(pageAtom)
-  const [cart, setCart] = useAtom(cartAtom)
+  const { openView, setAlert, cart, setCart } = useAppStore()
+  const { clerk } = useClerk()
 
   // SWR
   const { holds, isHoldsLoading, mutateHolds } = useHolds()
   const { inventory, mutateInventory } = useInventory()
-  const { logs, mutateLogs } = useLogs()
+  // const { logs, mutateLogs } = useLogs()
   const { customers } = useCustomers()
   const { clerks } = useClerks()
-  const { registerID } = useRegisterID()
+  const { registerId } = useCurrentRegisterId()
 
   // States
   const originalHold = holds?.filter(
@@ -98,7 +78,7 @@ export default function HoldDialog() {
           holds,
           mutateHolds,
           mutateInventory,
-          registerID
+          registerId
         )
         closeDialog()
         logRemoveFromHold(hold, inventory, clerk)
@@ -185,11 +165,11 @@ export default function HoldDialog() {
 
     let newItems = cart?.items || []
     let index = newItems.findIndex(
-      (cartItem) => cartItem.item_id === hold?.item_id
+      (cartItem) => cartItem.itemId === hold?.item_id
     )
     if (index < 0)
       newItems.push({
-        item_id: hold?.item_id,
+        itemId: hold?.itemId,
         quantity: hold?.quantity,
       })
     else
@@ -198,20 +178,20 @@ export default function HoldDialog() {
       }`
     setCart({
       id: cart?.id || null,
-      date_sale_opened: cart?.date_sale_opened || dayjs.utc().format(),
-      sale_opened_by: cart?.sale_opened_by || clerk?.id,
+      dateSaleOpened: cart?.dateSaleOpened || dayjs.utc().format(),
+      saleOpenedBy: cart?.saleOpenedBy || clerk?.id,
       items: newItems,
       transactions: cart?.transactions || [],
       state: cart?.state || null,
-      customer_id: cart?.customer_id || null,
-      layby_started_by: cart?.layby_started_by || null,
-      date_layby_started: cart?.date_layby_started || null,
+      customerId: cart?.customerId || null,
+      laybyStartedBy: cart?.laybyStartedBy || null,
+      dateLaybyStarted: cart?.dateLaybyStarted || null,
       weather: cart?.weather || weather,
-      geo_latitude: cart?.geo_latitude || geolocation?.latitude,
-      geo_longitude: cart?.geo_longitude || geolocation?.longitude,
+      geoLatitude: cart?.geoLatitude || geolocation?.latitude,
+      geoLongitude: cart?.geoLongitude || geolocation?.longitude,
     })
     setPage('sell')
-    setView({ ...view, cart: true })
+    openView(ViewProps.cart)
     logHoldAddedToSale(hold, inventory, cart, clerk)
     setAlert({
       open: true,

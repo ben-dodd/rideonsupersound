@@ -2,13 +2,13 @@ import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
 import { logChangePrice } from 'features/log/lib/functions'
 import { createStockPriceInDatabase } from 'lib/database/create'
-import { useInventory, useStockItem } from 'lib/database/read'
 import { ModalButton } from 'lib/types'
 import { useEffect, useState } from 'react'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useRouter } from 'next/router'
+import { useStockItem, useStockList } from 'lib/api/stock'
 
 export default function ChangePriceDialog() {
   const { clerk } = useClerk()
@@ -16,11 +16,11 @@ export default function ChangePriceDialog() {
   const router = useRouter()
   const id = router.query.id
 
-  // SWR
-  const { inventory, mutateInventory } = useInventory()
-  const { stockItem, isStockItemLoading, mutateStockItem } = useStockItem(id)
+  const { inventory, mutateInventory } = useStockList()
+  const { stockItem, isStockItemLoading, mutateStockItem } = useStockItem(
+    `${id}`
+  )
 
-  // State
   const [totalSell, setTotalSell] = useState('')
   const [vendorCut, setVendorCut] = useState('')
   const [notes, setNotes] = useState('')

@@ -1,21 +1,13 @@
-// Packages
 import { useMemo } from 'react'
-
-// DB
-import { useGiftCards } from 'lib/database/read'
 import { StockObject } from 'lib/types'
-
-// Components
 import TableContainer from 'components/container/table'
 import Table from 'components/table'
 import dayjs from 'dayjs'
 import { mapGiftCardObject } from '../lib/functions'
+import { useGiftCards } from 'lib/api/stock'
 
 export default function GiftCardTable() {
-  // SWR
   const { giftCards, isGiftCardsLoading } = useGiftCards()
-
-  // Constants
   const data = useMemo(
     () =>
       giftCards?.map((giftCard: StockObject) => mapGiftCardObject(giftCard)),

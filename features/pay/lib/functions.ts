@@ -43,44 +43,6 @@ import {
   getCartItemPrice,
   getItemQuantity,
 } from 'features/sale/features/sell/lib/functions'
-import { useSaleItems } from 'lib/api/stock'
-
-export async function useSaleVars(sale: any) {
-  // Sale - sale item
-  const cartItems = sale?.items
-  const { saleItems } = await useSaleItems(cartItems)
-  const totalPostage = parseFloat(`${sale?.postage}`) || 0 // Postage: currently in dollars
-  const totalStoreCut = sumPrices(cartItems, saleItems, 'storePrice') / 100 // Total Amount of Sale goes to Store in dollars
-  // console.log(totalStoreCut);
-  const totalPriceUnrounded =
-    sumPrices(
-      cartItems.filter((s) => !s?.isRefunded),
-      saleItems,
-      'totalPrice'
-    ) / 100 // Total Amount of Sale in dollars
-  const totalVendorCut = totalPriceUnrounded - totalStoreCut // Total Vendor Cut in dollars
-  const totalItemPrice =
-    Math.round((totalPriceUnrounded + Number.EPSILON) * 10) / 10 // Total Amount rounded to 10c to avoid unpayable sales
-  const totalPrice = totalItemPrice + totalPostage // TotalPrice + postage
-  const totalPaid =
-    Math.round((getTotalPaid(sale?.transactions) / 100 + Number.EPSILON) * 10) /
-    10 // Total Paid to nearest 10c
-  const totalRemaining =
-    Math.round((totalPrice - totalPaid + Number.EPSILON) * 10) / 10 // Amount remaining to pay
-  return {
-    totalItemPrice,
-    totalPrice,
-    totalPostage,
-    totalPaid,
-    totalStoreCut,
-    totalVendorCut,
-    totalRemaining,
-    numberOfItems: sale?.items
-      ?.filter((item) => !item.isRefunded && !item?.isDeleted)
-      ?.reduce((acc, item) => acc + parseInt(item?.quantity), 0), // Total number of items in sale
-    itemList: writeItemList(saleItems, cartItems), // List of items written in full
-  }
-}
 
 export function sumPrices(saleItems: any[], items: any[], field: string) {
   if (!saleItems) return 0
@@ -251,51 +213,4 @@ export async function useSaveSaleAndPark(
   )
   logSaleParked(saleId, cart, customers, clerk)
   mutateInventory && mutateInventory()
-}
-
-export async function saveSaleTransaction(
-  transaction: SaleTransactionObject,
-  clerk: ClerkObject,
-  giftCards: GiftCardObject[],
-  mutateGiftCards: Function
-) {
-  if (transaction?.paymentMethod === PaymentMethodTypes.Account) {
-    // Add account payment as a store payment to the vendor
-    let vendorPaymentId = null
-    const vendorPayment = {
-      amount: transaction?.amount,
-      clerkId: transaction?.clerkId,
-      vendorId: transaction?.vendor?.id,
-      type: transaction?.isRefund
-        ? VendorPaymentTypes.SaleRefund
-        : VendorPaymentTypes.Sale,
-      date: dayjs.utc().format(),
-      registerId: transaction?.registerId,
-    }
-    vendorPaymentId = await createVendorPaymentInDatabase(vendorPayment)
-    transaction = { ...transaction, vendorPayment: vendorPaymentId }
-  }
-  let giftCardId = null
-  if (transaction?.paymentMethod === PaymentMethodTypes.GiftCard) {
-    if (transaction?.isRefund) {
-      // Gift card is new, create new one
-      giftCardId = await createStockItemInDatabase(
-        transaction?.giftCardUpdate,
-        clerk
-      )
-    } else {
-      // Update gift card
-      updateStockItemInDatabase(transaction?.giftCardUpdate)
-    }
-    const otherGiftCards = giftCards?.filter(
-      (g: GiftCardObject) => g?.id !== transaction?.giftCardUpdate?.id
-    )
-    mutateGiftCards([...otherGiftCards, transaction?.giftCardUpdate], false)
-  }
-  if (giftCardId) transaction = { ...transaction, giftCardId }
-  createSaleTransactionInDatabase(transaction)
-}
-
-export function validateGiftCard(id: number) {
-  updateItemInDatabase({ giftCardIsValid: 1, id }, 'stock')
 }

@@ -1,6 +1,4 @@
 import { logPrintLabels } from 'features/log/lib/functions'
-import { clerkAtom } from 'lib/atoms'
-import { useLogs } from 'lib/database/read'
 import dayjs from 'dayjs'
 import { useAtom } from 'jotai'
 import { CSVLink } from 'react-csv'
@@ -10,10 +8,11 @@ import {
   getItemSku,
 } from '../../display-inventory/lib/functions'
 import { getLabelPrinterCSV } from '../../print-labels/lib/functions'
+import { useClerk } from 'lib/api/clerk'
 
 export default function PrintLabel({ receivedStock }) {
-  const { logs, mutateLogs } = useLogs()
-  const [clerk] = useAtom(clerkAtom)
+  // const { logs, mutateLogs } = useLogs()
+  const { clerk } = useClerk()
   const totalItemCount = receivedStock?.reduce(
     (prev, curr) => prev + parseInt(curr?.quantity),
     0

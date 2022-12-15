@@ -1,22 +1,7 @@
-// Packages
-import { useAtom } from 'jotai'
 import { useState } from 'react'
-
-// DB
-import { alertAtom, clerkAtom, viewAtom } from 'lib/atoms'
-import {
-  useInventory,
-  useLogs,
-  useRegisterID,
-  useVendors,
-} from 'lib/database/read'
 import { ModalButton, StockObject, VendorObject } from 'lib/types'
-
-// Components
 import TextField from 'components/inputs/text-field'
 import Select from 'react-select'
-
-// Icons
 import ScreenContainer from 'components/container/screen'
 import DeleteIcon from '@mui/icons-material/Delete'
 import {
@@ -26,18 +11,20 @@ import {
   getItemSkuDisplayName,
 } from '../../display-inventory/lib/functions'
 import { returnStock } from '../lib/functions'
+import { useStockList } from 'lib/api/stock'
+import { useVendors } from 'lib/api/vendor'
+import { useCurrentRegisterId } from 'lib/api/register'
+import { useClerk } from 'lib/api/clerk'
+import { useAppStore } from 'lib/store'
+import { ViewProps } from 'lib/store/types'
 
 export default function ReturnStockScreen() {
-  // SWR
-  const { inventory, mutateInventory } = useInventory()
-  const { logs, mutateLogs } = useLogs()
+  const { inventory, mutateInventory } = useStockList()
+  // const { logs, mutateLogs } = useLogs()
   const { vendors } = useVendors()
-  const { registerID } = useRegisterID()
-
-  // Atoms
-  const [clerk] = useAtom(clerkAtom)
-  const [view, setView] = useAtom(viewAtom)
-  const [, setAlert] = useAtom(alertAtom)
+  const { clerk } = useClerk()
+  const { view, closeView, setAlert } = useAppStore()
+  const { registerId } = useCurrentRegisterId()
 
   // State
   const [vendorWrapper, setVendorWrapper] = useState(null)
@@ -47,7 +34,7 @@ export default function ReturnStockScreen() {
   const [submitting, setSubmitting] = useState(false)
 
   function closeFunction() {
-    setView({ ...view, returnStockScreen: false })
+    closeView(ViewProps.returnStockScreen)
     setVendorWrapper(null)
     setReturnItems([])
     setNotes('')
@@ -68,11 +55,9 @@ export default function ReturnStockScreen() {
           returnItems,
           notes,
           clerk,
-          registerID,
+          registerId,
           inventory,
-          mutateInventory,
-          logs,
-          mutateLogs
+          mutateInventory
         )
         setSubmitting(false)
         setAlert({
@@ -104,7 +89,7 @@ export default function ReturnStockScreen() {
   const returnOptions = inventory
     ?.filter(
       (item: StockObject) =>
-        item?.vendor_id === vendorWrapper?.value &&
+        item?.vendorId === vendorWrapper?.value &&
         returnItems?.filter((i) => i?.id === item?.id)?.length === 0 &&
         item?.quantity > 0
     )

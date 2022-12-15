@@ -1,26 +1,17 @@
-// Packages
-import { useAtom } from 'jotai'
 import { useState } from 'react'
-
-// DB
-import { alertAtom, clerkAtom, viewAtom } from 'lib/atoms'
-import { useJobs } from 'lib/database/read'
 import { ModalButton, RoleTypes, TaskObject } from 'lib/types'
-
-// Functions
-
-// Components
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
 import { logCreateJob } from 'features/log/lib/functions'
 import dayjs from 'dayjs'
 import Select from 'react-select'
+import { useClerk } from 'lib/api/clerk'
+import { useAppStore } from 'lib/store'
+import { ViewProps } from 'lib/store/types'
 
 export default function JobDialog() {
-  const [clerk] = useAtom(clerkAtom)
-  const [view, setView] = useAtom(viewAtom)
-  const [, setAlert] = useAtom(alertAtom)
-  const { jobs, mutateJobs } = useJobs()
+  const { clerk } = useClerk()
+  const { view, closeView, setAlert } = useAppStore()
   const [description, setDescription] = useState('')
   const [assignedTo, setAssignedTo] = useState(null)
   const [isPriority, setIsPriority] = useState(false)
@@ -30,7 +21,7 @@ export default function JobDialog() {
     setDescription('')
     setAssignedTo(null)
     setIsPriority(false)
-    setView({ ...view, taskDialog: false })
+    closeView(ViewProps.taskDialog)
   }
 
   const roles = [
@@ -54,13 +45,13 @@ export default function JobDialog() {
         setSubmitting(true)
         let newTask: TaskObject = {
           description,
-          assigned_to: assignedTo?.value,
-          is_priority: isPriority || false,
-          created_by_clerk_id: clerk?.id,
-          date_created: dayjs.utc().format(),
+          assignedTo: assignedTo?.value,
+          isPriority: isPriority || false,
+          createdByClerkId: clerk?.id,
+          dateCreated: dayjs.utc().format(),
         }
         const jobId = await saveTaskToDatabase(newTask)
-        mutateJobs([...jobs, { ...newTask, jobId }], false)
+        // mutateJobs([...jobs, { ...newTask, jobId }], false)
         setSubmitting(false)
         clearDialog()
         logCreateJob(description, clerk, jobId)

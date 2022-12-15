@@ -1,10 +1,9 @@
-// DB
 import {
   getImageSrc,
   getItemDisplayName,
   getItemSku,
 } from 'features/inventory/features/display-inventory/lib/functions'
-import { useInventory } from 'lib/database/read'
+import { useStockList } from 'lib/api/stock'
 import { SaleItemObject, StockObject } from 'lib/types'
 import { MouseEventHandler } from 'react'
 import { writeCartItemPriceBreakdown } from '../../sale/features/sell/lib/functions'
@@ -23,7 +22,7 @@ export default function ItemListItem({
   onClick,
 }: SellListItemProps) {
   // SWR
-  const { inventory } = useInventory()
+  const { inventory } = useStockList()
   const item = inventory?.filter(
     (i: StockObject) => i.id === saleItem?.itemId
   )?.[0]

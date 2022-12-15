@@ -1,22 +1,4 @@
-// Packages
-import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
-
-// DB
-import {
-  clerkAtom,
-  loadedStocktakeIdAtom,
-  loadedStocktakeTemplateIdAtom,
-  viewAtom,
-} from 'lib/atoms'
-import {
-  useAllSelects,
-  useInventory,
-  useStocktakeItemsByStocktake,
-  useStocktakesByTemplate,
-  useStocktakeTemplates,
-  useVendors,
-} from 'lib/database/read'
 import {
   ModalButton,
   StockObject,
@@ -24,8 +6,6 @@ import {
   StocktakeStatuses,
   StocktakeTemplateObject,
 } from 'lib/types'
-
-// Components
 import ScreenContainer from 'components/container/screen'
 import TextField from 'components/inputs/text-field'
 import FilterBox from './filter-box'
@@ -37,10 +17,12 @@ import AddIcon from '@mui/icons-material/Add'
 import dayjs from 'dayjs'
 import { writeStocktakeFilterDescription } from '../../lib/functions'
 import StocktakeScreen from '../stocktake-screen'
+import { useStockList } from 'lib/api/stock'
+import { useVendors } from 'lib/api/vendor'
 
 export default function StocktakeTemplateScreen() {
   // Atoms
-  const { inventory, mutateInventory } = useInventory()
+  const { inventory, mutateInventory } = useStockList()
   const { selects, isSelectsLoading } = useAllSelects()
   const { vendors, isVendorsLoading } = useVendors()
 

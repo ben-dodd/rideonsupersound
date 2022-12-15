@@ -1,20 +1,19 @@
 // DB
 import { getItemSkuDisplayName } from 'features/inventory/features/display-inventory/lib/functions'
 import { logRestockItem } from 'features/log/lib/functions'
-import { clerkAtom } from 'lib/atoms'
-import { useInventory } from 'lib/database/read'
 import { StockObject } from 'lib/types'
 import { useAtom } from 'jotai'
 import { completeRestockTask } from '../lib/functions'
+import { useStockList } from 'lib/api/stock'
+import { useClerk } from 'lib/api/clerk'
 
 type ListItemProps = {
   item: StockObject
 }
 
 export default function RestockJob({ item }: ListItemProps) {
-  // SWR
-  const { inventory, mutateInventory } = useInventory()
-  const [clerk] = useAtom(clerkAtom)
+  const { inventory, mutateInventory } = useStockList()
+  const { clerk } = useClerk()
 
   return (
     <div className={`flex w-full border-b border-yellow-100 py-1 text-sm`}>
@@ -27,7 +26,7 @@ export default function RestockJob({ item }: ListItemProps) {
               onChange={() => {
                 mutateInventory(
                   inventory?.map((i) =>
-                    i?.id === item?.id ? { ...item, needs_restock: false } : i
+                    i?.id === item?.id ? { ...item, needsRestock: false } : i
                   ),
                   false
                 )

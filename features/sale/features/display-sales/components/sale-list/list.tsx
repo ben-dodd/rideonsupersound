@@ -1,18 +1,13 @@
 import MidScreenContainer from 'components/container/mid-screen'
-import { salesViewClerksAtom, salesViewRangeAtom } from 'lib/atoms'
-import {
-  useClerks,
-  useRegisters,
-  useSaleTransactionsForRange,
-} from 'lib/database/read'
 import dayjs from 'dayjs'
 import { useAtom } from 'jotai'
+import { useClerks } from 'lib/api/clerk'
 import { useMemo } from 'react'
 import Filter from './filter'
 
 export default function List() {
-  const [salesViewRange] = useAtom(salesViewRangeAtom)
-  const [salesViewClerks] = useAtom(salesViewClerksAtom)
+  // const [salesViewRange] = useAtom(salesViewRangeAtom)
+  // const [salesViewClerks] = useAtom(salesViewClerksAtom)
   const { saleTransactions, isSaleTransactionsLoading } =
     useSaleTransactionsForRange(salesViewRange)
   const { registers, isRegistersLoading } = useRegisters(salesViewRange)

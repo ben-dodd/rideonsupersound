@@ -1,19 +1,6 @@
 // Packages
-import { useAtom } from 'jotai'
 import { useMemo, useState } from 'react'
 import Select from 'react-select'
-
-// DB
-import { clerkAtom, viewAtom } from 'lib/atoms'
-import {
-  useCashGiven,
-  useInventory,
-  useLogs,
-  useRegisterID,
-  useSalesJoined,
-  useVendorPayments,
-  useVendors,
-} from 'lib/database/read'
 import { ModalButton, VendorObject, VendorPaymentTypes } from 'lib/types'
 
 // Components
@@ -23,17 +10,18 @@ import { logCreateVendorPayment } from 'features/log/lib/functions'
 import { getVendorDetails } from 'features/vendor/features/item-vendor/lib/functions'
 import { createVendorPaymentInDatabase } from 'lib/database/create'
 import dayjs from 'dayjs'
+import { useCurrentRegisterId } from 'lib/api/register'
+import { useVendors } from 'lib/api/vendor'
+import { useClerk } from 'lib/api/clerk'
+import { useAppStore } from 'lib/store'
+import { ViewProps } from 'lib/store/types'
 
 export default function CashPaymentDialog() {
-  // SWR
-  const { registerID } = useRegisterID()
+  const { registerId } = useCurrentRegisterId()
   const { vendors } = useVendors()
-  const { mutateCashGiven } = useCashGiven(registerID || 0)
-  const { logs, mutateLogs } = useLogs()
-
-  // Atoms
-  const [clerk] = useAtom(clerkAtom)
-  const [view, setView] = useAtom(viewAtom)
+  // const { logs, mutateLogs } = useLogs()
+  const { clerk } = useClerk()
+  const { view, closeView } = useAppStore()
 
   // State
   const [submitting, setSubmitting] = useState(false)
@@ -68,7 +56,7 @@ export default function CashPaymentDialog() {
           amount: Math.round(parseFloat(payment) * 100),
           clerk_id: clerk?.id,
           vendor_id: vendor?.id,
-          register_id: registerID,
+          registerId,
           type: paymentType,
           note: notes,
         }
@@ -77,7 +65,7 @@ export default function CashPaymentDialog() {
             ...vendorPayments,
             { ...vendorPayment, vendorPaymentId },
           ])
-          if (paymentType === VendorPaymentTypes.Cash) mutateCashGiven()
+          // if (paymentType === VendorPaymentTypes.Cash) mutateCashGiven()
           logCreateVendorPayment(paymentType, vendor, clerk, vendorPaymentId)
           setSubmitting(false)
           resetAndCloseDialog()
@@ -92,7 +80,7 @@ export default function CashPaymentDialog() {
 
   // Functions
   function resetAndCloseDialog() {
-    setView({ ...view, cashVendorPaymentDialog: false })
+    closeView(ViewProps.cashVendorPaymentDialog)
     setVendor(0)
     setPayment('0')
   }
@@ -100,7 +88,7 @@ export default function CashPaymentDialog() {
   return (
     <Modal
       open={view?.cashVendorPaymentDialog}
-      closeFunction={() => setView({ ...view, cashVendorPaymentDialog: false })}
+      closeFunction={() => closeView(ViewProps.cashVendorPaymentDialog)}
       title={`VENDOR PAYMENT`}
       buttons={buttons}
     >

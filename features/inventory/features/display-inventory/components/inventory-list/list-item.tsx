@@ -1,29 +1,7 @@
-// Packages
-import { useAtom } from 'jotai'
-
-// DB
-import {
-  alertAtom,
-  cartAtom,
-  clerkAtom,
-  confirmModalAtom,
-  loadedItemIdAtom,
-  sellSearchBarAtom,
-  viewAtom,
-} from 'lib/atoms'
-import { useVendors } from 'lib/database/read'
 import { StockObject, VendorObject } from 'lib/types'
-
-// Components
 import Tooltip from '@mui/material/Tooltip'
-
-// Icons
 import AddIcon from '@mui/icons-material/AddCircleOutline'
 import InfoIcon from '@mui/icons-material/Info'
-
-// REVIEW add tooltips everywhere. Have ability to turn them off.
-
-// Functions
 import { getItemQuantity } from 'features/sale/features/sell/lib/functions'
 import {
   getHoldQuantity,
@@ -31,6 +9,8 @@ import {
   getItemSku,
   getLaybyQuantity,
 } from '../../lib/functions'
+import { useVendors } from 'lib/api/vendor'
+import { useAppStore } from 'lib/store'
 
 type ListItemProps = {
   item: StockObject
@@ -38,26 +18,16 @@ type ListItemProps = {
 
 export default function ListItem({ item }: ListItemProps) {
   const { vendors } = useVendors()
-
-  // Atoms
-  const [cart, setCart] = useAtom(cartAtom)
-  const [sellSearch, setSearch] = useAtom(sellSearchBarAtom)
-  const [view, setView] = useAtom(viewAtom)
-  const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom)
-  const [, setConfirmModal] = useAtom(confirmModalAtom)
-  const [clerk] = useAtom(clerkAtom)
-  const [, setAlert] = useAtom(alertAtom)
-
-  // Constants
+  const { cart } = useAppStore()
   const itemQuantity = getItemQuantity(item, cart?.items)
   const vendor =
     vendors?.filter(
-      (vendor: VendorObject) => vendor?.id === item?.vendor_id
+      (vendor: VendorObject) => vendor?.id === item?.vendorId
     )[0] || null
 
-  function clickOpenInventoryModal() {
-    setLoadedItemId({ ...loadedItemId, inventory: item?.id })
-  }
+  // function clickOpenInventoryModal() {
+  //   setLoadedItemId({ ...loadedItemId, inventory: item?.id })
+  // }
 
   return (
     <div
@@ -95,10 +65,10 @@ export default function ListItem({ item }: ListItemProps) {
             </div>
             <div
               className={`${
-                item?.needs_restock ? 'text-yellow-400' : 'text-red-400'
+                item?.needsRestock ? 'text-yellow-400' : 'text-red-400'
               } font-bold text-3xl`}
             >
-              {item?.needs_restock
+              {item?.needsRestock
                 ? 'PLEASE RESTOCK!'
                 : itemQuantity < 1
                 ? 'OUT OF STOCK'
@@ -108,7 +78,7 @@ export default function ListItem({ item }: ListItemProps) {
           <div className="text-sm text-green-800">{`${
             item?.section ? `${item.section} / ` : ''
           }${item?.format} [${
-            item?.is_new ? 'NEW' : item?.cond?.toUpperCase() || 'USED'
+            item?.isNew ? 'NEW' : item?.cond?.toUpperCase() || 'USED'
           }]`}</div>
         </div>
         <div className="text-xs">
@@ -131,7 +101,7 @@ export default function ListItem({ item }: ListItemProps) {
           </Tooltip>
           <Tooltip title="You can change the price in the item details screen.">
             <div className="text-xl">{`$${(
-              (item?.total_sell || 0) / 100
+              (item?.totalSell || 0) / 100
             )?.toFixed(2)}`}</div>
           </Tooltip>
         </div>
@@ -140,7 +110,7 @@ export default function ListItem({ item }: ListItemProps) {
         <Tooltip title="View and edit item details.">
           <button
             className="icon-button-large text-black hover:text-blue-500"
-            onClick={clickOpenInventoryModal}
+            onClick={null}
           >
             <InfoIcon style={{ fontSize: '40px' }} />
           </button>
@@ -150,7 +120,7 @@ export default function ListItem({ item }: ListItemProps) {
         <Tooltip title="Add item to sale.">
           <button
             className="icon-button-large text-black hover:text-blue-500"
-            disabled={!item?.total_sell}
+            disabled={!item?.totalSell}
             onClick={null}
           >
             <AddIcon style={{ fontSize: '40px' }} />

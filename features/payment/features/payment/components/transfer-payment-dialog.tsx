@@ -1,24 +1,10 @@
-// Packages
-import { useAtom } from 'jotai'
 import { useMemo, useState } from 'react'
 import Select from 'react-select'
-
-// DB
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
 import { logTransferVendorPayment } from 'features/log/lib/functions'
 import { getTotalOwing } from 'features/sale/features/item-sale/lib/functions'
-import { clerkAtom, viewAtom } from 'lib/atoms'
 import { createVendorPaymentInDatabase } from 'lib/database/create'
-import {
-  useCashGiven,
-  useInventory,
-  useLogs,
-  useRegisterID,
-  useSalesJoined,
-  useVendorPayments,
-  useVendors,
-} from 'lib/database/read'
 import {
   ModalButton,
   StockObject,
