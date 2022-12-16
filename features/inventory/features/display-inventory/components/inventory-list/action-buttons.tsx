@@ -1,25 +1,22 @@
-import { clerkAtom, viewAtom } from 'lib/atoms'
-import { useAtom } from 'jotai'
-
 import { saveSystemLog } from 'features/log/lib/functions'
 import ReturnIcon from '@mui/icons-material/AssignmentReturn'
 import ReceiveIcon from '@mui/icons-material/AssignmentReturned'
 import PrintIcon from '@mui/icons-material/Print'
+import { useClerk } from 'lib/api/clerk'
+import { useAppStore } from 'lib/store'
+import { ViewProps } from 'lib/store/types'
 
 export default function InventoryActionButtons() {
-  const [view, setView] = useAtom(viewAtom)
-  const [clerk] = useAtom(clerkAtom)
+  const { clerk } = useClerk()
+  const { openView, closeView } = useAppStore()
   return (
     <div className="flex">
       <button
         className="icon-text-button"
         onClick={() => {
           saveSystemLog('Inventory Nav - Receive stock clicked.', clerk?.id)
-          setView({
-            ...view,
-            receiveStockScreen: true,
-            returnStockScreen: false,
-          })
+          openView(ViewProps.receiveStockScreen)
+          closeView(ViewProps.returnStockScreen)
         }}
       >
         <ReceiveIcon className="mr-1" />
@@ -29,11 +26,8 @@ export default function InventoryActionButtons() {
         className="icon-text-button"
         onClick={() => {
           saveSystemLog('Inventory Nav - Return stock clicked.', clerk?.id)
-          setView({
-            ...view,
-            returnStockScreen: true,
-            receiveStockScreen: false,
-          })
+          openView(ViewProps.returnStockScreen)
+          closeView(ViewProps.receiveStockScreen)
         }}
       >
         <ReturnIcon className="mr-1" />
@@ -43,7 +37,7 @@ export default function InventoryActionButtons() {
         className="icon-text-button"
         onClick={() => {
           saveSystemLog('Inventory Nav - Print labels clicked.', clerk?.id)
-          setView({ ...view, labelPrintDialog: true })
+          openView(ViewProps.labelPrintDialog)
         }}
       >
         <PrintIcon className="mr-1" />

@@ -10,17 +10,19 @@ import ScreenContainer from 'components/container/screen'
 import TextField from 'components/inputs/text-field'
 import FilterBox from './filter-box'
 import StocktakeListItem from './stocktake-list-item'
-
-import { createStocktakeInDatabase } from 'lib/database/create'
-import { updateStocktakeTemplateInDatabase } from 'lib/database/update'
 import AddIcon from '@mui/icons-material/Add'
 import dayjs from 'dayjs'
 import { writeStocktakeFilterDescription } from '../../lib/functions'
 import StocktakeScreen from '../stocktake-screen'
 import { useStockList } from 'lib/api/stock'
 import { useVendors } from 'lib/api/vendor'
+import { useClerk } from 'lib/api/clerk'
+import { useAppStore } from 'lib/store'
+import { ViewProps } from 'lib/store/types'
 
 export default function StocktakeTemplateScreen() {
+  const { clerk } = useClerk()
+  const { closeView } = useAppStore()
   // Atoms
   const { inventory, mutateInventory } = useStockList()
   const { selects, isSelectsLoading } = useAllSelects()
@@ -48,9 +50,6 @@ export default function StocktakeTemplateScreen() {
   const stocktakeTemplate = stocktakeTemplates?.filter(
     (st) => st?.id === stocktakeTemplateId
   )?.[0]
-
-  const [view, setView] = useAtom(viewAtom)
-  const [clerk] = useAtom(clerkAtom)
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
@@ -105,7 +104,7 @@ export default function StocktakeTemplateScreen() {
       type: 'cancel',
       hidden: Boolean(stocktakeTemplate?.id),
       onClick: () => {
-        setView({ ...view, stocktakeTemplateScreen: false })
+        closeView(ViewProps.stocktakeTemplateScreen)
         setLoadedStocktakeTemplateId(null)
       },
       text: 'CANCEL',
@@ -123,7 +122,7 @@ export default function StocktakeTemplateScreen() {
           ),
           false
         )
-        setView({ ...view, stocktakeTemplateScreen: false })
+        closeView(ViewProps.stocktakeTemplateScreen)
         setLoadedStocktakeTemplateId(null)
         // }
       },
@@ -149,7 +148,7 @@ export default function StocktakeTemplateScreen() {
       <ScreenContainer
         show={view?.stocktakeTemplateScreen}
         closeFunction={() => {
-          setView({ ...view, stocktakeTemplateScreen: false })
+          closeView(ViewProps.stocktakeTemplateScreen)
           setLoadedStocktakeTemplateId(null)
         }}
         loading={
@@ -182,12 +181,12 @@ export default function StocktakeTemplateScreen() {
                       status: StocktakeStatuses?.inProgress,
                     })
                     let newStocktake: StocktakeObject = {
-                      date_started: dayjs.utc().format(),
-                      started_by: clerk?.id,
-                      stocktake_template_id: stocktakeTemplate?.id,
-                      total_estimated: stocktakeTemplate?.total_estimated,
-                      total_unique_estimated:
-                        stocktakeTemplate?.total_unique_estimated,
+                      dateStarted: dayjs.utc().format(),
+                      startedBy: clerk?.id,
+                      stocktakeTemplateId: stocktakeTemplate?.id,
+                      totalEstimated: stocktakeTemplate?.totalEstimated,
+                      totalUniqueEstimated:
+                        stocktakeTemplate?.totalUniqueEstimated,
                     }
                     const id = await createStocktakeInDatabase(newStocktake)
                     mutateStocktakes(
@@ -229,14 +228,14 @@ export default function StocktakeTemplateScreen() {
               <div className="w-100 bg-red-200">
                 <div className="p-2">
                   <div className="italic">
-                    {stocktakeTemplate?.filter_description}
+                    {stocktakeTemplate?.filterDescription}
                   </div>
                   <div className="flex">
                     <div className="mr-2">
                       Estimated Number of Items in Stock:{' '}
                     </div>
                     <div className="font-bold">
-                      {stocktakeTemplate?.total_estimated || '0'}
+                      {stocktakeTemplate?.totalEstimated || '0'}
                     </div>
                   </div>
                   <div className="flex">
@@ -244,7 +243,7 @@ export default function StocktakeTemplateScreen() {
                       Estimated Number of Unique Items:{' '}
                     </div>
                     <div className="font-bold">
-                      {stocktakeTemplate?.total_unique_estimated || '0'}
+                      {stocktakeTemplate?.totalUniqueEstimated || '0'}
                     </div>
                   </div>
                 </div>

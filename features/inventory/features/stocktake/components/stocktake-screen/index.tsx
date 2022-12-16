@@ -1,19 +1,17 @@
 import { useState } from 'react'
 import { ModalButton, StockObject } from 'lib/types'
-
 import ScreenContainer from 'components/container/screen'
-import { createStocktakeItemInDatabase } from 'lib/database/create'
-import {
-  updateStocktakeInDatabase,
-  updateStocktakeItemInDatabase,
-} from 'lib/database/update'
 import { processStocktake } from '../../lib/functions'
 import CountItems from './count-items'
 import ReviewItems from './review-items'
+import { useClerk } from 'lib/api/clerk'
+import { useAppStore } from 'lib/store'
+import { ViewProps } from 'lib/store/types'
 
 export default function StocktakeScreen() {
+  const { clerk } = useClerk()
+  const { view, closeView, openConfirm } = useAppStore()
   // Atoms
-  const [, setConfirmModal] = useAtom(confirmModalAtom)
   const [stocktakeId, setLoadedStocktakeId] = useAtom(loadedStocktakeIdAtom)
   const [stocktakeTemplateId] = useAtom(loadedStocktakeTemplateIdAtom)
 
@@ -33,8 +31,6 @@ export default function StocktakeScreen() {
   const { inventory } = useInventory()
   const [loadedItemId] = useAtom(loadedItemIdAtom)
 
-  const [view, setView] = useAtom(viewAtom)
-  const [clerk] = useAtom(clerkAtom)
   const [step, setStep] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -49,14 +45,14 @@ export default function StocktakeScreen() {
     )
   }
 
-  const completed = Boolean(stocktake?.date_closed || stocktake?.date_cancelled)
+  const completed = Boolean(stocktake?.dateClosed || stocktake?.dateCancelled)
 
   function addMissedItems() {
     const inventoryList = inventory?.filter(
       (i: StockObject) =>
         i?.quantity > 0 &&
         (stocktakeTemplate?.vendor_enabled
-          ? stocktakeTemplate?.vendor_list?.includes(i?.vendor_id)
+          ? stocktakeTemplate?.vendor_list?.includes(i?.vendorId)
           : true) &&
         (stocktakeTemplate?.format_enabled
           ? stocktakeTemplate?.format_list?.includes(i?.format)
@@ -112,7 +108,7 @@ export default function StocktakeScreen() {
       type: 'ok',
       text: `OK`,
       onClick: () => {
-        setView({ ...view, stocktakeScreen: false })
+        closeView(ViewProps.stocktakeScreen)
         setLoadedStocktakeId(null)
       },
     },
@@ -123,7 +119,7 @@ export default function StocktakeScreen() {
       {
         type: 'cancel',
         onClick: () => {
-          setView({ ...view, stocktakeScreen: false })
+          closeView(ViewProps.stocktakeScreen)
           setLoadedStocktakeId(null)
         },
         text: 'CANCEL',
@@ -133,7 +129,7 @@ export default function StocktakeScreen() {
         text: `SAVE AND CLOSE`,
         onClick: () => {
           saveOrUpdateStocktake()
-          setView({ ...view, stocktakeScreen: false })
+          closeView(ViewProps.stocktakeScreen)
           setLoadedStocktakeId(null)
         },
       },
@@ -151,7 +147,7 @@ export default function StocktakeScreen() {
       {
         type: 'cancel',
         onClick: () => {
-          setView({ ...view, stocktakeScreen: false })
+          closeView(ViewProps.stocktakeScreen)
           setLoadedStocktakeId(null)
         },
         text: 'CANCEL',
@@ -169,7 +165,7 @@ export default function StocktakeScreen() {
         text: `SAVE AND CLOSE`,
         onClick: async () => {
           saveOrUpdateStocktake()
-          setView({ ...view, stocktakeScreen: false })
+          closeView(ViewProps.stocktakeScreen)
           setLoadedStocktakeId(null)
         },
       },
@@ -177,7 +173,7 @@ export default function StocktakeScreen() {
         type: 'ok',
         text: `COMPLETE`,
         onClick: async () => {
-          setConfirmModal({
+          openConfirm({
             open: true,
             title: 'Lock It In',
             styledMessage: (
@@ -193,7 +189,7 @@ export default function StocktakeScreen() {
                 inventory,
                 clerk
               )
-              setView({ ...view, stocktakeScreen: false })
+              closeView(ViewProps.stocktakeScreen)
               setLoadedStocktakeId(null)
             },
           })
@@ -210,11 +206,11 @@ export default function StocktakeScreen() {
         closeFunction={
           completed
             ? () => {
-                setView({ ...view, stocktakeScreen: false })
+                closeView(ViewProps.stocktakeScreen)
                 setLoadedStocktakeId(null)
               }
             : async () => {
-                setView({ ...view, stocktakeScreen: false })
+                closeView(ViewProps.stocktakeScreen)
                 await saveOrUpdateStocktake(stocktake)
                 setLoadedStocktakeId(null)
               }

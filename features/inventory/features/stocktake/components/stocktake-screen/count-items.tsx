@@ -23,18 +23,6 @@ import { ViewProps } from 'lib/store/types'
 export default function CountItems() {
   // SWR
   const { inventory, mutateInventory } = useStockList()
-  // const [stocktakeId] = useAtom(loadedStocktakeIdAtom)
-  // const [stocktakeTemplateId] = useAtom(loadedStocktakeTemplateIdAtom)
-  // const { stocktakes, mutateStocktakes } =
-  //   useStocktakesByTemplate(stocktakeTemplateId)
-  // const { stocktakeItems, mutateStocktakeItems } =
-  //   useStocktakeItemsByStocktake(stocktakeId)
-
-  // const stocktake = stocktakes?.filter(
-  //   (stocktake) => stocktake?.id === stocktakeId
-  // )?.[0]
-  // const { logs, mutateLogs } = useLogs()
-  // const { registerID } = useRegisterID()
   const [inputValue, setInputValue] = useState('')
   const [scanInput, setScanInput] = useState('')
   const { clerk } = useClerk()

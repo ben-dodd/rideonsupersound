@@ -11,27 +11,28 @@ import PrintLabel from './print-label'
 import SelectVendor from './select-vendor'
 import SetPriceAndQuantities from './set-price-and-quantities'
 import { useAppStore } from 'lib/store'
+import { useCurrentRegisterId } from 'lib/api/register'
+import { ViewProps } from 'lib/store/types'
+import { useClerk } from 'lib/api/clerk'
 
 export default function ReceiveStockScreen() {
-  const { receiveStock, setReceiveStock } = useAppStore()
+  const { receiveStock, setReceiveStock, view, openConfirm, closeView } =
+    useAppStore()
+  const { clerk } = useClerk()
   // Atoms
-  const [basket, setBasket] = useAtom(receiveStockAtom)
-  const [, setConfirmModal] = useAtom(confirmModalAtom)
-  const { mutateInventory } = useInventory()
-  const [view, setView] = useAtom(viewAtom)
-  const [clerk] = useAtom(clerkAtom)
+  // const [basket, setBasket] = useAtom(receiveStockAtom)
   const [step, setStep] = useState(0)
   const [receivedStock, setReceivedStock] = useState(null)
   const [receiveLoading, setReceiveLoading] = useState(false)
 
   // SWR
-  const { registerID } = useRegisterID()
+  const { registerId } = useCurrentRegisterId()
 
   const buttons: ModalButton[][] = [
     [
       {
         type: 'cancel',
-        onClick: () => setView({ ...view, receiveStockScreen: false }),
+        onClick: () => closeView(ViewProps.receiveStockScreen),
         text: 'CANCEL',
       },
       {
@@ -48,7 +49,7 @@ export default function ReceiveStockScreen() {
       {
         type: 'cancel',
         onClick: () => {
-          setConfirmModal({
+          openConfirm({
             open: true,
             title: 'Reset Basket?',
             styledMessage: (
@@ -150,7 +151,7 @@ export default function ReceiveStockScreen() {
   return (
     <ScreenContainer
       show={view?.receiveStockScreen}
-      closeFunction={() => setView({ ...view, receiveStockScreen: false })}
+      closeFunction={() => closeView(ViewProps.receiveStockScreen)}
       title={'RECEIVE STOCK'}
       buttons={buttons[step]}
       titleClass="bg-col2"

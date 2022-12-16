@@ -17,8 +17,6 @@ import { useCurrentRegister } from 'lib/api/register'
 // REVIEW fix all actions and clean up files
 
 export default function Nav() {
-  // SWR
-  // const { registerID } = useRegisterID()
   const { currentRegister } = useCurrentRegister()
 
   // Atoms

@@ -1,12 +1,11 @@
 import { saveSystemLog } from 'features/log/lib/functions'
-import { clerkAtom } from 'lib/atoms'
 import { StockObject } from 'lib/types'
 import SyncIcon from '@mui/icons-material/Sync'
-import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 import { getGoogleBooksOptionsByItem } from '../lib/functions'
 import GoogleBooksItem from './google-books-item'
 import GoogleBooksOption from './google-books-option'
+import { useClerk } from 'lib/api/clerk'
 
 interface inventoryProps {
   item: StockObject
@@ -24,7 +23,7 @@ export default function GoogleBooksPanel({
 
   // Constants
   const googleBooksItem = item?.googleBooksItem
-  const [clerk] = useAtom(clerkAtom)
+  const { clerk } = useClerk()
 
   // Load
   useEffect(() => {

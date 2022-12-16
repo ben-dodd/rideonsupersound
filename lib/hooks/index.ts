@@ -7,7 +7,7 @@ import {
 import { StockObject } from 'lib/types'
 import { useState, useEffect } from 'react'
 
-export function useSaleProperties(cart) {
+export function useSaleProperties(cart): any {
   const [properties, setProperties] = useState({})
   const [stockTable, setStockTable]: [StockObject[], Function] = useState([])
 
@@ -28,7 +28,7 @@ export function useSaleProperties(cart) {
     const totalStoreCut = sumPrices(cartItems, stockTable, 'storePrice') / 100 // Total Amount of Sale goes to Store in dollars
     const totalPriceUnrounded =
       sumPrices(
-        cartItems.filter((s) => !s?.isRefunded),
+        cartItems?.filter((s) => !s?.isRefunded),
         stockTable,
         'totalPrice'
       ) / 100 // Total Amount of Sale in dollars

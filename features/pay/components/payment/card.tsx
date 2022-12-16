@@ -1,6 +1,5 @@
 import dayjs from 'dayjs'
 import { useState } from 'react'
-import { useCustomers, useInventory, useRegisterID } from 'lib/database/read'
 import {
   ModalButton,
   PaymentMethodTypes,
@@ -15,11 +14,13 @@ import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useSaleProperties } from 'lib/hooks'
+import { useCurrentRegisterId } from 'lib/api/register'
+import { useCustomers } from 'lib/api/customer'
 
 export default function Cash() {
   const { clerk } = useClerk()
   const { view, cart, closeView, setAlert, addCartTransaction } = useAppStore()
-  const { registerID } = useRegisterID()
+  const { registerId } = useCurrentRegisterId()
   const { inventory } = useInventory()
   const { customers } = useCustomers()
 

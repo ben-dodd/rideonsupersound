@@ -14,25 +14,26 @@ import {
   VendorSaleItemObject,
 } from 'lib/types'
 import dayjs from 'dayjs'
+import { useClerk } from 'lib/api/clerk'
+import { useAppStore } from 'lib/store'
+import { useVendors } from 'lib/api/vendor'
+import { ViewProps } from 'lib/store/types'
+import { useCurrentRegisterId } from 'lib/api/register'
 
 export default function TransferVendorPaymentDialog() {
+  const { clerk } = useClerk()
+  const { view, closeView } = useAppStore()
   // SWR
-  const { registerID } = useRegisterID()
+  const { registerId } = useCurrentRegisterId()
   const { inventory } = useInventory()
   const { vendors } = useVendors()
   const { sales } = useSalesJoined()
-  const { mutateCashGiven } = useCashGiven(registerID || 0)
   const { vendorPayments, mutateVendorPayments } = useVendorPayments()
-  const { logs, mutateLogs } = useLogs()
-
-  // Atoms
-  const [clerk] = useAtom(clerkAtom)
-  const [view, setView] = useAtom(viewAtom)
 
   // State
   const [submitting, setSubmitting] = useState(false)
-  const [vendor_pay_id, setVendorPay]: [any, Function] = useState(0)
-  const [vendor_receive_id, setVendorReceive]: [number, Function] = useState(0)
+  const [vendorPayId, setVendorPay]: [any, Function] = useState(0)
+  const [vendorReceiveId, setVendorReceive]: [number, Function] = useState(0)
   const [payment, setPayment] = useState('0')
   const [notes, setNotes] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -40,44 +41,44 @@ export default function TransferVendorPaymentDialog() {
   // Constants
   const totalPayOwing = useMemo(
     () =>
-      vendor_pay_id === 'store'
+      vendorPayId === 'store'
         ? null
         : getTotalOwing(
             vendorPayments?.filter(
-              (v: VendorPaymentObject) => v?.vendor_id === vendor_pay_id
+              (v: VendorPaymentObject) => v?.vendorId === vendorPayId
             ),
             sales?.filter(
               (v: VendorSaleItemObject) =>
-                inventory?.filter((i: StockObject) => i?.id === v?.item_id)[0]
-                  ?.vendor_id === vendor_pay_id
+                inventory?.filter((i: StockObject) => i?.id === v?.itemId)[0]
+                  ?.vendor_id === vendorPayId
             )
           ),
-    [vendor_pay_id, vendorPayments]
+    [vendorPayId, vendorPayments]
   )
   const totalReceiveOwing = useMemo(
     () =>
       getTotalOwing(
         vendorPayments?.filter(
-          (v: VendorPaymentObject) => v?.vendor_id === vendor_receive_id
+          (v: VendorPaymentObject) => v?.vendorId === vendorReceiveId
         ),
         sales?.filter(
           (v: VendorSaleItemObject) =>
-            inventory?.filter((i: StockObject) => i?.id === v?.item_id)[0]
-              ?.vendor_id === vendor_receive_id
+            inventory?.filter((i: StockObject) => i?.id === v?.itemId)[0]
+              ?.vendor_id === vendorReceiveId
         )
       ),
-    [vendor_receive_id, vendorPayments]
+    [vendorReceiveId, vendorPayments]
   )
   const vendorPay = useMemo(
     () =>
-      vendor_pay_id === 'store'
+      vendorPayId === 'store'
         ? null
-        : vendors?.filter((v: VendorObject) => v?.id === vendor_pay_id)[0],
-    [vendor_pay_id, vendors]
+        : vendors?.filter((v: VendorObject) => v?.id === vendorPayId)[0],
+    [vendorPayId, vendors]
   )
   const vendorReceive = useMemo(
-    () => vendors?.filter((v: VendorObject) => v?.id === vendor_receive_id)[0],
-    [vendor_receive_id, vendors]
+    () => vendors?.filter((v: VendorObject) => v?.id === vendorReceiveId)[0],
+    [vendorReceiveId, vendors]
   )
   const buttons: ModalButton[] = [
     {
@@ -91,13 +92,13 @@ export default function TransferVendorPaymentDialog() {
       loading: submitting,
       onClick: async () => {
         setSubmitting(true)
-        if (vendor_pay_id !== 'store') {
+        if (vendorPayId !== 'store') {
           let vendorPayPayment = {
             date: dayjs.utc().format(),
             amount: Math.round(parseFloat(payment) * 100),
-            clerk_id: clerk?.id,
-            vendor_id: vendor_pay_id,
-            register_id: registerID,
+            clerkId: clerk?.id,
+            vendorId: vendorPayId,
+            registerId: registerID,
             type: VendorPaymentTypes.TransferFrom,
             note: notes,
           }
@@ -111,9 +112,9 @@ export default function TransferVendorPaymentDialog() {
         let vendorReceivePayment = {
           date: dayjs.utc().format(),
           amount: Math.round(parseFloat(payment) * -100),
-          clerk_id: clerk?.id,
-          vendor_id: vendor_receive_id,
-          register_id: registerID,
+          clerkId: clerk?.id,
+          vendorId: vendorReceiveId,
+          registerId,
           type: VendorPaymentTypes.TransferTo,
           note: notes,
         }
@@ -125,9 +126,9 @@ export default function TransferVendorPaymentDialog() {
             ])
             logTransferVendorPayment(
               payment,
-              vendor_pay_id,
+              vendorPayId,
               vendorPay,
-              vendor_receive_id,
+              vendorReceiveId,
               vendorReceive,
               clerk,
               vendorPaymentId
@@ -138,8 +139,8 @@ export default function TransferVendorPaymentDialog() {
         )
       },
       disabled:
-        !vendor_pay_id ||
-        !vendor_receive_id ||
+        !vendorPayId ||
+        !vendorReceiveId ||
         !payment ||
         parseFloat(payment) <= 0,
     },
@@ -147,7 +148,7 @@ export default function TransferVendorPaymentDialog() {
 
   // Functions
   function resetAndCloseDialog() {
-    setView({ ...view, transferVendorPaymentDialog: false })
+    closeView(ViewProps.transferVendorPaymentDialog)
     setVendorPay(0)
     setVendorReceive(0)
     setPayment('0')
@@ -156,9 +157,7 @@ export default function TransferVendorPaymentDialog() {
   return (
     <Modal
       open={view?.transferVendorPaymentDialog}
-      closeFunction={() =>
-        setView({ ...view, transferVendorPaymentDialog: false })
-      }
+      closeFunction={() => closeView(ViewProps.transferVendorPaymentDialog)}
       title={`TRANSFER STORE CREDIT`}
       buttons={buttons}
     >
@@ -167,13 +166,12 @@ export default function TransferVendorPaymentDialog() {
         <Select
           className="w-full"
           value={{
-            value: vendor_pay_id,
+            value: vendorPayId,
             label:
-              vendor_pay_id === 'store'
+              vendorPayId === 'store'
                 ? 'R.O.S.S.'
-                : vendors?.filter(
-                    (v: VendorObject) => v?.id === vendor_pay_id
-                  )[0]?.name || '',
+                : vendors?.filter((v: VendorObject) => v?.id === vendorPayId)[0]
+                    ?.name || '',
           }}
           options={[{ value: 'store', label: 'R.O.S.S.' }]?.concat(
             vendors
@@ -189,11 +187,10 @@ export default function TransferVendorPaymentDialog() {
         <Select
           className="w-full"
           value={{
-            value: vendor_receive_id,
+            value: vendorReceiveId,
             label:
-              vendors?.filter(
-                (v: VendorObject) => v?.id === vendor_receive_id
-              )[0]?.name || '',
+              vendors?.filter((v: VendorObject) => v?.id === vendorReceiveId)[0]
+                ?.name || '',
           }}
           options={vendors?.map((val: VendorObject) => ({
             value: val?.id,
@@ -222,17 +219,17 @@ export default function TransferVendorPaymentDialog() {
           onChange={(e: any) => setNotes(e.target.value)}
         />
         <div className="mt-4 text-center">
-          {vendor_pay_id === 'store'
+          {vendorPayId === 'store'
             ? 'R.O.S.S. PAYS'
-            : vendor_pay_id > 0 &&
+            : vendorPayId > 0 &&
               `PAYING VENDOR HAS $${(totalPayOwing / 100)?.toFixed(2)}`}
         </div>
         <div className="text-center">
-          {vendor_receive_id > 0 &&
+          {vendorReceiveId > 0 &&
             `RECEIVING VENDOR HAS $${(totalReceiveOwing / 100)?.toFixed(2)}`}
         </div>
         <div className="my-4 text-center text-xl font-bold">
-          {vendor_pay_id === 0 || vendor_receive_id === 0
+          {vendorPayId === 0 || vendorReceiveId === 0
             ? 'SELECT VENDORS'
             : isNaN(parseFloat(payment))
             ? 'NUMBERS ONLY PLEASE'

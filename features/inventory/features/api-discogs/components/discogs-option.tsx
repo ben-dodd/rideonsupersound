@@ -1,9 +1,9 @@
 import { saveSystemLog } from 'features/log/lib/functions'
-import { clerkAtom } from 'lib/atoms'
 import { StockObject } from 'lib/types'
 import { useAtom } from 'jotai'
 import { setDiscogsItemToStockItem } from '../lib/functions'
 import { DiscogsItem } from '../lib/types'
+import { useClerk } from 'lib/api/clerk'
 
 interface discogsProps {
   discogsOption: DiscogsItem
@@ -18,7 +18,7 @@ export default function DiscogsOption({
   setItem,
   overrideItemDetails = false,
 }: discogsProps) {
-  const [clerk] = useAtom(clerkAtom)
+  const { clerk } = useClerk()
   const handleDiscogsOptionClick = async () => {
     saveSystemLog(`Discogs option clicked - ${discogsOption?.id}`, clerk?.id)
     setDiscogsItemToStockItem(discogsOption, item, overrideItemDetails).then(

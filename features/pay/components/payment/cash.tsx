@@ -15,6 +15,8 @@ import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useSaleProperties } from 'lib/hooks'
+import { useCurrentRegisterId } from 'lib/api/register'
+import { useCustomers } from 'lib/api/customer'
 
 export default function Cash() {
   dayjs.extend(UTC)
@@ -24,7 +26,7 @@ export default function Cash() {
   // SWR
   const { inventory } = useInventory()
   const { customers } = useCustomers()
-  const { registerID } = useRegisterID()
+  const { registerId } = useCurrentRegisterId()
 
   const { totalRemaining } = useSaleProperties(cart)
 

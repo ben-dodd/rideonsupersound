@@ -226,6 +226,8 @@ export interface VendorPaymentObject {
   registerId?: number
   type?: string
   note?: string
+  vendorPayId?: number
+  vendorReceiveId?: number
   isDeleted?: boolean
 }
 

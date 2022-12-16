@@ -1,5 +1,4 @@
 import { saveSystemLog } from 'features/log/lib/functions'
-import { clerkAtom } from 'lib/atoms'
 import { StockObject } from 'lib/types'
 import SyncIcon from '@mui/icons-material/Sync'
 import { useAtom } from 'jotai'
@@ -7,6 +6,7 @@ import { useEffect, useState } from 'react'
 import { getDiscogsOptions } from '../lib/functions'
 import DiscogsItem from './discogs-item'
 import DiscogsOption from './discogs-option'
+import { useClerk } from 'lib/api/clerk'
 
 interface inventoryProps {
   item: StockObject
@@ -21,7 +21,7 @@ export default function DiscogsPanel({
 }: inventoryProps) {
   // State
   const [discogsOptions, setDiscogsOptions] = useState(null)
-  const [clerk] = useAtom(clerkAtom)
+  const { clerk } = useClerk()
 
   // Constants
   const discogsItem = item?.discogsItem || null

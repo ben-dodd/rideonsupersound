@@ -9,10 +9,11 @@ import { getAmountFromCashMap, saveAndOpenRegister } from '../lib/functions'
 import CashMap from './cash-map'
 import { useAppStore } from 'lib/store'
 import { useClerk } from 'lib/api/clerk'
+import { useCurrentRegisterId } from 'lib/api/register'
 
 export default function OpenRegisterScreen() {
   const { clerk } = useClerk()
-  const { registerID, mutateRegisterID } = useRegisterID()
+  const { registerId, mutateRegisterId } = useCurrentRegisterId()
   const { logs, mutateLogs } = useLogs()
   const { setAlert } = useAppStore()
 

@@ -19,6 +19,8 @@ import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useSaleProperties } from 'lib/hooks'
+import { useCurrentRegisterId } from 'lib/api/register'
+import { useCustomers } from 'lib/api/customer'
 
 export default function Gift() {
   dayjs.extend(UTC)
@@ -26,8 +28,8 @@ export default function Gift() {
   const { view, cart, closeView, setAlert, addCartTransaction } = useAppStore()
 
   // SWR
-  const { giftCards, mutateGiftCards } = useGiftCards()
-  const { registerID } = useRegisterID()
+  const { giftCards } = useGiftCards()
+  const { registerId } = useCurrentRegisterId()
   const { inventory } = useInventory()
   const { customers } = useCustomers()
   const { logs, mutateLogs } = useLogs()
