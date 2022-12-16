@@ -1,10 +1,19 @@
+import dayjs from 'dayjs'
 import { getItemQuantity } from 'features/sale/features/sell/lib/functions'
 import { createMailOrderTask } from 'lib/api/jobs'
-import { SaleStateTypes, StockMovementTypes } from 'lib/types'
+import { updateStockItem } from 'lib/api/stock'
+import {
+  GiftCardObject,
+  PaymentMethodTypes,
+  SaleStateTypes,
+  StockMovementTypes,
+  VendorPaymentTypes,
+} from 'lib/types'
 import connection from './conn'
 import { dbGetCustomer } from './customer'
-import { dbUpdateVendorPayment } from './payment'
+import { dbCreateVendorPayment, dbUpdateVendorPayment } from './payment'
 import {
+  dbCreateStockItem,
   dbCreateStockMovement,
   dbGetStockItem,
   dbUpdateStockItem,
@@ -174,31 +183,35 @@ export async function dbDeleteSale(id, { sale, clerk, registerID }) {
   }
 }
 
-function handleSaveSaleItem(item, sale, prevState, db) {
+async function handleSaveSaleItem(item, sale, prevState, db) {
   let invItem = dbGetStockItem(item?.itemId)
   // Check whether inventory item needs restocking
   const quantity = getItemQuantity(invItem, sale?.items)
   let quantityLayby = invItem?.quantityLayby || 0
   // let quantity_sold = invItem?.quantity_sold || 0;
   if (quantity > 0) {
-    dbUpdateStockItem(item?.item_id, { needsRestock: true }, db)
+    await dbUpdateStockItem(item?.item_id, { needsRestock: true }, db)
   }
 
   // If sale is complete, validate gift card
   if (sale?.state === SaleStateTypes.Completed && item?.isGiftCard) {
-    dbUpdateStockItem(item?.itemId, { giftCardIsValid: true }, db)
+    await dbUpdateStockItem(item?.itemId, { giftCardIsValid: true }, db)
   }
+
+  await handleStockMovements(item, sale, prevState, db)
 
   // Add or update Sale Item
   if (!item?.id) {
     // Item is new to sale
     let newSaleItem = { ...item, saleId: sale?.id }
-    dbCreateSaleItem(newSaleItem, db)
+    await dbCreateSaleItem(newSaleItem, db)
   } else {
     // Item was already in sale, update in case discount, quantity has changed or item has been deleted
-    dbUpdateSaleItem(item?.id, item, db)
+    await dbUpdateSaleItem(item?.id, item, db)
   }
+}
 
+async function handleStockMovements(item, sale, prevState, db) {
   // Add stock movement if it's a regular stock item
   if (!item?.isGiftCard && !item?.isMiscItem) {
     let stockMovement = {
@@ -211,7 +224,6 @@ function handleSaveSaleItem(item, sale, prevState, db) {
       // If it was a layby, unlayby it before marking as sold
       if (prevState === SaleStateTypes.Layby && !item?.isGiftCard) {
         stockMovement.act = StockMovementTypes.Unlayby
-        quantityLayby -= 1
       }
       if (item?.isRefunded) {
         // Refund item if refunded
@@ -224,13 +236,12 @@ function handleSaveSaleItem(item, sale, prevState, db) {
     ) {
       stockMovement.clerkId = sale?.laybyStartedBy
       stockMovement.act = StockMovementTypes.Layby
-      quantityLayby += 1
     }
     stockMovement.quantity = getQuantityByType(
       item?.quantity,
       stockMovement?.act
     )
-    dbCreateStockMovement(stockMovement)
+    await dbCreateStockMovement(stockMovement, db)
   }
 }
 
@@ -245,54 +256,41 @@ function getQuantityByType(quantity, act) {
     : -parseInt(quantity)
 }
 
-function handleSaveSaleTransaction(trans, sale, db) {
+async function handleSaveSaleTransaction(trans, sale, db) {
   if (!trans?.id) {
     // Transaction is new to sale
     let newSaleTransaction = { ...trans, saleId: sale?.id }
-    dbCreateSaleTransaction(newSaleTransaction)
+    if (trans?.paymentMethod === PaymentMethodTypes.Account) {
+      // Add account payment as a store payment to the vendor
+      let vendorPaymentId = null
+      const vendorPayment = {
+        amount: trans?.amount,
+        clerkId: trans?.clerkId,
+        vendorId: trans?.vendor?.id,
+        type: trans?.isRefund
+          ? VendorPaymentTypes.SaleRefund
+          : VendorPaymentTypes.Sale,
+        date: dayjs.utc().format(),
+        registerId: trans?.registerId,
+      }
+      vendorPaymentId = await dbCreateVendorPayment(vendorPayment, db)
+      newSaleTransaction = { ...trans, vendorPayment: vendorPaymentId }
+    }
+    let giftCardId = null
+    if (trans?.paymentMethod === PaymentMethodTypes.GiftCard) {
+      if (!trans?.isRefund) {
+        // Gift card is new, create new one
+        giftCardId = await dbCreateStockItem(trans?.giftCardUpdate, db)
+      } else {
+        // Update gift card
+        await dbUpdateStockItem(
+          trans?.giftCardUpdate,
+          trans?.giftCardUpdate?.id,
+          db
+        )
+      }
+    }
+    if (giftCardId) newSaleTransaction = { ...newSaleTransaction, giftCardId }
+    await dbCreateSaleTransaction(newSaleTransaction, db)
   }
 }
-
-// This should be done at the save sale transaction stage
-// export async function saveSaleTransaction(
-//   transaction: SaleTransactionObject,
-//   clerk: ClerkObject,
-//   giftCards: GiftCardObject[],
-//   mutateGiftCards: Function
-// ) {
-//   if (transaction?.paymentMethod === PaymentMethodTypes.Account) {
-//     // Add account payment as a store payment to the vendor
-//     let vendorPaymentId = null
-//     const vendorPayment = {
-//       amount: transaction?.amount,
-//       clerkId: transaction?.clerkId,
-//       vendorId: transaction?.vendor?.id,
-//       type: transaction?.isRefund
-//         ? VendorPaymentTypes.SaleRefund
-//         : VendorPaymentTypes.Sale,
-//       date: dayjs.utc().format(),
-//       registerId: transaction?.registerId,
-//     }
-//     vendorPaymentId = await createVendorPaymentInDatabase(vendorPayment)
-//     transaction = { ...transaction, vendorPayment: vendorPaymentId }
-//   }
-//   let giftCardId = null
-//   if (transaction?.paymentMethod === PaymentMethodTypes.GiftCard) {
-//     if (transaction?.isRefund) {
-//       // Gift card is new, create new one
-//       giftCardId = await createStockItemInDatabase(
-//         transaction?.giftCardUpdate,
-//         clerk
-//       )
-//     } else {
-//       // Update gift card
-//       updateStockItemInDatabase(transaction?.giftCardUpdate)
-//     }
-//     const otherGiftCards = giftCards?.filter(
-//       (g: GiftCardObject) => g?.id !== transaction?.giftCardUpdate?.id
-//     )
-//     mutateGiftCards([...otherGiftCards, transaction?.giftCardUpdate], false)
-//   }
-//   if (giftCardId) transaction = { ...transaction, giftCardId }
-//   createSaleTransactionInDatabase(transaction)
-// }

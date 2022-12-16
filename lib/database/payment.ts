@@ -22,6 +22,10 @@ export function dbGetVendorPaymentsByVendorUid(vendorUid, db = connection) {
   )
 }
 
+export function dbCreateVendorPayment(payment, db = connection) {
+  return db('vendor_payment').insert(js2mysql(payment))
+}
+
 export function dbUpdateVendorPayment(id, update, db = connection) {
   return db('vendor_payment').where({ id }).update(js2mysql(update))
 }
