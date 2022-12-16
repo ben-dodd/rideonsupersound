@@ -12,16 +12,14 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import { useClerk, useClerks } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { useVendors } from 'lib/api/vendor'
+import { useRouter } from 'next/router'
 
 export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
   // SWR
   const { clerks } = useClerks()
   const { clerk } = useClerk()
-  const { setConfirm } = useAppStore()
-  // const [loadedVendorId, setLoadedVendorId] = useAtom(loadedVendorIdAtom)
-  // const [page] = useAtom(pageAtom)
-  // const { logs, mutateLogs } = useLogs()
-  const { vendors, mutateVendors } = useVendors()
+  const { openConfirm } = useAppStore()
+  const router = useRouter()
   const { inventory } = useInventory()
 
   const bankAccountMask = [
@@ -54,7 +52,7 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
     // REVIEW Delete inventory item
     // const itemIsPartOfSale =
     //   saleItems?.filter((s) => s?.item_id === item?.id)?.length > 0;
-    setConfirmModal({
+    openConfirm({
       open: true,
       title: 'Are you sure you want to delete this item?',
       styledMessage: (
@@ -78,17 +76,13 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
         ? () => {}
         : async () =>
             deleteVendorFromDatabase(vendor?.id)?.then(() => {
-              mutateVendors(
-                vendors?.filter((v) => v?.id !== vendor?.id),
-                false
-              )
               saveLog(
                 `Vendor #${vendor?.id} ${vendor?.name} deleted.`,
                 clerk?.id,
                 'vendor',
                 vendor?.id
               )
-              setLoadedVendorId({ ...loadedVendorId, [page]: 0 })
+              router.back()
             }),
     })
   }

@@ -1,18 +1,16 @@
-import { updateItemInDatabase } from 'lib/database/update'
+import { updateJob } from 'lib/api/jobs'
+import { updateStockItem } from 'lib/api/stock'
 import { TaskObject } from 'lib/types'
 
 export async function completeTask(task: TaskObject) {
-  const { date_completed, completed_by_clerk_id, id } = task
-  updateItemInDatabase(
-    { date_completed, completed_by_clerk_id, is_completed: 1, id },
-    'task'
-  )
+  const { dateCompleted, completedByClerkId, id } = task
+  updateJob({ dateCompleted, completedByClerkId, isCompleted: true }, id)
 }
 
 export async function addRestockTask(id: number) {
-  updateItemInDatabase({ needs_restock: 0, id }, 'stock')
+  updateStockItem({ needsRestock: true }, id)
 }
 
 export async function completeRestockTask(id: number) {
-  updateItemInDatabase({ needs_restock: 1, id }, 'stock')
+  updateStockItem({ needsRestock: false }, id)
 }

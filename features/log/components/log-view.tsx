@@ -1,5 +1,6 @@
 import ListLog from 'features/log/components/list-log'
-import { useClerks, useLogs } from 'lib/database/read'
+import { useClerks } from 'lib/api/clerk'
+import { useLogs } from 'lib/api/log'
 import { LogObject } from 'lib/types'
 
 export function LogView() {

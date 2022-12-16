@@ -1,17 +1,14 @@
 import { saveSystemLog } from 'features/log/lib/functions'
-import { createStocktakeTemplateInDatabase } from 'lib/database/create'
 import { StocktakeTemplateObject } from 'lib/types'
 import NewIcon from '@mui/icons-material/AddBox'
 import { useState } from 'react'
 import { useClerk } from 'lib/api/clerk'
-import { ViewProps } from 'lib/store/types'
-import { useAppStore } from 'lib/store'
+import { createStocktakeTemplate } from 'lib/api/stock'
+import { useRouter } from 'next/router'
 
 export default function StocktakeNavActions() {
   const { clerk } = useClerk()
-  const { openView, setLoadedStocktakeTemplateId } = useAppStore()
-  // const { stocktakeTemplates, mutateStocktakeTemplates } =
-  //   useStocktakeTemplates()
+  const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   return (
     <div className="flex">
@@ -24,15 +21,8 @@ export default function StocktakeNavActions() {
           let newStocktakeTemplate: StocktakeTemplateObject = {
             formatEnabled: true,
           }
-          const id = await createStocktakeTemplateInDatabase(
-            newStocktakeTemplate
-          )
-          // mutateStocktakeTemplates(
-          //   [{ id, format_enabled: true, name: '' }, ...stocktakeTemplates],
-          //   false
-          // )
-          setLoadedStocktakeTemplateId(id)
-          openView(ViewProps.stocktakeTemplateScreen)
+          const id = await createStocktakeTemplate(newStocktakeTemplate, clerk)
+          router.push(`/stocktake/template/${id}`)
           setIsLoading(false)
         }}
       >

@@ -1,23 +1,12 @@
-// Packages
-import { useAtom } from 'jotai'
-
-// DB
-import { pageAtom } from 'lib/atoms'
-
-// Components
+import Layout from 'components/layout'
 import GiftCardTable from '../../features/inventory/features/display-gift-cards/components/gift-card-table'
 
 export default function GiftCardPage() {
-  // atoms
-  const [page] = useAtom(pageAtom)
   return (
-    <div
-      className={`flex relative overflow-x-hidden ${
-        page !== 'giftCards' ? 'hidden' : ''
-      }`}
-    >
-      {' '}
-      {page === 'giftCards' && <GiftCardTable />}
+    <div className={`flex relative overflow-x-hidden`}>
+      <GiftCardTable />
     </div>
   )
 }
+
+GiftCardPage.getLayout = (page) => <Layout>{page}</Layout>

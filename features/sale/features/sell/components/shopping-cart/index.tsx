@@ -5,28 +5,17 @@ import Tooltip from '@mui/material/Tooltip'
 import Actions from './actions'
 import ListItem from './list-item'
 import {
-  getItemById,
-  getItemDisplayName,
-} from 'features/inventory/features/display-inventory/lib/functions'
-import { saveLog } from 'features/log/lib/functions'
-import {
   deleteSaleFromDatabase,
   deleteSaleItemFromDatabase,
 } from 'lib/database/delete'
 import HoldIcon from '@mui/icons-material/PanTool'
 import PayIcon from '@mui/icons-material/ShoppingCart'
-import { useStockList } from 'lib/api/stock'
 import { useAppStore } from 'lib/store'
-import { useClerk } from 'lib/api/clerk'
 import { ViewProps } from 'lib/store/types'
 import { useSaleProperties } from 'lib/hooks'
 
 export default function ShoppingCart() {
-  const { cart, view, setCart, setAlert, resetCart, closeView, openView } =
-    useAppStore()
-  const { stockList } = useStockList()
-  // const { logs, mutateLogs } = useLogs()
-  const { clerk } = useClerk()
+  const { cart, view, setCart, setAlert, closeView, openView } = useAppStore()
 
   // State
   const [loadingSale, setLoadingSale] = useState(false)

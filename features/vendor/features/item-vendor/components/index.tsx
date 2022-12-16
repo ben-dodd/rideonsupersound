@@ -68,7 +68,6 @@ export default function VendorScreen() {
         if (loadedVendorId[page] < 0) {
           setIsLoading(true)
           const newVendorId = await createVendorInDatabase(vendor)
-          mutateVendors([...vendors, { ...vendor, id: newVendorId }])
           setLoadedVendorId({ ...loadedVendorId, [page]: 0 })
           setVendor(null)
           setIsLoading(false)
@@ -76,7 +75,6 @@ export default function VendorScreen() {
           let otherVendors = vendors?.filter(
             (i: VendorObject) => i?.id !== vendor?.id
           )
-          mutateVendors([...otherVendors, vendor], false)
           updateVendorInDatabase(vendor)
           setLoadedVendorId({ ...loadedVendorId, [page]: 0 })
           setVendor(null)

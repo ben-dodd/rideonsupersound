@@ -26,6 +26,7 @@ export default function Nav() {
   const { openView } = useAppStore()
   const router = useRouter()
   const page = router.pathname
+  console.log(page)
 
   return (
     <nav className={`py-2 ${bg[clerk?.colour]} text-white h-nav`}>

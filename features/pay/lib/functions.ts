@@ -1,33 +1,10 @@
 import { getItemDisplayName } from 'features/inventory/features/display-inventory/lib/functions'
-import { addRestockTask } from 'features/job/lib/functions'
 import { logSaleNuked, logSaleParked } from 'features/log/lib/functions'
-import {
-  createSaleInDatabase,
-  createSaleItemInDatabase,
-  createSaleTransactionInDatabase,
-  createStockItemInDatabase,
-  createStockMovementInDatabase,
-  createVendorPaymentInDatabase,
-} from 'lib/database/create'
-import {
-  deleteSaleFromDatabase,
-  deleteSaleItemFromDatabase,
-  deleteSaleTransactionFromDatabase,
-  deleteVendorPaymentFromDatabase,
-} from 'lib/database/delete'
-import {
-  updateItemInDatabase,
-  updateSaleInDatabase,
-  updateSaleItemInDatabase,
-  updateStockItemInDatabase,
-} from 'lib/database/update'
 import {
   ClerkObject,
   CustomerObject,
   GiftCardObject,
   LogObject,
-  PaymentMethodTypes,
-  RoleTypes,
   SaleItemObject,
   SaleObject,
   SaleStateTypes,
@@ -35,14 +12,10 @@ import {
   StockMovementTypes,
   StockObject,
   VendorPaymentObject,
-  VendorPaymentTypes,
   VendorSaleItemObject,
 } from 'lib/types'
 import dayjs from 'dayjs'
-import {
-  getCartItemPrice,
-  getItemQuantity,
-} from 'features/sale/features/sell/lib/functions'
+import { getCartItemPrice } from 'features/sale/features/sell/lib/functions'
 
 export function sumPrices(saleItems: any[], items: any[], field: string) {
   if (!saleItems) return 0
@@ -132,60 +105,14 @@ export async function useLoadSaleToCart(
   sale: SaleObject,
   clerk: ClerkObject,
   registerID: number,
-  customers: CustomerObject[],
-  logs: LogObject[],
-  mutateLogs: Function,
-  sales: SaleObject[],
-  mutateSales: Function,
-  inventory: StockObject[],
-  mutateInventory: Function,
-  giftCards: GiftCardObject[],
-  mutateGiftCards: Function
+  customers: CustomerObject[]
 ) {
   if (cart?.dateSaleOpened && (cart?.items || cart?.id !== sale?.id)) {
     // Cart is loaded with a different sale or
     // Cart has been started but not loaded into sale
-    await useSaveSaleAndPark(
-      cart,
-      clerk,
-      registerID,
-      customers,
-      sales,
-      mutateSales,
-      inventory,
-      mutateInventory,
-      giftCards,
-      mutateGiftCards
-    )
+    await useSaveSaleAndPark(cart, clerk, registerID, customers)
   }
   setCart(sale)
-}
-
-export async function nukeSaleInDatabase(
-  sale: SaleObject,
-  clerk: ClerkObject,
-  registerID: number
-) {
-  logSaleNuked(sale, clerk)
-  sale?.items?.forEach((saleItem) => {
-    deleteSaleItemFromDatabase(saleItem?.id)
-    if (!saleItem?.isRefunded)
-      createStockMovementInDatabase({
-        item: saleItem,
-        clerk,
-        registerID,
-        act: StockMovementTypes.Unsold,
-        note: 'Sale nuked.',
-        sale_id: sale?.id,
-      })
-  })
-  sale?.transactions?.forEach((saleTransaction) => {
-    if (saleTransaction?.vendorPayment)
-      deleteVendorPaymentFromDatabase(saleTransaction?.vendorPayment)
-    deleteSaleTransactionFromDatabase(saleTransaction?.id)
-  })
-  // deleteStockMovementsFromDatabase(sale?.id);
-  deleteSaleFromDatabase(sale?.id)
 }
 
 export async function useSaveSaleAndPark(

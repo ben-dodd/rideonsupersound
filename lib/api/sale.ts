@@ -52,3 +52,10 @@ export function updateSaleItem(id, update) {
     .then((res) => res.data)
     .catch((e) => Error(e.message))
 }
+
+export function nukeSale(id, { clerk, registerId }) {
+  return axios
+    .patch(`/api/sale/delete/${id}`, { clerk, registerId })
+    .then((res) => res.data)
+    .catch((e) => Error(e.message))
+}

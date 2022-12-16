@@ -39,11 +39,8 @@ export default function SaleScreen() {
   const { cart, view, resetCart, setAlert } = useAppStore()
   const { clerk } = useClerk()
   const { customers } = useCustomers()
-  const { inventory, mutateInventory } = useInventory()
   const { isSaleTransactionsLoading } = useSaleTransactionsForSale(cart?.id)
-  const { sales, mutateSales } = useSales()
-  const { giftCards, mutateGiftCards } = useGiftCards()
-  const { registerID } = useRegisterID()
+  const { sales } = useSales()
 
   // State
   // const [saleLoading, setSaleLoading] = useState(false);
@@ -63,18 +60,7 @@ export default function SaleScreen() {
   async function clickParkSale() {
     saveSystemLog('PARK SALE clicked.', clerk?.id)
     setParkSaleLoading(true)
-    saveSaleAndPark(
-      cart,
-      clerk,
-      registerID,
-      customers,
-      sales,
-      mutateSales,
-      inventory,
-      mutateInventory,
-      giftCards,
-      mutateGiftCards
-    )
+    saveSaleAndPark(cart, clerk, registerID, customers, sales)
     setAlert({
       open: true,
       type: 'success',
@@ -118,12 +104,6 @@ export default function SaleScreen() {
       laybySale,
       clerk,
       registerID,
-      sales,
-      mutateSales,
-      inventory,
-      mutateInventory,
-      giftCards,
-      mutateGiftCards,
       cart?.state
     )
     // close dialog
@@ -153,12 +133,6 @@ export default function SaleScreen() {
       completedSale,
       clerk,
       registerID,
-      sales,
-      mutateSales,
-      inventory,
-      mutateInventory,
-      giftCards,
-      mutateGiftCards,
       cart?.state,
       customers?.filter((c) => c?.id === cart?.customerId)[0]?.name
     )

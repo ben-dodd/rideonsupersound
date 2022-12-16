@@ -39,7 +39,6 @@ export default function ReturnCashDialog() {
           notes
         )
         setSubmitting(false)
-        // mutatePettyCash([...pettyCash])
         closeView(ViewProps.returnCashDialog)
         setAmount('0')
         setNotes('')

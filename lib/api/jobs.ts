@@ -25,3 +25,10 @@ export async function createMailOrderTask(sale: SaleObject, customer: string) {
     .then((res) => res.data)
     .catch((e) => Error(e.message))
 }
+
+export function updateJob(update: any, id) {
+  return axios
+    .patch(`/api/job/${id}`)
+    .then((res) => res.data)
+    .catch((e) => Error(e.message))
+}

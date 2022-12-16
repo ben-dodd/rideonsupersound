@@ -59,9 +59,7 @@ export async function saveClosedRegisterToDatabase(
 export async function saveAndOpenRegister(
   register: RegisterObject,
   till: TillObject,
-  clerk: ClerkObject,
-  logs: LogObject[],
-  mutateLogs: Function
+  clerk: ClerkObject
 ) {
   const tillID = await createTillInDatabase(till)
   const registerId = await createRegisterInDatabase({

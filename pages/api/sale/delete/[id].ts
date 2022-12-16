@@ -1,27 +1,16 @@
 import { NextApiResponse } from 'next'
 import { requireScope } from 'lib/api/utils'
 import { NextAuthenticatedApiRequest } from '@serverless-jwt/next/dist/types'
-import { dbGetStockItem, dbUpdateStockItem } from 'lib/database/stock'
+import { dbDeleteSale } from 'lib/database/stock'
 
 const apiRoute = async (
   req: NextAuthenticatedApiRequest,
   res: NextApiResponse
 ) => {
-  if (req.method === 'GET') {
+  if (req.method === 'PATCH') {
     const { id } = req.query
     try {
-      return dbGetStockItem(id).then((data) => res.status(200).json(data))
-    } catch (error) {
-      res.status(error.status || 500).json({
-        code: error.code,
-        error: error.message,
-      })
-    }
-  } else if (req.method === 'PATCH') {
-    const { id } = req.query
-    const { update } = req.body
-    try {
-      return dbUpdateStockItem(update, id).then((data) =>
+      return dbDeleteSale(id, req.body).then((data) =>
         res.status(200).json(data)
       )
     } catch (error) {

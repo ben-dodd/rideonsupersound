@@ -1,6 +1,11 @@
 import axios from 'axios'
 import { saveSystemLog } from 'features/log/lib/functions'
-import { ClerkObject, SaleItemObject, StockObject } from 'lib/types'
+import {
+  ClerkObject,
+  SaleItemObject,
+  StockObject,
+  StocktakeTemplateObject,
+} from 'lib/types'
 import useData from './'
 
 export function useStockList() {
@@ -34,8 +39,31 @@ export function createStockItem(stockItem: StockObject, clerk: ClerkObject) {
     })
     .then((res) => {
       const id = res.data
-      saveSystemLog(`New stock (${id}) created.`, clerk?.id)
+      // saveSystemLog(`New stock (${id}) created.`, clerk?.id)
       return { ...stockItem, id }
+    })
+}
+
+export function updateStockItem(update: any, id) {
+  return axios
+    .patch(`/api/stock/${id}`)
+    .then((res) => res.data)
+    .catch((e) => Error(e.message))
+}
+
+export function createStocktakeTemplate(
+  stocktakeTemplate: StocktakeTemplateObject,
+  clerk: ClerkObject
+) {
+  return axios
+    .post(`/api/stocktake/template`, {
+      ...stocktakeTemplate,
+      createdByClerkId: clerk?.id,
+    })
+    .then((res) => {
+      const id = res.data
+      // saveSystemLog(`New stock (${id}) created.`, clerk?.id)
+      return { ...stocktakeTemplate, id }
     })
 }
 

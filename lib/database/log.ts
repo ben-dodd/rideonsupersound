@@ -7,3 +7,7 @@ export function dbGetLogs(limit?, db = connection) {
     .orderBy('date_created', 'desc')
     .limit(limit || 500)
 }
+
+export function dbCreateLog(log, db = connection) {
+  return db('log').insert(log)
+}

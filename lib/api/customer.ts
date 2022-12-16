@@ -11,11 +11,19 @@ export async function createCustomer(
   customer: CustomerObject,
   clerk: ClerkObject
 ) {
-  saveSystemLog(`New customer (${customer?.name}) created.`, clerk?.id)
+  // saveSystemLog(`New customer (${customer?.name}) created.`, clerk?.id)
   return axios
     .post(`/api/customer`, {
       ...customer,
       createdByClerkId: clerk?.id,
     })
     .then((res) => ({ ...customer, id: res.data }))
+    .catch((e) => Error(e.message))
+}
+
+export function updateCustomer(customer: CustomerObject) {
+  return axios
+    .patch(`/api/customer/${customer?.id}`)
+    .then((res) => res.data)
+    .catch((e) => Error(e.message))
 }

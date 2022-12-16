@@ -3,7 +3,6 @@ import {
   getItemDisplayName,
   getItemSkuDisplayName,
 } from 'features/inventory/features/display-inventory/lib/functions'
-import { createLogInDatabase } from 'lib/database/create'
 import {
   CustomerObject,
   SaleItemObject,
@@ -20,18 +19,18 @@ export async function saveSystemLog(log: string, clerk_id: number) {
 
 export function saveLog(
   log: string,
-  clerk_id: number,
-  table_id?: string,
-  row_id?: number
+  clerkId: number,
+  tableId?: string,
+  rowId?: number
 ) {
   let logObj = {
     log,
-    clerk_id,
-    table_id,
-    row_id,
+    clerkId,
+    tableId,
+    rowId,
     date_created: dayjs.utc().format(),
   }
-  createLogInDatabase(logObj)
+  createLog(logObj)
 }
 
 export function logOpenRegister(clerk, openAmount, registerID) {

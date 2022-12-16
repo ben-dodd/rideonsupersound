@@ -1,20 +1,14 @@
+import Layout from 'components/layout'
 import Tabs from 'components/navigation/tabs'
-import { pageAtom } from 'lib/atoms'
-import { useAtom } from 'jotai'
+import { LogView } from 'features/log/components/log-view'
+import { StockMovementView } from 'features/log/components/stock-movement-view'
 import { useState } from 'react'
-import { LogView } from './log-view'
-import { StockMovementView } from './stock-movement-view'
 
 export default function LogPage() {
-  const [page] = useAtom(pageAtom)
   const [tab, setTab] = useState(0)
 
   return (
-    <div
-      className={`flex flex-col overflow-x-hidden ${
-        page !== 'logs' ? 'hidden' : ''
-      }`}
-    >
+    <div className={`flex flex-col overflow-x-hidden`}>
       <div className="bg-col9 text-4xl font-bold uppercase text-white p-2 mb-1">
         Logs
       </div>
@@ -34,3 +28,5 @@ export default function LogPage() {
     </div>
   )
 }
+
+LogPage.getLayout = (page) => <Layout>{page}</Layout>

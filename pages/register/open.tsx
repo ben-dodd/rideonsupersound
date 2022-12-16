@@ -13,12 +13,11 @@ import {
 } from 'features/sale/features/register/lib/functions'
 import CashMap from 'features/sale/features/register/components/cash-map'
 import { useCurrentRegister } from 'lib/api/register'
-import { useLogs } from 'lib/api/log'
 
 export default function OpenRegisterScreen() {
   const { clerk } = useClerk()
   const { currentRegister } = useCurrentRegister()
-  const { logs, mutateLogs } = useLogs()
+  // const { logs, mutateLogs } = useLogs()
   const { setAlert, toggleBypassRegister } = useAppStore()
 
   // State
@@ -44,7 +43,7 @@ export default function OpenRegisterScreen() {
     }
     setLoading(true)
     // Save register to DB and mutate register with returned ID number
-    await saveAndOpenRegister(register, till, clerk, logs, mutateLogs)
+    await saveAndOpenRegister(register, till, clerk)
     setLoading(false)
 
     // Reset State

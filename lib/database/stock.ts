@@ -1,3 +1,4 @@
+import { dbUpdateSale } from './sale'
 import { js2mysql } from './utils/helpers'
 const connection = require('./conn')
 
@@ -9,21 +10,21 @@ export function dbGetStockList(db = connection) {
     .groupBy('stock.id')
     .select(
       'stock.id',
-      'stock.vendor_id as vendorId',
+      'stock.vendor_id',
       'vendor.name as vendorName',
       'stock.artist',
       'stock.title',
-      'stock.display_as as displayAs',
+      'stock.display_as',
       'stock.media',
       'stock.format',
       'stock.section',
       'stock.country',
-      'stock.is_new as isNew',
+      'stock.is_new',
       'stock.cond',
-      'stock.image_url as imageUrl',
-      'stock.needs_restock as needsRestock',
-      'stock_price.vendor_cut as vendorCut',
-      'stock_price.total_sell as totalSell'
+      'stock.image_url',
+      'stock.needs_restock',
+      'stock_price.vendor_cut',
+      'stock_price.total_sell'
     )
     .sum('stock_movement.quantity as quantity')
     .where(`stock.is_deleted`, 0)
@@ -103,4 +104,8 @@ export function dbCreateStockMovement(stockMovement, db = connection) {
 
 export function dbGetStocktakeTemplates(db = connection) {
   return db('stocktake_template').where(`is_deleted`, 0)
+}
+
+export function dbCreateStocktakeTemplate(stocktakeTemplate, db = connection) {
+  return db('stocktake_template').insert(js2mysql(stocktakeTemplate))
 }

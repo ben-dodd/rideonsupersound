@@ -1,4 +1,5 @@
 import ListStockMovement from 'features/log/components/list-stock-movement'
+import { useClerks } from 'lib/api/clerk'
 import { StockMovementObject } from 'lib/types'
 
 export function StockMovementView() {

@@ -1,24 +1,16 @@
-import { useAtom } from 'jotai'
 import { useState } from 'react'
-
-import { pageAtom } from 'lib/atoms'
-
 import Tabs from 'components/navigation/tabs'
 import TaskDialog from '../../features/job/components/job-dialog'
-import JobView from './job-view'
-import RestockTaskView from './restock-task-view'
+import JobView from '../../features/job/components/job-view'
+import Layout from 'components/layout'
+import RestockTaskView from 'features/job/components/restock-task-view'
 
 export default function JobsPage() {
-  const [page] = useAtom(pageAtom)
   const [tab, setTab] = useState(0)
 
   return (
     <>
-      <div
-        className={`flex flex-col overflow-x-hidden ${
-          page !== 'jobs' ? 'hidden' : ''
-        }`}
-      >
+      <div className={`flex flex-col overflow-x-hidden`}>
         <div className="bg-col10 text-4xl font-bold uppercase text-white p-2 mb-1">
           Jobs
         </div>
@@ -43,3 +35,5 @@ export default function JobsPage() {
     </>
   )
 }
+
+JobsPage.getLayout = (page) => <Layout>{page}</Layout>

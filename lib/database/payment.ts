@@ -1,4 +1,5 @@
 import connection from './conn'
+import { js2mysql } from './utils/helpers'
 import { dbGetVendorIdFromUid } from './vendor'
 
 export function dbGetAllVendorPayments(db = connection) {
@@ -19,6 +20,10 @@ export function dbGetVendorPaymentsByVendorUid(vendorUid, db = connection) {
       .andWhere(`is_deleted`, 0)
       .orderBy('date', 'desc')
   )
+}
+
+export function dbUpdateVendorPayment(id, update, db = connection) {
+  return db('vendor_payment').where({ id }).update(js2mysql(update))
 }
 
 export function dbGetVendorStoreCreditByVendorUid(vendorUid, db = connection) {

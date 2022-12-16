@@ -3,6 +3,7 @@ import { createMailOrderTask } from 'lib/api/jobs'
 import { SaleStateTypes, StockMovementTypes } from 'lib/types'
 import connection from './conn'
 import { dbGetCustomer } from './customer'
+import { dbUpdateVendorPayment } from './payment'
 import {
   dbCreateStockMovement,
   dbGetStockItem,
@@ -128,78 +129,108 @@ export async function dbSaveSale(sale, prevState, db = connection) {
     }
 
     for await (const item of sale?.items) {
-      let invItem = dbGetStockItem(item?.itemId)
-      // Check whether inventory item needs restocking
-      const quantity = getItemQuantity(invItem, sale?.items)
-      let quantityLayby = invItem?.quantityLayby || 0
-      // let quantity_sold = invItem?.quantity_sold || 0;
-      if (quantity > 0) {
-        dbUpdateStockItem(item?.item_id, { needsRestock: true }, db)
-      }
-
-      // If sale is complete, validate gift card
-      if (sale?.state === SaleStateTypes.Completed && item?.isGiftCard) {
-        dbUpdateStockItem(item?.itemId, { giftCardIsValid: true }, db)
-      }
-
-      // Add or update Sale Item
-      if (!item?.id) {
-        // Item is new to sale
-        let newSaleItem = { ...item, saleId }
-        dbCreateSaleItem(newSaleItem, db)
-      } else {
-        // Item was already in sale, update in case discount, quantity has changed or item has been deleted
-        dbUpdateSaleItem(item?.id, item, db)
-      }
-
-      // Add stock movement if it's a regular stock item
-      if (!item?.isGiftCard && !item?.isMiscItem) {
-        let stockMovement = {
-          stockId: item?.itemId,
-          clerkId: sale?.saleClosedBy,
-          act: StockMovementTypes.Sold,
-          quantity: 0,
-        }
-        if (sale?.state === SaleStateTypes.Completed) {
-          // If it was a layby, unlayby it before marking as sold
-          if (prevState === SaleStateTypes.Layby && !item?.isGiftCard) {
-            stockMovement.act = StockMovementTypes.Unlayby
-            quantityLayby -= 1
-          }
-          if (item?.isRefunded) {
-            // Refund item if refunded
-            stockMovement.act = StockMovementTypes.Unsold
-          }
-          // Add layby stock movement if it's a new layby
-        } else if (
-          sale?.state === SaleStateTypes.Layby &&
-          prevState !== SaleStateTypes.Layby
-        ) {
-          stockMovement.clerkId = sale?.laybyStartedBy
-          stockMovement.act = StockMovementTypes.Layby
-          quantityLayby += 1
-        }
-        stockMovement.quantity = getQuantityByType(
-          item?.quantity,
-          stockMovement?.act
-        )
-        dbCreateStockMovement(stockMovement)
-      }
+      handleSaveSaleItem(item, sale, prevState, db)
     }
-    //
-    // HANDLE TRANSACTIONS
-    //
+
     for await (const trans of sale?.transactions) {
-      if (!trans?.id) {
-        // Transaction is new to sale
-        let newSaleTransaction = { ...trans, saleId }
-        dbCreateSaleTransaction(newSaleTransaction)
-      }
+      handleSaveSaleTransaction(trans, sale, db)
     }
     trx.commit()
   } catch (err) {
     // Roll back the transaction on error
     trx.rollback()
+  }
+}
+
+export async function dbDeleteSale(id, { sale, clerk, registerID }) {
+  // Start the transaction
+  const trx = await knex.transaction()
+  try {
+    await sale?.items?.forEach((saleItem) => {
+      dbUpdateSaleItem(saleItem?.id, { isDeleted: true })
+      if (!saleItem?.isRefunded)
+        dbCreateStockMovement({
+          item: saleItem,
+          clerk,
+          registerID,
+          act: StockMovementTypes.Unsold,
+          note: 'Sale nuked.',
+          saleId: sale?.id,
+        })
+    })
+    await sale?.transactions?.forEach((saleTransaction) => {
+      if (saleTransaction?.vendorPaymentId)
+        dbUpdateVendorPayment(saleTransaction?.vendorPaymentId, {
+          isDeleted: true,
+        })
+      dbUpdateSaleTransaction(saleTransaction?.id, { isDeleted: true })
+    })
+    // deleteStockMovementsFromDatabase(sale?.id);
+    await dbUpdateSale(id, { isDeleted: true })
+    trx.commit()
+  } catch (err) {
+    // Roll back the transaction on error
+    trx.rollback()
+  }
+}
+
+function handleSaveSaleItem(item, sale, prevState, db) {
+  let invItem = dbGetStockItem(item?.itemId)
+  // Check whether inventory item needs restocking
+  const quantity = getItemQuantity(invItem, sale?.items)
+  let quantityLayby = invItem?.quantityLayby || 0
+  // let quantity_sold = invItem?.quantity_sold || 0;
+  if (quantity > 0) {
+    dbUpdateStockItem(item?.item_id, { needsRestock: true }, db)
+  }
+
+  // If sale is complete, validate gift card
+  if (sale?.state === SaleStateTypes.Completed && item?.isGiftCard) {
+    dbUpdateStockItem(item?.itemId, { giftCardIsValid: true }, db)
+  }
+
+  // Add or update Sale Item
+  if (!item?.id) {
+    // Item is new to sale
+    let newSaleItem = { ...item, saleId: sale?.id }
+    dbCreateSaleItem(newSaleItem, db)
+  } else {
+    // Item was already in sale, update in case discount, quantity has changed or item has been deleted
+    dbUpdateSaleItem(item?.id, item, db)
+  }
+
+  // Add stock movement if it's a regular stock item
+  if (!item?.isGiftCard && !item?.isMiscItem) {
+    let stockMovement = {
+      stockId: item?.itemId,
+      clerkId: sale?.saleClosedBy,
+      act: StockMovementTypes.Sold,
+      quantity: 0,
+    }
+    if (sale?.state === SaleStateTypes.Completed) {
+      // If it was a layby, unlayby it before marking as sold
+      if (prevState === SaleStateTypes.Layby && !item?.isGiftCard) {
+        stockMovement.act = StockMovementTypes.Unlayby
+        quantityLayby -= 1
+      }
+      if (item?.isRefunded) {
+        // Refund item if refunded
+        stockMovement.act = StockMovementTypes.Unsold
+      }
+      // Add layby stock movement if it's a new layby
+    } else if (
+      sale?.state === SaleStateTypes.Layby &&
+      prevState !== SaleStateTypes.Layby
+    ) {
+      stockMovement.clerkId = sale?.laybyStartedBy
+      stockMovement.act = StockMovementTypes.Layby
+      quantityLayby += 1
+    }
+    stockMovement.quantity = getQuantityByType(
+      item?.quantity,
+      stockMovement?.act
+    )
+    dbCreateStockMovement(stockMovement)
   }
 }
 
@@ -212,6 +243,14 @@ function getQuantityByType(quantity, act) {
     act === StockMovementTypes.Adjustment
     ? parseInt(quantity)
     : -parseInt(quantity)
+}
+
+function handleSaveSaleTransaction(trans, sale, db) {
+  if (!trans?.id) {
+    // Transaction is new to sale
+    let newSaleTransaction = { ...trans, saleId: sale?.id }
+    dbCreateSaleTransaction(newSaleTransaction)
+  }
 }
 
 // This should be done at the save sale transaction stage

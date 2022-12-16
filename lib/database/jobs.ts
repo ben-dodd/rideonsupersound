@@ -10,3 +10,7 @@ export function dbGetJobsToDo(db = connection) {
 export function dbGetJobs(db = connection) {
   return db('task').where(`is_deleted`, 0)
 }
+
+export function dbCreateJob(job, db = connection) {
+  return db('task').insert(job)
+}

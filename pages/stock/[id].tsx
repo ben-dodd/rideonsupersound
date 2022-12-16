@@ -73,10 +73,6 @@ export default function InventoryItemScreen() {
           ? () => {}
           : async () =>
               deleteInventoryItemFromDatabase(stockItem?.id)?.then(() => {
-                // mutateInventory(
-                //   inventory?.filter((i) => i?.id !== item?.id),
-                //   false
-                // )
                 router.back()
               }),
     })
@@ -91,15 +87,8 @@ export default function InventoryItemScreen() {
     {
       type: 'ok',
       onClick: () => {
-        // mutateInventory(
-        //   inventory?.map((i) =>
-        //     i?.id === stockItem?.id ? { ...stockItem, ...item } : i
-        //   ),
-        //   false
-        // )
         updateStockItemInDatabase(stockItem)
         router.back()
-        // setTimeout(() => setItem(null), 1000);
       },
       text: 'SAVE',
     },
@@ -147,15 +136,15 @@ export default function InventoryItemScreen() {
           hidden={
             !(
               tab === 1 &&
-              (item?.media === 'Audio' ||
-                item?.media === 'Video' ||
-                item?.media === 'Mixed')
+              (stockItem?.media === 'Audio' ||
+                stockItem?.media === 'Video' ||
+                stockItem?.media === 'Mixed')
             )
           }
         >
           {/* <DiscogsPanel item={item} setItem={setItem} /> */}
         </div>
-        <div hidden={!(tab === 1 && item?.media === 'Literature')}>
+        <div hidden={!(tab === 1 && stockItem?.media === 'Literature')}>
           {/* <GoogleBooksPanel item={item} setItem={setItem} /> */}
         </div>
         <div hidden={tab !== 2}>Item Sale Details</div>

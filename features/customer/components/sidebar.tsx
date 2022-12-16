@@ -1,7 +1,6 @@
 import SidebarContainer from 'components/container/side-bar'
 import TextField from 'components/inputs/text-field'
 import { saveSystemLog } from 'features/log/lib/functions'
-import { updateCustomerInDatabase } from 'lib/database/update'
 import { ModalButton } from 'lib/types'
 import { useEffect, useState } from 'react'
 import { checkCustomerNameConflict } from '../lib/functions'
@@ -20,16 +19,12 @@ export default function CreateCustomerSidebar() {
     resetCustomer,
     closeView,
   } = useAppStore()
-  // State
   const [nameConflict, setNameConflict] = useState(false)
   const [submitting, setSubmitting] = useState(false)
-
-  // Load
   useEffect(() => {
     setNameConflict(checkCustomerNameConflict(customer, customers))
   }, [customers, customer?.name])
 
-  // Functions
   function closeSidebar() {
     saveSystemLog('New customer sidebar closed.', clerk?.id)
     resetCustomer()
@@ -47,7 +42,7 @@ export default function CreateCustomerSidebar() {
 
   async function onClickUpdateCustomer() {
     setSubmitting(true)
-    updateCustomerInDatabase(customer, mutateCustomers, customers)
+    updateCustomer(customer)
     closeSidebar()
   }
 

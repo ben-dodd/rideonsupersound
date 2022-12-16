@@ -27,13 +27,10 @@ export default function SaleItemScreen() {
 
   // SWR
   const { customers } = useCustomers()
-  const { inventory, mutateInventory } = useStockList()
-  const { giftCards, mutateGiftCards } = useGiftCards()
   const { items, isSaleItemsLoading } = useSaleItemsForSale(Number(id))
   const { transactions, isSaleTransactionsLoading } =
     useSaleTransactionsForSale(Number(id))
   const { sales, mutateSales } = useSales()
-  // const { logs, mutateLogs } = useLogs()
   const { registerId } = useCurrentRegisterId()
 
   // State
@@ -70,22 +67,7 @@ export default function SaleItemScreen() {
   async function loadSale() {
     saveSystemLog('LOAD SALE clicked.', clerk?.id)
     setLoadToCartLoading(true)
-    await loadSaleToCart(
-      cart,
-      setCart,
-      sale,
-      clerk,
-      registerId,
-      customers,
-      logs,
-      mutateLogs,
-      sales,
-      mutateSales,
-      inventory,
-      mutateInventory,
-      giftCards,
-      mutateGiftCards
-    )
+    await loadSaleToCart(cart, setCart, sale, clerk, registerId, customers)
     setLoadToCartLoading(false)
     router.push('sell/')
     // setView({ ...view, saleScreen: true })

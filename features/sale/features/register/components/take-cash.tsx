@@ -36,7 +36,6 @@ export default function TakeCashDialog() {
           amount,
           notes
         )
-        // mutatePettyCash()
         setSubmitting(false)
         closeView(ViewProps.takeCashDialog)
         setAmount('0')

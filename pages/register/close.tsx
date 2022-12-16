@@ -94,7 +94,6 @@ export default function CloseRegisterScreen() {
       till
     )
     logCloseRegisterWithAmount(closeAmount, clerk, currentRegister?.id)
-    // mutateRegisterID([{ num: 0 }], false)
     closeView(ViewProps.closeRegisterScreen)
     setAlert({
       open: true,
