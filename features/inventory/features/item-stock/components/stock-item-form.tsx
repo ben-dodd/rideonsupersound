@@ -3,7 +3,6 @@ import RadioButton from 'components/inputs/radio-button'
 import SettingsSelect from 'components/inputs/settings-select'
 import TextField from 'components/inputs/text-field'
 import { logCreateVendor } from 'features/log/lib/functions'
-import { createVendorInDatabase } from 'lib/database/create'
 import { StockObject, VendorObject } from 'lib/types'
 import {
   getImageSrc,
@@ -11,7 +10,7 @@ import {
   getItemSku,
 } from '../../display-inventory/lib/functions'
 import { useClerk } from 'lib/api/clerk'
-import { useVendors } from 'lib/api/vendor'
+import { createVendor, useVendors } from 'lib/api/vendor'
 
 export default function InventoryItemForm({
   item,
@@ -80,10 +79,10 @@ export default function InventoryItemForm({
                   setItem({ ...item, vendor_id: parseInt(vendorObject?.value) })
                 }
                 onCreateOption={async (vendorName: string) => {
-                  const vendorId = await createVendorInDatabase({
+                  const vendorId = await createVendor({
                     name: vendorName,
                   })
-                  logCreateVendor(clerk, vendorName, vendorId)
+                  // logCreateVendor(clerk, vendorName, vendorId)
                   setItem({ ...item, vendor_id: vendorId })
                 }}
                 options={vendors?.map((val: VendorObject) => ({

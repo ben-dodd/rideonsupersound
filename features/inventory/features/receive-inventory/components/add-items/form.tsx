@@ -9,7 +9,7 @@ import { v4 as uuid } from 'uuid'
 export default function Form() {
   // State
   const [basket, setBasket] = useAtom(receiveStockAtom)
-  const defaultItem = { is_new: 1, do_list_on_website: 1 }
+  const defaultItem = { isNew: true, doListOnWebsite: true }
   const [item, setItem] = useState<StockObject>(defaultItem)
   const addItem = () => {
     setBasket({

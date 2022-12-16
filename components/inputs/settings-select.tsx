@@ -1,5 +1,4 @@
-import { useSetting } from 'lib/api/settings'
-import { createSettingSelectInDatabase } from 'lib/database/create'
+import { createSetting, useSetting } from 'lib/api/settings'
 import { useState } from 'react'
 import Select from 'react-select'
 import CreatableSelect from 'react-select/creatable'
@@ -134,7 +133,7 @@ export default function SettingsSelect({
           onCreateOption={(inputValue: string) => {
             if (!isCreateDisabled) {
               setLoading(true)
-              createSettingSelectInDatabase(inputValue, dbField, mutateSelects)
+              createSetting({ label: inputValue, settingSelect: dbField })
               if (isMulti)
                 onEdit({
                   ...object,

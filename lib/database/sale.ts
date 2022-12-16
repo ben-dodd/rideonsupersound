@@ -77,6 +77,10 @@ export function dbGetAllSalesAndItems(db = connection) {
     .andWhere(`sale_item.is_deleted`, 0)
 }
 
+export function dbGetAllHolds(db = connection) {
+  return db('hold').where(`is_deleted`, 0)
+}
+
 export function dbGetSale(id, db = connection) {
   return db('sale').where({ id }).first()
 }
@@ -95,6 +99,15 @@ export function getAllSaleItems(db = connection) {
 
 export function dbCreateSale(sale, db = connection) {
   return db('sale').insert(js2mysql(sale))
+}
+
+export function dbCreateHold(hold, db = connection) {
+  return db('hold')
+    .insert(js2mysql(hold))
+    .then((res) => {
+      // Create stock movement for hold
+      // Check if restock necessary
+    })
 }
 
 export function dbUpdateSale(id, update, db = connection) {

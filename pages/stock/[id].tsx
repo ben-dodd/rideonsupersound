@@ -7,12 +7,10 @@ import DiscogsPanel from 'features/inventory/features/api-discogs/components'
 import GoogleBooksPanel from 'features/inventory/features/api-google-books/components'
 import InventoryItemForm from 'features/inventory/features/item-stock/components/stock-item-form'
 import StockDetails from 'features/inventory/features/item-stock/components/stock-details'
-import { deleteInventoryItemFromDatabase } from 'lib/database/delete'
-import { updateStockItemInDatabase } from 'lib/database/update'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { useRouter } from 'next/router'
 import { useAppStore } from 'lib/store'
-import { useStockItem } from 'lib/api/stock'
+import { deleteStockItem, updateStockItem, useStockItem } from 'lib/api/stock'
 import PriceDetails from 'features/inventory/features/item-stock/components/price-details'
 import Loading from 'components/loading'
 import Layout from 'components/layout'
@@ -72,7 +70,7 @@ export default function InventoryItemScreen() {
         stockItem?.sales?.length > 0
           ? () => {}
           : async () =>
-              deleteInventoryItemFromDatabase(stockItem?.id)?.then(() => {
+              deleteStockItem(stockItem?.id)?.then(() => {
                 router.back()
               }),
     })
@@ -87,7 +85,7 @@ export default function InventoryItemScreen() {
     {
       type: 'ok',
       onClick: () => {
-        updateStockItemInDatabase(stockItem)
+        updateStockItem(stockItem, stockItem?.id)
         router.back()
       },
       text: 'SAVE',

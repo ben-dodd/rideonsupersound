@@ -2,11 +2,12 @@ import { useState } from 'react'
 import { ModalButton } from 'lib/types'
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
-import { savePettyCashToRegister } from '../lib/functions'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
-import { useCurrentRegister } from 'lib/api/register'
+import { useCurrentRegister, useCurrentRegisterId } from 'lib/api/register'
+import { dollarsToCents } from 'lib/utils'
+import dayjs from 'dayjs'
 
 export default function ReturnCashDialog() {
   const { currentRegister } = useCurrentRegister()
@@ -14,10 +15,11 @@ export default function ReturnCashDialog() {
   // const { logs, mutateLogs } = useLogs()
   const { clerk } = useClerk()
   const { view, closeView, setAlert } = useAppStore()
+  const { registerId } = useCurrentRegisterId()
 
   // State
   const [amount, setAmount] = useState('0')
-  const [notes, setNotes] = useState('')
+  const [note, setNote] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
   const buttons: ModalButton[] = [
@@ -31,17 +33,19 @@ export default function ReturnCashDialog() {
       loading: submitting,
       onClick: async () => {
         setSubmitting(true)
-        const id = await savePettyCashToRegister(
-          currentRegister?.id,
-          clerk,
-          false,
-          amount,
-          notes
-        )
+        const pettyCash = {
+          registerId,
+          clerk_id: clerk?.id,
+          amount: dollarsToCents(amount),
+          isTake: false,
+          note,
+          date: dayjs.utc().format(),
+        }
+        const id = await savePettyCash(pettyCash)
         setSubmitting(false)
         closeView(ViewProps.returnCashDialog)
         setAmount('0')
-        setNotes('')
+        setNote('')
         setAlert({
           open: true,
           type: 'success',
@@ -75,8 +79,8 @@ export default function ReturnCashDialog() {
         <TextField
           inputLabel="Notes"
           className="mt-1"
-          value={notes}
-          onChange={(e: any) => setNotes(e.target.value)}
+          value={note}
+          onChange={(e: any) => setNote(e.target.value)}
           multiline
         />
       </>

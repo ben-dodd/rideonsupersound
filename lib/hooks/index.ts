@@ -4,11 +4,12 @@ import {
   sumPrices,
   writeItemList,
 } from 'features/pay/lib/functions'
+import { StockObject } from 'lib/types'
 import { useState, useEffect } from 'react'
 
 export function useSaleProperties(cart) {
-  const [properties, setProperties] = useState(null)
-  const [stockTable, setStockTable] = useState(null)
+  const [properties, setProperties] = useState({})
+  const [stockTable, setStockTable]: [StockObject[], Function] = useState([])
 
   useEffect(() => {
     // Fetch the stock table from the database here

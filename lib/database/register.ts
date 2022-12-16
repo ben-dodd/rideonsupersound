@@ -1,4 +1,5 @@
-import { VendorPaymentTypes } from 'lib/types'
+import dayjs from 'dayjs'
+import { RegisterObject, TillObject, VendorPaymentTypes } from 'lib/types'
 import connection from './conn'
 import { js2mysql } from './utils/helpers'
 
@@ -56,4 +57,66 @@ export function dbGetCurrentRegister(db = connection) {
     const pettyCash = await db('register_petty_cash').where({ register_id })
     return { ...register, cashGiven, cashReceived, manualPayments, pettyCash }
   })
+}
+
+export function dbCreateTill(till, db = connection) {
+  return db('register_till').insert(js2mysql(till))
+}
+
+export function dbCreateRegister(register, db = connection) {
+  return db('register').insert(js2mysql(register))
+}
+
+export function dbCreatePettyCash(pettyCash, db = connection) {
+  return db('register_petty_cash').insert(js2mysql(pettyCash))
+}
+
+export function dbSetRegister(id, db = connection) {
+  return db('global').where({ id: 'current_register' }).update({ num: id })
+}
+
+export async function dbCloseRegister(
+  id: number,
+  register: RegisterObject,
+  till: TillObject,
+  db = connection
+) {
+  const trx = await knex.transaction()
+  try {
+    const tillID = await dbCreateTill(till, db)
+    dbUpdateRegister(id, {
+      closeTillId: tillID,
+      closeDate: dayjs.utc().format(),
+    })
+    dbSetRegister(0, db)
+    trx.commit()
+  } catch (err) {
+    // Roll back the transaction on error
+    trx.rollback()
+  }
+}
+
+export async function dbOpenRegister(
+  register: RegisterObject,
+  till: TillObject,
+  db = connection
+) {
+  const trx = await knex.transaction()
+  try {
+    const tillID = await dbCreateTill(till, db)
+    const registerId = await dbCreateRegister(
+      {
+        ...register,
+        openTillId: tillID,
+        openDate: dayjs.utc().format(),
+      },
+      db
+    )
+    // logOpenRegister(clerk, null, registerId)
+    dbSetRegister(registerId, db)
+    trx.commit()
+  } catch (err) {
+    // Roll back the transaction on error
+    trx.rollback()
+  }
 }

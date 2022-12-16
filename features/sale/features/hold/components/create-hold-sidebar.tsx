@@ -5,10 +5,6 @@ import TextField from 'components/inputs/text-field'
 import { addRestockTask } from 'features/job/lib/functions'
 import { logCreateHold, saveSystemLog } from 'features/log/lib/functions'
 import {
-  createHoldInDatabase,
-  createStockMovementInDatabase,
-} from 'lib/database/create'
-import {
   CustomerObject,
   ModalButton,
   StockMovementTypes,
@@ -21,6 +17,7 @@ import { useClerk } from 'lib/api/clerk'
 import { ViewProps } from 'lib/store/types'
 import { useCustomers } from 'lib/api/customer'
 import { useCurrentRegisterId } from 'lib/api/register'
+import { createHold } from 'lib/api/sale'
 
 export default function CreateHoldSidebar() {
   const {
@@ -51,41 +48,15 @@ export default function CreateHoldSidebar() {
     setSubmitting(true)
     // Create hold
 
-    cart?.items.forEach(
-      // Create hold for each item
-      async (cartItem) => {
-        const item = inventory?.filter(
-          (i: StockObject) => i?.id === cartItem?.itemId
-        )[0]
-        const itemQuantity = getItemQuantity(item, cart?.items)
-        if (itemQuantity > 0) {
-          addRestockTask(cartItem?.itemId)
-        }
-        const holdId = await createHoldInDatabase(
-          cart,
-          cartItem,
-          holdPeriod,
-          note,
-          clerk,
-          registerId
-        )
-        createStockMovementInDatabase({
-          item,
-          clerk,
-          registerId,
-          act: StockMovementTypes.Hold,
-        })
-        logCreateHold(
-          cart,
-          cartItem,
-          inventory,
-          customers,
-          holdPeriod,
-          clerk,
-          holdId
-        )
-      }
-    )
+    await cart?.items.forEach((cartItem) => {
+      createHold({
+        customerId: cart?.customerId,
+        itemId: cartItem?.itemId,
+        quantity: Number(cartItem?.quantity),
+        holdPeriod,
+        note,
+      })
+    })
     setAlert({
       open: true,
       type: 'success',

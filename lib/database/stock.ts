@@ -109,3 +109,7 @@ export function dbGetStocktakeTemplates(db = connection) {
 export function dbCreateStocktakeTemplate(stocktakeTemplate, db = connection) {
   return db('stocktake_template').insert(js2mysql(stocktakeTemplate))
 }
+
+export function dbDeleteStockItem(id, db = connection) {
+  return db('stock').where({ id }).update({ is_deleted: 1 })
+}

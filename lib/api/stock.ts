@@ -31,6 +31,13 @@ export function useGiftCards() {
   return useData(`stock/giftcard`, 'giftCards')
 }
 
+export function deleteStockItem(id) {
+  return axios
+    .post(`/api/stock/delete/${id}`)
+    .then((res) => res.data)
+    .catch((e) => Error(e.message))
+}
+
 export function createStockItem(stockItem: StockObject, clerk: ClerkObject) {
   return axios
     .post(`/api/stock`, {

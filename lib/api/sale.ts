@@ -1,5 +1,5 @@
 import { saveSystemLog } from 'features/log/lib/functions'
-import { ClerkObject, SaleItemObject, SaleObject } from 'lib/types'
+import { ClerkObject, HoldObject, SaleItemObject, SaleObject } from 'lib/types'
 import axios from 'axios'
 import useData from './'
 
@@ -27,6 +27,17 @@ export function createSale(sale: SaleObject, clerk: ClerkObject) {
     .then((res) => {
       const id = res.data
       saveSystemLog(`New sale (${id}) created.`, clerk?.id)
+      return id
+    })
+    .catch((e) => Error(e.message))
+}
+
+export function createHold(hold: HoldObject) {
+  return axios
+    .post(`/api/sale/hold`, hold)
+    .then((res) => {
+      const id = res.data
+      // saveSystemLog(`New sale (${id}) created.`, clerk?.id)
       return id
     })
     .catch((e) => Error(e.message))
