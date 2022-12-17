@@ -109,9 +109,9 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
             isClearable
             value={{
               value: vendor?.clerk_id,
-              label: clerks?.filter(
+              label: clerks?.find(
                 (c: ClerkObject) => c?.id === vendor?.clerk_id
-              )[0]?.name,
+              )?.name,
             }}
             options={clerks?.map((clerk: ClerkObject) => ({
               value: clerk?.id,

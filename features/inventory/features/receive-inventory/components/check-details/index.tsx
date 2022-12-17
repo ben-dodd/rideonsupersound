@@ -2,38 +2,33 @@ import Tabs from 'components/navigation/tabs'
 import DiscogsPanel from 'features/inventory/features/api-discogs/components'
 import GoogleBooksPanel from 'features/inventory/features/api-google-books/components'
 import InventoryItemForm from 'features/inventory/features/item-stock/components/stock-item-form'
-import { receiveStockAtom } from 'lib/atoms'
-import { useAtom } from 'jotai'
+import { useAppStore } from 'lib/store'
 import { useState } from 'react'
 import Items from './items'
 
 export default function CheckDetails() {
-  const [basket, setBasket] = useAtom(receiveStockAtom)
-  const [item, setItem] = useState(
-    basket?.items ? basket?.items[0]?.item : null
-  )
-  const [itemKey, setItemKey] = useState(
-    basket?.items ? basket?.items[0]?.key : null
-  )
+  const { receiveBasket, setReceiveBasket } = useAppStore()
+  const [item, setItem] = useState(receiveBasket?.items?.[0]?.item || null)
+  const [itemKey, setItemKey] = useState(receiveBasket?.items?.[0]?.key || null)
   const [mode, setMode] = useState(0)
   const onItemClick = (newItem) => {
     if (item) {
-      const items = basket?.items?.map((i) => {
+      const items = receiveBasket?.items?.map((i) => {
         if (i?.key === itemKey) return { ...i, item }
         else return i
       })
-      setBasket({ ...basket, items })
+      setReceiveBasket({ items })
     }
     setItem(newItem?.item)
     setItemKey(newItem?.key)
   }
   const setItemAndBasket = (item) => {
     setItem(item)
-    const items = basket?.items?.map((i) => {
+    const items = receiveBasket?.items?.map((i) => {
       if (i?.key === itemKey) return { ...i, item }
       else return i
     })
-    setBasket({ ...basket, items })
+    setReceiveBasket({ items })
   }
   return (
     <div className="w-full">

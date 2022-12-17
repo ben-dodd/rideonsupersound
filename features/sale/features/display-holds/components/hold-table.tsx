@@ -20,28 +20,27 @@ export default function HoldTable() {
   // Atoms
   const [view, setView] = useAtom(viewAtom)
   const [loadedHoldId, setLoadedHoldId] = useAtom(loadedHoldIdAtom)
-  const [clerk] = useAtom(clerkAtom)
   const [customer, setCustomer] = useAtom(loadedCustomerObjectAtom)
 
   // Constants
   const data = useMemo(
     () =>
       holds
-        ?.filter((h: HoldObject) => !h?.is_deleted)
+        ?.filter((h: HoldObject) => !h?.isDeleted)
         .map((h: HoldObject) => {
-          const c: CustomerObject = customers?.filter(
-            (c: CustomerObject) => h?.customer_id === c?.id
-          )[0]
+          const c: CustomerObject = customers?.find(
+            (c: CustomerObject) => h?.customerId === c?.id
+          )
           return {
             id: h?.id,
             hold: h,
-            holdName: getItemSkuDisplayName(getItemById(h?.item_id, inventory)),
-            expiryDate: dayjs(h?.date_from).add(h?.hold_period, 'day'),
+            holdName: getItemSkuDisplayName(getItemById(h?.itemId, inventory)),
+            expiryDate: dayjs(h?.dateFrom).add(h?.holdPeriod, 'day'),
             customer: c,
             name: c?.name,
             email: c?.email,
             phone: c?.phone,
-            postal_address: c?.postal_address,
+            postal_address: c?.postalAddress,
           }
         }),
     [customers, holds]
@@ -69,7 +68,7 @@ export default function HoldTable() {
             }}
           >
             {`${value?.quantity || 1} x ${getItemDisplayName(
-              inventory?.filter((i: StockObject) => i?.id === value?.item_id)[0]
+              inventory?.find((i: StockObject) => i?.id === value?.item_id)
             )}`}
           </div>
         ),

@@ -2,9 +2,7 @@ import ScreenContainer from 'components/container/screen'
 import Stepper from 'components/navigation/stepper'
 import { saveSystemLog } from 'features/log/lib/functions'
 import { ModalButton } from 'lib/types'
-import { useAtom } from 'jotai'
 import { useState } from 'react'
-import { receiveStock } from '../lib/functions'
 import SelectItems from './add-items'
 import CheckDetails from './check-details'
 import PrintLabel from './print-label'
@@ -14,13 +12,12 @@ import { useAppStore } from 'lib/store'
 import { useCurrentRegisterId } from 'lib/api/register'
 import { ViewProps } from 'lib/store/types'
 import { useClerk } from 'lib/api/clerk'
+import { receiveStock } from 'lib/api/stock'
 
 export default function ReceiveStockScreen() {
-  const { receiveStock, setReceiveStock, view, openConfirm, closeView } =
+  const { receiveBasket, resetReceiveBasket, view, openConfirm, closeView } =
     useAppStore()
   const { clerk } = useClerk()
-  // Atoms
-  // const [basket, setBasket] = useAtom(receiveStockAtom)
   const [step, setStep] = useState(0)
   const [receivedStock, setReceivedStock] = useState(null)
   const [receiveLoading, setReceiveLoading] = useState(false)
@@ -38,7 +35,7 @@ export default function ReceiveStockScreen() {
       {
         type: 'ok',
         text: 'NEXT',
-        disabled: !basket?.vendor_id,
+        disabled: !receiveBasket?.vendorId,
         onClick: () => {
           saveSystemLog(`Receive stock screen - Set step 1`, clerk?.id)
           setStep(1)
@@ -59,7 +56,7 @@ export default function ReceiveStockScreen() {
             action: () => {
               saveSystemLog(`Receive stock screen - Set step 0`, clerk?.id)
               setStep(0)
-              setBasket({})
+              resetReceiveBasket()
             },
           })
         },
@@ -68,7 +65,7 @@ export default function ReceiveStockScreen() {
       {
         type: 'ok',
         text: 'NEXT',
-        disabled: basket?.items?.length === 0,
+        disabled: receiveBasket?.items?.length === 0,
         onClick: () => {
           saveSystemLog(`Receive stock screen - Set step 2`, clerk?.id)
           setStep(2)
@@ -114,8 +111,11 @@ export default function ReceiveStockScreen() {
             `Receive stock screen - Set step 4, receive stock called`,
             clerk?.id
           )
-          const receivedStock = await receiveStock(basket, clerk, registerID)
-          mutateInventory()
+          const receivedStock = await receiveStock({
+            ...receiveStock,
+            clerkId: clerk?.id,
+            registerId,
+          })
           setReceivedStock(receivedStock)
           setReceiveLoading(false)
           setStep(4)
@@ -129,8 +129,8 @@ export default function ReceiveStockScreen() {
         text: 'DONE',
         onClick: () => {
           saveSystemLog(`Receive stock screen - DONE clicked`, clerk?.id)
-          setBasket({})
-          setView({ ...view, receiveStockScreen: false })
+          resetReceiveBasket()
+          closeView(ViewProps.receiveStockScreen)
         },
       },
     ],
@@ -205,19 +205,18 @@ export default function ReceiveStockScreen() {
   )
 
   function isDisabled() {
-    console.log(basket)
     return (
-      !basket?.vendor_id ||
-      basket?.items?.length === 0 ||
-      basket?.items?.filter(
+      !receiveBasket?.vendorId ||
+      receiveBasket?.items?.length === 0 ||
+      receiveBasket?.items?.filter(
         (item) =>
           // !item?.item?.section ||
-          item?.item?.is_new === null ||
+          item?.item?.isNew === null ||
           // (!item?.item?.is_new && !item?.item?.cond) ||
           !Number.isInteger(parseInt(`${item?.quantity}`)) ||
           !(
-            (Number.isInteger(parseInt(`${item?.vendor_cut}`)) &&
-              Number.isInteger(parseInt(`${item?.total_sell}`))) ||
+            (Number.isInteger(parseInt(`${item?.vendorCut}`)) &&
+              Number.isInteger(parseInt(`${item?.totalSell}`))) ||
             item?.item?.id
           )
       ).length > 0

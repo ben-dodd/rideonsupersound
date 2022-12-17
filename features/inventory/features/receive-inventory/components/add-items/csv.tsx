@@ -1,19 +1,19 @@
 import { getItemDisplayName } from 'features/inventory/features/display-inventory/lib/functions'
-import { receiveStockAtom } from 'lib/atoms'
 import { ChevronRight } from '@mui/icons-material'
-import { useAtom } from 'jotai'
 import { useState } from 'react'
 import { useCSVReader } from 'react-papaparse'
 import { parseCSVItems } from '../../lib/functions'
+import { useAppStore } from 'lib/store'
 
 export default function Csv() {
   const { CSVReader } = useCSVReader()
-  const [basket, setBasket] = useAtom(receiveStockAtom)
+  const { receiveBasket, setReceiveBasket } = useAppStore()
   const [csvItems, setCSVItems] = useState([])
   const addItems = () => {
-    setBasket({
-      ...basket,
-      items: basket?.items ? [...basket?.items, ...csvItems] : csvItems,
+    setReceiveBasket({
+      items: receiveBasket?.items
+        ? [...receiveBasket?.items, ...csvItems]
+        : csvItems,
     })
   }
   return (
@@ -28,11 +28,11 @@ export default function Csv() {
               rel="noopener noreferrer"
             >
               Click here
-            </a>{' '}
-            and add your items to the Google Sheet.
+            </a>
+            {'and add your items to the Google Sheet.'}
           </li>
           <li>
-            Once you're done. Click{' '}
+            {"Once you're done. Click"}
             <i>File | Download | Comma-separated values (*.csv)</i>
           </li>
           <li>Upload the CSV file using the button below.</li>

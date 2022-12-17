@@ -29,9 +29,8 @@ export default function ListItem({ item }: ListItemProps) {
   // Constants
   const itemQuantity = getItemQuantity(item, cart?.items)
   const vendor =
-    vendors?.filter(
-      (vendor: VendorObject) => vendor?.id === item?.vendorId
-    )[0] || null
+    vendors?.find((vendor: VendorObject) => vendor?.id === item?.vendorId) ||
+    null
 
   // function clickOpenInventoryModal() {
   //   setLoadedItemId({ ...loadedItemId, inventory: item?.id })

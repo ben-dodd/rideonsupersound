@@ -61,7 +61,7 @@ export default function CreateHoldSidebar() {
       open: true,
       type: 'success',
       message: `ITEM${cart?.items?.length === 1 ? '' : 'S'} PUT ON HOLD FOR ${(
-        customers?.filter((c: CustomerObject) => c?.id === cart?.customerId)[0]
+        customers?.find((c: CustomerObject) => c?.id === cart?.customerId)
           ?.name || ''
       ).toUpperCase()}.`,
     })
@@ -116,9 +116,8 @@ export default function CreateHoldSidebar() {
           fieldRequired
           value={cart?.customerId}
           label={
-            customers?.filter(
-              (c: CustomerObject) => c?.id === cart?.customerId
-            )[0]?.name || ''
+            customers?.find((c: CustomerObject) => c?.id === cart?.customerId)
+              ?.name || ''
           }
           onChange={(customerObject: any) => {
             saveSystemLog('New hold sidebar - Customer selected.', clerk?.id)

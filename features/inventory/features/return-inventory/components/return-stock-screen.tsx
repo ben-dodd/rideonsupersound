@@ -75,9 +75,9 @@ export default function ReturnStockScreen() {
         returnItems?.filter(
           (returnItem: any) =>
             isNaN(returnItem?.quantity) ||
-            inventory?.filter(
+            inventory?.find(
               (i: StockObject) => i?.id === parseInt(returnItem?.id)
-            )[0]?.quantity < parseInt(`${returnItem?.quantity}`) ||
+            )?.quantity < parseInt(`${returnItem?.quantity}`) ||
             returnItem?.quantity < 0
         ).length > 0,
       text: 'RETURN STOCK',
@@ -138,9 +138,8 @@ export default function ReturnStockScreen() {
                   {
                     id: item?.value,
                     quantity:
-                      inventory?.filter(
-                        (i: StockObject) => i?.id === item?.value
-                      )[0]?.quantity || 1,
+                      inventory?.find((i: StockObject) => i?.id === item?.value)
+                        ?.quantity || 1,
                   },
                   ...returnItems,
                 ])
@@ -156,12 +155,12 @@ export default function ReturnStockScreen() {
                   let returnItem = inventory?.filter(
                     (i: StockObject) =>
                       i?.id ===
-                      returnOptions?.filter(
+                      returnOptions?.find(
                         (opt) =>
                           newValue ===
                           `${('00000' + opt?.value || '').slice(-5)}`
                       )?.[0]?.value
-                  )[0]
+                  )
                   setReturnItems([
                     {
                       id: returnItem?.id,
@@ -194,9 +193,9 @@ export default function ReturnStockScreen() {
                 )} ITEMS`}</div>
                 <div className="h-full overflow-y-scroll">
                   {returnItems?.map((returnItem: any, i: number) => {
-                    const item = inventory?.filter(
+                    const item = inventory?.find(
                       (i: StockObject) => i?.id === parseInt(returnItem?.id)
-                    )[0]
+                    )
                     return (
                       <div
                         className="flex justify-between my-2 border-b w-full"

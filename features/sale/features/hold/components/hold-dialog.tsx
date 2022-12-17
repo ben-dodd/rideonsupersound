@@ -49,16 +49,16 @@ export default function HoldDialog() {
   const { registerId } = useCurrentRegisterId()
 
   // States
-  const originalHold = holds?.filter(
+  const originalHold = holds?.find(
     (h: HoldObject) => h?.id === loadedHoldId[page]
-  )[0]
+  )
   const [hold, setHold] = useState(originalHold)
-  const customerName = customers?.filter(
+  const customerName = customers?.find(
     (c: CustomerObject) => c?.id === hold?.customer_id
-  )[0]?.name
-  const clerkName = clerks?.filter(
+  )?.name
+  const clerkName = clerks?.find(
     (c: ClerkObject) => c?.id === hold?.started_by
-  )[0]?.name
+  )?.name
 
   function closeDialog() {
     setLoadedHoldId({ ...loadedHoldId, [page]: 0 })

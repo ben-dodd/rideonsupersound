@@ -181,9 +181,9 @@ export default function CountItems() {
                   //   (stocktakeItem) => stocktakeItem?.quantity_counted > 0
                   // )
                   .map((stocktakeItem: any, i: number) => {
-                    const stockItem = inventory?.filter(
+                    const stockItem = inventory?.find(
                       (i: StockObject) => i?.id === stocktakeItem?.stock_id
-                    )[0]
+                    )
                     if (
                       search !== '' &&
                       !getItemSkuDisplayName(stockItem)

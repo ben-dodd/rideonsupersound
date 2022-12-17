@@ -57,9 +57,9 @@ export default function ListJob({ task }: ListItemProps) {
         </div>
         {/*<div className="grid grid-cols-3 w-2/5">
           <div className="text-blue-800">{`Created by ${
-            clerks?.filter(
+            clerks?.find(
               (c: ClerkObject) => c?.id === task?.created_by_clerk_id
-            )[0]?.name
+            )?.name
           }`}</div>*/}
         <div className="w-3/12">
           {task?.assignedTo ? (
@@ -71,9 +71,9 @@ export default function ListJob({ task }: ListItemProps) {
         <div className="w-3/12 text-right">
           {task?.completedByClerkId
             ? `Completed by ${
-                clerks?.filter(
+                clerks?.find(
                   (c: ClerkObject) => c?.id === task?.completedByClerkId
-                )[0]?.name
+                )?.name
               } (${dayjs(task?.dateCompleted).format('D MMMM YYYY, h:mm A')})`
             : ''}
         </div>

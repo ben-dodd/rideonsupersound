@@ -7,12 +7,11 @@ export function mapPayment(
   return {
     date: vendorPayment?.date,
     payment_id: vendorPayment?.id,
-    vendor_id: vendorPayment?.vendor_id,
+    vendor_id: vendorPayment?.vendorId,
     amount: vendorPayment?.amount,
     type: vendorPayment?.type,
-    clerk: clerks?.filter(
-      (c: ClerkObject) => c?.id === vendorPayment?.clerk_id
-    )[0]?.name,
+    clerk: clerks?.find((c: ClerkObject) => c?.id === vendorPayment?.clerkId)
+      ?.name,
     note: vendorPayment?.note,
   }
 }

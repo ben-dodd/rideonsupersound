@@ -55,9 +55,8 @@ export default async function SaleDetails({ sale }: { sale: SaleObject }) {
       <div className="px-2">
         <div className="font-bold">Customer</div>
         <div className="mb-4">
-          {customers?.filter(
-            (c: CustomerObject) => c?.id === sale?.customerId
-          )[0]?.name || 'Customer not set'}
+          {customers?.find((c: CustomerObject) => c?.id === sale?.customerId)
+            ?.name || 'Customer not set'}
         </div>
         <div className="font-bold">Sale Open</div>
         <div className="mb-4">
@@ -66,9 +65,9 @@ export default async function SaleDetails({ sale }: { sale: SaleObject }) {
                 sale?.saleOpenedBy
                   ? ` (opened by ${
                       clerks
-                        ? clerks.filter(
+                        ? clerks.find(
                             (clerk: any) => clerk?.id === sale?.saleOpenedBy
-                          )[0]?.name
+                          )?.name
                         : 'unknown clerk'
                     })`
                   : ''
@@ -82,9 +81,9 @@ export default async function SaleDetails({ sale }: { sale: SaleObject }) {
                 sale?.saleClosedBy
                   ? ` (closed by ${
                       clerks
-                        ? clerks.filter(
+                        ? clerks.find(
                             (clerk: any) => clerk?.id === sale?.saleClosedBy
-                          )[0]?.name
+                          )?.name
                         : 'unknown clerk'
                     })`
                   : ''

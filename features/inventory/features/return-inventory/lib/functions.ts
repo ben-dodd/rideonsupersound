@@ -27,9 +27,9 @@ export function returnStock(
     returnItems
       .filter((returnItem: any) => parseInt(`${returnItem?.quantity}`) > 0)
       .forEach((returnItem: any) => {
-        const stockItem = inventory?.filter(
+        const stockItem = inventory?.find(
           (i: StockObject) => i?.id === parseInt(returnItem?.id)
-        )[0]
+        )
         updatedInventoryItems.push({
           ...stockItem,
           quantity_returned:

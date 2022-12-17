@@ -19,18 +19,17 @@ export function getVendorDetails(
 
   // Total Items - all stock items that belong to the vendor
   let totalItems = inventory?.filter?.(
-    (i: StockObject) => i?.vendor_id === vendor_id
+    (i: StockObject) => i?.vendorId === vendor_id
   )
 
   // Total Sales - all sale items of the Vendor's stock
-  let totalSales = vendorSales?.filter?.(
-    (v: VendorSaleItemObject) =>
-      totalItems?.filter((i: StockObject) => i?.id === v?.item_id)[0]
+  let totalSales = vendorSales?.filter?.((v: VendorSaleItemObject) =>
+    totalItems?.find((i: StockObject) => i?.id === v?.itemId)
   )
 
   // Total Payments - all payments made to the Vendor
   let totalPayments = vendorPayments?.filter?.(
-    (v: VendorPaymentObject) => v?.vendor_id === vendor_id
+    (v: VendorPaymentObject) => v?.vendorId === vendor_id
   )
 
   // If a cart is in progress, add these payments - possibly delete this?
@@ -84,7 +83,7 @@ export function getVendorDetails(
 
   // Get the date of the last sale of the vendor stock
   let lastSold = latestDate(
-    totalSales?.map((s: VendorSaleItemObject) => s?.date_sale_closed)
+    totalSales?.map((s: VendorSaleItemObject) => s?.dateSaleClosed)
   )
 
   // Total vendor take minus total paid to vendor
@@ -117,5 +116,5 @@ export function getVendorItemsInStock(
   inventory: StockObject[],
   vendor_id: number
 ) {
-  return inventory?.filter((i: StockObject) => i?.vendor_id === vendor_id)
+  return inventory?.filter((i: StockObject) => i?.vendorId === vendor_id)
 }

@@ -1,8 +1,7 @@
 import TextField from 'components/inputs/text-field'
 import DiscogsOption from 'features/inventory/features/api-discogs/components/discogs-option'
 import { getDiscogsOptions } from 'features/inventory/features/api-discogs/lib/functions'
-import { receiveStockAtom } from 'lib/atoms'
-import { useAtom } from 'jotai'
+import { useAppStore } from 'lib/store'
 import debounce from 'lodash/debounce'
 import { useCallback, useState } from 'react'
 import { v4 as uuid } from 'uuid'
@@ -20,14 +19,9 @@ export default function Discogs() {
       }
     }
   }
-  const [basket, setBasket] = useAtom(receiveStockAtom)
+  const { receiveBasket, addReceiveBasketItem } = useAppStore()
   const addItem = (item) => {
-    setBasket({
-      ...basket,
-      items: basket?.items
-        ? [...basket?.items, { key: uuid(), item }]
-        : [{ key: uuid(), item }],
-    })
+    addReceiveBasketItem(item)
     setBarcode('')
     setKey(uuid())
     setDiscogsOptions([])
@@ -71,7 +65,7 @@ export default function Discogs() {
           <DiscogsOption
             discogsOption={discogsOption}
             key={k}
-            item={{ vendor_id: basket?.vendor_id }}
+            item={{ vendorId: receiveBasket?.vendorId }}
             setItem={addItem}
             overrideItemDetails={true}
           />

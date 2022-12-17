@@ -98,9 +98,9 @@ export default function Pay() {
               <div>
                 <div className="font-bold">Customer</div>
                 <div>
-                  {customers?.filter(
+                  {customers?.find(
                     (c: CustomerObject) => c?.id === cart?.customerId
-                  )[0]?.name || ''}
+                  )?.name || ''}
                 </div>
               </div>
             ) : (
@@ -116,9 +116,9 @@ export default function Pay() {
               inputLabel="Select customer"
               value={cart?.customerId}
               label={
-                customers?.filter(
+                customers?.find(
                   (c: CustomerObject) => c?.id === cart?.customerId
-                )[0]?.name || ''
+                )?.name || ''
               }
               onChange={(customerObject: any) => {
                 saveSystemLog('SALE SCREEN customer selected.', clerk?.id)
@@ -169,9 +169,9 @@ export default function Pay() {
               multiline
               value={
                 cart?.postalAddress ||
-                customers?.filter(
+                customers?.find(
                   (c: CustomerObject) => c?.id === cart?.customerId
-                )[0]?.postalAddress ||
+                )?.postalAddress ||
                 ''
               }
               onChange={(e: any) => setCart({ postalAddress: e.target.value })}

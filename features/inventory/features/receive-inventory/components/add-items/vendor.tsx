@@ -6,8 +6,8 @@ import Select from 'react-select'
 
 export default function Vendor() {
   const { inventory } = useStockList()
-  const { receiveStock, setReceiveStock, addReceiveStockItem } = useAppStore()
-  const addItem = (item: any) => addReceiveStockItem(item?.value)
+  const { receiveBasket, addReceiveBasketItem } = useAppStore()
+  const addItem = (item: any) => addReceiveBasketItem(item?.value)
   return (
     <div>
       <div className="helper-text mb-2">
@@ -20,8 +20,8 @@ export default function Vendor() {
           options={inventory
             ?.filter(
               (item: StockObject) =>
-                item?.vendorId === receiveStock?.vendor_id &&
-                !receiveStock?.items
+                item?.vendorId === receiveBasket?.vendorId &&
+                !receiveBasket?.items
                   ?.map((item) => item?.item?.id)
                   .includes(item?.id)
             )

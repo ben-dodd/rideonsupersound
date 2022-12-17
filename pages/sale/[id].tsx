@@ -46,7 +46,7 @@ export default function SaleItemScreen() {
     setSaleLoading(true)
     if (!isSaleItemsLoading && !isSaleTransactionsLoading) {
       let loadedSale =
-        sales?.filter((s: SaleObject) => s?.id === Number(id))[0] || {}
+        sales?.find((s: SaleObject) => s?.id === Number(id)) || {}
       loadedSale.items = items
       loadedSale.transactions = transactions
       console.log(loadedSale)

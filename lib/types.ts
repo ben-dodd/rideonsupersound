@@ -269,7 +269,7 @@ export interface StockObject {
   format?: string
   section?: string
   genre?: string[] | string
-  isNew?: number
+  isNew?: boolean
   cond?: string
   country?: string
   releaseYear?: string
@@ -284,12 +284,12 @@ export interface StockObject {
   thumbUrl?: string
   googleBooksItemId?: number
   discogsItemId?: number
-  doListOnWebsite?: number
-  hasNoQuantity?: number
+  doListOnWebsite?: boolean
+  hasNoQuantity?: boolean
   dateCreated?: string
   dateLastStocktake?: string
   dateModified?: string
-  isDeleted?: number
+  isDeleted?: boolean
   vendorCut?: number
   totalSell?: number
   quantity?: number

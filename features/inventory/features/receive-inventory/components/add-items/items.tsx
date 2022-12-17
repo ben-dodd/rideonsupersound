@@ -2,20 +2,21 @@ import {
   getItemDisplayName,
   getItemSkuDisplayName,
 } from 'features/inventory/features/display-inventory/lib/functions'
-import { receiveStockAtom } from 'lib/atoms'
 import CloseIcon from '@mui/icons-material/Close'
-import { useAtom } from 'jotai'
+import { useAppStore } from 'lib/store'
 
 export default function Items() {
-  const [basket, setBasket] = useAtom(receiveStockAtom)
+  const { receiveBasket, setReceiveBasket } = useAppStore()
   const removeItem = (removeItem) => {
-    const items = basket?.items?.filter((item) => item?.key !== removeItem?.key)
-    setBasket({ ...basket, items })
+    const items = receiveBasket?.items?.filter(
+      (item) => item?.key !== removeItem?.key
+    )
+    setReceiveBasket({ items })
   }
   return (
     <div>
-      {basket?.items?.length > 0 ? (
-        basket?.items?.map((item: any) => {
+      {receiveBasket?.items?.length > 0 ? (
+        receiveBasket?.items?.map((item: any) => {
           return (
             <div
               key={item?.key}

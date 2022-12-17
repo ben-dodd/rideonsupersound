@@ -1,8 +1,3 @@
-import {
-  createStockItemInDatabase,
-  createStockMovementInDatabase,
-  createStockPriceInDatabase,
-} from 'lib/database/create'
 import { ClerkObject, StockMovementTypes } from 'lib/types'
 import { v4 as uuid } from 'uuid'
 
@@ -37,64 +32,4 @@ export function parseCSVItems(results: any) {
     })
   }
   return parsedItems
-}
-
-export async function receiveStock(
-  basket: any,
-  clerk: ClerkObject,
-  registerID: number
-) {
-  const receivedStock = []
-  await Promise.all(
-    basket?.items?.map(async (receiveItem: any) => {
-      if (receiveItem?.item?.id) {
-        createStockMovementInDatabase({
-          item: {
-            item_id: receiveItem?.item?.id,
-            quantity: receiveItem?.quantity,
-          },
-          clerk,
-          registerID,
-          act: StockMovementTypes?.Received,
-          note: 'Existing stock received.',
-        })
-        receivedStock.push({
-          item: receiveItem?.item,
-          quantity: receiveItem?.quantity,
-        })
-      } else {
-        const newStockID = await createStockItemInDatabase(
-          { ...receiveItem?.item, vendor_id: basket?.vendor_id },
-          clerk
-        )
-        createStockPriceInDatabase(
-          newStockID,
-          clerk,
-          parseFloat(receiveItem?.total_sell) * 100,
-          parseFloat(receiveItem?.vendor_cut) * 100,
-          'New stock priced.'
-        )
-        createStockMovementInDatabase({
-          item: {
-            item_id: newStockID,
-            quantity: receiveItem?.quantity,
-          },
-          clerk,
-          registerID,
-          act: StockMovementTypes?.Received,
-          note: 'New stock received.',
-        })
-        receivedStock.push({
-          item: {
-            ...receiveItem?.item,
-            vendor_id: basket?.vendor_id,
-            total_sell: parseFloat(receiveItem?.total_sell) * 100,
-            id: newStockID,
-          },
-          quantity: receiveItem?.quantity,
-        })
-      }
-    })
-  )
-  return receivedStock
 }

@@ -97,9 +97,9 @@ export function getItemQuantity(
   item: StockObject,
   saleItems: SaleItemObject[]
 ) {
-  const saleItem = saleItems?.filter(
+  const saleItem = saleItems?.find(
     (i: SaleItemObject) => i?.itemId === item?.id
-  )[0]
+  )
   const cartQuantity = saleItem?.quantity || '0'
   const itemQuantity = item?.quantity || 0
   return itemQuantity - parseInt(cartQuantity)

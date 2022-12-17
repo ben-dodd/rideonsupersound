@@ -44,10 +44,10 @@ export default function Gift() {
   const [giftCardCode, setGiftCardCode] = useState('')
   const giftCard: GiftCardObject = useMemo(() => {
     console.log('Gift card changed')
-    let gc: GiftCardObject = giftCards?.filter(
+    let gc: GiftCardObject = giftCards?.find(
       (giftCard: GiftCardObject) =>
         giftCard?.giftCardCode === giftCardCode.toUpperCase()
-    )[0]
+    )
     console.log(gc?.giftCardRemaining)
     console.log(totalRemaining)
     if (gc?.giftCardRemaining / 100 < totalRemaining)

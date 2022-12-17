@@ -1,9 +1,8 @@
-import { receiveStockAtom } from 'lib/atoms'
-import { useAtom } from 'jotai'
 import ListItem from './list-item'
+import { useAppStore } from 'lib/store'
 
 export default function SetPriceAndQuantities() {
-  const [bucket, setBucket] = useAtom(receiveStockAtom)
+  const { receiveBasket } = useAppStore()
   return (
     <div>
       <div className="help-text">
@@ -11,12 +10,8 @@ export default function SetPriceAndQuantities() {
         have a price, vendor cut, quantity, and have selected new or used for
         every item to go to the next step.
       </div>
-      {bucket?.items?.map((receiveItem) => (
-        <ListItem
-          receiveItem={receiveItem}
-          bucket={bucket}
-          setBucket={setBucket}
-        />
+      {receiveBasket?.items?.map((receiveItem) => (
+        <ListItem key={receiveItem?.key} receiveItem={receiveItem} />
       ))}
     </div>
   )

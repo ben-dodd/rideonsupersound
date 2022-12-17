@@ -62,9 +62,9 @@ export default function VendorSales({ vendor, vendorDetails }) {
             )
             // ?.slice(0, 5)
             ?.map((sale: VendorSaleItemObject) => {
-              const stockItem: StockObject = inventory?.filter(
+              const stockItem: StockObject = inventory?.find(
                 (i: StockObject) => i?.id === sale?.item_id
-              )[0]
+              )
               const prices = getCartItemPrice(sale, null)
               return (
                 <div

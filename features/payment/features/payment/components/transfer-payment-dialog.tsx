@@ -49,8 +49,8 @@ export default function TransferVendorPaymentDialog() {
             ),
             sales?.filter(
               (v: VendorSaleItemObject) =>
-                inventory?.filter((i: StockObject) => i?.id === v?.itemId)[0]
-                  ?.vendor_id === vendorPayId
+                inventory?.find((i: StockObject) => i?.id === v?.itemId)
+                  ?.vendorId === vendorPayId
             )
           ),
     [vendorPayId, vendorPayments]
@@ -63,8 +63,8 @@ export default function TransferVendorPaymentDialog() {
         ),
         sales?.filter(
           (v: VendorSaleItemObject) =>
-            inventory?.filter((i: StockObject) => i?.id === v?.itemId)[0]
-              ?.vendor_id === vendorReceiveId
+            inventory?.find((i: StockObject) => i?.id === v?.itemId)
+              ?.vendorId === vendorReceiveId
         )
       ),
     [vendorReceiveId, vendorPayments]
@@ -73,11 +73,11 @@ export default function TransferVendorPaymentDialog() {
     () =>
       vendorPayId === 'store'
         ? null
-        : vendors?.filter((v: VendorObject) => v?.id === vendorPayId)[0],
+        : vendors?.find((v: VendorObject) => v?.id === vendorPayId),
     [vendorPayId, vendors]
   )
   const vendorReceive = useMemo(
-    () => vendors?.filter((v: VendorObject) => v?.id === vendorReceiveId)[0],
+    () => vendors?.find((v: VendorObject) => v?.id === vendorReceiveId),
     [vendorReceiveId, vendors]
   )
   const buttons: ModalButton[] = [
@@ -170,7 +170,7 @@ export default function TransferVendorPaymentDialog() {
             label:
               vendorPayId === 'store'
                 ? 'R.O.S.S.'
-                : vendors?.filter((v: VendorObject) => v?.id === vendorPayId)[0]
+                : vendors?.find((v: VendorObject) => v?.id === vendorPayId)
                     ?.name || '',
           }}
           options={[{ value: 'store', label: 'R.O.S.S.' }]?.concat(
@@ -189,7 +189,7 @@ export default function TransferVendorPaymentDialog() {
           value={{
             value: vendorReceiveId,
             label:
-              vendors?.filter((v: VendorObject) => v?.id === vendorReceiveId)[0]
+              vendors?.find((v: VendorObject) => v?.id === vendorReceiveId)
                 ?.name || '',
           }}
           options={vendors?.map((val: VendorObject) => ({

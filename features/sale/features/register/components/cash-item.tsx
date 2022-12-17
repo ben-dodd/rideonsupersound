@@ -12,9 +12,9 @@ export default function CashItem({
   negative?: boolean
 }) {
   const { clerks } = useClerks()
-  const transactionBy = clerks?.filter(
+  const transactionBy = clerks?.find(
     (c: ClerkObject) => c?.id === transaction?.clerkId
-  )[0]?.name
+  )?.name
   const date = dayjs(transaction?.date).format('H:mm A, D MMMM YYYY')
 
   // REVIEW Add more info to cash items, possibly add receipt pop up info dialog

@@ -1,12 +1,10 @@
-// Packages
+ay // Packages
 import { useEffect, useMemo, useState } from 'react'
 import { ModalButton, VendorObject } from 'lib/types'
 
 // Components
 import ScreenContainer from 'components/container/screen'
 import Tabs from 'components/navigation/tabs'
-import { createVendorInDatabase } from 'lib/database/create'
-import { updateVendorInDatabase } from 'lib/database/update'
 import { getVendorDetails } from '../lib/functions'
 import GeneralDetails from './general-details'
 import VendorItems from './items'
@@ -42,7 +40,7 @@ export default function VendorScreen() {
       setVendor({})
     } else {
       setVendor(
-        vendors?.filter((v: VendorObject) => v?.id === loadedVendorId[page])[0]
+        vendors?.find((v: VendorObject) => v?.id === loadedVendorId[page])
       )
     }
     setTab(0)

@@ -235,8 +235,7 @@ export function logCreateHold(
     `${getItemSkuDisplayName(
       getItemById(cartItem?.item_id, inventory)
     )} put on hold for ${
-      customers?.filter((c: CustomerObject) => c?.id === cart?.customer_id)[0]
-        ?.name
+      customers?.find((c: CustomerObject) => c?.id === cart?.customerId)?.name
     } for ${holdPeriod} day${holdPeriod === 1 ? '' : 's'}.`,
     clerk?.id,
     'hold',
@@ -274,9 +273,8 @@ export function logLaybyStarted(
     `Layby started${
       cart?.customer_id
         ? ` for ${
-            customers?.filter(
-              (c: CustomerObject) => c?.id === cart?.customer_id
-            )[0]?.name
+            customers?.find((c: CustomerObject) => c?.id === cart?.customerId)
+              ?.name
           }`
         : ''
     } (${numberOfItems} item${
@@ -414,9 +412,8 @@ export function logSaleParked(saleId, cart, customers, clerk) {
     }${
       cart?.customer_id
         ? ` for ${
-            customers?.filter(
-              (c: CustomerObject) => c?.id === cart?.customer_id
-            )[0]?.name
+            customers?.find((c: CustomerObject) => c?.id === cart?.customerId)
+              ?.name
           }.`
         : ''
     }).`,

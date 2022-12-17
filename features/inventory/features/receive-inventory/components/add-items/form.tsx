@@ -1,30 +1,18 @@
 import InventoryItemForm from 'features/inventory/features/item-stock/components/stock-item-form'
-import { receiveStockAtom } from 'lib/atoms'
 import { StockObject } from 'lib/types'
 import { ChevronRight } from '@mui/icons-material'
-import { useAtom } from 'jotai'
 import { useState } from 'react'
-import { v4 as uuid } from 'uuid'
+import { useAppStore } from 'lib/store'
 
 export default function Form() {
-  // State
-  const [basket, setBasket] = useAtom(receiveStockAtom)
+  const { addReceiveBasketItem } = useAppStore()
   const defaultItem = { isNew: true, doListOnWebsite: true }
   const [item, setItem] = useState<StockObject>(defaultItem)
-  const addItem = () => {
-    setBasket({
-      ...basket,
-      items: basket?.items
-        ? [...basket?.items, { key: uuid(), item }]
-        : [{ key: uuid(), item }],
-    })
-    setItem(defaultItem)
-  }
   return (
     <div>
       <div className="flex justify-end">
         <button
-          onClick={addItem}
+          onClick={() => addReceiveBasketItem(item)}
           disabled={Object.keys(item)?.length === 0}
           className="bg-col2-dark hover:bg-col2 disabled:bg-gray-200 p-2 rounded"
         >

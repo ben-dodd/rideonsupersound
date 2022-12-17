@@ -1,6 +1,5 @@
 import { logPrintLabels } from 'features/log/lib/functions'
 import dayjs from 'dayjs'
-import { useAtom } from 'jotai'
 import { CSVLink } from 'react-csv'
 import {
   getImageSrc,

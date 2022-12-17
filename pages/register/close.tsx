@@ -35,10 +35,10 @@ export default function CloseRegisterScreen() {
   useEffect(() => setCloseAmount(`${getAmountFromCashMap(till)}`), [till])
 
   // Constants
-  const openAmount = cashUp?.open_amount / 100
-  const openedBy = clerks?.filter(
-    (c: ClerkObject) => c?.id === cashUp?.opened_by_id
-  )[0]?.name
+  const openAmount = cashUp?.openAmount / 100
+  const openedBy = clerks?.find(
+    (c: ClerkObject) => c?.id === cashUp?.openedById
+  )?.name
   const openedOn = dayjs(cashUp?.open_date).format('H:mm A, D MMMM YYYY')
 
   // Cash Balances

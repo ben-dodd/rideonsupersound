@@ -53,7 +53,12 @@ export interface StoreState {
   sellSearchBar?: string
   confirmModal?: ConfirmModal
   alert?: AlertProps
-  receiveStock?: any
+  receiveBasket?: {
+    items: any[]
+    clerkId?: number
+    registerId?: number
+    vendorId?: number
+  }
   bypassRegister?: boolean
   salesView?: string
   salesViewRange?: any
@@ -71,9 +76,11 @@ export interface StoreState {
   addCartItem: (newItem: SaleItemObject) => void
   setCartItem: (id: number, update: any) => void
   setCustomer: (update: any) => void
-  setReceiveStock: (update: any) => void
-  addReceiveStockItem: (newItem: any) => void
+  setReceiveBasket: (update: any) => void
+  addReceiveBasketItem: (newItem: any) => void
+  updateReceiveBasketItem: (key: any, update: any) => void
   resetCart: () => void
+  resetReceiveBasket: () => void
   resetCustomer: () => void
   resetSellSearchBar: () => void
   toggleTableMode: () => void

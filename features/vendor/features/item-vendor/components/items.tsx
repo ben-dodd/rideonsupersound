@@ -30,7 +30,7 @@ export default function VendorItems() {
   // Load
   useEffect(() => {
     setVendor(
-      vendors?.filter((v: VendorObject) => v?.id === loadedVendorId[page])[0]
+      vendors?.find((v: VendorObject) => v?.id === loadedVendorId[page])
     )
   }, [loadedVendorId[page]])
 

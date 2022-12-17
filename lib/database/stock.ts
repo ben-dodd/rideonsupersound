@@ -1,4 +1,4 @@
-import { dbUpdateSale } from './sale'
+import { StockMovementTypes } from 'lib/types'
 import { js2mysql } from './utils/helpers'
 const connection = require('./conn')
 
@@ -102,6 +102,10 @@ export function dbCreateStockMovement(stockMovement, db = connection) {
   return db('stock_movement').insert(js2mysql(stockMovement))
 }
 
+export function dbCreateStockPrice(stockPrice, db = connection) {
+  return db('stock_price').insert(js2mysql(stockPrice))
+}
+
 export function dbGetStocktakeTemplates(db = connection) {
   return db('stocktake_template').where(`is_deleted`, 0)
 }
@@ -112,4 +116,75 @@ export function dbCreateStocktakeTemplate(stocktakeTemplate, db = connection) {
 
 export function dbDeleteStockItem(id, db = connection) {
   return db('stock').where({ id }).update({ is_deleted: 1 })
+}
+
+export async function dbReceiveStock(receiveStock: any, db = connection) {
+  // return received stock?
+  const trx = await knex.transaction()
+  try {
+    const { clerkId, registerId, vendorId } = receiveStock
+    const receivedStock = []
+    await Promise.all(
+      receiveStock?.items?.map(async (receiveItem: any) => {
+        if (receiveItem?.item?.id) {
+          await dbCreateStockMovement(
+            {
+              item: {
+                item_id: receiveItem?.item?.id,
+                quantity: receiveItem?.quantity,
+              },
+              clerkId,
+              registerId,
+              act: StockMovementTypes?.Received,
+              note: 'Existing stock received.',
+            },
+            db
+          )
+          receivedStock.push({
+            item: receiveItem?.item,
+            quantity: receiveItem?.quantity,
+          })
+        } else {
+          const stockId = await dbCreateStockItem(
+            { ...receiveItem?.item, vendorId },
+            db
+          )
+          dbCreateStockPrice(
+            {
+              stockId,
+              clerkId,
+              totalSell: parseFloat(receiveItem?.totalSell) * 100,
+              vendorCut: parseFloat(receiveItem?.vendorCut) * 100,
+              note: 'New stock priced.',
+            },
+            db
+          )
+          await dbCreateStockMovement(
+            {
+              stockId,
+              clerkId,
+              quantity: receiveItem?.quantity,
+              registerId,
+              act: StockMovementTypes?.Received,
+              note: 'New stock received.',
+            },
+            db
+          )
+          receivedStock.push({
+            item: {
+              ...receiveItem?.item,
+              vendorId,
+              totalSell: parseFloat(receiveItem?.totalSell) * 100,
+              id: stockId,
+            },
+            quantity: receiveItem?.quantity,
+          })
+        }
+      })
+    )
+    trx.commit()
+  } catch (err) {
+    // Roll back the transaction on error
+    trx.rollback()
+  }
 }

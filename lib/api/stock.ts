@@ -51,6 +51,13 @@ export function createStockItem(stockItem: StockObject, clerk: ClerkObject) {
     })
 }
 
+export function receiveStock(receiveStock: any) {
+  return axios
+    .patch(`/api/stock/receive`, receiveStock)
+    .then((res) => res.data)
+    .catch((e) => Error(e.message))
+}
+
 export function updateStockItem(update: any, id) {
   return axios
     .patch(`/api/stock/${id}`)

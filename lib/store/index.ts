@@ -43,7 +43,7 @@ export const useAppStore = createSelectors(
     sellSearchBar: '',
     confirmModal: { open: false },
     alert: { open: false },
-    receiveStock: {},
+    receiveBasket: { items: [] },
     bypassRegister: false,
     salesView: 'day',
     salesViewRange: {
@@ -109,18 +109,26 @@ export const useAppStore = createSelectors(
           draft.cart.items[id] = { ...get().cart.items[id], ...update }
         })
       ),
-    setReceiveStock: (update) =>
+    setReceiveBasket: (update) =>
       set(
         produce((draft) => {
           Object.entries(update).forEach(
-            ([key, value]) => (draft.receiveStock.key = value)
+            ([key, value]) => (draft.receiveBasket.key = value)
           )
         })
       ),
-    addReceiveStockItem: (newItem) =>
+    addReceiveBasketItem: (newItem) =>
       set(
         produce((draft) => {
-          draft.cart.items.push({ key: uuid(), item: newItem })
+          draft.receiveBasket.items.push({ key: uuid(), item: newItem })
+        })
+      ),
+    updateReceiveBasketItem: (key, update) =>
+      set(
+        produce((draft) => {
+          draft.receiveBasket.items.map((item) =>
+            item?.key === key ? { ...item, ...update } : item
+          )
         })
       ),
     setCustomer: (update) =>
@@ -141,6 +149,12 @@ export const useAppStore = createSelectors(
       set(
         produce((draft) => {
           draft.cart = { id: null, customer: {} }
+        })
+      ),
+    resetReceiveBasket: () =>
+      set(
+        produce((draft) => {
+          draft.receiveStock = { items: [] }
         })
       ),
     resetCustomer: () =>

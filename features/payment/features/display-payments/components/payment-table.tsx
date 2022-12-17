@@ -6,6 +6,7 @@ import Table from 'components/table'
 import dayjs from 'dayjs'
 import { mapPayment } from '../lib/functions'
 import { useVendors } from 'lib/api/vendor'
+import { useClerks } from 'lib/api/clerk'
 
 export default function PaymentTable() {
   // SWR
@@ -40,10 +41,10 @@ export default function PaymentTable() {
       },
       {
         Header: 'Vendor',
-        accessor: 'vendor_id',
+        accessor: 'vendorId',
         width: 250,
         Cell: ({ value }) =>
-          vendors?.filter((v: VendorObject) => v?.id === value)[0]?.name || '',
+          vendors?.find((v: VendorObject) => v?.id === value)?.name || '',
       },
       {
         Header: 'Amount',

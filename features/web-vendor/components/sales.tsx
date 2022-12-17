@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+import dayjs from 'dayjs'
 // import { XYPlot, VerticalBarSeries, XAxis, YAxis } from "react-vis";
 // import { timeFormatDefaultLocale } from "d3-time-format";
 
@@ -26,9 +26,7 @@ export default function Sales({ sales, vendorStock }) {
           </div>
           {sales?.map((sale) => {
             // console.log(sale);
-            const stockItem = vendorStock?.filter(
-              (s) => s?.id === sale?.item_id
-            )[0];
+            const stockItem = vendorStock?.find((s) => s?.id === sale?.item_id)
             // console.log(stockItem);
             return (
               <div
@@ -37,10 +35,10 @@ export default function Sales({ sales, vendorStock }) {
               >
                 <div className="w-2/12 px-1 md:w-1/12">
                   <div className="hidden md:inline">
-                    {dayjs(sale?.date_sale_closed).format("DD/MM/YYYY")}
+                    {dayjs(sale?.date_sale_closed).format('DD/MM/YYYY')}
                   </div>
                   <div className="md:hidden">
-                    {dayjs(sale?.date_sale_closed).format("DD/MM/YY")}
+                    {dayjs(sale?.date_sale_closed).format('DD/MM/YY')}
                   </div>
                 </div>
                 <div className="w-1/12 px-1 hidden md:inline">
@@ -49,31 +47,31 @@ export default function Sales({ sales, vendorStock }) {
                 <div className="w-2/12 px-1">{stockItem?.format}</div>
                 <div className="w-2/12 px-1">{stockItem?.artist}</div>
                 <div className="w-2/12 md:w-3/12 px-1">{`${stockItem?.title}${
-                  sale?.is_refunded ? " [REFUNDED]" : ""
+                  sale?.is_refunded ? ' [REFUNDED]' : ''
                 }`}</div>
                 <div
                   className={`w-2/12 md:w-1/12 px-1 text-right${
-                    sale?.is_refunded ? " line-through" : ""
+                    sale?.is_refunded ? ' line-through' : ''
                   }`}
                 >
                   ${(sale?.total_sell / 100)?.toFixed(2)}
                 </div>
                 <div
                   className={`w-1/12 px-1 text-right hidden md:inline${
-                    sale?.is_refunded ? " line-through" : ""
+                    sale?.is_refunded ? ' line-through' : ''
                   }`}
                 >
                   ${((sale?.total_sell - sale?.vendor_cut) / 100)?.toFixed(2)}
                 </div>
                 <div
                   className={`w-2/12 md:w-1/12 px-1 text-right${
-                    sale?.is_refunded ? " line-through" : ""
+                    sale?.is_refunded ? ' line-through' : ''
                   }`}
                 >
                   ${(sale?.vendor_cut / 100)?.toFixed(2)}
                 </div>
               </div>
-            );
+            )
           })}
         </div>
       )}
@@ -83,5 +81,5 @@ export default function Sales({ sales, vendorStock }) {
         <YAxis />
       </XYPlot> */}
     </div>
-  );
+  )
 }

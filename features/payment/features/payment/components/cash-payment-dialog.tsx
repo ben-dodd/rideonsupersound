@@ -113,8 +113,8 @@ export default function CashPaymentDialog() {
           value={{
             value: vendor_id,
             label:
-              vendors?.filter((v: VendorObject) => v?.id === vendor_id)[0]
-                ?.name || '',
+              vendors?.find((v: VendorObject) => v?.id === vendor_id)?.name ||
+              '',
           }}
           options={vendors?.map((val: VendorObject) => ({
             value: val?.id,

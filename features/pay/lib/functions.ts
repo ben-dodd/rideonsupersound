@@ -81,9 +81,9 @@ export function writeItemList(
     return items
       .filter((item: SaleItemObject) => !item?.isDeleted)
       .map((item: SaleItemObject) => {
-        let stockItem: StockObject = inventory?.filter(
+        let stockItem: StockObject = inventory?.find(
           (i) => i?.id === item?.itemId
-        )[0]
+        )
         if (item?.isGiftCard) {
           return `Gift Card [${stockItem?.giftCardCode}]`
         } else {

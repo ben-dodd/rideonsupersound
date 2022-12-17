@@ -1,18 +1,13 @@
 import { useMemo } from 'react'
 import { ClerkObject, StockObject, VendorObject } from 'lib/types'
-
-// Functions
-
-// Components
 import TableContainer from 'components/container/table'
 import Table from 'components/table'
 import { getVendorDetails } from 'features/vendor/features/item-vendor/lib/functions'
+import { useClerks } from 'lib/api/clerk'
+import { useCustomers } from 'lib/api/customer'
+import { useVendors } from 'lib/api/vendor'
 
 export default function VendorsScreen() {
-  // Atoms
-  const [loadedVendorId, setLoadedVendorId] = useAtom(loadedVendorIdAtom)
-
-  // SWR
   const { inventory, isInventoryLoading } = useInventory()
   const { sales, isSalesLoading } = useSalesJoined()
   const { vendorPayments, isVendorPaymentsLoading } = useVendorPayments()
@@ -39,7 +34,7 @@ export default function VendorsScreen() {
     () =>
       vendors
         ? vendors
-            ?.filter((v: VendorObject) => !v?.is_deleted)
+            ?.filter((v: VendorObject) => !v?.isDeleted)
             .map((v: VendorObject) => {
               let vendorVars = getVendorDetails(
                 inventory,
@@ -50,13 +45,13 @@ export default function VendorsScreen() {
               return {
                 id: v?.id,
                 name: v?.name || '-',
-                contactName: v?.contact_name || '-',
+                contactName: v?.contactName || '-',
                 storeContact:
-                  clerks?.filter((c: ClerkObject) => c?.id === v?.clerk_id)[0]
+                  clerks?.find((c: ClerkObject) => c?.id === v?.clerkId)
                     ?.name || '-',
-                type: v?.vendor_category || '-',
+                type: v?.vendorCategory || '-',
                 email: v?.email || '',
-                bankAccountNumber: v?.bank_account_number || '-',
+                bankAccountNumber: v?.bankAccountNumber || '-',
                 totalTake: vendorVars?.totalSell || 0,
                 totalOwing: vendorVars?.totalOwing || 0,
                 totalDebitAmount: vendorVars?.totalPaid || 0,

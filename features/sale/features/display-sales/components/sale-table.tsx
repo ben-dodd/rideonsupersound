@@ -23,15 +23,13 @@ export default function SaleTable() {
         ?.map((s: SaleObject) => {
           return {
             id: s?.id,
-            date: s?.date_sale_opened,
+            date: s?.dateSaleOpened,
             status: s?.state,
-            clerk: clerks?.filter(
-              (c: ClerkObject) => c?.id === s?.sale_opened_by
-            )[0],
-            numberOfItems: s?.number_of_items,
-            items: s?.item_list,
-            store: s?.store_cut,
-            sell: s?.total_price,
+            clerk: clerks?.find((c: ClerkObject) => c?.id === s?.saleOpenedBy),
+            numberOfItems: s?.numberOfItems,
+            items: s?.itemList,
+            store: s?.storeCut,
+            sell: s?.totalPrice,
           }
         }),
     [sales, clerks]

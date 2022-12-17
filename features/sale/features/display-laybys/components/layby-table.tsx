@@ -10,6 +10,8 @@ import {
 import TableContainer from 'components/container/table'
 import Table from 'components/table'
 import dayjs from 'dayjs'
+import { useClerks } from 'lib/api/clerk'
+import { useCustomers } from 'lib/api/customer'
 
 export default function LaybyTable() {
   // SWR
@@ -20,7 +22,6 @@ export default function LaybyTable() {
 
   // Atoms
   // const [view, setView] = useAtom(viewAtom);
-  const [page] = useAtom(pageAtom)
   const [loadedSaleId, setLoadedSaleId] = useAtom(loadedSaleIdAtom)
 
   // Constants
@@ -31,17 +32,15 @@ export default function LaybyTable() {
         ?.map((s: SaleObject) => {
           return {
             id: s?.id,
-            date: s?.date_sale_opened,
-            customer: customers?.filter(
-              (c: CustomerObject) => c?.id === s?.customer_id
-            )[0],
-            clerk: clerks?.filter(
-              (c: ClerkObject) => c?.id === s?.sale_opened_by
-            )[0],
-            numberOfItems: s?.number_of_items,
-            items: s?.item_list,
-            store: s?.store_cut,
-            sell: s?.total_price,
+            date: s?.dateSaleOpened,
+            customer: customers?.find(
+              (c: CustomerObject) => c?.id === s?.customerId
+            ),
+            clerk: clerks?.find((c: ClerkObject) => c?.id === s?.saleOpenedBy),
+            numberOfItems: s?.numberOfItems,
+            items: s?.itemList,
+            store: s?.storeCut,
+            sell: s?.totalPrice,
           }
         }),
     [sales, customers, clerks]

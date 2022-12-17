@@ -120,8 +120,7 @@ export default function SaleScreen() {
       ...cart,
       postal_address: cart?.isMailOrder
         ? cart?.postalAddress ||
-          customers?.filter((c) => c?.id === cart?.customerId)[0]
-            ?.postalAddress ||
+          customers?.find((c) => c?.id === cart?.customerId)?.postalAddress ||
           null
         : null,
       state: SaleStateTypes.Completed,
@@ -132,9 +131,9 @@ export default function SaleScreen() {
     const saleId = await saveSaleItemsTransactionsToDatabase(
       completedSale,
       clerk,
-      registerID,
+      registerId,
       cart?.state,
-      customers?.filter((c) => c?.id === cart?.customerId)[0]?.name
+      customers?.find((c) => c?.id === cart?.customerId)?.name
     )
     resetCart()
     router.back()

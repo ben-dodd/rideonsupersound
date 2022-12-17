@@ -7,31 +7,33 @@ import {
   getItemDisplayName,
   getItemSku,
 } from 'features/inventory/features/display-inventory/lib/functions'
-import { getProfitMargin } from 'features/sale/features/item-sale/lib/functions'
+import { getProfitMargin } from 'features/pay/lib/functions'
 import { getStoreCut } from 'features/sale/features/sell/lib/functions'
+import { useAppStore } from 'lib/store'
 import { StockObject } from 'lib/types'
 
-export default function ListItem({ receiveItem, bucket, setBucket }) {
+export default function ListItem({ receiveItem }) {
+  const { updateReceiveBasketItem } = useAppStore()
   const item: StockObject = receiveItem?.item
   const priceSuggestion = getPriceSuggestion(item)
   const profitMargin = getProfitMargin({
-    total_sell: parseFloat(
-      receiveItem?.total_sell ||
-        (item?.total_sell ? `${item?.total_sell / 100}` : '')
+    totalSell: parseFloat(
+      receiveItem?.totalSell ||
+        (item?.totalSell ? `${item?.totalSell / 100}` : '')
     ),
-    vendor_cut: parseFloat(
-      receiveItem?.vendor_cut ||
-        (item?.vendor_cut ? `${item?.vendor_cut / 100}` : '')
+    vendorCut: parseFloat(
+      receiveItem?.vendorCut ||
+        (item?.vendorCut ? `${item?.vendorCut / 100}` : '')
     ),
   })
   const storeCut = getStoreCut({
-    total_sell: parseFloat(
-      receiveItem?.total_sell ||
-        (item?.total_sell ? `${item?.total_sell / 100}` : '')
+    totalSell: parseFloat(
+      receiveItem?.totalSell ||
+        (item?.totalSell ? `${item?.totalSell / 100}` : '')
     ),
-    vendor_cut: parseFloat(
-      receiveItem?.vendor_cut ||
-        (item?.vendor_cut ? `${item?.vendor_cut / 100}` : '')
+    vendorCut: parseFloat(
+      receiveItem?.vendorCut ||
+        (item?.vendorCut ? `${item?.vendorCut / 100}` : '')
     ),
   })
 
@@ -45,7 +47,7 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
               src={getImageSrc(item)}
               alt={item?.title || 'Inventory image'}
             />
-            {!item?.is_gift_card && !item?.is_misc_item && item?.id && (
+            {!item?.isGiftCard && !item?.isMiscItem && item?.id && (
               <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white text-sm flex justify-center items-center">
                 {getItemSku(item)}
               </div>
@@ -62,28 +64,15 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
       <div>
         <div className="self-center flex items-center">
           <RadioButton
-            key={`${receiveItem?.key}isNew${item?.is_new}`}
+            key={`${receiveItem?.key}isNew${item?.isNew}`}
             inputLabel="CONDITION"
             group={`${receiveItem?.key}isNew`}
-            value={
-              item?.is_new === null ? null : item?.is_new ? 'true' : 'false'
-            }
+            value={`${Boolean(item?.isNew)}`}
             onChange={(value: string) =>
-              setBucket({
-                ...bucket,
-                items: bucket?.items?.map((bItem, i) =>
-                  bItem?.key === receiveItem?.key
-                    ? {
-                        ...bucket.items[i],
-                        item: {
-                          ...bucket.items[i].item,
-                          is_new: value === 'true' ? 1 : 0,
-                          cond: value === 'true' ? null : item?.cond,
-                        },
-                      }
-                    : bItem
-                ),
-              })
+              updateReceiveBasketItem(
+                receiveItem?.key,
+                value === 'true' ? { isNew: 1, cond: null } : { isNew: 0 }
+              )
             }
             options={[
               { id: `new${receiveItem?.key}`, value: 'true', label: 'New' },
@@ -94,20 +83,7 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
             className="w-full"
             object={item}
             customEdit={(e) =>
-              setBucket({
-                ...bucket,
-                items: bucket?.items?.map((bItem, i) =>
-                  bItem?.key === receiveItem?.key
-                    ? {
-                        ...bucket.items[i],
-                        item: {
-                          ...bucket.items[i].item,
-                          cond: e.value,
-                        },
-                      }
-                    : bItem
-                ),
-              })
+              updateReceiveBasketItem(receiveItem?.key, { cond: e.value })
             }
             dbField="cond"
             sorted={false}
@@ -119,20 +95,7 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
             className="w-1/2"
             object={item}
             customEdit={(e) =>
-              setBucket({
-                ...bucket,
-                items: bucket?.items?.map((bItem, i) =>
-                  bItem?.key === receiveItem?.key
-                    ? {
-                        ...bucket.items[i],
-                        item: {
-                          ...bucket.items[i].item,
-                          section: e.value,
-                        },
-                      }
-                    : bItem
-                ),
-              })
+              updateReceiveBasketItem(receiveItem?.key, { section: e.value })
             }
             inputLabel="SECTION"
             dbField="section"
@@ -142,17 +105,7 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
             className="w-1/2 ml-2"
             object={item}
             customEdit={(e) =>
-              setBucket({
-                ...bucket,
-                items: bucket?.items?.map((bItem, i) =>
-                  bItem?.key === receiveItem?.key
-                    ? {
-                        ...bucket.items[i],
-                        item: { ...bucket.items[i].item, country: e.value },
-                      }
-                    : bItem
-                ),
-              })
+              updateReceiveBasketItem(receiveItem?.key, { country: e.value })
             }
             inputLabel="COUNTRY"
             dbField="country"
@@ -165,17 +118,12 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
             startAdornment={'$'}
             disabled={Boolean(item?.id)}
             value={`${
-              receiveItem?.vendor_cut ||
-              (item?.vendor_cut ? item?.vendor_cut / 100 : '')
+              receiveItem?.vendorCut ||
+              (item?.vendorCut ? item?.vendorCut / 100 : '')
             }`}
             onChange={(e: any) =>
-              setBucket({
-                ...bucket,
-                items: bucket?.items?.map((bItem, i) =>
-                  bItem?.key === receiveItem?.key
-                    ? { ...bucket.items[i], vendor_cut: e.target.value }
-                    : bItem
-                ),
+              updateReceiveBasketItem(receiveItem?.key, {
+                vendorCut: e.target.value,
               })
             }
           />
@@ -184,17 +132,12 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
             className="w-24 mr-6"
             startAdornment={'$'}
             value={`${
-              receiveItem?.total_sell ||
-              (item?.total_sell ? item?.total_sell / 100 : '')
+              receiveItem?.totalSell ||
+              (item?.totalSell ? item?.totalSell / 100 : '')
             }`}
             onChange={(e: any) =>
-              setBucket({
-                ...bucket,
-                items: bucket?.items?.map((bItem, i) =>
-                  bItem?.key === receiveItem?.key
-                    ? { ...bucket.items[i], total_sell: e.target.value }
-                    : bItem
-                ),
+              updateReceiveBasketItem(receiveItem?.key, {
+                totalSell: e.target.value,
               })
             }
           />
@@ -222,13 +165,8 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
             min={0}
             value={`${receiveItem?.quantity || ''}`}
             onChange={(e: any) =>
-              setBucket({
-                ...bucket,
-                items: bucket?.items?.map((bItem, i) =>
-                  bItem?.key === receiveItem?.key
-                    ? { ...bucket.items[i], quantity: e.target.value }
-                    : bItem
-                ),
+              updateReceiveBasketItem(receiveItem?.key, {
+                quantity: e.target.value,
               })
             }
           />
