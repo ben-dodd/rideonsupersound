@@ -2,15 +2,14 @@ import {
   getItemDisplayName,
   getItemSkuDisplayName,
 } from 'features/inventory/features/display-inventory/lib/functions'
-import { receiveStockAtom } from 'lib/atoms'
-import { useAtom } from 'jotai'
+import { useAppStore } from 'lib/store'
 
 export default function Items({ onClick }) {
-  const [basket] = useAtom(receiveStockAtom)
+  const { receiveBasket } = useAppStore()
   return (
     <div>
-      {basket?.items?.length > 0 ? (
-        basket?.items?.map((item: any) => (
+      {receiveBasket?.items?.length > 0 ? (
+        receiveBasket?.items?.map((item: any) => (
           <div
             key={item?.key}
             className="flex hover:bg-gray-200 items-center p-2 cursor-pointer border-b"

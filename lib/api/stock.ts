@@ -4,6 +4,7 @@ import {
   ClerkObject,
   SaleItemObject,
   StockObject,
+  StockPriceObject,
   StocktakeTemplateObject,
 } from 'lib/types'
 import useData from './'
@@ -47,7 +48,19 @@ export function createStockItem(stockItem: StockObject, clerk: ClerkObject) {
     .then((res) => {
       const id = res.data
       // saveSystemLog(`New stock (${id}) created.`, clerk?.id)
-      return { ...stockItem, id }
+      return { ...stockItem, createdByClerkId: clerk?.id, id }
+    })
+}
+
+export function createStockPrice(stockPrice: StockPriceObject) {
+  return axios
+    .post(`/api/stock/price`, {
+      ...stockPrice,
+    })
+    .then((res) => {
+      const id = res.data
+      // saveSystemLog(`New stock (${id}) created.`, clerk?.id)
+      return { ...stockPrice, id }
     })
 }
 
@@ -58,6 +71,12 @@ export function receiveStock(receiveStock: any) {
     .catch((e) => Error(e.message))
 }
 
+export function returnStock(returnStock: any) {
+  return axios
+    .patch(`/api/stock/return`, returnStock)
+    .then((res) => res.data)
+    .catch((e) => Error(e.message))
+}
 export function updateStockItem(update: any, id) {
   return axios
     .patch(`/api/stock/${id}`)

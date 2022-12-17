@@ -53,42 +53,42 @@ export default function Menu({ badges }) {
     },
     {
       type: 'link',
-      page: 'vendors',
+      page: 'vendor',
       text: 'VENDORS',
       class: 'bg-col3-light hover:bg-col3',
       icon: <VendorsIcon />,
     },
     {
       type: 'link',
-      page: 'payments',
+      page: 'payment',
       text: 'PAYMENTS',
       class: 'bg-col4-light hover:bg-col4',
       icon: <PaymentsIcon />,
     },
     {
       type: 'link',
-      page: 'sales',
+      page: 'sale',
       text: 'SALES',
       class: 'bg-col5-light hover:bg-col5',
       icon: <SalesIcon />,
     },
     {
       type: 'link',
-      page: 'laybys',
+      page: 'layby',
       text: 'LAYBYS',
       class: 'bg-col6-light hover:bg-col6',
       icon: <LaybyIcon />,
     },
     {
       type: 'link',
-      page: 'holds',
+      page: 'hold',
       text: 'HOLDS',
       class: 'bg-col7-light hover:bg-col7',
       icon: <HoldsIcon />,
     },
     {
       type: 'link',
-      page: 'giftCards',
+      page: 'gift-card',
       text: 'GIFT CARDS',
       class: 'bg-col8-light hover:bg-col8',
       icon: <GiftCardsIcon />,
@@ -97,7 +97,7 @@ export default function Menu({ badges }) {
   const bottomMenu = [
     {
       type: 'link',
-      page: 'logs',
+      page: 'log',
       text: 'LOGS',
       class: 'bg-col9-light hover:bg-col9',
       icon: <LogsIcon />,
@@ -129,6 +129,7 @@ export default function Menu({ badges }) {
   const defaultOnClick = (item) => {
     // window.scrollTo(0, 0)
     saveSystemLog(`${item?.page} on menu clicked.`, clerk?.id)
+    console.log(item?.page)
     router.push(item?.page)
     closeView(ViewProps.mainMenu)
   }

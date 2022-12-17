@@ -1,14 +1,13 @@
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
 import { logChangePrice } from 'features/log/lib/functions'
-import { createStockPriceInDatabase } from 'lib/database/create'
 import { ModalButton } from 'lib/types'
 import { useEffect, useState } from 'react'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useRouter } from 'next/router'
-import { useStockItem, useStockList } from 'lib/api/stock'
+import { createStockPrice, useStockItem, useStockList } from 'lib/api/stock'
 
 export default function ChangePriceDialog() {
   const { clerk } = useClerk()
@@ -40,33 +39,13 @@ export default function ChangePriceDialog() {
       loading: submitting,
       onClick: async () => {
         setSubmitting(true)
-        const totalSellNum = parseFloat(totalSell) * 100
-        const vendorCutNum = parseFloat(vendorCut) * 100
-        mutateInventory(
-          inventory?.map((i) =>
-            i?.id === stockItem?.id
-              ? { ...i, total_sell: totalSellNum, vendor_cut: vendorCutNum }
-              : i
-          ),
-          false
-        )
-        mutateStockItem(
-          [
-            {
-              ...stockItem,
-              total_sell: totalSellNum,
-              vendor_cut: vendorCutNum,
-            },
-          ],
-          false
-        )
-        const stockPriceId = await createStockPriceInDatabase(
-          stockItem?.id,
-          clerk,
-          totalSellNum,
-          vendorCutNum,
-          notes
-        )
+        const stockPriceId = await createStockPrice({
+          stockId: stockItem?.id,
+          clerkId: clerk?.id,
+          totalSell: parseFloat(totalSell) * 100,
+          vendorCut: parseFloat(vendorCut) * 100,
+          note: 'New stock priced.',
+        })
         setSubmitting(false)
         closeView(ViewProps.changePriceDialog)
         logChangePrice(stockItem, totalSell, vendorCut, clerk, stockPriceId)

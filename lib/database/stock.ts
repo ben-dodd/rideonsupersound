@@ -1,4 +1,4 @@
-import { StockMovementTypes } from 'lib/types'
+import { StockMovementTypes, StockObject } from 'lib/types'
 import { js2mysql } from './utils/helpers'
 const connection = require('./conn')
 
@@ -182,6 +182,43 @@ export async function dbReceiveStock(receiveStock: any, db = connection) {
         }
       })
     )
+    trx.commit()
+  } catch (err) {
+    // Roll back the transaction on error
+    trx.rollback()
+  }
+}
+
+export async function dbReturnStock(returnStock: any, db = connection) {
+  const trx = await knex.transaction()
+  try {
+    const { clerkId, registerId, vendorId, items, note } = returnStock
+    if (vendorId && items?.length > 0) {
+      items
+        .filter((returnItem: any) => parseInt(`${returnItem?.quantity}`) > 0)
+        .forEach(async (returnItem: any) => {
+          await dbGetStockItem(returnItem?.id).then((stockItem) =>
+            dbUpdateStockItem(returnItem?.id, {
+              quantityReturn:
+                (stockItem?.quantityReturned || 0) +
+                parseInt(returnItem?.quantity),
+              quantity:
+                (stockItem?.quantity || 0) - parseInt(returnItem?.quantity),
+            })
+          )
+          await dbCreateStockMovement(
+            {
+              itemId: parseInt(returnItem?.id),
+              quantity: `${returnItem?.quantity}`,
+              clerkId,
+              registerId,
+              act: StockMovementTypes?.Returned,
+              note: note || 'Stock returned to vendor.',
+            },
+            db
+          )
+        })
+    }
     trx.commit()
   } catch (err) {
     // Roll back the transaction on error
