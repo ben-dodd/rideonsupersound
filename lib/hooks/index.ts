@@ -4,6 +4,7 @@ import {
   sumPrices,
   writeItemList,
 } from 'features/pay/lib/functions'
+import { apiAuth } from 'lib/api'
 import { StockObject } from 'lib/types'
 import { useState, useEffect } from 'react'
 
@@ -14,12 +15,31 @@ export function useSaleProperties(cart): any {
   useEffect(() => {
     // Fetch the stock table from the database here
     // and set it using setStockTable()
-    axios(
-      `stock/items?items=${cart?.items?.map((item) => item?.itemId)?.join('+')}`
-    ).then((items) => setStockTable(items))
+    console.log('getting cart items...')
+    apiAuth()
+      .then((accessToken) =>
+        axios(
+          `stock/items?items=${cart?.items
+            ?.map((item) => item?.itemId)
+            ?.join('+')}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        )
+      )
+      .then((items) => {
+        console.log(items)
+        setStockTable(items)
+      })
   }, [cart?.items])
 
   useEffect(() => {
+    console.log('calculating props for sale')
+    console.log(cart)
+    console.log(stockTable)
+
     // Calculate the properties for the sale here
     // using the items and stockTable
     // and set them using setProperties()

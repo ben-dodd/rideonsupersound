@@ -1,7 +1,7 @@
 import axios from 'axios'
 import dayjs from 'dayjs'
 import { RoleTypes, SaleObject } from 'lib/types'
-import useData from './'
+import { useData } from './'
 
 export function useJobsToDo() {
   return useData(`job/todo`, 'jobsToDo')

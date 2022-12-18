@@ -1,4 +1,5 @@
 import { StockMovementTypes, StockObject } from 'lib/types'
+import { dbGetAllSalesAndItems } from './sale'
 import { js2mysql } from './utils/helpers'
 const connection = require('./conn')
 
@@ -55,22 +56,28 @@ export function dbGetStockItem(id, db = connection) {
     .where('stock.id', id)
     .first()
     .then(async (stockItem) => {
-      const sales = await db('sale_item')
-        .join('sale', 'sale_item.sale_id', 'sale.id')
-        .where(`item_id`, stockItem?.id)
+      const sales = await dbGetAllSalesAndItems(db).where(
+        `sale_item.item_id`,
+        stockItem?.id
+      )
       const stockMovements = await db('stock_movement').where(
         `stock_id`,
         stockItem?.id
+      )
+      const quantity = stockMovements.reduce(
+        (acc, stockMovement) => acc + stockMovement.quantity,
+        0
       )
       const stockPrices = await db('stock_price').where(
         `stock_id`,
         stockItem?.id
       )
-      return { ...stockItem, sales, stockMovements, stockPrices }
+      return { ...stockItem, quantity, sales, stockMovements, stockPrices }
     })
 }
 
 export function dbGetStockItems(itemIds, db = connection) {
+  console.log('Getting stock items for ids: ', itemIds)
   return Promise.all(itemIds?.map((itemId) => dbGetStockItem(itemId, db)))
 }
 
@@ -129,10 +136,8 @@ export async function dbReceiveStock(receiveStock: any, db = connection) {
         if (receiveItem?.item?.id) {
           await dbCreateStockMovement(
             {
-              item: {
-                item_id: receiveItem?.item?.id,
-                quantity: receiveItem?.quantity,
-              },
+              item_id: receiveItem?.item?.id,
+              quantity: receiveItem?.quantity,
               clerkId,
               registerId,
               act: StockMovementTypes?.Received,
@@ -270,4 +275,29 @@ export async function dbChangeStockQuantity(
     // Roll back the transaction on error
     trx.rollback()
   }
+}
+
+export function dbGetWebStock(condition, db = connection) {
+  return db('stock')
+    .select(
+      'stock.artist',
+      'stock.title',
+      'stock.format',
+      'stock.is_new',
+      'stock_price.total_sell'
+    )
+    .leftJoin('stock_price', 'stock.id', 'stock_price.stock_id')
+    .leftJoin('stock_movement', 'stock.id', 'stock_movement.stock_id')
+    .sum('stock_movement.quantity as quantity')
+    .groupBy('stock.id')
+    .where(`stock.is_deleted`, 0)
+    .andWhere(`stock.is_misc_item`, 0)
+    .andWhere(`stock.is_gift_card`, 0)
+    .andWhere(`stock.do_list_on_website`, 1)
+    .andWhereRaw(condition)
+    .andWhereRaw(
+      `(stock_price.id = (SELECT MAX(id) FROM stock_price WHERE stock_id = stock.id))`
+    )
+    .orderBy(['stock.format', 'stock.artist', 'stock.title'])
+    .then((stock) => stock.filter((stockItem) => stockItem?.quantity > 0))
 }

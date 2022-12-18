@@ -73,7 +73,7 @@ export function dbGetAllSalesAndItems(db = connection) {
       'stock_price.total_sell',
       'stock_price.date_valid_from as datePriceValidFrom'
     )
-    .where(`datePriceValidFrom`, '<=', 'sale.date_sale_opened')
+    .where(`stock_price.date_valid_from`, '<=', 'sale.date_sale_opened')
     .andWhereRaw(
       `stock_price.id = (
     SELECT MAX(id) FROM stock_price WHERE stock_id = sale_item.item_id)`

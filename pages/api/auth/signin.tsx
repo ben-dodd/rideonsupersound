@@ -24,10 +24,10 @@ export default function SignIn() {
           href={`/api/auth/${user ? 'logout' : 'login'}`}
         >
           <button className="bg-black hover:bg-gray-900 text-white mx-auto rounded px-8 py-2 mt-4 mb-8 transform">
-            {user ? 'Try Again' : 'Sign In'}
+            {user?.email ? 'Try Again' : 'Sign In'}
           </button>
         </Link>
-        {user && (
+        {user?.email && (
           <div className="text-center text-sm">
             {`The email ${user.email} is not authenticated. Please contact the system admin.`}
           </div>

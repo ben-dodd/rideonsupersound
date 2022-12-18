@@ -1,5 +1,5 @@
 import axios from 'axios'
-import useData from './'
+import { useData } from './'
 
 export function useRegister(register_id) {
   return useData(`register/${register_id}`, 'register')

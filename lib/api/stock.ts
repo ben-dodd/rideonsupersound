@@ -7,7 +7,7 @@ import {
   StockPriceObject,
   StocktakeTemplateObject,
 } from 'lib/types'
-import useData from './'
+import { apiAuth, useData } from './'
 
 export function useStockList() {
   return useData(`stock`, 'stockList')
@@ -40,16 +40,26 @@ export function deleteStockItem(id) {
 }
 
 export function createStockItem(stockItem: StockObject, clerk: ClerkObject) {
-  return axios
-    .post(`/api/stock`, {
-      ...stockItem,
-      createdByClerkId: clerk?.id,
-    })
-    .then((res) => {
-      const id = res.data
-      // saveSystemLog(`New stock (${id}) created.`, clerk?.id)
-      return { ...stockItem, createdByClerkId: clerk?.id, id }
-    })
+  return apiAuth().then((accessToken) =>
+    axios
+      .post(
+        `/api/stock`,
+        {
+          ...stockItem,
+          createdByClerkId: clerk?.id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      )
+      .then((res) => {
+        const id = res.data
+        // saveSystemLog(`New stock (${id}) created.`, clerk?.id)
+        return { ...stockItem, createdByClerkId: clerk?.id, id }
+      })
+  )
 }
 
 export function createStockPrice(stockPrice: StockPriceObject) {

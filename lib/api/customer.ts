@@ -1,7 +1,6 @@
 import axios from 'axios'
-import { saveSystemLog } from 'features/log/lib/functions'
 import { ClerkObject, CustomerObject } from 'lib/types'
-import useData from './'
+import { apiAuth, useData } from './'
 
 export function useCustomers() {
   return useData(`customer`, 'customers')
@@ -12,13 +11,20 @@ export async function createCustomer(
   clerk: ClerkObject
 ) {
   // saveSystemLog(`New customer (${customer?.name}) created.`, clerk?.id)
-  return axios
-    .post(`/api/customer`, {
-      ...customer,
-      createdByClerkId: clerk?.id,
-    })
-    .then((res) => ({ ...customer, id: res.data }))
-    .catch((e) => Error(e.message))
+  return apiAuth().then((accessToken) =>
+    axios
+      .post(`/api/customer`, {
+        customer: {
+          ...customer,
+          createdByClerkId: clerk?.id,
+        },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((res) => ({ ...customer, id: res.data }))
+      .catch((e) => Error(e.message))
+  )
 }
 
 export function updateCustomer(customer: CustomerObject) {

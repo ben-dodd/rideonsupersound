@@ -73,7 +73,7 @@ export interface StoreState {
   closeAlert: () => void
   setCart: (update: any) => void
   addCartTransaction: (transaction: SaleTransactionObject) => void
-  addCartItem: (newItem: SaleItemObject) => void
+  addCartItem: (newItem: SaleItemObject, clerkId: number) => void
   setCartItem: (id: number, update: any) => void
   setCustomer: (update: any) => void
   setReceiveBasket: (update: any) => void

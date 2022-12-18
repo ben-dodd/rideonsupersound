@@ -28,13 +28,10 @@ export default function SellListItem({
   cartItem,
   deleteCartItem,
 }: SellListItemProps) {
+  console.log(cartItem)
   const { openConfirm, setCartItem } = useAppStore()
-  const { inventory } = useStockList()
   const { stockItem } = useStockItem(`${cartItem?.itemId}`)
   const [expanded, setExpanded] = useState(false)
-  const item = inventory?.filter(
-    (i: StockObject) => i.id === cartItem?.itemId
-  )?.[0]
 
   // Functions
   function onChangeCart(e: any, property: string) {
@@ -49,8 +46,9 @@ export default function SellListItem({
         title: 'Are you sure you want to add to cart?',
         styledMessage: (
           <span>
-            There is not enough of <b>{getItemDisplayName(item)}</b> in stock.
-            Are you sure you want to change the quantity to {e?.target?.value}?
+            There is not enough of <b>{getItemDisplayName(stockItem)}</b> in
+            stock. Are you sure you want to change the quantity to{' '}
+            {e?.target?.value}?
           </span>
         ),
         yesText: "YES, I'M SURE",
@@ -72,20 +70,20 @@ export default function SellListItem({
               className="object-cover absolute"
               // layout="fill"
               // objectFit="cover"
-              src={getImageSrc(item)}
-              alt={item?.title || 'Inventory image'}
+              src={getImageSrc(stockItem)}
+              alt={stockItem?.title || 'Inventory image'}
             />
-            {!item?.is_gift_card && !item?.is_misc_item && (
+            {!stockItem?.isGiftCard && !stockItem?.isMiscItem && (
               <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white text-sm flex justify-center items-center">
-                {getItemSku(item)}
+                {getItemSku(stockItem)}
               </div>
             )}
           </div>
         </div>
         <div className="flex flex-col w-full pt-2 px-2 justify-between">
-          <div className="text-sm pl-1">{getItemDisplayName(item)}</div>
+          <div className="text-sm pl-1">{getItemDisplayName(stockItem)}</div>
           <div className="text-red-500 self-end">
-            {writeCartItemPriceBreakdown(cartItem, item)}
+            {writeCartItemPriceBreakdown(cartItem, stockItem)}
           </div>
           <div className="self-end text-xs">
             {expanded ? (
@@ -108,7 +106,7 @@ export default function SellListItem({
         }`}
       >
         <div>
-          {!item?.is_gift_card && !item?.is_misc_item && (
+          {!stockItem?.isGiftCard && !stockItem?.isMiscItem && (
             <div className="flex justify-between items-end">
               <TextField
                 className="w-1/3"
@@ -153,11 +151,11 @@ export default function SellListItem({
           />
           <div className="flex w-full justify-between place-start">
             <div className="font-bold">
-              {writeCartItemPriceBreakdown(cartItem, item)}
+              {writeCartItemPriceBreakdown(cartItem, stockItem)}
             </div>
             <div>
               <div className="font-bold self-center">
-                {priceCentsString(getCartItemPrice(cartItem, item))}
+                {/* {priceCentsString(getCartItemPrice(cartItem, stockItem))} */}
               </div>
               <div className="w-50 text-right">
                 <button

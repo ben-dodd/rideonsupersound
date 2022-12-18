@@ -10,24 +10,17 @@ import {
   getLaybyQuantity,
 } from 'features/inventory/features/display-inventory/lib/functions'
 import { getItemQuantity, skuScan } from '../../lib/functions'
-import { useAppStore } from 'lib/store'
-import { ViewProps } from 'lib/store/types'
 import { useRouter } from 'next/router'
+import { useAppStore } from 'lib/store'
+import { useClerk } from 'lib/api/clerk'
 
 export default function ListItem({ item }: { item: StockObject }) {
-  const {
-    cart,
-    sellSearchBar,
-    openView,
-    openConfirm,
-    addCartItem,
-    resetSellSearchBar,
-  } = useAppStore()
+  const { cart, sellSearchBar, openConfirm, addCartItem } = useAppStore()
   const router = useRouter()
+  const { clerk } = useClerk()
 
   const itemQuantity = getItemQuantity(item, cart?.items)
 
-  // Functions
   function clickAddToCart() {
     if (itemQuantity < 1) {
       openConfirm({
@@ -46,11 +39,7 @@ export default function ListItem({ item }: { item: StockObject }) {
   }
 
   function handleAddItemToCart() {
-    // if (!cart?.dateSaleOpened) openCart(setCart, clerk, weather, geolocation)
-    // TODO open cart if not already open
-    addCartItem({ id: item?.id, quantity: '1' })
-    openView(ViewProps.cart)
-    resetSellSearchBar()
+    addCartItem({ itemId: item?.id, quantity: '1' }, clerk?.id)
   }
 
   skuScan(sellSearchBar, item, handleAddItemToCart)

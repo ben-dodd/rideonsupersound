@@ -1,24 +1,23 @@
 import { getItemDisplayName } from 'features/inventory/features/display-inventory/lib/functions'
-import { logSaleNuked, logSaleParked } from 'features/log/lib/functions'
+import { logSaleParked } from 'features/log/lib/functions'
 import {
   ClerkObject,
   CustomerObject,
   GiftCardObject,
-  LogObject,
   SaleItemObject,
   SaleObject,
   SaleStateTypes,
   SaleTransactionObject,
-  StockMovementTypes,
   StockObject,
   VendorPaymentObject,
   VendorSaleItemObject,
 } from 'lib/types'
-import dayjs from 'dayjs'
 import { getCartItemPrice } from 'features/sale/features/sell/lib/functions'
 
 export function sumPrices(saleItems: any[], items: any[], field: string) {
-  if (!saleItems) return 0
+  console.log(saleItems)
+  console.log(items)
+  if (!(saleItems?.length > 0) || !(items?.length > 0)) return 0
   return saleItems
     ?.filter((s) => !s?.isRefunded)
     ?.reduce((acc, saleItem) => {
@@ -26,7 +25,8 @@ export function sumPrices(saleItems: any[], items: any[], field: string) {
       let item: StockObject =
         saleItem?.totalSell && saleItem?.vendorCut && saleItem?.storeCut
           ? null
-          : items?.find((i: StockObject) => i?.id === saleItem?.itemId)
+          : items?.find?.((i: StockObject) => i?.id === saleItem?.itemId)
+      // return (acc += 1)
       const prices = getCartItemPrice(saleItem, item)
       return (acc += prices?.[field])
     }, 0)

@@ -3,7 +3,7 @@ import { camelCase, pascalCase } from '../utils'
 import { mysql2js } from 'lib/database/utils/helpers'
 import axios from 'axios'
 
-export default function useData(url: string, label: string) {
+export function useData(url: string, label: string) {
   const { data, error, mutate } = useSWR(url, async () =>
     axios(`/api/auth/jwt`)
       .then((response) => response.data)
@@ -15,6 +15,7 @@ export default function useData(url: string, label: string) {
         })
       )
       .then((res) => mysql2js(res.data))
+      .catch((e) => Error(e.message))
   )
   return {
     [camelCase(label)]: data,
@@ -22,4 +23,10 @@ export default function useData(url: string, label: string) {
     [`is${pascalCase(label)}Error`]: error,
     [`mutate${pascalCase(label)}`]: mutate,
   }
+}
+
+export function apiAuth() {
+  return axios(`/api/auth/jwt`)
+    .then((response) => response.data)
+    .catch((e) => Error(e.message))
 }

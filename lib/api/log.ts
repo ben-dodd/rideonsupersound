@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { LogObject } from 'lib/types'
-import useData from './'
+import { useData } from './'
 
 export function useLogs() {
   return useData(`log`, 'logs')

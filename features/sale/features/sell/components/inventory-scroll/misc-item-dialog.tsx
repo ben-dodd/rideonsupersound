@@ -39,14 +39,15 @@ export default function MiscItemDialog() {
           clerk
         )
         setSubmitting(false)
-        addCartItem({
-          itemId: newMiscItem?.id,
-          quantity: '1',
-          isMiscItem: true,
-        })
+        addCartItem(
+          {
+            itemId: newMiscItem?.id,
+            quantity: '1',
+            isMiscItem: true,
+          },
+          clerk?.id
+        )
         clearDialog()
-        openView(ViewProps.cart)
-        // logNewMiscItemCreated(description, clerk, id)
         setAlert({
           open: true,
           type: 'success',

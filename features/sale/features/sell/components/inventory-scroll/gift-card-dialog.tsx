@@ -45,14 +45,15 @@ export default function GiftCardDialog() {
           clerk
         )
         setSubmitting(false)
-        addCartItem({
-          itemId: newGiftCard?.id,
-          quantity: '1',
-          isGiftCard: true,
-        })
+        addCartItem(
+          {
+            itemId: newGiftCard?.id,
+            quantity: '1',
+            isGiftCard: true,
+          },
+          clerk?.id
+        )
         clearDialog()
-        openView(ViewProps.cart)
-        // logNewGiftCardCreated(newGiftCard, clerk, id)
         setAlert({
           open: true,
           type: 'success',

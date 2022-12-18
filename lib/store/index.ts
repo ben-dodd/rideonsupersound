@@ -3,6 +3,7 @@ import dayjs from 'dayjs'
 import produce from 'immer'
 import { StoreState } from './types'
 import { v4 as uuid } from 'uuid'
+import { getGeolocation, getWeather, useWeather } from 'lib/api/external'
 
 type WithSelectors<S> = S extends { getState: () => infer T }
   ? S & { use: { [K in keyof T]: () => T[K] } }
@@ -32,7 +33,7 @@ export const errorHandler = (method: string, route: string) => (err: any) => {
 export const useAppStore = createSelectors(
   create<StoreState>((set, get) => ({
     view: {},
-    cart: { id: null, customer: {}, transactions: [] },
+    cart: { id: null, customer: {}, items: [], transactions: [] },
     loadedItemId: {},
     loadedVendorId: {},
     loadedHoldId: {},
@@ -97,12 +98,30 @@ export const useAppStore = createSelectors(
           )
         })
       ),
-    addCartItem: (newItem) =>
-      set(
+    addCartItem: (newItem, clerkId) => {
+      get().resetSellSearchBar()
+      return set(
         produce((draft) => {
-          draft.cart.items.push(newItem)
+          if (get().cart.items.length === 0) {
+            draft.cart.dateSaleOpened = dayjs.utc().format()
+            draft.cart.saleOpenedBy = clerkId
+            getWeather().then((weather) => (draft.cart.weather = weather))
+            const geolocation: any = getGeolocation()
+            draft.cart.geoLatitude = geolocation?.latitude
+            draft.cart.geoLongitude = geolocation?.longitude
+          }
+          draft.view.cart = true
+          const index = get().cart.items.findIndex(
+            (cartItem) => cartItem.itemId === newItem?.id
+          )
+          if (index < 0) draft.cart.items.push(newItem)
+          else
+            get().cart.items[index].quantity = `${
+              parseInt(get().cart.items[index].quantity) + 1
+            }`
         })
-      ),
+      )
+    },
     setCartItem: (id, update) =>
       set(
         produce((draft) => {

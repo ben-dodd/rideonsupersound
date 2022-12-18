@@ -1,7 +1,7 @@
 import { saveSystemLog } from 'features/log/lib/functions'
 import { ClerkObject, HoldObject, SaleItemObject, SaleObject } from 'lib/types'
 import axios from 'axios'
-import useData from './'
+import { useData } from './'
 
 export function useSaleItemsForSale(saleId) {
   return useData(`sale/items/${saleId}`, 'saleItems')

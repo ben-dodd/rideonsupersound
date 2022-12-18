@@ -1,5 +1,5 @@
 import axios from 'axios'
-import useData from './'
+import { useData } from './'
 
 export function useVendors() {
   return useData(`vendor`, 'vendors')

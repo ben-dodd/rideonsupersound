@@ -1,6 +1,6 @@
 import axios from 'axios'
 import useSWR from 'swr'
-import useData from './external'
+import { useData } from './'
 
 export function get(url, params = {}, callback = null) {
   return axios(url, params)
@@ -23,29 +23,27 @@ export async function getUSDExchangeRate() {
   )
 }
 
-export function useWeather() {
+export function getWeather() {
   let loc = 'id=2192362'
   if (navigator?.geolocation) {
     navigator?.geolocation?.getCurrentPosition((position) => {
       loc = `lat=${position.coords.latitude}, lon=${position.coords.longitude}`
     })
   }
-  return useData(
-    `https://api.openweathermap.org/data/2.5/weather?${loc}&appid=${process.env.NEXT_PUBLIC_OPEN_WEATHER_API}&units=metric`,
-    'weather'
-  )
+  return axios(
+    `https://api.openweathermap.org/data/2.5/weather?${loc}&appid=${process.env.NEXT_PUBLIC_OPEN_WEATHER_API}&units=metric`
+  ).then((res) => res.data)
 }
 
 export function getGeolocation() {
   if (!navigator.geolocation) {
     console.log('Geolocation is not supported by your browser')
     return null
-  } else {
+  } else
     return navigator.geolocation.getCurrentPosition(
       (position) => position?.coords,
       () => console.log('Unable to retrieve location.')
     )
-  }
 }
 
 export function uploadFiles(files) {
