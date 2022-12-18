@@ -13,6 +13,10 @@ export function useVendorFromVendorPayment(vendorPaymentId) {
   return useData(`vendor/payment/${vendorPaymentId}`, 'vendor')
 }
 
+export function useVendor(id) {
+  return useData(`vendor/${id}`, 'vendor')
+}
+
 export function createVendor(vendor) {
   return axios
     .post(`/api/vendor`, vendor)

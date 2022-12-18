@@ -7,8 +7,8 @@ import { useRouter } from 'next/router'
 export default function PriceDetails() {
   const router = useRouter()
   const { id } = router.query
-  const { stockItem, isStockItemLoading } = useStockItem(`${id}`)
-  const { view, openView } = useAppStore()
+  const { stockItem } = useStockItem(`${id}`)
+  const { openView } = useAppStore()
 
   return (
     <>

@@ -53,15 +53,11 @@ export function createStockItem(stockItem: StockObject, clerk: ClerkObject) {
 }
 
 export function createStockPrice(stockPrice: StockPriceObject) {
-  return axios
-    .post(`/api/stock/price`, {
-      ...stockPrice,
-    })
-    .then((res) => {
-      const id = res.data
-      // saveSystemLog(`New stock (${id}) created.`, clerk?.id)
-      return { ...stockPrice, id }
-    })
+  return axios.post(`/api/stock/price`, stockPrice).then((res) => {
+    const id = res.data
+    // saveSystemLog(`New stock (${id}) created.`, clerk?.id)
+    return { ...stockPrice, id }
+  })
 }
 
 export function receiveStock(receiveStock: any) {
@@ -77,6 +73,14 @@ export function returnStock(returnStock: any) {
     .then((res) => res.data)
     .catch((e) => Error(e.message))
 }
+
+export function changeStockQuantity(update: any, id) {
+  return axios
+    .patch(`/api/stock/${id}/quantity`, update)
+    .then((res) => res.data)
+    .catch((e) => Error(e.message))
+}
+
 export function updateStockItem(update: any, id) {
   return axios
     .patch(`/api/stock/${id}`)

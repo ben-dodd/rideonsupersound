@@ -1,24 +1,29 @@
-import { VendorObject } from 'lib/types'
+import dayjs from 'dayjs'
+import { getCartItemPrice } from 'features/sale/features/sell/lib/functions'
+import { VendorObject, VendorPaymentObject } from 'lib/types'
 import connection from './conn'
+import { dbGetAllVendorPayments } from './payment'
+import { dbGetAllSales, dbGetAllSalesAndItems } from './sale'
+import { dbGetStockList } from './stock'
 import { js2mysql } from './utils/helpers'
 
 const fullVendorQuery = (db) =>
   db('vendor').select(
     'id',
     'name',
-    'vendor_category as vendorCategory',
-    'clerk_id as clerkId',
-    'bank_account_number as bankAccountNumber',
-    'contact_name as contactName',
+    'vendor_category',
+    'clerk_id',
+    'bank_account_number',
+    'contact_name',
     'email',
     'phone',
-    'postal_address as postalAddress',
+    'postal_address',
     'note',
-    'last_contacted as lastContacted',
-    'store_credit_only as storeCreditOnly',
-    'email_vendor as emailVendor',
-    'date_created as dateCreated',
-    'date_modified as dateModified',
+    'last_contacted',
+    'store_credit_only',
+    'email_vendor',
+    'date_created',
+    'date_modified',
     'uid'
   )
 
@@ -31,14 +36,14 @@ export function dbGetVendors(db = connection) {
     .select(
       'id',
       'name',
-      'vendor_category as vendorCategory',
-      'clerk_id as clerkId',
-      'bank_account_number as bankAccountNumber',
-      'contact_name as contactName',
+      'vendor_category',
+      'clerk_id',
+      'bank_account_number',
+      'contact_name',
       'email',
       'phone',
-      'last_contacted as lastContacted',
-      'store_credit_only as storeCreditOnly',
+      'last_contacted',
+      'store_credit_only',
       'email_vendor as emailVendor',
       'uid'
     )
@@ -50,7 +55,52 @@ export function dbGetVendorNames(db = connection) {
 }
 
 export function dbGetVendor(id, db = connection) {
-  return fullVendorQuery(db).where({ id }).andWhere({ is_deleted: 0 }).first()
+  return fullVendorQuery(db)
+    .where({ id })
+    .first()
+    .then(async (vendor) => {
+      // Get lists
+      const items = await dbGetStockList(db).where({ vendor_id: id })
+      const sales = await dbGetAllSalesAndItems(db).where(`stock.vendor_id`, id)
+      const payments = await dbGetAllVendorPayments(db).where(`vendor_id`, id)
+
+      // Do calculations
+      const totalPaid = payments.reduce(
+        (acc: number, payment: VendorPaymentObject) => acc + payment?.amount,
+        0
+      )
+      const totalStoreCut = sales
+        ?.filter((s) => !s?.isRefunded)
+        ?.reduce((acc, saleItem) => {
+          const stockItem = items?.find((item) => item?.id === saleItem?.itemId)
+          const { storePrice } = getCartItemPrice(saleItem, stockItem)
+          return acc + storePrice
+        })
+      const totalSell = sales
+        ?.filter((s) => !s?.isRefunded)
+        ?.reduce((acc, saleItem) => {
+          const stockItem = items?.find((item) => item?.id === saleItem?.itemId)
+          const { totalPrice } = getCartItemPrice(saleItem, stockItem)
+          return acc + totalPrice
+        })
+      const lastPaid = dayjs.max(payments?.map((p) => p?.date))
+      const lastSold = dayjs.max(sales?.map((s) => s?.dateSaleClosed))
+      const totalOwing = totalSell - totalPaid
+
+      // Return object
+      return {
+        ...vendor,
+        items,
+        sales,
+        payments,
+        totalPaid,
+        totalStoreCut,
+        totalSell,
+        totalOwing,
+        lastPaid,
+        lastSold,
+      }
+    })
 }
 
 export function dbGetVendorByUid(uid, db = connection) {

@@ -1,27 +1,29 @@
 // DB
 import { getItemDisplayName } from 'features/inventory/features/display-inventory/lib/functions'
 import { getCartItemPrice } from 'features/sale/features/sell/lib/functions'
-import { useInventory } from 'lib/database/read'
 import { StockObject, VendorSaleItemObject } from 'lib/types'
 
 // Components
 import dayjs from 'dayjs'
 import { CSVLink } from 'react-csv'
+import { useRouter } from 'next/router'
+import { useVendor } from 'lib/api/vendor'
 
-export default function VendorSales({ vendor, vendorDetails }) {
-  // SWR
-  const { inventory } = useInventory()
+export default function VendorSales() {
+  const router = useRouter()
+  const id = router.query
+  const { vendor } = useVendor(id)
 
   return (
     <div>
-      {vendorDetails?.totalSales?.length > 0 && (
+      {vendor?.sales?.length > 0 && (
         <div className="mt-4">
           <CSVLink
             className={`bg-white hover:bg-gray-100 disabled:bg-gray-200 p-2 rounded border`}
             filename={`${vendor?.name}-sales-${dayjs().format(
               'YYYY-MM-DD'
             )}.csv`}
-            data={vendorDetails?.totalSales?.map((s) => {
+            data={vendor?.sales?.map((s) => {
               const prices = getCartItemPrice(s, null)
               return { ...s, ...prices }
             })}
@@ -39,63 +41,59 @@ export default function VendorSales({ vendor, vendorDetails }) {
 
           <div className="border-b py-1 flex text-sm font-bold">
             <div className="w-3/12" />
-            <div className="w-1/2">{`${vendorDetails?.totalSales?.length} ITEM${
-              vendorDetails?.totalSales?.length === 1 ? '' : 'S'
+            <div className="w-1/2">{`${vendor?.sales?.length} ITEM${
+              vendor?.sales?.length === 1 ? '' : 'S'
             } SOLD`}</div>
             <div className="w-1/6">
-              {`$${(
-                (vendorDetails?.totalStoreCut + vendorDetails?.totalSell) /
-                100
-              )?.toFixed(2)}`}
+              {`$${((vendor?.totalStoreCut + vendor?.totalSell) / 100)?.toFixed(
+                2
+              )}`}
             </div>
             <div className="w-1/12">
-              {`$${(vendorDetails?.totalSell / 100)?.toFixed(2)}`}
+              {`$${(vendor?.totalSell / 100)?.toFixed(2)}`}
             </div>
           </div>
-          {vendorDetails?.totalSales
+          {vendor?.sales
             ?.sort(
               (saleA: VendorSaleItemObject, saleB: VendorSaleItemObject) => {
-                const a = dayjs(saleA?.date_sale_closed)
-                const b = dayjs(saleB?.date_sale_closed)
+                const a = dayjs(saleA?.dateSaleClosed)
+                const b = dayjs(saleB?.dateSaleClosed)
                 return a < b ? 1 : b < a ? -1 : 0
               }
             )
             // ?.slice(0, 5)
             ?.map((sale: VendorSaleItemObject) => {
-              const stockItem: StockObject = inventory?.find(
-                (i: StockObject) => i?.id === sale?.item_id
-              )
-              const prices = getCartItemPrice(sale, null)
+              const { totalPrice, vendorPrice } = getCartItemPrice(sale, null)
               return (
                 <div
                   className="border-b py-1 flex hover:bg-gray-100 text-sm"
-                  key={`${sale?.sale_id}${sale?.item_id}`}
+                  key={`${sale?.saleId}${sale?.itemId}`}
                 >
                   <div className="w-1/12">#{sale?.id}</div>
                   <div className="font-bold w-1/6">
-                    {dayjs(sale?.date_sale_closed).format('D MMMM YYYY')}
+                    {dayjs(sale?.dateSaleClosed).format('D MMMM YYYY')}
                   </div>
                   <div className="w-1/3">{`${
                     sale?.quantity
-                  } x ${getItemDisplayName(stockItem)}${
-                    sale?.is_refunded ? ' [REFUNDED]' : ''
+                  } x ${getItemDisplayName(sale)}${
+                    sale?.isRefunded ? ' [REFUNDED]' : ''
                   }`}</div>
-                  <div className="w-1/6">{stockItem?.format}</div>
+                  <div className="w-1/6">{sale?.format}</div>
                   <div
                     className={`w-1/6${
-                      sale?.is_refunded ? ' line-through' : ''
+                      sale?.isRefunded ? ' line-through' : ''
                     }`}
                   >
-                    {`$${(prices?.totalPrice / 100)?.toFixed(2)}`}
+                    {`$${(totalPrice / 100)?.toFixed(2)}`}
                   </div>
                   <div
                     className={`w-1/12${
-                      sale?.is_refunded ? ' line-through' : ''
+                      sale?.isRefunded ? ' line-through' : ''
                     }`}
                   >
-                    {`$${(prices?.vendorPrice / 100)?.toFixed(2)}${
-                      sale?.vendor_discount
-                        ? ` (${sale?.vendor_discount}% DISCOUNT)`
+                    {`$${(vendorPrice / 100)?.toFixed(2)}${
+                      sale?.vendorDiscount
+                        ? ` (${sale?.vendorDiscount}% DISCOUNT)`
                         : ''
                     }`}
                   </div>

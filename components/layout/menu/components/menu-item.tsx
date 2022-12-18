@@ -1,8 +1,10 @@
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 
 export default function MenuItem({ item, defaultOnClick }) {
   const router = useRouter()
+  const handleOnClick = item?.onClick
+    ? item?.onClick
+    : () => defaultOnClick(item)
   return item?.type === 'divider' ? (
     <hr />
   ) : (
@@ -12,9 +14,9 @@ export default function MenuItem({ item, defaultOnClick }) {
           ? 'text-white hover:bg-black bg-black'
           : item?.class || ''
       }`}
-      onClick={item?.onClick || defaultOnClick}
+      onClick={handleOnClick}
     >
-      <Link href={item?.page} className="flex">
+      <div className="flex">
         <div className="pr-6">
           {item?.badge ? (
             <div className="relative">
@@ -28,7 +30,7 @@ export default function MenuItem({ item, defaultOnClick }) {
           )}
         </div>
         <div>{item?.text}</div>
-      </Link>
+      </div>
     </li>
   )
 }

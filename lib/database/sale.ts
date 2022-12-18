@@ -1,9 +1,7 @@
 import dayjs from 'dayjs'
 import { getItemQuantity } from 'features/sale/features/sell/lib/functions'
 import { createMailOrderTask } from 'lib/api/jobs'
-import { updateStockItem } from 'lib/api/stock'
 import {
-  GiftCardObject,
   PaymentMethodTypes,
   SaleStateTypes,
   StockMovementTypes,
@@ -57,6 +55,14 @@ export function dbGetAllSalesAndItems(db = connection) {
       'sale_item.vendor_discount',
       'sale_item.is_refunded',
       'stock.vendor_id',
+      'stock.format',
+      'stock.is_gift_card',
+      'stock.gift_card_code',
+      'stock.is_misc_item',
+      'stock.misc_item_description',
+      'stock.display_as',
+      'stock.artist',
+      'stock.title',
       'sale.date_sale_opened',
       'sale.date_sale_closed',
       'sale.store_cut',

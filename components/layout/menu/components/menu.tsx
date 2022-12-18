@@ -38,7 +38,7 @@ export default function Menu({ badges }) {
   const topMenu = [
     {
       type: 'link',
-      page: 'sell',
+      page: '/sell',
       text: 'SELL',
       badge: badges.numCartItems,
       class: 'bg-col1-light hover:bg-col1',
@@ -46,49 +46,49 @@ export default function Menu({ badges }) {
     },
     {
       type: 'link',
-      page: 'inventory',
+      page: '/inventory',
       text: 'INVENTORY',
       class: 'bg-col2-light hover:bg-col2',
       icon: <InventoryIcon />,
     },
     {
       type: 'link',
-      page: 'vendor',
+      page: '/vendor',
       text: 'VENDORS',
       class: 'bg-col3-light hover:bg-col3',
       icon: <VendorsIcon />,
     },
     {
       type: 'link',
-      page: 'payment',
+      page: '/payment',
       text: 'PAYMENTS',
       class: 'bg-col4-light hover:bg-col4',
       icon: <PaymentsIcon />,
     },
     {
       type: 'link',
-      page: 'sale',
+      page: '/sale',
       text: 'SALES',
       class: 'bg-col5-light hover:bg-col5',
       icon: <SalesIcon />,
     },
     {
       type: 'link',
-      page: 'layby',
+      page: '/layby',
       text: 'LAYBYS',
       class: 'bg-col6-light hover:bg-col6',
       icon: <LaybyIcon />,
     },
     {
       type: 'link',
-      page: 'hold',
+      page: '/hold',
       text: 'HOLDS',
       class: 'bg-col7-light hover:bg-col7',
       icon: <HoldsIcon />,
     },
     {
       type: 'link',
-      page: 'gift-card',
+      page: '/gift-card',
       text: 'GIFT CARDS',
       class: 'bg-col8-light hover:bg-col8',
       icon: <GiftCardsIcon />,
@@ -97,14 +97,14 @@ export default function Menu({ badges }) {
   const bottomMenu = [
     {
       type: 'link',
-      page: 'log',
+      page: '/log',
       text: 'LOGS',
       class: 'bg-col9-light hover:bg-col9',
       icon: <LogsIcon />,
     },
     {
       type: 'link',
-      page: 'jobs',
+      page: '/jobs',
       text: 'JOBS',
       badge: badges.numJobsToDo,
       class: 'bg-col10-light hover:bg-col10',
@@ -112,7 +112,7 @@ export default function Menu({ badges }) {
     },
     {
       type: 'link',
-      page: 'stocktake',
+      page: '/stocktake',
       text: 'STOCKTAKE',
       class: 'bg-col1-light hover:bg-col1',
       icon: <StocktakeIcon />,
@@ -127,9 +127,7 @@ export default function Menu({ badges }) {
   ]
 
   const defaultOnClick = (item) => {
-    // window.scrollTo(0, 0)
     saveSystemLog(`${item?.page} on menu clicked.`, clerk?.id)
-    console.log(item?.page)
     router.push(item?.page)
     closeView(ViewProps.mainMenu)
   }

@@ -1,10 +1,8 @@
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
-import { logChangeQuantity } from 'features/log/lib/functions'
 import { useClerk } from 'lib/api/clerk'
 import { useCurrentRegisterId } from 'lib/api/register'
-import { useStockItem, useStockList } from 'lib/api/stock'
-import { createStockMovementInDatabase } from 'lib/database/create'
+import { changeStockQuantity, useStockItem, useStockList } from 'lib/api/stock'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { ModalButton, StockMovementTypes } from 'lib/types'
@@ -18,10 +16,7 @@ export default function ChangeStockQuantityDialog() {
   const router = useRouter()
   const id = router.query.id
 
-  const { inventory, mutateInventory } = useStockList()
-  const { stockItem, isStockItemLoading, mutateStockItem } = useStockItem(
-    `${id}`
-  )
+  const { stockItem, isStockItemLoading } = useStockItem(`${id}`)
   const { registerId } = useCurrentRegisterId()
   const [movement, setMovement] = useState(StockMovementTypes?.Received)
   const [quantity, setQuantity] = useState('')
@@ -40,73 +35,31 @@ export default function ChangeStockQuantityDialog() {
       loading: submitting,
       onClick: async () => {
         setSubmitting(true)
-        let originalQuantity = stockItem?.quantity
-        let newQuantity = stockItem?.quantity
-        let adjustment = parseInt(quantity)
-        if (movement === StockMovementTypes?.Adjustment) {
-          newQuantity = parseInt(quantity)
-          adjustment = newQuantity - originalQuantity
-        } else if (
-          movement === StockMovementTypes?.Discarded ||
-          movement === StockMovementTypes?.Lost ||
-          movement === StockMovementTypes?.Returned
-        ) {
-          newQuantity -= adjustment
-        } else {
-          newQuantity += adjustment
-        }
-        mutateInventory(
-          inventory?.map((i) =>
-            i?.id === stockItem?.id ? { ...i, quantity: newQuantity } : i
-          ),
-          false
-        )
-        mutateStockItem(
-          [
-            {
-              ...stockItem,
-              quantity: newQuantity,
-              [`quantity_${movement}`]:
-                (stockItem[`quantity_${movement}`] || 0) + adjustment,
-            },
-          ],
-          false
-        )
-        const stockMovementId = await createStockMovementInDatabase({
-          item: {
-            itemId: stockItem?.id,
-            quantity:
-              movement === StockMovementTypes?.Adjustment
-                ? adjustment?.toString()
-                : quantity,
+        changeStockQuantity(
+          {
+            stockItem,
+            quantity,
+            movement,
+            clerkId: clerk?.id,
+            registerId,
+            note,
           },
-          clerk,
-          registerId,
-          act: movement,
-          note,
-        })
-        setSubmitting(false)
-        closeView(ViewProps.changeStockQuantityDialog)
-        setMovement(null)
-        setQuantity('')
-        setNote('')
-        logChangeQuantity(
-          movement,
-          stockItem,
-          quantity,
-          originalQuantity,
-          newQuantity,
-          clerk,
-          stockMovementId
-        )
-        setAlert({
-          open: true,
-          type: 'success',
-          message: `${
-            movement === StockMovementTypes?.Adjustment
-              ? 'STOCK QUANTITY ADJUSTED'
-              : `STOCK MARKED AS ${movement?.toUpperCase()}`
-          }`,
+          id
+        ).then((res) => {
+          setAlert({
+            open: true,
+            type: 'success',
+            message: `${
+              movement === StockMovementTypes?.Adjustment
+                ? 'STOCK QUANTITY ADJUSTED'
+                : `STOCK MARKED AS ${movement?.toUpperCase()}`
+            }`,
+          })
+          closeView(ViewProps.changeStockQuantityDialog)
+          setSubmitting(false)
+          setQuantity('')
+          setNote('')
+          setMovement(StockMovementTypes?.Received)
         })
       },
       text: 'CHANGE QUANTITY',

@@ -225,3 +225,49 @@ export async function dbReturnStock(returnStock: any, db = connection) {
     trx.rollback()
   }
 }
+
+export async function dbChangeStockQuantity(
+  change: any,
+  id: any,
+  db = connection
+) {
+  const trx = await knex.transaction()
+  try {
+    const { stockItem, quantity, movement, clerkId, registerId, note } = change
+    const itemId = Number(id)
+    // todo Change stockItem quantity so it gets direct from database
+    let originalQuantity = stockItem?.quantity
+    let newQuantity = stockItem?.quantity
+    let adjustment = parseInt(quantity)
+    if (movement === StockMovementTypes?.Adjustment) {
+      newQuantity = parseInt(quantity)
+      adjustment = newQuantity - originalQuantity
+    } else if (
+      movement === StockMovementTypes?.Discarded ||
+      movement === StockMovementTypes?.Lost ||
+      movement === StockMovementTypes?.Returned
+    ) {
+      newQuantity -= adjustment
+    } else {
+      newQuantity += adjustment
+    }
+    await dbCreateStockMovement(
+      {
+        itemId,
+        quantity:
+          movement === StockMovementTypes?.Adjustment
+            ? adjustment
+            : Number(quantity),
+        clerkId,
+        registerId,
+        act: movement,
+        note,
+      },
+      db
+    )
+    trx.commit()
+  } catch (err) {
+    // Roll back the transaction on error
+    trx.rollback()
+  }
+}

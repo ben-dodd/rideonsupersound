@@ -15,10 +15,7 @@ export default function ChangePriceDialog() {
   const router = useRouter()
   const id = router.query.id
 
-  const { inventory, mutateInventory } = useStockList()
-  const { stockItem, isStockItemLoading, mutateStockItem } = useStockItem(
-    `${id}`
-  )
+  const { stockItem, isStockItemLoading } = useStockItem(`${id}`)
 
   const [totalSell, setTotalSell] = useState('')
   const [vendorCut, setVendorCut] = useState('')

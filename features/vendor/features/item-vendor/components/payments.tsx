@@ -1,38 +1,25 @@
 import { useMemo } from 'react'
 import { VendorPaymentObject } from 'lib/types'
-
-// Components
 import dayjs from 'dayjs'
 import { CSVLink } from 'react-csv'
-import { getVendorDetails } from '../lib/functions'
+import { useRouter } from 'next/router'
+import { useVendor } from 'lib/api/vendor'
 
-export default function VendorPayments({ vendor }) {
-  // Atoms
-  // const [loadedVendorId] = useAtom(loadedVendorIdAtom)
-  const [page] = useAtom(pageAtom)
-
-  // SWR
-  const { inventory } = useInventory()
-  const { sales } = useSalesJoined()
-  const { vendorPayments } = useVendorPayments()
-
-  // Constants
-  const vendorDetails = useMemo(
-    () =>
-      getVendorDetails(inventory, sales, vendorPayments, loadedVendorId[page]),
-    [inventory, sales, vendorPayments, loadedVendorId[page]]
-  )
+export default function VendorPayments() {
+  const router = useRouter()
+  const id = router.query
+  const { vendor } = useVendor(id)
 
   return (
     <div>
-      {vendorDetails?.totalPayments?.length > 0 && (
+      {vendor?.payments?.length > 0 && (
         <div className="mt-4">
           <CSVLink
             className={`bg-white hover:bg-gray-100 disabled:bg-gray-200 p-2 rounded border`}
             filename={`${vendor?.name}-payments-${dayjs().format(
               'YYYY-MM-DD'
             )}.csv`}
-            data={vendorDetails?.totalPayments}
+            data={vendor?.payments}
           >
             DOWNLOAD DATA
           </CSVLink>
@@ -50,14 +37,12 @@ export default function VendorPayments({ vendor }) {
           <div className="border-b py-1 flex text-sm font-bold">
             <div className="w-1/6" />
             <div className="w-1/2" />
-            <div className="w-1/6">{`${
-              vendorDetails?.totalPayments?.length
-            } PAYMENT${
-              vendorDetails?.totalPayments?.length === 1 ? '' : 'S'
+            <div className="w-1/6">{`${vendor?.payments?.length} PAYMENT${
+              vendor?.payments?.length === 1 ? '' : 'S'
             } MADE`}</div>
             <div className="w-1/6 text-right">
               {`$${(
-                vendorDetails?.totalPayments?.reduce(
+                vendor?.payments?.reduce(
                   (prev, curr) => prev + curr?.amount,
                   0
                 ) / 100
@@ -65,7 +50,7 @@ export default function VendorPayments({ vendor }) {
             </div>
           </div>
 
-          {vendorDetails?.totalPayments
+          {vendor?.payments
             ?.sort(
               (debitA: VendorPaymentObject, debitB: VendorPaymentObject) => {
                 const a = dayjs(debitA?.date)

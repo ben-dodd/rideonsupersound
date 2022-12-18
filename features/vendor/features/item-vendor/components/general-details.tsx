@@ -2,7 +2,6 @@ import { ClerkObject } from 'lib/types'
 import SettingsSelect from 'components/inputs/settings-select'
 import TextField from 'components/inputs/text-field'
 import dayjs from 'dayjs'
-import { useAtom } from 'jotai'
 import Select from 'react-select'
 import MaskedInput from 'react-text-mask'
 
@@ -11,16 +10,19 @@ import { deleteVendorFromDatabase } from 'lib/database/delete'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { useClerk, useClerks } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
-import { useVendors } from 'lib/api/vendor'
+import { useVendor } from 'lib/api/vendor'
 import { useRouter } from 'next/router'
 
-export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
-  // SWR
+export default function GeneralDetails({ editVendor, setEditVendor }) {
   const { clerks } = useClerks()
   const { clerk } = useClerk()
   const { openConfirm } = useAppStore()
   const router = useRouter()
-  const { inventory } = useInventory()
+  const id = router.query
+  const { vendor } = useVendor(id)
+  const handleEdit = (e) => {
+    setEditVendor({ ...editVendor, [e.target.name]: e.target.value })
+  }
 
   const bankAccountMask = [
     /\d/,
@@ -43,10 +45,6 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
     /\d/,
     /\d/,
   ]
-
-  const vendorIsUsed =
-    inventory?.filter((i) => i?.vendor_id === vendor?.id)?.length > 0
-
   // Functions
   function onClickDelete() {
     // REVIEW Delete inventory item
@@ -57,7 +55,7 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
       title: 'Are you sure you want to delete this item?',
       styledMessage: (
         <div>
-          {vendorIsUsed ? (
+          {vendor?.items?.length > 0 ? (
             <>
               <div className="text-red-500 text-lg text-center p-2 border-red-500">
                 SORRY
@@ -71,19 +69,20 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
           )}
         </div>
       ),
-      yesText: vendorIsUsed ? 'OK' : "YES, I'M SURE",
-      action: vendorIsUsed
-        ? () => {}
-        : async () =>
-            deleteVendorFromDatabase(vendor?.id)?.then(() => {
-              saveLog(
-                `Vendor #${vendor?.id} ${vendor?.name} deleted.`,
-                clerk?.id,
-                'vendor',
-                vendor?.id
-              )
-              router.back()
-            }),
+      yesText: vendor?.items?.length > 0 ? 'OK' : "YES, I'M SURE",
+      action:
+        vendor?.items?.length > 0
+          ? () => {}
+          : async () =>
+              deleteVendorFromDatabase(vendor?.id)?.then(() => {
+                saveLog(
+                  `Vendor #${vendor?.id} ${vendor?.name} deleted.`,
+                  clerk?.id,
+                  'vendor',
+                  vendor?.id
+                )
+                router.back()
+              }),
     })
   }
 
@@ -91,15 +90,16 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
     <div className="flex w-full">
       <div className="w-1/2">
         <TextField
+          id="name"
           inputLabel="Name"
-          value={vendor?.name || ''}
-          onChange={(e: any) => setVendor({ ...vendor, name: e.target.value })}
+          value={editVendor?.name || ''}
+          onChange={handleEdit}
         />
         <SettingsSelect
-          object={vendor}
-          onEdit={setVendor}
+          object={editVendor}
+          onEdit={setEditVendor}
           inputLabel="Vendor Category"
-          dbField="vendor_category"
+          dbField="vendorCategory"
           isCreateDisabled={true}
         />
 
@@ -108,9 +108,9 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
           <Select
             isClearable
             value={{
-              value: vendor?.clerk_id,
+              value: editVendor?.clerkId,
               label: clerks?.find(
-                (c: ClerkObject) => c?.id === vendor?.clerk_id
+                (c: ClerkObject) => c?.id === editVendor?.clerkId
               )?.name,
             }}
             options={clerks?.map((clerk: ClerkObject) => ({
@@ -118,9 +118,9 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
               label: clerk?.name,
             }))}
             onChange={(e: any) =>
-              setVendor({
-                ...vendor,
-                clerk_id: e?.value || null,
+              setEditVendor({
+                ...editVendor,
+                clerkId: e?.value || null,
               })
             }
           />
@@ -134,11 +134,11 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
             className={`appearance-none w-full py-1 px-2 outline-none bg-transparent`}
             mask={bankAccountMask}
             guide={false}
-            value={vendor?.bank_account_number || ''}
+            value={editVendor?.bankAccountNumber || ''}
             onChange={(e) =>
-              setVendor({
-                ...vendor,
-                bank_account_number: e.target.value,
+              setEditVendor({
+                ...editVendor,
+                bankAccountNumber: e.target.value,
               })
             }
           />
@@ -147,9 +147,12 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
           <input
             type="checkbox"
             className="cursor-pointer"
-            checked={vendor?.store_credit_only}
+            checked={editVendor?.store_credit_only}
             onChange={(e) =>
-              setVendor({ ...vendor, store_credit_only: e.target.checked })
+              setEditVendor({
+                ...editVendor,
+                storeCreditOnly: e.target.checked,
+              })
             }
           />
           <div className="ml-2">Store Credit Only</div>
@@ -158,43 +161,44 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
           <input
             type="checkbox"
             className="cursor-pointer"
-            checked={vendor?.email_vendor}
+            checked={editVendor?.emailVendor}
             onChange={(e) =>
-              setVendor({ ...vendor, email_vendor: e.target.checked })
+              setEditVendor({ ...editVendor, emailVendor: e.target.checked })
             }
           />
           <div className="ml-2">Email Vendor</div>
         </div>
         <TextField
+          id="contactName"
           inputLabel="Contact Name"
-          value={vendor?.contact_name || ''}
-          onChange={(e: any) =>
-            setVendor({ ...vendor, contact_name: e.target.value })
-          }
+          value={editVendor?.contactName || ''}
+          onChange={handleEdit}
         />
         <TextField
+          id="email"
           inputLabel="Email"
-          value={vendor?.email || ''}
-          onChange={(e: any) => setVendor({ ...vendor, email: e.target.value })}
+          value={editVendor?.email || ''}
+          onChange={handleEdit}
         />
         <TextField
+          id="phone"
           inputLabel="Phone"
-          value={vendor?.phone || ''}
-          onChange={(e: any) => setVendor({ ...vendor, phone: e.target.value })}
+          value={editVendor?.phone || ''}
+          onChange={handleEdit}
         />
         <TextField
+          id="postalAddress"
           inputLabel="Postal Address"
-          value={vendor?.postal_address || ''}
-          onChange={(e: any) =>
-            setVendor({ ...vendor, postal_address: e.target.value })
-          }
+          value={editVendor?.postalAddress || ''}
+          onChange={handleEdit}
           multiline
           rows={3}
         />
         <TextField
+          id="note"
           inputLabel="Notes"
-          value={vendor?.note || ''}
-          onChange={(e) => setVendor({ ...vendor, note: e.target.value })}
+          value={editVendor?.note || ''}
+          onChange={handleEdit}
           multiline
           rows={3}
         />
@@ -211,32 +215,30 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
       <div className="w-1/2">
         <div className="ml-4 grid grid-cols-2 justify-items-start rounded border p-2 mt-2">
           <div>TOTAL SALES</div>
-          <div>{vendorDetails?.totalSales?.length || 0}</div>
+          <div>{vendor?.sales?.length || 0}</div>
           <div>LAST SALE</div>
           <div>
-            {vendorDetails?.lastSold
-              ? dayjs(vendorDetails?.lastSold).format('D MMMM YYYY')
+            {vendor?.lastSold
+              ? dayjs(vendor?.lastSold).format('D MMMM YYYY')
               : 'N/A'}
           </div>
           <div>LAST PAID</div>
           <div>
-            {vendorDetails?.lastPaid
-              ? dayjs(vendorDetails?.lastPaid).format('D MMMM YYYY')
+            {vendor?.lastPaid
+              ? dayjs(vendor?.lastPaid).format('D MMMM YYYY')
               : 'N/A'}
           </div>
           <div>TOTAL TAKE</div>
-          <div>{`$${(vendorDetails?.totalSell
-            ? vendorDetails?.totalSell / 100
-            : 0
-          )?.toFixed(2)}`}</div>
+          <div>{`$${(vendor?.totalSell ? vendor?.totalSell / 100 : 0)?.toFixed(
+            2
+          )}`}</div>
           <div>TOTAL PAID</div>
-          <div>{`$${(vendorDetails?.totalPaid
-            ? vendorDetails?.totalPaid / 100
-            : 0
-          )?.toFixed(2)}`}</div>
+          <div>{`$${(vendor?.totalPaid ? vendor?.totalPaid / 100 : 0)?.toFixed(
+            2
+          )}`}</div>
           <div>TOTAL OWED</div>
-          <div>{`$${(vendorDetails?.totalOwing
-            ? vendorDetails?.totalOwing / 100
+          <div>{`$${(vendor?.totalOwing
+            ? vendor?.totalOwing / 100
             : 0
           )?.toFixed(2)}`}</div>
         </div>

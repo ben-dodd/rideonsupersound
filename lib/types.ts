@@ -203,8 +203,10 @@ export interface VendorSaleItemObject {
   saleId?: number
   itemId?: number
   quantity?: number
-  vendorDiscount?: number
   storeDiscount?: number
+  vendorDiscount?: number
+  vendorId?: number
+  format: string
   vendorCut?: number
   totalSell?: number
   datePriceValidFrom?: string

@@ -1,40 +1,18 @@
-// Packages
-import { useAtom } from 'jotai'
-import { useEffect, useMemo, useState } from 'react'
-import { StockObject, VendorObject } from 'lib/types'
-
-// Functions
+import { StockObject } from 'lib/types'
 import {
   getImageSrc,
   getItemSku,
 } from 'features/inventory/features/display-inventory/lib/functions'
 import InfoIcon from '@mui/icons-material/Info'
 import { Tooltip } from '@mui/material'
-import { getVendorDetails } from '../lib/functions'
+import { useVendor } from 'lib/api/vendor'
+import { useRouter } from 'next/router'
 
 export default function VendorItems() {
-  // Atoms
-  const [loadedVendorId] = useAtom(loadedVendorIdAtom)
-  const [page] = useAtom(pageAtom)
+  const router = useRouter()
+  const id = router?.query
+  const { vendor } = useVendor(id)
 
-  // SWR
-  const { vendors } = useVendors()
-  const { inventory } = useInventory()
-  const { sales } = useSalesJoined()
-  const { vendorPayments } = useVendorPayments()
-
-  // State
-  const [vendor, setVendor]: [VendorObject, Function] = useState({})
-  const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom)
-
-  // Load
-  useEffect(() => {
-    setVendor(
-      vendors?.find((v: VendorObject) => v?.id === loadedVendorId[page])
-    )
-  }, [loadedVendorId[page]])
-
-  // Functions
   function StockItem({ item }) {
     return (
       <div
@@ -68,13 +46,13 @@ export default function VendorItems() {
                 <div className="text-md">{`${item?.artist || 'Untitled'}`}</div>
               </div>
               <div className="text-yellow-400 font-bold text-3xl">
-                {item?.needs_restock ? 'PLEASE RESTOCK!' : ''}
+                {item?.needsRestock ? 'PLEASE RESTOCK!' : ''}
               </div>
             </div>
             <div className="text-sm text-green-800">{`${
               item?.genre ? `${item.genre} / ` : ''
             }${item?.format} [${
-              item?.is_new ? 'NEW' : item?.cond?.toUpperCase() || 'USED'
+              item?.isNew ? 'NEW' : item?.cond?.toUpperCase() || 'USED'
             }]`}</div>
           </div>
           <div className="flex justify-between items-end">
@@ -85,9 +63,7 @@ export default function VendorItems() {
               <Tooltip title="View and edit item details.">
                 <button
                   className="icon-button-large text-black hover:text-blue-500"
-                  onClick={() =>
-                    setLoadedItemId({ ...loadedItemId, vendors: item?.id })
-                  }
+                  onClick={() => router.push('/stock/${item?.id')}
                 >
                   <InfoIcon style={{ fontSize: '40px' }} />
                 </button>
@@ -99,20 +75,20 @@ export default function VendorItems() {
             <div
               className={`text-md ${item?.quantity < 1 && 'text-red-500'}`}
             >{`${item?.quantity} in stock${
-              (item?.quantity_hold || 0) + (item?.quantity_unhold || 0) > 0
+              (item?.quantityHold || 0) + (item?.quantityUnhold || 0) > 0
                 ? `, ${-(
-                    (item?.quantity_hold || 0) + (item?.quantity_unhold || 0)
+                    (item?.quantityHold || 0) + (item?.quantityUnhold || 0)
                   )} on hold`
                 : ''
             }${
-              (item?.quantity_layby || 0) + (item?.quantity_unlayby || 0) > 0
+              (item?.quantityLayby || 0) + (item?.quantityUnlayby || 0) > 0
                 ? `, ${-(
-                    (item?.quantity_layby || 0) + (item?.quantity_unlayby || 0)
+                    (item?.quantityLayby || 0) + (item?.quantityUnlayby || 0)
                   )} on layby`
                 : ''
             }`}</div>
             <div className="text-xl pr-2">{`$${(
-              (item?.total_sell || 0) / 100
+              (item?.totalSell || 0) / 100
             )?.toFixed(2)}`}</div>
           </div>
         </div>
@@ -120,29 +96,22 @@ export default function VendorItems() {
     )
   }
 
-  // Constants
-  const v = useMemo(
-    () =>
-      getVendorDetails(inventory, sales, vendorPayments, loadedVendorId[page]),
-    [inventory, sales, vendorPayments, loadedVendorId[page]]
-  )
-
   return (
     <div className="flex">
       <div className="w-1/2 pr-2">
         <div className="text-sm font-bold px-1 border-b mb-2">IN STOCK</div>
-        {v?.totalItems
+        {vendor?.items
           ?.filter((item: StockObject) => item?.quantity > 0)
           ?.map((item: StockObject) => (
-            <StockItem key={item.id} item={item} />
+            <StockItem key={item?.id} item={item} />
           ))}
       </div>
       <div className="w-1/2 pl-2">
         <div className="text-sm font-bold px-1 border-b mb-2">OUT OF STOCK</div>
-        {v?.totalItems
+        {vendor?.items
           ?.filter((item: StockObject) => (item?.quantity || 0) <= 0)
           ?.map((item: StockObject) => (
-            <StockItem item={item} />
+            <StockItem key={item?.id} item={item} />
           ))}
       </div>
     </div>
