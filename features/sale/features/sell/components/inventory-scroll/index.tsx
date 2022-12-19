@@ -9,7 +9,7 @@ import { getGeolocation } from 'lib/api/external'
 export default function InventoryScroll({ search }: { search: string }) {
   const maxItemsInList = 50
   const { stockList, isStockListLoading } = useStockList()
-  console.log(stockList)
+  // console.log(stockList)
   // const weather = useWeather()
   const [geolocation, setGeolocation] = useState(null)
 

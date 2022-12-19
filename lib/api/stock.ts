@@ -19,7 +19,11 @@ export function useStockItem(id: string) {
 
 export function useSaleStockItems(items: SaleItemObject[]) {
   return useData(
-    `stock/items?items=${items?.map((item) => item?.itemId)?.join('+')}`,
+    `stock/items${
+      items?.length > 0
+        ? `?items=${items?.map((item) => item?.itemId)?.join('+')}`
+        : ''
+    }`,
     'saleItems'
   )
 }

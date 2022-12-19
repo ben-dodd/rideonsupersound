@@ -84,7 +84,7 @@ export function getCartItemPrice(cartItem: any, item: StockObject) {
   return {
     storePrice: getCartItemStoreCut(cartItem, item),
     vendorPrice: getCartItemVendorCut(cartItem, item),
-    totalPrice: getCartItemPrice(cartItem, item),
+    totalPrice: getCartItemTotal(cartItem, item),
   }
 }
 

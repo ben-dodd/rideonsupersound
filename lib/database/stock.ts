@@ -77,7 +77,6 @@ export function dbGetStockItem(id, db = connection) {
 }
 
 export function dbGetStockItems(itemIds, db = connection) {
-  console.log('Getting stock items for ids: ', itemIds)
   return Promise.all(itemIds?.map((itemId) => dbGetStockItem(itemId, db)))
 }
 

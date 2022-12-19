@@ -5,6 +5,7 @@ import {
   writeItemList,
 } from 'features/pay/lib/functions'
 import { apiAuth } from 'lib/api'
+import { mysql2js } from 'lib/database/utils/helpers'
 import { StockObject } from 'lib/types'
 import { useState, useEffect } from 'react'
 
@@ -16,23 +17,25 @@ export function useSaleProperties(cart): any {
     // Fetch the stock table from the database here
     // and set it using setStockTable()
     console.log('getting cart items...')
-    apiAuth()
-      .then((accessToken) =>
-        axios(
-          `stock/items?items=${cart?.items
-            ?.map((item) => item?.itemId)
-            ?.join('+')}`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        )
-      )
-      .then((items) => {
-        console.log(items)
-        setStockTable(items)
-      })
+    if (cart?.items?.length === 0) setStockTable([])
+    else
+      apiAuth()
+        .then((accessToken) => {
+          return axios(
+            `api/stock/items?items=${cart?.items
+              ?.map((item) => item?.itemId)
+              ?.join('+')}`,
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          )
+        })
+        .then((res) => {
+          setStockTable(mysql2js(res.data))
+        })
+        .catch((e) => Error(e.message))
   }, [cart?.items])
 
   useEffect(() => {
@@ -76,6 +79,6 @@ export function useSaleProperties(cart): any {
       itemList: writeItemList(stockTable, cartItems), // List of items written in full
     })
   }, [cart, stockTable])
-
+  console.log(properties)
   return properties
 }
