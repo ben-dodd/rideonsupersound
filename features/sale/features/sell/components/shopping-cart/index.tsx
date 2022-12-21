@@ -49,7 +49,7 @@ export default function ShoppingCart() {
     // setRefresh(refresh + 1);
   }
 
-  console.log(cart)
+  // console.log(cart)
 
   // Constants
   const { totalPrice, totalStoreCut, totalRemaining, totalPaid } =

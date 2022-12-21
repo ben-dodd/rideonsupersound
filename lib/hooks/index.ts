@@ -39,9 +39,9 @@ export function useSaleProperties(cart): any {
   }, [cart?.items])
 
   useEffect(() => {
-    console.log('calculating props for sale')
-    console.log(cart)
-    console.log(stockTable)
+    // console.log('calculating props for sale')
+    // console.log(cart)
+    // console.log(stockTable)
 
     // Calculate the properties for the sale here
     // using the items and stockTable
@@ -79,6 +79,6 @@ export function useSaleProperties(cart): any {
       itemList: writeItemList(stockTable, cartItems), // List of items written in full
     })
   }, [cart, stockTable])
-  console.log(properties)
+  // console.log(properties)
   return properties
 }

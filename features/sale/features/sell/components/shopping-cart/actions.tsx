@@ -63,13 +63,13 @@ export default function ShoppingCartActions() {
       message: 'Are you sure you want to clear the cart of all items?',
       yesText: 'DISCARD SALE',
       action: () => {
-        saveLog(`Cart cleared.`, clerk?.id)
+        // saveLog(`Cart cleared.`, clerk?.id)
         setAlert({
           open: true,
           type: 'warning',
           message: 'SALE DISCARDED',
           undo: () => {
-            saveLog(`Cart uncleared.`, clerk?.id)
+            // saveLog(`Cart uncleared.`, clerk?.id)
             setCart({ ...cart })
           },
         })

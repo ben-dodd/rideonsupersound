@@ -3,7 +3,11 @@ import dayjs from 'dayjs'
 import produce from 'immer'
 import { StoreState } from './types'
 import { v4 as uuid } from 'uuid'
-import { getGeolocation, getWeather, useWeather } from 'lib/api/external'
+import {
+  getGeolocation,
+  getWeather,
+  useSetWeatherToCart,
+} from 'lib/api/external'
 
 type WithSelectors<S> = S extends { getState: () => infer T }
   ? S & { use: { [K in keyof T]: () => T[K] } }
@@ -99,24 +103,24 @@ export const useAppStore = createSelectors(
         })
       ),
     addCartItem: (newItem, clerkId) => {
-      get().resetSellSearchBar()
+      // get().resetSellSearchBar()
       return set(
         produce((draft) => {
           if (get().cart.items.length === 0) {
+            useSetWeatherToCart(get().setCart)
             draft.cart.dateSaleOpened = dayjs.utc().format()
             draft.cart.saleOpenedBy = clerkId
-            getWeather().then((weather) => (draft.cart.weather = weather))
             const geolocation: any = getGeolocation()
             draft.cart.geoLatitude = geolocation?.latitude
             draft.cart.geoLongitude = geolocation?.longitude
           }
           draft.view.cart = true
           const index = get().cart.items.findIndex(
-            (cartItem) => cartItem.itemId === newItem?.id
+            (cartItem) => cartItem?.itemId === newItem?.itemId
           )
           if (index < 0) draft.cart.items.push(newItem)
           else
-            get().cart.items[index].quantity = `${
+            draft.cart.items[index].quantity = `${
               parseInt(get().cart.items[index].quantity) + 1
             }`
         })
@@ -125,7 +129,10 @@ export const useAppStore = createSelectors(
     setCartItem: (id, update) =>
       set(
         produce((draft) => {
-          draft.cart.items[id] = { ...get().cart.items[id], ...update }
+          const index = get().cart.items.findIndex(
+            (cartItem) => cartItem?.itemId === id
+          )
+          draft.cart.items[index] = { ...get().cart.items[index], ...update }
         })
       ),
     setReceiveBasket: (update) =>
@@ -167,7 +174,7 @@ export const useAppStore = createSelectors(
     resetCart: () =>
       set(
         produce((draft) => {
-          draft.cart = { id: null, customer: {} }
+          draft.cart = { id: null, customer: {}, items: [], transactions: [] }
         })
       ),
     resetReceiveBasket: () =>

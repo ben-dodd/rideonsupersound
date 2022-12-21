@@ -51,33 +51,38 @@ export function dbGetRestockList(db = connection) {
     .andWhere('is_deleted', 0)
 }
 
-export function dbGetStockItem(id, db = connection) {
+export function dbGetStockItem(id, simple = false, db = connection) {
   return db('stock')
     .where('stock.id', id)
     .first()
     .then(async (stockItem) => {
-      const sales = await dbGetAllSalesAndItems(db).where(
-        `sale_item.item_id`,
-        stockItem?.id
-      )
       const stockMovements = await db('stock_movement').where(
         `stock_id`,
         stockItem?.id
       )
+      const stockPrices = await db('stock_price')
+        .where(`stock_id`, stockItem?.id)
+        .orderBy('date_valid_from', 'desc')
       const quantity = stockMovements.reduce(
         (acc, stockMovement) => acc + stockMovement.quantity,
         0
       )
-      const stockPrices = await db('stock_price').where(
-        `stock_id`,
+      const latestPrice = stockPrices[0]
+      const totalSell = latestPrice?.total_sell
+      const vendorCut = latestPrice?.vendor_cut
+      const itemReturn = { ...stockItem, quantity, totalSell, vendorCut }
+      if (simple) return itemReturn
+      // Add other quantity params as needed
+      const sales = await dbGetAllSalesAndItems(db).where(
+        `sale_item.item_id`,
         stockItem?.id
       )
-      return { ...stockItem, quantity, sales, stockMovements, stockPrices }
+      return { ...itemReturn, sales, stockMovements, stockPrices }
     })
 }
 
 export function dbGetStockItems(itemIds, db = connection) {
-  return Promise.all(itemIds?.map((itemId) => dbGetStockItem(itemId, db)))
+  return Promise.all(itemIds?.map((itemId) => dbGetStockItem(itemId, true, db)))
 }
 
 export function dbGetGiftCards(db = connection) {

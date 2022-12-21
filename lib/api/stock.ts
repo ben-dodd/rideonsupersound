@@ -17,6 +17,10 @@ export function useStockItem(id: string) {
   return useData(`stock/${id}`, 'stockItem')
 }
 
+export function useSimpleStockItem(id: string) {
+  return useData(`stock/${id}?simple=true`, 'stockItem')
+}
+
 export function useSaleStockItems(items: SaleItemObject[]) {
   return useData(
     `stock/items${
@@ -59,7 +63,7 @@ export function createStockItem(stockItem: StockObject, clerk: ClerkObject) {
         }
       )
       .then((res) => {
-        const id = res.data
+        const id = res.data[0]
         // saveSystemLog(`New stock (${id}) created.`, clerk?.id)
         return { ...stockItem, createdByClerkId: clerk?.id, id }
       })

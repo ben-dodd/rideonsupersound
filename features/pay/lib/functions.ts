@@ -15,8 +15,6 @@ import {
 import { getCartItemPrice } from 'features/sale/features/sell/lib/functions'
 
 export function sumPrices(saleItems: any[], items: any[], field: string) {
-  console.log(saleItems)
-  console.log(items)
   if (!(saleItems?.length > 0) || !(items?.length > 0)) return 0
   return saleItems
     ?.filter((s) => !s?.isRefunded)

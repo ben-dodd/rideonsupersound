@@ -1,54 +1,55 @@
-import { useState } from 'react'
-import { SaleItemObject, StockObject } from 'lib/types'
+import { useEffect, useState } from 'react'
+import { SaleItemObject } from 'lib/types'
 import TextField from 'components/inputs/text-field'
 import {
   getImageSrc,
   getItemDisplayName,
   getItemSku,
 } from 'features/inventory/features/display-inventory/lib/functions'
-import { priceCentsString } from 'lib/utils'
 import ArrowDown from '@mui/icons-material/ArrowDropDown'
 import ArrowUp from '@mui/icons-material/ArrowDropUp'
 import DeleteIcon from '@mui/icons-material/Delete'
 import {
   getCartItemPrice,
+  getCartItemTotal,
   writeCartItemPriceBreakdown,
 } from '../../lib/functions'
 import { useAppStore } from 'lib/store'
-import { useStockItem, useStockList } from 'lib/api/stock'
+import { useSimpleStockItem, useStockItem, useStockList } from 'lib/api/stock'
+import { priceCentsString } from 'lib/utils'
 
 type SellListItemProps = {
-  index: number
   cartItem: SaleItemObject
   deleteCartItem?: Function
 }
 
 export default function SellListItem({
-  index,
   cartItem,
   deleteCartItem,
 }: SellListItemProps) {
-  console.log(cartItem)
   const { openConfirm, setCartItem } = useAppStore()
   const { stockItem } = useStockItem(`${cartItem?.itemId}`)
+  const { stockList } = useStockList()
+  console.log(cartItem)
+  const item =
+    stockItem || stockList?.find((item) => item?.id === cartItem?.itemId)
   const [expanded, setExpanded] = useState(false)
+  console.log(stockItem)
 
-  // Functions
   function onChangeCart(e: any, property: string) {
-    setCartItem(index, { [property]: e.target.value })
+    setCartItem(cartItem?.itemId, { [property]: e.target.value })
   }
 
   function onChangeQuantity(e: any) {
-    if (stockItem?.quantity < parseInt(e?.target?.value)) {
+    if (item?.quantity < parseInt(e?.target?.value)) {
       const newQuantity = e?.target?.value
       openConfirm({
         open: true,
         title: 'Are you sure you want to add to cart?',
         styledMessage: (
           <span>
-            There is not enough of <b>{getItemDisplayName(stockItem)}</b> in
-            stock. Are you sure you want to change the quantity to{' '}
-            {e?.target?.value}?
+            There is not enough of <b>{getItemDisplayName(item)}</b> in stock.
+            Are you sure you want to change the quantity to {e?.target?.value}?
           </span>
         ),
         yesText: "YES, I'M SURE",
@@ -68,22 +69,20 @@ export default function SellListItem({
           <div className="w-20 h-20 relative">
             <img
               className="object-cover absolute"
-              // layout="fill"
-              // objectFit="cover"
-              src={getImageSrc(stockItem)}
-              alt={stockItem?.title || 'Inventory image'}
+              src={getImageSrc(item)}
+              alt={item?.title || 'Inventory image'}
             />
-            {!stockItem?.isGiftCard && !stockItem?.isMiscItem && (
+            {!item?.isGiftCard && !item?.isMiscItem && (
               <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white text-sm flex justify-center items-center">
-                {getItemSku(stockItem)}
+                {getItemSku(item)}
               </div>
             )}
           </div>
         </div>
         <div className="flex flex-col w-full pt-2 px-2 justify-between">
-          <div className="text-sm pl-1">{getItemDisplayName(stockItem)}</div>
+          <div className="text-sm pl-1">{getItemDisplayName(item)}</div>
           <div className="text-red-500 self-end">
-            {writeCartItemPriceBreakdown(cartItem, stockItem)}
+            {writeCartItemPriceBreakdown(cartItem, item)}
           </div>
           <div className="self-end text-xs">
             {expanded ? (
@@ -106,7 +105,7 @@ export default function SellListItem({
         }`}
       >
         <div>
-          {!stockItem?.isGiftCard && !stockItem?.isMiscItem && (
+          {!item?.isGiftCard && !item?.isMiscItem && (
             <div className="flex justify-between items-end">
               <TextField
                 className="w-1/3"
@@ -126,7 +125,7 @@ export default function SellListItem({
                 endAdornment="%"
                 error={parseInt(cartItem?.vendorDiscount) > 100}
                 valueNum={parseInt(cartItem?.vendorDiscount)}
-                onChange={(e: any) => onChangeCart(e, 'vendor_discount')}
+                onChange={(e: any) => onChangeCart(e, 'vendorDiscount')}
               />
               <TextField
                 className="w-1/3"
@@ -137,7 +136,7 @@ export default function SellListItem({
                 endAdornment="%"
                 error={parseInt(cartItem?.storeDiscount) > 100}
                 valueNum={parseInt(cartItem?.storeDiscount)}
-                onChange={(e: any) => onChangeCart(e, 'store_discount')}
+                onChange={(e: any) => onChangeCart(e, 'storeDiscount')}
               />
             </div>
           )}
@@ -151,11 +150,11 @@ export default function SellListItem({
           />
           <div className="flex w-full justify-between place-start">
             <div className="font-bold">
-              {writeCartItemPriceBreakdown(cartItem, stockItem)}
+              {writeCartItemPriceBreakdown(cartItem, item)}
             </div>
             <div>
               <div className="font-bold self-center">
-                {/* {priceCentsString(getCartItemPrice(cartItem, stockItem))} */}
+                {priceCentsString(getCartItemTotal(cartItem, item))}
               </div>
               <div className="w-50 text-right">
                 <button

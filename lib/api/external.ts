@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { useAppStore } from 'lib/store'
 import useSWR from 'swr'
 import { useData } from './'
 
@@ -23,7 +24,7 @@ export async function getUSDExchangeRate() {
   )
 }
 
-export function getWeather() {
+export function useSetWeatherToCart(setCart) {
   let loc = 'id=2192362'
   if (navigator?.geolocation) {
     navigator?.geolocation?.getCurrentPosition((position) => {
@@ -32,7 +33,9 @@ export function getWeather() {
   }
   return axios(
     `https://api.openweathermap.org/data/2.5/weather?${loc}&appid=${process.env.NEXT_PUBLIC_OPEN_WEATHER_API}&units=metric`
-  ).then((res) => res.data)
+  ).then((res) => {
+    setCart({ weather: res.data })
+  })
 }
 
 export function getGeolocation() {

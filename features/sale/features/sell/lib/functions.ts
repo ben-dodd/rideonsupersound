@@ -6,6 +6,7 @@ import { saveLog } from 'features/log/lib/functions'
 import { GiftCardObject, SaleItemObject, StockObject } from 'lib/types'
 import { priceCentsString } from 'lib/utils'
 import dayjs from 'dayjs'
+import ItemListItem from 'features/pay/components/item-list-item'
 
 export function writeCartItemPriceBreakdown(
   cartItem: SaleItemObject,
@@ -28,7 +29,7 @@ export function writeCartItemPriceBreakdown(
       } x ${priceCentsString(cartItem?.totalSell ?? item?.totalSell)}`
 }
 
-export function getPrice(
+export function getDiscountedPrice(
   cost: number | string,
   discount: number | string,
   quantity: number | string
@@ -42,7 +43,7 @@ export function getPrice(
 
 export function getCartItemVendorCut(cartItem: SaleItemObject, item) {
   const vendorCut: number = cartItem?.vendorCut ?? item?.vendorCut
-  const vendorPrice: number = getPrice(
+  const vendorPrice: number = getDiscountedPrice(
     vendorCut,
     cartItem?.vendorDiscount,
     cartItem?.quantity
@@ -51,30 +52,33 @@ export function getCartItemVendorCut(cartItem: SaleItemObject, item) {
 }
 
 export function getCartItemStoreCut(cartItem, item) {
-  const vendorCut = getCartItemVendorCut(cartItem, item)
-  const storeCut: number = item?.is_misc_item
-    ? item?.misc_item_amount || 0
-    : (cartItem?.total_sell ?? item?.total_sell) - vendorCut
-  const storePrice: number = getPrice(
+  // const vendorCut = getCartItemVendorCut(cartItem, item)
+  const storeCut = getStoreCut(item)
+  // console.log(cartItem?.totalSell ?? item?.totalSell)
+  const storePrice: number = getDiscountedPrice(
     storeCut,
-    cartItem?.store_discount,
+    cartItem?.storeDiscount,
     cartItem?.quantity
   )
+  console.log({ storeCut, storePrice })
   return storePrice
 }
 
 export function getCartItemTotal(cartItem, item) {
+  console.log(cartItem)
+  console.log(item)
   const totalSell: number = !cartItem
     ? 0
     : item?.isGiftCard
     ? item?.giftCardAmount || 0
-    : item?.is_misc_item
-    ? item?.misc_item_amount || 0
+    : item?.isMiscItem
+    ? item?.miscItemAmount || 0
     : null
   if (totalSell) return totalSell
   const vendorPrice: number = getCartItemVendorCut(cartItem, item)
   const storePrice: number = getCartItemStoreCut(cartItem, item)
   const totalPrice: number = totalSell ?? storePrice + vendorPrice
+  console.log({ vendorPrice, storePrice, totalPrice })
   return totalPrice
 }
 
@@ -89,6 +93,7 @@ export function getCartItemPrice(cartItem: any, item: StockObject) {
 }
 
 export function getStoreCut(item: StockObject) {
+  if (item?.isMiscItem) return item?.miscItemAmount || 0
   if (!item?.totalSell || !item?.vendorCut) return 0
   return item?.totalSell - item?.vendorCut
 }
@@ -138,7 +143,7 @@ export function sortInventory(a: StockObject, b: StockObject) {
   return 0
 }
 
-export function makeGiftCardCode(giftCards: GiftCardObject[]) {
+export function makeGiftCardCode(giftCards: GiftCardObject[], length = 6) {
   var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
   var charactersLength = characters.length
   let result = ''
@@ -147,22 +152,11 @@ export function makeGiftCardCode(giftCards: GiftCardObject[]) {
     giftCards?.map((g: GiftCardObject) => g?.giftCardCode).includes(result)
   ) {
     result = ''
-    for (var i = 0; i < 6; i++) {
+    for (var i = 0; i < length; i++) {
       result += characters.charAt(Math.floor(Math.random() * charactersLength))
     }
   }
   return result
-}
-
-export function openCart(setCart, clerk, weather, geolocation) {
-  setCart({
-    id: null,
-    date_sale_opened: dayjs.utc().format(),
-    sale_opened_by: clerk?.id,
-    weather: weather,
-    geo_latitude: geolocation?.latitude,
-    geo_longitude: geolocation?.longitude,
-  })
 }
 
 function getIndexOfItemInCart(item, cart) {

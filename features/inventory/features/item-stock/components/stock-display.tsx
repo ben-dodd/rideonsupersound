@@ -26,7 +26,6 @@ export default function InventoryItemForm({
     setItem({ ...item, [e.target.name]: e.target.value })
   const { vendors } = useVendors()
   const { clerk } = useClerk()
-  console.log(item)
 
   return (
     <div>

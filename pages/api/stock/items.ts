@@ -8,13 +8,11 @@ const apiRoute = async (
   res: NextApiResponse
 ) => {
   const { items } = req.query
-  console.log(items)
   try {
     if (items?.length === 0) return []
-    const itemIds = `${items}`?.split('+')
+    const itemIds = `${items}`?.split(' ')
     console.log(itemIds)
     return dbGetStockItems(itemIds).then((data) => {
-      console.log(data)
       res.status(200).json(data)
     })
   } catch (error) {
