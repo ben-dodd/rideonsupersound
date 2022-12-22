@@ -48,7 +48,7 @@ export function deleteStockItem(id) {
 }
 
 export function createStockItem(stockItem: StockObject, clerk: ClerkObject) {
-  axiosAuth
+  return axiosAuth
     .post(`/api/stock`, {
       ...stockItem,
       createdByClerkId: clerk?.id,

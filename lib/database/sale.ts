@@ -105,7 +105,6 @@ export function getAllSaleItems(db = connection) {
 }
 
 export function dbCreateSale(sale, db = connection) {
-  console.log('creating new sale', sale)
   return db('sale')
     .insert(js2mysql(sale))
     .then((rows) => rows[0])
@@ -175,19 +174,18 @@ export async function dbSaveSale(sale, prevState, db = connection) {
     .transaction(async (trx) => {
       console.log('trying to save the sale')
       // Insert the sale
-      let saleId = sale?.id
       const newSale = { ...sale }
       delete newSale?.items
       delete newSale?.transactions
       delete newSale?.customer
-      if (saleId) {
+      if (newSale?.id) {
         console.log('updating the sale')
-        dbUpdateSale(saleId, newSale, trx)
+        dbUpdateSale(newSale?.id, newSale, trx)
       } else {
         console.log('creating a new sale')
         newSale.state = newSale?.state || SaleStateTypes.InProgress
-        saleId = await dbCreateSale(newSale, trx)
-        console.log('sale created', saleId)
+        newSale.id = await dbCreateSale(newSale, trx)
+        console.log('sale created', newSale.id)
       }
       if (sale?.isMailOrder && sale?.state === SaleStateTypes.Completed) {
         console.log('creating a mail order task')
@@ -208,16 +206,16 @@ export async function dbSaveSale(sale, prevState, db = connection) {
 
       for (const item of sale?.items) {
         console.log('saving item', item?.itemId)
-        const id = await handleSaveSaleItem(item, sale, prevState, trx)
+        const id = await handleSaveSaleItem(item, newSale, prevState, trx)
         console.log('item saved', id)
       }
 
       for (const trans of sale?.transactions) {
         console.log('saving transaction', trans)
-        const id = await handleSaveSaleTransaction(trans, sale, trx)
+        const id = await handleSaveSaleTransaction(trans, newSale, trx)
         console.log('item saved', id)
       }
-      return saleId
+      return newSale?.id
     })
     .then((id) => id)
     .catch((e) => Error(e.message))

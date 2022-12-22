@@ -12,7 +12,7 @@ import { createStockItem, useGiftCards } from 'lib/api/stock'
 export default function GiftCardDialog() {
   const { clerk } = useClerk()
   const { giftCards } = useGiftCards()
-  const { view, setAlert, addCartItem, openView, closeView } = useAppStore()
+  const { view, setAlert, addCartItem, closeView } = useAppStore()
 
   const defaultAmount = '20'
   const [giftCardCode, setGiftCardCode] = useState(makeGiftCardCode(giftCards))
