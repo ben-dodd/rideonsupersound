@@ -38,9 +38,8 @@ export const useAppStore = createSelectors(
   create<StoreState>((set, get) => ({
     view: {},
     cart: {
-      id: null,
+      sale: { id: null, customerId: null },
       customer: {},
-      customerId: null,
       items: [],
       transactions: [],
     },
@@ -115,13 +114,13 @@ export const useAppStore = createSelectors(
           )
         })
       ),
-    addCartItem: (newItem, clerkId) => {
-      return set(
+    addCartItem: (newItem, clerkId) =>
+      set(
         produce((draft) => {
           if (get().cart.items.length === 0) {
-            useSetWeatherToCart(get().setCart)
-            draft.cart.dateSaleOpened = dayjs.utc().format()
-            draft.cart.saleOpenedBy = clerkId
+            useSetWeatherToCart(get().setCartSale)
+            draft.cart.sale.dateSaleOpened = dayjs.utc().format()
+            draft.cart.sale.saleOpenedBy = clerkId
           }
           draft.view.cart = true
           const index = get().cart.items.findIndex(
@@ -133,8 +132,15 @@ export const useAppStore = createSelectors(
               parseInt(get().cart.items[index].quantity) + 1
             }`
         })
-      )
-    },
+      ),
+    setCartSale: (update) =>
+      set(
+        produce((draft) => {
+          Object.entries(update).forEach(
+            ([key, value]) => (draft.cart.sale[key] = value)
+          )
+        })
+      ),
     setCartItem: (id, update) =>
       set(
         produce((draft) => {
@@ -183,7 +189,12 @@ export const useAppStore = createSelectors(
     resetCart: () =>
       set(
         produce((draft) => {
-          draft.cart = { id: null, customer: {}, items: [], transactions: [] }
+          draft.cart = {
+            sale: { id: null, customerId: null },
+            customer: {},
+            items: [],
+            transactions: [],
+          }
         })
       ),
     resetReceiveBasket: () =>

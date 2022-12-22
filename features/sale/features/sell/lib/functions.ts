@@ -197,7 +197,7 @@ export function addItemToCart(item, cart, setCart, clerk) {
     index < 0
       ? addNewItemToCart(item, cart, clerk)
       : updateItemQuantityInCart(item, cart, clerk)
-  setCart({ ...cart, items: newItems })
+  setCart({ items: newItems })
 }
 
 export function skuScan(inputValue, item, callbackFunction) {

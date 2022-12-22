@@ -169,26 +169,18 @@ export function dbUpdateSaleTransaction(id, update, db = connection) {
     .catch((e) => Error(e.message))
 }
 
-export async function dbSaveSale(sale, prevState, db = connection) {
+export async function dbSaveSale(cart, prevState, db = connection) {
   return db
     .transaction(async (trx) => {
-      console.log('trying to save the sale')
-      // Insert the sale
+      const { sale, items, transactions } = cart
       const newSale = { ...sale }
-      delete newSale?.items
-      delete newSale?.transactions
-      delete newSale?.customer
       if (newSale?.id) {
-        console.log('updating the sale')
         dbUpdateSale(newSale?.id, newSale, trx)
       } else {
-        console.log('creating a new sale')
         newSale.state = newSale?.state || SaleStateTypes.InProgress
         newSale.id = await dbCreateSale(newSale, trx)
-        console.log('sale created', newSale.id)
       }
       if (sale?.isMailOrder && sale?.state === SaleStateTypes.Completed) {
-        console.log('creating a mail order task')
         const customer = await dbGetCustomer(sale?.customerId, trx)
         dbCreateJob(
           {
@@ -204,16 +196,12 @@ export async function dbSaveSale(sale, prevState, db = connection) {
         )
       }
 
-      for (const item of sale?.items) {
-        console.log('saving item', item?.itemId)
-        const id = await handleSaveSaleItem(item, newSale, prevState, trx)
-        console.log('item saved', id)
+      for (const item of items) {
+        await handleSaveSaleItem(item, newSale, prevState, trx)
       }
 
-      for (const trans of sale?.transactions) {
-        console.log('saving transaction', trans)
-        const id = await handleSaveSaleTransaction(trans, newSale, trx)
-        console.log('item saved', id)
+      for (const trans of transactions) {
+        await handleSaveSaleTransaction(trans, newSale, trx)
       }
       return newSale?.id
     })

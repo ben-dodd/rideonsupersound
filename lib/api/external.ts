@@ -24,7 +24,7 @@ export async function getUSDExchangeRate() {
   )
 }
 
-export function useSetWeatherToCart(setCart) {
+export function useSetWeatherToCart(setCartSale) {
   let loc = 'id=2192362'
   let latitude,
     longitude = ''
@@ -38,7 +38,7 @@ export function useSetWeatherToCart(setCart) {
   return axios(
     `https://api.openweathermap.org/data/2.5/weather?${loc}&appid=${process.env.NEXT_PUBLIC_OPEN_WEATHER_API}&units=metric`
   ).then((res) => {
-    setCart({
+    setCartSale({
       weather: res.data,
       geoLatitude: latitude,
       geoLongitude: longitude,

@@ -76,6 +76,7 @@ export interface StoreState {
   addCartTransaction: (transaction: SaleTransactionObject) => void
   addCartItem: (newItem: SaleItemObject, clerkId: number) => void
   setCartItem: (id: number, update: any) => void
+  setCartSale: (update: any) => void
   setCustomer: (update: any) => void
   setReceiveBasket: (update: any) => void
   addReceiveBasketItem: (newItem: any) => void

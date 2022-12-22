@@ -74,7 +74,7 @@ export default function ShoppingCartActions() {
           message: 'SALE DISCARDED',
           undo: () => {
             // saveLog(`Cart uncleared.`, clerk?.id)
-            setCart({ ...cart })
+            setCart({ cart })
           },
         })
         clearCart()
