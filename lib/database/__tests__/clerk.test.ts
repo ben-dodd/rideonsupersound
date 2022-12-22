@@ -2,8 +2,6 @@
 import testCon from '../testConn'
 import { dbGetClerk } from '../clerk'
 
-// const { getClerk } = require('../clerk')
-
 beforeAll(() => testCon.migrate.latest())
 
 beforeEach(() => testCon.seed.run())

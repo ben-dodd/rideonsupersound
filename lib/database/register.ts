@@ -81,7 +81,7 @@ export async function dbCloseRegister(
   till: TillObject,
   db = connection
 ) {
-  const trx = await knex.transaction()
+  const trx = await db.transaction()
   try {
     const tillID = await dbCreateTill(till, db)
     dbUpdateRegister(id, {
@@ -101,7 +101,7 @@ export async function dbOpenRegister(
   till: TillObject,
   db = connection
 ) {
-  const trx = await knex.transaction()
+  const trx = await db.transaction()
   try {
     const tillID = await dbCreateTill(till, db)
     const registerId = await dbCreateRegister(

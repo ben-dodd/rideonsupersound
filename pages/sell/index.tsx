@@ -19,7 +19,6 @@ import Layout from 'components/layout'
 export default function SellPage() {
   const { currentRegister, isCurrentRegisterLoading } = useCurrentRegister()
   const { view, openView, closeView, bypassRegister } = useAppStore()
-  const [search, setSearch] = useState('')
   const router = useRouter()
 
   const handlers = useSwipeable({
@@ -43,8 +42,8 @@ export default function SellPage() {
   return (
     <div className={`flex relative overflow-x-hidden`} {...handlers}>
       <div className="w-full sm:w-2/3 bg-gray-100">
-        <SellSearchBar search={search} setSearch={setSearch} />
-        <InventoryScroll search={search} />
+        <SellSearchBar />
+        <InventoryScroll />
       </div>
       <ShoppingCart />
       <CreateHoldSidebar />

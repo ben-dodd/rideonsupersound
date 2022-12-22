@@ -1,19 +1,20 @@
 import dayjs from 'dayjs'
-import { getItemQuantity } from 'features/sale/features/sell/lib/functions'
 import { createMailOrderTask } from 'lib/api/jobs'
 import {
   PaymentMethodTypes,
+  RoleTypes,
   SaleStateTypes,
   StockMovementTypes,
   VendorPaymentTypes,
 } from 'lib/types'
 import connection from './conn'
 import { dbGetCustomer } from './customer'
+import { dbCreateJob } from './jobs'
 import { dbCreateVendorPayment, dbUpdateVendorPayment } from './payment'
 import {
+  dbCheckIfRestockNeeded,
   dbCreateStockItem,
   dbCreateStockMovement,
-  dbGetStockItem,
   dbUpdateStockItem,
 } from './stock'
 import { js2mysql } from './utils/helpers'
@@ -104,18 +105,28 @@ export function getAllSaleItems(db = connection) {
 }
 
 export function dbCreateSale(sale, db = connection) {
-  return db('sale').insert(js2mysql(sale))
+  console.log('creating new sale', sale)
+  return db('sale')
+    .insert(js2mysql(sale))
+    .then((rows) => rows[0])
+    .catch((e) => Error(e.message))
 }
 
 export function dbCreateHold(hold, db = connection) {
   return db('hold')
     .insert(js2mysql(hold))
-    .then((res) => {
-      console.log(res.data)
-      console.log(hold)
-      // Create stock movement for hold
-      // Check if restock necessary
-    })
+    .then(() =>
+      dbCreateStockMovement(
+        {
+          stockId: hold?.itemId,
+          clerkId: hold?.startedBy,
+          quantity: hold?.quantity * -1,
+          act: StockMovementTypes.Hold,
+        },
+        db
+      )
+    )
+    .then(() => dbCheckIfRestockNeeded(hold?.itemId, db))
 }
 
 export function dbUpdateSale(id, update, db = connection) {
@@ -123,63 +134,102 @@ export function dbUpdateSale(id, update, db = connection) {
     .where({ id })
     .update(js2mysql(update))
     .then(() => id)
+    .catch((e) => Error(e.message))
 }
 
 export function dbCreateSaleItem(saleItem, db = connection) {
-  return db('sale_item').insert(js2mysql(saleItem))
+  return db('sale_item')
+    .insert(js2mysql(saleItem))
+    .then((rows) => rows[0])
+    .catch((e) => Error(e.message))
 }
 
 export function dbUpdateSaleItem(id, update, db = connection) {
-  return db('sale_item').where({ id }).update(js2mysql(update))
+  return db('sale_item')
+    .where({ id })
+    .update(js2mysql(update))
+    .catch((e) => Error(e.message))
 }
 
 export function dbDeleteSaleItem(id, db = connection) {
-  console.log(`Deleting ${id}`)
-  return dbUpdateSaleItem(id, { isDeleted: true })
+  return dbUpdateSaleItem(id, { isDeleted: true }).catch((e) =>
+    Error(e.message)
+  )
 }
 
 export function dbCreateSaleTransaction(saleTransaction, db = connection) {
-  return db('sale_transaction').insert(js2mysql(saleTransaction))
+  return db('sale_transaction')
+    .insert(js2mysql(saleTransaction))
+    .catch((e) => Error(e.message))
 }
 
 export function dbUpdateSaleTransaction(id, update, db = connection) {
-  return db('sale_transaction').where({ id }).update(js2mysql(update))
+  return db('sale_transaction')
+    .where({ id })
+    .update(js2mysql(update))
+    .catch((e) => Error(e.message))
 }
 
 export async function dbSaveSale(sale, prevState, db = connection) {
-  // Start the transaction
-  const trx = await knex.transaction()
-  try {
-    // Insert the sale
-    let saleId = sale?.id
-    if (saleId) {
-      dbUpdateSale(saleId, sale, db)
-    } else {
-      sale.state = sale?.state || SaleStateTypes.InProgress
-      saleId = await dbCreateSale(sale, db)
-    }
-    if (sale?.isMailOrder && sale?.state === SaleStateTypes.Completed) {
-      const customer = await dbGetCustomer(sale?.customerId)
-      createMailOrderTask(sale, customer)
-    }
+  return db
+    .transaction(async (trx) => {
+      console.log('trying to save the sale')
+      // Insert the sale
+      let saleId = sale?.id
+      const newSale = { ...sale }
+      delete newSale?.items
+      delete newSale?.transactions
+      delete newSale?.customer
+      if (saleId) {
+        console.log('updating the sale')
+        dbUpdateSale(saleId, newSale, trx)
+      } else {
+        console.log('creating a new sale')
+        newSale.state = newSale?.state || SaleStateTypes.InProgress
+        saleId = await dbCreateSale(newSale, trx)
+        console.log('sale created', saleId)
+      }
+      if (sale?.isMailOrder && sale?.state === SaleStateTypes.Completed) {
+        console.log('creating a mail order task')
+        const customer = await dbGetCustomer(sale?.customerId, trx)
+        dbCreateJob(
+          {
+            description: `Post Sale ${sale?.id} (${sale?.itemList}) to ${
+              `${customer?.name}\n` || ''
+            }${sale?.postalAddress}`,
+            createdByClerkId: sale?.saleOpenedBy,
+            assignedTo: RoleTypes?.MC,
+            dateCreated: dayjs.utc().format(),
+            isPostMailOrder: true,
+          },
+          trx
+        )
+      }
 
-    for await (const item of sale?.items) {
-      handleSaveSaleItem(item, sale, prevState, db)
-    }
+      for (const item of sale?.items) {
+        console.log('saving item', item?.itemId)
+        const id = await handleSaveSaleItem(item, sale, prevState, trx)
+        console.log('item saved', id)
+      }
 
-    for await (const trans of sale?.transactions) {
-      handleSaveSaleTransaction(trans, sale, db)
-    }
-    trx.commit()
-  } catch (err) {
-    // Roll back the transaction on error
-    trx.rollback()
-  }
+      for (const trans of sale?.transactions) {
+        console.log('saving transaction', trans)
+        const id = await handleSaveSaleTransaction(trans, sale, trx)
+        console.log('item saved', id)
+      }
+      return saleId
+    })
+    .then((id) => id)
+    .catch((e) => Error(e.message))
 }
 
-export async function dbDeleteSale(id, { sale, clerk, registerID }) {
+export async function dbDeleteSale(
+  id,
+  { sale, clerk, registerID },
+  db = connection
+) {
   // Start the transaction
-  const trx = await knex.transaction()
+  const trx = await db.transaction()
   try {
     await sale?.items?.forEach((saleItem) => {
       dbUpdateSaleItem(saleItem?.id, { isDeleted: true })
@@ -210,31 +260,31 @@ export async function dbDeleteSale(id, { sale, clerk, registerID }) {
 }
 
 async function handleSaveSaleItem(item, sale, prevState, db) {
-  let invItem = dbGetStockItem(item?.itemId)
-  // Check whether inventory item needs restocking
-  const quantity = getItemQuantity(invItem, sale?.items)
-  let quantityLayby = invItem?.quantityLayby || 0
-  // let quantity_sold = invItem?.quantity_sold || 0;
-  if (quantity > 0) {
-    await dbUpdateStockItem(item?.item_id, { needsRestock: true }, db)
-  }
+  return db
+    .transaction(async (trx) => {
+      // If sale is complete, validate gift card
+      if (sale?.state === SaleStateTypes.Completed && item?.isGiftCard) {
+        await dbUpdateStockItem(item?.itemId, { giftCardIsValid: true }, trx)
+      }
 
-  // If sale is complete, validate gift card
-  if (sale?.state === SaleStateTypes.Completed && item?.isGiftCard) {
-    await dbUpdateStockItem(item?.itemId, { giftCardIsValid: true }, db)
-  }
+      await handleStockMovements(item, sale, prevState, trx)
+      dbCheckIfRestockNeeded(item?.itemId, trx)
 
-  await handleStockMovements(item, sale, prevState, db)
+      let itemId = item?.id
 
-  // Add or update Sale Item
-  if (!item?.id) {
-    // Item is new to sale
-    let newSaleItem = { ...item, saleId: sale?.id }
-    await dbCreateSaleItem(newSaleItem, db)
-  } else {
-    // Item was already in sale, update in case discount, quantity has changed or item has been deleted
-    await dbUpdateSaleItem(item?.id, item, db)
-  }
+      // Add or update Sale Item
+      if (!itemId) {
+        // Item is new to sale
+        let newSaleItem = { ...item, saleId: sale?.id }
+        itemId = await dbCreateSaleItem(newSaleItem, trx)
+      } else {
+        // Item was already in sale, update in case discount, quantity has changed or item has been deleted
+        dbUpdateSaleItem(item?.id, item, db)
+      }
+      return itemId
+    })
+    .then((id) => id)
+    .catch((e) => Error(e.message))
 }
 
 async function handleStockMovements(item, sale, prevState, db) {

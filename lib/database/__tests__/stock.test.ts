@@ -1,9 +1,13 @@
 // const testCon = require('../testConn')
 import testCon from '../testConn'
-import { dbGetClerk } from '../clerk'
-import { dbGetStockItem, dbGetStockItems, dbGetWebStock } from '../stock'
-
-// const { getClerk } = require('../clerk')
+import {
+  dbCheckIfRestockNeeded,
+  dbCreateStockMovement,
+  dbGetStockItem,
+  dbGetStockItems,
+  dbGetWebStock,
+} from '../stock'
+import { StockMovementTypes } from 'lib/types'
 
 beforeAll(() => testCon.migrate.latest())
 
@@ -40,5 +44,28 @@ describe('getWebStock', () => {
     return dbGetWebStock(`stock.format = '7"'`, testCon).then((webStock) => {
       expect(webStock).toHaveLength(2)
     })
+  })
+})
+
+describe('checkIfRestockNeeded', () => {
+  it('checks if there is any more of the item in stock and changes the stock item restock flag to true', () =>
+    dbCheckIfRestockNeeded(1, testCon).then((needsRestock) => {
+      expect(needsRestock).toBeTruthy()
+      return dbGetStockItem(1, true, testCon).then((item) => {
+        expect(item.needs_restock).toBeTruthy()
+      })
+    }))
+  it('wont flag restock if there is no more in stock', () => {
+    return dbCreateStockMovement(
+      { stockId: 1, quantity: -3, act: StockMovementTypes.Sold },
+      testCon
+    )
+      .then(() => dbCheckIfRestockNeeded(1, testCon))
+      .then((needsRestock) => {
+        expect(needsRestock).toBeFalsy()
+        return dbGetStockItem(1, true, testCon).then((item) => {
+          expect(item.needs_restock).toBeFalsy()
+        })
+      })
   })
 })

@@ -24,16 +24,12 @@ export default function CreateHoldSidebar() {
     openView,
     closeView,
   } = useAppStore()
-  const { clerk } = useClerk()
   const defaultHoldPeriod = 30
-
-  const { customers } = useCustomers()
-  // const { inventory } = useInventory()
-  // const { logs, mutateLogs } = useLogs()
+  const { clerk } = useClerk()
   const { registerId } = useCurrentRegisterId()
-
+  const { customers } = useCustomers()
   const [holdPeriod, setHoldPeriod] = useState(defaultHoldPeriod)
-  const [note, setNote] = useState('')
+  const [note, setNote] = useState(cart?.note || '')
   const [submitting, setSubmitting] = useState(false)
   const resetHold = () => {
     setHoldPeriod(defaultHoldPeriod)
@@ -47,15 +43,15 @@ export default function CreateHoldSidebar() {
 
   // Functions
   async function onClickConfirmHold() {
-    // saveSystemLog('Confirm Hold clicked.', clerk?.id)
     setSubmitting(true)
-    // Create hold
-
     await cart?.items.forEach((cartItem) => {
       createHold({
         customerId: cart?.customerId,
         itemId: cartItem?.itemId,
         quantity: Number(cartItem?.quantity),
+        startedBy: clerk?.id,
+        vendorDiscount: Number(cartItem?.vendorDiscount),
+        storeDiscount: Number(cartItem?.storeDiscount),
         holdPeriod,
         note,
       })

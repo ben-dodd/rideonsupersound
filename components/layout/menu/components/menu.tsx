@@ -127,7 +127,7 @@ export default function Menu({ badges }) {
   ]
 
   const defaultOnClick = (item) => {
-    saveSystemLog(`${item?.page} on menu clicked.`, clerk?.id)
+    // saveSystemLog(`${item?.page} on menu clicked.`, clerk?.id)
     router.push(item?.page)
     closeView(ViewProps.mainMenu)
   }

@@ -26,15 +26,23 @@ export async function getUSDExchangeRate() {
 
 export function useSetWeatherToCart(setCart) {
   let loc = 'id=2192362'
+  let latitude,
+    longitude = ''
   if (navigator?.geolocation) {
     navigator?.geolocation?.getCurrentPosition((position) => {
-      loc = `lat=${position.coords.latitude}, lon=${position.coords.longitude}`
+      latitude = `${position.coords.latitude}`
+      longitude = `${position.coords.longitude}`
+      loc = `lat=${latitude}, lon=${longitude}`
     })
   }
   return axios(
     `https://api.openweathermap.org/data/2.5/weather?${loc}&appid=${process.env.NEXT_PUBLIC_OPEN_WEATHER_API}&units=metric`
   ).then((res) => {
-    setCart({ weather: res.data })
+    setCart({
+      weather: res.data,
+      geoLatitude: latitude,
+      geoLongitude: longitude,
+    })
   })
 }
 

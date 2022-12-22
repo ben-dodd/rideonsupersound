@@ -5,26 +5,21 @@ import ListItem from './list-item'
 import Loading from 'components/loading'
 import { useStockList } from 'lib/api/stock'
 import { getGeolocation } from 'lib/api/external'
+import { useAppStore } from 'lib/store'
 
-export default function InventoryScroll({ search }: { search: string }) {
+export default function InventoryScroll() {
   const maxItemsInList = 50
   const { stockList, isStockListLoading } = useStockList()
-  // console.log(stockList)
-  // const weather = useWeather()
-  const [geolocation, setGeolocation] = useState(null)
-
-  useEffect(() => {
-    setGeolocation(getGeolocation())
-  }, [])
+  const { sellSearchBar } = useAppStore()
 
   return (
     <div className="h-inventory overflow-y-scroll px-2">
       {isStockListLoading ? (
         <Loading />
-      ) : search ? (
+      ) : sellSearchBar ? (
         <>
           {stockList
-            ?.filter((item) => filterInventory(item, search))
+            ?.filter((item) => filterInventory(item, sellSearchBar))
             ?.sort(sortInventory)
             ?.slice(0, maxItemsInList)
             ?.map((item: StockObject) => (

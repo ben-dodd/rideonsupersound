@@ -131,7 +131,7 @@ export function dbDeleteStockItem(id, db = connection) {
 
 export async function dbReceiveStock(receiveStock: any, db = connection) {
   // return received stock?
-  const trx = await knex.transaction()
+  const trx = await db.transaction()
   try {
     const { clerkId, registerId, vendorId } = receiveStock
     const receivedStock = []
@@ -199,7 +199,7 @@ export async function dbReceiveStock(receiveStock: any, db = connection) {
 }
 
 export async function dbReturnStock(returnStock: any, db = connection) {
-  const trx = await knex.transaction()
+  const trx = await db.transaction()
   try {
     const { clerkId, registerId, vendorId, items, note } = returnStock
     if (vendorId && items?.length > 0) {
@@ -240,7 +240,7 @@ export async function dbChangeStockQuantity(
   id: any,
   db = connection
 ) {
-  const trx = await knex.transaction()
+  const trx = await db.transaction()
   try {
     const { stockItem, quantity, movement, clerkId, registerId, note } = change
     const itemId = Number(id)
@@ -304,4 +304,16 @@ export function dbGetWebStock(condition, db = connection) {
     )
     .orderBy(['stock.format', 'stock.artist', 'stock.title'])
     .then((stock) => stock.filter((stockItem) => stockItem?.quantity > 0))
+}
+
+export function dbCheckIfRestockNeeded(itemId, db = connection) {
+  return db('stock_movement')
+    .sum('quantity as totalQuantity')
+    .where('stock_id', itemId)
+    .first()
+    .then((res) =>
+      res.totalQuantity > 0
+        ? dbUpdateStockItem(itemId, { needsRestock: true }, db).then(() => true)
+        : false
+    )
 }

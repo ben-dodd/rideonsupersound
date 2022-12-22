@@ -71,6 +71,7 @@ export interface StoreState {
   closeConfirm: () => void
   setAlert: (alert: any) => void
   closeAlert: () => void
+  setSellSearchBar: (val: string) => void
   setCart: (update: any) => void
   addCartTransaction: (transaction: SaleTransactionObject) => void
   addCartItem: (newItem: SaleItemObject, clerkId: number) => void

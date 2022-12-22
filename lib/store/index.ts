@@ -100,6 +100,13 @@ export const useAppStore = createSelectors(
           draft.alert = null
         })
       ),
+    setSellSearchBar: (val) => {
+      set(
+        produce((draft) => {
+          draft.sellSearchBar = val
+        })
+      )
+    },
     setCart: (update) =>
       set(
         produce((draft) => {
@@ -109,16 +116,12 @@ export const useAppStore = createSelectors(
         })
       ),
     addCartItem: (newItem, clerkId) => {
-      // get().resetSellSearchBar()
       return set(
         produce((draft) => {
           if (get().cart.items.length === 0) {
             useSetWeatherToCart(get().setCart)
             draft.cart.dateSaleOpened = dayjs.utc().format()
             draft.cart.saleOpenedBy = clerkId
-            const geolocation: any = getGeolocation()
-            draft.cart.geoLatitude = geolocation?.latitude
-            draft.cart.geoLongitude = geolocation?.longitude
           }
           draft.view.cart = true
           const index = get().cart.items.findIndex(

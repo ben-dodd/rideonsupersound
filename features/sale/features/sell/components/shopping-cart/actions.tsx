@@ -9,9 +9,9 @@ import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { saveSale } from 'lib/api/sale'
+import useSWR, { useSWRConfig } from 'swr'
 
 export default function ShoppingCartActions() {
-  const { clerk } = useClerk()
   const {
     cart,
     setCart,
@@ -20,8 +20,10 @@ export default function ShoppingCartActions() {
     openView,
     closeView,
     resetCart,
+    resetSellSearchBar,
   } = useAppStore()
   const [saveSaleLoading, setSaveSaleLoading] = useState(false)
+  const { mutate } = useSWRConfig()
 
   function clearCart() {
     resetCart()
@@ -35,11 +37,13 @@ export default function ShoppingCartActions() {
   async function onClickSaveSale() {
     setSaveSaleLoading(true)
     await saveSale({ ...cart, state: SaleStateTypes.Parked }, cart?.state)
+    mutate('stock')
     setAlert({
       open: true,
       type: 'success',
       message: 'SALE PARKED',
     })
+    resetSellSearchBar()
     clearCart()
     setSaveSaleLoading(false)
   }
@@ -92,9 +96,7 @@ export default function ShoppingCartActions() {
               ? onClickContinueLayby
               : onClickSaveSale
           }
-          disabled={Boolean(
-            saveSaleLoading || !cart || !cart?.items || cart?.items?.length < 1
-          )}
+          disabled={Boolean(saveSaleLoading || cart?.items?.length < 1)}
         >
           {saveSaleLoading ? (
             <CircularProgress color="inherit" size={16} />
@@ -108,7 +110,7 @@ export default function ShoppingCartActions() {
           <button
             className="icon-button-small-white"
             onClick={onClickDiscardSale}
-            disabled={Boolean(!cart || !cart?.items || cart?.items?.length < 1)}
+            disabled={Boolean(cart?.items?.length < 1)}
           >
             <DiscardSaleIcon />
           </button>

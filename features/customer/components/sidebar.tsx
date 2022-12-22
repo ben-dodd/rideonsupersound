@@ -12,7 +12,7 @@ import { useSWRConfig } from 'swr'
 
 export default function CreateCustomerSidebar() {
   const { clerk } = useClerk()
-  const { customers, mutateCustomers } = useCustomers()
+  const { customers } = useCustomers()
   const {
     view,
     cart: { customer },
@@ -66,7 +66,6 @@ export default function CreateCustomerSidebar() {
   async function onClickCreateCustomer() {
     setSubmitting(true)
     const newCustomer = await createCustomer(customer, clerk)
-    // mutateCustomers([...customers, newCustomer], false)
     if (newCustomer instanceof Error) {
       setAlert({
         open: true,

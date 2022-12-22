@@ -4,7 +4,7 @@ import {
   sumPrices,
   writeItemList,
 } from 'features/pay/lib/functions'
-import { apiAuth } from 'lib/api'
+import { axiosAuth } from 'lib/api'
 import { mysql2js } from 'lib/database/utils/helpers'
 import { StockObject } from 'lib/types'
 import { useState, useEffect } from 'react'
@@ -19,23 +19,15 @@ export function useSaleProperties(cart): any {
     console.log('getting cart items...')
     if (cart?.items?.length === 0) setStockTable([])
     else
-      apiAuth()
-        .then((accessToken) => {
-          return axios(
-            `api/stock/items?items=${cart?.items
-              ?.map((item) => item?.itemId)
-              ?.join('+')}`,
-            {
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-              },
-            }
-          )
+      axiosAuth
+        .get(
+          `api/stock/items?items=${cart?.items
+            ?.map((item) => item?.itemId)
+            ?.join('+')}`
+        )
+        .then((data) => {
+          setStockTable(mysql2js(data))
         })
-        .then((res) => {
-          setStockTable(mysql2js(res.data))
-        })
-        .catch((e) => Error(e.message))
   }, [cart?.items])
 
   useEffect(() => {

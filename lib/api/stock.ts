@@ -7,7 +7,7 @@ import {
   StockPriceObject,
   StocktakeTemplateObject,
 } from 'lib/types'
-import { apiAuth, useData } from './'
+import { axiosAuth, useData } from './'
 
 export function useStockList() {
   return useData(`stock`, 'stockList')
@@ -48,30 +48,18 @@ export function deleteStockItem(id) {
 }
 
 export function createStockItem(stockItem: StockObject, clerk: ClerkObject) {
-  return apiAuth().then((accessToken) =>
-    axios
-      .post(
-        `/api/stock`,
-        {
-          ...stockItem,
-          createdByClerkId: clerk?.id,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      )
-      .then((res) => {
-        const id = res.data[0]
-        // saveSystemLog(`New stock (${id}) created.`, clerk?.id)
-        return { ...stockItem, createdByClerkId: clerk?.id, id }
-      })
-  )
+  axiosAuth
+    .post(`/api/stock`, {
+      ...stockItem,
+      createdByClerkId: clerk?.id,
+    })
+    .then((ids) => {
+      return { ...stockItem, createdByClerkId: clerk?.id, id: ids[0] }
+    })
 }
 
 export function createStockPrice(stockPrice: StockPriceObject) {
-  return axios.post(`/api/stock/price`, stockPrice).then((res) => {
+  return axiosAuth.post(`/api/stock/price`, stockPrice).then((res) => {
     const id = res.data
     // saveSystemLog(`New stock (${id}) created.`, clerk?.id)
     return { ...stockPrice, id }
@@ -79,44 +67,31 @@ export function createStockPrice(stockPrice: StockPriceObject) {
 }
 
 export function receiveStock(receiveStock: any) {
-  return axios
-    .patch(`/api/stock/receive`, receiveStock)
-    .then((res) => res.data)
-    .catch((e) => Error(e.message))
+  return axiosAuth.patch(`/api/stock/receive`, receiveStock)
 }
 
 export function returnStock(returnStock: any) {
-  return axios
-    .patch(`/api/stock/return`, returnStock)
-    .then((res) => res.data)
-    .catch((e) => Error(e.message))
+  return axiosAuth.patch(`/api/stock/return`, returnStock)
 }
 
 export function changeStockQuantity(update: any, id) {
-  return axios
-    .patch(`/api/stock/${id}/quantity`, update)
-    .then((res) => res.data)
-    .catch((e) => Error(e.message))
+  return axiosAuth.patch(`/api/stock/${id}/quantity`, update)
 }
 
 export function updateStockItem(update: any, id) {
-  return axios
-    .patch(`/api/stock/${id}`)
-    .then((res) => res.data)
-    .catch((e) => Error(e.message))
+  return axiosAuth.patch(`/api/stock/${id}`)
 }
 
 export function createStocktakeTemplate(
   stocktakeTemplate: StocktakeTemplateObject,
   clerk: ClerkObject
 ) {
-  return axios
+  return axiosAuth
     .post(`/api/stocktake/template`, {
       ...stocktakeTemplate,
       createdByClerkId: clerk?.id,
     })
-    .then((res) => {
-      const id = res.data
+    .then((id) => {
       // saveSystemLog(`New stock (${id}) created.`, clerk?.id)
       return { ...stocktakeTemplate, id }
     })
