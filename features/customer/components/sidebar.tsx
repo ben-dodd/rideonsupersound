@@ -4,10 +4,11 @@ import { saveSystemLog } from 'features/log/lib/functions'
 import { ModalButton } from 'lib/types'
 import { useEffect, useState } from 'react'
 import { checkCustomerNameConflict } from '../lib/functions'
-import { createCustomer, useCustomers } from 'lib/api/customer'
+import { createCustomer, updateCustomer, useCustomers } from 'lib/api/customer'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
+import { useSWRConfig } from 'swr'
 
 export default function CreateCustomerSidebar() {
   const { clerk } = useClerk()
@@ -16,17 +17,48 @@ export default function CreateCustomerSidebar() {
     view,
     cart: { customer },
     setCustomer,
+    setCart,
     resetCustomer,
     closeView,
+    setAlert,
   } = useAppStore()
   const [nameConflict, setNameConflict] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+
+  const handleClickCancel = () => {
+    setCart({ customerId: null })
+    closeSidebar()
+  }
+
+  const handleClickOK = () =>
+    customer?.id ? onClickUpdateCustomer() : onClickCreateCustomer()
+
+  // useEffect(() => {
+  //   const handleKeyPress = (event) => {
+  //     if (view?.createCustomer) {
+  //       console.log(event.key)
+  //       if (event.key === 'Enter') handleClickOK()
+  //       if (event.key === 'Escape') handleClickCancel()
+  //     }
+  //   }
+  //   document.addEventListener('keydown', handleKeyPress)
+
+  //   return () => {
+  //     document.removeEventListener('keydown', handleKeyPress)
+  //   }
+  // }, [])
+
   useEffect(() => {
     setNameConflict(checkCustomerNameConflict(customer, customers))
-  }, [customers, customer?.name])
+  }, [customers, customer])
+  const { mutate } = useSWRConfig()
+
+  const handleChange = (e) => {
+    setCustomer({ [e.target.name]: e.target.value })
+  }
 
   function closeSidebar() {
-    saveSystemLog('New customer sidebar closed.', clerk?.id)
+    // saveSystemLog('New customer sidebar closed.', clerk?.id)
     resetCustomer()
     closeView(ViewProps.createCustomer)
   }
@@ -34,9 +66,19 @@ export default function CreateCustomerSidebar() {
   async function onClickCreateCustomer() {
     setSubmitting(true)
     const newCustomer = await createCustomer(customer, clerk)
-    mutateCustomers([...customers, newCustomer], false)
-    setCustomer({ customerId: newCustomer?.id })
-    closeSidebar()
+    // mutateCustomers([...customers, newCustomer], false)
+    if (newCustomer instanceof Error) {
+      setAlert({
+        open: true,
+        type: 'error',
+        message: 'Error creating new customer',
+      })
+    } else {
+      mutate('customer')
+      setCustomer(newCustomer)
+      setCart({ customerId: newCustomer?.id })
+      closeSidebar()
+    }
     setSubmitting(false)
   }
 
@@ -45,17 +87,16 @@ export default function CreateCustomerSidebar() {
     updateCustomer(customer)
     closeSidebar()
   }
-
   // Constants
   const buttons: ModalButton[] = [
     {
       type: 'cancel',
-      onClick: closeSidebar,
+      onClick: handleClickCancel,
       text: 'CANCEL',
     },
     {
       type: 'ok',
-      onClick: customer?.id ? onClickUpdateCustomer : onClickCreateCustomer,
+      onClick: handleClickOK,
       disabled: !customer?.name || nameConflict,
       text: customer?.id ? 'UPDATE' : submitting ? 'CREATING...' : 'CREATE',
     },
@@ -69,36 +110,41 @@ export default function CreateCustomerSidebar() {
     >
       <TextField
         inputLabel="Name"
+        id="name"
         fieldRequired
         error={nameConflict}
         errorText="Name already exists."
         displayOnly={Boolean(customer?.id)}
         value={customer?.name || ''}
-        onChange={(e: any) => setCustomer({ name: e.target.value })}
+        onChange={handleChange}
       />
       <TextField
+        id="email"
         inputLabel="Email"
         value={customer?.email || ''}
-        onChange={(e: any) => setCustomer({ email: e.target.value })}
+        onChange={handleChange}
       />
       <TextField
+        id="phone"
         inputLabel="Phone"
         value={customer?.phone || ''}
-        onChange={(e: any) => setCustomer({ phone: e.target.value })}
+        onChange={handleChange}
       />
       <TextField
+        id="postalAddress"
         inputLabel="Postal Address"
         multiline
         rows={4}
         value={customer?.postalAddress || ''}
-        onChange={(e: any) => setCustomer({ postalAddress: e.target.value })}
+        onChange={handleChange}
       />
       <TextField
+        id="note"
         inputLabel="Notes"
         multiline
         rows={4}
         value={customer?.note || ''}
-        onChange={(e: any) => setCustomer({ note: e.target.value })}
+        onChange={handleChange}
       />
     </SidebarContainer>
   )

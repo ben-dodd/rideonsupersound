@@ -5,8 +5,6 @@ import {
 import { saveLog } from 'features/log/lib/functions'
 import { GiftCardObject, SaleItemObject, StockObject } from 'lib/types'
 import { priceCentsString } from 'lib/utils'
-import dayjs from 'dayjs'
-import ItemListItem from 'features/pay/components/item-list-item'
 
 export function writeCartItemPriceBreakdown(
   cartItem: SaleItemObject,
@@ -17,16 +15,16 @@ export function writeCartItemPriceBreakdown(
   return item?.isGiftCard
     ? `${priceCentsString(item?.giftCardAmount)} GIFT CARD`
     : item?.isMiscItem
-    ? `${cartItem?.quantity} x ${priceCentsString(item?.miscItemAmount)}`
+    ? `${cartItem?.quantity} × ${priceCentsString(item?.miscItemAmount)}`
     : `${cartItem?.quantity}${
         parseInt(cartItem?.vendorDiscount) > 0
-          ? ` x V${cartItem?.vendorDiscount}%`
+          ? ` × V${cartItem?.vendorDiscount}%`
           : ''
       }${
         parseInt(cartItem?.storeDiscount) > 0
-          ? ` x S${cartItem?.storeDiscount}%`
+          ? ` × S${cartItem?.storeDiscount}%`
           : ''
-      } x ${priceCentsString(cartItem?.totalSell ?? item?.totalSell)}`
+      } × ${priceCentsString(cartItem?.totalSell ?? item?.totalSell)}`
 }
 
 export function getDiscountedPrice(

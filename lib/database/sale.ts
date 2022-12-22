@@ -111,6 +111,8 @@ export function dbCreateHold(hold, db = connection) {
   return db('hold')
     .insert(js2mysql(hold))
     .then((res) => {
+      console.log(res.data)
+      console.log(hold)
       // Create stock movement for hold
       // Check if restock necessary
     })

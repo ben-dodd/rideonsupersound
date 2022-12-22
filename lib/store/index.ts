@@ -37,7 +37,13 @@ export const errorHandler = (method: string, route: string) => (err: any) => {
 export const useAppStore = createSelectors(
   create<StoreState>((set, get) => ({
     view: {},
-    cart: { id: null, customer: {}, items: [], transactions: [] },
+    cart: {
+      id: null,
+      customer: {},
+      customerId: null,
+      items: [],
+      transactions: [],
+    },
     loadedItemId: {},
     loadedVendorId: {},
     loadedHoldId: {},

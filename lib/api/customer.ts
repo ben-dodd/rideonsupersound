@@ -13,16 +13,23 @@ export async function createCustomer(
   // saveSystemLog(`New customer (${customer?.name}) created.`, clerk?.id)
   return apiAuth().then((accessToken) =>
     axios
-      .post(`/api/customer`, {
-        customer: {
+      .post(
+        `/api/customer`,
+        {
           ...customer,
           createdByClerkId: clerk?.id,
         },
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then((res) => ({ ...customer, id: res.data }))
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      )
+      .then((res) => ({
+        ...customer,
+        createdByClerkId: clerk?.id,
+        id: res.data,
+      }))
       .catch((e) => Error(e.message))
   )
 }

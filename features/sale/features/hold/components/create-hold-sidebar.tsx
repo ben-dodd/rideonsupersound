@@ -25,19 +25,29 @@ export default function CreateHoldSidebar() {
     closeView,
   } = useAppStore()
   const { clerk } = useClerk()
+  const defaultHoldPeriod = 30
 
   const { customers } = useCustomers()
   // const { inventory } = useInventory()
   // const { logs, mutateLogs } = useLogs()
   const { registerId } = useCurrentRegisterId()
 
-  const [holdPeriod, setHoldPeriod] = useState(30)
+  const [holdPeriod, setHoldPeriod] = useState(defaultHoldPeriod)
   const [note, setNote] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const resetHold = () => {
+    setHoldPeriod(defaultHoldPeriod)
+    setNote('')
+    resetSellSearchBar()
+    resetCart()
+    closeView(ViewProps.cart)
+    closeView(ViewProps.createHold)
+    setSubmitting(false)
+  }
 
   // Functions
   async function onClickConfirmHold() {
-    saveSystemLog('Confirm Hold clicked.', clerk?.id)
+    // saveSystemLog('Confirm Hold clicked.', clerk?.id)
     setSubmitting(true)
     // Create hold
 
@@ -60,18 +70,14 @@ export default function CreateHoldSidebar() {
     })
 
     // Reset vars and return to inventory scroll
-    setSubmitting(false)
-    resetSellSearchBar()
-    resetCart()
-    closeView(ViewProps.cart)
-    closeView(ViewProps.createHold)
+    resetHold()
   }
 
   const buttons: ModalButton[] = [
     {
       type: 'cancel',
       onClick: () => {
-        saveSystemLog('New hold cancelled.', clerk?.id)
+        // saveSystemLog('New hold cancelled.', clerk?.id)
         closeView(ViewProps.cart)
         closeView(ViewProps.createHold)
       },
@@ -113,11 +119,11 @@ export default function CreateHoldSidebar() {
               ?.name || ''
           }
           onChange={(customerObject: any) => {
-            saveSystemLog('New hold sidebar - Customer selected.', clerk?.id)
+            // saveSystemLog('New hold sidebar - Customer selected.', clerk?.id)
             setCart({ customerId: parseInt(customerObject?.value) })
           }}
           onCreateOption={(inputValue: string) => {
-            saveSystemLog('New hold sidebar - Customer created.', clerk?.id)
+            // saveSystemLog('New hold sidebar - Customer created.', clerk?.id)
             setCustomer({ name: inputValue })
             openView(ViewProps.createCustomer)
           }}
