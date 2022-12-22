@@ -72,7 +72,9 @@ export function dbGetStockItem(id, simple = false, db = connection) {
       const latestPrice = stockPrices[0]
       const totalSell = latestPrice?.total_sell
       const vendorCut = latestPrice?.vendor_cut
-      const storeCut = totalSell - vendorCut
+      const storeCut = item?.isMiscItem
+        ? item?.miscItemAmount
+        : totalSell - vendorCut
       const price = { totalSell, vendorCut, storeCut }
       const itemReturn = { item, quantities, price }
       if (simple) return itemReturn

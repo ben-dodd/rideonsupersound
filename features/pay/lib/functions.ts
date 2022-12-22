@@ -12,22 +12,18 @@ import {
   VendorPaymentObject,
   VendorSaleItemObject,
 } from 'lib/types'
-import { getCartItemPrice } from 'features/sale/features/sell/lib/functions'
+import { getCartItemPrices } from 'features/sale/features/sell/lib/functions'
 
 export function sumPrices(saleItems: any[], items: any[], field: string) {
-  if (!(saleItems?.length > 0) || !(items?.length > 0)) return 0
-  return saleItems
-    ?.filter((s) => !s?.isRefunded)
-    ?.reduce((acc, saleItem) => {
-      // Dont bother getting inventory item if not needed
-      let item: StockObject =
-        saleItem?.totalSell && saleItem?.vendorCut && saleItem?.storeCut
-          ? null
-          : items?.find?.((i: StockObject) => i?.id === saleItem?.itemId)
-      // return (acc += 1)
-      const prices = getCartItemPrice(saleItem, item)
-      return (acc += prices?.[field])
-    }, 0)
+  if (saleItems?.length === 0 || items?.length === 0) return 0
+  return saleItems?.reduce((acc, saleItem) => {
+    const stockItem: any = items?.find?.(
+      (stockItem: any) => stockItem?.item?.id === saleItem?.itemId
+    )
+    const { item = {}, price = {} } = stockItem || {}
+    const prices = getCartItemPrices(saleItem, item, price)
+    return (acc += prices?.[field])
+  }, 0)
 }
 
 export function getTotalPaid(saleTransactions: SaleTransactionObject[]) {
@@ -95,6 +91,10 @@ export function writeItemList(
       })
       .join(', ')
   } else return ''
+}
+
+export function roundToTenCents(dollars) {
+  return Math.round((dollars + Number.EPSILON) * 10) / 10
 }
 
 export async function useLoadSaleToCart(

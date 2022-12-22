@@ -8,7 +8,8 @@ import { priceCentsString } from 'lib/utils'
 
 export function writeCartItemPriceBreakdown(
   cartItem: SaleItemObject,
-  item?: StockObject
+  item: StockObject,
+  price: any
 ) {
   // Writes out the sale item in the following form:
   // 1 x V10% x R50% x $27.00
@@ -24,7 +25,7 @@ export function writeCartItemPriceBreakdown(
         parseInt(cartItem?.storeDiscount) > 0
           ? ` × S${cartItem?.storeDiscount}%`
           : ''
-      } × ${priceCentsString(cartItem?.totalSell ?? item?.totalSell)}`
+      } × ${priceCentsString(cartItem?.totalSell ?? price?.totalSell)}`
 }
 
 export function getDiscountedPrice(
@@ -39,32 +40,25 @@ export function getDiscountedPrice(
   )
 }
 
-export function getCartItemVendorCut(cartItem: SaleItemObject, item) {
-  const vendorCut: number = cartItem?.vendorCut ?? item?.vendorCut
+export function getCartItemVendorCut(cartItem: SaleItemObject, price) {
   const vendorPrice: number = getDiscountedPrice(
-    vendorCut,
+    price?.vendorCut,
     cartItem?.vendorDiscount,
     cartItem?.quantity
   )
   return vendorPrice
 }
 
-export function getCartItemStoreCut(cartItem, item) {
-  // const vendorCut = getCartItemVendorCut(cartItem, item)
-  const storeCut = getStoreCut(item)
-  // console.log(cartItem?.totalSell ?? item?.totalSell)
+export function getCartItemStoreCut(cartItem, price) {
   const storePrice: number = getDiscountedPrice(
-    storeCut,
+    price?.storeCut,
     cartItem?.storeDiscount,
     cartItem?.quantity
   )
-  // console.log({ storeCut, storePrice })
   return storePrice
 }
 
-export function getCartItemTotal(cartItem, item) {
-  // console.log(cartItem)
-  // console.log(item)
+export function getCartItemTotal(cartItem, item, price) {
   const totalSell: number = !cartItem
     ? 0
     : item?.isGiftCard
@@ -73,27 +67,23 @@ export function getCartItemTotal(cartItem, item) {
     ? item?.miscItemAmount || 0
     : null
   if (totalSell) return totalSell
-  const vendorPrice: number = getCartItemVendorCut(cartItem, item)
-  const storePrice: number = getCartItemStoreCut(cartItem, item)
-  const totalPrice: number = totalSell ?? storePrice + vendorPrice
-  // console.log({ vendorPrice, storePrice, totalPrice })
-  return totalPrice
+  return (
+    getCartItemVendorCut(cartItem, price) + getCartItemStoreCut(cartItem, price)
+  )
 }
 
-export function getCartItemPrice(cartItem: any, item: StockObject) {
+export function getCartItemPrices(
+  cartItem: any,
+  item: StockObject,
+  price: any
+) {
   // Gets three prices for each sale item: the vendor cut, store cut, and total
   // Price is returned in cents
   return {
-    storePrice: getCartItemStoreCut(cartItem, item),
-    vendorPrice: getCartItemVendorCut(cartItem, item),
-    totalPrice: getCartItemTotal(cartItem, item),
+    storePrice: getCartItemStoreCut(cartItem, price),
+    vendorPrice: getCartItemVendorCut(cartItem, price),
+    totalPrice: getCartItemTotal(cartItem, item, price),
   }
-}
-
-export function getStoreCut(item: StockObject) {
-  if (item?.isMiscItem) return item?.miscItemAmount || 0
-  if (!item?.totalSell || !item?.vendorCut) return 0
-  return item?.totalSell - item?.vendorCut
 }
 
 export function getItemQuantity(

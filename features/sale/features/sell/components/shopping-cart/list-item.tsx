@@ -15,7 +15,12 @@ import {
   writeCartItemPriceBreakdown,
 } from '../../lib/functions'
 import { useAppStore } from 'lib/store'
-import { useSimpleStockItem, useStockItem, useStockList } from 'lib/api/stock'
+import {
+  useSaleStockItems,
+  useSimpleStockItem,
+  useStockItem,
+  useStockList,
+} from 'lib/api/stock'
 import { priceCentsString } from 'lib/utils'
 
 type SellListItemProps = {
@@ -29,19 +34,21 @@ export default function SellListItem({
 }: SellListItemProps) {
   const { openConfirm, setCartItem } = useAppStore()
   const { stockItem } = useStockItem(`${cartItem?.itemId}`)
-  const { stockList } = useStockList()
-  console.log(cartItem)
-  const item =
-    stockItem || stockList?.find((item) => item?.id === cartItem?.itemId)
+  const { stockList = [] } = useStockList()
+
+  const {
+    item = stockList?.find((stock) => stock?.id === cartItem?.itemId) || {},
+    quantities = {},
+    price = {},
+  } = stockItem || {}
   const [expanded, setExpanded] = useState(false)
-  // console.log(stockItem)
 
   function onChangeCart(e: any, property: string) {
     setCartItem(cartItem?.itemId, { [property]: e.target.value })
   }
 
   function onChangeQuantity(e: any) {
-    if (item?.quantity < parseInt(e?.target?.value)) {
+    if (quantities?.inStock < parseInt(e?.target?.value)) {
       const newQuantity = e?.target?.value
       openConfirm({
         open: true,
@@ -82,7 +89,7 @@ export default function SellListItem({
         <div className="flex flex-col w-full pt-2 px-2 justify-between">
           <div className="text-sm pl-1">{getItemDisplayName(item)}</div>
           <div className="text-red-500 self-end">
-            {writeCartItemPriceBreakdown(cartItem, item)}
+            {writeCartItemPriceBreakdown(cartItem, item, price)}
           </div>
           <div className="self-end text-xs">
             {expanded ? (
@@ -150,7 +157,7 @@ export default function SellListItem({
           />
           <div className="flex w-full justify-between place-start">
             <div className="font-bold">
-              {writeCartItemPriceBreakdown(cartItem, item)}
+              {writeCartItemPriceBreakdown(cartItem, item, price)}
             </div>
             <div>
               <div className="font-bold self-center">

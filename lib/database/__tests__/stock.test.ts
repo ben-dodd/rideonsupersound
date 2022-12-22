@@ -18,7 +18,7 @@ afterAll(() => testCon.destroy())
 describe('getStockItem', () => {
   it('get stock item that matches the id', () => {
     return dbGetStockItem(1, testCon).then((stockItem) => {
-      expect(stockItem?.id).toBe(1)
+      expect(stockItem?.item?.id).toBe(1)
     })
   })
 })
@@ -27,8 +27,8 @@ describe('getStockItems', () => {
   it('gets all stock items from a list', () => {
     return dbGetStockItems([1, 2], testCon).then((stockItems) => {
       expect(stockItems).toHaveLength(2)
-      expect(stockItems[0]?.artist).toBe('The Beatles')
-      expect(stockItems[0]?.quantity).toEqual(3)
+      expect(stockItems[0]?.item?.artist).toBe('The Beatles')
+      expect(stockItems[0]?.quantities?.inStock).toEqual(3)
       // expect(stockItems[0]?.totalSell).toEqual(2000)
     })
   })
@@ -51,8 +51,8 @@ describe('checkIfRestockNeeded', () => {
   it('checks if there is any more of the item in stock and changes the stock item restock flag to true', () =>
     dbCheckIfRestockNeeded(1, testCon).then((needsRestock) => {
       expect(needsRestock).toBeTruthy()
-      return dbGetStockItem(1, true, testCon).then((item) => {
-        expect(item.needs_restock).toBeTruthy()
+      return dbGetStockItem(1, true, testCon).then((stockItem) => {
+        expect(stockItem?.item?.needs_restock).toBeTruthy()
       })
     }))
   it('wont flag restock if there is no more in stock', () => {
@@ -63,8 +63,8 @@ describe('checkIfRestockNeeded', () => {
       .then(() => dbCheckIfRestockNeeded(1, testCon))
       .then((needsRestock) => {
         expect(needsRestock).toBeFalsy()
-        return dbGetStockItem(1, true, testCon).then((item) => {
-          expect(item.needs_restock).toBeFalsy()
+        return dbGetStockItem(1, true, testCon).then((stockItem) => {
+          expect(stockItem?.item?.needs_restock).toBeFalsy()
         })
       })
   })
