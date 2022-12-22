@@ -55,30 +55,82 @@ export function dbGetStockItem(id, simple = false, db = connection) {
   return db('stock')
     .where('stock.id', id)
     .first()
-    .then(async (stockItem) => {
-      const stockMovements = await db('stock_movement').where(
-        `stock_id`,
-        stockItem?.id
-      )
+    .then(async (item) => {
+      const stockMovements = await db('stock_movement')
+        .where(`stock_id`, item?.id)
+        .where('is_deleted', 0)
       const stockPrices = await db('stock_price')
-        .where(`stock_id`, stockItem?.id)
+        .where(`stock_id`, item?.id)
+        .where('is_deleted', 0)
         .orderBy('date_valid_from', 'desc')
-      const quantity = stockMovements.reduce(
-        (acc, stockMovement) => acc + stockMovement.quantity,
-        0
-      )
+      const quantities: any = {
+        inStock: stockMovements.reduce(
+          (acc, stockMovement) => acc + stockMovement.quantity,
+          0
+        ),
+      }
       const latestPrice = stockPrices[0]
       const totalSell = latestPrice?.total_sell
       const vendorCut = latestPrice?.vendor_cut
-      const itemReturn = { ...stockItem, quantity, totalSell, vendorCut }
+      const storeCut = totalSell - vendorCut
+      const price = { totalSell, vendorCut, storeCut }
+      const itemReturn = { item, quantities, price }
       if (simple) return itemReturn
       // Add other quantity params as needed
+      quantities.received = getQuantities(
+        [StockMovementTypes.Received],
+        stockMovements
+      )
+      quantities.sold = getQuantities(
+        [StockMovementTypes.Sold],
+        stockMovements,
+        true
+      )
+      quantities.returned = getQuantities(
+        [StockMovementTypes.Returned],
+        stockMovements,
+        true
+      )
+      quantities.laybyHold = getQuantities(
+        [
+          StockMovementTypes.Layby,
+          StockMovementTypes.Unlayby,
+          StockMovementTypes.Hold,
+          StockMovementTypes.Unhold,
+        ],
+        stockMovements,
+        true
+      )
+      quantities.discardedLost = getQuantities(
+        [
+          StockMovementTypes.Discarded,
+          StockMovementTypes.Lost,
+          StockMovementTypes.Found,
+        ],
+        stockMovements,
+        true
+      )
+      quantities.refunded = getQuantities(
+        [StockMovementTypes.Unsold],
+        stockMovements
+      )
+      quantities.adjustment = getQuantities(
+        [StockMovementTypes.Adjustment],
+        stockMovements
+      )
       const sales = await dbGetAllSalesAndItems(db).where(
         `sale_item.item_id`,
-        stockItem?.id
+        item?.id
       )
-      return { ...itemReturn, sales, stockMovements, stockPrices }
+      return { item, quantities, price, sales, stockMovements, stockPrices }
     })
+}
+
+export function getQuantities(types, stockMovements, reverse = false) {
+  const sum = stockMovements
+    .filter((stockMovement) => types.includes(stockMovement?.act))
+    .reduce((acc, stockMovement) => acc + stockMovement.quantity, 0)
+  return reverse ? sum * -1 : sum
 }
 
 export function dbGetStockItems(itemIds, db = connection) {

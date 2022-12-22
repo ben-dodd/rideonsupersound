@@ -56,16 +56,16 @@ export function getTotalOwing(
   return totalSell - totalPaid
 }
 
-export function getGrossProfit(item: StockObject) {
-  let sellNum = item?.totalSell / 100 || 0,
-    costNum = item?.vendorCut / 100 || 0
+export function getGrossProfit(price: any) {
+  let sellNum = price?.totalSell / 100 || 0,
+    costNum = price?.vendorCut / 100 || 0
   if (sellNum > 0) return `$${(sellNum - costNum)?.toFixed(2)}`
   else return ''
 }
 
-export function getProfitMargin(item: StockObject) {
-  let sellNum = item?.totalSell || 0,
-    costNum = item?.vendorCut || 0
+export function getProfitMargin(price: any) {
+  let sellNum = price?.totalSell || 0,
+    costNum = price?.vendorCut || 0
   if (sellNum > 0)
     return `${(((sellNum - costNum) / sellNum) * 100)?.toFixed(1)}%`
   else return ''

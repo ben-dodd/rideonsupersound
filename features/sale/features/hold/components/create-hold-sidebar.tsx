@@ -17,7 +17,7 @@ export default function CreateHoldSidebar() {
     cart,
     view,
     setAlert,
-    setCart,
+    setCartSale,
     setCustomer,
     resetCart,
     resetSellSearchBar,
@@ -116,7 +116,7 @@ export default function CreateHoldSidebar() {
           }
           onChange={(customerObject: any) => {
             // saveSystemLog('New hold sidebar - Customer selected.', clerk?.id)
-            setCart({ customerId: parseInt(customerObject?.value) })
+            setCartSale({ customerId: parseInt(customerObject?.value) })
           }}
           onCreateOption={(inputValue: string) => {
             // saveSystemLog('New hold sidebar - Customer created.', clerk?.id)

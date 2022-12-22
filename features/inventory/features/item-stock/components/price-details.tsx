@@ -8,17 +8,21 @@ export default function PriceDetails() {
   const router = useRouter()
   const { id } = router.query
   const { stockItem } = useStockItem(`${id}`)
+  const { item = {}, price = {}, stockPrices = [] } = stockItem || {}
   const { openView } = useAppStore()
+  console.log(stockItem)
+  console.log(item)
+  console.log(price)
 
   return (
     <>
       <div className="grid grid-cols-6 gap-2 mt-4 mb-4">
         <div>
-          {(!stockItem?.isNew && !stockItem?.cond) ||
+          {(!item?.isNew && !item?.cond) ||
           !(
-            stockItem?.discogsItem?.priceSuggestions &&
-            stockItem?.discogsItem?.priceSuggestions[
-              stockItem?.isNew ? 'Mint (M)' : stockItem?.cond || 'Good (G)'
+            item?.discogsItem?.priceSuggestions &&
+            item?.discogsItem?.priceSuggestions[
+              item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)'
             ]?.value
           ) ? (
             <div />
@@ -27,10 +31,8 @@ export default function PriceDetails() {
               <div className="px-1 text-xs mt-2 mb-2">DISCOGS</div>
               <div className="font-bold text-xl">
                 {`$${parseFloat(
-                  stockItem?.discogsItem?.priceSuggestions[
-                    stockItem?.isNew
-                      ? 'Mint (M)'
-                      : stockItem?.cond || 'Good (G)'
+                  item?.discogsItem?.priceSuggestions[
+                    item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)'
                   ]?.value
                 )?.toFixed(2)}`}
               </div>
@@ -40,28 +42,28 @@ export default function PriceDetails() {
         <div>
           <div className="px-1 text-xs mt-2 mb-2">COST PRICE</div>
           <div className="font-bold text-xl">
-            {stockItem?.vendorCut
-              ? `$${(stockItem?.vendorCut / 100)?.toFixed(2)}`
+            {price?.vendorCut
+              ? `$${(price?.vendorCut / 100)?.toFixed(2)}`
               : 'N/A'}
           </div>
         </div>
         <div>
           <div className="px-1 text-xs mt-2 mb-2">STORE CUT</div>
           <div className="font-bold text-xl">
-            {getGrossProfit(stockItem) || 'N/A'}
+            {getGrossProfit(price) || 'N/A'}
           </div>
         </div>
         <div>
           <div className="px-1 text-xs mt-2 mb-2">MARGIN</div>
           <div className="font-bold text-xl">
-            {getProfitMargin(stockItem) || 'N/A'}
+            {getProfitMargin(price) || 'N/A'}
           </div>
         </div>
         <div className="col-start-5 col-end-7">
           <div className="flex justify-center items-center p-4 bg-tertiary-dark">
             <div className="font-bold text-4xl text-white">
-              {stockItem?.totalSell
-                ? `$${(stockItem?.totalSell / 100)?.toFixed(2)}`
+              {price?.totalSell
+                ? `$${(price?.totalSell / 100)?.toFixed(2)}`
                 : 'N/A'}
             </div>
           </div>

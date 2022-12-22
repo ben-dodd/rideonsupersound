@@ -11,7 +11,7 @@ import { useSaleProperties } from 'lib/hooks'
 
 export default function Pay() {
   const { clerk } = useClerk()
-  const { cart, openView, setCart, setCustomer } = useAppStore()
+  const { cart, openView, setCartSale, setCustomer } = useAppStore()
   const { totalRemaining } = useSaleProperties(cart)
   const { customers } = useCustomers()
   return (
@@ -122,10 +122,7 @@ export default function Pay() {
               }
               onChange={(customerObject: any) => {
                 saveSystemLog('SALE SCREEN customer selected.', clerk?.id)
-                setCart((s) => ({
-                  ...s,
-                  customer_id: parseInt(customerObject?.value),
-                }))
+                setCartSale({ customerId: parseInt(customerObject?.value) })
               }}
               onCreateOption={(inputValue: string) => {
                 saveSystemLog(
@@ -150,7 +147,7 @@ export default function Pay() {
             checked={cart?.isMailOrder}
             onChange={() => {
               saveSystemLog('SALE SCREEN - IS MAIL ORDER clicked.', clerk?.id)
-              setCart({ isMailOrder: !cart?.isMailOrder })
+              setCartSale({ isMailOrder: !cart?.isMailOrder })
             }}
           />
           <div className="ml-2">Mail order</div>
@@ -162,7 +159,7 @@ export default function Pay() {
               startAdornment="$"
               inputType="number"
               valueNum={cart?.postage}
-              onChange={(e: any) => setCart({ postage: e.target.value })}
+              onChange={(e: any) => setCartSale({ postage: e.target.value })}
             />
             <TextField
               inputLabel="Postal Address"
@@ -174,7 +171,9 @@ export default function Pay() {
                 )?.postalAddress ||
                 ''
               }
-              onChange={(e: any) => setCart({ postalAddress: e.target.value })}
+              onChange={(e: any) =>
+                setCartSale({ postalAddress: e.target.value })
+              }
             />
           </div>
         ) : (
@@ -185,7 +184,7 @@ export default function Pay() {
         inputLabel="Note"
         multiline
         value={cart?.note}
-        onChange={(e: any) => setCart({ ...cart, note: e.target.value })}
+        onChange={(e: any) => setCartSale({ note: e.target.value })}
       />
       {cart?.id && (
         <div>

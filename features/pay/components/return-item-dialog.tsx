@@ -11,7 +11,8 @@ import { useSaleItemsForSale } from 'lib/api/sale'
 
 export default function ReturnItemsDialog({ sale }) {
   const { clerk } = useClerk()
-  const { cart, view, setCart, closeView, setAlert } = useAppStore()
+  const { cart, view, setCart, setCartSale, closeView, setAlert } =
+    useAppStore()
   const { items, mutateSaleItems } = useSaleItemsForSale(sale?.id)
   // const { logs, mutateLogs } = useLogs()
   // const { inventory } = useInventory()
@@ -33,7 +34,7 @@ export default function ReturnItemsDialog({ sale }) {
       type: 'ok',
       loading: submitting,
       onClick: () => {
-        saveSystemLog('RETURN ITEMS - OK clicked.', clerk?.id)
+        // saveSystemLog('RETURN ITEMS - OK clicked.', clerk?.id)
         const updatedCartItems = cart?.items?.map((item: SaleItemObject) =>
           refundItems.includes(item?.id)
             ? { ...item, isRefunded: true, refundNote: notes }
@@ -41,6 +42,8 @@ export default function ReturnItemsDialog({ sale }) {
         )
         setCart({
           items: updatedCartItems,
+        })
+        setCartSale({
           state:
             cart?.state === SaleStateTypes.Completed
               ? SaleStateTypes.InProgress

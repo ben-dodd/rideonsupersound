@@ -177,18 +177,20 @@ export default function HoldDialog() {
         parseInt(newItems[index].quantity) + hold?.quantity
       }`
     setCart({
-      id: cart?.id || null,
-      dateSaleOpened: cart?.dateSaleOpened || dayjs.utc().format(),
-      saleOpenedBy: cart?.saleOpenedBy || clerk?.id,
+      sale: {
+        id: cart?.id || null,
+        dateSaleOpened: cart?.dateSaleOpened || dayjs.utc().format(),
+        saleOpenedBy: cart?.saleOpenedBy || clerk?.id,
+        state: cart?.state || null,
+        customerId: cart?.customerId || null,
+        laybyStartedBy: cart?.laybyStartedBy || null,
+        dateLaybyStarted: cart?.dateLaybyStarted || null,
+        weather: cart?.weather || weather,
+        geoLatitude: cart?.geoLatitude || geolocation?.latitude,
+        geoLongitude: cart?.geoLongitude || geolocation?.longitude,
+      },
       items: newItems,
       transactions: cart?.transactions || [],
-      state: cart?.state || null,
-      customerId: cart?.customerId || null,
-      laybyStartedBy: cart?.laybyStartedBy || null,
-      dateLaybyStarted: cart?.dateLaybyStarted || null,
-      weather: cart?.weather || weather,
-      geoLatitude: cart?.geoLatitude || geolocation?.latitude,
-      geoLongitude: cart?.geoLongitude || geolocation?.longitude,
     })
     setPage('sell')
     openView(ViewProps.cart)

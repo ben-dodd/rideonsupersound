@@ -11,20 +11,18 @@ import {
 } from '../../display-inventory/lib/functions'
 import { useClerk } from 'lib/api/clerk'
 import { createVendor, useVendors } from 'lib/api/vendor'
+import { useStockItem } from 'lib/api/stock'
+import router from 'next/router'
+import { useState } from 'react'
 
-export default function InventoryItemForm({
-  item,
-  setItem,
-  disabled,
-}: {
-  item: StockObject
-  setItem: Function
-  disabled?: boolean
-}) {
+export default function InventoryItemForm() {
+  const { id } = router.query
+  const { stockItem, isStockItemLoading } = useStockItem(`${id}`)
+  const [item, setItem] = useState(stockItem?.item || {})
   const handleChange = (e) =>
     setItem({ ...item, [e.target.name]: e.target.value })
   const { vendors } = useVendors()
-  const { clerk } = useClerk()
+  const disabled = false
 
   return (
     <div>

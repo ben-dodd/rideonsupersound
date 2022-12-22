@@ -20,9 +20,8 @@ export default function InventoryItemScreen() {
   const { id } = router.query
   const { openConfirm } = useAppStore()
   const { stockItem, isStockItemLoading } = useStockItem(`${id}`)
-  // const { logs, mutateLogs } = useLogs()
-
-  console.log(stockItem)
+  const { item = {}, sales = [] } = stockItem || {}
+  const [editItem, setEditItem] = useState(item)
   const [tab, setTab] = useState(0)
 
   // // Load
@@ -45,12 +44,13 @@ export default function InventoryItemScreen() {
   // Functions
   function onClickDelete() {
     // REVIEW Delete inventory item
+    const hasBeenSold = sales?.length > 0
     openConfirm({
       open: true,
       title: 'Are you sure you want to delete this item?',
       styledMessage: (
         <div>
-          {stockItem?.saleItemId ? (
+          {hasBeenSold ? (
             <>
               <div className="text-red-500 text-lg text-center p-2 border-red-500">
                 SORRY
@@ -65,14 +65,13 @@ export default function InventoryItemScreen() {
           )}
         </div>
       ),
-      yesText: stockItem?.sales?.length > 0 ? 'OK' : "YES, I'M SURE",
-      action:
-        stockItem?.sales?.length > 0
-          ? () => {}
-          : async () =>
-              deleteStockItem(stockItem?.id)?.then(() => {
-                router.back()
-              }),
+      yesText: hasBeenSold ? 'OK' : "YES, I'M SURE",
+      action: hasBeenSold
+        ? () => {}
+        : async () =>
+            deleteStockItem(item?.id)?.then(() => {
+              router.back()
+            }),
     })
   }
 
@@ -85,7 +84,7 @@ export default function InventoryItemScreen() {
     {
       type: 'ok',
       onClick: () => {
-        updateStockItem(stockItem, stockItem?.id)
+        updateStockItem(item, item?.id)
         router.back()
       },
       text: 'SAVE',
@@ -99,11 +98,11 @@ export default function InventoryItemScreen() {
       <div className="flex flex-col w-full">
         <Tabs
           tabs={
-            stockItem?.media === 'Mixed'
+            item?.media === 'Mixed'
               ? ['General Information', 'Discogs', 'GoogleBooks']
-              : stockItem?.media === 'Audio'
+              : item?.media === 'Audio'
               ? ['General Information', 'Discogs']
-              : stockItem?.media === 'Literature'
+              : item?.media === 'Literature'
               ? ['General Information', 'GoogleBooks']
               : ['General Information']
           }
@@ -113,7 +112,7 @@ export default function InventoryItemScreen() {
         <div hidden={tab !== 0}>
           <div className="flex">
             <div className="w-1/2">
-              <InventoryItemForm />
+              <InventoryItemForm item={editItem} setItem={setEditItem} />
             </div>
             <div className="w-1/2 ml-4">
               <PriceDetails />
@@ -134,15 +133,15 @@ export default function InventoryItemScreen() {
           hidden={
             !(
               tab === 1 &&
-              (stockItem?.media === 'Audio' ||
-                stockItem?.media === 'Video' ||
-                stockItem?.media === 'Mixed')
+              (item?.media === 'Audio' ||
+                item?.media === 'Video' ||
+                item?.media === 'Mixed')
             )
           }
         >
           {/* <DiscogsPanel item={item} setItem={setItem} /> */}
         </div>
-        <div hidden={!(tab === 1 && stockItem?.media === 'Literature')}>
+        <div hidden={!(tab === 1 && item?.media === 'Literature')}>
           {/* <GoogleBooksPanel item={item} setItem={setItem} /> */}
         </div>
         <div hidden={tab !== 2}>Item Sale Details</div>

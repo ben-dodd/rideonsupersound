@@ -17,7 +17,7 @@ export default function CreateCustomerSidebar() {
     view,
     cart: { customer },
     setCustomer,
-    setCart,
+    setCartSale,
     resetCustomer,
     closeView,
     setAlert,
@@ -26,7 +26,7 @@ export default function CreateCustomerSidebar() {
   const [submitting, setSubmitting] = useState(false)
 
   const handleClickCancel = () => {
-    setCart({ customerId: null })
+    setCartSale({ customerId: null })
     closeSidebar()
   }
 
@@ -75,7 +75,7 @@ export default function CreateCustomerSidebar() {
     } else {
       mutate('customer')
       setCustomer(newCustomer)
-      setCart({ customerId: newCustomer?.id })
+      setCartSale({ customerId: newCustomer?.id })
       closeSidebar()
     }
     setSubmitting(false)
