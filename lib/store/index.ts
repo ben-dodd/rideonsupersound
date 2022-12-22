@@ -98,7 +98,7 @@ export const useAppStore = createSelectors(
       set(
         produce((draft) => {
           Object.entries(update).forEach(
-            ([key, value]) => (draft.cart.key = value)
+            ([key, value]) => (draft.cart[key] = value)
           )
         })
       ),

@@ -131,6 +131,11 @@ export function dbUpdateSaleItem(id, update, db = connection) {
   return db('sale_item').where({ id }).update(js2mysql(update))
 }
 
+export function dbDeleteSaleItem(id, db = connection) {
+  console.log(`Deleting ${id}`)
+  return dbUpdateSaleItem(id, { isDeleted: true })
+}
+
 export function dbCreateSaleTransaction(saleTransaction, db = connection) {
   return db('sale_transaction').insert(js2mysql(saleTransaction))
 }

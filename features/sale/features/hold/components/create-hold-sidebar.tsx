@@ -2,15 +2,8 @@ import { useState } from 'react'
 import SidebarContainer from 'components/container/side-bar'
 import CreateableSelect from 'components/inputs/createable-select'
 import TextField from 'components/inputs/text-field'
-import { addRestockTask } from 'features/job/lib/functions'
 import { logCreateHold, saveSystemLog } from 'features/log/lib/functions'
-import {
-  CustomerObject,
-  ModalButton,
-  StockMovementTypes,
-  StockObject,
-} from 'lib/types'
-import { getItemQuantity } from '../../sell/lib/functions'
+import { CustomerObject, ModalButton } from 'lib/types'
 import ListItem from './list-item'
 import { useAppStore } from 'lib/store'
 import { useClerk } from 'lib/api/clerk'

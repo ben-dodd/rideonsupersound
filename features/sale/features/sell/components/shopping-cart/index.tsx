@@ -13,28 +13,37 @@ import PayIcon from '@mui/icons-material/ShoppingCart'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useSaleProperties } from 'lib/hooks'
+import { deleteSale, deleteSaleItem } from 'lib/api/sale'
+import { useClerk } from 'lib/api/clerk'
+import { useCurrentRegisterId } from 'lib/api/register'
 
 export default function ShoppingCart() {
-  const { cart, view, setCart, setAlert, closeView, openView } = useAppStore()
+  const { cart, view, setCart, resetCart, setAlert, closeView, openView } =
+    useAppStore()
+  const { clerk } = useClerk()
+  const { registerId } = useCurrentRegisterId()
 
   // State
   const [loadingSale, setLoadingSale] = useState(false)
 
-  async function deleteCartItem(itemId: string, id: number) {
-    let updatedCartItems = cart?.items?.map((i: SaleItemObject) =>
-      i?.itemId === parseInt(itemId) ? { ...i, isDeleted: true } : i
+  function deleteCartItem(cartItem) {
+    let updatedCartItems = cart?.items?.filter(
+      (item) => item?.itemId !== cartItem?.itemId
     )
-    if (id)
+    if (cartItem?.id)
       // Cart has been saved to the database, delete sale_item
-      deleteSaleItemFromDatabase(id)
-    if (cart?.items?.length < 1 && cart?.transactions?.length < 1) {
+      deleteSaleItem(cartItem?.id)
+    if (updatedCartItems.length < 1 && cart?.transactions?.length < 1) {
       // No items left and no transactions, delete cart
       closeView(ViewProps.cart)
-      deleteSaleFromDatabase(cart?.id)
+      resetCart()
+      if (cart?.id) deleteSale(cart?.id, { clerk, registerId })
+    } else {
+      console.log(updatedCartItems)
+      setCart({
+        items: updatedCartItems,
+      })
     }
-    setCart({
-      items: updatedCartItems,
-    })
     // saveLog(
     //   `${getItemDisplayName(
     //     getItemById(parseInt(itemId), inventory)
@@ -49,7 +58,7 @@ export default function ShoppingCart() {
     // setRefresh(refresh + 1);
   }
 
-  // console.log(cart)
+  console.log('refreshing cart', cart)
 
   // Constants
   const { totalPrice, totalStoreCut, totalRemaining, totalPaid } =
@@ -78,11 +87,10 @@ export default function ShoppingCart() {
         <div className="flex-grow overflow-x-hidden overflow-y-scroll">
           {cart?.items?.length > 0 ? (
             cart.items
-              .filter((cartItem: SaleItemObject) => !cartItem?.isDeleted)
+              // .filter((cartItem: SaleItemObject) => !cartItem?.isDeleted)
               .map((cartItem, i) => (
                 <ListItem
                   key={cartItem?.itemId}
-                  index={i}
                   cartItem={cartItem}
                   deleteCartItem={deleteCartItem}
                 />

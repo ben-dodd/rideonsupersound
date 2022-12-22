@@ -64,9 +64,17 @@ export function updateSaleItem(id, update) {
     .catch((e) => Error(e.message))
 }
 
-export function nukeSale(id, { clerk, registerId }) {
+export function deleteSale(id, { clerk, registerId }) {
   return axios
     .patch(`/api/sale/delete/${id}`, { clerk, registerId })
+    .then((res) => res.data)
+    .catch((e) => Error(e.message))
+}
+
+export function deleteSaleItem(id) {
+  console.log(`Deleting sale item ${id}`)
+  return axios
+    .patch(`/api/sale/item/delete/${id}`)
     .then((res) => res.data)
     .catch((e) => Error(e.message))
 }

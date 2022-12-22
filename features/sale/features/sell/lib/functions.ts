@@ -60,13 +60,13 @@ export function getCartItemStoreCut(cartItem, item) {
     cartItem?.storeDiscount,
     cartItem?.quantity
   )
-  console.log({ storeCut, storePrice })
+  // console.log({ storeCut, storePrice })
   return storePrice
 }
 
 export function getCartItemTotal(cartItem, item) {
-  console.log(cartItem)
-  console.log(item)
+  // console.log(cartItem)
+  // console.log(item)
   const totalSell: number = !cartItem
     ? 0
     : item?.isGiftCard
@@ -78,7 +78,7 @@ export function getCartItemTotal(cartItem, item) {
   const vendorPrice: number = getCartItemVendorCut(cartItem, item)
   const storePrice: number = getCartItemStoreCut(cartItem, item)
   const totalPrice: number = totalSell ?? storePrice + vendorPrice
-  console.log({ vendorPrice, storePrice, totalPrice })
+  // console.log({ vendorPrice, storePrice, totalPrice })
   return totalPrice
 }
 

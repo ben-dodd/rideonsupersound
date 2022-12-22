@@ -34,7 +34,7 @@ export default function SellListItem({
   const item =
     stockItem || stockList?.find((item) => item?.id === cartItem?.itemId)
   const [expanded, setExpanded] = useState(false)
-  console.log(stockItem)
+  // console.log(stockItem)
 
   function onChangeCart(e: any, property: string) {
     setCartItem(cartItem?.itemId, { [property]: e.target.value })
@@ -159,7 +159,7 @@ export default function SellListItem({
               <div className="w-50 text-right">
                 <button
                   className="py-2 text-tertiary hover:text-tertiary-dark"
-                  onClick={() => deleteCartItem(cartItem?.itemId)}
+                  onClick={() => deleteCartItem(cartItem)}
                 >
                   <DeleteIcon />
                 </button>
