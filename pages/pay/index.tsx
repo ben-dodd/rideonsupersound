@@ -1,14 +1,8 @@
 import { useState } from 'react'
-import {
-  useGiftCards,
-  useInventory,
-  useLogs,
-  useRegisterID,
-  useSaleTransactionsForSale,
-} from 'lib/database/read'
 import { ModalButton, SaleStateTypes } from 'lib/types'
 
 // Components
+import Layout from 'components/layout'
 import ScreenContainer from 'components/container/screen'
 import CreateCustomerSidebar from 'features/customer/components/sidebar'
 import {
@@ -27,20 +21,21 @@ import Card from 'features/pay/components/payment/card'
 import Gift from 'features/pay/components/payment/gift'
 import Cash from 'features/pay/components/payment/cash'
 import ReturnItemDialog from 'features/pay/components/return-item-dialog'
-import { saveSaleAndPark } from 'features/sale/features/item-sale/lib/functions'
 import { useCustomers } from 'lib/api/customer'
 import { useSaleProperties } from 'lib/hooks'
 
 // TODO add returns to sale items
 // TODO refund dialog like PAY, refund with store credit, cash or card
 
-export default function SaleScreen() {
+export default function PayScreen() {
   const router = useRouter()
   const { cart, view, resetCart, setAlert } = useAppStore()
+  console.log(cart)
+  if (!cart?.sale?.id && cart?.items?.length === 0) router.push('sell')
   const { clerk } = useClerk()
   const { customers } = useCustomers()
-  const { isSaleTransactionsLoading } = useSaleTransactionsForSale(cart?.id)
-  const { sales } = useSales()
+  // const { isSaleTransactionsLoading } = useSaleTransactionsForSale(cart?.id)
+  // const { sales } = useSales()
 
   // State
   // const [saleLoading, setSaleLoading] = useState(false);
@@ -60,7 +55,7 @@ export default function SaleScreen() {
   async function clickParkSale() {
     saveSystemLog('PARK SALE clicked.', clerk?.id)
     setParkSaleLoading(true)
-    saveSaleAndPark(cart, clerk, registerID, customers, sales)
+    // saveSaleAndPark(cart, clerk, registerID, customers, sales)
     setAlert({
       open: true,
       type: 'success',
@@ -100,12 +95,12 @@ export default function SaleScreen() {
         message: 'LAYBY STARTED.',
       })
     }
-    saveSaleItemsTransactionsToDatabase(
-      laybySale,
-      clerk,
-      registerID,
-      cart?.state
-    )
+    // saveSaleItemsTransactionsToDatabase(
+    //   laybySale,
+    //   clerk,
+    //   registerID,
+    //   cart?.state
+    // )
     // close dialog
     setLaybyLoading(false)
     resetCart()
@@ -128,17 +123,17 @@ export default function SaleScreen() {
       dateSaleClosed: dayjs.utc().format(),
     }
 
-    const saleId = await saveSaleItemsTransactionsToDatabase(
-      completedSale,
-      clerk,
-      registerId,
-      cart?.state,
-      customers?.find((c) => c?.id === cart?.customerId)?.name
-    )
+    // const saleId = await saveSaleItemsTransactionsToDatabase(
+    //   completedSale,
+    //   clerk,
+    //   registerId,
+    //   cart?.state,
+    //   customers?.find((c) => c?.id === cart?.customerId)?.name
+    // )
     resetCart()
     router.back()
     setCompleteSaleLoading(false)
-    logSaleCompleted(cart, saleId, clerk)
+    // logSaleCompleted(cart, saleId, clerk)
     setAlert({
       open: true,
       type: 'success',
@@ -223,13 +218,13 @@ export default function SaleScreen() {
         title={`${cart?.id ? `SALE #${cart?.id}` : `NEW SALE`} [${
           cart?.state ? cart?.state.toUpperCase() : 'IN PROGRESS'
         }]`}
-        loading={isSaleTransactionsLoading}
+        // loading={isSaleTransactionsLoading}
         buttons={buttons}
         titleClass="bg-col1"
       >
         <div className="flex items-start overflow-auto w-full">
           <div className="w-2/3">
-            <SaleSummary sale={cart} />
+            <SaleSummary cart={cart} />
           </div>
           <div className="w-1/3 p-2 flex flex-col justify-between">
             <Pay />
@@ -246,3 +241,5 @@ export default function SaleScreen() {
     </>
   )
 }
+
+PayScreen.getLayout = (page) => <Layout>{page}</Layout>

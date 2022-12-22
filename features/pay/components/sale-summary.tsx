@@ -4,7 +4,7 @@ import ItemListItem from './item-list-item'
 import TransactionListItem from './transaction-list-item'
 import { useSaleProperties } from 'lib/hooks'
 
-export default async function SaleSummary({ sale }) {
+export default function SaleSummary({ cart }) {
   const {
     totalRemaining,
     totalStoreCut,
@@ -12,14 +12,16 @@ export default async function SaleSummary({ sale }) {
     totalPrice,
     totalPaid,
     totalPostage,
-  } = await useSaleProperties(sale)
+  } = useSaleProperties(cart)
+
+  const { sale = {}, items = [], transactions = [] } = cart || {}
 
   // Functions
   function SaleItems() {
     return (
       <div className={`h-2/5 overflow-y-scroll`}>
-        {sale?.items?.length > 0 ? (
-          sale?.items?.map((saleItem: SaleItemObject) => (
+        {items?.length > 0 ? (
+          items?.map((saleItem: SaleItemObject) => (
             <ItemListItem key={saleItem?.itemId} saleItem={saleItem} />
           ))
         ) : (
@@ -33,10 +35,10 @@ export default async function SaleSummary({ sale }) {
     return (
       <div
         className={`h-1/5 overflow-y-scroll mt-1 pt-1 border-t border-gray-500 ${
-          !sale?.transactions || (sale?.transactions?.length === 0 && ' hidden')
+          !transactions || (transactions?.length === 0 && ' hidden')
         }`}
       >
-        {sale?.transactions
+        {transactions
           ?.sort(
             (transA: SaleTransactionObject, transB: SaleTransactionObject) => {
               const a = dayjs(transA?.date)

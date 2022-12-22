@@ -46,7 +46,7 @@ export default function CreateHoldSidebar() {
     setSubmitting(true)
     await cart?.items.forEach((cartItem) => {
       createHold({
-        customerId: cart?.customerId,
+        customerId: cart?.sale?.customerId,
         itemId: cartItem?.itemId,
         quantity: Number(cartItem?.quantity),
         startedBy: clerk?.id,
@@ -109,10 +109,11 @@ export default function CreateHoldSidebar() {
         <CreateableSelect
           inputLabel="Select customer"
           fieldRequired
-          value={cart?.customerId}
+          value={cart?.sale?.customerId}
           label={
-            customers?.find((c: CustomerObject) => c?.id === cart?.customerId)
-              ?.name || ''
+            customers?.find(
+              (c: CustomerObject) => c?.id === cart?.sale?.customerId
+            )?.name || ''
           }
           onChange={(customerObject: any) => {
             // saveSystemLog('New hold sidebar - Customer selected.', clerk?.id)

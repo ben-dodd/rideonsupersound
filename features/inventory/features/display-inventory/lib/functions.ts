@@ -16,19 +16,18 @@ export function getItemSku(item: StockObject) {
     : null
 }
 
-export function getItemDisplayName(item: StockObject | GiftCardObject) {
+export function getItemDisplayName(item: StockObject) {
   // Add special cases e.g. for comics
   // Might be better as a span component
   if (item?.isGiftCard)
     return `Gift Card [${item?.giftCardCode?.toUpperCase()}]`
-  let inventoryItem: any = item
-  if (inventoryItem?.isMiscItem) return inventoryItem?.miscItemDescription
-  if (inventoryItem?.displayAs) return inventoryItem?.displayAs
-  if (!inventoryItem || !(inventoryItem?.artist || inventoryItem?.title))
-    return 'Untitled'
-  return `${inventoryItem?.title || ''}${
-    inventoryItem?.title && inventoryItem?.artist ? ' - ' : ''
-  }${inventoryItem?.artist || ''}`
+  // let inventoryItem: any = item
+  if (item?.isMiscItem) return item?.miscItemDescription
+  if (item?.displayAs) return item?.displayAs
+  if (!item || !(item?.artist || item?.title)) return 'Untitled'
+  return `${item?.title || ''}${item?.title && item?.artist ? ' - ' : ''}${
+    item?.artist || ''
+  }`
 }
 
 export function getImageSrc(item: StockObject) {

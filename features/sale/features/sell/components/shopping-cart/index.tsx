@@ -1,13 +1,8 @@
 import { useState } from 'react'
-import { SaleItemObject } from 'lib/types'
 import CircularProgress from '@mui/material/CircularProgress'
 import Tooltip from '@mui/material/Tooltip'
 import Actions from './actions'
 import ListItem from './list-item'
-import {
-  deleteSaleFromDatabase,
-  deleteSaleItemFromDatabase,
-} from 'lib/database/delete'
 import HoldIcon from '@mui/icons-material/PanTool'
 import PayIcon from '@mui/icons-material/ShoppingCart'
 import { useAppStore } from 'lib/store'
@@ -16,12 +11,14 @@ import { useSaleProperties } from 'lib/hooks'
 import { deleteSale, deleteSaleItem } from 'lib/api/sale'
 import { useClerk } from 'lib/api/clerk'
 import { useCurrentRegisterId } from 'lib/api/register'
+import { useRouter } from 'next/router'
 
 export default function ShoppingCart() {
   const { cart, view, setCart, resetCart, setAlert, closeView, openView } =
     useAppStore()
   const { clerk } = useClerk()
   const { registerId } = useCurrentRegisterId()
+  const router = useRouter()
 
   // State
   const [loadingSale, setLoadingSale] = useState(false)
@@ -157,7 +154,7 @@ export default function ShoppingCart() {
                 totalRemaining < 0 ? 'cancel' : 'ok'
               }`}
               disabled={loadingSale || totalRemaining === 0}
-              onClick={() => openView(ViewProps.saleScreen)}
+              onClick={() => router.push('pay')}
             >
               {loadingSale ? (
                 <span className="pr-4">
