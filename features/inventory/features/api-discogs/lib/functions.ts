@@ -27,6 +27,8 @@ export async function getDiscogsItem({ master_id, resource_url }: any) {
   return axios(
     master_id ? `https://api.discogs.com/masters/${master_id}` : resource_url
   )
+    .then((res) => res?.data)
+    .catch((e) => Error(e.message))
 }
 
 export async function getDiscogsPriceSuggestions({ id }: any) {
@@ -35,6 +37,8 @@ export async function getDiscogsPriceSuggestions({ id }: any) {
       process.env.NEXT_PUBLIC_DISCOGS_PERSONAL_ACCESS_TOKEN
     }`
   )
+    .then((res) => res.data)
+    .catch((e) => Error(e.message))
 }
 
 export async function getDiscogsItemArtistDetails({ artists }: any) {
@@ -61,7 +65,7 @@ export async function setDiscogsItemToStockItem(
   let update = {
     thumbUrl: discogsOption?.thumb || null,
     imageUrl: discogsOption?.cover_image || null,
-    discogsItem,
+    discogsItem: JSON.stringify(discogsItem),
   }
 
   if (overrideItemDetails)

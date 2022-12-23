@@ -31,7 +31,7 @@ export default function DiscogsItemScreen({ discogsItem, item }: discogsProps) {
         </div>
         <div className="text-md">{discogsItem?.format?.join(', ')}</div>
         <div className="pr-1 italic">
-          {`${discogsItem?.label[0] || ''}${
+          {`${discogsItem?.label?.[0] || ''}${
             discogsItem?.label && discogsItem?.country ? ', ' : ''
           }${discogsItem?.country || ''}`}
         </div>

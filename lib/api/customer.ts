@@ -1,4 +1,3 @@
-import axios from 'axios'
 import { ClerkObject, CustomerObject } from 'lib/types'
 import { axiosAuth, useData } from './'
 

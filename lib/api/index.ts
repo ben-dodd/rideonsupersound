@@ -2,7 +2,6 @@ import useSWR from 'swr'
 import { camelCase, pascalCase } from '../utils'
 import { mysql2js } from 'lib/database/utils/helpers'
 import axios from 'axios'
-import { access } from 'fs'
 
 export function useData(url: string, label: string) {
   const { data, error, mutate } = useSWR(url, async () =>
@@ -17,39 +16,37 @@ export function useData(url: string, label: string) {
 }
 
 export const getAuth = () =>
-  axios(`/api/auth/jwt`).then((response) => response.data)
+  axios(`/api/auth/jwt`)
+    .then((response) => response.data)
+    .catch((e) => {
+      return Error(e.message)
+    })
 
 export const axiosAuth = {
   get: (url) =>
-    getAuth()
-      .then((accessToken) =>
-        axios(url, {
+    getAuth().then((accessToken) =>
+      axios(url, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      })
+        .then((res) => res.data)
+        .catch((e) => Error(e.message))
+    ),
+  post: (url, body = {}) =>
+    getAuth().then((accessToken) =>
+      axios
+        .post(url, body, {
           headers: { Authorization: `Bearer ${accessToken}` },
         })
-          .then((res) => res.data)
-          .catch((e) => Error(e.message))
-      )
-      .catch((e) => Error(e.message)),
-  post: (url, body = {}) =>
-    getAuth()
-      .then((accessToken) =>
-        axios
-          .post(url, body, {
-            headers: { Authorization: `Bearer ${accessToken}` },
-          })
-          .then((res) => res.data)
-          .catch((e) => Error(e.message))
-      )
-      .catch((e) => Error(e.message)),
+        .then((res) => res.data)
+        .catch((e) => Error(e.message))
+    ),
   patch: (url, body = {}) =>
-    getAuth()
-      .then((accessToken) =>
-        axios
-          .patch(url, body, {
-            headers: { Authorization: `Bearer ${accessToken}` },
-          })
-          .then((res) => res.data)
-          .catch((e) => Error(e.message))
-      )
-      .catch((e) => Error(e.message)),
+    getAuth().then((accessToken) =>
+      axios
+        .patch(url, body, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        })
+        .then((res) => res.data)
+        .catch((e) => Error(e.message))
+    ),
 }

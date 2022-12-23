@@ -9,7 +9,7 @@ export default async function handler(req, res) {
     res.json(accessToken)
   } catch (error) {
     res.status(error.status || 500).json({
-      code: error.code,
+      code: error.error,
       error: error.message,
     })
   }
