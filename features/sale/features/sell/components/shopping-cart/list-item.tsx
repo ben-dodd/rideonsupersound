@@ -73,9 +73,9 @@ export default function SellListItem({
         onClick={() => setExpanded((e) => !e)}
       >
         <div className="w-20">
-          <div className="w-20 h-20 relative">
+          <div className="w-20 h-20 aspect-ratio-square relative">
             <img
-              className="object-cover absolute"
+              className="object-cover w-full h-full absolute"
               src={getImageSrc(item)}
               alt={item?.title || 'Inventory image'}
             />

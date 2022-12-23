@@ -7,9 +7,9 @@ const InfoBox = ({ image, data }) => {
   return (
     <div className="border border-gray-300 rounded-lg p-2">
       {image && (
-        <div className="w-52 h-52 relative">
+        <div className="w-52 h-52 aspect-ratio-square">
           <img
-            className="object-cover absolute"
+            className="h-full w-full object-cover"
             src={image}
             alt={'Info Box Image'}
           />

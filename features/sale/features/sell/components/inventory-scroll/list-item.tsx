@@ -51,20 +51,15 @@ export default function ListItem({ item }: { item: StockObject }) {
       }`}
     >
       <div className="w-imageMed">
-        <div
-          className={`w-imageMed h-imageMed${
-            item?.quantity < 1 ? ' opacity-50' : ''
-          }`}
-        >
+        <div className={`w-imageMed${item?.quantity < 1 ? ' opacity-50' : ''}`}>
           <img
-            className="object-cover h-imageMed"
-            width="100%"
+            className="object-cover h-imageMed w-full aspect-ratio-square"
             src={getImageSrc(item)}
             alt={item?.title || 'Inventory image'}
           />
-        </div>
-        <div className="text-lg font-bold text-center bg-black text-white">
-          {getItemSku(item)}
+          <div className="h-8 text-lg font-bold text-center bg-black text-white w-imageMed">
+            {getItemSku(item)}
+          </div>
         </div>
       </div>
       <div className="flex flex-col w-full px-2">

@@ -30,7 +30,7 @@ export default function DiscogsPanel() {
       handleGetDiscogsOptions()
   }, [])
 
-  console.log(discogsItem)
+  // console.log(discogsItem)
 
   return (
     <div className="flex flex-col h-inventory">

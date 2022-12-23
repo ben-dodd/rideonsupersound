@@ -15,7 +15,7 @@ export default function DiscogsOption({
   const { id } = router.query
   const { mutate } = useSWRConfig()
   const handleDiscogsOptionClick = async () => {
-    console.log(discogsOption)
+    // console.log(discogsOption)
     // saveSystemLog(`Discogs option clicked - ${discogsOption?.id}`, clerk?.id)
     setDiscogsItemToStockItem(discogsOption, overrideItemDetails)
       .then((update) => {

@@ -2,8 +2,7 @@
 import { useState } from 'react'
 import Tabs from 'components/navigation/tabs'
 import StockDetails from 'features/inventory/features/item-stock/components/stock-details'
-import DeleteIcon from '@mui/icons-material/Delete'
-import EditIcon from '@mui/icons-material/Edit'
+import { Settings, Edit, Delete } from '@mui/icons-material'
 import { useRouter } from 'next/router'
 import { useAppStore } from 'lib/store'
 import { deleteStockItem, useStockItem } from 'lib/api/stock'
@@ -26,8 +25,10 @@ export default function InventoryItemScreen() {
   const { stockItem, isStockItemLoading } = useStockItem(`${id}`)
   const { item = {}, sales = [] } = stockItem || {}
   const [tab, setTab] = useState(0)
+  const [menuVisible, setMenuVisible] = useState(false)
 
-  // Functions
+  const toggleMenu = () => setMenuVisible((isVisible) => !isVisible)
+
   function onClickDelete() {
     // REVIEW Delete inventory item
     const hasBeenSold = sales?.length > 0
@@ -61,6 +62,44 @@ export default function InventoryItemScreen() {
     })
   }
 
+  const Menu = () => (
+    <div className="absolute top-7 right-7 bg-white shadow-2xl rounded-lg py-4 px-6 z-5">
+      <div className="block mb-2 text-gray-700 hover:text-gray-900">
+        <button
+          className="flex"
+          onClick={() => openView(ViewProps.stockEditDialog)}
+        >
+          <Edit />
+          Edit
+        </button>
+      </div>
+      <div className="block mb-2 text-gray-700 hover:text-gray-900">
+        <button
+          className="flex"
+          onClick={() => openView(ViewProps.changePriceDialog)}
+        >
+          <Delete />
+          Change Price{' '}
+        </button>
+      </div>
+      <div className="block mb-2 text-gray-700 hover:text-gray-900">
+        <button
+          className="flex"
+          onClick={() => openView(ViewProps.changeStockQuantityDialog)}
+        >
+          <Delete />
+          Change Quantities
+        </button>
+      </div>
+      <div className="block mb-2 text-gray-700 hover:text-gray-900">
+        <button className="flex" onClick={onClickDelete}>
+          <Delete />
+          Delete Item
+        </button>
+      </div>
+    </div>
+  )
+
   return isStockItemLoading ? (
     <Loading />
   ) : (
@@ -70,34 +109,10 @@ export default function InventoryItemScreen() {
           <div className="text-2xl font-bold">{`STOCK ${getItemSkuDisplayName(
             item
           )}`}</div>
-          <div className="flex">
-            <button
-              className="p-1 border border-black bg-red-300 hover:bg-tertiary rounded-xl"
-              onClick={() => openView(ViewProps.stockEditDialog)}
-            >
-              <EditIcon />
-              Edit
-            </button>
-            <button
-              className="p-1 border border-black bg-white hover:bg-tertiary rounded-xl"
-              onClick={() => openView(ViewProps.changePriceDialog)}
-            >
-              <DeleteIcon />
-              Change Price{' '}
-            </button>
-            <button
-              className="p-1 border border-black bg-white hover:bg-tertiary rounded-xl"
-              onClick={() => openView(ViewProps.changeStockQuantityDialog)}
-            >
-              <DeleteIcon />
-              Change Quantities
-            </button>
-            <button
-              className="p-1 border border-black bg-white hover:bg-tertiary rounded-xl"
-              onClick={onClickDelete}
-            >
-              <DeleteIcon />
-              Delete Item
+          <div>
+            {menuVisible && <Menu />}
+            <button onClick={toggleMenu}>
+              <Settings />
             </button>
           </div>
         </div>
