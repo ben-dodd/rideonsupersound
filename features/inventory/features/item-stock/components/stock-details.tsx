@@ -8,7 +8,7 @@ import { useStockItem } from 'lib/api/stock'
 export default function StockDetails() {
   const router = useRouter()
   const { id } = router.query
-  const { stockItem, isStockItemLoading } = useStockItem(`${id}`)
+  const { stockItem } = useStockItem(`${id}`)
   const { quantities = {}, stockMovements = [] } = stockItem || {}
   const { openView } = useAppStore()
 
@@ -58,12 +58,12 @@ export default function StockDetails() {
           {`${quantities?.adjustment}`}
         </div>
       </div>
-      <button
+      {/* <button
         onClick={() => openView(ViewProps.changeStockQuantityDialog)}
         className="bg-brown-dark hover:bg-brown p-2 w-full text-white"
       >
         CHANGE STOCK LEVEL
-      </button>
+      </button> */}
       <div className="font-bold py-2">Stock Movement Logs</div>
       <div className="h-dialogsm overflow-y-scroll">
         {stockMovements?.length === 0 ? (
@@ -76,7 +76,7 @@ export default function StockDetails() {
                 className={`flex hover:bg-gray-200 p-2 justify-between`}
               >
                 <div className="mr-2">
-                  {dayjs(s?.date_moved).format('D MMMM YYYY, h:mm A')}
+                  {dayjs(s?.dateMoved).format('D MMMM YYYY, h:mm A')}
                 </div>
                 <div
                   className={`mr-2 font-bold ${

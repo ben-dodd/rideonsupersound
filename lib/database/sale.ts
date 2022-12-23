@@ -214,37 +214,40 @@ export async function dbDeleteSale(
   { sale, clerk, registerID },
   db = connection
 ) {
-  // Start the transaction
-  // TODO fix trx
-
-  const trx = await db.transaction()
-  try {
-    await sale?.items?.forEach((saleItem) => {
-      dbUpdateSaleItem(saleItem?.id, { isDeleted: true })
-      if (!saleItem?.isRefunded)
-        dbCreateStockMovement({
-          item: saleItem,
-          clerk,
-          registerID,
-          act: StockMovementTypes.Unsold,
-          note: 'Sale nuked.',
-          saleId: sale?.id,
-        })
+  return db
+    .transaction(async (trx) => {
+      await sale?.items?.forEach((saleItem) => {
+        dbUpdateSaleItem(saleItem?.id, { isDeleted: true }, trx)
+        // TODO should this delete the original sale stock movement instead?
+        if (!saleItem?.isRefunded)
+          dbCreateStockMovement(
+            {
+              item: saleItem,
+              clerk,
+              registerID,
+              act: StockMovementTypes.Unsold,
+              note: 'Sale nuked.',
+              saleId: sale?.id,
+            },
+            trx
+          )
+      })
+      await sale?.transactions?.forEach((saleTransaction) => {
+        if (saleTransaction?.vendorPaymentId)
+          dbUpdateVendorPayment(
+            saleTransaction?.vendorPaymentId,
+            {
+              isDeleted: true,
+            },
+            trx
+          )
+        dbUpdateSaleTransaction(saleTransaction?.id, { isDeleted: true }, trx)
+      })
+      // deleteStockMovementsFromDatabase(sale?.id);
+      await dbUpdateSale(id, { isDeleted: true }, trx)
     })
-    await sale?.transactions?.forEach((saleTransaction) => {
-      if (saleTransaction?.vendorPaymentId)
-        dbUpdateVendorPayment(saleTransaction?.vendorPaymentId, {
-          isDeleted: true,
-        })
-      dbUpdateSaleTransaction(saleTransaction?.id, { isDeleted: true })
-    })
-    // deleteStockMovementsFromDatabase(sale?.id);
-    await dbUpdateSale(id, { isDeleted: true })
-    trx.commit()
-  } catch (err) {
-    // Roll back the transaction on error
-    trx.rollback()
-  }
+    .then((res) => res)
+    .catch((e) => Error(e.message))
 }
 
 async function handleSaveSaleItem(item, sale, prevState, db) {
@@ -301,7 +304,7 @@ async function handleStockMovements(item, sale, prevState, db) {
       stockMovement.clerkId = sale?.laybyStartedBy
       stockMovement.act = StockMovementTypes.Layby
     }
-    stockMovement.quantity = getQuantityByType(
+    stockMovement.quantity = getStockMovementQuantityByAct(
       item?.quantity,
       stockMovement?.act
     )
@@ -309,7 +312,7 @@ async function handleStockMovements(item, sale, prevState, db) {
   }
 }
 
-function getQuantityByType(quantity, act) {
+export function getStockMovementQuantityByAct(quantity, act) {
   return act === StockMovementTypes.Received ||
     act === StockMovementTypes.Unhold ||
     act === StockMovementTypes.Unlayby ||

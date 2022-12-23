@@ -6,7 +6,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
 import { useRouter } from 'next/router'
 import { useAppStore } from 'lib/store'
-import { deleteStockItem, updateStockItem, useStockItem } from 'lib/api/stock'
+import { deleteStockItem, useStockItem } from 'lib/api/stock'
 import PriceDetails from 'features/inventory/features/item-stock/components/price-details'
 import Loading from 'components/loading'
 import Layout from 'components/layout'
@@ -14,11 +14,9 @@ import StockItemDisplay from 'features/inventory/features/item-stock/components/
 import ChangePriceDialog from 'features/inventory/features/item-stock/components/change-price-dialog'
 import ChangeStockQuantityDialog from 'features/inventory/features/item-stock/components/change-stock-quantity-dialog'
 import StockEditDialog from 'features/inventory/features/item-stock/components/stock-edit-dialog'
-import {
-  getItemSku,
-  getItemSkuDisplayName,
-} from 'features/inventory/features/display-inventory/lib/functions'
+import { getItemSkuDisplayName } from 'features/inventory/features/display-inventory/lib/functions'
 import { ViewProps } from 'lib/store/types'
+import DiscogsPanel from 'features/inventory/features/api-discogs/components'
 
 export default function InventoryItemScreen() {
   const router = useRouter()
@@ -67,7 +65,7 @@ export default function InventoryItemScreen() {
   ) : (
     <>
       <div>
-        <div className="flex w-full bg-red-400 justify-between p-2">
+        <div className="flex w-full bg-red-400 justify-between p-2 h-nav border-b drop-shadow-md">
           <div className="text-2xl font-bold">{`STOCK ${getItemSkuDisplayName(
             item
           )}`}</div>
@@ -102,7 +100,7 @@ export default function InventoryItemScreen() {
             </button>
           </div>
         </div>
-        <div className="flex flex-col w-full">
+        <div className="flex flex-col w-full h-inventory overflow-y-scroll">
           <Tabs
             tabs={
               item?.media === 'Mixed'
@@ -118,10 +116,10 @@ export default function InventoryItemScreen() {
           />
           <div hidden={tab !== 0}>
             <div className="flex">
-              <div className="w-1/2">
+              <div className="w-1/3">
                 <StockItemDisplay />
               </div>
-              <div className="w-1/2 ml-4">
+              <div className="w-2/3 ml-4">
                 <PriceDetails />
                 <StockDetails />
               </div>
@@ -137,7 +135,7 @@ export default function InventoryItemScreen() {
               )
             }
           >
-            {/* <DiscogsPanel item={item} setItem={setItem} /> */}
+            <DiscogsPanel />
           </div>
           <div hidden={!(tab === 1 && item?.media === 'Literature')}>
             {/* <GoogleBooksPanel item={item} setItem={setItem} /> */}

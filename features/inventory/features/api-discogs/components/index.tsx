@@ -1,32 +1,27 @@
-import { saveSystemLog } from 'features/log/lib/functions'
-import { StockObject } from 'lib/types'
 import SyncIcon from '@mui/icons-material/Sync'
-import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 import { getDiscogsOptions } from '../lib/functions'
 import DiscogsItem from './discogs-item'
 import DiscogsOption from './discogs-option'
-import { useClerk } from 'lib/api/clerk'
+import { useAppStore } from 'lib/store'
+import { useRouter } from 'next/router'
+import { updateStockItem, useStockItem } from 'lib/api/stock'
+import { useSWRConfig } from 'swr'
 
-interface inventoryProps {
-  item: StockObject
-  setItem: Function
-  disabled?: boolean
-}
-
-export default function DiscogsPanel({
-  item,
-  setItem,
-  disabled,
-}: inventoryProps) {
-  // State
+export default function DiscogsPanel() {
+  const router = useRouter()
+  const { id } = router.query
+  const { openConfirm, view, openView } = useAppStore()
+  const { stockItem, isStockItemLoading } = useStockItem(`${id}`)
+  const { item = {} } = stockItem || {}
   const [discogsOptions, setDiscogsOptions] = useState(null)
-  const { clerk } = useClerk()
-
-  // Constants
   const discogsItem = item?.discogsItem || null
+  const { mutate } = useSWRConfig()
 
-  // Load
+  const handleGetDiscogsOptions = () => {
+    getDiscogsOptions(item).then((options) => setDiscogsOptions(options))
+  }
+
   useEffect(() => {
     if (
       !Boolean(item?.discogsItem) &&
@@ -35,10 +30,7 @@ export default function DiscogsPanel({
       handleGetDiscogsOptions()
   }, [])
 
-  const handleGetDiscogsOptions = async () => {
-    const options = await getDiscogsOptions(item)
-    setDiscogsOptions(options)
-  }
+  console.log(discogsOptions)
 
   return (
     <div className="flex flex-col h-inventory">
@@ -51,10 +43,11 @@ export default function DiscogsPanel({
         />
         <button
           className="icon-text-button"
-          disabled={disabled}
+          disabled={false}
           onClick={() => {
-            saveSystemLog('Discogs Panel - sync clicked.', clerk?.id)
-            setItem({ ...item, discogsItem: null })
+            // saveSystemLog('Discogs Panel - sync clicked.', clerk?.id)
+            updateStockItem({ discogsItem: null }, id)
+            mutate(`stock/${id}`)
             handleGetDiscogsOptions()
           }}
         >
@@ -68,12 +61,7 @@ export default function DiscogsPanel({
           discogsOptions.length > 0 ? (
             <div>
               {discogsOptions.map((discogsOption: any, i: number) => (
-                <DiscogsOption
-                  key={i}
-                  discogsOption={discogsOption}
-                  item={item}
-                  setItem={setItem}
-                />
+                <DiscogsOption key={i} discogsOption={discogsOption} />
               ))}
             </div>
           ) : (
@@ -85,8 +73,9 @@ export default function DiscogsPanel({
           )
         ) : (
           <div className="text-xl p-6">
-            To search item on Discogs, fill in the title, artist, and/or barcode
-            and click the "Refresh Discogs Search" button.
+            {
+              "To search item on Discogs, fill in the title, artist, and/or barcode and click the 'Refresh Discogs Search' button."
+            }
           </div>
         )}
       </div>

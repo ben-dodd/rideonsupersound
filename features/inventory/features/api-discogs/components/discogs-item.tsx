@@ -1,4 +1,4 @@
-import { getUSDExchangeRate } from 'lib/api'
+import { getUSDExchangeRate } from 'lib/api/external'
 import { StockObject } from 'lib/types'
 import { andList } from 'lib/utils'
 import { useEffect, useState } from 'react'
@@ -71,18 +71,18 @@ export default function DiscogsItemScreen({ discogsItem, item }: discogsProps) {
         <div className="p-2 bg-primary-light rounded">
           <div className="font-bold">Suggested Price</div>
           <div>
-            {!item?.is_new && !item?.cond
+            {!item?.isNew && !item?.cond
               ? 'Set condition of item to get suggested price.'
               : discogsItem?.priceSuggestions &&
                 discogsItem?.priceSuggestions[
-                  item?.is_new ? 'Mint (M)' : item?.cond || 'Good (G)'
+                  item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)'
                 ]?.value
               ? `$${parseFloat(
                   discogsItem?.priceSuggestions[
-                    item?.is_new ? 'Mint (M)' : item?.cond || 'Good (G)'
+                    item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)'
                   ]?.value
                 )?.toFixed(2)} NZD (${
-                  item?.is_new ? 'Mint (M)' : item?.cond || 'Good (G)'
+                  item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)'
                 } condition)`
               : 'No data'}
           </div>

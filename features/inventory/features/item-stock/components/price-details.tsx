@@ -64,12 +64,12 @@ export default function PriceDetails() {
                 : 'N/A'}
             </div>
           </div>
-          <button
+          {/* <button
             onClick={() => openView(ViewProps.changePriceDialog)}
             className="bg-brown-dark hover:bg-brown p-2 w-full text-white"
           >
             CHANGE PRICE
-          </button>
+          </button> */}
         </div>
       </div>
     </>

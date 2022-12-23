@@ -8,6 +8,7 @@ import { useClerk } from 'lib/api/clerk'
 import { useVendors } from 'lib/api/vendor'
 import router from 'next/router'
 import { useStockItem } from 'lib/api/stock'
+import InfoBox from 'components/infoBox'
 
 export default function StockItemDisplay() {
   const { id } = router.query
@@ -19,107 +20,37 @@ export default function StockItemDisplay() {
 
   return (
     <div>
-      <div className="flex justify-start w-full">
-        <div className="pr-2 w-52 mr-2">
-          <div className="w-52 h-52 relative">
-            <img
-              className="object-cover absolute"
-              src={getImageSrc(item)}
-              alt={item?.title || 'Inventory image'}
-            />
-            {item?.id && (
-              <div className="absolute w-52 h-8 bg-opacity-50 bg-black text-white flex justify-center items-center">
-                {getItemSku(item)}
-              </div>
-            )}
-          </div>
-        </div>
-        <div className="w-full">
-          <div className="flex">
-            <div className="font-bold mr-2">ARTIST</div>
-            <div>{item?.artist}</div>
-          </div>
-          <div className="flex">
-            <div className="font-bold mr-2">TITLE</div>
-            <div>{item?.title}</div>
-          </div>
-          <div className="flex">
-            <div className="font-bold mr-2">DISPLAY NAME</div>
-            <div>{item?.displayAs}</div>
-          </div>
-          <div className="flex">
-            <div className="font-bold mr-2">VENDOR</div>
-            <div>{`[${item?.vendorId}] ${
+      <InfoBox
+        image={getImageSrc(item)}
+        data={[
+          { label: 'SKU', value: getItemSku(item) },
+          { label: 'Artist', value: item?.artist },
+          { label: 'Title', value: item?.title },
+          {
+            label: 'Vendor',
+            value: `[${item?.vendorId}] ${
               vendors?.filter(
                 (v: VendorObject) => v?.id === item?.vendorId
               )?.[0]?.name || ''
-            }`}</div>
-          </div>
-        </div>
-      </div>
-      <div className="mb-2">
-        <div className="flex">
-          <div className="font-bold mr-2">BARCODE</div>
-          <div>{item?.barcode}</div>
-        </div>
-      </div>
-      <div className="grid grid-cols-2 gap-2 mb-2">
-        <div className="flex">
-          <div className="font-bold mr-2">TYPE</div>
-          <div>{item?.type}</div>
-        </div>
-        <div className="flex">
-          <div className="font-bold mr-2">FORMAT</div>
-          <div>{item?.format}</div>
-        </div>
-      </div>
-      {item?.format == 'Shirt' ? (
-        <div className="grid grid-cols-2 gap-2 mb-2">
-          <div className="flex">
-            <div className="font-bold mr-2">COLOUR</div>
-            <div>{item?.colour}</div>
-          </div>
-          <div className="flex">
-            <div className="font-bold mr-2">SIZE</div>
-            <div>{item?.size}</div>
-          </div>
-        </div>
-      ) : (
-        <div className="flex items-end">
-          <div className="flex">
-            <div className="font-bold mr-2">CONDITION</div>
-            <div>`${item?.isNew ? 'NEW' : item?.cond}`</div>
-          </div>
-        </div>
-      )}
-      <div className="grid grid-cols-2 gap-2 items-center justify-center">
-        <div className="flex">
-          <div className="font-bold mr-2">SECTION</div>
-          <div>{item?.section}</div>
-        </div>
-        <div className="flex">
-          <div className="font-bold mr-2">COUNTRY</div>
-          <div>{item?.country}</div>
-        </div>
-      </div>
-      <div className="flex">
-        <div className="font-bold mr-2">GENRE / TAGS</div>
-        <div>{item?.genre?.join?.(', ')}</div>
-      </div>
-      <div className="flex">
-        <div className="font-bold mr-2">DESCRIPTION / NOTES</div>
-        <div>{item?.description}</div>
-      </div>
-      <div className="grid grid-cols-3 mt-4 gap-2">
-        <div className="flex">
-          <div className="font-bold mr-2">LISTED ON WEBSITE?</div>
-          <div>{item?.doListOnWebsite ? 'YES' : 'NO'}</div>
-        </div>
-        <div className="flex">
-          <div className="font-bold mr-2">ITEM HAS NO QUANTITY?</div>
-          <div>{item?.hasNoQuantity ? 'YES' : 'NO'}</div>
-        </div>
-      </div>
+            }`,
+            link: `/vendor/${item?.vendorId}`,
+          },
+          { label: 'Barcode', value: item?.barcode },
+          { label: 'Format', value: item?.format },
+          { label: 'Colour', value: item?.colour },
+          { label: 'Size', value: item?.size },
+          {
+            label: 'Condition',
+            value: item?.isNew ? 'New' : `Used (${item?.cond})`,
+          },
+          { label: 'Section', value: item?.section },
+          { label: 'Country', value: item?.country },
+          { label: 'Genre/Tags', value: item?.genre?.join?.(', ') },
+          { label: 'Description/Notes', value: item?.description },
+          { label: 'Listed on Website', value: Boolean(item?.doListOnWebsite) },
+          { label: 'No-Quantity Item', value: Boolean(item?.hasNoQuantity) },
+        ]}
+      />
     </div>
   )
 }

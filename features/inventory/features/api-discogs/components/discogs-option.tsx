@@ -1,29 +1,24 @@
-import { saveSystemLog } from 'features/log/lib/functions'
-import { StockObject } from 'lib/types'
-import { useAtom } from 'jotai'
 import { setDiscogsItemToStockItem } from '../lib/functions'
 import { DiscogsItem } from '../lib/types'
-import { useClerk } from 'lib/api/clerk'
-
-interface discogsProps {
-  discogsOption: DiscogsItem
-  item: StockObject
-  setItem: Function
-  overrideItemDetails?: boolean
-}
+import { updateStockItem } from 'lib/api/stock'
+import { useRouter } from 'next/router'
+import { useSWRConfig } from 'swr'
 
 export default function DiscogsOption({
   discogsOption,
-  item,
-  setItem,
   overrideItemDetails = false,
-}: discogsProps) {
-  const { clerk } = useClerk()
+}: {
+  discogsOption: DiscogsItem
+  overrideItemDetails?: boolean
+}) {
+  const router = useRouter()
+  const { id } = router.query
+  const { mutate } = useSWRConfig()
   const handleDiscogsOptionClick = async () => {
-    saveSystemLog(`Discogs option clicked - ${discogsOption?.id}`, clerk?.id)
-    setDiscogsItemToStockItem(discogsOption, item, overrideItemDetails).then(
-      (item) => setItem(item)
-    )
+    // saveSystemLog(`Discogs option clicked - ${discogsOption?.id}`, clerk?.id)
+    setDiscogsItemToStockItem(discogsOption, overrideItemDetails)
+      .then((update) => updateStockItem(update, id))
+      .then(() => mutate(`stock/${id}`))
   }
   return (
     <div

@@ -1,5 +1,5 @@
 import { StockMovementTypes, StockObject } from 'lib/types'
-import { dbGetAllSalesAndItems } from './sale'
+import { dbGetAllSalesAndItems, getStockMovementQuantityByAct } from './sale'
 import { js2mysql } from './utils/helpers'
 const connection = require('./conn')
 
@@ -59,6 +59,7 @@ export function dbGetStockItem(id, simple = false, db = connection) {
       const stockMovements = await db('stock_movement')
         .where(`stock_id`, item?.id)
         .where('is_deleted', 0)
+        .orderBy('date_moved', 'desc')
       const stockPrices = await db('stock_price')
         .where(`stock_id`, item?.id)
         .where('is_deleted', 0)
@@ -166,7 +167,6 @@ export function dbUpdateStockItem(update, id, db = connection) {
 }
 
 export function dbCreateStockMovement(stockMovement, db = connection) {
-  console.log(stockMovement)
   return db('stock_movement')
     .insert(js2mysql(stockMovement))
     .then((res) => {
@@ -193,73 +193,69 @@ export function dbDeleteStockItem(id, db = connection) {
 }
 
 export async function dbReceiveStock(receiveStock: any, db = connection) {
-  // return received stock?
-  // TODO fix this transaction
-  const trx = await db.transaction()
-  try {
-    const { clerkId, registerId, vendorId } = receiveStock
-    const receivedStock = []
-    await Promise.all(
-      receiveStock?.items?.map(async (receiveItem: any) => {
-        if (receiveItem?.item?.id) {
-          await dbCreateStockMovement(
-            {
-              item_id: receiveItem?.item?.id,
+  return db
+    .transaction(async (trx) => {
+      const { clerkId, registerId, vendorId } = receiveStock
+      const receivedStock = []
+      await Promise.all(
+        receiveStock?.items?.map(async (receiveItem: any) => {
+          if (receiveItem?.item?.id) {
+            await dbCreateStockMovement(
+              {
+                item_id: receiveItem?.item?.id,
+                quantity: receiveItem?.quantity,
+                clerkId,
+                registerId,
+                act: StockMovementTypes?.Received,
+                note: 'Existing stock received.',
+              },
+              trx
+            )
+            receivedStock.push({
+              item: receiveItem?.item,
               quantity: receiveItem?.quantity,
-              clerkId,
-              registerId,
-              act: StockMovementTypes?.Received,
-              note: 'Existing stock received.',
-            },
-            db
-          )
-          receivedStock.push({
-            item: receiveItem?.item,
-            quantity: receiveItem?.quantity,
-          })
-        } else {
-          const stockId = await dbCreateStockItem(
-            { ...receiveItem?.item, vendorId },
-            db
-          )
-          dbCreateStockPrice(
-            {
-              stockId,
-              clerkId,
-              totalSell: parseFloat(receiveItem?.totalSell) * 100,
-              vendorCut: parseFloat(receiveItem?.vendorCut) * 100,
-              note: 'New stock priced.',
-            },
-            db
-          )
-          await dbCreateStockMovement(
-            {
-              stockId,
-              clerkId,
+            })
+          } else {
+            const stockId = await dbCreateStockItem(
+              { ...receiveItem?.item, vendorId },
+              trx
+            )
+            dbCreateStockPrice(
+              {
+                stockId,
+                clerkId,
+                totalSell: parseFloat(receiveItem?.totalSell) * 100,
+                vendorCut: parseFloat(receiveItem?.vendorCut) * 100,
+                note: 'New stock priced.',
+              },
+              trx
+            )
+            await dbCreateStockMovement(
+              {
+                stockId,
+                clerkId,
+                quantity: receiveItem?.quantity,
+                registerId,
+                act: StockMovementTypes?.Received,
+                note: 'New stock received.',
+              },
+              trx
+            )
+            receivedStock.push({
+              item: {
+                ...receiveItem?.item,
+                vendorId,
+                totalSell: parseFloat(receiveItem?.totalSell) * 100,
+                id: stockId,
+              },
               quantity: receiveItem?.quantity,
-              registerId,
-              act: StockMovementTypes?.Received,
-              note: 'New stock received.',
-            },
-            db
-          )
-          receivedStock.push({
-            item: {
-              ...receiveItem?.item,
-              vendorId,
-              totalSell: parseFloat(receiveItem?.totalSell) * 100,
-              id: stockId,
-            },
-            quantity: receiveItem?.quantity,
-          })
-        }
-      })
-    )
-    trx.commit()
-  } catch (err) {
-    // Roll back the transaction on error
-    trx.rollback()
-  }
+            })
+          }
+        })
+      )
+    })
+    .then((res) => res)
+    .catch((e) => Error(e.message))
 }
 
 export async function dbReturnStock(returnStock: any, db = connection) {
@@ -306,6 +302,7 @@ export async function dbChangeStockQuantity(
   id: any,
   db = connection
 ) {
+  console.log(change)
   const { stockItem, quantity, movement, clerkId, registerId, note } = change
   const { quantities = {} } = stockItem || {}
   const stockId = Number(id)
@@ -317,22 +314,14 @@ export async function dbChangeStockQuantity(
   if (movement === StockMovementTypes?.Adjustment) {
     newQuantity = parseInt(quantity)
     adjustment = newQuantity - originalQuantity
-  } else if (
-    movement === StockMovementTypes?.Discarded ||
-    movement === StockMovementTypes?.Lost ||
-    movement === StockMovementTypes?.Returned
-  ) {
-    newQuantity -= adjustment
   } else {
+    adjustment = getStockMovementQuantityByAct(quantity, movement)
     newQuantity += adjustment
   }
   return dbCreateStockMovement(
     {
       stockId,
-      quantity:
-        movement === StockMovementTypes?.Adjustment
-          ? adjustment
-          : Number(quantity),
+      quantity: adjustment,
       clerkId,
       registerId,
       act: movement,

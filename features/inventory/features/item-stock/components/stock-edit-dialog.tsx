@@ -59,6 +59,7 @@ export default function StockEditDialog() {
       title={'EDIT ITEM'}
       buttons={buttons}
       loading={isStockItemLoading}
+      width="max-w-screen-md"
     >
       <div>
         <div className="flex justify-start w-full">
