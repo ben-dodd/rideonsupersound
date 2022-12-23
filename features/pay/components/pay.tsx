@@ -12,6 +12,7 @@ import { useSaleProperties } from 'lib/hooks'
 export default function Pay() {
   const { clerk } = useClerk()
   const { cart, openView, setCartSale, setCustomer } = useAppStore()
+  const { sale = {} } = cart || {}
   const { totalRemaining } = useSaleProperties(cart)
   const { customers } = useCustomers()
   return (
@@ -42,14 +43,14 @@ export default function Pay() {
             : `$${(totalRemaining || 0)?.toFixed(2)}`}
         </div>
       </div>
-      {cart?.state !== SaleStateTypes.Completed && totalRemaining === 0 && (
+      {sale?.state !== SaleStateTypes.Completed && totalRemaining === 0 && (
         <div className="font-sm">Click complete sale to finish.</div>
       )}
       <div className="grid grid-cols-2 gap-2 mt-4">
         <button
           className="square-button"
           onClick={() => {
-            saveSystemLog('CASH PAYMENT clicked.', clerk?.id)
+            // saveSystemLog('CASH PAYMENT clicked.', clerk?.id)
             openView(ViewProps.cashPaymentDialog)
           }}
           disabled={totalRemaining === 0}
@@ -59,7 +60,7 @@ export default function Pay() {
         <button
           className="square-button"
           onClick={() => {
-            saveSystemLog('CARD PAYMENT clicked.', clerk?.id)
+            // saveSystemLog('CARD PAYMENT clicked.', clerk?.id)
             openView(ViewProps.cardPaymentDialog)
           }}
           disabled={totalRemaining === 0}
@@ -69,7 +70,7 @@ export default function Pay() {
         <button
           className="square-button"
           onClick={() => {
-            saveSystemLog('ACCT PAYMENT clicked.', clerk?.id)
+            // saveSystemLog('ACCT PAYMENT clicked.', clerk?.id)
             openView(ViewProps.acctPaymentDialog)
           }}
           disabled={totalRemaining === 0}
@@ -79,7 +80,7 @@ export default function Pay() {
         <button
           className="square-button"
           onClick={() => {
-            saveSystemLog('GIFT PAYMENT clicked.', clerk?.id)
+            // saveSystemLog('GIFT PAYMENT clicked.', clerk?.id)
             openView(ViewProps.giftPaymentDialog)
           }}
           disabled={totalRemaining === 0}
@@ -89,12 +90,12 @@ export default function Pay() {
       </div>
       <div
         className={`${
-          cart?.state === SaleStateTypes.Completed ? 'hidden' : ''
+          sale?.state === SaleStateTypes.Completed ? 'hidden' : ''
         }`}
       >
-        {cart?.state === SaleStateTypes.Layby ? (
+        {sale?.state === SaleStateTypes.Layby ? (
           <div className="mt-2">
-            {cart?.customerId ? (
+            {sale?.customerId ? (
               <div>
                 <div className="font-bold">Customer</div>
                 <div>
@@ -117,18 +118,18 @@ export default function Pay() {
               value={cart?.customerId}
               label={
                 customers?.find(
-                  (c: CustomerObject) => c?.id === cart?.customerId
+                  (c: CustomerObject) => c?.id === sale?.customerId
                 )?.name || ''
               }
               onChange={(customerObject: any) => {
-                saveSystemLog('SALE SCREEN customer selected.', clerk?.id)
+                // saveSystemLog('SALE SCREEN customer selected.', clerk?.id)
                 setCartSale({ customerId: parseInt(customerObject?.value) })
               }}
               onCreateOption={(inputValue: string) => {
-                saveSystemLog(
-                  'SALE SCREEN new customer screen opened.',
-                  clerk?.id
-                )
+                // saveSystemLog(
+                //   'SALE SCREEN new customer screen opened.',
+                //   clerk?.id
+                // )
                 setCustomer({ name: inputValue })
                 openView(ViewProps.createCustomer)
               }}
@@ -141,13 +142,13 @@ export default function Pay() {
         )}
         <div className="flex mt-2">
           <input
-            disabled={!cart?.customerId}
+            disabled={!sale?.customerId}
             className="cursor-pointer"
             type="checkbox"
-            checked={cart?.isMailOrder}
+            checked={sale?.isMailOrder}
             onChange={() => {
-              saveSystemLog('SALE SCREEN - IS MAIL ORDER clicked.', clerk?.id)
-              setCartSale({ isMailOrder: !cart?.isMailOrder })
+              // saveSystemLog('SALE SCREEN - IS MAIL ORDER clicked.', clerk?.id)
+              setCartSale({ isMailOrder: !sale?.isMailOrder })
             }}
           />
           <div className="ml-2">Mail order</div>
@@ -158,16 +159,16 @@ export default function Pay() {
               inputLabel="Postage Fee"
               startAdornment="$"
               inputType="number"
-              valueNum={cart?.postage}
+              valueNum={sale?.postage}
               onChange={(e: any) => setCartSale({ postage: e.target.value })}
             />
             <TextField
               inputLabel="Postal Address"
               multiline
               value={
-                cart?.postalAddress ||
+                sale?.postalAddress ||
                 customers?.find(
-                  (c: CustomerObject) => c?.id === cart?.customerId
+                  (c: CustomerObject) => c?.id === sale?.customerId
                 )?.postalAddress ||
                 ''
               }
@@ -183,7 +184,7 @@ export default function Pay() {
       <TextField
         inputLabel="Note"
         multiline
-        value={cart?.note}
+        value={sale?.note}
         onChange={(e: any) => setCartSale({ note: e.target.value })}
       />
       {cart?.id && (

@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
+import { AnyAaaaRecord } from 'dns'
 import { useClerks } from 'lib/api/clerk'
 import { useCustomers } from 'lib/api/customer'
 import { useStockList } from 'lib/api/stock'
@@ -11,17 +12,16 @@ import {
   SaleStateTypes,
 } from 'lib/types'
 import { convertDegToCardinal, convertMPStoKPH } from 'lib/utils'
-
-export default async function SaleDetails({ sale }: { sale: SaleObject }) {
+// TODO need to fix cart/sale types
+export default async function SaleDetails({ cart }: { cart: any }) {
   dayjs.extend(utc)
   // SWR
   const { clerks } = useClerks()
   const { customers } = useCustomers()
-  const { inventory } = useStockList()
+  const { sale = {} } = cart || {}
 
   // State
   const { totalRemaining } = useSaleProperties(sale)
-  console.log(totalRemaining)
 
   // Constants
   const weather: OpenWeatherObject = jsonDecode(sale?.weather)

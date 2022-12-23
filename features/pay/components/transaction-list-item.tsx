@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
 import { useGiftCards } from 'lib/api/stock'
+import { useVendorFromVendorPayment } from 'lib/api/vendor'
 import {
   GiftCardObject,
   PaymentMethodTypes,
