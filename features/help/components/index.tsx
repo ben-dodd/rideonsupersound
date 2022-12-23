@@ -16,6 +16,7 @@ export default function HelpDialog() {
   const { view, closeView } = useAppStore()
   const router = useRouter()
   const page = router.pathname
+  console.log(helps)
 
   // State
   const [search, setSearch] = useState('')
