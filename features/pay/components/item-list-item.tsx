@@ -3,7 +3,7 @@ import {
   getItemDisplayName,
   getItemSku,
 } from 'features/inventory/features/display-inventory/lib/functions'
-import { useStockList } from 'lib/api/stock'
+import { useStockItem, useStockList } from 'lib/api/stock'
 import { SaleItemObject, StockObject } from 'lib/types'
 import { MouseEventHandler } from 'react'
 import { writeCartItemPriceBreakdown } from '../../sale/features/sell/lib/functions'
@@ -21,29 +21,26 @@ export default function ItemListItem({
   selected,
   onClick,
 }: SellListItemProps) {
-  // SWR
-  const { inventory } = useStockList()
-  const item = inventory?.filter(
-    (i: StockObject) => i.id === saleItem?.itemId
-  )?.[0]
+  const { stockItem } = useStockItem(`${saleItem?.itemId}`)
+  const { item = {}, price = {} } = stockItem || {}
 
-  // Functions
+  // TODO make image + sku a reusable component
 
   return (
     <div
-      className={`flex w-full relative pt mb-2${
+      className={`flex w-full relative pt border-b mb-2${
         saleItem?.isRefunded ? ' opacity-50' : ''
       }${onClick ? ' cursor-pointer' : ''}${selected ? ' bg-red-100' : ''}`}
       onClick={onClick || null}
     >
       <div className="w-20">
-        <div className="w-20 h-20 relative">
+        <div className="w-20 h-20 aspect-ratio-square relative">
           <img
-            className="object-cover absolute"
+            className="object-cover w-full h-full absolute"
             src={getImageSrc(item)}
             alt={item?.title || 'Inventory image'}
           />
-          {!item?.is_gift_card && !item?.is_misc_item && (
+          {!item?.isGiftCard && !item?.isMiscItem && (
             <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white text-sm flex justify-center items-center">
               {getItemSku(item)}
             </div>
@@ -64,7 +61,7 @@ export default function ItemListItem({
             saleItem?.isRefunded ? ' line-through' : ''
           }`}
         >
-          <div>{writeCartItemPriceBreakdown(saleItem, item)}</div>
+          <div>{writeCartItemPriceBreakdown(saleItem, item, price)}</div>
         </div>
       </div>
     </div>

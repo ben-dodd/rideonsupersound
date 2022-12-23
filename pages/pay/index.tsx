@@ -31,8 +31,9 @@ import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 export default function PayScreen() {
   const router = useRouter()
   useEffect(() => {
-    if (router.asPath === router.pathname) router.replace('sell')
-    // if (!cart?.sale?.id && cart?.items?.length === 0) router.replace('sell')
+    // if (router.asPath === router.pathname) router.replace('sell')
+    // TODO cart needs type fixed
+    if (!cart?.sale?.id && cart?.items?.length === 0) router.replace('sell')
   }, [])
   const { cart, view, resetCart, setAlert } = useAppStore()
   console.log(cart)
