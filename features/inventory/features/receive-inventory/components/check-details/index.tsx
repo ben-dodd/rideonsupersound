@@ -1,7 +1,7 @@
 import Tabs from 'components/navigation/tabs'
 import DiscogsPanel from 'features/inventory/features/api-discogs/components'
 import GoogleBooksPanel from 'features/inventory/features/api-google-books/components'
-import InventoryItemForm from 'features/inventory/features/item-stock/components/stock-item-form'
+import InventoryItemForm from 'features/inventory/features/item-stock/components/stock-edit-dialog'
 import { useAppStore } from 'lib/store'
 import { useState } from 'react'
 import Items from './items'

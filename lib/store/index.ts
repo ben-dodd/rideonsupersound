@@ -3,11 +3,7 @@ import dayjs from 'dayjs'
 import produce from 'immer'
 import { StoreState } from './types'
 import { v4 as uuid } from 'uuid'
-import {
-  getGeolocation,
-  getWeather,
-  useSetWeatherToCart,
-} from 'lib/api/external'
+import { useSetWeatherToCart } from 'lib/api/external'
 
 type WithSelectors<S> = S extends { getState: () => infer T }
   ? S & { use: { [K in keyof T]: () => T[K] } }

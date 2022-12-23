@@ -2,16 +2,6 @@ import { StockObject } from 'lib/types'
 import dayjs from 'dayjs'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
-import {
-  getAdjustmentQuantity,
-  getDiscardedLostQuantity,
-  getInStockQuantity,
-  getLaybyHoldQuantity,
-  getReceivedQuantity,
-  getRefundedQuantity,
-  getReturnedQuantity,
-  getSoldQuantity,
-} from 'features/inventory/lib/functions'
 import { useRouter } from 'next/router'
 import { useStockItem } from 'lib/api/stock'
 
@@ -21,7 +11,6 @@ export default function StockDetails() {
   const { stockItem, isStockItemLoading } = useStockItem(`${id}`)
   const { quantities = {}, stockMovements = [] } = stockItem || {}
   const { openView } = useAppStore()
-  console.log(quantities)
 
   return (
     <>

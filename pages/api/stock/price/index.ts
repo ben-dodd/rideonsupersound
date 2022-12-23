@@ -7,6 +7,7 @@ const apiRoute = async (
   req: NextAuthenticatedApiRequest,
   res: NextApiResponse
 ) => {
+  console.log(req.body)
   if (req.method === 'POST')
     try {
       return dbCreateStockPrice(req.body).then((data) =>

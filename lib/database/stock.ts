@@ -68,6 +68,16 @@ export function dbGetStockItem(id, simple = false, db = connection) {
           (acc, stockMovement) => acc + stockMovement.quantity,
           0
         ),
+        layby: getQuantities(
+          [StockMovementTypes.Layby, StockMovementTypes.Unlayby],
+          stockMovements,
+          true
+        ),
+        hold: getQuantities(
+          [StockMovementTypes.Hold, StockMovementTypes.Unhold],
+          stockMovements,
+          true
+        ),
       }
       const latestPrice = stockPrices[0]
       const totalSell = latestPrice?.total_sell
@@ -76,8 +86,7 @@ export function dbGetStockItem(id, simple = false, db = connection) {
         ? item?.miscItemAmount
         : totalSell - vendorCut
       const price = { totalSell, vendorCut, storeCut }
-      const itemReturn = { item, quantities, price }
-      if (simple) return itemReturn
+      if (simple) return { item, quantities, price }
       // Add other quantity params as needed
       quantities.received = getQuantities(
         [StockMovementTypes.Received],
@@ -93,25 +102,18 @@ export function dbGetStockItem(id, simple = false, db = connection) {
         stockMovements,
         true
       )
-      quantities.laybyHold = getQuantities(
-        [
-          StockMovementTypes.Layby,
-          StockMovementTypes.Unlayby,
-          StockMovementTypes.Hold,
-          StockMovementTypes.Unhold,
-        ],
+      quantities.laybyHold = quantities.layby + quantities.hold
+      quantities.discarded = getQuantities(
+        [StockMovementTypes.Discarded],
         stockMovements,
         true
       )
-      quantities.discardedLost = getQuantities(
-        [
-          StockMovementTypes.Discarded,
-          StockMovementTypes.Lost,
-          StockMovementTypes.Found,
-        ],
+      quantities.lost = getQuantities(
+        [StockMovementTypes.Lost, StockMovementTypes.Found],
         stockMovements,
         true
       )
+      quantities.discardedLost = quantities.discarded + quantities.lost
       quantities.refunded = getQuantities(
         [StockMovementTypes.Unsold],
         stockMovements
@@ -159,12 +161,19 @@ export function dbCreateStockItem(stockItem, db = connection) {
   return db('stock').insert(js2mysql(stockItem))
 }
 
-export function dbUpdateStockItem(id, update, db = connection) {
+export function dbUpdateStockItem(update, id, db = connection) {
   return db('stock').where({ id }).update(js2mysql(update))
 }
 
 export function dbCreateStockMovement(stockMovement, db = connection) {
-  return db('stock_movement').insert(js2mysql(stockMovement))
+  console.log(stockMovement)
+  return db('stock_movement')
+    .insert(js2mysql(stockMovement))
+    .then((res) => {
+      console.log(res)
+      return res.data
+    })
+    .catch((e) => Error(e.message))
 }
 
 export function dbCreateStockPrice(stockPrice, db = connection) {
@@ -185,6 +194,7 @@ export function dbDeleteStockItem(id, db = connection) {
 
 export async function dbReceiveStock(receiveStock: any, db = connection) {
   // return received stock?
+  // TODO fix this transaction
   const trx = await db.transaction()
   try {
     const { clerkId, registerId, vendorId } = receiveStock
@@ -253,40 +263,42 @@ export async function dbReceiveStock(receiveStock: any, db = connection) {
 }
 
 export async function dbReturnStock(returnStock: any, db = connection) {
-  const trx = await db.transaction()
-  try {
-    const { clerkId, registerId, vendorId, items, note } = returnStock
-    if (vendorId && items?.length > 0) {
-      items
-        .filter((returnItem: any) => parseInt(`${returnItem?.quantity}`) > 0)
-        .forEach(async (returnItem: any) => {
-          await dbGetStockItem(returnItem?.id).then((stockItem) =>
-            dbUpdateStockItem(returnItem?.id, {
-              quantityReturn:
-                (stockItem?.quantityReturned || 0) +
-                parseInt(returnItem?.quantity),
-              quantity:
-                (stockItem?.quantity || 0) - parseInt(returnItem?.quantity),
-            })
-          )
-          await dbCreateStockMovement(
-            {
-              itemId: parseInt(returnItem?.id),
-              quantity: `${returnItem?.quantity}`,
-              clerkId,
-              registerId,
-              act: StockMovementTypes?.Returned,
-              note: note || 'Stock returned to vendor.',
-            },
-            db
-          )
-        })
-    }
-    trx.commit()
-  } catch (err) {
-    // Roll back the transaction on error
-    trx.rollback()
-  }
+  return db
+    .transaction(async (trx) => {
+      const { clerkId, registerId, vendorId, items, note } = returnStock
+      if (vendorId && items?.length > 0) {
+        items
+          .filter((returnItem: any) => parseInt(`${returnItem?.quantity}`) > 0)
+          .forEach(async (returnItem: any) => {
+            await dbGetStockItem(returnItem?.id, trx).then((stockItem) =>
+              dbUpdateStockItem(
+                returnItem?.id,
+                {
+                  quantityReturn:
+                    (stockItem?.quantityReturned || 0) +
+                    parseInt(returnItem?.quantity),
+                  quantity:
+                    (stockItem?.quantity || 0) - parseInt(returnItem?.quantity),
+                },
+                trx
+              )
+            )
+            await dbCreateStockMovement(
+              {
+                itemId: parseInt(returnItem?.id),
+                quantity: `${returnItem?.quantity}`,
+                clerkId,
+                registerId,
+                act: StockMovementTypes?.Returned,
+                note: note || 'Stock returned to vendor.',
+              },
+              trx
+            )
+          })
+      }
+    })
+    .then((id) => id)
+    .catch((e) => Error(e.message))
 }
 
 export async function dbChangeStockQuantity(
@@ -294,45 +306,45 @@ export async function dbChangeStockQuantity(
   id: any,
   db = connection
 ) {
-  const trx = await db.transaction()
-  try {
-    const { stockItem, quantity, movement, clerkId, registerId, note } = change
-    const itemId = Number(id)
-    // todo Change stockItem quantity so it gets direct from database
-    let originalQuantity = stockItem?.quantity
-    let newQuantity = stockItem?.quantity
-    let adjustment = parseInt(quantity)
-    if (movement === StockMovementTypes?.Adjustment) {
-      newQuantity = parseInt(quantity)
-      adjustment = newQuantity - originalQuantity
-    } else if (
-      movement === StockMovementTypes?.Discarded ||
-      movement === StockMovementTypes?.Lost ||
-      movement === StockMovementTypes?.Returned
-    ) {
-      newQuantity -= adjustment
-    } else {
-      newQuantity += adjustment
-    }
-    await dbCreateStockMovement(
-      {
-        itemId,
-        quantity:
-          movement === StockMovementTypes?.Adjustment
-            ? adjustment
-            : Number(quantity),
-        clerkId,
-        registerId,
-        act: movement,
-        note,
-      },
-      db
-    )
-    trx.commit()
-  } catch (err) {
-    // Roll back the transaction on error
-    trx.rollback()
+  const { stockItem, quantity, movement, clerkId, registerId, note } = change
+  const { quantities = {} } = stockItem || {}
+  const stockId = Number(id)
+  // TODO Change stockItem quantity so it gets direct from database
+  // TODO make quantities a type
+  let originalQuantity = quantities?.inStock
+  let newQuantity = quantities?.inStock
+  let adjustment = parseInt(quantity)
+  if (movement === StockMovementTypes?.Adjustment) {
+    newQuantity = parseInt(quantity)
+    adjustment = newQuantity - originalQuantity
+  } else if (
+    movement === StockMovementTypes?.Discarded ||
+    movement === StockMovementTypes?.Lost ||
+    movement === StockMovementTypes?.Returned
+  ) {
+    newQuantity -= adjustment
+  } else {
+    newQuantity += adjustment
   }
+  return dbCreateStockMovement(
+    {
+      stockId,
+      quantity:
+        movement === StockMovementTypes?.Adjustment
+          ? adjustment
+          : Number(quantity),
+      clerkId,
+      registerId,
+      act: movement,
+      note,
+    },
+    db
+  )
+    .then((res) => {
+      console.log(res)
+      res.data
+    })
+    .catch((e) => Error(e.message))
 }
 
 export function dbGetWebStock(condition, db = connection) {

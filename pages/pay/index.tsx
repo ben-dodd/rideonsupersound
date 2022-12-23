@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ModalButton, SaleStateTypes } from 'lib/types'
 
 // Components
@@ -29,9 +29,12 @@ import { useSaleProperties } from 'lib/hooks'
 
 export default function PayScreen() {
   const router = useRouter()
+  useEffect(() => {
+    if (router.asPath === router.pathname) router.replace('sell')
+    // if (!cart?.sale?.id && cart?.items?.length === 0) router.replace('sell')
+  }, [])
   const { cart, view, resetCart, setAlert } = useAppStore()
   console.log(cart)
-  if (!cart?.sale?.id && cart?.items?.length === 0) router.push('sell')
   const { clerk } = useClerk()
   const { customers } = useCustomers()
   // const { isSaleTransactionsLoading } = useSaleTransactionsForSale(cart?.id)
@@ -243,3 +246,16 @@ export default function PayScreen() {
 }
 
 PayScreen.getLayout = (page) => <Layout>{page}</Layout>
+
+// PayScreen.getInitialProps = async (context) => {
+//   console.log(context.res ? 'RES' : 'NO RES')
+//   console.log(context.req ? 'REQ' : 'NO REQ')
+//   // if (context.res) {
+//   //   context.res.writeHead(302, {
+//   //     Location: '/sell',
+//   //   })
+//   //   context.res.end()
+//   // }
+
+//   return {}
+// }

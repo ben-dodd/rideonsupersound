@@ -15,6 +15,7 @@ export interface StoreState {
     closeRegisterScreen?: boolean
     receiveStockScreen?: boolean
     returnStockScreen?: boolean
+    stockEditDialog?: boolean
     changePriceDialog?: boolean
     changeStockQuantityDialog?: boolean
     helpDialog?: boolean
@@ -100,6 +101,7 @@ export enum ViewProps {
   closeRegisterScreen = 'closeRegisterScreen',
   receiveStockScreen = 'receiveStockScreen',
   returnStockScreen = 'returnStockScreen',
+  stockEditDialog = 'stockEditDialog',
   changePriceDialog = 'changePriceDialog',
   changeStockQuantityDialog = 'changeStockQuantityDialog',
   helpDialog = 'helpDialog',

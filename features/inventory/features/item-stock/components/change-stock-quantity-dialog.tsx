@@ -9,12 +9,14 @@ import { ModalButton, StockMovementTypes } from 'lib/types'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 import Select from 'react-select'
+import { useSWRConfig } from 'swr'
 
 export default function ChangeStockQuantityDialog() {
   const { clerk } = useClerk()
   const { view, closeView, setAlert } = useAppStore()
   const router = useRouter()
   const id = router.query.id
+  const { mutate } = useSWRConfig()
 
   const { stockItem, isStockItemLoading } = useStockItem(`${id}`)
   const { registerId } = useCurrentRegisterId()
@@ -35,7 +37,7 @@ export default function ChangeStockQuantityDialog() {
       loading: submitting,
       onClick: async () => {
         setSubmitting(true)
-        changeStockQuantity(
+        await changeStockQuantity(
           {
             stockItem,
             quantity,
@@ -45,22 +47,22 @@ export default function ChangeStockQuantityDialog() {
             note,
           },
           id
-        ).then((res) => {
-          setAlert({
-            open: true,
-            type: 'success',
-            message: `${
-              movement === StockMovementTypes?.Adjustment
-                ? 'STOCK QUANTITY ADJUSTED'
-                : `STOCK MARKED AS ${movement?.toUpperCase()}`
-            }`,
-          })
-          closeView(ViewProps.changeStockQuantityDialog)
-          setSubmitting(false)
-          setQuantity('')
-          setNote('')
-          setMovement(StockMovementTypes?.Received)
+        )
+        mutate(`stock/${id}`)
+        setAlert({
+          open: true,
+          type: 'success',
+          message: `${
+            movement === StockMovementTypes?.Adjustment
+              ? 'STOCK QUANTITY ADJUSTED'
+              : `STOCK MARKED AS ${movement?.toUpperCase()}`
+          }`,
         })
+        closeView(ViewProps.changeStockQuantityDialog)
+        setSubmitting(false)
+        setQuantity('')
+        setNote('')
+        setMovement(StockMovementTypes?.Received)
       },
       text: 'CHANGE QUANTITY',
     },

@@ -215,6 +215,8 @@ export async function dbDeleteSale(
   db = connection
 ) {
   // Start the transaction
+  // TODO fix trx
+
   const trx = await db.transaction()
   try {
     await sale?.items?.forEach((saleItem) => {

@@ -21,9 +21,8 @@ const apiRoute = async (
     }
   } else if (req.method === 'PATCH') {
     const { id } = req.query
-    const { update } = req.body
     try {
-      return dbUpdateStockItem(update, id).then((data) =>
+      return dbUpdateStockItem(req.body, id).then((data) =>
         res.status(200).json(data)
       )
     } catch (error) {

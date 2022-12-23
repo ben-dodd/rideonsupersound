@@ -1,4 +1,4 @@
-import InventoryItemForm from 'features/inventory/features/item-stock/components/stock-item-form'
+import InventoryItemForm from 'features/inventory/features/item-stock/components/stock-edit-dialog'
 import { StockObject } from 'lib/types'
 import { ChevronRight } from '@mui/icons-material'
 import { useState } from 'react'

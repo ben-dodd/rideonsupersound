@@ -10,9 +10,6 @@ export default function PriceDetails() {
   const { stockItem } = useStockItem(`${id}`)
   const { item = {}, price = {}, stockPrices = [] } = stockItem || {}
   const { openView } = useAppStore()
-  console.log(stockItem)
-  console.log(item)
-  console.log(price)
 
   return (
     <>
