@@ -1,3 +1,4 @@
+import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import Layout from 'components/layout'
 import CreateCustomerSidebar from 'features/customer/components/sidebar'
 import HoldTable from 'features/sale/features/display-holds/components/hold-table'
@@ -15,3 +16,5 @@ export default function HoldsPage() {
 }
 
 HoldsPage.getLayout = (page) => <Layout>{page}</Layout>
+
+export const getServerSideProps = withPageAuthRequired()

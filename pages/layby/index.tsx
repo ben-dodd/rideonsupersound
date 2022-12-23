@@ -1,3 +1,4 @@
+import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import Layout from 'components/layout'
 import LaybyTable from '../../features/sale/features/display-laybys/components/layby-table'
 
@@ -14,3 +15,5 @@ export default function LaybyPage() {
 }
 
 LaybyPage.getLayout = (page) => <Layout>{page}</Layout>
+
+export const getServerSideProps = withPageAuthRequired()

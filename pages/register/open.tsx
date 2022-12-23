@@ -13,6 +13,8 @@ import {
 } from 'features/sale/features/register/lib/functions'
 import CashMap from 'features/sale/features/register/components/cash-map'
 import { useCurrentRegister } from 'lib/api/register'
+import Layout from 'components/layout'
+import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 
 export default function OpenRegisterScreen() {
   const { clerk } = useClerk()
@@ -137,3 +139,7 @@ export default function OpenRegisterScreen() {
     </div>
   )
 }
+
+OpenRegisterScreen.getLayout = (page) => <Layout>{page}</Layout>
+
+export const getServerSideProps = withPageAuthRequired()

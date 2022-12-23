@@ -1,3 +1,4 @@
+import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import Layout from 'components/layout'
 import InventoryList from 'features/inventory/features/display-inventory/components/inventory-list'
 import InventoryTable from 'features/inventory/features/display-inventory/components/table/inventory-table'
@@ -20,3 +21,5 @@ export default function InventoryPage() {
 }
 
 InventoryPage.getLayout = (page) => <Layout>{page}</Layout>
+
+export const getServerSideProps = withPageAuthRequired()

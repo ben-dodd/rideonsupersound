@@ -1,3 +1,5 @@
+import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+import Layout from 'components/layout'
 import ChangePriceDialog from 'features/inventory/features/item-stock/components/change-price-dialog'
 import ChangeStockQuantityDialog from 'features/inventory/features/item-stock/components/change-stock-quantity-dialog'
 import VendorTable from 'features/vendor/features/display-vendors/components/vendor-table'
@@ -15,6 +17,10 @@ export default function VendorPage() {
     </div>
   )
 }
+
+VendorPage.getLayout = (page) => <Layout>{page}</Layout>
+
+export const getServerSideProps = withPageAuthRequired()
 
 // const handlers = useSwipeable({
 //   onSwipedRight: () =>

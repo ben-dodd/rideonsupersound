@@ -17,6 +17,7 @@ import StockEditDialog from 'features/inventory/features/item-stock/components/s
 import { getItemSkuDisplayName } from 'features/inventory/features/display-inventory/lib/functions'
 import { ViewProps } from 'lib/store/types'
 import DiscogsPanel from 'features/inventory/features/api-discogs/components'
+import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 
 export default function InventoryItemScreen() {
   const router = useRouter()
@@ -151,3 +152,5 @@ export default function InventoryItemScreen() {
 }
 
 InventoryItemScreen.getLayout = (page) => <Layout>{page}</Layout>
+
+export const getServerSideProps = withPageAuthRequired()

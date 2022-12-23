@@ -23,6 +23,7 @@ import Cash from 'features/pay/components/payment/cash'
 import ReturnItemDialog from 'features/pay/components/return-item-dialog'
 import { useCustomers } from 'lib/api/customer'
 import { useSaleProperties } from 'lib/hooks'
+import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 
 // TODO add returns to sale items
 // TODO refund dialog like PAY, refund with store credit, cash or card
@@ -259,3 +260,5 @@ PayScreen.getLayout = (page) => <Layout>{page}</Layout>
 
 //   return {}
 // }
+
+export const getServerSideProps = withPageAuthRequired()

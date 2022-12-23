@@ -14,6 +14,8 @@ import {
 } from 'features/sale/features/register/lib/functions'
 import CashMap from 'features/sale/features/register/components/cash-map'
 import CashItem from 'features/sale/features/register/components/cash-item'
+import Layout from 'components/layout'
+import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 
 export default function CloseRegisterScreen() {
   // SWR
@@ -275,3 +277,7 @@ export default function CloseRegisterScreen() {
     </div>
   )
 }
+
+CloseRegisterScreen.getLayout = (page) => <Layout>{page}</Layout>
+
+export const getServerSideProps = withPageAuthRequired()

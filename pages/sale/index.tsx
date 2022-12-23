@@ -1,3 +1,5 @@
+import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+import Layout from 'components/layout'
 import SaleList from 'features/sale/features/display-sales/components/sale-list'
 import SaleTable from 'features/sale/features/display-sales/components/sale-table'
 import { useAppStore } from 'lib/store'
@@ -13,3 +15,7 @@ export default function SalesPage() {
     </div>
   )
 }
+
+SalesPage.getLayout = (page) => <Layout>{page}</Layout>
+
+export const getServerSideProps = withPageAuthRequired()

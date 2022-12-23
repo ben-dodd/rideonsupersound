@@ -4,6 +4,7 @@ import TaskDialog from '../../features/job/components/job-dialog'
 import JobView from '../../features/job/components/job-view'
 import Layout from 'components/layout'
 import RestockTaskView from 'features/job/components/restock-task-view'
+import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 
 export default function JobsPage() {
   const [tab, setTab] = useState(0)
@@ -37,3 +38,5 @@ export default function JobsPage() {
 }
 
 JobsPage.getLayout = (page) => <Layout>{page}</Layout>
+
+export const getServerSideProps = withPageAuthRequired()

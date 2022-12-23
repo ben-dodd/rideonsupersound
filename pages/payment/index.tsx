@@ -1,3 +1,4 @@
+import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import Layout from 'components/layout'
 import PaymentTable from 'features/payment/features/display-payments/components/payment-table'
 import BatchPaymentScreen from 'features/payment/features/payment/components/batch-payment-screen'
@@ -18,3 +19,5 @@ export default function PaymentsPage() {
 }
 
 PaymentsPage.getLayout = (page) => <Layout>{page}</Layout>
+
+export const getServerSideProps = withPageAuthRequired()

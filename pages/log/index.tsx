@@ -1,3 +1,4 @@
+import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import Layout from 'components/layout'
 import Tabs from 'components/navigation/tabs'
 import { LogView } from 'features/log/components/log-view'
@@ -30,3 +31,5 @@ export default function LogPage() {
 }
 
 LogPage.getLayout = (page) => <Layout>{page}</Layout>
+
+export const getServerSideProps = withPageAuthRequired()

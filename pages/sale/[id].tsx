@@ -15,6 +15,8 @@ import { useCurrentRegisterId } from 'lib/api/register'
 import SaleSummary from 'features/pay/components/sale-summary'
 import SaleDetails from 'features/pay/components/sale-details'
 import { useSaleProperties } from 'lib/hooks'
+import Layout from 'components/layout'
+import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 
 // TODO add returns to sale items
 // TODO refund dialog like PAY, refund with store credit, cash or card
@@ -157,3 +159,7 @@ export default function SaleItemScreen() {
     </>
   )
 }
+
+SaleItemScreen.getLayout = (page) => <Layout>{page}</Layout>
+
+export const getServerSideProps = withPageAuthRequired()

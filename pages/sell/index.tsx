@@ -15,6 +15,7 @@ import { useAppStore } from 'lib/store'
 import { useCurrentRegister } from 'lib/api/register'
 import { useRouter } from 'next/router'
 import Layout from 'components/layout'
+import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 
 export default function SellPage() {
   const { currentRegister, isCurrentRegisterLoading } = useCurrentRegister()
@@ -58,3 +59,5 @@ export default function SellPage() {
 }
 
 SellPage.getLayout = (page) => <Layout>{page}</Layout>
+
+export const getServerSideProps = withPageAuthRequired()
