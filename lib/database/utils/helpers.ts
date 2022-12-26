@@ -1,8 +1,10 @@
 import { snakeCase, transform, camelCase, isObject, isArray } from 'lodash'
 
-export const js2mysql = (obj: any) => convertKeyCase(obj, 'snakeCase')
+export const js2mysql = (obj: any) =>
+  typeof obj === 'object' ? convertKeyCase(obj, 'snakeCase') : obj
 
-export const mysql2js = (obj: any) => convertKeyCase(obj, 'camelCase')
+export const mysql2js = (obj: any) =>
+  typeof obj === 'object' ? convertKeyCase(obj, 'camelCase') : obj
 
 export const convertKeyCase = (obj: any, keyCase: 'camelCase' | 'snakeCase') =>
   transform(obj, (acc, value, key, target) => {

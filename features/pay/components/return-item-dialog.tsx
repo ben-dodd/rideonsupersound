@@ -11,7 +11,7 @@ import { useSaleItemsForSale } from 'lib/api/sale'
 export default function ReturnItemsDialog({ sale }) {
   const { cart, view, setCart, setCartSale, closeView, setAlert } =
     useAppStore()
-  const { items, mutateSaleItems } = useSaleItemsForSale(sale?.id)
+  const { items = [] } = cart || {}
   const [refundItems, setRefundItems] = useState([])
   const [notes, setNotes] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -69,7 +69,7 @@ export default function ReturnItemsDialog({ sale }) {
           ?.filter(
             (item: SaleItemObject) => !item?.isDeleted && !item?.isRefunded
           )
-          ?.map((item: SaleItemObject) => (
+          ?.map((item: SaleItemObject, i: number) => (
             <div className="flex" key={item?.id}>
               <ItemListItem
                 saleItem={item}

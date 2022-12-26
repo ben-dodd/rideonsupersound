@@ -4,6 +4,8 @@ import ItemListItem from './item-list-item'
 import TransactionListItem from './transaction-list-item'
 import { useSaleProperties } from 'lib/hooks'
 
+// TODO When sale is completed, make an obvious popup
+
 export default function SaleSummary({ cart }) {
   const {
     totalRemaining,
@@ -30,6 +32,7 @@ export default function SaleSummary({ cart }) {
       </div>
     )
   }
+  console.log(transactions)
 
   function TransactionItems() {
     return (
@@ -38,7 +41,7 @@ export default function SaleSummary({ cart }) {
           !transactions || (transactions?.length === 0 && ' hidden')
         }`}
       >
-        {transactions
+        {[...transactions]
           ?.sort(
             (transA: SaleTransactionObject, transB: SaleTransactionObject) => {
               const a = dayjs(transA?.date)

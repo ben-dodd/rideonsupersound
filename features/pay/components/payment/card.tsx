@@ -28,6 +28,7 @@ export default function Cash() {
   const [cardPayment, setCardPayment] = useState(
     `${Math.abs(totalRemaining).toFixed(2)}`
   )
+  console.log(registerId)
   useEffect(() => {
     setCardPayment(`${Math.abs(totalRemaining).toFixed(2)}`)
   }, [totalRemaining])
