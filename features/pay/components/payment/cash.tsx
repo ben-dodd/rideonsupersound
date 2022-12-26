@@ -17,6 +17,7 @@ import { ViewProps } from 'lib/store/types'
 import { useSaleProperties } from 'lib/hooks'
 import { useCurrentRegisterId } from 'lib/api/register'
 import { useCustomers } from 'lib/api/customer'
+import { getCashVars } from 'features/pay/lib/functions'
 
 export default function Cash() {
   dayjs.extend(UTC)
@@ -49,22 +50,19 @@ export default function Cash() {
       loading: submitting,
       onClick: () => {
         setSubmitting(true)
+        const { netAmount, cashFromCustomer, cashToCustomer } = getCashVars(
+          cashReceived,
+          totalRemaining,
+          isRefund
+        )
         let transaction: SaleTransactionObject = {
           date: dayjs.utc().format(),
           saleId: sale?.id,
           clerkId: clerk?.id,
           paymentMethod: PaymentMethodTypes.Cash,
-          amount: isRefund
-            ? parseFloat(cashReceived) * -100
-            : parseFloat(cashReceived) >= totalRemaining
-            ? totalRemaining * 100
-            : parseFloat(cashReceived) * 100,
-          cashReceived: parseFloat(cashReceived) * 100,
-          changeGiven: isRefund
-            ? null
-            : parseFloat(cashReceived) > totalRemaining
-            ? (parseFloat(cashReceived) - totalRemaining) * 100
-            : null,
+          amount: netAmount,
+          cashReceived: cashFromCustomer,
+          changeGiven: cashToCustomer,
           registerId,
           isRefund,
         }

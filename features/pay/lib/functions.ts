@@ -139,3 +139,19 @@ export async function useSaveSaleAndPark(
   logSaleParked(saleId, cart, customers, clerk)
   mutateInventory && mutateInventory()
 }
+
+export function getCashVars(cashReceived, totalRemaining, isRefund) {
+  return {
+    netAmount: isRefund
+      ? parseFloat(cashReceived) * -100
+      : parseFloat(cashReceived) >= totalRemaining
+      ? totalRemaining * 100
+      : parseFloat(cashReceived) * 100,
+    cashFromCustomer: isRefund ? null : parseFloat(cashReceived) * 100,
+    cashToCustomer: isRefund
+      ? parseFloat(cashReceived) * 100
+      : parseFloat(cashReceived) > totalRemaining
+      ? (parseFloat(cashReceived) - totalRemaining) * 100
+      : null,
+  }
+}
