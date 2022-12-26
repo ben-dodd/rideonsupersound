@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import UTC from 'dayjs/plugin/utc'
-import { useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   ModalButton,
   PaymentMethodTypes,
@@ -10,48 +10,36 @@ import {
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
 import { logSalePaymentAcct } from 'features/log/lib/functions'
-import { getVendorDetails } from 'features/vendor/features/item-vendor/lib/functions'
 import Select from 'react-select'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useCurrentRegisterId } from 'lib/api/register'
 import { useStockList } from 'lib/api/stock'
-import { useVendors } from 'lib/api/vendor'
+import { useVendor, useVendors } from 'lib/api/vendor'
 import { useSaleProperties } from 'lib/hooks'
 
 export default function Acct() {
   dayjs.extend(UTC)
   const { clerk } = useClerk()
   const { view, cart, closeView, setAlert, addCartTransaction } = useAppStore()
+  const { sale = {} } = cart || {}
   const [vendorWrapper, setVendorWrapper] = useState(null)
   const { registerId } = useCurrentRegisterId()
-  const { inventory } = useStockList()
   const { vendors } = useVendors()
-  const { sales } = useSalesJoined()
-  const { vendorPayments } = useVendorPayments()
 
   const { totalRemaining } = useSaleProperties(cart)
-
-  // State
+  const { vendor, isVendorLoading } = useVendor(vendorWrapper?.value?.id)
+  console.log(vendor)
   const isRefund = totalRemaining < 0
   const [acctPayment, setAcctPayment] = useState(
     `${Math.abs(totalRemaining)?.toFixed(2)}`
   )
+  useEffect(() => {
+    setAcctPayment(`${Math.abs(totalRemaining).toFixed(2)}`)
+  }, [totalRemaining])
   const [submitting, setSubmitting] = useState(false)
-
-  // Constants
-  const vendorVars = useMemo(
-    () =>
-      getVendorDetails(
-        inventory,
-        sales,
-        vendorPayments,
-        vendorWrapper?.value?.id,
-        cart
-      ),
-    [inventory, sales, vendorPayments, vendorWrapper?.value?.id]
-  )
+  // TODO NEXT TO DO , pay/components/payment
 
   const buttons: ModalButton[] = [
     {
@@ -68,7 +56,7 @@ export default function Acct() {
         setSubmitting(true)
         let transaction: SaleTransactionObject = {
           date: dayjs.utc().format(),
-          saleId: cart?.id,
+          saleId: sale?.id,
           clerkId: clerk?.id,
           paymentMethod: PaymentMethodTypes.Account,
           amount: isRefund
@@ -81,7 +69,6 @@ export default function Acct() {
         addCartTransaction(transaction)
         setSubmitting(false)
         closeView(ViewProps.acctPaymentDialog)
-        logSalePaymentAcct(acctPayment, vendorWrapper, isRefund, cart, clerk)
         setAlert({
           open: true,
           type: 'success',
@@ -138,7 +125,7 @@ export default function Acct() {
               {`${isRefund ? `Currently` : `Remaining`} in account: ${
                 false
                   ? `Loading...`
-                  : `$${(vendorVars?.totalOwing / 100)?.toFixed(2)}`
+                  : `$${(vendor?.totalOwing / 100)?.toFixed(2)}`
               }`}
             </div>
             <div className="text-center text-xl font-bold my-4">
@@ -152,7 +139,7 @@ export default function Acct() {
                 ? `${isRefund ? 'REFUND AMOUNT' : 'PAYMENT'} TOO HIGH`
                 : isRefund
                 ? 'ALL GOOD!'
-                : vendorVars?.totalOwing / 100 < parseFloat(acctPayment)
+                : vendor?.totalOwing / 100 < parseFloat(acctPayment)
                 ? `NOT ENOUGH IN ACCOUNT, VENDOR WILL OWE THE SHOP`
                 : parseFloat(acctPayment) < totalRemaining
                 ? `AMOUNT SHORT BY $${(

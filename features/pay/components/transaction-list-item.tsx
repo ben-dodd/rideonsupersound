@@ -8,9 +8,6 @@ import {
   SaleTransactionObject,
 } from 'lib/types'
 
-// Functions
-
-// Types
 type TransactionListItemProps = {
   transaction: SaleTransactionObject
   sale: SaleObject
@@ -21,8 +18,10 @@ export default function TransactionListItem({
 }: TransactionListItemProps) {
   // SWR
   const { giftCards } = useGiftCards()
-  const { vendor } = useVendorFromVendorPayment(transaction?.vendorPayment)
-
+  console.log(transaction)
+  const { vendor = {} } = useVendorFromVendorPayment(
+    transaction?.vendorPayment || 0
+  )
   const giftCard = giftCards?.find(
     (g: GiftCardObject) => g?.id === transaction?.giftCardId
   )
@@ -73,12 +72,10 @@ export default function TransactionListItem({
               ? transaction?.changeGiven
                 ? `CARD TAKEN, $${(transaction?.giftCardChange / 100)?.toFixed(
                     2
-                  )} CHANGE [${(giftCard?.gift_card_code || '').toUpperCase()}]`
-                : `CARD TAKEN [${(
-                    giftCard?.gift_card_code || ''
-                  ).toUpperCase()}]`
+                  )} CHANGE [${(giftCard?.giftCardCode || '').toUpperCase()}]`
+                : `CARD TAKEN [${(giftCard?.giftCardCode || '').toUpperCase()}]`
               : `[${(
-                  giftCard?.gift_card_code ||
+                  giftCard?.giftCardCode ||
                   transaction?.giftCardUpdate?.giftCardCode ||
                   ''
                 ).toUpperCase()}]`

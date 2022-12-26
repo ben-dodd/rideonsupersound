@@ -1,13 +1,12 @@
-import axios from 'axios'
 import { LogObject } from 'lib/types'
-import { useData } from './'
+import { axiosAuth, useData } from './'
 
 export function useLogs() {
   return useData(`log`, 'logs')
 }
 
 export async function createLog(log: LogObject) {
-  return axios
+  return axiosAuth
     .post(`/api/log`, log)
     .then((res) => res.data)
     .catch((e) => Error(e.message))

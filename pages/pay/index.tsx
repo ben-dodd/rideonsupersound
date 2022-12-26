@@ -1,15 +1,9 @@
 import { useEffect, useState } from 'react'
 import { ModalButton, SaleStateTypes } from 'lib/types'
-
-// Components
 import Layout from 'components/layout'
 import ScreenContainer from 'components/container/screen'
 import CreateCustomerSidebar from 'features/customer/components/sidebar'
-import {
-  logLaybyStarted,
-  logSaleCompleted,
-  saveSystemLog,
-} from 'features/log/lib/functions'
+import { saveSystemLog } from 'features/log/lib/functions'
 import dayjs from 'dayjs'
 import { useAppStore } from 'lib/store'
 import { useClerk } from 'lib/api/clerk'
@@ -24,26 +18,23 @@ import ReturnItemDialog from 'features/pay/components/return-item-dialog'
 import { useCustomers } from 'lib/api/customer'
 import { useSaleProperties } from 'lib/hooks'
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+import { saveCart } from 'lib/api/sale'
 
 // TODO add returns to sale items
 // TODO refund dialog like PAY, refund with store credit, cash or card
 
 export default function PayScreen() {
   const router = useRouter()
+  const { cart, view, resetCart, setAlert } = useAppStore()
+  const { sale = {}, items = [] } = cart || {}
   useEffect(() => {
     // if (router.asPath === router.pathname) router.replace('sell')
     // TODO cart needs type fixed
-    if (!cart?.sale?.id && cart?.items?.length === 0) router.replace('sell')
-  }, [])
-  const { cart, view, resetCart, setAlert } = useAppStore()
+    if (!sale?.id && items?.length === 0) router.replace('sell')
+  }, [sale, items])
   console.log(cart)
   const { clerk } = useClerk()
   const { customers } = useCustomers()
-  // const { isSaleTransactionsLoading } = useSaleTransactionsForSale(cart?.id)
-  // const { sales } = useSales()
-
-  // State
-  // const [saleLoading, setSaleLoading] = useState(false);
   const [laybyLoading, setLaybyLoading] = useState(false)
   const [addMoreItemsLoading, setAddMoreItemsLoading] = useState(false)
   const [completeSaleLoading, setCompleteSaleLoading] = useState(false)
@@ -54,13 +45,12 @@ export default function PayScreen() {
   // BUG why are some sales showing items as separate line items, not 2x quantity
   // TODO refunding items, then adding the same item again
 
-  const { totalRemaining, totalPrice, numberOfItems } = useSaleProperties(cart)
+  const { totalRemaining } = useSaleProperties(cart)
 
   // Functions
   async function clickParkSale() {
     saveSystemLog('PARK SALE clicked.', clerk?.id)
     setParkSaleLoading(true)
-    // saveSaleAndPark(cart, clerk, registerID, customers, sales)
     setAlert({
       open: true,
       type: 'success',
@@ -74,67 +64,40 @@ export default function PayScreen() {
   async function clickLayby() {
     saveSystemLog('START LAYBY started.', clerk?.id)
     setLaybyLoading(true)
-    let laybySale = { ...cart }
-    if (cart?.state !== SaleStateTypes.Layby) {
-      // If not already a layby in progress...
-      // Change cart state to layby
-      // date_layby_started
-      // layby_started_by
+    let laybySale = { ...sale }
+    if (sale?.state !== SaleStateTypes.Layby) {
       laybySale = {
-        ...laybySale,
+        ...sale,
         state: SaleStateTypes.Layby,
         dateLaybyStarted: dayjs.utc().format(),
         laybyStartedBy: clerk?.id,
       }
-      logLaybyStarted(
-        cart,
-        customers,
-        numberOfItems,
-        totalPrice,
-        totalRemaining,
-        clerk
-      )
       setAlert({
         open: true,
         type: 'success',
         message: 'LAYBY STARTED.',
       })
     }
-    // saveSaleItemsTransactionsToDatabase(
-    //   laybySale,
-    //   clerk,
-    //   registerID,
-    //   cart?.state
-    // )
-    // close dialog
+    await saveCart({ ...cart, sale: laybySale })
     setLaybyLoading(false)
     resetCart()
     router.back()
   }
 
   async function clickCompleteSale() {
-    saveSystemLog('COMPLETE SALE clicked.', clerk?.id)
     setCompleteSaleLoading(true)
-    // Update sale to 'complete', add date_sale_closed, sale_closed_by
     let completedSale = {
-      ...cart,
-      postal_address: cart?.isMailOrder
-        ? cart?.postalAddress ||
-          customers?.find((c) => c?.id === cart?.customerId)?.postalAddress ||
+      ...sale,
+      postalAddress: sale?.isMailOrder
+        ? sale?.postalAddress ||
+          customers?.find((c) => c?.id === sale?.customerId)?.postalAddress ||
           null
         : null,
       state: SaleStateTypes.Completed,
       saleClosedBy: clerk?.id,
       dateSaleClosed: dayjs.utc().format(),
     }
-
-    // const saleId = await saveSaleItemsTransactionsToDatabase(
-    //   completedSale,
-    //   clerk,
-    //   registerId,
-    //   cart?.state,
-    //   customers?.find((c) => c?.id === cart?.customerId)?.name
-    // )
+    await saveCart({ ...cart, sale: completedSale })
     resetCart()
     router.back()
     setCompleteSaleLoading(false)
@@ -152,20 +115,16 @@ export default function PayScreen() {
     {
       type: 'cancel',
       onClick: () => {
-        saveSystemLog('DISCARD SALE clicked.', clerk?.id)
         resetCart()
         router.back()
       },
       disabled: Boolean(cart?.transactions) || totalRemaining === 0,
       text:
-        cart?.state === SaleStateTypes.Layby ? 'CANCEL LAYBY' : 'DISCARD SALE',
+        sale?.state === SaleStateTypes.Layby ? 'CANCEL LAYBY' : 'DISCARD SALE',
     },
     {
       type: 'alt2',
-      onClick: () => {
-        saveSystemLog('CHANGE ITEMS clicked.', clerk?.id)
-        router.back()
-      },
+      onClick: () => router.back(),
       disabled: totalRemaining === 0,
       loading: addMoreItemsLoading,
       text: 'CHANGE ITEMS',
@@ -173,17 +132,17 @@ export default function PayScreen() {
     {
       type: 'alt3',
       onClick: clickParkSale,
-      disabled: cart?.state === SaleStateTypes.Layby || totalRemaining === 0,
+      disabled: sale?.state === SaleStateTypes.Layby || totalRemaining === 0,
       loading: parkSaleLoading,
       text: 'PARK SALE',
     },
     {
       type: 'alt1',
       onClick: clickLayby,
-      disabled: laybyLoading || !cart?.customerId || totalRemaining <= 0,
+      disabled: laybyLoading || !sale?.customerId || totalRemaining <= 0,
       loading: laybyLoading,
       text:
-        cart?.state === SaleStateTypes.Layby ? 'CONTINUE LAYBY' : 'START LAYBY',
+        sale?.state === SaleStateTypes.Layby ? 'CONTINUE LAYBY' : 'START LAYBY',
     },
     {
       type: 'ok',
@@ -191,7 +150,7 @@ export default function PayScreen() {
       disabled:
         completeSaleLoading ||
         totalRemaining !== 0 ||
-        cart?.state === SaleStateTypes.Completed,
+        sale?.state === SaleStateTypes.Completed,
       loading: completeSaleLoading,
       text: 'COMPLETE SALE',
     },
@@ -203,25 +162,13 @@ export default function PayScreen() {
         show={view?.saleScreen}
         closeFunction={() => {
           if (totalRemaining === 0) {
-            if (cart?.state === SaleStateTypes.Completed) {
-              saveSystemLog(
-                'Sale screen closed. Total remaining === 0. Cart set to null.',
-                clerk?.id
-              )
-              resetCart()
-            } else {
-              saveSystemLog(
-                'Sale screen closed. Total remaining === 0. Sale completed.',
-                clerk?.id
-              )
-              clickCompleteSale()
-            }
+            if (sale?.state === SaleStateTypes.Completed) resetCart()
+            else clickCompleteSale()
           }
-          saveSystemLog('Sale screen closed. Total remaining not 0.', clerk?.id)
           router.back()
         }}
-        title={`${cart?.id ? `SALE #${cart?.id}` : `NEW SALE`} [${
-          cart?.state ? cart?.state.toUpperCase() : 'IN PROGRESS'
+        title={`${sale?.id ? `SALE #${sale?.id}` : `NEW SALE`} [${
+          sale?.state ? sale?.state.toUpperCase() : 'IN PROGRESS'
         }]`}
         // loading={isSaleTransactionsLoading}
         buttons={buttons}
@@ -248,18 +195,5 @@ export default function PayScreen() {
 }
 
 PayScreen.getLayout = (page) => <Layout>{page}</Layout>
-
-// PayScreen.getInitialProps = async (context) => {
-//   console.log(context.res ? 'RES' : 'NO RES')
-//   console.log(context.req ? 'REQ' : 'NO REQ')
-//   // if (context.res) {
-//   //   context.res.writeHead(302, {
-//   //     Location: '/sell',
-//   //   })
-//   //   context.res.end()
-//   // }
-
-//   return {}
-// }
 
 export const getServerSideProps = withPageAuthRequired()

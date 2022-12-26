@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { SaleItemObject } from 'lib/types'
 import TextField from 'components/inputs/text-field'
 import {
@@ -10,17 +10,11 @@ import ArrowDown from '@mui/icons-material/ArrowDropDown'
 import ArrowUp from '@mui/icons-material/ArrowDropUp'
 import DeleteIcon from '@mui/icons-material/Delete'
 import {
-  getCartItemPrice,
   getCartItemTotal,
   writeCartItemPriceBreakdown,
 } from '../../lib/functions'
 import { useAppStore } from 'lib/store'
-import {
-  useSaleStockItems,
-  useSimpleStockItem,
-  useStockItem,
-  useStockList,
-} from 'lib/api/stock'
+import { useStockItem, useStockList } from 'lib/api/stock'
 import { priceCentsString } from 'lib/utils'
 
 type SellListItemProps = {
@@ -161,7 +155,7 @@ export default function SellListItem({
             </div>
             <div>
               <div className="font-bold self-center">
-                {priceCentsString(getCartItemTotal(cartItem, item))}
+                {priceCentsString(getCartItemTotal(cartItem, item, price))}
               </div>
               <div className="w-50 text-right">
                 <button

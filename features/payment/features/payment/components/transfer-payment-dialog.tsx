@@ -1,85 +1,30 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import Select from 'react-select'
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
-import { logTransferVendorPayment } from 'features/log/lib/functions'
-import { getTotalOwing } from 'features/sale/features/item-sale/lib/functions'
-import { createVendorPaymentInDatabase } from 'lib/database/create'
-import {
-  ModalButton,
-  StockObject,
-  VendorObject,
-  VendorPaymentObject,
-  VendorPaymentTypes,
-  VendorSaleItemObject,
-} from 'lib/types'
+import { ModalButton, VendorObject, VendorPaymentTypes } from 'lib/types'
 import dayjs from 'dayjs'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
-import { useVendors } from 'lib/api/vendor'
+import { createVendorPayment, useVendor, useVendors } from 'lib/api/vendor'
 import { ViewProps } from 'lib/store/types'
 import { useCurrentRegisterId } from 'lib/api/register'
 
 export default function TransferVendorPaymentDialog() {
   const { clerk } = useClerk()
   const { view, closeView } = useAppStore()
-  // SWR
   const { registerId } = useCurrentRegisterId()
-  const { inventory } = useInventory()
   const { vendors } = useVendors()
-  const { sales } = useSalesJoined()
-  const { vendorPayments, mutateVendorPayments } = useVendorPayments()
-
-  // State
   const [submitting, setSubmitting] = useState(false)
   const [vendorPayId, setVendorPay]: [any, Function] = useState(0)
   const [vendorReceiveId, setVendorReceive]: [number, Function] = useState(0)
+  const { vendor: payVendor, isVendorLoading: isPayVendorLoading } =
+    useVendor(vendorPayId)
+  const { vendor: receiveVendor, isVendorLoading: isReceiveVendorLoading } =
+    useVendor(vendorReceiveId)
   const [payment, setPayment] = useState('0')
   const [notes, setNotes] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-
-  // Constants
-  const totalPayOwing = useMemo(
-    () =>
-      vendorPayId === 'store'
-        ? null
-        : getTotalOwing(
-            vendorPayments?.filter(
-              (v: VendorPaymentObject) => v?.vendorId === vendorPayId
-            ),
-            sales?.filter(
-              (v: VendorSaleItemObject) =>
-                inventory?.find((i: StockObject) => i?.id === v?.itemId)
-                  ?.vendorId === vendorPayId
-            )
-          ),
-    [vendorPayId, vendorPayments]
-  )
-  const totalReceiveOwing = useMemo(
-    () =>
-      getTotalOwing(
-        vendorPayments?.filter(
-          (v: VendorPaymentObject) => v?.vendorId === vendorReceiveId
-        ),
-        sales?.filter(
-          (v: VendorSaleItemObject) =>
-            inventory?.find((i: StockObject) => i?.id === v?.itemId)
-              ?.vendorId === vendorReceiveId
-        )
-      ),
-    [vendorReceiveId, vendorPayments]
-  )
-  const vendorPay = useMemo(
-    () =>
-      vendorPayId === 'store'
-        ? null
-        : vendors?.find((v: VendorObject) => v?.id === vendorPayId),
-    [vendorPayId, vendors]
-  )
-  const vendorReceive = useMemo(
-    () => vendors?.find((v: VendorObject) => v?.id === vendorReceiveId),
-    [vendorReceiveId, vendors]
-  )
   const buttons: ModalButton[] = [
     {
       type: 'cancel',
@@ -98,16 +43,11 @@ export default function TransferVendorPaymentDialog() {
             amount: Math.round(parseFloat(payment) * 100),
             clerkId: clerk?.id,
             vendorId: vendorPayId,
-            registerId: registerID,
+            registerId,
             type: VendorPaymentTypes.TransferFrom,
             note: notes,
           }
-          createVendorPaymentInDatabase(vendorPayPayment).then((id) =>
-            mutateVendorPayments([
-              ...vendorPayments,
-              { ...vendorPayPayment, id },
-            ])
-          )
+          await createVendorPayment(vendorPayPayment)
         }
         let vendorReceivePayment = {
           date: dayjs.utc().format(),
@@ -118,25 +58,9 @@ export default function TransferVendorPaymentDialog() {
           type: VendorPaymentTypes.TransferTo,
           note: notes,
         }
-        createVendorPaymentInDatabase(vendorReceivePayment).then(
-          (vendorPaymentId) => {
-            mutateVendorPayments([
-              ...vendorPayments,
-              { ...vendorReceivePayment, vendorPaymentId },
-            ])
-            logTransferVendorPayment(
-              payment,
-              vendorPayId,
-              vendorPay,
-              vendorReceiveId,
-              vendorReceive,
-              clerk,
-              vendorPaymentId
-            )
-            setSubmitting(false)
-            resetAndCloseDialog()
-          }
-        )
+        await createVendorPayment(vendorReceivePayment)
+        setSubmitting(false)
+        resetAndCloseDialog()
       },
       disabled:
         !vendorPayId ||
@@ -222,11 +146,15 @@ export default function TransferVendorPaymentDialog() {
           {vendorPayId === 'store'
             ? 'R.O.S.S. PAYS'
             : vendorPayId > 0 &&
-              `PAYING VENDOR HAS $${(totalPayOwing / 100)?.toFixed(2)}`}
+              `PAYING VENDOR HAS $${(
+                (payVendor?.totalOwing || 0) / 100
+              )?.toFixed(2)}`}
         </div>
         <div className="text-center">
           {vendorReceiveId > 0 &&
-            `RECEIVING VENDOR HAS $${(totalReceiveOwing / 100)?.toFixed(2)}`}
+            `RECEIVING VENDOR HAS $${(
+              (receiveVendor?.totalOwing || 0) / 100
+            )?.toFixed(2)}`}
         </div>
         <div className="my-4 text-center text-xl font-bold">
           {vendorPayId === 0 || vendorReceiveId === 0

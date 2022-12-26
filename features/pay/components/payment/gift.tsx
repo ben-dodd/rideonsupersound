@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import UTC from 'dayjs/plugin/utc'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   GiftCardObject,
   ModalButton,
@@ -20,19 +20,17 @@ import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useSaleProperties } from 'lib/hooks'
 import { useCurrentRegisterId } from 'lib/api/register'
-import { useCustomers } from 'lib/api/customer'
+import { useGiftCards } from 'lib/api/stock'
+import { useLogs } from 'lib/api/log'
 
 export default function Gift() {
   dayjs.extend(UTC)
   const { clerk } = useClerk()
   const { view, cart, closeView, setAlert, addCartTransaction } = useAppStore()
-
-  // SWR
+  const { sale = {} } = cart || {}
   const { giftCards } = useGiftCards()
   const { registerId } = useCurrentRegisterId()
-  const { inventory } = useInventory()
-  const { customers } = useCustomers()
-  const { logs, mutateLogs } = useLogs()
+  // const { logs, mutateLogs } = useLogs()
 
   const { totalRemaining } = useSaleProperties(cart)
 
@@ -41,6 +39,9 @@ export default function Gift() {
   const [giftCardPayment, setGiftCardPayment] = useState(
     `${Math.abs(totalRemaining).toFixed(2)}`
   )
+  useEffect(() => {
+    setGiftCardPayment(`${Math.abs(totalRemaining).toFixed(2)}`)
+  }, [totalRemaining])
   const [giftCardCode, setGiftCardCode] = useState('')
   const giftCard: GiftCardObject = useMemo(() => {
     console.log('Gift card changed')
@@ -48,12 +49,10 @@ export default function Gift() {
       (giftCard: GiftCardObject) =>
         giftCard?.giftCardCode === giftCardCode.toUpperCase()
     )
-    console.log(gc?.giftCardRemaining)
-    console.log(totalRemaining)
     if (gc?.giftCardRemaining / 100 < totalRemaining)
       setGiftCardPayment(`${Math.abs(gc.giftCardRemaining / 100).toFixed(2)}`)
     return gc
-  }, [giftCardCode, giftCards])
+  }, [giftCardCode, giftCards, totalRemaining])
 
   const [newGiftCardCode, setNewGiftCardCode] = useState(
     makeGiftCardCode(giftCards)
@@ -86,7 +85,7 @@ export default function Gift() {
             giftCardAmount: parseFloat(giftCardPayment) * 100,
             giftCardRemaining: parseFloat(giftCardPayment) * 100,
             note: `Gift card created as refund payment${
-              cart?.id ? ` for sale #${cart?.id}` : ''
+              cart?.sale?.id ? ` for sale #${cart?.sale?.id}` : ''
             }.`,
             giftCardIsValid: true,
           }
@@ -100,15 +99,15 @@ export default function Gift() {
         }
         let transaction: SaleTransactionObject = {
           date: dayjs.utc().format(),
-          saleId: cart?.id,
+          saleId: sale?.id,
           clerkId: clerk?.id,
           paymentMethod: PaymentMethodTypes.GiftCard,
           amount: isRefund
             ? parseFloat(giftCardPayment) * -100
             : parseFloat(giftCardPayment) * 100,
-          registerId: registerID,
-          giftCardUpdate: giftCardUpdate,
-          isRefund: isRefund,
+          registerId,
+          giftCardUpdate,
+          isRefund,
         }
         if (!isRefund) {
           transaction = {
@@ -122,17 +121,6 @@ export default function Gift() {
         addCartTransaction(transaction)
         setSubmitting(false)
         closeView(ViewProps.giftPaymentDialog)
-        logSalePaymentGift(
-          giftCardPayment,
-          isRefund,
-          newGiftCardCode,
-          giftCardCode,
-          leftOver,
-          remainingOnGiftCard,
-          cart,
-          customers,
-          clerk
-        )
         setAlert({
           open: true,
           type: 'success',

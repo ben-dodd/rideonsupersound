@@ -1,15 +1,13 @@
 import { StockObject } from 'lib/types'
-import { useEffect, useState } from 'react'
 import { filterInventory, sortInventory } from '../../lib/functions'
 import ListItem from './list-item'
 import Loading from 'components/loading'
 import { useStockList } from 'lib/api/stock'
-import { getGeolocation } from 'lib/api/external'
 import { useAppStore } from 'lib/store'
 
 export default function InventoryScroll() {
   const maxItemsInList = 50
-  const { stockList, isStockListLoading } = useStockList()
+  const { stockList = [], isStockListLoading } = useStockList()
   const { sellSearchBar } = useAppStore()
 
   return (

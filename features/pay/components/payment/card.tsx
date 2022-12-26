@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   ModalButton,
   PaymentMethodTypes,
@@ -20,16 +20,17 @@ import { useCustomers } from 'lib/api/customer'
 export default function Cash() {
   const { clerk } = useClerk()
   const { view, cart, closeView, setAlert, addCartTransaction } = useAppStore()
+  const { sale = {} } = cart || {}
   const { registerId } = useCurrentRegisterId()
-  const { inventory } = useInventory()
-  const { customers } = useCustomers()
-
   const { totalRemaining } = useSaleProperties(cart)
   const [submitting, setSubmitting] = useState(false)
   const isRefund = totalRemaining < 0
   const [cardPayment, setCardPayment] = useState(
     `${Math.abs(totalRemaining).toFixed(2)}`
   )
+  useEffect(() => {
+    setCardPayment(`${Math.abs(totalRemaining).toFixed(2)}`)
+  }, [totalRemaining])
 
   // Constants
   const buttons: ModalButton[] = [
@@ -47,19 +48,18 @@ export default function Cash() {
         setSubmitting(true)
         let transaction: SaleTransactionObject = {
           date: dayjs.utc().format(),
-          saleId: cart?.id,
+          saleId: sale?.id,
           clerkId: clerk?.id,
           paymentMethod: PaymentMethodTypes.Card,
           amount: isRefund
             ? parseFloat(cardPayment) * -100
             : parseFloat(cardPayment) * 100,
-          registerId: registerID,
-          isRefund: isRefund,
+          registerId,
+          isRefund,
         }
         addCartTransaction(transaction)
         setSubmitting(false)
         closeView(ViewProps.cardPaymentDialog)
-        logSalePaymentCard(cardPayment, isRefund, cart, customers, clerk)
         setAlert({
           open: true,
           type: 'success',

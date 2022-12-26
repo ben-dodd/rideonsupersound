@@ -4,6 +4,7 @@ import {
   AlertProps,
   SaleTransactionObject,
   SaleItemObject,
+  CartObject,
 } from 'lib/types'
 
 export interface StoreState {
@@ -43,7 +44,7 @@ export interface StoreState {
     stocktakeTemplateScreen?: boolean
     stocktakeTemplateSetupDialog?: boolean
   }
-  cart: SaleObject
+  cart: CartObject
   loadedItemId?: any
   loadedVendorId?: any
   loadedHoldId?: any

@@ -105,7 +105,7 @@ export async function useLoadSaleToCart(
   registerID: number,
   customers: CustomerObject[]
 ) {
-  if (cart?.dateSaleOpened && (cart?.items || cart?.id !== sale?.id)) {
+  if (sale?.dateSaleOpened && (cart?.items || cart?.id !== sale?.id)) {
     // Cart is loaded with a different sale or
     // Cart has been started but not loaded into sale
     await useSaveSaleAndPark(cart, clerk, registerID, customers)

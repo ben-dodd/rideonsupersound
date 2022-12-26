@@ -1,20 +1,17 @@
 import { CustomerObject, SaleStateTypes } from 'lib/types'
 import CreateableSelect from 'components/inputs/createable-select'
 import TextField from 'components/inputs/text-field'
-import { saveSystemLog } from 'features/log/lib/functions'
 import ReturnIcon from '@mui/icons-material/KeyboardReturn'
-import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useCustomers } from 'lib/api/customer'
 import { useSaleProperties } from 'lib/hooks'
 
 export default function Pay() {
-  const { clerk } = useClerk()
   const { cart, openView, setCartSale, setCustomer } = useAppStore()
-  const { sale = {} } = cart || {}
+  const { sale = {}, items = [] } = cart || {}
   const { totalRemaining } = useSaleProperties(cart)
-  const { customers } = useCustomers()
+  const { customers = [] } = useCustomers()
   return (
     <div className="flex flex-col justify-between">
       <div className="flex justify-between my-2">
@@ -27,7 +24,7 @@ export default function Pay() {
               : 'text-tertiary'
           }`}
         >
-          {cart?.state === SaleStateTypes.Completed
+          {sale?.state === SaleStateTypes.Completed
             ? 'SALE COMPLETED'
             : totalRemaining === 0
             ? 'ALL PAID'
@@ -100,7 +97,7 @@ export default function Pay() {
                 <div className="font-bold">Customer</div>
                 <div>
                   {customers?.find(
-                    (c: CustomerObject) => c?.id === cart?.customerId
+                    (c: CustomerObject) => c?.id === sale?.customerId
                   )?.name || ''}
                 </div>
               </div>
@@ -115,7 +112,7 @@ export default function Pay() {
             </div>
             <CreateableSelect
               inputLabel="Select customer"
-              value={cart?.customerId}
+              value={sale?.customerId}
               label={
                 customers?.find(
                   (c: CustomerObject) => c?.id === sale?.customerId
@@ -153,7 +150,7 @@ export default function Pay() {
           />
           <div className="ml-2">Mail order</div>
         </div>
-        {cart?.isMailOrder ? (
+        {sale?.isMailOrder ? (
           <div>
             <TextField
               inputLabel="Postage Fee"
@@ -187,12 +184,12 @@ export default function Pay() {
         value={sale?.note}
         onChange={(e: any) => setCartSale({ note: e.target.value })}
       />
-      {cart?.id && (
+      {sale?.id && (
         <div>
           <button
             className="icon-text-button ml-0"
             onClick={() => openView(ViewProps.returnItemDialog)}
-            disabled={cart?.items?.length < 1}
+            disabled={items?.length < 1}
           >
             <ReturnIcon className="mr-1" /> Return Items
           </button>

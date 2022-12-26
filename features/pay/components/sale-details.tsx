@@ -1,16 +1,9 @@
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import { AnyAaaaRecord } from 'dns'
 import { useClerks } from 'lib/api/clerk'
 import { useCustomers } from 'lib/api/customer'
-import { useStockList } from 'lib/api/stock'
 import { useSaleProperties } from 'lib/hooks'
-import {
-  CustomerObject,
-  OpenWeatherObject,
-  SaleObject,
-  SaleStateTypes,
-} from 'lib/types'
+import { CustomerObject, OpenWeatherObject, SaleStateTypes } from 'lib/types'
 import { convertDegToCardinal, convertMPStoKPH } from 'lib/utils'
 // TODO need to fix cart/sale types
 export default async function SaleDetails({ cart }: { cart: any }) {
@@ -116,6 +109,7 @@ export default async function SaleDetails({ cart }: { cart: any }) {
             <div className="flex">
               <div>
                 <img
+                  alt="Weather Icon"
                   src={`http://openweathermap.org/img/w/${weather?.weather?.[0]?.icon}.png`}
                 />
               </div>

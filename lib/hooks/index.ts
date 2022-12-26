@@ -12,8 +12,8 @@ import { useState, useEffect } from 'react'
 export function useSaleProperties(cart): any {
   const [properties, setProperties] = useState({})
   const [stockTable, setStockTable]: [StockObject[], Function] = useState([])
-  const { items = [], sale = {} } = cart || {}
-  console.log(items, sale)
+  const { items = [], sale = {}, transactions = [] } = cart || {}
+  // console.log(items, sale)
 
   useEffect(() => {
     // Fetch the stock table from the database here
@@ -42,7 +42,7 @@ export function useSaleProperties(cart): any {
     const totalVendorCut = totalPriceUnrounded - totalStoreCut // Total Vendor Cut in dollars
     const totalItemPrice = roundToTenCents(totalPriceUnrounded)
     const totalPrice = totalItemPrice + totalPostage // TotalPrice + postage
-    const totalPaid = roundToTenCents(getTotalPaid(cart?.transactions))
+    const totalPaid = roundToTenCents(getTotalPaid(transactions) / 100)
     const totalRemaining = roundToTenCents(totalPrice - totalPaid) // Amount remaining to pay
     setProperties({
       totalItemPrice,
@@ -57,7 +57,7 @@ export function useSaleProperties(cart): any {
         ?.reduce((acc, item) => acc + parseInt(item?.quantity), 0), // Total number of items in sale
       itemList: writeItemList(stockTable, items), // List of items written in full
     })
-  }, [cart, stockTable])
+  }, [items, sale, transactions, stockTable])
   console.log(properties)
   return properties
 }

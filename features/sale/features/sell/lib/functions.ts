@@ -13,19 +13,21 @@ export function writeCartItemPriceBreakdown(
 ) {
   // Writes out the sale item in the following form:
   // 1 x V10% x R50% x $27.00
-  return item?.isGiftCard
-    ? `${priceCentsString(item?.giftCardAmount)} GIFT CARD`
-    : item?.isMiscItem
-    ? `${cartItem?.quantity} × ${priceCentsString(item?.miscItemAmount)}`
-    : `${cartItem?.quantity}${
-        parseInt(cartItem?.vendorDiscount) > 0
-          ? ` × V${cartItem?.vendorDiscount}%`
-          : ''
-      }${
-        parseInt(cartItem?.storeDiscount) > 0
-          ? ` × S${cartItem?.storeDiscount}%`
-          : ''
-      } × ${priceCentsString(cartItem?.totalSell ?? price?.totalSell)}`
+  return price && price?.totalSell
+    ? item?.isGiftCard
+      ? `${priceCentsString(item?.giftCardAmount)} GIFT CARD`
+      : item?.isMiscItem
+      ? `${cartItem?.quantity} × ${priceCentsString(item?.miscItemAmount)}`
+      : `${cartItem?.quantity}${
+          parseInt(cartItem?.vendorDiscount) > 0
+            ? ` × V${cartItem?.vendorDiscount}%`
+            : ''
+        }${
+          parseInt(cartItem?.storeDiscount) > 0
+            ? ` × S${cartItem?.storeDiscount}%`
+            : ''
+        } × ${priceCentsString(cartItem?.totalSell ?? price?.totalSell)}`
+    : '...'
 }
 
 export function getDiscountedPrice(

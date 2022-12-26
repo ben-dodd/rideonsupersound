@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import UTC from 'dayjs/plugin/utc'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   ModalButton,
   PaymentMethodTypes,
@@ -22,19 +22,17 @@ export default function Cash() {
   dayjs.extend(UTC)
   const { clerk } = useClerk()
   const { view, cart, closeView, setAlert, addCartTransaction } = useAppStore()
-
-  // SWR
-  const { inventory } = useInventory()
-  const { customers } = useCustomers()
+  const { sale = {} } = cart || {}
+  const { customers = [] } = useCustomers()
   const { registerId } = useCurrentRegisterId()
-
   const { totalRemaining } = useSaleProperties(cart)
-
-  // State
   const isRefund = totalRemaining < 0
   const [cashReceived, setCashReceived] = useState(
     `${Math.abs(totalRemaining).toFixed(2)}`
   )
+  useEffect(() => {
+    setCashReceived(`${Math.abs(totalRemaining).toFixed(2)}`)
+  }, [totalRemaining])
   const [submitting, setSubmitting] = useState(false)
 
   // Constants
@@ -53,7 +51,7 @@ export default function Cash() {
         setSubmitting(true)
         let transaction: SaleTransactionObject = {
           date: dayjs.utc().format(),
-          saleId: cart?.id,
+          saleId: sale?.id,
           clerkId: clerk?.id,
           paymentMethod: PaymentMethodTypes.Cash,
           amount: isRefund
@@ -67,19 +65,11 @@ export default function Cash() {
             : parseFloat(cashReceived) > totalRemaining
             ? (parseFloat(cashReceived) - totalRemaining) * 100
             : null,
-          registerId: registerID,
-          isRefund: isRefund,
+          registerId,
+          isRefund,
         }
         addCartTransaction(transaction)
         setSubmitting(false)
-        logSalePaymentCash(
-          cashReceived,
-          isRefund,
-          cart,
-          customers,
-          changeToGive,
-          clerk
-        )
         closeView(ViewProps.cashPaymentDialog)
         setAlert({
           open: true,

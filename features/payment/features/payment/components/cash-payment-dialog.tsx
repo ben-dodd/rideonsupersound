@@ -1,17 +1,12 @@
 // Packages
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import Select from 'react-select'
 import { ModalButton, VendorObject, VendorPaymentTypes } from 'lib/types'
-
-// Components
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
-import { logCreateVendorPayment } from 'features/log/lib/functions'
-import { getVendorDetails } from 'features/vendor/features/item-vendor/lib/functions'
-import { createVendorPaymentInDatabase } from 'lib/database/create'
 import dayjs from 'dayjs'
 import { useCurrentRegisterId } from 'lib/api/register'
-import { useVendors } from 'lib/api/vendor'
+import { createVendorPayment, useVendor, useVendors } from 'lib/api/vendor'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
@@ -19,26 +14,15 @@ import { ViewProps } from 'lib/store/types'
 export default function CashPaymentDialog() {
   const { registerId } = useCurrentRegisterId()
   const { vendors } = useVendors()
-  // const { logs, mutateLogs } = useLogs()
   const { clerk } = useClerk()
   const { view, closeView } = useAppStore()
-
-  // State
   const [submitting, setSubmitting] = useState(false)
-  const [vendor_id, setVendor]: [number, Function] = useState(0)
-  const { inventory } = useInventory()
-  const { sales } = useSalesJoined()
-  const { vendorPayments, mutateVendorPayments } = useVendorPayments()
+  const [vendorId, setVendor]: [number, Function] = useState(0)
   const [payment, setPayment] = useState('0')
   const [notes, setNotes] = useState('')
   const [paymentType, setPaymentType] = useState(VendorPaymentTypes.Cash)
+  const { vendor } = useVendor(vendorId)
 
-  // Constants
-  const vendorVars = useMemo(
-    () => getVendorDetails(inventory, sales, vendorPayments, vendor_id),
-    [inventory, sales, vendorPayments, vendor_id]
-  )
-  const vendor = vendors?.filter((v: VendorObject) => v?.id === vendor_id)?.[0]
   const buttons: ModalButton[] = [
     {
       type: 'cancel',
@@ -54,22 +38,18 @@ export default function CashPaymentDialog() {
         let vendorPayment = {
           date: dayjs.utc().format(),
           amount: Math.round(parseFloat(payment) * 100),
-          clerk_id: clerk?.id,
-          vendor_id: vendor?.id,
+          clerkId: clerk?.id,
+          vendorId: vendor?.id,
           registerId,
           type: paymentType,
           note: notes,
         }
-        createVendorPaymentInDatabase(vendorPayment).then((vendorPaymentId) => {
-          mutateVendorPayments([
-            ...vendorPayments,
-            { ...vendorPayment, vendorPaymentId },
-          ])
-          // if (paymentType === VendorPaymentTypes.Cash) mutateCashGiven()
-          logCreateVendorPayment(paymentType, vendor, clerk, vendorPaymentId)
-          setSubmitting(false)
-          resetAndCloseDialog()
-        })
+
+        await createVendorPayment(vendorPayment)
+        // if (paymentType === VendorPaymentTypes.Cash) mutateCashGiven()
+        // logCreateVendorPayment(paymentType, vendor, clerk, vendorPaymentId)
+        setSubmitting(false)
+        resetAndCloseDialog()
       },
       disabled:
         // totalOwing < parseFloat(payment) ||
@@ -111,9 +91,9 @@ export default function CashPaymentDialog() {
         <Select
           className="w-full"
           value={{
-            value: vendor_id,
+            value: vendorId,
             label:
-              vendors?.find((v: VendorObject) => v?.id === vendor_id)?.name ||
+              vendors?.find((v: VendorObject) => v?.id === vendorId)?.name ||
               '',
           }}
           options={vendors?.map((val: VendorObject) => ({
@@ -141,14 +121,14 @@ export default function CashPaymentDialog() {
           onChange={(e: any) => setNotes(e.target.value)}
         />
         <div className="mt-4 text-center">
-          {vendor_id > 0 &&
-            `VENDOR OWED $${(vendorVars?.totalOwing / 100)?.toFixed(2)}`}
+          {vendorId > 0 &&
+            `VENDOR OWED $${(vendor?.totalOwing / 100)?.toFixed(2)}`}
         </div>
         <div className="my-4 text-center text-xl font-bold">
-          {vendor_id > 0
+          {vendorId > 0
             ? isNaN(parseFloat(payment))
             : 'NUMBERS ONLY PLEASE'
-            ? vendorVars?.totalOwing / 100 < parseFloat(payment)
+            ? vendor?.totalOwing / 100 < parseFloat(payment)
               ? `YOU ARE PAYING VENDOR MORE THAN THEY ARE OWED`
               : 'PAYMENT OK'
             : 'SELECT VENDOR'}

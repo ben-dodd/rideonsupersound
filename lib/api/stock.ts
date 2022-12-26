@@ -1,4 +1,3 @@
-import axios from 'axios'
 import { saveSystemLog } from 'features/log/lib/functions'
 import {
   ClerkObject,
@@ -41,7 +40,7 @@ export function useGiftCards() {
 }
 
 export function deleteStockItem(id) {
-  return axios
+  return axiosAuth
     .post(`/api/stock/delete/${id}`)
     .then((res) => res.data)
     .catch((e) => Error(e.message))

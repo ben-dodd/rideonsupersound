@@ -1,9 +1,12 @@
 import dayjs from 'dayjs'
-import { getCartItemPrice } from 'features/sale/features/sell/lib/functions'
+import {
+  getCartItemStoreCut,
+  getCartItemTotal,
+} from 'features/sale/features/sell/lib/functions'
 import { VendorObject, VendorPaymentObject } from 'lib/types'
 import connection from './conn'
 import { dbGetAllVendorPayments } from './payment'
-import { dbGetAllSales, dbGetAllSalesAndItems } from './sale'
+import { dbGetAllSalesAndItems } from './sale'
 import { dbGetStockList } from './stock'
 import { js2mysql } from './utils/helpers'
 
@@ -73,14 +76,18 @@ export function dbGetVendor(id, db = connection) {
         ?.filter((s) => !s?.isRefunded)
         ?.reduce((acc, saleItem) => {
           const stockItem = items?.find((item) => item?.id === saleItem?.itemId)
-          const { storePrice } = getCartItemPrice(saleItem, stockItem)
+          const { totalSell = 0, vendorCut = 0 } = stockItem
+          const price = { totalSell, vendorCut }
+          const storePrice = getCartItemStoreCut(saleItem, price)
           return acc + storePrice
         })
       const totalSell = sales
         ?.filter((s) => !s?.isRefunded)
         ?.reduce((acc, saleItem) => {
           const stockItem = items?.find((item) => item?.id === saleItem?.itemId)
-          const { totalPrice } = getCartItemPrice(saleItem, stockItem)
+          const { totalSell = 0, vendorCut = 0 } = stockItem
+          const price = { totalSell, vendorCut }
+          const totalPrice = getCartItemTotal(saleItem, stockItem, price)
           return acc + totalPrice
         })
       const lastPaid = dayjs.max(payments?.map((p) => p?.date))
@@ -128,4 +135,11 @@ export function dbGetVendorIdFromUid(vendorUid, db = connection) {
     .where({ uid: vendorUid })
     .first()
     .then((vendor) => vendor?.id)
+}
+
+export function dbCreateVendorPayment(
+  payment: VendorPaymentObject,
+  db = connection
+) {
+  return db('vendor_payment').insert(js2mysql(payment))
 }

@@ -113,7 +113,6 @@ export interface ConfirmModal {
 export interface SaleObject {
   id?: number
   customerId?: number
-  customer?: CustomerObject
   state?: SaleStateTypes
   dateSaleOpened?: any
   saleOpenedBy?: number
@@ -134,6 +133,11 @@ export interface SaleObject {
   geoLatitude?: number
   geoLongitude?: number
   isDeleted?: boolean
+}
+
+export interface CartObject {
+  sale?: SaleObject
+  customer?: CustomerObject
   items?: SaleItemObject[]
   transactions?: SaleTransactionObject[]
 }

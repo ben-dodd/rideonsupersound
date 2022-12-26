@@ -1,5 +1,4 @@
-import axios from 'axios'
-import { useData } from './'
+import { axiosAuth, useData } from './'
 
 export function useRegister(register_id) {
   return useData(`register/${register_id}`, 'register')
@@ -18,7 +17,7 @@ export function useCurrentRegister() {
 }
 
 export function savePettyCash(pettyCash) {
-  return axios
+  return axiosAuth
     .post(`/api/register/pettycash`, pettyCash)
     .then((res) => {
       const id = res.data

@@ -8,51 +8,51 @@ import PayIcon from '@mui/icons-material/ShoppingCart'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useSaleProperties } from 'lib/hooks'
-import { deleteSale, deleteSaleItem } from 'lib/api/sale'
+import { createSale, deleteSale, deleteSaleItem } from 'lib/api/sale'
 import { useClerk } from 'lib/api/clerk'
 import { useCurrentRegisterId } from 'lib/api/register'
 import { useRouter } from 'next/router'
 
 export default function ShoppingCart() {
-  const { cart, view, setCart, resetCart, setAlert, closeView, openView } =
-    useAppStore()
+  const {
+    cart,
+    view,
+    setCart,
+    setCartSale,
+    resetCart,
+    setAlert,
+    closeView,
+    openView,
+  } = useAppStore()
+  const { sale = {}, items = [], transactions = [] } = cart || {}
   const { clerk } = useClerk()
   const { registerId } = useCurrentRegisterId()
   const router = useRouter()
-
-  // State
   const [loadingSale, setLoadingSale] = useState(false)
 
   function deleteCartItem(cartItem) {
-    let updatedCartItems = cart?.items?.filter(
+    let updatedCartItems = items?.filter(
       (item) => item?.itemId !== cartItem?.itemId
     )
     if (cartItem?.id)
       // Cart has been saved to the database, delete sale_item
       deleteSaleItem(cartItem?.id)
-    if (updatedCartItems.length < 1 && cart?.transactions?.length < 1) {
+    if (updatedCartItems.length < 1 && transactions?.length < 1) {
       // No items left and no transactions, delete cart
       closeView(ViewProps.cart)
       resetCart()
-      if (cart?.id) deleteSale(cart?.id, { clerk, registerId })
+      if (sale?.id) deleteSale(sale?.id, { clerk, registerId })
     } else {
       console.log(updatedCartItems)
       setCart({
         items: updatedCartItems,
       })
     }
-    // saveLog(
-    //   `${getItemDisplayName(
-    //     getItemById(parseInt(itemId), inventory)
-    //   )} removed from cart${id ? ` (sale #${id})` : ''}.`,
-    //   clerk?.id
-    // )
     setAlert({
       open: true,
       type: 'success',
       message: `ITEM REMOVED FROM CART`,
     })
-    // setRefresh(refresh + 1);
   }
 
   console.log('refreshing cart', cart)
@@ -71,19 +71,19 @@ export default function ShoppingCart() {
         <div className="flex justify-between mb-2 relative">
           <div className="text-lg font-bold my-2 tracking-wide self-center">
             <div>Shopping Cart</div>
-            {cart?.id && (
+            {sale?.id && (
               <div className="text-sm font-light">
                 <div>{`Sale #${
-                  cart?.id
-                } // ${cart?.state?.toUpperCase()}`}</div>
+                  sale?.id
+                } // ${sale?.state?.toUpperCase()}`}</div>
               </div>
             )}
           </div>
           <Actions />
         </div>
         <div className="flex-grow overflow-x-hidden overflow-y-scroll">
-          {cart?.items?.length > 0 ? (
-            cart.items
+          {items?.length > 0 ? (
+            items
               // .filter((cartItem: SaleItemObject) => !cartItem?.isDeleted)
               .map((cartItem, i) => (
                 <ListItem
@@ -98,7 +98,7 @@ export default function ShoppingCart() {
             </Tooltip>
           )}
         </div>
-        {Boolean(cart?.transactions) ? (
+        {transactions?.length > 0 ? (
           <div className="flex justify-end mt-2">
             <div className="self-center">TOTAL PAID</div>
             <div
@@ -117,9 +117,7 @@ export default function ShoppingCart() {
             <button
               className="fab-button__secondary w-1/3 mb-4"
               disabled={
-                cart?.transactions?.length > 0 ||
-                loadingSale ||
-                totalRemaining === 0
+                transactions?.length > 0 || loadingSale || totalRemaining === 0
               }
               onClick={() => openView(ViewProps.createHold)}
             >
@@ -135,7 +133,7 @@ export default function ShoppingCart() {
                   }`}
                 >
                   {totalStoreCut < 0 && '-'}$
-                  {cart?.items?.length > 0
+                  {items?.length > 0
                     ? Math.abs(totalStoreCut)?.toFixed(2)
                     : '0.00'}
                 </div>
@@ -154,7 +152,15 @@ export default function ShoppingCart() {
                 totalRemaining < 0 ? 'cancel' : 'ok'
               }`}
               disabled={loadingSale || totalRemaining === 0}
-              onClick={() => router.push('pay')}
+              onClick={() => {
+                if (sale?.id) router.push('pay')
+                else
+                  createSale(sale, clerk).then((id) => {
+                    setCartSale({ id })
+                    console.log('new sale', id)
+                    router.push('pay')
+                  })
+              }}
             >
               {loadingSale ? (
                 <span className="pr-4">

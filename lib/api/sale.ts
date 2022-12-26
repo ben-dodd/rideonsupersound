@@ -1,17 +1,22 @@
 import { saveSystemLog } from 'features/log/lib/functions'
-import { ClerkObject, HoldObject, SaleItemObject, SaleObject } from 'lib/types'
-import axios from 'axios'
+import {
+  CartObject,
+  ClerkObject,
+  HoldObject,
+  SaleItemObject,
+  SaleObject,
+} from 'lib/types'
 import { axiosAuth, useData } from './'
 
 export function useSaleItemsForSale(saleId) {
   return useData(`sale/items/${saleId}`, 'saleItems')
 }
 
-export async function saveSale(sale: SaleObject, prevState?: string) {
-  return axiosAuth.post(`/api/sale/save`, { sale, prevState })
+export async function saveCart(cart: CartObject, prevState?: string) {
+  return axiosAuth.post(`/api/sale/save`, { cart, prevState })
 }
 
-export function createSale(sale: SaleObject, clerk: ClerkObject) {
+export function createSale(sale: any, clerk: ClerkObject) {
   return axiosAuth.post(`/api/sale`, {
     ...sale,
     saleOpenedBy: clerk?.id,
