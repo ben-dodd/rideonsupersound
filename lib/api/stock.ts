@@ -1,4 +1,4 @@
-import { saveSystemLog } from 'features/log/lib/functions'
+import { saveSystemLog } from 'lib/functions/log'
 import {
   ClerkObject,
   SaleItemObject,

@@ -1,6 +1,6 @@
 // Packages
 import TextField from 'components/inputs/text-field'
-import { logOpenRegister } from 'features/log/lib/functions'
+import { logOpenRegister } from 'lib/functions/log'
 import { RegisterObject, TillObject } from 'lib/types'
 import OpenIcon from '@mui/icons-material/ShoppingCart'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -10,7 +10,7 @@ import { useClerk } from 'lib/api/clerk'
 import {
   getAmountFromCashMap,
   saveAndOpenRegister,
-} from 'features/sale/features/register/lib/functions'
+} from 'features/sale/features/register/lib/register'
 import CashMap from 'features/sale/features/register/components/cash-map'
 import { useCurrentRegister } from 'lib/api/register'
 import Layout from 'components/layout'

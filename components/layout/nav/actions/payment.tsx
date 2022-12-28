@@ -1,4 +1,4 @@
-import { saveSystemLog } from 'features/log/lib/functions'
+import { saveSystemLog } from 'lib/functions/log'
 import NewIcon from '@mui/icons-material/AddBox'
 import PayIcon from '@mui/icons-material/Payment'
 import TransferIcon from '@mui/icons-material/TransferWithinAStation'

@@ -1,4 +1,4 @@
-import { saveSystemLog } from 'features/log/lib/functions'
+import { saveSystemLog } from 'lib/functions/log'
 import NewIcon from '@mui/icons-material/AddBox'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'

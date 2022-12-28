@@ -1,6 +1,6 @@
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import Layout from 'components/layout'
-import GiftCardTable from '../../features/inventory/features/display-gift-cards/components/gift-card-table'
+import GiftCardTable from '../../features/inventory/features/display-gift-cards/gift-card-table'
 
 export default function GiftCardPage() {
   return (

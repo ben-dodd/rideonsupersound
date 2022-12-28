@@ -1,8 +1,5 @@
 import dayjs from 'dayjs'
-import {
-  getCartItemStoreCut,
-  getCartItemTotal,
-} from 'features/sale/features/sell/lib/functions'
+import { getCartItemStoreCut, getCartItemTotal } from 'lib/functions/sell'
 import { VendorObject, VendorPaymentObject } from 'lib/types'
 import connection from './conn'
 import { dbGetAllVendorPayments } from './payment'

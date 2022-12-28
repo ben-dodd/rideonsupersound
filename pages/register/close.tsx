@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ClerkObject, ModalButton, SaleTransactionObject } from 'lib/types'
 import TextField from 'components/inputs/text-field'
-import { logCloseRegisterWithAmount } from 'features/log/lib/functions'
+import { logCloseRegisterWithAmount } from 'lib/functions/log'
 import dayjs from 'dayjs'
 import { useClerk, useClerks } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
@@ -11,9 +11,9 @@ import { useCashUp, useCurrentRegister } from 'lib/api/register'
 import {
   getAmountFromCashMap,
   saveClosedRegisterToDatabase,
-} from 'features/sale/features/register/lib/functions'
+} from 'features/sale/features/register/lib/register'
 import CashMap from 'features/sale/features/register/components/cash-map'
-import CashItem from 'features/sale/features/register/components/cash-item'
+import CashItem from 'features/sale/features/register/cash-item'
 import Layout from 'components/layout'
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 

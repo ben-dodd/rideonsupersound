@@ -1,6 +1,6 @@
 import { sumPrices } from 'features/sale/features/item-sale/lib/functions'
-import { filterInventory } from 'features/sale/features/sell/lib/functions'
-import Payments from 'features/web-vendor/components/payments'
+import { filterInventory } from 'lib/functions/sell'
+import Payments from 'features/web-vendor/payments'
 import Sales from 'features/web-vendor/components/sales'
 import StockItem from 'features/web-vendor/components/stock-item'
 import Tabs from 'features/web-vendor/components/tabs'

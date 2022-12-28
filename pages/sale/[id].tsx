@@ -4,7 +4,7 @@ import { ModalButton, SaleItemObject, SaleObject } from 'lib/types'
 // Components
 import ScreenContainer from 'components/container/screen'
 
-import { saveSystemLog } from 'features/log/lib/functions'
+import { saveSystemLog } from 'lib/functions/log'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { useAppStore } from 'lib/store'
 import { useClerk } from 'lib/api/clerk'

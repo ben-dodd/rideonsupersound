@@ -1,4 +1,4 @@
-import { saveSystemLog } from 'features/log/lib/functions'
+import { saveSystemLog } from 'lib/functions/log'
 import AddCashIcon from '@mui/icons-material/AttachMoney'
 import TakeCashIcon from '@mui/icons-material/MoneyOff'
 import CloseRegisterIcon from '@mui/icons-material/VpnKey'

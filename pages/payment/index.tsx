@@ -1,6 +1,6 @@
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import Layout from 'components/layout'
-import PaymentTable from 'features/payment/features/display-payments/components/payment-table'
+import PaymentTable from 'features/payment/display-payments/payment-table'
 import BatchPaymentScreen from 'features/payment/features/payment/components/batch-payment-screen'
 import CashPaymentDialog from 'features/payment/features/payment/components/cash-payment-dialog'
 import TransferVendorPaymentDialog from 'features/payment/features/payment/components/transfer-payment-dialog'
