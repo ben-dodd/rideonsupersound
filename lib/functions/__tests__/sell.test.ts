@@ -3,7 +3,6 @@ import {
   getCartItemTotal,
   getCartItemVendorCut,
   getDiscountedPrice,
-  getStoreCut,
   makeGiftCardCode,
   writeCartItemPriceBreakdown,
 } from '../sell'
@@ -25,13 +24,17 @@ const cartItem4 = {
   quantity: '1',
 }
 
-const stockItem = { vendorCut: 100, isMiscItem: false, totalSell: 300 }
+const stockItem = { isMiscItem: false }
+
+const stockItemPrice = { vendorCut: 100, totalSell: 300, storeCut: 200 }
 
 const cartItem2 = {
   quantity: '2',
 }
 
-const stockItem2 = { totalSell: 5500, vendorCut: 4300 }
+const stockItem2 = {}
+
+const stockItemPrice2 = { totalSell: 5500, vendorCut: 4300, storeCut: 1200 }
 
 const miscItem = {
   isMiscItem: true,
@@ -45,33 +48,37 @@ const giftCardItem = {
   giftCardCode: 'ABCDEF',
 }
 
+const stockItemPrice3 = {}
+
 describe('writeCartItemPriceBreakdown', () => {
   test.todo(
     'should write out a price breakdown based on a cart item and an item'
   )
   it('should handle gift cards', () => {
-    expect(writeCartItemPriceBreakdown(cartItem, giftCardItem)).toBe(
-      '$30.00 GIFT CARD'
-    )
+    expect(
+      writeCartItemPriceBreakdown(cartItem, giftCardItem, stockItemPrice3)
+    ).toBe('$30.00 GIFT CARD')
   })
   it('should handle misc items', () => {
-    expect(writeCartItemPriceBreakdown(cartItem, miscItem)).toBe('2 × $4.00')
+    expect(
+      writeCartItemPriceBreakdown(cartItem, miscItem, stockItemPrice3)
+    ).toBe('2 × $4.00')
   })
   it('should handle normal items', () => {
-    expect(writeCartItemPriceBreakdown(cartItem2, stockItem2)).toBe(
-      '2 × $55.00'
-    )
+    expect(
+      writeCartItemPriceBreakdown(cartItem2, stockItem2, stockItemPrice2)
+    ).toBe('2 × $55.00')
   })
   it('should handle discounts', () => {
-    expect(writeCartItemPriceBreakdown(cartItem, stockItem)).toBe(
-      '2 × V50% × S25% × $3.00'
-    )
-    expect(writeCartItemPriceBreakdown(cartItem3, stockItem)).toBe(
-      '1 × V50% × $3.00'
-    )
-    expect(writeCartItemPriceBreakdown(cartItem4, stockItem)).toBe(
-      '1 × S25% × $3.00'
-    )
+    expect(
+      writeCartItemPriceBreakdown(cartItem, stockItem, stockItemPrice)
+    ).toBe('2 × V50% × S25% × $3.00')
+    expect(
+      writeCartItemPriceBreakdown(cartItem3, stockItem, stockItemPrice)
+    ).toBe('1 × V50% × $3.00')
+    expect(
+      writeCartItemPriceBreakdown(cartItem4, stockItem, stockItemPrice)
+    ).toBe('1 × S25% × $3.00')
   })
 })
 
@@ -91,35 +98,33 @@ describe('getDiscountedPrice', () => {
 })
 
 describe('getCartItemVendorCut', () => {
-  it('should return the vendor cut given a cart item and a stock item', () => {
-    expect(getCartItemVendorCut(cartItem, stockItem)).toEqual(100)
-    expect(getCartItemVendorCut(cartItem2, stockItem2)).toEqual(8600)
+  it('should return the vendor cut given a cart item and a price item', () => {
+    expect(getCartItemVendorCut(cartItem, stockItemPrice)).toEqual(100)
+    expect(getCartItemVendorCut(cartItem2, stockItemPrice2)).toEqual(8600)
   })
 })
 
 describe('getCartItemStoreCut', () => {
   it('should return the store cut given a cart item and a stock item', () => {
-    expect(getCartItemStoreCut(cartItem, stockItem)).toEqual(300)
-    expect(getCartItemStoreCut(cartItem2, stockItem2)).toEqual(2400)
+    expect(getCartItemStoreCut(cartItem, stockItemPrice)).toEqual(300)
+    expect(getCartItemStoreCut(cartItem2, stockItemPrice2)).toEqual(2400)
   })
 })
 
 describe('getCartItemTotal', () => {
   it('should return the total price for an item after discounts have been applied', () => {
-    expect(getCartItemTotal(cartItem, stockItem)).toEqual(400)
-    expect(getCartItemTotal(cartItem2, stockItem2)).toEqual(11000)
+    expect(getCartItemTotal(cartItem, stockItem, stockItemPrice)).toEqual(400)
+    expect(getCartItemTotal(cartItem2, stockItem2, stockItemPrice2)).toEqual(
+      11000
+    )
   })
   it('should return the gift card amount, where the item is a gift card', () => {
-    expect(getCartItemTotal(cartItem, giftCardItem)).toEqual(3000)
+    expect(getCartItemTotal(cartItem, giftCardItem, stockItemPrice3)).toEqual(
+      3000
+    )
   })
   it('should return the misc item amount where the item is misc', () => {
-    expect(getCartItemTotal(cartItem, miscItem)).toEqual(400)
-  })
-})
-
-describe('getStoreCut', () => {
-  it('should return the store cut given the total sell and the vendor cut', () => {
-    expect(getStoreCut(stockItem)).toEqual(200)
+    expect(getCartItemTotal(cartItem, miscItem, stockItemPrice3)).toEqual(400)
   })
 })
 

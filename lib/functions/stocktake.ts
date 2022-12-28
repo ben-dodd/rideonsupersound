@@ -1,13 +1,5 @@
 import { logStocktakeAdjustment, logStocktakeKeep } from 'lib/functions/log'
 import {
-  createStockMovementInDatabase,
-  createTaskInDatabase,
-} from 'lib/database/create'
-import {
-  updateStocktakeInDatabase,
-  updateStocktakeTemplateInDatabase,
-} from 'lib/database/update'
-import {
   ClerkObject,
   StockMovementTypes,
   StockObject,
@@ -26,42 +18,43 @@ export function writeStocktakeFilterDescription(
 ) {
   const maxNum = 20
   let filters = []
-  if (stocktake?.media_enabled)
+  if (stocktake?.mediaEnabled && stocktake?.mediaList?.length > 0)
     filters?.push(
       `Media Filters: ${
-        stocktake?.media_list?.length < maxNum
-          ? stocktake?.media_list?.join?.(', ')
-          : `${stocktake?.media_list?.length} Media Types`
+        stocktake?.mediaList?.length < maxNum
+          ? stocktake?.mediaList?.join?.(', ')
+          : `${stocktake?.mediaList?.length} Media Types`
       }`
     )
-  if (stocktake?.format_enabled)
+  if (stocktake?.formatEnabled && stocktake?.formatList?.length > 0)
     filters?.push(
       `Format Filters: ${
-        stocktake?.format_list?.length < maxNum
-          ? stocktake?.format_list?.join?.(', ')
-          : `${stocktake?.format_list?.length} Formats`
+        stocktake?.formatList?.length < maxNum
+          ? stocktake?.formatList?.join?.(', ')
+          : `${stocktake?.formatList?.length} Formats`
       }`
     )
-  if (stocktake?.section_enabled)
+  if (stocktake?.sectionEnabled && stocktake?.sectionList?.length > 0)
     filters?.push(
       `Section Filters: ${
-        stocktake?.section_list?.length < maxNum
-          ? stocktake?.section_list?.join?.(', ')
-          : `${stocktake?.section_list?.length} Sections`
+        stocktake?.sectionList?.length < maxNum
+          ? stocktake?.sectionList?.join?.(', ')
+          : `${stocktake?.sectionList?.length} Sections`
       }`
     )
-  if (stocktake?.vendor_enabled)
+  if (stocktake?.vendorEnabled && stocktake?.vendorList?.length > 0)
     filters?.push(
       `Vendor Filters: ${
-        stocktake?.vendor_list?.length < maxNum
-          ? stocktake?.vendor_list?.join?.(', ')
-          : `${stocktake?.vendor_list?.length} Vendors`
+        stocktake?.vendorList?.length < maxNum
+          ? stocktake?.vendorList?.join?.(', ')
+          : `${stocktake?.vendorList?.length} Vendors`
       }`
     )
   if (filters?.length > 0) {
     return filters?.join?.(', ')
   } else return 'No Filters'
 }
+// TODO move process stocktake to db function
 
 export function processStocktake(
   stocktake: StocktakeObject,
@@ -72,39 +65,39 @@ export function processStocktake(
 ) {
   let tasks = []
   stocktakeItems?.forEach(async (item: StocktakeItemObject) => {
-    if (item?.quantity_counted === item?.quantity_recorded) {
+    if (item?.quantityCounted === item?.quantityRecorded) {
       // Do nothing
-    } else if (item?.review_decision === StocktakeReviewDecisions?.keep) {
+    } else if (item?.reviewDecision === StocktakeReviewDecisions?.keep) {
       logStocktakeKeep(item, inventory, clerk)
     } else if (
-      item?.review_decision === StocktakeReviewDecisions?.review ||
-      !item?.review_decision
+      item?.reviewDecision === StocktakeReviewDecisions?.review ||
+      !item?.reviewDecision
     ) {
       let newTask: TaskObject = {
         description: `Review stock take. ${getItemSkuDisplayName(
-          getItemById(item?.stock_id, inventory)
-        )}. ${item?.quantity_counted} counted, ${
-          item?.quantity_recorded
+          getItemById(item?.stockId, inventory)
+        )}. ${item?.quantityCounted} counted, ${
+          item?.quantityRecorded
         } in the system.`,
-        created_by_clerk_id: clerk?.id,
-        date_created: dayjs.utc().format(),
+        createdByClerkId: clerk?.id,
+        dateCreated: dayjs.utc().format(),
       }
       const id = await createTaskInDatabase(newTask)
       tasks?.push({ ...newTask, id })
     } else {
       let act = StockMovementTypes?.Adjustment
-      if (item?.review_decision === StocktakeReviewDecisions?.discard)
+      if (item?.reviewDecision === StocktakeReviewDecisions?.discard)
         act = StockMovementTypes?.Discarded
-      else if (item?.review_decision === StocktakeReviewDecisions?.found)
+      else if (item?.reviewDecision === StocktakeReviewDecisions?.found)
         act = StockMovementTypes?.Found
-      else if (item?.review_decision === StocktakeReviewDecisions?.lost)
+      else if (item?.reviewDecision === StocktakeReviewDecisions?.lost)
         act = StockMovementTypes?.Lost
-      else if (item?.review_decision === StocktakeReviewDecisions?.return)
+      else if (item?.reviewDecision === StocktakeReviewDecisions?.return)
         act = StockMovementTypes?.Returned
       createStockMovementInDatabase({
         item: {
-          item_id: item?.stock_id,
-          quantity: `${item?.quantity_difference}`,
+          itemId: item?.stockId,
+          quantity: `${item?.quantityDifference}`,
         },
         clerk,
         act,

@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { StockObject } from 'lib/types'
-import { DiscogsItem } from './types'
+import { DiscogsItem } from 'lib/types/discogs'
 
 export async function getDiscogsOptions({
   query,

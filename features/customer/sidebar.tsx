@@ -83,7 +83,7 @@ export default function CreateCustomerSidebar() {
 
   async function onClickUpdateCustomer() {
     setSubmitting(true)
-    updateCustomer(customer)
+    updateCustomer(customer, customer?.id)
     closeSidebar()
   }
   // Constants

@@ -6,8 +6,8 @@ export function getLabelPrinterCSV(items) {
     getItemSku(item),
     item?.artist,
     item?.title,
-    item?.is_new ? 'NEW' : 'USED',
-    `$${Math.round(centsToDollars(item?.total_sell))}`,
+    item?.isNew ? 'NEW' : 'USED',
+    `$${Math.round(centsToDollars(item?.totalSell))}`,
     `${item?.section || ''}${
       item?.section && item?.country === 'New Zealand' ? '/' : ''
     }${item?.country === 'New Zealand' ? 'NZ' : ''}`,
