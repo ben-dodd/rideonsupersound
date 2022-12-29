@@ -4,9 +4,9 @@ const Title = ({ item }) => {
   return (
     <div>
       <div className="font-bold text-md">{`${
-        item?.title || item?.displayAs || 'Untitled'
+        item?.displayAs || item?.title || 'Untitled'
       }`}</div>
-      <div className="text-md">{`${item?.artist || 'Untitled'}`}</div>
+      <div className="text-md">{`${item?.artist || ''}`}</div>
     </div>
   )
 }
