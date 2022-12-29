@@ -67,6 +67,12 @@ export function getProfitMargin(price: any) {
   else return ''
 }
 
+export function getStoreCut(price: any) {
+  let sellNum = price?.totalSell || 0,
+    costNum = price?.vendorCut || 0
+  return sellNum - costNum
+}
+
 export function writeItemList(
   inventory: StockObject[],
   items: SaleItemObject[]

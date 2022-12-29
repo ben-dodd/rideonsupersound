@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { StockObject } from 'lib/types'
+import { StockItemObject } from 'lib/types'
 import { DiscogsItem } from 'lib/types/discogs'
 
 export async function getDiscogsOptions({
@@ -125,7 +125,7 @@ export function getFormatFromDiscogs(formats: string[]) {
   return format
 }
 
-export function getPriceSuggestion(item: StockObject) {
+export function getPriceSuggestion(item: StockItemObject) {
   if (item?.discogsItem?.priceSuggestions) {
     const priceSuggestions = item?.discogsItem?.priceSuggestions
     return priceSuggestions[item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)']

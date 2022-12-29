@@ -1,41 +1,34 @@
 import RadioButton from 'components/inputs/radio-button'
 import SettingsSelect from 'components/inputs/settings-select'
 import TextField from 'components/inputs/text-field'
-import { getPriceSuggestion } from 'lib/types/discogs'
+import { getPriceSuggestion } from 'lib/functions/discogs'
 import {
   getImageSrc,
   getItemDisplayName,
   getItemSku,
 } from 'lib/functions/displayInventory'
-import { getProfitMargin } from 'features/pay/lib/functions'
-import { getStoreCut } from 'lib/functions/sell'
+import { getProfitMargin, getStoreCut } from 'lib/functions/pay'
 import { useAppStore } from 'lib/store'
-import { StockObject } from 'lib/types'
+import { StockItemObject, StockItemPriceObject } from 'lib/types'
 
 export default function ListItem({ receiveItem }) {
   const { updateReceiveBasketItem } = useAppStore()
-  const item: StockObject = receiveItem?.item
+  const {
+    item = {},
+    price = {},
+  }: { item: StockItemObject; price: StockItemPriceObject } = receiveItem || {}
   const priceSuggestion = getPriceSuggestion(item)
+  const totalSell = parseFloat(
+    receiveItem?.totalSell || (price?.totalSell || 0) / 100
+  )
+  const vendorCut = parseFloat(
+    receiveItem?.vendorCut || (price?.vendorCut || 0) / 100
+  )
   const profitMargin = getProfitMargin({
-    totalSell: parseFloat(
-      receiveItem?.totalSell ||
-        (item?.totalSell ? `${item?.totalSell / 100}` : '')
-    ),
-    vendorCut: parseFloat(
-      receiveItem?.vendorCut ||
-        (item?.vendorCut ? `${item?.vendorCut / 100}` : '')
-    ),
+    totalSell,
+    vendorCut,
   })
-  const storeCut = getStoreCut({
-    totalSell: parseFloat(
-      receiveItem?.totalSell ||
-        (item?.totalSell ? `${item?.totalSell / 100}` : '')
-    ),
-    vendorCut: parseFloat(
-      receiveItem?.vendorCut ||
-        (item?.vendorCut ? `${item?.vendorCut / 100}` : '')
-    ),
-  })
+  const storeCut = getStoreCut({ totalSell, vendorCut })
 
   return (
     <div className="flex justify-between my-2 border-b">

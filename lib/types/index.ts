@@ -281,18 +281,14 @@ export interface StockListItemObject {
   vendorCut?: number
   totalSell?: number
   quantity?: number
-  quantityLayby?: number
-  quantityUnlayby?: number
+  quantityLayby?: Number
   quantityHold?: number
-  quantityUnhold?: number
   needsRestock?: boolean
 }
 
-export interface StockObject {
+export interface StockItemObject {
   id?: number
-  sku?: string
   vendorId?: number
-  vendorName?: string
   artist?: string
   title?: string
   displayAs?: string
@@ -320,22 +316,6 @@ export interface StockObject {
   dateCreated?: string
   dateLastStocktake?: string
   dateModified?: string
-  isDeleted?: boolean
-  vendorCut?: number
-  totalSell?: number
-  quantity?: number
-  quantityReceived?: number
-  quantityReturned?: number
-  quantityLost?: number
-  quantityFound?: number
-  quantityDiscarded?: number
-  quantityLayby?: number
-  quantityUnlayby?: number
-  quantityHold?: number
-  quantityUnhold?: number
-  quantitySold?: number
-  quantityUnsold?: number
-  quantityAdjustment?: number
   tags?: string[]
   isGiftCard?: boolean
   giftCardCode?: string
@@ -347,10 +327,37 @@ export interface StockObject {
   miscItemAmount?: number
   googleBooksItem?: any
   discogsItem?: any
-  needsRestock?: boolean
-  stockMovements?: any[]
+  isDeleted?: boolean
+}
+
+export interface StockItemPriceObject {
+  totalSell?: number
+  vendorCut?: number
+  storeCut?: number
+}
+
+export interface StockQuantitiesObject {
+  inStock?: number
+  layby?: number
+  hold?: number
+  received?: number
+  sold?: number
+  returned?: number
+  laybyHold?: number
+  discarded?: number
+  lost?: number
+  discardedLost?: number
+  refunded?: number
+  adjustment?: number
+}
+
+export interface StockObject {
+  item?: StockItemObject
+  quantities?: StockQuantitiesObject
+  price?: StockItemPriceObject
   sales?: any[]
-  prices?: any[]
+  stockMovements?: StockMovementObject[]
+  stockPrices?: StockPriceObject[]
 }
 
 export interface StockPriceObject {

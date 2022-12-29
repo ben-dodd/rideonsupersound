@@ -1,14 +1,14 @@
-import { StockObject, VendorObject } from 'lib/types'
+import { StockItemObject, StockListItemObject, VendorObject } from 'lib/types'
 
-export function getItemById(item_id: number, inventory: StockObject[]) {
+export function getItemById(item_id: number, inventory: StockItemObject[]) {
   return inventory?.find((i) => i?.id === item_id)
 }
 
-export function getItemSkuDisplayName(item: StockObject) {
+export function getItemSkuDisplayName(item: StockItemObject) {
   return `[${getItemSku(item)}] ${getItemDisplayName(item)}`
 }
 
-export function getItemSku(item: StockObject) {
+export function getItemSku(item: StockItemObject) {
   return item
     ? `${('000' + item?.vendorId || '').slice(-3)}/${(
         '00000' + item?.id || ''
@@ -16,7 +16,7 @@ export function getItemSku(item: StockObject) {
     : null
 }
 
-export function getItemDisplayName(item: StockObject) {
+export function getItemDisplayName(item: StockItemObject) {
   // Add special cases e.g. for comics
   // Might be better as a span component
   if (item?.isGiftCard)
@@ -30,7 +30,7 @@ export function getItemDisplayName(item: StockObject) {
   }`
 }
 
-export function getImageSrc(item: StockObject) {
+export function getImageSrc(item: StockItemObject) {
   let src = 'default'
   if (item?.imageUrl) return item.imageUrl
   if (item?.isGiftCard) src = 'giftCard'
@@ -47,7 +47,10 @@ export function getImageSrc(item: StockObject) {
   return `${process.env.NEXT_PUBLIC_RESOURCE_URL}img/${src}.png`
 }
 
-export function mapInventoryItem(item: StockObject, vendors: VendorObject[]) {
+export function mapInventoryItem(
+  item: StockListItemObject,
+  vendors: VendorObject[]
+) {
   return {
     id: item?.id,
     title: item?.title || '-',
@@ -72,16 +75,16 @@ export function mapInventoryItem(item: StockObject, vendors: VendorObject[]) {
         : 0,
     quantity: item?.quantity || 0,
     quantityReceived: item?.quantityReceived || 0,
-    quantityHoldLayby: getHoldQuantity(item) + getLaybyQuantity(item),
+    quantityHoldLayby: item?.quantityHold + item?.quantityLayby,
     quantityReturned: Math.abs(item?.quantityReturned || 0),
     quantitySold: Math.abs(item?.quantitySold || 0),
   }
 }
 
-export function getHoldQuantity(item: StockObject) {
-  return ((item?.quantityHold || 0) + (item?.quantityUnhold || 0)) * -1
-}
+// export function getHoldQuantity(item: StockListItemObject) {
+//   return ((item?.quantityHold || 0) + (item?.quantityUnhold || 0)) * -1
+// }
 
-export function getLaybyQuantity(item: StockObject) {
-  return ((item?.quantityLayby || 0) + (item?.quantityUnlayby || 0)) * -1
-}
+// export function getLaybyQuantity(item: StockListItemObject) {
+//   return ((item?.quantityLayby || 0) + (item?.quantityUnlayby || 0)) * -1
+// }
