@@ -5,9 +5,9 @@ const connection = require('./conn')
 
 export function dbGetStockList(db = connection) {
   return db('stock')
-    .join('stock_movement', 'stock.id', '=', 'stock_movement.stock_id')
-    .join('stock_price', 'stock.id', '=', 'stock_price.stock_id')
-    .join('vendor', 'stock.vendor_id', '=', 'vendor.id')
+    .leftJoin('stock_movement', 'stock.id', 'stock_movement.stock_id')
+    .leftJoin('stock_price', 'stock.id', 'stock_price.stock_id')
+    .leftJoin('vendor', 'stock.vendor_id', 'vendor.id')
     .groupBy('stock.id')
     .select(
       'stock.id',
@@ -25,12 +25,18 @@ export function dbGetStockList(db = connection) {
       'stock.image_url',
       'stock.needs_restock',
       'stock_price.vendor_cut',
-      'stock_price.total_sell'
+      'stock_price.total_sell',
+      knex.raw('SUM(stock_movement.quantity) as total_quantity'),
+      knex.raw(
+        'SUM(CASE WHEN stock_movement.act IN ("hold", "unhold") THEN stock_movement.quantity ELSE 0 END) as hold_quantity'
+      ),
+      knex.raw(
+        'SUM(CASE WHEN stock_movement.act IN ("layby", "unlayby") THEN stock_movement.quantity ELSE 0 END) as layby_quantity'
+      )
     )
-    .sum('stock_movement.quantity as quantity')
     .where(`stock.is_deleted`, 0)
-    .andWhere(`stock.is_misc_item`, 0)
-    .andWhere(`stock.is_gift_card`, 0)
+    .where(`stock.is_misc_item`, 0)
+    .where(`stock.is_gift_card`, 0)
     .andWhereRaw(
       `(stock_price.id = (SELECT MAX(id) FROM stock_price WHERE stock_id = stock.id))`
     )
@@ -371,7 +377,7 @@ export function dbCheckIfRestockNeeded(itemId, db = connection) {
     .first()
     .then((res) =>
       res.totalQuantity > 0
-        ? dbUpdateStockItem(itemId, { needsRestock: true }, db).then(() => true)
+        ? dbUpdateStockItem({ needsRestock: true }, itemId, db).then(() => true)
         : false
     )
 }

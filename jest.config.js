@@ -26,6 +26,7 @@ const customJestConfig = {
     '^lib/(.*)$': '<rootDir>/lib/$1',
     '^features/(.*)$': '<rootDir>/features/$1',
     '^views/(.*)$': '<rootDir>/views/$1',
+    uuid: require.resolve('uuid'),
     // './(.*)$/': '$1',
   },
 }

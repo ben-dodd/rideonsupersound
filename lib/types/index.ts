@@ -264,6 +264,30 @@ export interface VendorObject {
   lastSold?: string
 }
 
+export interface StockListItemObject {
+  id?: number
+  vendorId?: number
+  vendorName?: string
+  artist?: string
+  title?: string
+  displayAs?: string
+  media?: string
+  format?: string
+  section?: string
+  isNew?: boolean
+  cond?: string
+  country?: string
+  imageUrl?: string
+  vendorCut?: number
+  totalSell?: number
+  quantity?: number
+  quantityLayby?: number
+  quantityUnlayby?: number
+  quantityHold?: number
+  quantityUnhold?: number
+  needsRestock?: boolean
+}
+
 export interface StockObject {
   id?: number
   sku?: string

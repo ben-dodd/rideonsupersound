@@ -10,7 +10,7 @@ export default function MenuItem({ item, defaultOnClick }) {
   ) : (
     <li
       className={`flex cursor-pointer content-center p-2 py-3 ${
-        router.pathname === item?.page
+        router?.pathname === item?.page
           ? 'text-white hover:bg-black bg-black'
           : item?.class || ''
       }`}

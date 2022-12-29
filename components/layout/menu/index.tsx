@@ -4,17 +4,6 @@ import { useAppStore } from 'lib/store'
 import { useRestockList } from 'lib/api/stock'
 import { useJobsToDo } from 'lib/api/jobs'
 
-// Types
-type MenuType = {
-  type: string
-  page: string
-  text: string
-  badge: any
-  class: string
-  icon: any
-  onClick: any
-}
-
 export default function MenuView() {
   const { cart } = useAppStore()
   const { jobsToDo } = useJobsToDo()
