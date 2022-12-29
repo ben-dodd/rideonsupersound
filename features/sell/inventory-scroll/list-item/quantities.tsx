@@ -20,9 +20,11 @@ const Quantities = ({ item, itemQuantity }) => {
         }`}</div>
       </Tooltip>
       <Tooltip title="You can change the price in the item details screen.">
-        <div className="text-xl">{`$${((item?.totalSell || 0) / 100)?.toFixed(
-          2
-        )}`}</div>
+        <div className="text-xl">
+          {item?.totalSell === undefined || item?.totalSell === null
+            ? 'N/A'
+            : `$${(item?.totalSell / 100)?.toFixed(2)}`}
+        </div>
       </Tooltip>
     </div>
   )
