@@ -1,11 +1,4 @@
-import { saveSystemLog } from 'lib/functions/log'
-import {
-  CartObject,
-  ClerkObject,
-  HoldObject,
-  SaleItemObject,
-  SaleObject,
-} from 'lib/types'
+import { CartObject, ClerkObject, HoldObject, SaleItemObject } from 'lib/types'
 import { axiosAuth, useData } from './'
 
 export function useSaleItemsForSale(saleId) {

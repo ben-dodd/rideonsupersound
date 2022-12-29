@@ -1,4 +1,4 @@
-import { HelpObject } from '../../../lib/types/help'
+import { HelpObject } from 'lib/types/help'
 
 type HelpListItemProps = {
   help: HelpObject

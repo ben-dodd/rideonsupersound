@@ -1,7 +1,4 @@
 import axios from 'axios'
-import { useAppStore } from 'lib/store'
-import useSWR from 'swr'
-import { useData } from './'
 
 export function get(url, params = {}, callback = null) {
   return axios(url, params)

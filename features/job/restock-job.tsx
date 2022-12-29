@@ -2,8 +2,7 @@
 import { getItemSkuDisplayName } from 'lib/functions/displayInventory'
 import { logRestockItem } from 'lib/functions/log'
 import { StockObject } from 'lib/types'
-import { useAtom } from 'jotai'
-import { completeRestockTask } from '../../../lib/functions/job'
+import { completeRestockTask } from 'lib/functions/job'
 import { useStockList } from 'lib/api/stock'
 import { useClerk } from 'lib/api/clerk'
 

@@ -1,5 +1,4 @@
 import dayjs from 'dayjs'
-import { createMailOrderTask } from 'lib/api/jobs'
 import {
   PaymentMethodTypes,
   RoleTypes,

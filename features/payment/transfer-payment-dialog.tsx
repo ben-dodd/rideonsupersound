@@ -18,13 +18,10 @@ export default function TransferVendorPaymentDialog() {
   const [submitting, setSubmitting] = useState(false)
   const [vendorPayId, setVendorPay]: [any, Function] = useState(0)
   const [vendorReceiveId, setVendorReceive]: [number, Function] = useState(0)
-  const { vendor: payVendor, isVendorLoading: isPayVendorLoading } =
-    useVendor(vendorPayId)
-  const { vendor: receiveVendor, isVendorLoading: isReceiveVendorLoading } =
-    useVendor(vendorReceiveId)
+  const { vendor: payVendor } = useVendor(vendorPayId)
+  const { vendor: receiveVendor } = useVendor(vendorReceiveId)
   const [payment, setPayment] = useState('0')
   const [notes, setNotes] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
   const buttons: ModalButton[] = [
     {
       type: 'cancel',

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ModalButton, StockObject } from 'lib/types'
 import ScreenContainer from 'components/container/screen'
-import { processStocktake } from '../../../../../lib/functions/stocktake'
+import { processStocktake } from 'lib/functions/stocktake'
 import CountItems from './count-items'
 import ReviewItems from './review-items'
 import { useClerk } from 'lib/api/clerk'

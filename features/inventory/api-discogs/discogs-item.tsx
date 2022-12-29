@@ -3,7 +3,7 @@ import { StockObject } from 'lib/types'
 import { andList } from 'lib/utils'
 import { useEffect, useState } from 'react'
 import ReactPlayer from 'react-player'
-import { DiscogsItem } from '../../../lib/types/discogs'
+import { DiscogsItem } from 'lib/types/discogs'
 
 interface discogsProps {
   discogsItem: DiscogsItem

@@ -5,8 +5,8 @@ import {
   getImageSrc,
   getItemDisplayName,
   getItemSku,
-} from '../../../../../lib/functions/displayInventory'
-import { getLabelPrinterCSV } from '../../../../../lib/functions/printLabels'
+} from 'lib/functions/displayInventory'
+import { getLabelPrinterCSV } from 'lib/functions/printLabels'
 import { useClerk } from 'lib/api/clerk'
 
 export default function PrintLabel({ receivedStock }) {

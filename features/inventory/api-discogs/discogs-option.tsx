@@ -1,10 +1,8 @@
-import {
-  setDiscogsItemToStockItem,
-  DiscogsItem,
-} from '../../../../../lib/types/discogs'
+import { DiscogsItem } from 'lib/types/discogs'
 import { updateStockItem } from 'lib/api/stock'
 import { useRouter } from 'next/router'
 import { useSWRConfig } from 'swr'
+import { setDiscogsItemToStockItem } from 'lib/functions/discogs'
 
 export default function DiscogsOption({
   discogsOption,

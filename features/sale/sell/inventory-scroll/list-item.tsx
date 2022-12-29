@@ -9,7 +9,7 @@ import {
   getItemSku,
   getLaybyQuantity,
 } from 'lib/functions/displayInventory'
-import { getItemQuantity, skuScan } from '../../../../../lib/functions/sell'
+import { getItemQuantity, skuScan } from 'lib/functions/sell'
 import { useRouter } from 'next/router'
 import { useAppStore } from 'lib/store'
 import { useClerk } from 'lib/api/clerk'

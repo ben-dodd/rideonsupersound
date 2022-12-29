@@ -1,4 +1,4 @@
-import dayjs from 'dayjs'
+import dayjs, { extend } from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { useClerks } from 'lib/api/clerk'
 import { useCustomers } from 'lib/api/customer'
@@ -7,7 +7,7 @@ import { CustomerObject, OpenWeatherObject, SaleStateTypes } from 'lib/types'
 import { convertDegToCardinal, convertMPStoKPH } from 'lib/utils'
 // TODO need to fix cart/sale types
 export default async function SaleDetails({ cart }: { cart: any }) {
-  dayjs.extend(utc)
+  extend(utc)
   // SWR
   const { clerks } = useClerks()
   const { customers } = useCustomers()

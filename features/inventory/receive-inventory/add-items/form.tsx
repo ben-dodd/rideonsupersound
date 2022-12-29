@@ -1,8 +1,8 @@
-import InventoryItemForm from 'features/inventory/features/item-stock/components/stock-edit-dialog'
 import { StockObject } from 'lib/types'
 import { ChevronRight } from '@mui/icons-material'
 import { useState } from 'react'
 import { useAppStore } from 'lib/store'
+import StockEditDialog from 'features/inventory/item-stock/stock-edit-dialog'
 
 export default function Form() {
   const { addReceiveBasketItem } = useAppStore()
@@ -19,7 +19,7 @@ export default function Form() {
           Add Item <ChevronRight />
         </button>
       </div>
-      <InventoryItemForm item={item} setItem={setItem} />
+      <StockEditDialog item={item} setItem={setItem} />
     </div>
   )
 }

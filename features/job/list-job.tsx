@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ClerkObject, TaskObject } from 'lib/types'
 import dayjs from 'dayjs'
-import { completeTask } from '../../../lib/functions/job'
+import { completeTask } from 'lib/functions/job'
 import { useClerk, useClerks } from 'lib/api/clerk'
 
 type ListItemProps = {

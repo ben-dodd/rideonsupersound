@@ -1,7 +1,7 @@
 import { NextApiResponse } from 'next'
 import { requireScope } from 'lib/api/utils'
 import { NextAuthenticatedApiRequest } from '@serverless-jwt/next/dist/types'
-import { createVendorNames } from 'lib/database/vendor'
+import { dbGetVendorNames } from 'lib/database/vendor'
 
 const apiRoute = async (
   req: NextAuthenticatedApiRequest,
@@ -9,7 +9,7 @@ const apiRoute = async (
 ) => {
   if (req.method === 'GET') {
     try {
-      return getVendorNames().then((data) => res.status(200).json(data))
+      return dbGetVendorNames().then((data) => res.status(200).json(data))
     } catch (error) {
       res.status(error.status || 500).json({
         code: error.code,

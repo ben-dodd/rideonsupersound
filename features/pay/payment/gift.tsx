@@ -1,4 +1,4 @@
-import dayjs from 'dayjs'
+import dayjs, { extend } from 'dayjs'
 import UTC from 'dayjs/plugin/utc'
 import { useEffect, useMemo, useState } from 'react'
 import {
@@ -13,7 +13,6 @@ import SyncIcon from '@mui/icons-material/Sync'
 // Components
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
-import { logSalePaymentGift } from 'lib/functions/log'
 import { makeGiftCardCode } from 'lib/functions/sell'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
@@ -21,10 +20,9 @@ import { ViewProps } from 'lib/store/types'
 import { useSaleProperties } from 'lib/hooks'
 import { useCurrentRegisterId } from 'lib/api/register'
 import { useGiftCards } from 'lib/api/stock'
-import { useLogs } from 'lib/api/log'
 
 export default function Gift() {
-  dayjs.extend(UTC)
+  extend(UTC)
   const { clerk } = useClerk()
   const { view, cart, closeView, setAlert, addCartTransaction } = useAppStore()
   const { sale = {} } = cart || {}

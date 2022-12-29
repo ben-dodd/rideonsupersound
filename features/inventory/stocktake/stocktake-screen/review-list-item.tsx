@@ -4,7 +4,6 @@ import {
   getItemDisplayName,
   getItemSku,
 } from 'lib/functions/displayInventory'
-import { updateStocktakeItemInDatabase } from 'lib/database/update'
 import {
   StockObject,
   StocktakeItemObject,

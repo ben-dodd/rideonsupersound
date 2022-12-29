@@ -1,4 +1,3 @@
-import ListTask from 'features/job/components/list-job'
 import { useJobs } from 'lib/api/jobs'
 import { TaskObject } from 'lib/types'
 import dayjs from 'dayjs'

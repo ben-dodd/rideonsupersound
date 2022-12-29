@@ -17,9 +17,8 @@ const apiRoute = async (
   //     })
   //   }
   if (req.method === 'POST') {
-    const { vendor } = req.body
     try {
-      return dbCreateVendorPayment(payment).then((data) =>
+      return dbCreateVendorPayment(req.body).then((data) =>
         res.status(200).json(data)
       )
     } catch (error) {

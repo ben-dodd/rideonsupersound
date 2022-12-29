@@ -8,7 +8,7 @@ import {
   getImageSrc,
   getItemDisplayName,
   getItemSku,
-} from '../../../../../lib/functions/displayInventory'
+} from 'lib/functions/displayInventory'
 import { createVendor, useVendors } from 'lib/api/vendor'
 import { updateStockItem, useStockItem } from 'lib/api/stock'
 import router from 'next/router'

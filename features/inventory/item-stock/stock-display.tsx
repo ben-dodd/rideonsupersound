@@ -3,7 +3,7 @@ import {
   getImageSrc,
   getItemDisplayName,
   getItemSku,
-} from '../../../../../lib/functions/displayInventory'
+} from 'lib/functions/displayInventory'
 import { useClerk } from 'lib/api/clerk'
 import { useVendors } from 'lib/api/vendor'
 import router from 'next/router'

@@ -1,7 +1,6 @@
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import Layout from 'components/layout'
-import StocktakeListScreen from 'features/inventory/features/stocktake/components/stocktake-list-screen'
-import StocktakeTemplateScreen from 'features/inventory/features/stocktake/components/stocktake-template-screen'
+import StocktakeListScreen from 'features/inventory/stocktake/stocktake-list-screen'
 
 export default function StocktakePage() {
   return (

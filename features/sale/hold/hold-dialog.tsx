@@ -11,7 +11,7 @@ import {
 } from 'lib/functions/log'
 import { updateHoldInDatabase } from 'lib/database/update'
 import dayjs from 'dayjs'
-import { returnHoldToStock } from '../../../../../lib/functions/hold'
+import { returnHoldToStock } from 'lib/functions/hold'
 import HoldListItem from './list-item'
 import { useWeather } from 'lib/api/external'
 import { useAppStore } from 'lib/store'

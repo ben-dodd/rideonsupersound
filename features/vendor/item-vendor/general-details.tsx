@@ -6,7 +6,6 @@ import Select from 'react-select'
 import MaskedInput from 'react-text-mask'
 
 import { saveLog } from 'lib/functions/log'
-import { deleteVendorFromDatabase } from 'lib/database/delete'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { useClerk, useClerks } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
@@ -74,7 +73,7 @@ export default function GeneralDetails({ editVendor, setEditVendor }) {
         vendor?.items?.length > 0
           ? () => {}
           : async () =>
-              deleteVendorFromDatabase(vendor?.id)?.then(() => {
+              deleteVendor(vendor?.id)?.then(() => {
                 saveLog(
                   `Vendor #${vendor?.id} ${vendor?.name} deleted.`,
                   clerk?.id,

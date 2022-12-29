@@ -1,12 +1,4 @@
-// Packages
-import { useAtom } from 'jotai'
-
-import { loadedItemIdAtom } from 'lib/atoms'
-
-// Components
 import TextField from 'components/inputs/text-field'
-
-// Icons
 import {
   getImageSrc,
   getItemDisplayName,
@@ -14,6 +6,7 @@ import {
 } from 'lib/functions/displayInventory'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
+import { useVendors } from 'lib/api/vendor'
 
 export default function CountedListItem({
   stocktakeItem,
@@ -23,7 +16,6 @@ export default function CountedListItem({
   const { stocktakeItems, mutateStocktakeItems } = useStocktakeItemsByStocktake(
     stocktake?.id
   )
-  const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom)
   const { vendors } = useVendors()
   const vendor = vendors?.filter((v) => v?.id === stockItem?.vendor_id)?.[0]
   return (

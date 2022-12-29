@@ -9,7 +9,7 @@ import { createStockItem } from 'lib/api/stock'
 
 export default function MiscItemDialog() {
   const { clerk } = useClerk()
-  const { view, addCartItem, setAlert, openView, closeView } = useAppStore()
+  const { view, addCartItem, setAlert, closeView } = useAppStore()
   const [description, setDescription] = useState('')
   const [amount, setAmount] = useState('')
   const [note, setNote] = useState('')

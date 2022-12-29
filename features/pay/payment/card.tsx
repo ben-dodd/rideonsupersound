@@ -9,13 +9,11 @@ import {
 // Components
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
-import { logSalePaymentCard } from 'lib/functions/log'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useSaleProperties } from 'lib/hooks'
 import { useCurrentRegisterId } from 'lib/api/register'
-import { useCustomers } from 'lib/api/customer'
 
 export default function Cash() {
   const { clerk } = useClerk()

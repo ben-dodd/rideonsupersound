@@ -1,4 +1,3 @@
-import { saveSystemLog } from 'lib/functions/log'
 import {
   ClerkObject,
   SaleItemObject,

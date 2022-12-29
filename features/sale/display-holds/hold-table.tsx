@@ -8,19 +8,12 @@ import {
 import { saveSystemLog } from 'lib/functions/log'
 import { CustomerObject, HoldObject, StockObject } from 'lib/types'
 import dayjs from 'dayjs'
-import { useAtom } from 'jotai'
 import { useMemo } from 'react'
+import { useCustomers } from 'lib/api/customer'
 
 export default function HoldTable() {
-  // SWR
   const { customers, isCustomersLoading } = useCustomers()
   const { holds, isHoldsLoading } = useHolds()
-  const { inventory, isInventoryLoading } = useInventory()
-
-  // Atoms
-  const [view, setView] = useAtom(viewAtom)
-  const [loadedHoldId, setLoadedHoldId] = useAtom(loadedHoldIdAtom)
-  const [customer, setCustomer] = useAtom(loadedCustomerObjectAtom)
 
   // Constants
   const data = useMemo(

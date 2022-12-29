@@ -1,9 +1,8 @@
 import SyncIcon from '@mui/icons-material/Sync'
 import { useEffect, useState } from 'react'
-import { getDiscogsOptions } from '../../../../../lib/types/discogs'
+import { getDiscogsOptions } from 'lib/functions/discogs'
 import DiscogsItem from './discogs-item'
 import DiscogsOption from './discogs-option'
-import { useAppStore } from 'lib/store'
 import { useRouter } from 'next/router'
 import { updateStockItem, useStockItem } from 'lib/api/stock'
 import { useSWRConfig } from 'swr'
@@ -11,8 +10,7 @@ import { useSWRConfig } from 'swr'
 export default function DiscogsPanel() {
   const router = useRouter()
   const { id } = router.query
-  const { openConfirm, view, openView } = useAppStore()
-  const { stockItem, isStockItemLoading } = useStockItem(`${id}`)
+  const { stockItem } = useStockItem(`${id}`)
   const { item = {} } = stockItem || {}
   const [discogsOptions, setDiscogsOptions] = useState(null)
   const discogsItem = item?.discogsItem || null

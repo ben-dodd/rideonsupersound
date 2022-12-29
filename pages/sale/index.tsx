@@ -1,7 +1,7 @@
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import Layout from 'components/layout'
-import SaleList from 'features/sale/features/display-sales/sale-list'
-import SaleTable from 'features/sale/features/display-sales/sale-table'
+import SaleList from 'features/sale/display-sales/sale-list'
+import SaleTable from 'features/sale/display-sales/sale-table'
 import { useAppStore } from 'lib/store'
 
 // REVIEW add filter buttons to table for laybys etc.

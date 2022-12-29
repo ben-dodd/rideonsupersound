@@ -1,6 +1,6 @@
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import Layout from 'components/layout'
-import LaybyTable from '../../features/sale/features/display-laybys/layby-table'
+import LaybyTable from 'features/sale/display-laybys/layby-table'
 
 // REVIEW add filter buttons to table for laybys etc.
 

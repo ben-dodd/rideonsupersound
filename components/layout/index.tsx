@@ -1,12 +1,12 @@
 import Head from 'next/head'
 import Nav from './nav'
 import Menu from './menu'
-import HelpDialog from 'features/help/components'
 import ConfirmModal from 'components/modal/confirm-modal'
 import SnackAlert from 'components/alert'
 import { useClerk } from 'lib/api/clerk'
 import Loading from 'components/loading'
 import { useAppStore } from 'lib/store'
+import HelpDialog from 'features/help'
 
 export default function Layout({ children }) {
   const { alert, view, confirmModal } = useAppStore()

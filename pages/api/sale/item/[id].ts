@@ -1,7 +1,7 @@
 import { NextApiResponse } from 'next'
 import { requireScope } from 'lib/api/utils'
 import { NextAuthenticatedApiRequest } from '@serverless-jwt/next/dist/types'
-import { dbGetSale, dbUpdateSale, dbUpdateSaleItem } from 'lib/database/sale'
+import { dbGetSale, dbUpdateSaleItem } from 'lib/database/sale'
 
 const apiRoute = async (
   req: NextAuthenticatedApiRequest,

@@ -28,7 +28,7 @@ export default function ShoppingCart() {
   const { clerk } = useClerk()
   const { registerId } = useCurrentRegisterId()
   const router = useRouter()
-  const [loadingSale, setLoadingSale] = useState(false)
+  const [loadingSale] = useState(false)
 
   function deleteCartItem(cartItem) {
     let updatedCartItems = items?.filter(
@@ -85,7 +85,7 @@ export default function ShoppingCart() {
           {items?.length > 0 ? (
             items
               // .filter((cartItem: SaleItemObject) => !cartItem?.isDeleted)
-              .map((cartItem, i) => (
+              .map((cartItem) => (
                 <ListItem
                   key={cartItem?.itemId}
                   cartItem={cartItem}

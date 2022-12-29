@@ -4,7 +4,7 @@ import { VendorObject, VendorPaymentObject } from 'lib/types'
 import TableContainer from 'components/container/table'
 import Table from 'components/table'
 import dayjs from 'dayjs'
-import { mapPayment } from '../../../lib/functions/displayPayments'
+import { mapPayment } from 'lib/functions/displayPayments'
 import { useVendors } from 'lib/api/vendor'
 import { useClerks } from 'lib/api/clerk'
 

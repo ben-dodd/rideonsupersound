@@ -1,4 +1,4 @@
-import dayjs from 'dayjs'
+import dayjs, { extend } from 'dayjs'
 import UTC from 'dayjs/plugin/utc'
 import { useEffect, useState } from 'react'
 import {
@@ -10,21 +10,18 @@ import {
 // Components
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
-import { logSalePaymentCash } from 'lib/functions/log'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useSaleProperties } from 'lib/hooks'
 import { useCurrentRegisterId } from 'lib/api/register'
-import { useCustomers } from 'lib/api/customer'
-import { getCashVars } from 'features/pay/lib/functions'
+import { getCashVars } from 'lib/functions/pay'
 
 export default function Cash() {
-  dayjs.extend(UTC)
+  extend(UTC)
   const { clerk } = useClerk()
   const { view, cart, closeView, setAlert, addCartTransaction } = useAppStore()
   const { sale = {} } = cart || {}
-  const { customers = [] } = useCustomers()
   const { registerId } = useCurrentRegisterId()
   const { totalRemaining } = useSaleProperties(cart)
   const isRefund = totalRemaining < 0

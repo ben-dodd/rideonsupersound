@@ -150,7 +150,7 @@ export const useAppStore = createSelectors(
       set(
         produce((draft) => {
           Object.entries(update).forEach(
-            ([key, value]) => (draft.receiveBasket.key = value)
+            ([, value]) => (draft.receiveBasket.key = value)
           )
         })
       ),

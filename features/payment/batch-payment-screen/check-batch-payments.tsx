@@ -10,7 +10,7 @@ import {
   modulusCheck,
   writeKiwiBankBatchFile,
   writePaymentNotificationEmail,
-} from '../../../../lib/functions/payment'
+} from 'lib/functions/payment'
 
 export default function CheckBatchPayments({
   vendorList,

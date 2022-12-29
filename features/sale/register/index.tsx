@@ -5,16 +5,15 @@ import { RegisterObject, TillObject } from 'lib/types'
 import OpenIcon from '@mui/icons-material/ShoppingCart'
 import CircularProgress from '@mui/material/CircularProgress'
 import { useEffect, useState } from 'react'
-import { getAmountFromCashMap, saveAndOpenRegister } from '../lib/register'
 import CashMap from './cash-map'
 import { useAppStore } from 'lib/store'
 import { useClerk } from 'lib/api/clerk'
 import { useCurrentRegisterId } from 'lib/api/register'
+import { getAmountFromCashMap } from 'lib/functions/register'
 
 export default function OpenRegisterScreen() {
   const { clerk } = useClerk()
-  const { registerId, mutateRegisterId } = useCurrentRegisterId()
-  const { logs, mutateLogs } = useLogs()
+  const { registerId } = useCurrentRegisterId()
   const { setAlert } = useAppStore()
 
   // State
@@ -56,7 +55,7 @@ export default function OpenRegisterScreen() {
       type: 'success',
       message: 'REGISTER OPENED',
     })
-    logOpenRegister(clerk, openAmount, registerID)
+    logOpenRegister(clerk, openAmount, registerId)
   }
 
   function isError(till: TillObject) {
@@ -88,7 +87,7 @@ export default function OpenRegisterScreen() {
   return (
     <div
       className={`flex justify-center bg-white h-menu${
-        page !== 'sell' || registerID > 0 ? ' hidden' : ''
+        page !== 'sell' || registerId > 0 ? ' hidden' : ''
       }`}
     >
       <div className="flex flex-col justify-center h-full pt-4 max-w-md">

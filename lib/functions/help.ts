@@ -1,4 +1,4 @@
-import { HelpObject } from './types'
+import { HelpObject } from 'lib/types/help'
 
 export function filterHelps({ helps, page, view, search }: any) {
   if (!helps) return []

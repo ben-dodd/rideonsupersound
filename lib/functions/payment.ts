@@ -1,8 +1,8 @@
-import dayjs from 'dayjs'
+import dayjs, { extend } from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { KiwiBankTransactionObject } from '../types/payment'
 
-dayjs.extend(utc)
+extend(utc)
 
 interface KiwiBankBatchFileProps {
   transactions: KiwiBankTransactionObject[]

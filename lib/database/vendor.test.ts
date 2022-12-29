@@ -5,10 +5,7 @@ const {
   getTodo,
   addTodo,
   updateTodo,
-  completeTodo,
-  uncompleteTodo,
   deleteTodo,
-  close,
 } = require('./todos')
 
 beforeAll(() => testConn.migrate.latest())

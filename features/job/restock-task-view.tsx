@@ -1,6 +1,6 @@
-import RestockTask from 'features/job/components/restock-job'
 import { useStockList } from 'lib/api/stock'
 import { StockObject } from 'lib/types'
+import RestockJob from './restock-job'
 
 export default function RestockTaskView() {
   const { inventory, isInventoryLoading } = useStockList()
@@ -11,6 +11,6 @@ export default function RestockTaskView() {
   ) : (
     inventory
       ?.filter((item: StockObject) => item?.needsRestock)
-      .map((item: StockObject) => <RestockTask item={item} key={item?.id} />)
+      .map((item: StockObject) => <RestockJob item={item} key={item?.id} />)
   )
 }

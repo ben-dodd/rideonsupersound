@@ -1,8 +1,8 @@
 import { SaleItemObject, SaleTransactionObject } from 'lib/types'
 import dayjs from 'dayjs'
-import ItemListItem from '../item-list-item'
 import TransactionListItem from './transaction-list-item'
 import { useSaleProperties } from 'lib/hooks'
+import ItemListItem from './item-list-item'
 
 // TODO When sale is completed, make an obvious popup
 

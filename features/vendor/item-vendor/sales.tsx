@@ -1,7 +1,7 @@
 // DB
 import { getItemDisplayName } from 'lib/functions/displayInventory'
-import { getCartItemPrice } from 'lib/functions/sell'
-import { StockObject, VendorSaleItemObject } from 'lib/types'
+import { getCartItemPrice, getCartItemPrices } from 'lib/functions/sell'
+import { VendorSaleItemObject } from 'lib/types'
 
 // Components
 import dayjs from 'dayjs'
@@ -24,7 +24,7 @@ export default function VendorSales() {
               'YYYY-MM-DD'
             )}.csv`}
             data={vendor?.sales?.map((s) => {
-              const prices = getCartItemPrice(s, null)
+              const prices = getCartItemPrices(s, null)
               return { ...s, ...prices }
             })}
           >

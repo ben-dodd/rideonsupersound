@@ -1,6 +1,6 @@
 import TextField from 'components/inputs/text-field'
-import DiscogsOption from 'features/inventory/features/api-discogs/components/discogs-option'
-import { getDiscogsOptions } from 'lib/types/discogs'
+import DiscogsOption from 'features/inventory/api-discogs/discogs-option'
+import { getDiscogsOptions } from 'lib/functions/discogs'
 import { useAppStore } from 'lib/store'
 import debounce from 'lodash/debounce'
 import { useCallback, useState } from 'react'

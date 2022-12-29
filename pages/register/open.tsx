@@ -7,14 +7,11 @@ import CircularProgress from '@mui/material/CircularProgress'
 import { useEffect, useState } from 'react'
 import { useAppStore } from 'lib/store'
 import { useClerk } from 'lib/api/clerk'
-import {
-  getAmountFromCashMap,
-  saveAndOpenRegister,
-} from 'features/sale/features/register/lib/register'
-import CashMap from 'features/sale/features/register/components/cash-map'
+import CashMap from 'features/sale/register/cash-map'
 import { useCurrentRegister } from 'lib/api/register'
 import Layout from 'components/layout'
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+import { getAmountFromCashMap } from 'lib/functions/register'
 
 export default function OpenRegisterScreen() {
   const { clerk } = useClerk()

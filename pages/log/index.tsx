@@ -1,8 +1,8 @@
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import Layout from 'components/layout'
 import Tabs from 'components/navigation/tabs'
-import { LogView } from 'features/log/components/log-view'
-import { StockMovementView } from 'features/log/components/stock-movement-view'
+import { LogView } from 'features/log/log-view'
+import { StockMovementView } from 'features/log/stock-movement-view'
 import { useState } from 'react'
 
 export default function LogPage() {

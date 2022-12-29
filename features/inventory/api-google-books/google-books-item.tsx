@@ -1,6 +1,6 @@
 import { andList } from 'lib/utils'
 import dayjs from 'dayjs'
-import { GoogleBooksItem } from '../../../../lib/types/googleBooks'
+import { GoogleBooksItem } from 'lib/types/googleBooks'
 
 interface googleProps {
   googleBooksItem: GoogleBooksItem

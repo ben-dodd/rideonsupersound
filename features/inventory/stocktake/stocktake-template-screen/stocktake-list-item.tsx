@@ -1,7 +1,3 @@
-import { useAtom } from 'jotai'
-
-// DB
-import { loadedStocktakeIdAtom, viewAtom } from 'lib/atoms'
 import { StocktakeObject } from 'lib/types'
 import { LinearProgress } from '@mui/material'
 import dayjs from 'dayjs'

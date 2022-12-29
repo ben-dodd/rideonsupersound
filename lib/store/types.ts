@@ -1,6 +1,6 @@
+/* eslint-disable unused-imports/no-unused-vars */
 import {
   ConfirmModal,
-  SaleObject,
   AlertProps,
   SaleTransactionObject,
   SaleItemObject,

@@ -1,11 +1,11 @@
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import Layout from 'components/layout'
-import StocktakeTemplateScreen from 'features/inventory/features/stocktake/components/stocktake-template-screen'
-import { useRouter } from 'next/router'
+import StocktakeTemplateScreen from 'features/inventory/stocktake/stocktake-template-screen'
+// import { useRouter } from 'next/router'
 
 export default function StocktakePage() {
-  const router = useRouter()
-  const id = router.query.id
+  // const router = useRouter()
+  // const id = router.query.id
   return <StocktakeTemplateScreen />
 }
 

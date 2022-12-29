@@ -3,7 +3,7 @@ import { StockObject } from 'lib/types'
 import TableContainer from 'components/container/table'
 import Table from 'components/table'
 import dayjs from 'dayjs'
-import { mapGiftCardObject } from '../../../../lib/functions/giftCard'
+import { mapGiftCardObject } from 'lib/functions/giftCard'
 import { useGiftCards } from 'lib/api/stock'
 
 export default function GiftCardTable() {

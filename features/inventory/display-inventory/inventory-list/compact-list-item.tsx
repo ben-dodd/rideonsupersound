@@ -7,7 +7,7 @@ import {
   getHoldQuantity,
   getItemSku,
   getLaybyQuantity,
-} from '../../../../../lib/functions/displayInventory'
+} from 'lib/functions/displayInventory'
 import { useVendors } from 'lib/api/vendor'
 import { useAppStore } from 'lib/store'
 import { useRouter } from 'next/router'

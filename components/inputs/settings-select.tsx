@@ -32,7 +32,7 @@ export default function SettingsSelect({
   delimiter,
   className,
 }: SettingsSelectProps) {
-  const { selects, isSelectsLoading, mutateSelects } = useSetting(dbField)
+  const { selects, isSelectsLoading } = useSetting(dbField)
   const [isLoading, setLoading] = useState(false)
   const options = sorted
     ? selects?.sort()?.map((opt: string) => ({

@@ -1,6 +1,5 @@
 import Modal from 'components/modal'
 import { ModalButton } from 'lib/types'
-import { useAtom } from 'jotai'
 import { useAppStore } from 'lib/store'
 
 export default function ConfirmModal() {

@@ -9,9 +9,8 @@ import {
   getItemDisplayName,
   getItemSku,
   getItemSkuDisplayName,
-} from '../../../../lib/functions/displayInventory'
-import { returnStock } from '../lib/functions'
-import { useStockList } from 'lib/api/stock'
+} from 'lib/functions/displayInventory'
+import { returnStock, useStockList } from 'lib/api/stock'
 import { useVendors } from 'lib/api/vendor'
 import { useCurrentRegisterId } from 'lib/api/register'
 import { useClerk } from 'lib/api/clerk'

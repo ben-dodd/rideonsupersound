@@ -1,5 +1,5 @@
-import { getGrossProfit, getProfitMargin } from 'features/pay/lib/functions'
 import { useStockItem } from 'lib/api/stock'
+import { getGrossProfit, getProfitMargin } from 'lib/functions/pay'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useRouter } from 'next/router'

@@ -1,5 +1,3 @@
-// Packages
-import { saveSystemLog } from 'lib/functions/log'
 import { bg } from 'lib/types'
 import InventoryIcon from '@mui/icons-material/Category'
 import LaybyIcon from '@mui/icons-material/DryCleaning'

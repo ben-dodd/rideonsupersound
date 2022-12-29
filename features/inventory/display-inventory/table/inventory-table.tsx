@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { StockObject } from 'lib/types'
 import TableContainer from 'components/container/table'
 import Table from 'components/table'
-import { mapInventoryItem } from '../../../../../../lib/functions/displayInventory'
+import { mapInventoryItem } from 'lib/functions/displayInventory'
 import { useStockList } from 'lib/api/stock'
 import { useVendors } from 'lib/api/vendor'
 

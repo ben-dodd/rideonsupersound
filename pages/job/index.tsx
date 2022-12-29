@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import Tabs from 'components/navigation/tabs'
-import TaskDialog from '../../features/job/job-dialog'
-import JobView from '../../features/job/components/job-view'
+import TaskDialog from 'features/job/job-dialog'
+import JobView from 'features/job/job-view'
 import Layout from 'components/layout'
-import RestockTaskView from 'features/job/components/restock-task-view'
+import RestockTaskView from 'features/job/restock-task-view'
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 
 export default function JobsPage() {

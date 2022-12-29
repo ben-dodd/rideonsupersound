@@ -1,16 +1,15 @@
 import CreateCustomerSidebar from 'features/customer/sidebar'
-import CreateHoldSidebar from 'features/sale/features/hold/create-hold-sidebar'
-import CloseRegisterScreen from 'features/sale/features/register/components/close-register-screen'
-import ReturnCashDialog from 'features/sale/features/register/components/return-cash'
-import TakeCashDialog from 'features/sale/features/register/components/take-cash'
-import InventoryScroll from 'features/sale/features/sell/inventory-scroll'
-import GiftCardDialog from 'features/sale/features/sell/inventory-scroll/gift-card-dialog'
-import MiscItemDialog from 'features/sale/features/sell/inventory-scroll/misc-item-dialog'
-import SellSearchBar from 'features/sale/features/sell/sell-search-bar'
-import ShoppingCart from 'features/sale/features/sell/components/shopping-cart'
+import CreateHoldSidebar from 'features/sale/hold/create-hold-sidebar'
+import CloseRegisterScreen from 'features/sale/register/close-register-screen'
+import ReturnCashDialog from 'features/sale/register/return-cash'
+import TakeCashDialog from 'features/sale/register/take-cash'
+import InventoryScroll from 'features/sale/sell/inventory-scroll'
+import GiftCardDialog from 'features/sale/sell/inventory-scroll/gift-card-dialog'
+import MiscItemDialog from 'features/sale/sell/inventory-scroll/misc-item-dialog'
+import SellSearchBar from 'features/sale/sell/sell-search-bar'
+import ShoppingCart from 'features/sale/sell/shopping-cart'
 import { useSwipeable } from 'react-swipeable'
 import { ViewProps } from 'lib/store/types'
-import { useState } from 'react'
 import { useAppStore } from 'lib/store'
 import { useCurrentRegister } from 'lib/api/register'
 import { useRouter } from 'next/router'
@@ -19,7 +18,7 @@ import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 
 export default function SellPage() {
   const { currentRegister, isCurrentRegisterLoading } = useCurrentRegister()
-  const { view, openView, closeView, bypassRegister } = useAppStore()
+  const { view, openView, closeView } = useAppStore()
   const router = useRouter()
 
   const handlers = useSwipeable({

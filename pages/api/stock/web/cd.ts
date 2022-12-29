@@ -1,39 +1,21 @@
-import { NextApiHandler } from "next";
-import { query } from "../../lib/db";
+import { NextApiHandler, NextApiRequest, NextApiResponse } from 'next'
+import { dbGetWebStock } from 'lib/database/stock'
 
-const handler: NextApiHandler = async (req, res) => {
-  try {
-    const results = await query(
-      `
-      SELECT
-        s.artist,
-        s.title,
-        s.format,
-        s.is_new,
-        p.total_sell
-      FROM stock AS s
-      LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity FROM stock_movement GROUP BY stock_id) AS q
-        ON q.stock_id = s.id
-      LEFT JOIN stock_price AS p ON p.stock_id = s.id
-      WHERE
-        q.quantity > 0 AND
-        s.do_list_on_website AND
-        NOT is_deleted AND
-        INSTR(s.format, 'CD') > 0 AND
-         (p.id = (
-            SELECT MAX(id)
-            FROM stock_price
-            WHERE stock_id = s.id
-         ) OR s.is_gift_card OR s.is_misc_item)
-      ORDER BY s.format, s.artist, s.title
-      `
-    );
+const apiRoute: NextApiHandler = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
+  if (req.method === 'GET')
+    try {
+      return dbGetWebStock(`INSTR(stock.format, 'CD') > 0`).then((data) =>
+        res.status(200).json(data)
+      )
+    } catch (error) {
+      res.status(error.status || 500).json({
+        code: error.code,
+        error: error.message,
+      })
+    }
+}
 
-    return res.json(results);
-  } catch (e) {
-    res.status(500).json({ message: e.message });
-  }
-};
-
-export default handler;
+export default apiRoute

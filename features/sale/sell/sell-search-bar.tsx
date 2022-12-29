@@ -1,7 +1,7 @@
 import MiscItemIcon from '@mui/icons-material/DeviceUnknown'
 import GiftCardsIcon from '@mui/icons-material/Redeem'
 import SearchIcon from '@mui/icons-material/Search'
-import Tooltip from '@mui/material/Tooltip'
+// import Tooltip from '@mui/material/Tooltip'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 

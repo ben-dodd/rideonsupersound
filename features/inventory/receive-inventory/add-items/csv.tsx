@@ -2,7 +2,7 @@ import { getItemDisplayName } from 'lib/functions/displayInventory'
 import { ChevronRight } from '@mui/icons-material'
 import { useState } from 'react'
 import { useCSVReader } from 'react-papaparse'
-import { parseCSVItems } from '../../../../../lib/functions/receiveInventory'
+import { parseCSVItems } from 'lib/functions/receiveInventory'
 import { useAppStore } from 'lib/store'
 
 export default function Csv() {

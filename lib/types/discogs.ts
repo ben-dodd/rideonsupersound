@@ -1,3 +1,4 @@
+/* eslint-disable unused-imports/no-unused-vars */
 export enum DiscogsConditionTypes {
   M = 'Mint (M)',
   NM = 'Near Mint (NM or M-)',

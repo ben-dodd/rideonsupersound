@@ -1,4 +1,4 @@
-import dayjs from 'dayjs'
+import dayjs, { extend } from 'dayjs'
 import UTC from 'dayjs/plugin/utc'
 import { useEffect, useState } from 'react'
 import {
@@ -9,18 +9,16 @@ import {
 } from 'lib/types'
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
-import { logSalePaymentAcct } from 'lib/functions/log'
 import Select from 'react-select'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useCurrentRegisterId } from 'lib/api/register'
-import { useStockList } from 'lib/api/stock'
 import { useVendor, useVendors } from 'lib/api/vendor'
 import { useSaleProperties } from 'lib/hooks'
 
 export default function Acct() {
-  dayjs.extend(UTC)
+  extend(UTC)
   const { clerk } = useClerk()
   const { view, cart, closeView, setAlert, addCartTransaction } = useAppStore()
   const { sale = {} } = cart || {}
@@ -29,7 +27,7 @@ export default function Acct() {
   const { vendors } = useVendors()
 
   const { totalRemaining } = useSaleProperties(cart)
-  const { vendor, isVendorLoading } = useVendor(vendorWrapper?.value?.id)
+  const { vendor } = useVendor(vendorWrapper?.value?.id)
   console.log(vendor)
   const isRefund = totalRemaining < 0
   const [acctPayment, setAcctPayment] = useState(

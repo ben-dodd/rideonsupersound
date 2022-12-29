@@ -1,4 +1,4 @@
-import { StockMovementTypes, StockObject } from 'lib/types'
+import { StockMovementTypes } from 'lib/types'
 import { dbGetAllSalesAndItems, getStockMovementQuantityByAct } from './sale'
 import { js2mysql } from './utils/helpers'
 const connection = require('./conn')
@@ -339,7 +339,7 @@ export async function dbChangeStockQuantity(
     .catch((e) => Error(e.message))
 }
 
-export function dbGetWebStock(condition, db = connection) {
+export function dbGetWebStock(condition = '', db = connection) {
   return db('stock')
     .select(
       'stock.artist',

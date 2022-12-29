@@ -1,6 +1,5 @@
 import * as fs from 'fs'
 // const fs = require('fs')
-import { log } from 'util'
 
 let filename: string = 'schema.sql'
 let input = fs.readFileSync(filename).toString()
@@ -244,7 +243,7 @@ tables.forEach((table: any) => {
   written += sqlString + '\n'
 
   sqlString =
-    `\nexports.down = function (knex, Promise) {` +
+    `\nexports.down = function (knex) {` +
     `\n\treturn knex.schema.dropTable('${table.tableName}');` +
     `\n};`
   written += sqlString + '\n'

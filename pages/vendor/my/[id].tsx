@@ -1,9 +1,5 @@
-import { sumPrices } from 'features/sale/features/item-sale/lib/functions'
 import { filterInventory } from 'lib/functions/sell'
 import Payments from 'features/web-vendor/payments'
-import Sales from 'features/web-vendor/components/sales'
-import StockItem from 'features/web-vendor/components/stock-item'
-import Tabs from 'features/web-vendor/components/tabs'
 import { StockObject } from 'lib/types'
 import {
   useVendorByUid,
@@ -18,6 +14,10 @@ import dayjs from 'dayjs'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
+import { sumPrices } from 'lib/functions/pay'
+import Tabs from 'features/web-vendor/tabs'
+import Sales from 'features/web-vendor/sales'
+import StockItem from 'features/web-vendor/stock-item'
 
 export default function VendorScreen() {
   const router = useRouter()
@@ -25,11 +25,8 @@ export default function VendorScreen() {
   const { vendor, isVendorLoading, isVendorError } = useVendorByUid(id)
   const { vendorStock, isVendorStockLoading, isVendorStockError } =
     useVendorStockByUid(id)
-  const {
-    vendorStockMovement,
-    isVendorStockMovementLoading,
-    isVendorStockMovementError,
-  } = useVendorStockMovementByUid(id)
+  const { isVendorStockMovementLoading, isVendorStockMovementError } =
+    useVendorStockMovementByUid(id)
   const {
     vendorStockPrice,
     isVendorStockPriceLoading,
@@ -133,6 +130,7 @@ export default function VendorScreen() {
           >
             <div className="pb-4">
               <img
+                alt="Ride On Super Sound Logo"
                 src="http://hmn.exu.mybluehost.me/img/POS-RIDEONSUPERSOUNDLOGOBLACK.png"
                 width="500px"
               />

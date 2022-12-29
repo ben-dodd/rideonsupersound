@@ -1,13 +1,10 @@
 import MidScreenContainer from 'components/container/mid-screen'
 import dayjs from 'dayjs'
-import { useAtom } from 'jotai'
 import { useClerks } from 'lib/api/clerk'
 import { useMemo } from 'react'
 import Filter from './filter'
 
 export default function List() {
-  // const [salesViewRange] = useAtom(salesViewRangeAtom)
-  // const [salesViewClerks] = useAtom(salesViewClerksAtom)
   const { saleTransactions, isSaleTransactionsLoading } =
     useSaleTransactionsForRange(salesViewRange)
   const { registers, isRegistersLoading } = useRegisters(salesViewRange)
@@ -82,11 +79,14 @@ export default function List() {
                   {dayjs(saleDay?.day).format('dddd, MMMM D, YYYY')}
                 </div>
                 {saleDay?.sales?.map?.((sale: any) => (
-                  <div className="flex border-b border-gray-500 border-dotted">
+                  <div
+                    className="flex border-b border-gray-500 border-dotted"
+                    key={sale?.id}
+                  >
                     <div className="w-5/12">{`[${sale?.id}] ${sale?.item_list}`}</div>
                     <div className="w-7/12 text-right">
                       {sale?.transactions?.map((transaction) => (
-                        <div className="flex">
+                        <div className="flex" key={transaction?.id}>
                           <div className="w-1/4">
                             {dayjs(transaction?.date).format('h:mm A')}
                           </div>

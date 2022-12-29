@@ -12,7 +12,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import {
   getCartItemTotal,
   writeCartItemPriceBreakdown,
-} from '../../../../../../lib/functions/sell'
+} from 'lib/functions/sell'
 import { useAppStore } from 'lib/store'
 import { useStockItem, useStockList } from 'lib/api/stock'
 import { priceCentsString } from 'lib/utils'

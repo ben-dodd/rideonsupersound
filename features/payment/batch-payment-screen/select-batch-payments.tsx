@@ -5,7 +5,7 @@ import QuantityCheckIcon from '@mui/icons-material/Warning'
 import { Tooltip } from '@mui/material'
 import dayjs from 'dayjs'
 import { useState } from 'react'
-import { modulusCheck } from '../../../../lib/functions/payment'
+import { modulusCheck } from 'lib/functions/payment'
 
 export default function SelectBatchPayments({ vendorList, setVendorList }) {
   const [checked, setChecked] = useState(true)

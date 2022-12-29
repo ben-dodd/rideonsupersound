@@ -8,13 +8,13 @@ import dayjs from 'dayjs'
 import { useAppStore } from 'lib/store'
 import { useClerk } from 'lib/api/clerk'
 import { useRouter } from 'next/router'
-import SaleSummary from 'features/pay/components/sale-summary'
+import SaleSummary from 'features/pay/sale-summary'
 import Pay from 'features/pay/pay'
 import Acct from 'features/pay/payment/acct'
 import Card from 'features/pay/payment/card'
 import Gift from 'features/pay/payment/gift'
 import Cash from 'features/pay/payment/cash'
-import ReturnItemDialog from 'features/pay/components/return-item-dialog'
+import ReturnItemDialog from 'features/pay/return-item-dialog'
 import { useCustomers } from 'lib/api/customer'
 import { useSaleProperties } from 'lib/hooks'
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
@@ -36,7 +36,7 @@ export default function PayScreen() {
   const { clerk } = useClerk()
   const { customers } = useCustomers()
   const [laybyLoading, setLaybyLoading] = useState(false)
-  const [addMoreItemsLoading, setAddMoreItemsLoading] = useState(false)
+  const [addMoreItemsLoading] = useState(false)
   const [completeSaleLoading, setCompleteSaleLoading] = useState(false)
   const [parkSaleLoading, setParkSaleLoading] = useState(false)
   // BUG fix bug where close register screen appears (pressing TAB) - have fixed by just hiding sidebars and screens

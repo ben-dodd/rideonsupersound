@@ -11,8 +11,8 @@ import dayjs from 'dayjs'
 import {
   getImageSrc,
   getItemSkuDisplayName,
-} from '../../../../lib/functions/displayInventory'
-import { getLabelPrinterCSV } from '../../../../lib/functions/printLabels'
+} from 'lib/functions/displayInventory'
+import { getLabelPrinterCSV } from 'lib/functions/printLabels'
 import { useAppStore } from 'lib/store'
 import { useClerk } from 'lib/api/clerk'
 import { useStockList } from 'lib/api/stock'

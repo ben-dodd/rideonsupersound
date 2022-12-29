@@ -1,3 +1,4 @@
+/* eslint-disable unused-imports/no-unused-vars */
 export enum SaleStateTypes {
   InProgress = 'in progress', // sale in cart
   Layby = 'layby', // sale held on layby

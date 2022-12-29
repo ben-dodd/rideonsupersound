@@ -1,9 +1,9 @@
-import { dbCreateCustomer } from 'lib/database/customer'
-import { mockRequestResponse } from '../utils'
-import handler from '../../customer'
-import { requireScope } from 'lib/api/utils'
-import { NextApiHandler } from 'next'
-import { NextAuthenticatedApiRequest } from '@serverless-jwt/next/dist/types'
+// import { dbCreateCustomer } from 'lib/database/customer'
+// import { mockRequestResponse } from '../utils'
+// import handler from '../../customer'
+// import { requireScope } from 'lib/api/utils'
+// import { NextApiHandler } from 'next'
+// import { NextAuthenticatedApiRequest } from '@serverless-jwt/next/dist/types'
 
 jest.mock('lib/database/customer')
 jest.mock('lib/api/utils')

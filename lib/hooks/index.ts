@@ -1,11 +1,11 @@
+import { axiosAuth } from 'lib/api'
+import { mysql2js } from 'lib/database/utils/helpers'
 import {
   getTotalPaid,
   roundToTenCents,
   sumPrices,
   writeItemList,
-} from 'features/pay/lib/functions'
-import { axiosAuth } from 'lib/api'
-import { mysql2js } from 'lib/database/utils/helpers'
+} from 'lib/functions/pay'
 import { StockObject } from 'lib/types'
 import { useState, useEffect } from 'react'
 

@@ -1,19 +1,14 @@
 import { useEffect, useState } from 'react'
-import { ModalButton, SaleItemObject, SaleObject } from 'lib/types'
-
-// Components
-import ScreenContainer from 'components/container/screen'
-
+import { ModalButton, SaleObject } from 'lib/types'
 import { saveSystemLog } from 'lib/functions/log'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { useAppStore } from 'lib/store'
 import { useClerk } from 'lib/api/clerk'
 import { useRouter } from 'next/router'
 import { useCustomers } from 'lib/api/customer'
-import { useGiftCards, useStockList } from 'lib/api/stock'
 import { useCurrentRegisterId } from 'lib/api/register'
-import SaleSummary from 'features/pay/components/sale-summary'
-import SaleDetails from 'features/pay/components/sale-details'
+import SaleSummary from 'features/pay/sale-summary'
+import SaleDetails from 'features/pay/sale-details'
 import { useSaleProperties } from 'lib/hooks'
 import Layout from 'components/layout'
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
@@ -126,10 +121,10 @@ export default function SaleItemScreen() {
       <div>
         <div className="flex items-start overflow-auto w-full">
           <div className="w-2/3">
-            <SaleSummary sale={sale} />
+            <SaleSummary cart={sale} />
           </div>
           <div className="w-1/3 p-2 flex flex-col justify-between">
-            <SaleDetails sale={sale} />
+            <SaleDetails cart={sale} />
             <div className="flex justify-start py-2">
               <button
                 className="p-1 border border-black hover:bg-tertiary rounded-xl mt-2"
