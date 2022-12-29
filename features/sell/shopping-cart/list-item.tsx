@@ -63,8 +63,8 @@ export default function SellListItem({
   return (
     <>
       <div
-        className="flex w-full bg-black text-white relative pt mb-2 cursor-pointer"
-        onClick={() => setExpanded((e) => !e)}
+        className={`flex w-full bg-black text-white relative pt cursor-pointer mt-2`}
+        onClick={() => setExpanded((expanded) => !expanded)}
       >
         <div className="w-20">
           <div className="w-20 h-20 aspect-ratio-square relative">

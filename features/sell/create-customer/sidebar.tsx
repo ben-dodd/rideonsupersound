@@ -1,6 +1,5 @@
 import SidebarContainer from 'components/container/side-bar'
 import TextField from 'components/inputs/text-field'
-import { saveSystemLog } from 'lib/functions/log'
 import { ModalButton } from 'lib/types'
 import { useEffect, useState } from 'react'
 import { createCustomer, updateCustomer, useCustomers } from 'lib/api/customer'
@@ -33,21 +32,6 @@ export default function CreateCustomerSidebar() {
   const handleClickOK = () =>
     customer?.id ? onClickUpdateCustomer() : onClickCreateCustomer()
 
-  // useEffect(() => {
-  //   const handleKeyPress = (event) => {
-  //     if (view?.createCustomer) {
-  //       console.log(event.key)
-  //       if (event.key === 'Enter') handleClickOK()
-  //       if (event.key === 'Escape') handleClickCancel()
-  //     }
-  //   }
-  //   document.addEventListener('keydown', handleKeyPress)
-
-  //   return () => {
-  //     document.removeEventListener('keydown', handleKeyPress)
-  //   }
-  // }, [])
-
   useEffect(() => {
     setNameConflict(checkCustomerNameConflict(customer, customers))
   }, [customers, customer])
@@ -58,7 +42,6 @@ export default function CreateCustomerSidebar() {
   }
 
   function closeSidebar() {
-    // saveSystemLog('New customer sidebar closed.', clerk?.id)
     resetCustomer()
     closeView(ViewProps.createCustomer)
   }
@@ -86,7 +69,7 @@ export default function CreateCustomerSidebar() {
     updateCustomer(customer, customer?.id)
     closeSidebar()
   }
-  // Constants
+
   const buttons: ModalButton[] = [
     {
       type: 'cancel',

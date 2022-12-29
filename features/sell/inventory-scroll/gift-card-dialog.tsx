@@ -37,8 +37,8 @@ export default function GiftCardDialog() {
           {
             isGiftCard: true,
             giftCardIsValid: false,
-            giftCardAmount: parseFloat(defaultAmount) * 100,
-            giftCardRemaining: parseFloat(defaultAmount) * 100,
+            giftCardAmount: parseFloat(amount) * 100,
+            giftCardRemaining: parseFloat(amount) * 100,
             giftCardCode,
             note,
           },
@@ -102,11 +102,3 @@ export default function GiftCardDialog() {
     </Modal>
   )
 }
-
-// setCart({
-//   id: cart?.id || null,
-//   // REVIEW check the date to string thing works ok
-//   date_sale_opened: cart?.dateSaleOpened || dayjs.utc().format(),
-//   sale_opened_by: cart?.saleOpenedBy || clerk?.id,
-//   items: newItems,
-// })

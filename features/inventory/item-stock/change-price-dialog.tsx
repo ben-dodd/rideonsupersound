@@ -1,13 +1,12 @@
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
-import { logChangePrice } from 'lib/functions/log'
 import { ModalButton } from 'lib/types'
 import { useEffect, useState } from 'react'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useRouter } from 'next/router'
-import { createStockPrice, useStockItem, useStockList } from 'lib/api/stock'
+import { createStockPrice, useStockItem } from 'lib/api/stock'
 import { useSWRConfig } from 'swr'
 
 export default function ChangePriceDialog() {

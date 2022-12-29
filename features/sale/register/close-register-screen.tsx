@@ -4,26 +4,18 @@ import { ClerkObject, ModalButton, SaleTransactionObject } from 'lib/types'
 // Components
 import ScreenContainer from 'components/container/screen'
 import TextField from 'components/inputs/text-field'
-import { logCloseRegisterWithAmount } from 'lib/functions/log'
 import dayjs from 'dayjs'
-import {
-  getAmountFromCashMap,
-  saveClosedRegisterToDatabase,
-} from '../lib/register'
 import CashItem from './cash-item'
 import CashMap from './cash-map'
 import { useClerk, useClerks } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
-import { useLogs } from 'lib/api/log'
-import { useCashUp, useCurrentRegister } from 'lib/api/register'
+import { useCurrentRegister } from 'lib/api/register'
+import { getAmountFromCashMap } from 'lib/functions/register'
 
 export default function CloseRegisterScreen() {
-  // SWR
   const { clerks, isClerksLoading } = useClerks()
-  const { logs, mutateLogs } = useLogs()
   const { currentRegister, isCurrentRegisterLoading } = useCurrentRegister()
-  const { cashUp, isCashUpLoading } = useCashUp()
 
   const { clerk } = useClerk()
   const { view, closeView, setAlert } = useAppStore()
@@ -38,33 +30,35 @@ export default function CloseRegisterScreen() {
   useEffect(() => setCloseAmount(`${getAmountFromCashMap(till)}`), [till])
 
   // Constants
-  const openAmount = cashUp?.openAmount / 100
+  const openAmount = currentRegister?.openAmount / 100
   const openedBy = clerks?.find(
-    (c: ClerkObject) => c?.id === cashUp?.openedById
+    (c: ClerkObject) => c?.id === currentRegister?.openedById
   )?.name
-  const openedOn = dayjs(cashUp?.openDate).format('H:mm A, D MMMM YYYY')
+  const openedOn = dayjs(currentRegister?.openDate).format(
+    'H:mm A, D MMMM YYYY'
+  )
 
   // Cash Balances
   const closePettyBalance =
-    cashUp?.pettyCash?.reduce(
+    currentRegister?.pettyCash?.reduce(
       (acc: number, transaction: SaleTransactionObject) =>
         acc + transaction?.amount,
       0
     ) / 100
   const closeCashGiven =
-    cashUp?.cashGiven?.reduce(
+    currentRegister?.cashGiven?.reduce(
       (acc: number, transaction: SaleTransactionObject) =>
         acc + transaction?.changeGiven,
       0
     ) / 100
   const closeCashReceived =
-    cashUp?.cashReceived?.reduce(
+    currentRegister?.cashReceived?.reduce(
       (acc: number, transaction: SaleTransactionObject) =>
         acc + transaction?.cashReceived,
       0
     ) / 100
   const closeManualPayments =
-    cashUp?.manualPayments?.reduce(
+    currentRegister?.manualPayments?.reduce(
       (acc: number, transaction: SaleTransactionObject) =>
         acc + transaction?.amount,
       0
@@ -82,21 +76,21 @@ export default function CloseRegisterScreen() {
 
   // Functions
   async function closeRegister() {
-    saveClosedRegisterToDatabase(
-      currentRegister?.id,
-      {
-        closeAmount: parseFloat(closeAmount) * 100,
-        closedById: clerk?.id,
-        closePettyBalance: closePettyBalance * 100,
-        closeCashGiven: closeCashGiven * 100,
-        closeManualPayments: closeManualPayments * 100,
-        closeExpectedAmount: closeExpectedAmount * 100,
-        closeDiscrepancy: closeDiscrepancy * 100,
-        closeNote: notes,
-      },
-      till
-    )
-    logCloseRegisterWithAmount(closeAmount, clerk, currentRegister?.id)
+    // saveClosedRegisterToDatabase(
+    //   currentRegister?.id,
+    //   {
+    //     closeAmount: parseFloat(closeAmount) * 100,
+    //     closedById: clerk?.id,
+    //     closePettyBalance: closePettyBalance * 100,
+    //     closeCashGiven: closeCashGiven * 100,
+    //     closeManualPayments: closeManualPayments * 100,
+    //     closeExpectedAmount: closeExpectedAmount * 100,
+    //     closeDiscrepancy: closeDiscrepancy * 100,
+    //     closeNote: notes,
+    //   },
+    //   till
+    // )
+    // logCloseRegisterWithAmount(closeAmount, clerk, currentRegister?.id)
     // mutateRegisterID([{ num: 0 }], false)
     closeView(ViewProps.closeRegisterScreen)
     setAlert({
@@ -107,10 +101,10 @@ export default function CloseRegisterScreen() {
   }
 
   const cashList =
-    cashUp?.cashReceived?.length > 0 ||
-    cashUp?.cashGiven?.length > 0 ||
-    cashUp?.manualPayments?.length > 0 ||
-    cashUp?.pettyCash?.length > 0
+    currentRegister?.cashReceived?.length > 0 ||
+    currentRegister?.cashGiven?.length > 0 ||
+    currentRegister?.manualPayments?.length > 0 ||
+    currentRegister?.pettyCash?.length > 0
 
   const buttons: ModalButton[] = [
     {
@@ -132,7 +126,7 @@ export default function CloseRegisterScreen() {
       show={view?.closeRegisterScreen}
       closeFunction={() => closeView(ViewProps.closeRegisterScreen)}
       title={`Close Register #${currentRegister?.id} [opened by ${openedBy} at ${openedOn}]`}
-      loading={isClerksLoading || isCashUpLoading}
+      loading={isClerksLoading || isCurrentRegisterLoading}
       buttons={buttons}
       titleClass="bg-col1"
     >
@@ -196,10 +190,10 @@ export default function CloseRegisterScreen() {
         <div className="w-1/2">
           {cashList ? (
             <div>
-              {cashUp?.cashReceived?.length > 0 && (
+              {currentRegister?.cashReceived?.length > 0 && (
                 <>
                   <div className="text-xl font-bold mt-4">Cash Received</div>
-                  {cashUp?.cashReceived?.map(
+                  {currentRegister?.cashReceived?.map(
                     (transaction: SaleTransactionObject, i: number) => (
                       <CashItem
                         transaction={transaction}
@@ -217,10 +211,10 @@ export default function CloseRegisterScreen() {
                   )?.toFixed(2)}`}</div>
                 </>
               )}
-              {cashUp?.cashGiven?.length > 0 && (
+              {currentRegister?.cashGiven?.length > 0 && (
                 <>
                   <div className="text-xl font-bold mt-4">Cash Given</div>
-                  {cashUp?.cashGiven?.map(
+                  {currentRegister?.cashGiven?.map(
                     (transaction: SaleTransactionObject, i: number) => (
                       <CashItem
                         transaction={transaction}
@@ -235,12 +229,12 @@ export default function CloseRegisterScreen() {
                   >{`- $${Math.abs(closeCashGiven)?.toFixed(2)}`}</div>
                 </>
               )}
-              {cashUp?.manualPayments?.length > 0 && (
+              {currentRegister?.manualPayments?.length > 0 && (
                 <>
                   <div className="text-xl font-bold mt-4">
                     Vendor Cash Payments
                   </div>
-                  {cashUp?.manualPayments.map(
+                  {currentRegister?.manualPayments.map(
                     (transaction: SaleTransactionObject, i: number) => (
                       <CashItem transaction={transaction} negative key={i} />
                     )
@@ -250,12 +244,12 @@ export default function CloseRegisterScreen() {
                   >{`- $${Math.abs(closeManualPayments)?.toFixed(2)}`}</div>
                 </>
               )}
-              {cashUp?.pettyCash?.length > 0 && (
+              {currentRegister?.pettyCash?.length > 0 && (
                 <>
                   <div className="text-xl font-bold mt-4">
                     Petty Cash Transactions
                   </div>
-                  {cashUp?.pettyCash.map(
+                  {currentRegister?.pettyCash.map(
                     (transaction: SaleTransactionObject, i: number) => (
                       <CashItem transaction={transaction} key={i} />
                     )

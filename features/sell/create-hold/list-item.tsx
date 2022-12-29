@@ -5,7 +5,7 @@ import {
 } from 'lib/functions/displayInventory'
 import { useStockItem } from 'lib/api/stock'
 import { SaleItemObject } from 'lib/types'
-import { writeCartItemPriceBreakdown } from '../../sell/lib/functions'
+import { writeCartItemPriceBreakdown } from 'lib/functions/sell'
 
 type HoldListItemProps = {
   cartItem: SaleItemObject
@@ -15,16 +15,20 @@ export default function HoldListItem({ cartItem }: HoldListItemProps) {
   const { item = {}, price = {} } = stockItem || {}
 
   return (
-    <div className="flex w-full bg-blue-100 text-black relative pt mb-2">
-      <img
-        className="w-20 h-20"
-        src={getImageSrc(item)}
-        alt={item?.title || 'Inventory image'}
-      />
-      <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white flex justify-center items-center text-sm">
-        {getItemSku(item)}
+    <div className="flex w-full bg-blue-100 text-black mb-2">
+      <div className="w-20">
+        <div className="w-20 h-20 aspect-ratio-square relative">
+          <img
+            className="object-cover w-full h-full absolute"
+            src={getImageSrc(item)}
+            alt={item?.title || 'Inventory image'}
+          />
+          <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white flex justify-center items-center text-sm">
+            {getItemSku(item)}
+          </div>
+        </div>
       </div>
-      <div className="flex flex-col w-full p-2 justify-between">
+      <div className="flex flex-col w-full pt-2 px-2 justify-between">
         <div className="text-sm pl-1">{getItemDisplayName(item)}</div>
         <div className="text-red-500 self-end">
           {writeCartItemPriceBreakdown(cartItem, item, price)}

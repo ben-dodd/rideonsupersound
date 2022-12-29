@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { ClerkObject, CustomerObject, HoldObject, ModalButton } from 'lib/types'
 
-// Components
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
 import {
@@ -9,11 +8,9 @@ import {
   logRemoveFromHold,
   saveSystemLog,
 } from 'lib/functions/log'
-import { updateHoldInDatabase } from 'lib/database/update'
 import dayjs from 'dayjs'
 import { returnHoldToStock } from 'lib/functions/hold'
-import HoldListItem from './list-item'
-import { useWeather } from 'lib/api/external'
+import HoldListItem from '../../sell/create-hold/list-item'
 import { useAppStore } from 'lib/store'
 import { useClerk, useClerks } from 'lib/api/clerk'
 import { useCustomers } from 'lib/api/customer'
@@ -21,29 +18,8 @@ import { useCurrentRegisterId } from 'lib/api/register'
 import { ViewProps } from 'lib/store/types'
 
 export default function HoldDialog() {
-  const { weather } = useWeather()
-  // State
-  const [geolocation, setGeolocation] = useState(null)
-
-  useEffect(() => {
-    if (!navigator.geolocation) {
-      console.log('Geolocation is not supported by your browser')
-    } else {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setGeolocation(position?.coords)
-        },
-        () => console.log('Unable to retrieve location.')
-      )
-    }
-  }, [])
   const { openView, setAlert, cart, setCart } = useAppStore()
   const { clerk } = useClerk()
-
-  // SWR
-  const { holds, isHoldsLoading, mutateHolds } = useHolds()
-  const { inventory, mutateInventory } = useInventory()
-  // const { logs, mutateLogs } = useLogs()
   const { customers } = useCustomers()
   const { clerks } = useClerks()
   const { registerId } = useCurrentRegisterId()

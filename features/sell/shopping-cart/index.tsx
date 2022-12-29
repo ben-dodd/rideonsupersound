@@ -12,6 +12,7 @@ import { createSale, deleteSale, deleteSaleItem } from 'lib/api/sale'
 import { useClerk } from 'lib/api/clerk'
 import { useCurrentRegisterId } from 'lib/api/register'
 import { useRouter } from 'next/router'
+import { SaleStateTypes } from 'lib/types'
 
 export default function ShoppingCart() {
   const {
@@ -57,7 +58,6 @@ export default function ShoppingCart() {
 
   console.log('refreshing cart', cart)
 
-  // Constants
   const { totalPrice, totalStoreCut, totalRemaining, totalPaid } =
     useSaleProperties(cart)
 
@@ -68,14 +68,14 @@ export default function ShoppingCart() {
       } sm:left-2/3 h-full w-full bg-yellow-200 sm:w-1/3 sm:h-menu`}
     >
       <div className="flex flex-col h-menu px-2 bg-gray-200 text-black">
-        <div className="flex justify-between mb-2 relative">
+        <div className="flex justify-between relative">
           <div className="text-lg font-bold my-2 tracking-wide self-center">
             <div>Shopping Cart</div>
             {sale?.id && (
               <div className="text-sm font-light">
-                <div>{`Sale #${
-                  sale?.id
-                } // ${sale?.state?.toUpperCase()}`}</div>
+                <div>{`Sale #${sale?.id} // ${(
+                  sale?.state || SaleStateTypes.InProgress
+                )?.toUpperCase()}`}</div>
               </div>
             )}
           </div>
