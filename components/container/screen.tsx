@@ -37,7 +37,8 @@ export default function ScreenContainer({
         </button>
         {title}
       </div>
-      <div className="screen__body">{children}</div>
+      {/* <div className="screen__body">{children}</div> */}
+      {children}
       {buttons && (
         <div className="screen__button-div">
           {buttons.map((button: ModalButton, i: number) =>

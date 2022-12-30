@@ -1,11 +1,16 @@
 import TextField from 'components/inputs/text-field'
 import { useCustomers } from 'lib/api/customer'
 import { useAppStore } from 'lib/store'
+import { useEffect } from 'react'
 
 const MailOrderForm = () => {
   const { cart, setCartSale } = useAppStore()
   const { sale = {} } = cart || {}
   const { customers } = useCustomers()
+
+  useEffect(() => {
+    resetMailOrder()
+  }, [sale?.customerId])
 
   function handleToggleMailOrder() {
     if (sale?.isMailOrder) {
@@ -13,7 +18,6 @@ const MailOrderForm = () => {
     } else {
       setCartSale({
         isMailOrder: true,
-        postage: 0,
         postalAddress: customers?.find((c) => c?.id === sale?.customerId)?.postalAddress || '',
       })
     }
