@@ -28,3 +28,5 @@ export default function InventoryScroll() {
     </div>
   )
 }
+
+// TODO very bottom of inventory scroll is cut off by half a line
