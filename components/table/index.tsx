@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 
-import { SaleStateTypes } from 'lib/types'
+import { SaleStateTypes } from 'lib/types/sale'
 
 // Material UI Components
 import {
@@ -28,13 +28,7 @@ import { CSVLink } from 'react-csv'
 // const skipPageResetRef:any = useRef();
 // skipPageResetRef.current = false;
 
-function GlobalFilter({
-  preGlobalFilteredRows,
-  globalFilter,
-  setGlobalFilter,
-  skipPageResetRef,
-  colorLight,
-}) {
+function GlobalFilter({ preGlobalFilteredRows, globalFilter, setGlobalFilter, skipPageResetRef, colorLight }) {
   const [searchValue, setSearchValue] = useState(globalFilter)
   const onChange = useAsyncDebounce((value) => {
     // skipPageResetRef.current = true;
@@ -43,9 +37,7 @@ function GlobalFilter({
   return (
     <div
       className={`flex items-center ring-1 ring-gray-400 rounded-md mr-1 my-2 ml-3 w-auto ${
-        colorLight
-          ? `bg-gray-100 hover:${colorLight}`
-          : 'bg-gray-200 hover:bg-gray-300'
+        colorLight ? `bg-gray-100 hover:${colorLight}` : 'bg-gray-200 hover:bg-gray-300'
       }`}
     >
       <div className="pl-3 pr-1">
@@ -97,7 +89,7 @@ function Table({
     () => ({
       minWidth: 30,
     }),
-    []
+    [],
   )
   // useEffect(() => {
   //   skipPageResetRef.current = false;
@@ -146,26 +138,18 @@ function Table({
     useFilters,
     useGlobalFilter,
     useSortBy,
-    usePagination
+    usePagination,
   )
 
   return (
     <div className="ml-1">
-      <div
-        className={`flex justify-between items-center px-2 mb-1 ${color || ''}`}
-      >
-        {heading ? (
-          <div className={`text-4xl font-bold uppercase sticky`}>{heading}</div>
-        ) : (
-          <div />
-        )}
+      <div className={`flex justify-between items-center px-2 mb-1 ${color || ''}`}>
+        {heading ? <div className={`text-4xl font-bold uppercase sticky`}>{heading}</div> : <div />}
         <div className="flex items-center">
           {downloadCSV ? (
             <CSVLink
               className={`text-gray-600 bg-gray-100 hover:bg-gray-200 p-2 py-1 my-1 rounded border border-gray-600`}
-              filename={`${heading?.toLowerCase?.()}-${dayjs().format(
-                'YYYY-MM-DD'
-              )}.csv`}
+              filename={`${heading?.toLowerCase?.()}-${dayjs().format('YYYY-MM-DD')}.csv`}
               data={data}
             >
               DOWNLOAD DATA
@@ -191,16 +175,11 @@ function Table({
                   <th
                     key={i}
                     className={`border border-white ${
-                      color
-                        ? `${color} hover:${colorDark}`
-                        : 'bg-gray-500 hover:bg-gray-800'
+                      color ? `${color} hover:${colorDark}` : 'bg-gray-500 hover:bg-gray-800'
                     } text-left px-2 truncate`}
                     {...column.getHeaderProps()}
                   >
-                    <div
-                      {...column.getSortByToggleProps()}
-                      className="flex justify-between"
-                    >
+                    <div {...column.getSortByToggleProps()} className="flex justify-between">
                       <div>{column.render('Header')}</div>
                       <div>
                         {column.isSorted ? (
@@ -248,9 +227,7 @@ function Table({
                       : row?.cells[2]?.value === SaleStateTypes.Parked
                       ? 'bg-green-100'
                       : 'bg-gray-100'
-                  } ${
-                    row?.cells[9]?.value === 0 && 'text-gray-600'
-                  } opacity-70 hover:opacity-100 mt-1`}
+                  } ${row?.cells[9]?.value === 0 && 'text-gray-600'} opacity-70 hover:opacity-100 mt-1`}
                 >
                   {row.cells.map((cell: any) => {
                     return (
@@ -289,32 +266,16 @@ function Table({
             {(state?.pageIndex || 0) + 1} of {pageOptions.length}
           </strong>
         </span>
-        <button
-          className="icon-button"
-          onClick={() => gotoPage(0)}
-          disabled={!canPreviousPage}
-        >
+        <button className="icon-button" onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
           <MdFirstPage />
         </button>
-        <button
-          className="icon-button"
-          onClick={() => previousPage()}
-          disabled={!canPreviousPage}
-        >
+        <button className="icon-button" onClick={() => previousPage()} disabled={!canPreviousPage}>
           <MdNavigateBefore />
         </button>
-        <button
-          className="icon-button"
-          onClick={() => nextPage()}
-          disabled={!canNextPage}
-        >
+        <button className="icon-button" onClick={() => nextPage()} disabled={!canNextPage}>
           <MdNavigateNext />
         </button>
-        <button
-          className="icon-button"
-          onClick={() => gotoPage(pageCount - 1)}
-          disabled={!canNextPage}
-        >
+        <button className="icon-button" onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
           <MdLastPage />
         </button>
       </div>

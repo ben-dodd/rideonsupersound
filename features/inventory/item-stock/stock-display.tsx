@@ -1,14 +1,9 @@
-import { StockObject, VendorObject } from 'lib/types'
-import {
-  getImageSrc,
-  getItemDisplayName,
-  getItemSku,
-} from 'lib/functions/displayInventory'
-import { useClerk } from 'lib/api/clerk'
+import { getImageSrc, getItemSku } from 'lib/functions/displayInventory'
 import { useVendors } from 'lib/api/vendor'
 import router from 'next/router'
 import { useStockItem } from 'lib/api/stock'
 import InfoBox from 'components/infoBox'
+import { VendorObject } from 'lib/types/vendor'
 
 export default function StockItemDisplay() {
   const { id } = router.query
@@ -29,9 +24,7 @@ export default function StockItemDisplay() {
           {
             label: 'Vendor',
             value: `[${item?.vendorId}] ${
-              vendors?.filter(
-                (v: VendorObject) => v?.id === item?.vendorId
-              )?.[0]?.name || ''
+              vendors?.filter((v: VendorObject) => v?.id === item?.vendorId)?.[0]?.name || ''
             }`,
             link: `/vendor/${item?.vendorId}`,
           },

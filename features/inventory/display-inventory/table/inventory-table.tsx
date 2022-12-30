@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { StockObject } from 'lib/types'
+import { StockObject } from 'lib/types/stock'
 import TableContainer from 'components/container/table'
 import Table from 'components/table'
 import { mapInventoryItem } from 'lib/functions/displayInventory'
@@ -21,11 +21,9 @@ export default function InventoryTable() {
   const data = useMemo(
     () =>
       inventory
-        ?.filter(
-          (t: StockObject) => !t?.isDeleted && !t?.isGiftCard && !t?.isMiscItem
-        )
+        ?.filter((t: StockObject) => !t?.isDeleted && !t?.isGiftCard && !t?.isMiscItem)
         .map((t: StockObject) => mapInventoryItem(t, vendors)),
-    [inventory, vendors]
+    [inventory, vendors],
   )
   const columns = useMemo(() => {
     // const openInventoryDialog = (item:any) => openInventoryModal(item?.row?.original?.id);
@@ -83,8 +81,7 @@ export default function InventoryTable() {
         accessor: 'sell',
         Header: 'Sell',
         width: 90,
-        Cell: ({ value }: NumberProps) =>
-          value && !isNaN(value) ? `$${value?.toFixed(2)}` : '-',
+        Cell: ({ value }: NumberProps) => (value && !isNaN(value) ? `$${value?.toFixed(2)}` : '-'),
       },
       // {
       //   accessor: "profitMargin",

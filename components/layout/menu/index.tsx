@@ -1,4 +1,4 @@
-import { SaleItemObject } from 'lib/types'
+import { SaleItemObject } from 'lib/types/sale'
 import Menu from './components/menu'
 import { useAppStore } from 'lib/store'
 import { useRestockList } from 'lib/api/stock'
@@ -10,9 +10,8 @@ export default function MenuView() {
   const { restockList } = useRestockList()
 
   const numCartItems = cart?.items?.reduce?.(
-    (accumulator: number, item: SaleItemObject) =>
-      accumulator + (parseInt(item?.quantity) || 1),
-    0
+    (accumulator: number, item: SaleItemObject) => accumulator + (parseInt(item?.quantity) || 1),
+    0,
   )
 
   const numJobsToDo = (jobsToDo?.length || 0) + (restockList?.length || 0)

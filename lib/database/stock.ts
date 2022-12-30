@@ -1,70 +1,82 @@
-import { StockMovementTypes } from 'lib/types'
+import { StockMovementTypes } from 'lib/types/stock'
 import { dbGetAllSalesAndItems, getStockMovementQuantityByAct } from './sale'
 import { js2mysql } from './utils/helpers'
 const connection = require('./conn')
 
 export function dbGetStockList(db = connection) {
   return db('stock')
-    .leftJoin('stock_movement', 'stock.id', 'stock_movement.stock_id')
-    .leftJoin('stock_price', 'stock.id', 'stock_price.stock_id')
-    .leftJoin('vendor', 'stock.vendor_id', 'vendor.id')
-    .groupBy('stock.id')
     .select(
-      'stock.id',
-      'stock.vendor_id',
-      'vendor.name as vendorName',
-      'stock.artist',
-      'stock.title',
-      'stock.display_as',
-      'stock.media',
-      'stock.format',
-      'stock.section',
-      'stock.country',
-      'stock.is_new',
-      'stock.cond',
-      'stock.image_url',
-      'stock.needs_restock',
-      'stock_price.vendor_cut',
-      'stock_price.total_sell',
-      knex.raw('SUM(stock_movement.quantity) as total_quantity'),
-      knex.raw(
-        'SUM(CASE WHEN stock_movement.act IN ("hold", "unhold") THEN stock_movement.quantity ELSE 0 END) as hold_quantity'
-      ),
-      knex.raw(
-        'SUM(CASE WHEN stock_movement.act IN ("layby", "unlayby") THEN stock_movement.quantity ELSE 0 END) as layby_quantity'
-      )
+      'id',
+      'vendor_id',
+      'artist',
+      'title',
+      'display_as',
+      'media',
+      'format',
+      'section',
+      'genre',
+      'is_new',
+      'cond',
+      'tags',
     )
     .where(`stock.is_deleted`, 0)
     .where(`stock.is_misc_item`, 0)
     .where(`stock.is_gift_card`, 0)
-    .andWhereRaw(
-      `(stock_price.id = (SELECT MAX(id) FROM stock_price WHERE stock_id = stock.id))`
-    )
 }
+
+// export function dbGetStockList(db = connection) {
+//   return db('stock')
+//     .leftJoin('stock_movement', 'stock.id', 'stock_movement.stock_id')
+//     .leftJoin('stock_price', 'stock.id', 'stock_price.stock_id')
+//     .leftJoin('vendor', 'stock.vendor_id', 'vendor.id')
+//     .groupBy('stock.id')
+//     .select(
+//       'stock.id',
+//       'stock.vendor_id',
+//       'vendor.name as vendorName',
+//       'stock.artist',
+//       'stock.title',
+//       'stock.display_as',
+//       'stock.media',
+//       'stock.format',
+//       'stock.section',
+//       'stock.country',
+//       'stock.is_new',
+//       'stock.cond',
+//       'stock.image_url',
+//       'stock.needs_restock',
+//       'stock_price.vendor_cut',
+//       'stock_price.total_sell',
+//       knex.raw('SUM(stock_movement.quantity) as total_quantity'),
+//       knex.raw(
+//         'SUM(CASE WHEN stock_movement.act IN ("hold", "unhold") THEN stock_movement.quantity ELSE 0 END) as hold_quantity'
+//       ),
+//       knex.raw(
+//         'SUM(CASE WHEN stock_movement.act IN ("layby", "unlayby") THEN stock_movement.quantity ELSE 0 END) as layby_quantity'
+//       )
+//     )
+//     .where(`stock.is_deleted`, 0)
+//     .where(`stock.is_misc_item`, 0)
+//     .where(`stock.is_gift_card`, 0)
+//     .andWhereRaw(
+//       `(stock_price.id = (SELECT MAX(id) FROM stock_price WHERE stock_id = stock.id))`
+//     )
+// }
 
 export function dbGetRestockList(db = connection) {
   return db('stock')
-    .select(
-      'id',
-      'vendor_id as vendorId',
-      'artist',
-      'title',
-      'media',
-      'format',
-      'section'
-    )
+    .select('id', 'vendor_id as vendorId', 'artist', 'title', 'media', 'format', 'section')
     .where(`needs_restock`, 1)
     .andWhere('is_deleted', 0)
 }
 
-export function dbGetStockItem(id, simple = false, db = connection) {
+export function dbGetStockItem(id, basic = false, db = connection) {
   return db('stock')
     .where('stock.id', id)
     .first()
     .then(async (item) => {
       if (item?.discogsItem) item.discogsItem = JSON.parse(item.discogsItem)
-      if (item?.googleBooksItem)
-        item.googleBooksItem = JSON.parse(item.googleBooksItem)
+      if (item?.googleBooksItem) item.googleBooksItem = JSON.parse(item.googleBooksItem)
       const stockMovements = await db('stock_movement')
         .where(`stock_id`, item?.id)
         .where('is_deleted', 0)
@@ -74,68 +86,27 @@ export function dbGetStockItem(id, simple = false, db = connection) {
         .where('is_deleted', 0)
         .orderBy('date_valid_from', 'desc')
       const quantities: any = {
-        inStock: stockMovements.reduce(
-          (acc, stockMovement) => acc + stockMovement.quantity,
-          0
-        ),
-        layby: getQuantities(
-          [StockMovementTypes.Layby, StockMovementTypes.Unlayby],
-          stockMovements,
-          true
-        ),
-        hold: getQuantities(
-          [StockMovementTypes.Hold, StockMovementTypes.Unhold],
-          stockMovements,
-          true
-        ),
+        inStock: stockMovements.reduce((acc, stockMovement) => acc + stockMovement.quantity, 0),
+        layby: getQuantities([StockMovementTypes.Layby, StockMovementTypes.Unlayby], stockMovements, true),
+        hold: getQuantities([StockMovementTypes.Hold, StockMovementTypes.Unhold], stockMovements, true),
       }
       const latestPrice = stockPrices[0]
       const totalSell = latestPrice?.total_sell
       const vendorCut = latestPrice?.vendor_cut
-      const storeCut = item?.isMiscItem
-        ? item?.miscItemAmount
-        : totalSell - vendorCut
+      const storeCut = item?.isMiscItem ? item?.miscItemAmount : totalSell - vendorCut
       const price = { totalSell, vendorCut, storeCut }
-      if (simple) return { item, quantities, price }
+      if (basic) return { item, quantities, price }
       // Add other quantity params as needed
-      quantities.received = getQuantities(
-        [StockMovementTypes.Received],
-        stockMovements
-      )
-      quantities.sold = getQuantities(
-        [StockMovementTypes.Sold],
-        stockMovements,
-        true
-      )
-      quantities.returned = getQuantities(
-        [StockMovementTypes.Returned],
-        stockMovements,
-        true
-      )
+      quantities.received = getQuantities([StockMovementTypes.Received], stockMovements)
+      quantities.sold = getQuantities([StockMovementTypes.Sold], stockMovements, true)
+      quantities.returned = getQuantities([StockMovementTypes.Returned], stockMovements, true)
       quantities.laybyHold = quantities.layby + quantities.hold
-      quantities.discarded = getQuantities(
-        [StockMovementTypes.Discarded],
-        stockMovements,
-        true
-      )
-      quantities.lost = getQuantities(
-        [StockMovementTypes.Lost, StockMovementTypes.Found],
-        stockMovements,
-        true
-      )
+      quantities.discarded = getQuantities([StockMovementTypes.Discarded], stockMovements, true)
+      quantities.lost = getQuantities([StockMovementTypes.Lost, StockMovementTypes.Found], stockMovements, true)
       quantities.discardedLost = quantities.discarded + quantities.lost
-      quantities.refunded = getQuantities(
-        [StockMovementTypes.Unsold],
-        stockMovements
-      )
-      quantities.adjustment = getQuantities(
-        [StockMovementTypes.Adjustment],
-        stockMovements
-      )
-      const sales = await dbGetAllSalesAndItems(db).where(
-        `sale_item.item_id`,
-        item?.id
-      )
+      quantities.refunded = getQuantities([StockMovementTypes.Unsold], stockMovements)
+      quantities.adjustment = getQuantities([StockMovementTypes.Adjustment], stockMovements)
+      const sales = await dbGetAllSalesAndItems(db).where(`sale_item.item_id`, item?.id)
       return { item, quantities, price, sales, stockMovements, stockPrices }
     })
 }
@@ -161,7 +132,7 @@ export function dbGetGiftCards(db = connection) {
       'gift_card_is_valid',
       'note',
       'date_created',
-      'date_modified'
+      'date_modified',
     )
     .where('is_gift_card', 1)
     .andWhere('is_deleted', 0)
@@ -218,17 +189,14 @@ export async function dbReceiveStock(receiveStock: any, db = connection) {
                 act: StockMovementTypes?.Received,
                 note: 'Existing stock received.',
               },
-              trx
+              trx,
             )
             receivedStock.push({
               item: receiveItem?.item,
               quantity: receiveItem?.quantity,
             })
           } else {
-            const stockId = await dbCreateStockItem(
-              { ...receiveItem?.item, vendorId },
-              trx
-            )
+            const stockId = await dbCreateStockItem({ ...receiveItem?.item, vendorId }, trx)
             dbCreateStockPrice(
               {
                 stockId,
@@ -237,7 +205,7 @@ export async function dbReceiveStock(receiveStock: any, db = connection) {
                 vendorCut: parseFloat(receiveItem?.vendorCut) * 100,
                 note: 'New stock priced.',
               },
-              trx
+              trx,
             )
             await dbCreateStockMovement(
               {
@@ -248,7 +216,7 @@ export async function dbReceiveStock(receiveStock: any, db = connection) {
                 act: StockMovementTypes?.Received,
                 note: 'New stock received.',
               },
-              trx
+              trx,
             )
             receivedStock.push({
               item: {
@@ -260,7 +228,7 @@ export async function dbReceiveStock(receiveStock: any, db = connection) {
               quantity: receiveItem?.quantity,
             })
           }
-        })
+        }),
       )
     })
     .then((res) => res)
@@ -279,14 +247,11 @@ export async function dbReturnStock(returnStock: any, db = connection) {
               dbUpdateStockItem(
                 returnItem?.id,
                 {
-                  quantityReturn:
-                    (stockItem?.quantityReturned || 0) +
-                    parseInt(returnItem?.quantity),
-                  quantity:
-                    (stockItem?.quantity || 0) - parseInt(returnItem?.quantity),
+                  quantityReturn: (stockItem?.quantityReturned || 0) + parseInt(returnItem?.quantity),
+                  quantity: (stockItem?.quantity || 0) - parseInt(returnItem?.quantity),
                 },
-                trx
-              )
+                trx,
+              ),
             )
             await dbCreateStockMovement(
               {
@@ -297,7 +262,7 @@ export async function dbReturnStock(returnStock: any, db = connection) {
                 act: StockMovementTypes?.Returned,
                 note: note || 'Stock returned to vendor.',
               },
-              trx
+              trx,
             )
           })
       }
@@ -306,11 +271,7 @@ export async function dbReturnStock(returnStock: any, db = connection) {
     .catch((e) => Error(e.message))
 }
 
-export async function dbChangeStockQuantity(
-  change: any,
-  id: any,
-  db = connection
-) {
+export async function dbChangeStockQuantity(change: any, id: any, db = connection) {
   console.log(change)
   const { stockItem, quantity, movement, clerkId, registerId, note } = change
   const { quantities = {} } = stockItem || {}
@@ -336,7 +297,7 @@ export async function dbChangeStockQuantity(
       act: movement,
       note,
     },
-    db
+    db,
   )
     .then((res) => {
       console.log(res)
@@ -347,13 +308,7 @@ export async function dbChangeStockQuantity(
 
 export function dbGetWebStock(condition = '', db = connection) {
   return db('stock')
-    .select(
-      'stock.artist',
-      'stock.title',
-      'stock.format',
-      'stock.is_new',
-      'stock_price.total_sell'
-    )
+    .select('stock.artist', 'stock.title', 'stock.format', 'stock.is_new', 'stock_price.total_sell')
     .leftJoin('stock_price', 'stock.id', 'stock_price.stock_id')
     .leftJoin('stock_movement', 'stock.id', 'stock_movement.stock_id')
     .sum('stock_movement.quantity as quantity')
@@ -363,9 +318,7 @@ export function dbGetWebStock(condition = '', db = connection) {
     .andWhere(`stock.is_gift_card`, 0)
     .andWhere(`stock.do_list_on_website`, 1)
     .andWhereRaw(condition)
-    .andWhereRaw(
-      `(stock_price.id = (SELECT MAX(id) FROM stock_price WHERE stock_id = stock.id))`
-    )
+    .andWhereRaw(`(stock_price.id = (SELECT MAX(id) FROM stock_price WHERE stock_id = stock.id))`)
     .orderBy(['stock.format', 'stock.artist', 'stock.title'])
     .then((stock) => stock.filter((stockItem) => stockItem?.quantity > 0))
 }
@@ -376,8 +329,6 @@ export function dbCheckIfRestockNeeded(itemId, db = connection) {
     .where('stock_id', itemId)
     .first()
     .then((res) =>
-      res.totalQuantity > 0
-        ? dbUpdateStockItem({ needsRestock: true }, itemId, db).then(() => true)
-        : false
+      res.totalQuantity > 0 ? dbUpdateStockItem({ needsRestock: true }, itemId, db).then(() => true) : false,
     )
 }

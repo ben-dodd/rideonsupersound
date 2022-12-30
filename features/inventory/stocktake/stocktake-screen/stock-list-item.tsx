@@ -1,6 +1,6 @@
 import { getItemDisplayName } from 'lib/functions/displayInventory'
 import { useStockList } from 'lib/api/stock'
-import { StockObject } from 'lib/types'
+import { StockObject } from 'lib/types/stock'
 
 export default function StockListItem({ id }) {
   const { inventory } = useStockList()

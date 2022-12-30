@@ -1,5 +1,5 @@
 import { saveSystemLog } from 'lib/functions/log'
-import { StocktakeTemplateObject } from 'lib/types'
+import { StocktakeTemplateObject } from 'lib/types/stock'
 import NewIcon from '@mui/icons-material/AddBox'
 import { useState } from 'react'
 import { useClerk } from 'lib/api/clerk'

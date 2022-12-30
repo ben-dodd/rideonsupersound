@@ -1,32 +1,24 @@
-import {
-  ClerkObject,
-  SaleItemObject,
-  StockObject,
-  StockPriceObject,
-  StocktakeTemplateObject,
-} from 'lib/types'
+import { ClerkObject } from 'lib/types'
+import { SaleItemObject } from 'lib/types/sale'
+import { StockObject, StockPriceObject, StocktakeTemplateObject } from 'lib/types/stock'
 import { axiosAuth, useData } from './'
 
 export function useStockList() {
   return useData(`stock`, 'stockList')
 }
 
-export function useStockItem(id: string) {
-  return useData(`stock/${id}`, 'stockItem')
+export function useBasicStockItem(id: string | number) {
+  return useData(`stock/${id}?basic=true`, 'stockItem')
 }
 
-export function useSimpleStockItem(id: string) {
-  return useData(`stock/${id}?simple=true`, 'stockItem')
+export function useStockItem(id: string | number) {
+  return useData(`stock/${id}`, 'stockItem')
 }
 
 export function useSaleStockItems(items: SaleItemObject[]) {
   return useData(
-    `stock/items${
-      items?.length > 0
-        ? `?items=${items?.map((item) => item?.itemId)?.join('+')}`
-        : ''
-    }`,
-    'saleItems'
+    `stock/items${items?.length > 0 ? `?items=${items?.map((item) => item?.itemId)?.join('+')}` : ''}`,
+    'saleItems',
   )
 }
 
@@ -83,10 +75,7 @@ export function updateStockItem(update: any, id) {
   return axiosAuth.patch(`/api/stock/${id}`, update)
 }
 
-export function createStocktakeTemplate(
-  stocktakeTemplate: StocktakeTemplateObject,
-  clerk: ClerkObject
-) {
+export function createStocktakeTemplate(stocktakeTemplate: StocktakeTemplateObject, clerk: ClerkObject) {
   return axiosAuth
     .post(`/api/stocktake/template`, {
       ...stocktakeTemplate,

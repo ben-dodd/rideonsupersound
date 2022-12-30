@@ -2,7 +2,6 @@
 import { ModalButton } from 'lib/types'
 import ArrowLeft from '@mui/icons-material/ArrowLeft'
 import CircularProgress from '@mui/material/CircularProgress'
-import { MouseEventHandler } from 'react'
 import { CSVLink } from 'react-csv'
 import { useRouter } from 'next/router'
 interface ScreenProps {
@@ -33,10 +32,7 @@ export default function ScreenContainer({
   ) : (
     <div className="screen__content">
       <div className={`screen__title ${titleClass || 'bg-primary-light'}`}>
-        <button
-          className="screen__back-button"
-          onClick={closeFunction || routerBack}
-        >
+        <button className="screen__back-button" onClick={closeFunction || routerBack}>
           <ArrowLeft />
         </button>
         {title}
@@ -62,9 +58,7 @@ export default function ScreenContainer({
             ) : (
               <button
                 key={i}
-                className={`screen__button--${button?.type}${
-                  button?.hidden ? ' hidden' : ''
-                }`}
+                className={`screen__button--${button?.type}${button?.hidden ? ' hidden' : ''}`}
                 onClick={() => button?.onClick()}
                 disabled={button?.disabled || button?.loading}
               >
@@ -77,7 +71,7 @@ export default function ScreenContainer({
                 )}
                 {button?.text}
               </button>
-            )
+            ),
           )}
         </div>
       )}

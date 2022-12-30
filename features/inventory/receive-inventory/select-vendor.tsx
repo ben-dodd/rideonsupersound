@@ -1,4 +1,4 @@
-import { VendorObject } from 'lib/types'
+import { VendorObject } from 'lib/types/vendor'
 import CreateableSelect from 'components/inputs/createable-select'
 import { logCreateVendor } from 'lib/functions/log'
 import { useAppStore } from 'lib/store'
@@ -18,10 +18,7 @@ export default function SelectVendor() {
         inputLabel="Select vendor"
         fieldRequired
         value={receiveBasket?.vendorId}
-        label={
-          vendors?.find((v: VendorObject) => v?.id === receiveBasket?.vendorId)
-            ?.name || ''
-        }
+        label={vendors?.find((v: VendorObject) => v?.id === receiveBasket?.vendorId)?.name || ''}
         onChange={(vendorObject: any) => {
           setReceiveStock({
             vendor_id: parseInt(vendorObject?.value),

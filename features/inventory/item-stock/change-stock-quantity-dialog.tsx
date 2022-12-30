@@ -2,10 +2,11 @@ import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
 import { useClerk } from 'lib/api/clerk'
 import { useCurrentRegisterId } from 'lib/api/register'
-import { changeStockQuantity, useStockItem, useStockList } from 'lib/api/stock'
+import { changeStockQuantity, useStockItem } from 'lib/api/stock'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
-import { ModalButton, StockMovementTypes } from 'lib/types'
+import { ModalButton } from 'lib/types'
+import { StockMovementTypes } from 'lib/types/stock'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 import Select from 'react-select'
@@ -46,7 +47,7 @@ export default function ChangeStockQuantityDialog() {
             registerId,
             note,
           },
-          id
+          id,
         )
         mutate(`stock/${id}`)
         setAlert({
@@ -112,13 +113,7 @@ export default function ChangeStockQuantityDialog() {
           value={quantity}
           onChange={(e: any) => setQuantity(e.target.value)}
         />
-        <TextField
-          inputLabel="Notes"
-          value={note}
-          onChange={(e: any) => setNote(e.target.value)}
-          multiline
-          rows={3}
-        />
+        <TextField inputLabel="Notes" value={note} onChange={(e: any) => setNote(e.target.value)} multiline rows={3} />
       </>
     </Modal>
   )

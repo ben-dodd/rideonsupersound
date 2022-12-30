@@ -1,5 +1,5 @@
 import { getUSDExchangeRate } from 'lib/api/external'
-import { StockObject } from 'lib/types'
+import { StockObject } from 'lib/types/stock'
 import { andList } from 'lib/utils'
 import { useEffect, useState } from 'react'
 import ReactPlayer from 'react-player'
@@ -21,9 +21,7 @@ export default function DiscogsItemScreen({ discogsItem, item }: discogsProps) {
     <div className="flex">
       <div className="w-1/2">
         <div className="text-xl">
-          <div className="font-bold">
-            {andList(discogsItem?.artists?.map((e: any) => e.name))}
-          </div>
+          <div className="font-bold">{andList(discogsItem?.artists?.map((e: any) => e.name))}</div>
           <div className="font-bold italic">
             {`${discogsItem?.title}
             ${discogsItem?.year ? ` (${discogsItem?.year})` : ''}`}
@@ -31,13 +29,11 @@ export default function DiscogsItemScreen({ discogsItem, item }: discogsProps) {
         </div>
         <div className="text-md">{discogsItem?.format?.join(', ')}</div>
         <div className="pr-1 italic">
-          {`${discogsItem?.label?.[0] || ''}${
-            discogsItem?.label && discogsItem?.country ? ', ' : ''
-          }${discogsItem?.country || ''}`}
+          {`${discogsItem?.label?.[0] || ''}${discogsItem?.label && discogsItem?.country ? ', ' : ''}${
+            discogsItem?.country || ''
+          }`}
         </div>
-        <div className="pt-4 text-sm">
-          {discogsItem?.genres?.concat(discogsItem?.styles || []).join(', ')}
-        </div>
+        <div className="pt-4 text-sm">{discogsItem?.genres?.concat(discogsItem?.styles || []).join(', ')}</div>
         <div className="pt-2" />
         <div className="p-2">
           {discogsItem?.barcode?.length > 0 && (
@@ -58,9 +54,7 @@ export default function DiscogsItemScreen({ discogsItem, item }: discogsProps) {
                 {discogsItem?.identifiers?.map((id: any, i: number) => (
                   <div key={i}>
                     <b>{id?.type}:</b>
-                    {` ${id?.value}${
-                      id?.description ? ` (${id.description})` : ''
-                    }`}
+                    {` ${id?.value}${id?.description ? ` (${id.description})` : ''}`}
                   </div>
                 ))}
               </div>
@@ -74,25 +68,17 @@ export default function DiscogsItemScreen({ discogsItem, item }: discogsProps) {
             {!item?.isNew && !item?.cond
               ? 'Set condition of item to get suggested price.'
               : discogsItem?.priceSuggestions &&
-                discogsItem?.priceSuggestions[
-                  item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)'
-                ]?.value
+                discogsItem?.priceSuggestions[item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)']?.value
               ? `$${parseFloat(
-                  discogsItem?.priceSuggestions[
-                    item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)'
-                  ]?.value
-                )?.toFixed(2)} NZD (${
-                  item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)'
-                } condition)`
+                  discogsItem?.priceSuggestions[item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)']?.value,
+                )?.toFixed(2)} NZD (${item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)'} condition)`
               : 'No data'}
           </div>
         </div>
         <div className="p-2 bg-secondary-light rounded mt-2">
           <div className="font-bold">Lowest Price on Marketplace</div>
           <div>
-            {discogsItem?.lowest_price
-              ? `$${(discogsItem?.lowest_price * exchangeRate)?.toFixed(2)} NZD`
-              : 'No Data'}
+            {discogsItem?.lowest_price ? `$${(discogsItem?.lowest_price * exchangeRate)?.toFixed(2)} NZD` : 'No Data'}
           </div>
         </div>
         <div className="p-2">
@@ -108,13 +94,7 @@ export default function DiscogsItemScreen({ discogsItem, item }: discogsProps) {
       </div>
       <div className="w-1/2">
         {discogsItem?.videos?.map((vid: any, i: number) => (
-          <ReactPlayer
-            className="p-2"
-            url={vid?.uri}
-            key={i}
-            controls={true}
-            width={'100%'}
-          />
+          <ReactPlayer className="p-2" url={vid?.uri} key={i} controls={true} width={'100%'} />
         ))}
       </div>
     </div>

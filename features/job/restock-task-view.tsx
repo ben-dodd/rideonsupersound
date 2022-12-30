@@ -1,5 +1,5 @@
 import { useStockList } from 'lib/api/stock'
-import { StockObject } from 'lib/types'
+import { StockObject } from 'lib/types/stock'
 import RestockJob from './restock-job'
 
 export default function RestockTaskView() {

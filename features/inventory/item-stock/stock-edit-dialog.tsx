@@ -2,13 +2,8 @@ import CreateableSelect from 'components/inputs/createable-select'
 import RadioButton from 'components/inputs/radio-button'
 import SettingsSelect from 'components/inputs/settings-select'
 import TextField from 'components/inputs/text-field'
-import { logCreateVendor } from 'lib/functions/log'
-import { ModalButton, StockObject, VendorObject } from 'lib/types'
-import {
-  getImageSrc,
-  getItemDisplayName,
-  getItemSku,
-} from 'lib/functions/displayInventory'
+import { ModalButton } from 'lib/types'
+import { getImageSrc, getItemDisplayName, getItemSku } from 'lib/functions/displayInventory'
 import { createVendor, useVendors } from 'lib/api/vendor'
 import { updateStockItem, useStockItem } from 'lib/api/stock'
 import router from 'next/router'
@@ -17,14 +12,14 @@ import { ViewProps } from 'lib/store/types'
 import { useAppStore } from 'lib/store'
 import Modal from 'components/modal'
 import { useSWRConfig } from 'swr'
+import { VendorObject } from 'lib/types/vendor'
 
 export default function StockEditDialog() {
   const { id } = router.query
   const { stockItem, isStockItemLoading } = useStockItem(`${id}`)
   const { view, closeView, setAlert } = useAppStore()
   const [item, setItem] = useState(stockItem?.item || {})
-  const handleChange = (e) =>
-    setItem({ ...item, [e.target.name]: e.target.value })
+  const handleChange = (e) => setItem({ ...item, [e.target.name]: e.target.value })
   const { vendors } = useVendors()
   const disabled = false
   const { mutate } = useSWRConfig()
@@ -65,11 +60,7 @@ export default function StockEditDialog() {
         <div className="flex justify-start w-full">
           <div className="pr-2 w-52 mr-2">
             <div className="w-52 h-52 relative">
-              <img
-                className="object-cover absolute"
-                src={getImageSrc(item)}
-                alt={item?.title || 'Inventory image'}
-              />
+              <img className="object-cover absolute" src={getImageSrc(item)} alt={item?.title || 'Inventory image'} />
               {item?.id && (
                 <div className="absolute w-52 h-8 bg-opacity-50 bg-black text-white flex justify-center items-center">
                   {getItemSku(item)}
@@ -80,9 +71,7 @@ export default function StockEditDialog() {
           <div className="w-full">
             <TextField
               value={item?.artist || ''}
-              onChange={(e: any) =>
-                setItem({ ...item, artist: e.target.value })
-              }
+              onChange={(e: any) => setItem({ ...item, artist: e.target.value })}
               inputLabel="ARTIST"
               disabled={disabled}
             />
@@ -94,9 +83,7 @@ export default function StockEditDialog() {
             />
             <TextField
               value={item?.displayAs || getItemDisplayName(item)}
-              onChange={(e: any) =>
-                setItem({ ...item, displayAs: e.target.value })
-              }
+              onChange={(e: any) => setItem({ ...item, displayAs: e.target.value })}
               inputLabel="DISPLAY NAME"
               disabled={disabled}
             />
@@ -106,11 +93,7 @@ export default function StockEditDialog() {
                   inputLabel="SELLING FOR VENDOR"
                   fieldRequired
                   value={item?.vendorId}
-                  label={
-                    vendors?.filter(
-                      (v: VendorObject) => v?.id === item?.vendorId
-                    )?.[0]?.name || ''
-                  }
+                  label={vendors?.filter((v: VendorObject) => v?.id === item?.vendorId)?.[0]?.name || ''}
                   onChange={(vendorObject: any) =>
                     setItem({
                       ...item,
@@ -153,30 +136,12 @@ export default function StockEditDialog() {
             isCreateDisabled={true}
             isDisabled={disabled}
           />
-          <SettingsSelect
-            object={item}
-            onEdit={setItem}
-            inputLabel="FORMAT"
-            dbField="format"
-            isDisabled={disabled}
-          />
+          <SettingsSelect object={item} onEdit={setItem} inputLabel="FORMAT" dbField="format" isDisabled={disabled} />
         </div>
         {item?.format == 'Shirt' ? (
           <div className="grid grid-cols-2 gap-2 mb-2">
-            <SettingsSelect
-              object={item}
-              onEdit={setItem}
-              inputLabel="COLOUR"
-              dbField="colour"
-              isDisabled={disabled}
-            />
-            <SettingsSelect
-              object={item}
-              onEdit={setItem}
-              inputLabel="SIZE"
-              dbField="size"
-              isDisabled={disabled}
-            />
+            <SettingsSelect object={item} onEdit={setItem} inputLabel="COLOUR" dbField="colour" isDisabled={disabled} />
+            <SettingsSelect object={item} onEdit={setItem} inputLabel="SIZE" dbField="size" isDisabled={disabled} />
           </div>
         ) : (
           <div className="flex items-end">
@@ -185,9 +150,7 @@ export default function StockEditDialog() {
               inputLabel="CONDITION"
               group="isNew"
               value={item?.isNew ? 'true' : 'false'}
-              onChange={(value: string) =>
-                setItem({ ...item, is_new: value === 'true' ? 1 : 0 })
-              }
+              onChange={(value: string) => setItem({ ...item, is_new: value === 'true' ? 1 : 0 })}
               options={[
                 { id: 'new', value: 'true', label: 'New' },
                 { id: 'used', value: 'false', label: 'Used' },
@@ -214,13 +177,7 @@ export default function StockEditDialog() {
             isCreateDisabled={true}
             isDisabled={disabled}
           />
-          <SettingsSelect
-            object={item}
-            onEdit={setItem}
-            inputLabel="COUNTRY"
-            dbField="country"
-            isDisabled={disabled}
-          />
+          <SettingsSelect object={item} onEdit={setItem} inputLabel="COUNTRY" dbField="country" isDisabled={disabled} />
         </div>
         <SettingsSelect
           object={item}
@@ -244,9 +201,7 @@ export default function StockEditDialog() {
               type="checkbox"
               className="cursor-pointer"
               checked={item?.doListOnWebsite === 0 ? false : true}
-              onChange={(e) =>
-                setItem({ ...item, doListOnWebsite: e.target.checked ? 1 : 0 })
-              }
+              onChange={(e) => setItem({ ...item, doListOnWebsite: e.target.checked ? 1 : 0 })}
             />
             <div className="ml-2">List on website</div>
           </div>
@@ -255,13 +210,9 @@ export default function StockEditDialog() {
               type="checkbox"
               className="cursor-pointer"
               checked={item?.hasNoQuantity === 1 ? true : false}
-              onChange={(e) =>
-                setItem({ ...item, hasNoQuantity: e.target.checked ? 1 : 0 })
-              }
+              onChange={(e) => setItem({ ...item, hasNoQuantity: e.target.checked ? 1 : 0 })}
             />
-            <div className="ml-2">
-              Item has no stock quantity (e.g. lathe cut services)
-            </div>
+            <div className="ml-2">Item has no stock quantity (e.g. lathe cut services)</div>
           </div>
         </div>
       </div>

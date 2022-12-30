@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ModalButton, StockObject } from 'lib/types'
+import { ModalButton } from 'lib/types'
 import ScreenContainer from 'components/container/screen'
 import { processStocktake } from 'lib/functions/stocktake'
 import CountItems from './count-items'
@@ -15,17 +15,13 @@ export default function StocktakeScreen() {
   const [stocktakeId, setLoadedStocktakeId] = useAtom(loadedStocktakeIdAtom)
   const [stocktakeTemplateId] = useAtom(loadedStocktakeTemplateIdAtom)
 
-  const { stocktakeItems, isStocktakeItemsLoading, mutateStocktakeItems } =
-    useStocktakeItemsByStocktake(stocktakeId)
-  const { stocktakes, isStocktakesLoading, mutateStocktakes } =
-    useStocktakesByTemplate(stocktakeTemplateId)
+  const { stocktakeItems, isStocktakeItemsLoading, mutateStocktakeItems } = useStocktakeItemsByStocktake(stocktakeId)
+  const { stocktakes, isStocktakesLoading, mutateStocktakes } = useStocktakesByTemplate(stocktakeTemplateId)
   const { stocktakeTemplates } = useStocktakeTemplates()
 
-  const stocktake = stocktakes?.filter(
-    (stocktake) => stocktake?.id === stocktakeId
-  )?.[0]
+  const stocktake = stocktakes?.filter((stocktake) => stocktake?.id === stocktakeId)?.[0]
   const stocktakeTemplate = stocktakeTemplates?.filter(
-    (stocktakeTemplate) => stocktakeTemplate?.id === stocktakeTemplateId
+    (stocktakeTemplate) => stocktakeTemplate?.id === stocktakeTemplateId,
   )?.[0]
 
   const { inventory } = useInventory()
@@ -38,10 +34,8 @@ export default function StocktakeScreen() {
     const stocktakeToSave = st || stocktake
     updateStocktakeInDatabase(stocktakeToSave)
     mutateStocktakes(
-      stocktakes?.map((st) =>
-        st?.id === stocktakeToSave?.id ? stocktakeToSave : st
-      ),
-      false
+      stocktakes?.map((st) => (st?.id === stocktakeToSave?.id ? stocktakeToSave : st)),
+      false,
     )
   }
 
@@ -51,18 +45,10 @@ export default function StocktakeScreen() {
     const inventoryList = inventory?.filter(
       (i: StockObject) =>
         i?.quantity > 0 &&
-        (stocktakeTemplate?.vendor_enabled
-          ? stocktakeTemplate?.vendor_list?.includes(i?.vendorId)
-          : true) &&
-        (stocktakeTemplate?.format_enabled
-          ? stocktakeTemplate?.format_list?.includes(i?.format)
-          : true) &&
-        (stocktakeTemplate?.media_enabled
-          ? stocktakeTemplate?.media_list?.includes(i?.media)
-          : true) &&
-        (stocktakeTemplate?.section_enabled
-          ? stocktakeTemplate?.section_list?.includes(i?.section)
-          : true)
+        (stocktakeTemplate?.vendor_enabled ? stocktakeTemplate?.vendor_list?.includes(i?.vendorId) : true) &&
+        (stocktakeTemplate?.format_enabled ? stocktakeTemplate?.format_list?.includes(i?.format) : true) &&
+        (stocktakeTemplate?.media_enabled ? stocktakeTemplate?.media_list?.includes(i?.media) : true) &&
+        (stocktakeTemplate?.section_enabled ? stocktakeTemplate?.section_list?.includes(i?.section) : true),
     )
 
     // const idList = inventoryList?.map((inventoryItem) => inventoryItem?.id);
@@ -79,11 +65,7 @@ export default function StocktakeScreen() {
         review_decision: null,
       }))
     const checkedStocktakeItems = stocktakeItems?.map((si) => {
-      if (
-        inventoryList?.filter(
-          (inventoryItem) => inventoryItem?.id === si?.stock_id
-        )?.length > 0
-      ) {
+      if (inventoryList?.filter((inventoryItem) => inventoryItem?.id === si?.stock_id)?.length > 0) {
         return si
       } else {
         updateStocktakeItemInDatabase({ ...si, do_check_details: 1 })
@@ -176,19 +158,11 @@ export default function StocktakeScreen() {
           openConfirm({
             open: true,
             title: 'Lock It In',
-            styledMessage: (
-              <span>Are you sure you want to process the stocktake?</span>
-            ),
+            styledMessage: <span>Are you sure you want to process the stocktake?</span>,
             yesText: "YES, I'M SURE",
             action: () => {
               saveOrUpdateStocktake()
-              processStocktake(
-                stocktake,
-                stocktakeTemplate,
-                stocktakeItems,
-                inventory,
-                clerk
-              )
+              processStocktake(stocktake, stocktakeTemplate, stocktakeItems, inventory, clerk)
               closeView(ViewProps.stocktakeScreen)
               setLoadedStocktakeId(null)
             },
@@ -215,9 +189,9 @@ export default function StocktakeScreen() {
                 setLoadedStocktakeId(null)
               }
         }
-        title={`${stocktake?.id ? '' : 'NEW '}${
-          stocktakeTemplate?.name
-        } STOCK TAKE ${stocktake?.id ? `#${stocktake?.id}` : ''}`}
+        title={`${stocktake?.id ? '' : 'NEW '}${stocktakeTemplate?.name} STOCK TAKE ${
+          stocktake?.id ? `#${stocktake?.id}` : ''
+        }`}
         buttons={completed ? completedButtons : buttons[step]}
         titleClass="bg-col1"
       >

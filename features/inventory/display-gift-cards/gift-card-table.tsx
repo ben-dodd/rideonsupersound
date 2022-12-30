@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { StockObject } from 'lib/types'
+import { StockObject } from 'lib/types/stock'
 import TableContainer from 'components/container/table'
 import Table from 'components/table'
 import dayjs from 'dayjs'
@@ -8,11 +8,7 @@ import { useGiftCards } from 'lib/api/stock'
 
 export default function GiftCardTable() {
   const { giftCards, isGiftCardsLoading } = useGiftCards()
-  const data = useMemo(
-    () =>
-      giftCards?.map((giftCard: StockObject) => mapGiftCardObject(giftCard)),
-    [giftCards]
-  )
+  const data = useMemo(() => giftCards?.map((giftCard: StockObject) => mapGiftCardObject(giftCard)), [giftCards])
 
   const columns = useMemo(
     () => [
@@ -20,8 +16,7 @@ export default function GiftCardTable() {
         Header: 'Date Purchased',
         accessor: 'date',
         width: 280,
-        Cell: (item: any) =>
-          item ? <div>{dayjs(item?.value).format('D MMMM YYYY')}</div> : '',
+        Cell: (item: any) => (item ? <div>{dayjs(item?.value).format('D MMMM YYYY')}</div> : ''),
         sortType: (rowA: any, rowB: any, columnId: any) => {
           const a = rowA?.original[columnId]
           const b = rowB?.original[columnId]
@@ -32,16 +27,12 @@ export default function GiftCardTable() {
       {
         Header: 'Initial Value',
         accessor: 'initial',
-        Cell: ({ value }) => (
-          <span>${(value ? value / 100 : 0)?.toFixed(2)}</span>
-        ),
+        Cell: ({ value }) => <span>${(value ? value / 100 : 0)?.toFixed(2)}</span>,
       },
       {
         Header: 'Remaining Value',
         accessor: 'remaining',
-        Cell: ({ value }) => (
-          <span>${(value ? value / 100 : 0)?.toFixed(2)}</span>
-        ),
+        Cell: ({ value }) => <span>${(value ? value / 100 : 0)?.toFixed(2)}</span>,
       },
       {
         Header: 'Valid',
@@ -50,7 +41,7 @@ export default function GiftCardTable() {
       },
       { Header: 'Notes', accessor: 'notes', width: 350 },
     ],
-    []
+    [],
   )
 
   return (

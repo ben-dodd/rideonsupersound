@@ -1,21 +1,18 @@
 import { useState } from 'react'
-import { ModalButton, StockObject, VendorObject } from 'lib/types'
+import { ModalButton } from 'lib/types'
 import TextField from 'components/inputs/text-field'
 import Select from 'react-select'
 import ScreenContainer from 'components/container/screen'
 import DeleteIcon from '@mui/icons-material/Delete'
-import {
-  getImageSrc,
-  getItemDisplayName,
-  getItemSku,
-  getItemSkuDisplayName,
-} from 'lib/functions/displayInventory'
+import { getImageSrc, getItemDisplayName, getItemSku, getItemSkuDisplayName } from 'lib/functions/displayInventory'
 import { returnStock, useStockList } from 'lib/api/stock'
 import { useVendors } from 'lib/api/vendor'
 import { useCurrentRegisterId } from 'lib/api/register'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
+import { StockObject } from 'lib/types/stock'
+import { VendorObject } from 'lib/types/vendor'
 
 export default function ReturnStockScreen() {
   const { inventory, mutateInventory } = useStockList()
@@ -49,15 +46,7 @@ export default function ReturnStockScreen() {
       type: 'ok',
       onClick: () => {
         setSubmitting(true)
-        returnStock(
-          vendorWrapper?.value,
-          returnItems,
-          notes,
-          clerk,
-          registerId,
-          inventory,
-          mutateInventory
-        )
+        returnStock(vendorWrapper?.value, returnItems, notes, clerk, registerId, inventory, mutateInventory)
         setSubmitting(false)
         setAlert({
           open: true,
@@ -74,10 +63,9 @@ export default function ReturnStockScreen() {
         returnItems?.filter(
           (returnItem: any) =>
             isNaN(returnItem?.quantity) ||
-            inventory?.find(
-              (i: StockObject) => i?.id === parseInt(returnItem?.id)
-            )?.quantity < parseInt(`${returnItem?.quantity}`) ||
-            returnItem?.quantity < 0
+            inventory?.find((i: StockObject) => i?.id === parseInt(returnItem?.id))?.quantity <
+              parseInt(`${returnItem?.quantity}`) ||
+            returnItem?.quantity < 0,
         ).length > 0,
       text: 'RETURN STOCK',
     },
@@ -90,7 +78,7 @@ export default function ReturnStockScreen() {
       (item: StockObject) =>
         item?.vendorId === vendorWrapper?.value &&
         returnItems?.filter((i) => i?.id === item?.id)?.length === 0 &&
-        item?.quantity > 0
+        item?.quantity > 0,
     )
     ?.map((item: StockObject) => ({
       value: item?.id,
@@ -107,8 +95,8 @@ export default function ReturnStockScreen() {
     >
       <div className="w-full">
         <div className="help-text">
-          Select the vendor that you are returning stock to, then select the
-          items and add how many of each they are taking.
+          Select the vendor that you are returning stock to, then select the items and add how many of each they are
+          taking.
         </div>
         <div className="flex mt-4">
           <div className="w-1/3">
@@ -136,9 +124,7 @@ export default function ReturnStockScreen() {
                 setReturnItems([
                   {
                     id: item?.value,
-                    quantity:
-                      inventory?.find((i: StockObject) => i?.id === item?.value)
-                        ?.quantity || 1,
+                    quantity: inventory?.find((i: StockObject) => i?.id === item?.value)?.quantity || 1,
                   },
                   ...returnItems,
                 ])
@@ -146,19 +132,13 @@ export default function ReturnStockScreen() {
               onInputChange={(newValue, actionMeta, prevInputValue) => {
                 if (
                   actionMeta?.action === 'input-change' &&
-                  returnOptions?.filter(
-                    (opt) =>
-                      newValue === `${('00000' + opt?.value || '').slice(-5)}`
-                  )?.length > 0
+                  returnOptions?.filter((opt) => newValue === `${('00000' + opt?.value || '').slice(-5)}`)?.length > 0
                 ) {
                   let returnItem = inventory?.filter(
                     (i: StockObject) =>
                       i?.id ===
-                      returnOptions?.find(
-                        (opt) =>
-                          newValue ===
-                          `${('00000' + opt?.value || '').slice(-5)}`
-                      )?.[0]?.value
+                      returnOptions?.find((opt) => newValue === `${('00000' + opt?.value || '').slice(-5)}`)?.[0]
+                        ?.value,
                   )
                   setReturnItems([
                     {
@@ -186,20 +166,14 @@ export default function ReturnStockScreen() {
             {returnItems?.length > 0 ? (
               <div className="h-dialog">
                 <div className="font-bold text-xl">{`RETURNING ${returnItems?.reduce(
-                  (prev, returnItem) =>
-                    (prev += parseInt(returnItem?.quantity)),
-                  0
+                  (prev, returnItem) => (prev += parseInt(returnItem?.quantity)),
+                  0,
                 )} ITEMS`}</div>
                 <div className="h-full overflow-y-scroll">
                   {returnItems?.map((returnItem: any, i: number) => {
-                    const item = inventory?.find(
-                      (i: StockObject) => i?.id === parseInt(returnItem?.id)
-                    )
+                    const item = inventory?.find((i: StockObject) => i?.id === parseInt(returnItem?.id))
                     return (
-                      <div
-                        className="flex justify-between my-2 border-b w-full"
-                        key={`${returnItem?.id}-${i}`}
-                      >
+                      <div className="flex justify-between my-2 border-b w-full" key={`${returnItem?.id}-${i}`}>
                         <div className="flex">
                           <div className="w-20">
                             <div className="w-20 h-20 relative">
@@ -221,9 +195,7 @@ export default function ReturnStockScreen() {
                             {getItemDisplayName(item)}
                             <div
                               className={`mt-2 text-sm font-bold ${
-                                item?.quantity <= 0
-                                  ? 'text-tertiary'
-                                  : 'text-black'
+                                item?.quantity <= 0 ? 'text-tertiary' : 'text-black'
                               }`}
                             >{`${item?.quantity || 0} in stock.`}</div>
                           </div>
@@ -238,21 +210,13 @@ export default function ReturnStockScreen() {
                             valueNum={returnItem?.quantity}
                             onChange={(e: any) =>
                               returnItems?.map((i) =>
-                                i?.id === returnItem?.id
-                                  ? { ...returnItem, quantity: e.target.value }
-                                  : returnItem
+                                i?.id === returnItem?.id ? { ...returnItem, quantity: e.target.value } : returnItem,
                               )
                             }
                           />
                           <button
                             className="bg-gray-200 hover:bg-gray-300 p-1 w-10 h-10 rounded-full mr-8"
-                            onClick={() =>
-                              setReturnItems(
-                                returnItems?.filter(
-                                  (i) => i?.id !== returnItem?.id
-                                )
-                              )
-                            }
+                            onClick={() => setReturnItems(returnItems?.filter((i) => i?.id !== returnItem?.id))}
                           >
                             <DeleteIcon />
                           </button>
