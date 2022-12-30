@@ -15,6 +15,8 @@ type SellListItemProps = {
   deleteCartItem?: Function
 }
 
+// TODO make list items share more components
+
 export default function SellListItem({ cartItem, deleteCartItem }: SellListItemProps) {
   const { openConfirm, setCartItem } = useAppStore()
   const { stockItem } = useStockItem(`${cartItem?.itemId}`)
