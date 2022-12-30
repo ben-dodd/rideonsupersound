@@ -1,12 +1,6 @@
-import testConn from './testConn'
+import testConn from '../testConn'
 
-const {
-  getTodos,
-  getTodo,
-  addTodo,
-  updateTodo,
-  deleteTodo,
-} = require('./todos')
+const { getTodos, getTodo, addTodo, updateTodo, deleteTodo } = require('./todos')
 
 beforeAll(() => testConn.migrate.latest())
 
@@ -38,9 +32,7 @@ describe('getTodo', () => {
 describe('addTodo', () => {
   it('adds a new todo to the db', () => {
     return addTodo('Do your Trello ticket', testConn).then(() => {
-      return getTodo(4, testConn).then((todo) =>
-        expect(todo.text).toContain('Trello')
-      )
+      return getTodo(4, testConn).then((todo) => expect(todo.text).toContain('Trello'))
     })
   })
 })

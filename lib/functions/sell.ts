@@ -3,9 +3,9 @@ import { saveLog } from 'lib/functions/log'
 import { SaleItemObject } from 'lib/types/sale'
 import {
   BasicStockObject,
+  BasicStockPriceObject,
   GiftCardObject,
   StockItemObject,
-  StockItemPriceObject,
   StockItemSearchObject,
   StockObject,
 } from 'lib/types/stock'
@@ -53,7 +53,7 @@ export function getCartItemTotal(cartItem, item, price) {
   return getCartItemVendorCut(cartItem, price) + getCartItemStoreCut(cartItem, price)
 }
 
-export function getCartItemPrices(cartItem: any, item: StockItemObject, price: StockItemPriceObject) {
+export function getCartItemPrices(cartItem: any, item: StockItemObject, price: BasicStockPriceObject) {
   // Gets three prices for each sale item: the vendor cut, store cut, and total
   // Price is returned in cents
   return {

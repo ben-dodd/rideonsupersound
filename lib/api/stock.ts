@@ -7,8 +7,8 @@ export function useStockList() {
   return useData(`stock`, 'stockList')
 }
 
-export function useBasicStockItem(id: string | number) {
-  return useData(`stock/${id}?basic=true`, 'stockItem')
+export function useBasicStockItem(id: string | number, wait: boolean) {
+  return useData(wait ? null : `stock/${id}?basic=true`, 'stockItem')
 }
 
 export function useStockItem(id: string | number) {

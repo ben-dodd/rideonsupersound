@@ -1,11 +1,6 @@
 /* eslint-disable unused-imports/no-unused-vars */
-import {
-  ConfirmModal,
-  AlertProps,
-  SaleTransactionObject,
-  SaleItemObject,
-  CartObject,
-} from 'lib/types'
+import { ConfirmModal, AlertProps } from 'lib/types'
+import { CartObject, SaleItemObject, SaleTransactionObject } from 'lib/types/sale'
 
 export interface StoreState {
   view: {
@@ -53,6 +48,7 @@ export interface StoreState {
   loadedStocktakeTemplateId?: number
   createableCustomerName?: string
   sellSearchBar?: string
+  sellIsSearching?: boolean
   confirmModal?: ConfirmModal
   alert?: AlertProps
   receiveBasket?: {
@@ -74,6 +70,7 @@ export interface StoreState {
   setAlert: (alert: any) => void
   closeAlert: () => void
   setSellSearchBar: (val: string) => void
+  toggleSellSearchingOff: () => void
   setCart: (update: any) => void
   addCartTransaction: (transaction: SaleTransactionObject) => void
   addCartItem: (newItem: SaleItemObject, clerkId: number) => void

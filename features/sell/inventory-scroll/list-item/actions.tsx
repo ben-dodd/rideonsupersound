@@ -10,7 +10,7 @@ const Actions = ({ item, itemQuantity }) => {
   const router = useRouter()
   const { sellSearchBar, addCartItem, openConfirm } = useAppStore()
   const { clerk } = useClerk()
-
+  // TODO add question if item is on hold for someone
   function clickAddToCart() {
     if (itemQuantity < 1) {
       openConfirm({

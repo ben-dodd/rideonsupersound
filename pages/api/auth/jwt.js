@@ -9,9 +9,7 @@ export default async function handler(req, res) {
     res.json(accessToken)
   } catch (error) {
     if (error.error === 'invalid_grant') {
-      console.log('INVALID GRANT')
       res.redirect('/').end()
-      console.log('redirected?')
     } else {
       res.status(error.status || 500).json({
         code: error.code,

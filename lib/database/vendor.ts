@@ -1,7 +1,7 @@
+import connection from './conn'
 import dayjs from 'dayjs'
 import { getCartItemStoreCut, getCartItemTotal } from 'lib/functions/sell'
-import { VendorObject, VendorPaymentObject } from 'lib/types'
-import connection from './conn'
+import { VendorObject, VendorPaymentObject } from 'lib/types/vendor'
 import { dbGetAllVendorPayments } from './payment'
 import { dbGetAllSalesAndItems } from './sale'
 import { dbGetStockList } from './stock'
@@ -24,7 +24,7 @@ const fullVendorQuery = (db) =>
     'email_vendor',
     'date_created',
     'date_modified',
-    'uid'
+    'uid',
   )
 
 export function dbCreateVendor(vendor: VendorObject, db = connection) {
@@ -45,7 +45,7 @@ export function dbGetVendors(db = connection) {
       'last_contacted',
       'store_credit_only',
       'email_vendor as emailVendor',
-      'uid'
+      'uid',
     )
     .where({ is_deleted: 0 })
 }
@@ -65,10 +65,7 @@ export function dbGetVendor(id, db = connection) {
       const payments = await dbGetAllVendorPayments(db).where(`vendor_id`, id)
 
       // Do calculations
-      const totalPaid = payments.reduce(
-        (acc: number, payment: VendorPaymentObject) => acc + payment?.amount,
-        0
-      )
+      const totalPaid = payments.reduce((acc: number, payment: VendorPaymentObject) => acc + payment?.amount, 0)
       const totalStoreCut = sales
         ?.filter((s) => !s?.isRefunded)
         ?.reduce((acc, saleItem) => {
@@ -112,9 +109,7 @@ export function dbGetVendorByUid(uid, db = connection) {
 }
 
 export function dbGetVendorFromVendorPayment(vendorPaymentId, db = connection) {
-  return fullVendorQuery(db)
-    .join('vendor_payment', 'vendor_payment.id', vendorPaymentId)
-    .first()
+  return fullVendorQuery(db).join('vendor_payment', 'vendor_payment.id', vendorPaymentId).first()
 }
 
 export function dbUpdateVendor(vendor, id, db = connection) {
@@ -134,9 +129,6 @@ export function dbGetVendorIdFromUid(vendorUid, db = connection) {
     .then((vendor) => vendor?.id)
 }
 
-export function dbCreateVendorPayment(
-  payment: VendorPaymentObject,
-  db = connection
-) {
+export function dbCreateVendorPayment(payment: VendorPaymentObject, db = connection) {
   return db('vendor_payment').insert(js2mysql(payment))
 }

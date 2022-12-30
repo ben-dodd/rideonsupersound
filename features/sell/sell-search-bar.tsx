@@ -4,9 +4,19 @@ import SearchIcon from '@mui/icons-material/Search'
 // import Tooltip from '@mui/material/Tooltip'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
+import debounce from 'lodash/debounce'
 
 export default function SellSearchBar() {
-  const { openView, sellSearchBar, setSellSearchBar } = useAppStore()
+  const { openView, sellSearchBar, setSellSearchBar, toggleSellSearchingOff } = useAppStore()
+  const debounceSearch = debounce(() => {
+    toggleSellSearchingOff()
+  }, 1000) // delay of 1 seconds
+
+  function handleSearch(e) {
+    setSellSearchBar(e.target.value)
+    debounceSearch()
+  }
+
   return (
     <div className="h-search py-2 px-2 mr-2 mb-4 flex w-full">
       <div
@@ -20,22 +30,16 @@ export default function SellSearchBar() {
         <input
           className="w-full py-1 px-2 outline-none bg-transparent text-2xl"
           value={sellSearchBar || ''}
-          onChange={(e) => setSellSearchBar(e.target.value)}
+          onChange={handleSearch}
           placeholder="SEARCH…"
         />
       </div>
       <div className="flex">
-        <button
-          className="icon-text-button"
-          onClick={() => openView(ViewProps.miscItemDialog)}
-        >
+        <button className="icon-text-button" onClick={() => openView(ViewProps.miscItemDialog)}>
           <MiscItemIcon className="mr-1" />
           Misc. Item
         </button>
-        <button
-          className="icon-text-button"
-          onClick={() => openView(ViewProps.giftCardDialog)}
-        >
+        <button className="icon-text-button" onClick={() => openView(ViewProps.giftCardDialog)}>
           <GiftCardsIcon className="mr-1" />
           Gift Card
         </button>

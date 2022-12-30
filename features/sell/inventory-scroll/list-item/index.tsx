@@ -15,13 +15,15 @@ import {
 import { useBasicStockItem } from 'lib/api/stock'
 
 export default function ListItem({ searchItem }: { searchItem: StockItemSearchObject }) {
-  const { cart } = useAppStore()
-  const { stockItem } = useBasicStockItem(searchItem?.id)
+  const { cart, sellIsSearching } = useAppStore()
+  const { stockItem } = useBasicStockItem(searchItem?.id, sellIsSearching)
   const {
     item = searchItem,
     quantities = { inStock: searchItem?.quantity || 0 },
     price = {},
   }: { item: BasicStockItemObject; quantities: BasicStockQuantitiesObject; price: StockPriceObject } = stockItem || {}
+  const { items = [] } = cart || {}
+  const isInCart: boolean = Boolean(items?.find((cartItem) => cartItem?.itemId === item?.id))
   const itemQuantity = getItemQuantity(stockItem, cart?.items)
 
   return (
@@ -36,9 +38,9 @@ export default function ListItem({ searchItem }: { searchItem: StockItemSearchOb
           <div className="flex flex-col justify-between w-full">
             <div className="flex justify-between items-end">
               <ItemDetails item={item} />
-              <Warning item={item} itemQuantity={itemQuantity} />
+              <Warning item={item} itemQuantity={itemQuantity} isInCart={isInCart} />
             </div>
-            <Quantities quantities={quantities} price={price} itemQuantity={itemQuantity} />
+            <Quantities quantities={quantities} price={price} itemQuantity={itemQuantity} isInCart={isInCart} />
           </div>
         </div>
       </div>

@@ -9,7 +9,6 @@ export default function InventoryScroll() {
   const maxItemsInList = 50
   const { stockList = [], isStockListLoading = true } = useStockList()
   const { sellSearchBar } = useAppStore()
-  console.log(stockList)
   return (
     <div className="h-inventory overflow-y-scroll px-2">
       {isStockListLoading ? (
