@@ -44,7 +44,6 @@ export default function Pay() {
         <button
           className="square-button"
           onClick={() => {
-            // saveSystemLog('CASH PAYMENT clicked.', clerk?.id)
             openView(ViewProps.cashPaymentDialog)
           }}
           disabled={totalRemaining === 0}
@@ -54,7 +53,6 @@ export default function Pay() {
         <button
           className="square-button"
           onClick={() => {
-            // saveSystemLog('CARD PAYMENT clicked.', clerk?.id)
             openView(ViewProps.cardPaymentDialog)
           }}
           disabled={totalRemaining === 0}
@@ -64,7 +62,6 @@ export default function Pay() {
         <button
           className="square-button"
           onClick={() => {
-            // saveSystemLog('ACCT PAYMENT clicked.', clerk?.id)
             openView(ViewProps.acctPaymentDialog)
           }}
           disabled={totalRemaining === 0}
@@ -74,7 +71,6 @@ export default function Pay() {
         <button
           className="square-button"
           onClick={() => {
-            // saveSystemLog('GIFT PAYMENT clicked.', clerk?.id)
             openView(ViewProps.giftPaymentDialog)
           }}
           disabled={totalRemaining === 0}
@@ -102,14 +98,9 @@ export default function Pay() {
               value={sale?.customerId}
               label={customers?.find((c: CustomerObject) => c?.id === sale?.customerId)?.name || ''}
               onChange={(customerObject: any) => {
-                // saveSystemLog('SALE SCREEN customer selected.', clerk?.id)
                 setCartSale({ customerId: parseInt(customerObject?.value) })
               }}
               onCreateOption={(inputValue: string) => {
-                // saveSystemLog(
-                //   'SALE SCREEN new customer screen opened.',
-                //   clerk?.id
-                // )
                 setCustomer({ name: inputValue })
                 openView(ViewProps.createCustomer)
               }}
@@ -127,7 +118,6 @@ export default function Pay() {
             type="checkbox"
             checked={sale?.isMailOrder}
             onChange={() => {
-              // saveSystemLog('SALE SCREEN - IS MAIL ORDER clicked.', clerk?.id)
               setCartSale({ isMailOrder: !sale?.isMailOrder })
             }}
           />

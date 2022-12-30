@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ModalButton, SaleObject } from 'lib/types'
-import { saveSystemLog } from 'lib/functions/log'
+import { ModalButton } from 'lib/types'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { useAppStore } from 'lib/store'
 import { useClerk } from 'lib/api/clerk'
@@ -25,8 +24,7 @@ export default function SaleItemScreen() {
   // SWR
   const { customers } = useCustomers()
   const { items, isSaleItemsLoading } = useSaleItemsForSale(Number(id))
-  const { transactions, isSaleTransactionsLoading } =
-    useSaleTransactionsForSale(Number(id))
+  const { transactions, isSaleTransactionsLoading } = useSaleTransactionsForSale(Number(id))
   const { sales, mutateSales } = useSales()
   const { registerId } = useCurrentRegisterId()
 
@@ -42,8 +40,7 @@ export default function SaleItemScreen() {
   useEffect(() => {
     setSaleLoading(true)
     if (!isSaleItemsLoading && !isSaleTransactionsLoading) {
-      let loadedSale =
-        sales?.find((s: SaleObject) => s?.id === Number(id)) || {}
+      let loadedSale = sales?.find((s: SaleObject) => s?.id === Number(id)) || {}
       loadedSale.items = items
       loadedSale.transactions = transactions
       console.log(loadedSale)
@@ -62,7 +59,6 @@ export default function SaleItemScreen() {
 
   // Functions
   async function loadSale() {
-    saveSystemLog('LOAD SALE clicked.', clerk?.id)
     setLoadToCartLoading(true)
     await loadSaleToCart(cart, setCart, sale, clerk, registerId, customers)
     setLoadToCartLoading(false)
@@ -71,7 +67,6 @@ export default function SaleItemScreen() {
   }
 
   async function nukeSale() {
-    saveSystemLog('SALE NUKED', clerk?.id)
     await nukeSaleInDatabase(sale, clerk, registerID)
     setSale(null)
     router.back()
@@ -129,15 +124,11 @@ export default function SaleItemScreen() {
               <button
                 className="p-1 border border-black hover:bg-tertiary rounded-xl mt-2"
                 onClick={() => {
-                  saveSystemLog('NUKE SALE clicked.', clerk?.id)
                   openConfirm({
                     open: true,
                     title: 'Are you sure you want to delete this sale?',
                     styledMessage: (
-                      <span>
-                        This will delete the sale and all associated
-                        transactions. There is no coming back.
-                      </span>
+                      <span>This will delete the sale and all associated transactions. There is no coming back.</span>
                     ),
                     yesText: "YES, I'M SURE",
                     action: nukeSale,

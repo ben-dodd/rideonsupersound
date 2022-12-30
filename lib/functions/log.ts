@@ -1,29 +1,14 @@
-import {
-  getItemById,
-  getItemDisplayName,
-  getItemSkuDisplayName,
-} from 'lib/functions/displayInventory'
-import {
-  CustomerObject,
-  SaleItemObject,
-  StockMovementTypes,
-  VendorPaymentTypes,
-} from 'lib/types'
+import { getItemById, getItemDisplayName, getItemSkuDisplayName } from 'lib/functions/displayInventory'
+import { CustomerObject } from 'lib/types'
 import { priceCentsString, priceDollarsString } from 'lib/utils'
 import dayjs from 'dayjs'
 import { createLog } from 'lib/api/log'
 import { writeItemList } from './pay'
+import { StockMovementTypes } from 'lib/types/stock'
+import { SaleItemObject } from 'lib/types/sale'
+import { VendorPaymentTypes } from 'lib/types/vendor'
 
-export async function saveSystemLog(log: string, clerk_id: number) {
-  saveLog(log, clerk_id, 'system')
-}
-
-export function saveLog(
-  log: string,
-  clerkId: number,
-  tableId?: string,
-  rowId?: number
-) {
+export function saveLog(log: string, clerkId: number, tableId?: string, rowId?: number) {
   let logObj = {
     log,
     clerkId,
@@ -35,60 +20,38 @@ export function saveLog(
 }
 
 export function logOpenRegister(clerk, openAmount, registerID) {
-  const log = `Register opened with $${
-    openAmount ? parseFloat(openAmount) : 0
-  } in the till.`
+  const log = `Register opened with $${openAmount ? parseFloat(openAmount) : 0} in the till.`
   saveLog(log, clerk?.id, 'register', registerID)
   return log
 }
 
 export function logCloseRegister(register) {
-  saveLog(
-    `Register #${register?.id} closed.`,
-    register?.closed_by_id,
-    'register',
-    register?.id
-  )
+  saveLog(`Register #${register?.id} closed.`, register?.closed_by_id, 'register', register?.id)
 }
 
 export function logCloseRegisterWithAmount(closeAmount, clerk, registerId) {
-  saveLog(
-    `Register closed with ${priceDollarsString(closeAmount)} in the till.`,
-    clerk?.id,
-    'register',
-    registerId
-  )
+  saveLog(`Register closed with ${priceDollarsString(closeAmount)} in the till.`, clerk?.id, 'register', registerId)
 }
 
 export function logPettyCash(clerk, amount, isTake, pettyCashId) {
   saveLog(
-    `$${parseFloat(amount)?.toFixed(2)} ${
-      isTake ? 'taken from till.' : 'put in till.'
-    }`,
+    `$${parseFloat(amount)?.toFixed(2)} ${isTake ? 'taken from till.' : 'put in till.'}`,
     clerk?.id,
     'register_petty_cash',
-    pettyCashId
+    pettyCashId,
   )
 }
 
-export function logChangePrice(
-  stockItem,
-  totalSell,
-  vendorCut,
-  clerk,
-  stockPriceId
-) {
+export function logChangePrice(stockItem, totalSell, vendorCut, clerk, stockPriceId) {
   saveLog(
-    `Price for ${getItemDisplayName(stockItem)} changed from $${(
-      stockItem?.total_sell / 100
-    )?.toFixed(2)} [${priceCentsString(
-      stockItem?.vendor_cut
-    )}] to ${priceDollarsString(totalSell)}} [${priceDollarsString(
-      vendorCut
+    `Price for ${getItemDisplayName(stockItem)} changed from $${(stockItem?.total_sell / 100)?.toFixed(
+      2,
+    )} [${priceCentsString(stockItem?.vendor_cut)}] to ${priceDollarsString(totalSell)}} [${priceDollarsString(
+      vendorCut,
     )}].`,
     clerk?.id,
     'stock_price',
-    stockPriceId
+    stockPriceId,
   )
 }
 
@@ -99,13 +62,11 @@ export function logChangeQuantity(
   originalQuantity,
   newQuantity,
   clerk,
-  stockMovementId
+  stockMovementId,
 ) {
   saveLog(
     movement === StockMovementTypes?.Adjustment
-      ? `Quantity adjusted for ${getItemDisplayName(
-          stockItem
-        )} (${originalQuantity} => ${newQuantity})`
+      ? `Quantity adjusted for ${getItemDisplayName(stockItem)} (${originalQuantity} => ${newQuantity})`
       : `${
           parseInt(quantity) *
           (movement === StockMovementTypes?.Discarded ||
@@ -116,17 +77,15 @@ export function logChangeQuantity(
         } copies of ${getItemDisplayName(stockItem)} marked as ${movement}.`,
     clerk?.id,
     'stock_movement',
-    stockMovementId
+    stockMovementId,
   )
 }
 
 export function logReturnStock(stockItem, returnItem, clerk) {
   saveLog(
-    `${getItemDisplayName(stockItem)} (x${
-      returnItem?.quantity
-    }) returned to vendor.`,
+    `${getItemDisplayName(stockItem)} (x${returnItem?.quantity}) returned to vendor.`,
     clerk?.id,
-    'stock_movement'
+    'stock_movement',
   )
 }
 
@@ -135,12 +94,7 @@ export function logCreateVendor(clerk, vendorName, vendorId) {
 }
 
 export function logDeleteVendor(clerk, item) {
-  saveLog(
-    `${getItemSkuDisplayName(item)} deleted.`,
-    clerk?.id,
-    'stock',
-    item?.id
-  )
+  saveLog(`${getItemSkuDisplayName(item)} deleted.`, clerk?.id, 'stock', item?.id)
 }
 
 export function logPrintLabels(clerk, where) {
@@ -149,23 +103,19 @@ export function logPrintLabels(clerk, where) {
 
 export function logStocktakeKeep(item, inventory, clerk) {
   saveLog(
-    `Stock take: ${getItemSkuDisplayName(
-      getItemById(item?.stock_id, inventory)
-    )}. ${item?.quantity_counted} counted, ${
+    `Stock take: ${getItemSkuDisplayName(getItemById(item?.stock_id, inventory))}. ${item?.quantity_counted} counted, ${
       item?.quantity_recorded
     } in the system. System quantity kept.`,
-    clerk?.id
+    clerk?.id,
   )
 }
 
 export function logStocktakeAdjustment(item, inventory, act, clerk) {
   saveLog(
-    `Stock take: ${getItemSkuDisplayName(
-      getItemById(item?.stock_id, inventory)
-    )}. ${item?.quantity_counted} counted, ${
+    `Stock take: ${getItemSkuDisplayName(getItemById(item?.stock_id, inventory))}. ${item?.quantity_counted} counted, ${
       item?.quantity_recorded
     } in the system. Difference marked as ${act}.`,
-    clerk?.id
+    clerk?.id,
   )
 }
 
@@ -177,19 +127,14 @@ export function logRestockItem(item, clerk) {
   saveLog(`${getItemDisplayName(item)} restocked.`, clerk?.id)
 }
 
-export function logCreateVendorPayment(
-  paymentType,
-  vendor,
-  clerk,
-  vendorPaymentId
-) {
+export function logCreateVendorPayment(paymentType, vendor, clerk, vendorPaymentId) {
   saveLog(
-    `${
-      paymentType === VendorPaymentTypes.Cash ? 'Cash' : 'Direct deposit'
-    } payment made to Vendor (${vendor?.id || ''}).`,
+    `${paymentType === VendorPaymentTypes.Cash ? 'Cash' : 'Direct deposit'} payment made to Vendor (${
+      vendor?.id || ''
+    }).`,
     clerk?.id,
     'vendor_payment',
-    vendorPaymentId
+    vendorPaymentId,
   )
 }
 
@@ -200,17 +145,15 @@ export function logTransferVendorPayment(
   vendor_receive_id,
   vendorReceive,
   clerk,
-  vendorPaymentId
+  vendorPaymentId,
 ) {
   saveLog(
     `${priceDollarsString(payment)} store credit transferred from ${
-      vendor_pay_id === 'store'
-        ? 'R.O.S.S.'
-        : `${vendorPay?.name} (${vendor_pay_id})`
+      vendor_pay_id === 'store' ? 'R.O.S.S.' : `${vendorPay?.name} (${vendor_pay_id})`
     } to ${vendorReceive?.name} (${vendor_receive_id || ''}).`,
     clerk?.id,
     'vendor_payment',
-    vendorPaymentId
+    vendorPaymentId,
   )
 }
 
@@ -219,146 +162,90 @@ export function logBatchPayment(vendor, clerk, vendorPaymentId) {
     `Batch payment made to Vendor ${vendor?.name} (${vendor?.id || ''}).`,
     clerk?.id,
     'vendor_payment',
-    vendorPaymentId
+    vendorPaymentId,
   )
 }
 
-export function logCreateHold(
-  cart,
-  cartItem,
-  inventory,
-  customers,
-  holdPeriod,
-  clerk,
-  holdId
-) {
+export function logCreateHold(cart, cartItem, inventory, customers, holdPeriod, clerk, holdId) {
   saveLog(
-    `${getItemSkuDisplayName(
-      getItemById(cartItem?.item_id, inventory)
-    )} put on hold for ${
+    `${getItemSkuDisplayName(getItemById(cartItem?.item_id, inventory))} put on hold for ${
       customers?.find((c: CustomerObject) => c?.id === cart?.customerId)?.name
     } for ${holdPeriod} day${holdPeriod === 1 ? '' : 's'}.`,
     clerk?.id,
     'hold',
-    holdId
+    holdId,
   )
 }
 
 export function logRemoveFromHold(hold, inventory, clerk) {
   saveLog(
-    `${getItemDisplayName(
-      getItemById(hold?.item_id, inventory)
-    )} removed from hold and added back to stock.`,
-    clerk?.id
+    `${getItemDisplayName(getItemById(hold?.item_id, inventory))} removed from hold and added back to stock.`,
+    clerk?.id,
   )
 }
 
 export function logHoldAddedToSale(hold, inventory, cart, clerk) {
   saveLog(
-    `${getItemDisplayName(
-      getItemById(hold?.item_id, inventory)
-    )} added to cart${cart?.id ? ` (sale #${cart?.id}) from hold` : ''}.`,
-    clerk?.id
+    `${getItemDisplayName(getItemById(hold?.item_id, inventory))} added to cart${
+      cart?.id ? ` (sale #${cart?.id}) from hold` : ''
+    }.`,
+    clerk?.id,
   )
 }
 
-export function logLaybyStarted(
-  cart,
-  customers,
-  numberOfItems,
-  totalPrice,
-  totalRemaining,
-  clerk
-) {
+export function logLaybyStarted(cart, customers, numberOfItems, totalPrice, totalRemaining, clerk) {
   saveLog(
     `Layby started${
-      cart?.customer_id
-        ? ` for ${
-            customers?.find((c: CustomerObject) => c?.id === cart?.customerId)
-              ?.name
-          }`
-        : ''
-    } (${numberOfItems} item${
-      numberOfItems === 1 ? '' : 's'
-    } / ${priceDollarsString(totalPrice)} with ${priceDollarsString(
-      totalRemaining
-    )} left to pay).`,
-    clerk?.id
+      cart?.customer_id ? ` for ${customers?.find((c: CustomerObject) => c?.id === cart?.customerId)?.name}` : ''
+    } (${numberOfItems} item${numberOfItems === 1 ? '' : 's'} / ${priceDollarsString(
+      totalPrice,
+    )} with ${priceDollarsString(totalRemaining)} left to pay).`,
+    clerk?.id,
   )
 }
 
 export function logSaleCompleted(cart, saleId, clerk) {
-  saveLog(
-    `Sale #${cart?.id || saleId} completed.`,
-    clerk?.id,
-    'sale',
-    cart?.id || saleId
-  )
+  saveLog(`Sale #${cart?.id || saleId} completed.`, clerk?.id, 'sale', cart?.id || saleId)
 }
 
 export function logSaleRefunded(inventory, items, refundItems, sale, clerk) {
   saveLog(
     `${writeItemList(
       inventory,
-      items?.filter((i: SaleItemObject) => refundItems?.includes(i?.id))
+      items?.filter((i: SaleItemObject) => refundItems?.includes(i?.id)),
     )} refunded (sale #${sale?.id}).`,
-    clerk?.id
+    clerk?.id,
   )
 }
 
-export function logSalePaymentAcct(
-  payment,
-  vendorWrapper,
-  isRefund,
-  cart,
-  clerk
-) {
+export function logSalePaymentAcct(payment, vendorWrapper, isRefund, cart, clerk) {
   saveLog(
     `${priceDollarsString(payment)} ${
       isRefund
         ? `refunded on ${vendorWrapper?.value?.name} account`
-        : `account payment from vendor ${vendorWrapper?.value?.name}${
-            cart?.id ? ` (sale #${cart?.id}).` : ''
-          }`
+        : `account payment from vendor ${vendorWrapper?.value?.name}${cart?.id ? ` (sale #${cart?.id}).` : ''}`
     }.`,
-    clerk?.id
+    clerk?.id,
   )
 }
 
 export function logSalePaymentCard(payment, isRefund, cart, customers, clerk) {
   saveLog(
-    `${priceDollarsString(payment)} ${
-      isRefund ? 'refunded on card to' : 'card payment from'
-    } ${
-      cart?.customer_id
-        ? customers?.find((c: CustomerObject) => c?.id === cart?.customer_id)
-            ?.name
-        : 'customer'
+    `${priceDollarsString(payment)} ${isRefund ? 'refunded on card to' : 'card payment from'} ${
+      cart?.customer_id ? customers?.find((c: CustomerObject) => c?.id === cart?.customer_id)?.name : 'customer'
     }${cart?.id ? ` (sale #${cart?.id}).` : ''}.`,
-    clerk?.id
+    clerk?.id,
   )
 }
 
-export function logSalePaymentCash(
-  payment,
-  isRefund,
-  cart,
-  customers,
-  changeToGive,
-  clerk
-) {
+export function logSalePaymentCash(payment, isRefund, cart, customers, changeToGive, clerk) {
   saveLog(
-    `${priceDollarsString(payment)} ${
-      isRefund ? `cash refunded to` : `cash taken from`
-    } ${
-      cart?.customer_id
-        ? customers?.find((c: CustomerObject) => c?.id === cart?.customer_id)
-            ?.name
-        : 'customer'
+    `${priceDollarsString(payment)} ${isRefund ? `cash refunded to` : `cash taken from`} ${
+      cart?.customer_id ? customers?.find((c: CustomerObject) => c?.id === cart?.customer_id)?.name : 'customer'
     }${cart?.id ? ` (sale #${cart?.id}).` : ''}.${
       parseFloat(changeToGive) > 0 ? ` $${changeToGive} change given.` : ''
     }`,
-    clerk?.id
+    clerk?.id,
   )
 }
 
@@ -371,34 +258,23 @@ export function logSalePaymentGift(
   remainingOnGiftCard,
   cart,
   customers,
-  clerk
+  clerk,
 ) {
   saveLog(
     `${priceDollarsString(payment)} ${
-      isRefund
-        ? `refunded with new gift card #${newGiftCardCode} to`
-        : `gift card payment from`
-    } ${
-      cart?.customer_id
-        ? customers?.find((c: CustomerObject) => c?.id === cart?.customer_id)
-            ?.name
-        : 'customer'
-    }${cart?.id ? ` (sale #${cart?.id})` : ''}.${
+      isRefund ? `refunded with new gift card #${newGiftCardCode} to` : `gift card payment from`
+    } ${cart?.customer_id ? customers?.find((c: CustomerObject) => c?.id === cart?.customer_id)?.name : 'customer'}${
+      cart?.id ? ` (sale #${cart?.id})` : ''
+    }.${
       isRefund
         ? ''
         : ` Gift card #${giftCardCode?.toUpperCase()}. ${
             leftOver < 10
-              ? `Card taken.${
-                  leftOver > 0
-                    ? ` $${leftOver?.toFixed(
-                        2
-                      )} change given for remainder on card.`
-                    : ''
-                }`
+              ? `Card taken.${leftOver > 0 ? ` $${leftOver?.toFixed(2)} change given for remainder on card.` : ''}`
               : `$${remainingOnGiftCard?.toFixed(2)} remaining on card.`
           }`
     }`,
-    clerk?.id
+    clerk?.id,
   )
 }
 
@@ -408,18 +284,11 @@ export function logSaleNuked(sale, clerk) {
 
 export function logSaleParked(saleId, cart, customers, clerk) {
   saveLog(
-    `Sale #${saleId} parked (${cart?.items?.length} item${
-      cart?.items?.length === 1 ? '' : 's'
-    }${
-      cart?.customer_id
-        ? ` for ${
-            customers?.find((c: CustomerObject) => c?.id === cart?.customerId)
-              ?.name
-          }.`
-        : ''
+    `Sale #${saleId} parked (${cart?.items?.length} item${cart?.items?.length === 1 ? '' : 's'}${
+      cart?.customer_id ? ` for ${customers?.find((c: CustomerObject) => c?.id === cart?.customerId)?.name}.` : ''
     }).`,
     clerk?.id,
-    'sale'
+    'sale',
   )
 }
 
@@ -428,15 +297,10 @@ export function logNewGiftCardCreated(newGiftCard, clerk, id) {
     `New gift card (#${newGiftCard?.gift_card_code?.toUpperCase()}) created and added to cart.`,
     clerk?.id,
     'stock',
-    id
+    id,
   )
 }
 
 export function logNewMiscItemCreated(description, clerk, id) {
-  saveLog(
-    `New misc item (${description}) created and added to cart.`,
-    clerk?.id,
-    'stock',
-    id
-  )
+  saveLog(`New misc item (${description}) created and added to cart.`, clerk?.id, 'stock', id)
 }

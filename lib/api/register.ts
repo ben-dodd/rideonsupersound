@@ -20,9 +20,7 @@ export function savePettyCash(pettyCash) {
   return axiosAuth
     .post(`/api/register/pettycash`, pettyCash)
     .then((res) => {
-      const id = res.data
-      // saveSystemLog(`New sale (${id}) created.`, clerk?.id)
-      return id
+      return res.data
     })
     .catch((e) => Error(e.message))
 }

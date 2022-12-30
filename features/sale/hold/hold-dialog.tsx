@@ -1,13 +1,8 @@
 import { useState } from 'react'
-import { ClerkObject, CustomerObject, HoldObject, ModalButton } from 'lib/types'
+import { ClerkObject, CustomerObject, ModalButton } from 'lib/types'
 
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
-import {
-  logHoldAddedToSale,
-  logRemoveFromHold,
-  saveSystemLog,
-} from 'lib/functions/log'
 import dayjs from 'dayjs'
 import { returnHoldToStock } from 'lib/functions/hold'
 import HoldListItem from '../../sell/create-hold/list-item'
@@ -16,6 +11,7 @@ import { useClerk, useClerks } from 'lib/api/clerk'
 import { useCustomers } from 'lib/api/customer'
 import { useCurrentRegisterId } from 'lib/api/register'
 import { ViewProps } from 'lib/store/types'
+import { HoldObject } from 'lib/types/sale'
 
 export default function HoldDialog() {
   const { openView, setAlert, cart, setCart } = useAppStore()
@@ -25,16 +21,10 @@ export default function HoldDialog() {
   const { registerId } = useCurrentRegisterId()
 
   // States
-  const originalHold = holds?.find(
-    (h: HoldObject) => h?.id === loadedHoldId[page]
-  )
+  const originalHold = holds?.find((h: HoldObject) => h?.id === loadedHoldId[page])
   const [hold, setHold] = useState(originalHold)
-  const customerName = customers?.find(
-    (c: CustomerObject) => c?.id === hold?.customer_id
-  )?.name
-  const clerkName = clerks?.find(
-    (c: ClerkObject) => c?.id === hold?.started_by
-  )?.name
+  const customerName = customers?.find((c: CustomerObject) => c?.id === hold?.customer_id)?.name
+  const clerkName = clerks?.find((c: ClerkObject) => c?.id === hold?.started_by)?.name
 
   function closeDialog() {
     setLoadedHoldId({ ...loadedHoldId, [page]: 0 })
@@ -48,14 +38,7 @@ export default function HoldDialog() {
       text: 'Return to Stock',
       onClick: () => {
         saveSystemLog('Hold dialog - Return hold to stock clicked.', clerk?.id)
-        returnHoldToStock(
-          hold,
-          clerk,
-          holds,
-          mutateHolds,
-          mutateInventory,
-          registerId
-        )
+        returnHoldToStock(hold, clerk, holds, mutateHolds, mutateInventory, registerId)
         closeDialog()
         logRemoveFromHold(hold, inventory, clerk)
         setAlert({
@@ -74,15 +57,12 @@ export default function HoldDialog() {
       type: 'ok',
       text: 'Update',
       disabled:
-        (hold?.hold_period === originalHold?.hold_period &&
-          hold?.note === originalHold?.note) ||
+        (hold?.hold_period === originalHold?.hold_period && hold?.note === originalHold?.note) ||
         isNaN(parseInt(hold?.hold_period)),
       onClick: () => {
         saveSystemLog('Hold dialog - Update hold clicked.', clerk?.id)
         if (hold?.hold_period !== null || hold?.note !== null) {
-          const otherHolds = holds?.filter(
-            (h: HoldObject) => h?.id !== loadedHoldId
-          )
+          const otherHolds = holds?.filter((h: HoldObject) => h?.id !== loadedHoldId)
           mutateHolds([...otherHolds, hold], false)
           updateHoldInDatabase(hold)
         }
@@ -102,18 +82,14 @@ export default function HoldDialog() {
       <>
         <HoldListItem cartItem={hold} />
         <div>{`Item held for ${customerName} (hold set up by ${clerkName})`}</div>
-        <div>{`Item held for ${dayjs().diff(hold?.date_from, 'day')} of ${
-          hold?.hold_period || 30
-        } days.`}</div>
+        <div>{`Item held for ${dayjs().diff(hold?.date_from, 'day')} of ${hold?.hold_period || 30} days.`}</div>
         <TextField
           inputLabel="Hold Period"
           inputType="number"
           min={0}
           error={isNaN(parseInt(hold?.hold_period)) || hold?.hold_period < 0}
           valueNum={hold?.hold_period}
-          onChange={(e: any) =>
-            setHold({ ...hold, hold_period: e.target.value })
-          }
+          onChange={(e: any) => setHold({ ...hold, hold_period: e.target.value })}
         />
         <TextField
           inputLabel="Notes"
@@ -129,29 +105,17 @@ export default function HoldDialog() {
   function addHoldToCart() {
     // TODO do we need to check if it is another customer?
     saveSystemLog('Hold dialog - Add hold to cart.', clerk?.id)
-    returnHoldToStock(
-      hold,
-      clerk,
-      holds,
-      mutateHolds,
-      mutateInventory,
-      registerID
-    )
+    returnHoldToStock(hold, clerk, holds, mutateHolds, mutateInventory, registerID)
     closeDialog()
 
     let newItems = cart?.items || []
-    let index = newItems.findIndex(
-      (cartItem) => cartItem.itemId === hold?.item_id
-    )
+    let index = newItems.findIndex((cartItem) => cartItem.itemId === hold?.item_id)
     if (index < 0)
       newItems.push({
         itemId: hold?.itemId,
         quantity: hold?.quantity,
       })
-    else
-      newItems[index].quantity = `${
-        parseInt(newItems[index].quantity) + hold?.quantity
-      }`
+    else newItems[index].quantity = `${parseInt(newItems[index].quantity) + hold?.quantity}`
     setCart({
       sale: {
         id: cart?.id || null,

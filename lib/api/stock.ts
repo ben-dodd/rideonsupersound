@@ -52,7 +52,6 @@ export function createStockPrice(stockPrice: StockPriceObject) {
   console.log(stockPrice)
   return axiosAuth.post(`/api/stock/price`, stockPrice).then((res) => {
     const id = res.data
-    // saveSystemLog(`New stock (${id}) created.`, clerk?.id)
     return { ...stockPrice, id }
   })
 }
@@ -82,7 +81,6 @@ export function createStocktakeTemplate(stocktakeTemplate: StocktakeTemplateObje
       createdByClerkId: clerk?.id,
     })
     .then((id) => {
-      // saveSystemLog(`New stock (${id}) created.`, clerk?.id)
       return { ...stocktakeTemplate, id }
     })
 }

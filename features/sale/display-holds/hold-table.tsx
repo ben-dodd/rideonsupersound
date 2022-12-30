@@ -1,15 +1,11 @@
 import TableContainer from 'components/container/table'
 import Table from 'components/table'
-import {
-  getItemById,
-  getItemDisplayName,
-  getItemSkuDisplayName,
-} from 'lib/functions/displayInventory'
-import { saveSystemLog } from 'lib/functions/log'
-import { CustomerObject, HoldObject, StockObject } from 'lib/types'
+import { getItemById, getItemDisplayName, getItemSkuDisplayName } from 'lib/functions/displayInventory'
+import { CustomerObject } from 'lib/types'
 import dayjs from 'dayjs'
 import { useMemo } from 'react'
 import { useCustomers } from 'lib/api/customer'
+import { HoldObject } from 'lib/types/sale'
 
 export default function HoldTable() {
   const { customers, isCustomersLoading } = useCustomers()
@@ -21,9 +17,7 @@ export default function HoldTable() {
       holds
         ?.filter((h: HoldObject) => !h?.isDeleted)
         .map((h: HoldObject) => {
-          const c: CustomerObject = customers?.find(
-            (c: CustomerObject) => h?.customerId === c?.id
-          )
+          const c: CustomerObject = customers?.find((c: CustomerObject) => h?.customerId === c?.id)
           return {
             id: h?.id,
             hold: h,
@@ -36,7 +30,7 @@ export default function HoldTable() {
             postal_address: c?.postalAddress,
           }
         }),
-    [customers, holds]
+    [customers, holds],
   )
   const columns = useMemo(() => {
     return [
@@ -53,15 +47,12 @@ export default function HoldTable() {
             key={value?.id}
             className={`mb-2 cursor-pointer underline whitespace-normal`}
             onClick={() => {
-              saveSystemLog(
-                `Hold table - Hold ${loadedHoldId} opened.`,
-                clerk?.id
-              )
+              saveSystemLog(`Hold table - Hold ${loadedHoldId} opened.`, clerk?.id)
               setLoadedHoldId({ ...loadedHoldId, holds: value?.id })
             }}
           >
             {`${value?.quantity || 1} x ${getItemDisplayName(
-              inventory?.find((i: StockObject) => i?.id === value?.item_id)
+              inventory?.find((i: StockObject) => i?.id === value?.item_id),
             )}`}
           </div>
         ),
@@ -70,11 +61,7 @@ export default function HoldTable() {
         Header: 'Expiry Date',
         accessor: 'expiryDate',
         Cell: ({ value }) => (
-          <div
-            className={dayjs().isAfter(value) ? 'text-red-500' : 'text-black'}
-          >
-            {value?.format('D MMMM YYYY')}
-          </div>
+          <div className={dayjs().isAfter(value) ? 'text-red-500' : 'text-black'}>{value?.format('D MMMM YYYY')}</div>
         ),
         sortType: (rowA: any, rowB: any, columnId: any) => {
           const a = rowA?.original[columnId]
@@ -114,9 +101,7 @@ export default function HoldTable() {
   }, [inventory])
 
   return (
-    <TableContainer
-      loading={isInventoryLoading || isHoldsLoading || isCustomersLoading}
-    >
+    <TableContainer loading={isInventoryLoading || isHoldsLoading || isCustomersLoading}>
       <Table
         color="bg-col7"
         colorLight="bg-col7-light"

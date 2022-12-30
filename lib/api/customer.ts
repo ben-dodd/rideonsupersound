@@ -5,11 +5,7 @@ export function useCustomers() {
   return useData(`customer`, 'customers')
 }
 
-export async function createCustomer(
-  customer: CustomerObject,
-  clerk: ClerkObject
-) {
-  // saveSystemLog(`New customer (${customer?.name}) created.`, clerk?.id)
+export async function createCustomer(customer: CustomerObject, clerk: ClerkObject) {
   return axiosAuth
     .post(`/api/customer`, {
       ...customer,

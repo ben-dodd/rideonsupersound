@@ -8,9 +8,7 @@ export function createSetting(setting) {
   return axiosAuth
     .post(`/api/setting`, setting)
     .then((res) => {
-      const id = res.data
-      // saveSystemLog(`New sale (${id}) created.`, clerk?.id)
-      return id
+      return res.data
     })
     .catch((e) => Error(e.message))
 }

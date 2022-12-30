@@ -1,6 +1,5 @@
 import ScreenContainer from 'components/container/screen'
 import Stepper from 'components/navigation/stepper'
-import { saveSystemLog } from 'lib/functions/log'
 import { ModalButton } from 'lib/types'
 import { useState } from 'react'
 import SelectItems from './add-items'
@@ -15,8 +14,7 @@ import { useClerk } from 'lib/api/clerk'
 import { receiveStock } from 'lib/api/stock'
 
 export default function ReceiveStockScreen() {
-  const { receiveBasket, resetReceiveBasket, view, openConfirm, closeView } =
-    useAppStore()
+  const { receiveBasket, resetReceiveBasket, view, openConfirm, closeView } = useAppStore()
   const { clerk } = useClerk()
   const [step, setStep] = useState(0)
   const [receivedStock, setReceivedStock] = useState(null)
@@ -37,7 +35,6 @@ export default function ReceiveStockScreen() {
         text: 'NEXT',
         disabled: !receiveBasket?.vendorId,
         onClick: () => {
-          saveSystemLog(`Receive stock screen - Set step 1`, clerk?.id)
           setStep(1)
         },
       },
@@ -49,12 +46,9 @@ export default function ReceiveStockScreen() {
           openConfirm({
             open: true,
             title: 'Reset Basket?',
-            styledMessage: (
-              <span>Are you sure you want to wipe all received items?</span>
-            ),
+            styledMessage: <span>Are you sure you want to wipe all received items?</span>,
             yesText: "YES, I'M SURE",
             action: () => {
-              saveSystemLog(`Receive stock screen - Set step 0`, clerk?.id)
               setStep(0)
               resetReceiveBasket()
             },
@@ -67,7 +61,6 @@ export default function ReceiveStockScreen() {
         text: 'NEXT',
         disabled: receiveBasket?.items?.length === 0,
         onClick: () => {
-          saveSystemLog(`Receive stock screen - Set step 2`, clerk?.id)
           setStep(2)
         },
       },
@@ -76,7 +69,6 @@ export default function ReceiveStockScreen() {
       {
         type: 'cancel',
         onClick: () => {
-          saveSystemLog(`Receive stock screen - Set step 1`, clerk?.id)
           setStep(1)
         },
         text: 'BACK',
@@ -85,7 +77,6 @@ export default function ReceiveStockScreen() {
         type: 'ok',
         text: 'NEXT',
         onClick: () => {
-          saveSystemLog(`Receive stock screen - Set step 3`, clerk?.id)
           setStep(3)
         },
       },
@@ -95,7 +86,6 @@ export default function ReceiveStockScreen() {
         type: 'cancel',
         disabled: receiveLoading,
         onClick: () => {
-          saveSystemLog(`Receive stock screen - Set step 2`, clerk?.id)
           setStep(2)
         },
         text: 'BACK',
@@ -107,10 +97,6 @@ export default function ReceiveStockScreen() {
         text: 'RECEIVE ITEMS',
         onClick: async () => {
           setReceiveLoading(true)
-          saveSystemLog(
-            `Receive stock screen - Set step 4, receive stock called`,
-            clerk?.id
-          )
           const receivedStock = await receiveStock({
             ...receiveStock,
             clerkId: clerk?.id,
@@ -128,7 +114,6 @@ export default function ReceiveStockScreen() {
         disabled: isDisabled(),
         text: 'DONE',
         onClick: () => {
-          saveSystemLog(`Receive stock screen - DONE clicked`, clerk?.id)
           resetReceiveBasket()
           closeView(ViewProps.receiveStockScreen)
         },
@@ -158,13 +143,7 @@ export default function ReceiveStockScreen() {
     >
       <div className="flex flex-col w-full">
         <Stepper
-          steps={[
-            'Select vendor',
-            'Add items',
-            'Check details',
-            'Set price and quantities',
-            'Print labels',
-          ]}
+          steps={['Select vendor', 'Add items', 'Check details', 'Set price and quantities', 'Print labels']}
           value={step}
           onChange={setStep}
           disabled
@@ -215,10 +194,9 @@ export default function ReceiveStockScreen() {
           // (!item?.item?.is_new && !item?.item?.cond) ||
           !Number.isInteger(parseInt(`${item?.quantity}`)) ||
           !(
-            (Number.isInteger(parseInt(`${item?.vendorCut}`)) &&
-              Number.isInteger(parseInt(`${item?.totalSell}`))) ||
+            (Number.isInteger(parseInt(`${item?.vendorCut}`)) && Number.isInteger(parseInt(`${item?.totalSell}`))) ||
             item?.item?.id
-          )
+          ),
       ).length > 0
     )
   }

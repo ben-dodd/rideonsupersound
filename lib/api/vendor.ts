@@ -21,7 +21,6 @@ export function createVendor(vendor) {
     .post(`/api/vendor`, vendor)
     .then((res) => {
       const id = res.data
-      // saveSystemLog(`New sale (${id}) created.`, clerk?.id)
       return id
     })
     .catch((e) => Error(e.message))
@@ -38,9 +37,7 @@ export function createVendorPayment(payment) {
   return axiosAuth
     .post(`/api/vendor/payment`, payment)
     .then((res) => {
-      const id = res.data
-      // saveSystemLog(`New sale (${id}) created.`, clerk?.id)
-      return id
+      return res.data
     })
     .catch((e) => Error(e.message))
 }

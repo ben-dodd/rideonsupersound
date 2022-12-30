@@ -1,25 +1,15 @@
 import { getItemDisplayName } from 'lib/functions/displayInventory'
 import { logSaleParked } from 'lib/functions/log'
-import {
-  ClerkObject,
-  CustomerObject,
-  GiftCardObject,
-  SaleItemObject,
-  SaleObject,
-  SaleStateTypes,
-  SaleTransactionObject,
-  StockObject,
-  VendorPaymentObject,
-  VendorSaleItemObject,
-} from 'lib/types'
+import { ClerkObject, CustomerObject } from 'lib/types'
 import { getCartItemPrices } from 'lib/functions/sell'
+import { SaleItemObject, SaleObject, SaleTransactionObject } from 'lib/types/sale'
+import { StockItemObject, StockObject } from 'lib/types/stock'
+import { VendorPaymentObject, VendorSaleItemObject } from 'lib/types/vendor'
 
 export function sumPrices(saleItems: any[], items: any[], field: string) {
   if (saleItems?.length === 0 || items?.length === 0) return 0
   return saleItems?.reduce((acc, saleItem) => {
-    const stockItem: any = items?.find?.(
-      (stockItem: any) => stockItem?.item?.id === saleItem?.itemId
-    )
+    const stockItem: any = items?.find?.((stockItem: any) => stockItem?.item?.id === saleItem?.itemId)
     const { item = {}, price = {} } = stockItem || {}
     const prices = getCartItemPrices(saleItem, item, price)
     return (acc += prices?.[field])
@@ -33,21 +23,13 @@ export function getTotalPaid(saleTransactions: SaleTransactionObject[]) {
     ?.reduce((acc, transaction) => acc + transaction?.amount, 0)
 }
 
-export function getTotalOwing(
-  totalPayments: VendorPaymentObject[],
-  totalSales: VendorSaleItemObject[]
-) {
-  const totalPaid = totalPayments?.reduce(
-    (acc: number, payment: VendorPaymentObject) => acc + payment?.amount,
-    0
-  )
+export function getTotalOwing(totalPayments: VendorPaymentObject[], totalSales: VendorSaleItemObject[]) {
+  const totalPaid = totalPayments?.reduce((acc: number, payment: VendorPaymentObject) => acc + payment?.amount, 0)
 
   const totalSell: any = totalSales?.reduce(
     (acc: number, sale: VendorSaleItemObject) =>
-      acc +
-      (sale?.quantity * sale?.vendorCut * (100 - sale?.vendorDiscount || 0)) /
-        100,
-    0
+      acc + (sale?.quantity * sale?.vendorCut * (100 - sale?.vendorDiscount || 0)) / 100,
+    0,
   )
   return totalSell - totalPaid
 }
@@ -62,8 +44,7 @@ export function getGrossProfit(price: any) {
 export function getProfitMargin(price: any) {
   let sellNum = price?.totalSell || 0,
     costNum = price?.vendorCut || 0
-  if (sellNum > 0)
-    return `${(((sellNum - costNum) / sellNum) * 100)?.toFixed(1)}%`
+  if (sellNum > 0) return `${(((sellNum - costNum) / sellNum) * 100)?.toFixed(1)}%`
   else return ''
 }
 
@@ -73,17 +54,12 @@ export function getStoreCut(price: any) {
   return sellNum - costNum
 }
 
-export function writeItemList(
-  inventory: StockObject[],
-  items: SaleItemObject[]
-) {
+export function writeItemList(inventory: StockItemObject[], items: SaleItemObject[]) {
   if (items && inventory) {
     return items
       .filter((item: SaleItemObject) => !item?.isDeleted)
       .map((item: SaleItemObject) => {
-        let stockItem: StockObject = inventory?.find(
-          (i) => i?.id === item?.itemId
-        )
+        let stockItem = inventory?.find((i) => i?.id === item?.itemId)
         if (item?.isGiftCard) {
           return `Gift Card [${stockItem?.giftCardCode}]`
         } else {
@@ -109,7 +85,7 @@ export async function useLoadSaleToCart(
   sale: SaleObject,
   clerk: ClerkObject,
   registerID: number,
-  customers: CustomerObject[]
+  customers: CustomerObject[],
 ) {
   if (sale?.dateSaleOpened && (cart?.items || cart?.id !== sale?.id)) {
     // Cart is loaded with a different sale or
@@ -129,7 +105,7 @@ export async function useSaveSaleAndPark(
   inventory: StockObject[],
   mutateInventory: Function,
   giftCards: GiftCardObject[],
-  mutateGiftCards: Function
+  mutateGiftCards: Function,
 ) {
   const saleId = await useSaveSaleItemsTransactionsToDatabase(
     { ...cart, state: SaleStateTypes.Parked },
@@ -140,7 +116,7 @@ export async function useSaveSaleAndPark(
     inventory,
     mutateInventory,
     giftCards,
-    mutateGiftCards
+    mutateGiftCards,
   )
   logSaleParked(saleId, cart, customers, clerk)
   mutateInventory && mutateInventory()
