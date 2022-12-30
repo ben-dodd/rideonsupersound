@@ -11,7 +11,7 @@ import { saveCart } from 'lib/api/sale'
 
 // TODO fix action icons alignment
 export default function ShoppingCartActions() {
-  const { cart, setCart, setAlert, openConfirm, openView, closeView, resetCart, resetSellSearchBar } = useAppStore()
+  const { cart, setCart, setAlert, openConfirm, closeView, resetCart, resetSellSearchBar } = useAppStore()
   const { sale = {}, items = [] } = cart || {}
   const [saveSaleLoading, setSaveSaleLoading] = useState(false)
   const { mutate } = useSWRConfig()

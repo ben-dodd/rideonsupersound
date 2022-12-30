@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ModalButton, SaleStateTypes } from 'lib/types'
+import { ModalButton } from 'lib/types'
 import Layout from 'components/layout'
 import ScreenContainer from 'components/container/screen'
 import CreateCustomerSidebar from 'features/sell/create-customer/sidebar'
@@ -19,6 +19,7 @@ import { useCustomers } from 'lib/api/customer'
 import { useSaleProperties } from 'lib/hooks'
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import { saveCart } from 'lib/api/sale'
+import { SaleStateTypes } from 'lib/types/sale'
 
 // TODO add returns to sale items
 // TODO refund dialog like PAY, refund with store credit, cash or card
@@ -89,9 +90,7 @@ export default function PayScreen() {
     let completedSale = {
       ...sale,
       postalAddress: sale?.isMailOrder
-        ? sale?.postalAddress ||
-          customers?.find((c) => c?.id === sale?.customerId)?.postalAddress ||
-          null
+        ? sale?.postalAddress || customers?.find((c) => c?.id === sale?.customerId)?.postalAddress || null
         : null,
       state: SaleStateTypes.Completed,
       saleClosedBy: clerk?.id,
@@ -119,8 +118,7 @@ export default function PayScreen() {
         router.back()
       },
       disabled: Boolean(cart?.transactions) || totalRemaining === 0,
-      text:
-        sale?.state === SaleStateTypes.Layby ? 'CANCEL LAYBY' : 'DISCARD SALE',
+      text: sale?.state === SaleStateTypes.Layby ? 'CANCEL LAYBY' : 'DISCARD SALE',
     },
     {
       type: 'alt2',
@@ -141,16 +139,12 @@ export default function PayScreen() {
       onClick: clickLayby,
       disabled: laybyLoading || !sale?.customerId || totalRemaining <= 0,
       loading: laybyLoading,
-      text:
-        sale?.state === SaleStateTypes.Layby ? 'CONTINUE LAYBY' : 'START LAYBY',
+      text: sale?.state === SaleStateTypes.Layby ? 'CONTINUE LAYBY' : 'START LAYBY',
     },
     {
       type: 'ok',
       onClick: clickCompleteSale,
-      disabled:
-        completeSaleLoading ||
-        totalRemaining !== 0 ||
-        sale?.state === SaleStateTypes.Completed,
+      disabled: completeSaleLoading || totalRemaining !== 0 || sale?.state === SaleStateTypes.Completed,
       loading: completeSaleLoading,
       text: 'COMPLETE SALE',
     },

@@ -44,8 +44,6 @@ export default function ShoppingCart() {
     })
   }
 
-  console.log('refreshing cart', cart)
-
   const { totalPrice, totalStoreCut, totalRemaining, totalPaid } = useSaleProperties(cart)
 
   return (
@@ -117,12 +115,12 @@ export default function ShoppingCart() {
               className={`w-full my-4 modal__button--${totalRemaining < 0 ? 'cancel' : 'ok'}`}
               disabled={loadingSale || totalRemaining === 0}
               onClick={() => {
-                if (sale?.id) router.push('pay')
+                if (sale?.id) router.push('sell/pay')
                 else
                   createSale(sale, clerk).then((id) => {
                     setCartSale({ id })
                     console.log('new sale', id)
-                    router.push('pay')
+                    router.push('sell/pay')
                   })
               }}
             >
