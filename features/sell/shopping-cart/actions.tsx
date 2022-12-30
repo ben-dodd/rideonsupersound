@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import CircularProgress from '@mui/material/CircularProgress'
 import Tooltip from '@mui/material/Tooltip'
-import { SaleStateTypes } from 'lib/types'
+import { SaleStateTypes } from 'lib/types/sale'
 import DiscardSaleIcon from '@mui/icons-material/Close'
 import SaveSaleIcon from '@mui/icons-material/Save'
 import { useAppStore } from 'lib/store'
@@ -10,16 +10,7 @@ import { useSWRConfig } from 'swr'
 import { saveCart } from 'lib/api/sale'
 
 export default function ShoppingCartActions() {
-  const {
-    cart,
-    setCart,
-    setAlert,
-    openConfirm,
-    openView,
-    closeView,
-    resetCart,
-    resetSellSearchBar,
-  } = useAppStore()
+  const { cart, setCart, setAlert, openConfirm, openView, closeView, resetCart, resetSellSearchBar } = useAppStore()
   const { sale = {}, items = [] } = cart || {}
   const [saveSaleLoading, setSaveSaleLoading] = useState(false)
   const { mutate } = useSWRConfig()
@@ -35,10 +26,7 @@ export default function ShoppingCartActions() {
 
   async function onClickSaveSale() {
     setSaveSaleLoading(true)
-    await saveCart(
-      { ...cart, sale: { ...sale, state: SaleStateTypes.Parked } },
-      sale?.state
-    )
+    await saveCart({ ...cart, sale: { ...sale, state: SaleStateTypes.Parked } }, sale?.state)
     mutate('stock')
     setAlert({
       open: true,
@@ -52,10 +40,7 @@ export default function ShoppingCartActions() {
 
   async function onClickContinueLayby() {
     setSaveSaleLoading(true)
-    saveCart(
-      { ...cart, sale: { ...sale, state: SaleStateTypes.Layby } },
-      sale?.state
-    )
+    saveCart({ ...cart, sale: { ...sale, state: SaleStateTypes.Layby } }, sale?.state)
     setAlert({
       open: true,
       type: 'success',
@@ -89,25 +74,13 @@ export default function ShoppingCartActions() {
   }
   return (
     <div>
-      <Tooltip
-        title={
-          sale?.state === SaleStateTypes.Layby ? 'Continue Layby' : 'Park sale'
-        }
-      >
+      <Tooltip title={sale?.state === SaleStateTypes.Layby ? 'Continue Layby' : 'Park sale'}>
         <button
           className="icon-button-small-white"
-          onClick={
-            sale?.state === SaleStateTypes.Layby
-              ? onClickContinueLayby
-              : onClickSaveSale
-          }
+          onClick={sale?.state === SaleStateTypes.Layby ? onClickContinueLayby : onClickSaveSale}
           disabled={Boolean(saveSaleLoading || cart?.items?.length < 1)}
         >
-          {saveSaleLoading ? (
-            <CircularProgress color="inherit" size={16} />
-          ) : (
-            <SaveSaleIcon />
-          )}
+          {saveSaleLoading ? <CircularProgress color="inherit" size={16} /> : <SaveSaleIcon />}
         </button>
       </Tooltip>
       {!sale?.id && (

@@ -1,6 +1,6 @@
 import { ClerkObject } from 'lib/types'
 import { SaleItemObject } from 'lib/types/sale'
-import { StockObject, StockPriceObject, StocktakeTemplateObject } from 'lib/types/stock'
+import { StockItemObject, StockPriceObject, StocktakeTemplateObject } from 'lib/types/stock'
 import { axiosAuth, useData } from './'
 
 export function useStockList() {
@@ -37,7 +37,7 @@ export function deleteStockItem(id) {
     .catch((e) => Error(e.message))
 }
 
-export function createStockItem(stockItem: StockObject, clerk: ClerkObject) {
+export function createStockItem(stockItem: StockItemObject, clerk: ClerkObject) {
   return axiosAuth
     .post(`/api/stock`, {
       ...stockItem,

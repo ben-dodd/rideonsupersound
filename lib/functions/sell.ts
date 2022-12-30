@@ -8,7 +8,6 @@ import {
   StockItemPriceObject,
   StockItemSearchObject,
   StockObject,
-  StockQuantitiesObject,
 } from 'lib/types/stock'
 import { priceCentsString } from 'lib/utils'
 
@@ -107,10 +106,10 @@ export function filterInventory(item: StockItemSearchObject, searchString) {
   return res
 }
 
-export function sortInventory(a: StockQuantitiesObject, b: StockQuantitiesObject) {
-  if (a?.inStock === b?.inStock) return 0
-  if (a?.inStock < 1) return 1
-  if (b?.inStock < 1) return -1
+export function sortInventory(a: StockItemSearchObject, b: StockItemSearchObject) {
+  if (a?.quantity === b?.quantity) return 0
+  if (a?.quantity < 1) return 1
+  if (b?.quantity < 1) return -1
   return 0
 }
 

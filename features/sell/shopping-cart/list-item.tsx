@@ -1,18 +1,11 @@
 import { useState } from 'react'
-import { SaleItemObject } from 'lib/types'
+import { SaleItemObject } from 'lib/types/sale'
 import TextField from 'components/inputs/text-field'
-import {
-  getImageSrc,
-  getItemDisplayName,
-  getItemSku,
-} from 'lib/functions/displayInventory'
+import { getImageSrc, getItemDisplayName, getItemSku } from 'lib/functions/displayInventory'
 import ArrowDown from '@mui/icons-material/ArrowDropDown'
 import ArrowUp from '@mui/icons-material/ArrowDropUp'
 import DeleteIcon from '@mui/icons-material/Delete'
-import {
-  getCartItemTotal,
-  writeCartItemPriceBreakdown,
-} from 'lib/functions/sell'
+import { getCartItemTotal, writeCartItemPriceBreakdown } from 'lib/functions/sell'
 import { useAppStore } from 'lib/store'
 import { useStockItem, useStockList } from 'lib/api/stock'
 import { priceCentsString } from 'lib/utils'
@@ -22,17 +15,15 @@ type SellListItemProps = {
   deleteCartItem?: Function
 }
 
-export default function SellListItem({
-  cartItem,
-  deleteCartItem,
-}: SellListItemProps) {
+export default function SellListItem({ cartItem, deleteCartItem }: SellListItemProps) {
   const { openConfirm, setCartItem } = useAppStore()
   const { stockItem } = useStockItem(`${cartItem?.itemId}`)
   const { stockList = [] } = useStockList()
+  const stockListItem = stockList.find((stock) => stock?.id === cartItem?.itemId) || {}
 
   const {
-    item = stockList?.find((stock) => stock?.id === cartItem?.itemId) || {},
-    quantities = {},
+    item = stockListItem?.item || {},
+    quantities = { inStock: stockListItem?.quantity },
     price = {},
   } = stockItem || {}
   const [expanded, setExpanded] = useState(false)
@@ -49,13 +40,12 @@ export default function SellListItem({
         title: 'Are you sure you want to add to cart?',
         styledMessage: (
           <span>
-            There is not enough of <b>{getItemDisplayName(item)}</b> in stock.
-            Are you sure you want to change the quantity to {e?.target?.value}?
+            There is not enough of <b>{getItemDisplayName(item)}</b> in stock. Are you sure you want to change the
+            quantity to {e?.target?.value}?
           </span>
         ),
         yesText: "YES, I'M SURE",
-        action: () =>
-          onChangeCart({ target: { value: newQuantity } }, 'quantity'),
+        action: () => onChangeCart({ target: { value: newQuantity } }, 'quantity'),
       })
     } else onChangeCart(e, 'quantity')
   }
@@ -82,9 +72,7 @@ export default function SellListItem({
         </div>
         <div className="flex flex-col w-full pt-2 px-2 justify-between">
           <div className="text-sm pl-1">{getItemDisplayName(item)}</div>
-          <div className="text-red-500 self-end">
-            {writeCartItemPriceBreakdown(cartItem, item, price)}
-          </div>
+          <div className="text-red-500 self-end">{writeCartItemPriceBreakdown(cartItem, stockItem)}</div>
           <div className="self-end text-xs">
             {expanded ? (
               <div>
@@ -150,13 +138,9 @@ export default function SellListItem({
             onChange={(e: any) => onChangeCart(e, 'note')}
           />
           <div className="flex w-full justify-between place-start">
-            <div className="font-bold">
-              {writeCartItemPriceBreakdown(cartItem, item, price)}
-            </div>
+            <div className="font-bold">{writeCartItemPriceBreakdown(cartItem, stockItem)}</div>
             <div>
-              <div className="font-bold self-center">
-                {priceCentsString(getCartItemTotal(cartItem, item, price))}
-              </div>
+              <div className="font-bold self-center">{priceCentsString(getCartItemTotal(cartItem, item, price))}</div>
               <div className="w-50 text-right">
                 <button
                   className="py-2 text-tertiary hover:text-tertiary-dark"

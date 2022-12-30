@@ -1,21 +1,13 @@
-import dayjs from 'dayjs'
-import {
-  PaymentMethodTypes,
-  RoleTypes,
-  SaleStateTypes,
-  StockMovementTypes,
-  VendorPaymentTypes,
-} from 'lib/types'
 import connection from './conn'
+import dayjs from 'dayjs'
+import { RoleTypes } from 'lib/types'
+import { PaymentMethodTypes, SaleStateTypes } from 'lib/types/sale'
+import { StockMovementTypes } from 'lib/types/stock'
+import { VendorPaymentTypes } from 'lib/types/vendor'
 import { dbGetCustomer } from './customer'
 import { dbCreateJob } from './jobs'
 import { dbCreateVendorPayment, dbUpdateVendorPayment } from './payment'
-import {
-  dbCheckIfRestockNeeded,
-  dbCreateStockItem,
-  dbCreateStockMovement,
-  dbUpdateStockItem,
-} from './stock'
+import { dbCheckIfRestockNeeded, dbCreateStockItem, dbCreateStockMovement, dbUpdateStockItem } from './stock'
 import { js2mysql } from './utils/helpers'
 
 export function dbGetAllSales(db = connection) {
@@ -36,7 +28,7 @@ export function dbGetAllSales(db = connection) {
       'postage',
       'postal_address',
       'weather',
-      'note'
+      'note',
     )
     .where(`is_deleted`, 0)
 }
@@ -71,12 +63,12 @@ export function dbGetAllSalesAndItems(db = connection) {
       'sale.item_list',
       'stock_price.vendor_cut',
       'stock_price.total_sell',
-      'stock_price.date_valid_from as datePriceValidFrom'
+      'stock_price.date_valid_from as datePriceValidFrom',
     )
     .where(`stock_price.date_valid_from`, '<=', 'sale.date_sale_opened')
     .andWhereRaw(
       `stock_price.id = (
-    SELECT MAX(id) FROM stock_price WHERE stock_id = sale_item.item_id)`
+    SELECT MAX(id) FROM stock_price WHERE stock_id = sale_item.item_id)`,
     )
     .andWhere('sale.state', 'completed')
     .andWhere(`sale.is_deleted`, 0)
@@ -121,8 +113,8 @@ export function dbCreateHold(hold, db = connection) {
           quantity: hold?.quantity * -1,
           act: StockMovementTypes.Hold,
         },
-        db
-      )
+        db,
+      ),
     )
     .then(() => dbCheckIfRestockNeeded(hold?.itemId, db))
 }
@@ -150,9 +142,7 @@ export function dbUpdateSaleItem(id, update, db = connection) {
 }
 
 export function dbDeleteSaleItem(id, db = connection) {
-  return dbUpdateSaleItem(id, { isDeleted: true }).catch((e) =>
-    Error(e.message)
-  )
+  return dbUpdateSaleItem(id, { isDeleted: true }).catch((e) => Error(e.message))
 }
 
 export function dbCreateSaleTransaction(saleTransaction, db = connection) {
@@ -183,15 +173,15 @@ export async function dbSaveSale(cart, prevState, db = connection) {
         const customer = await dbGetCustomer(sale?.customerId, trx)
         dbCreateJob(
           {
-            description: `Post Sale ${sale?.id} (${sale?.itemList}) to ${
-              `${customer?.name}\n` || ''
-            }${sale?.postalAddress}`,
+            description: `Post Sale ${sale?.id} (${sale?.itemList}) to ${`${customer?.name}\n` || ''}${
+              sale?.postalAddress
+            }`,
             createdByClerkId: sale?.saleOpenedBy,
             assignedTo: RoleTypes?.MC,
             dateCreated: dayjs.utc().format(),
             isPostMailOrder: true,
           },
-          trx
+          trx,
         )
       }
 
@@ -208,11 +198,7 @@ export async function dbSaveSale(cart, prevState, db = connection) {
     .catch((e) => Error(e.message))
 }
 
-export async function dbDeleteSale(
-  id,
-  { sale, clerk, registerID },
-  db = connection
-) {
+export async function dbDeleteSale(id, { sale, clerk, registerID }, db = connection) {
   return db
     .transaction(async (trx) => {
       await sale?.items?.forEach((saleItem) => {
@@ -228,7 +214,7 @@ export async function dbDeleteSale(
               note: 'Sale nuked.',
               saleId: sale?.id,
             },
-            trx
+            trx,
           )
       })
       await sale?.transactions?.forEach((saleTransaction) => {
@@ -238,7 +224,7 @@ export async function dbDeleteSale(
             {
               isDeleted: true,
             },
-            trx
+            trx,
           )
         dbUpdateSaleTransaction(saleTransaction?.id, { isDeleted: true }, trx)
       })
@@ -296,17 +282,11 @@ async function handleStockMovements(item, sale, prevState, db) {
         stockMovement.act = StockMovementTypes.Unsold
       }
       // Add layby stock movement if it's a new layby
-    } else if (
-      sale?.state === SaleStateTypes.Layby &&
-      prevState !== SaleStateTypes.Layby
-    ) {
+    } else if (sale?.state === SaleStateTypes.Layby && prevState !== SaleStateTypes.Layby) {
       stockMovement.clerkId = sale?.laybyStartedBy
       stockMovement.act = StockMovementTypes.Layby
     }
-    stockMovement.quantity = getStockMovementQuantityByAct(
-      item?.quantity,
-      stockMovement?.act
-    )
+    stockMovement.quantity = getStockMovementQuantityByAct(item?.quantity, stockMovement?.act)
     await dbCreateStockMovement(stockMovement, db)
   }
 }
@@ -333,9 +313,7 @@ async function handleSaveSaleTransaction(trans, sale, db) {
         amount: trans?.amount,
         clerkId: trans?.clerkId,
         vendorId: trans?.vendor?.id,
-        type: trans?.isRefund
-          ? VendorPaymentTypes.SaleRefund
-          : VendorPaymentTypes.Sale,
+        type: trans?.isRefund ? VendorPaymentTypes.SaleRefund : VendorPaymentTypes.Sale,
         date: dayjs.utc().format(),
         registerId: trans?.registerId,
       }
@@ -349,11 +327,7 @@ async function handleSaveSaleTransaction(trans, sale, db) {
         giftCardId = await dbCreateStockItem(trans?.giftCardUpdate, db)
       } else {
         // Update gift card
-        await dbUpdateStockItem(
-          trans?.giftCardUpdate,
-          trans?.giftCardUpdate?.id,
-          db
-        )
+        await dbUpdateStockItem(trans?.giftCardUpdate, trans?.giftCardUpdate?.id, db)
       }
     }
     if (giftCardId) newSaleTransaction = { ...newSaleTransaction, giftCardId }

@@ -5,20 +5,23 @@ const connection = require('./conn')
 
 export function dbGetStockList(db = connection) {
   return db('stock')
+    .leftJoin('stock_movement', 'stock.id', 'stock_movement.stock_id')
+    .groupBy('stock.id')
     .select(
-      'id',
-      'vendor_id',
-      'artist',
-      'title',
-      'display_as',
-      'media',
-      'format',
-      'section',
-      'genre',
-      'is_new',
-      'cond',
-      'tags',
+      'stock.id',
+      'stock.vendor_id',
+      'stock.artist',
+      'stock.title',
+      'stock.display_as',
+      'stock.media',
+      'stock.format',
+      'stock.section',
+      'stock.genre',
+      'stock.is_new',
+      'stock.cond',
+      'stock.tags',
     )
+    .sum('stock_movement.quantity as quantity')
     .where(`stock.is_deleted`, 0)
     .where(`stock.is_misc_item`, 0)
     .where(`stock.is_gift_card`, 0)
@@ -72,7 +75,32 @@ export function dbGetRestockList(db = connection) {
 
 export function dbGetStockItem(id, basic = false, db = connection) {
   return db('stock')
-    .where('stock.id', id)
+    .select(
+      basic
+        ? [
+            'id',
+            'vendor_id',
+            'artist',
+            'title',
+            'display_as',
+            'media',
+            'section',
+            'format',
+            'is_new',
+            'cond',
+            'country',
+            'image_url',
+            'needs_restock',
+            'is_gift_card',
+            'gift_card_code',
+            'gift_card_amount',
+            'is_misc_item',
+            'misc_item_description',
+            'misc_item_amount',
+          ]
+        : '*',
+    )
+    .where({ id })
     .first()
     .then(async (item) => {
       if (item?.discogsItem) item.discogsItem = JSON.parse(item.discogsItem)

@@ -1,4 +1,3 @@
-import Tooltip from '@mui/material/Tooltip'
 import { useRouter } from 'next/router'
 import { Info, AddCircleOutline } from '@mui/icons-material'
 import React from 'react'
@@ -19,8 +18,7 @@ const Actions = ({ item, itemQuantity }) => {
         title: 'Are you sure you want to add to cart?',
         styledMessage: (
           <span>
-            There is no more of <b>{getItemDisplayName(item)}</b> in stock. Are
-            you sure you want to add to cart?
+            There is no more of <b>{getItemDisplayName(item)}</b> in stock. Are you sure you want to add to cart?
           </span>
         ),
         yesText: "YES, I'M SURE",
@@ -38,25 +36,25 @@ const Actions = ({ item, itemQuantity }) => {
   return (
     <div className="flex py-2">
       <div className="self-center pl-8 hidden sm:inline">
-        <Tooltip title="View and edit item details.">
-          <button
-            className="icon-button-large text-black hover:text-blue-500"
-            onClick={() => router.push(`/stock/${item?.id}`)}
-          >
-            <Info style={{ fontSize: '40px' }} />
-          </button>
-        </Tooltip>
+        {/* <Tooltip title="View and edit item details."> */}
+        <button
+          className="icon-button-large text-black hover:text-blue-500"
+          onClick={() => router.push(`/stock/${item?.id}`)}
+        >
+          <Info style={{ fontSize: '40px' }} />
+        </button>
+        {/* </Tooltip> */}
       </div>
       <div className="self-center pl-1 hidden sm:inline">
-        <Tooltip title="Add item to sale.">
-          <button
-            className="icon-button-large text-black hover:text-blue-500"
-            disabled={!item?.totalSell}
-            onClick={clickAddToCart}
-          >
-            <AddCircleOutline style={{ fontSize: '40px' }} />
-          </button>
-        </Tooltip>
+        {/* <Tooltip title="Add item to sale."> */}
+        <button
+          className="icon-button-large text-black hover:text-blue-500"
+          // disabled={!item?.totalSell}
+          onClick={clickAddToCart}
+        >
+          <AddCircleOutline style={{ fontSize: '40px' }} />
+        </button>
+        {/* </Tooltip> */}
       </div>
     </div>
   )

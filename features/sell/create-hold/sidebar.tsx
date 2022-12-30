@@ -11,17 +11,8 @@ import { useCustomers } from 'lib/api/customer'
 import { createHold } from 'lib/api/sale'
 
 export default function CreateHoldSidebar() {
-  const {
-    cart,
-    view,
-    setAlert,
-    setCartSale,
-    setCustomer,
-    resetCart,
-    resetSellSearchBar,
-    openView,
-    closeView,
-  } = useAppStore()
+  const { cart, view, setAlert, setCartSale, setCustomer, resetCart, resetSellSearchBar, openView, closeView } =
+    useAppStore()
   const { sale = {}, items = [] } = cart || {}
   const defaultHoldPeriod = 30
   const { clerk } = useClerk()
@@ -38,6 +29,7 @@ export default function CreateHoldSidebar() {
     closeView(ViewProps.createHold)
     setSubmitting(false)
   }
+  const numberOfItems = items?.reduce((acc, item) => parseInt(item?.quantity) + acc, 0)
 
   async function onClickConfirmHold() {
     setSubmitting(true)
@@ -56,9 +48,8 @@ export default function CreateHoldSidebar() {
     setAlert({
       open: true,
       type: 'success',
-      message: `ITEM${cart?.items?.length === 1 ? '' : 'S'} PUT ON HOLD FOR ${(
-        customers?.find((c: CustomerObject) => c?.id === sale?.customerId)
-          ?.name || ''
+      message: `ITEM${numberOfItems === 1 ? '' : 'S'} PUT ON HOLD FOR ${(
+        customers?.find((c: CustomerObject) => c?.id === sale?.customerId)?.name || ''
       ).toUpperCase()}.`,
     })
     resetHold()
@@ -84,7 +75,7 @@ export default function CreateHoldSidebar() {
   return (
     <SidebarContainer
       show={view?.createHold}
-      title={'Hold Items'}
+      title={`Hold ${numberOfItems} Item${numberOfItems === 1 ? '' : 's'}`}
       buttons={buttons}
     >
       <div className="flex-grow overflow-x-hidden overflow-y-scroll">
@@ -99,10 +90,7 @@ export default function CreateHoldSidebar() {
           inputLabel="Select customer"
           fieldRequired
           value={sale?.customerId}
-          label={
-            customers?.find((c: CustomerObject) => c?.id === sale?.customerId)
-              ?.name || ''
-          }
+          label={customers?.find((c: CustomerObject) => c?.id === sale?.customerId)?.name || ''}
           onChange={(customerObject: any) => {
             setCartSale({ customerId: parseInt(customerObject?.value) })
           }}
@@ -125,12 +113,7 @@ export default function CreateHoldSidebar() {
           valueNum={holdPeriod}
           onChange={(e: any) => setHoldPeriod(e.target.value)}
         />
-        <TextField
-          inputLabel="Note"
-          multiline
-          value={note}
-          onChange={(e: any) => setNote(e.target.value)}
-        />
+        <TextField inputLabel="Note" multiline value={note} onChange={(e: any) => setNote(e.target.value)} />
       </div>
     </SidebarContainer>
   )

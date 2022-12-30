@@ -1,10 +1,6 @@
-import {
-  getImageSrc,
-  getItemDisplayName,
-  getItemSku,
-} from 'lib/functions/displayInventory'
+import { getImageSrc, getItemDisplayName, getItemSku } from 'lib/functions/displayInventory'
 import { useStockItem } from 'lib/api/stock'
-import { SaleItemObject } from 'lib/types'
+import { SaleItemObject } from 'lib/types/sale'
 import { writeCartItemPriceBreakdown } from 'lib/functions/sell'
 
 type HoldListItemProps = {
@@ -12,7 +8,7 @@ type HoldListItemProps = {
 }
 export default function HoldListItem({ cartItem }: HoldListItemProps) {
   const { stockItem } = useStockItem(`${cartItem?.itemId}`)
-  const { item = {}, price = {} } = stockItem || {}
+  const { item = {} } = stockItem || {}
 
   return (
     <div className="flex w-full bg-blue-100 text-black mb-2">
@@ -23,16 +19,16 @@ export default function HoldListItem({ cartItem }: HoldListItemProps) {
             src={getImageSrc(item)}
             alt={item?.title || 'Inventory image'}
           />
-          <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white flex justify-center items-center text-sm">
-            {getItemSku(item)}
-          </div>
+          {!item?.isGiftCard && !item?.isMiscItem && (
+            <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white flex justify-center items-center text-sm">
+              {getItemSku(item)}
+            </div>
+          )}
         </div>
       </div>
       <div className="flex flex-col w-full pt-2 px-2 justify-between">
         <div className="text-sm pl-1">{getItemDisplayName(item)}</div>
-        <div className="text-red-500 self-end">
-          {writeCartItemPriceBreakdown(cartItem, item, price)}
-        </div>
+        <div className="text-red-500 self-end">{writeCartItemPriceBreakdown(cartItem, stockItem)}</div>
       </div>
     </div>
   )

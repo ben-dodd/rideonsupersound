@@ -1,12 +1,7 @@
 import { axiosAuth } from 'lib/api'
 import { mysql2js } from 'lib/database/utils/helpers'
-import {
-  getTotalPaid,
-  roundToTenCents,
-  sumPrices,
-  writeItemList,
-} from 'lib/functions/pay'
-import { StockObject } from 'lib/types'
+import { getTotalPaid, roundToTenCents, sumPrices, writeItemList } from 'lib/functions/pay'
+import { StockObject } from 'lib/types/stock'
 import { useState, useEffect } from 'react'
 
 export function useSaleProperties(cart): any {
@@ -21,24 +16,16 @@ export function useSaleProperties(cart): any {
     console.log('getting cart items...')
     if (items?.length === 0) setStockTable([])
     else
-      axiosAuth
-        .get(
-          `api/stock/items?items=${items
-            ?.map((item) => item?.itemId)
-            ?.join('+')}`
-        )
-        .then((data) => {
-          setStockTable(mysql2js(data))
-        })
+      axiosAuth.get(`api/stock/items?items=${items?.map((item) => item?.itemId)?.join('+')}`).then((data) => {
+        setStockTable(mysql2js(data))
+      })
   }, [items])
 
   useEffect(() => {
     const totalPostage = parseFloat(`${sale?.postage}`) || 0 // Postage: currently in dollars
     const nonRefundedItems = items?.filter((item) => !item?.isRefunded)
-    const totalStoreCut =
-      sumPrices(nonRefundedItems, stockTable, 'storePrice') / 100 // Total Amount of Sale goes to Store in dollars
-    const totalPriceUnrounded =
-      sumPrices(nonRefundedItems, stockTable, 'totalPrice') / 100 // Total Amount of Sale in dollars
+    const totalStoreCut = sumPrices(nonRefundedItems, stockTable, 'storePrice') / 100 // Total Amount of Sale goes to Store in dollars
+    const totalPriceUnrounded = sumPrices(nonRefundedItems, stockTable, 'totalPrice') / 100 // Total Amount of Sale in dollars
     const totalVendorCut = totalPriceUnrounded - totalStoreCut // Total Vendor Cut in dollars
     const totalItemPrice = roundToTenCents(totalPriceUnrounded)
     const totalPrice = totalItemPrice + totalPostage // TotalPrice + postage

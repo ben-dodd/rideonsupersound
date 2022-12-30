@@ -50,6 +50,7 @@ export interface StockItemSearchObject extends StockItemBaseObject {
   isNew?: boolean
   cond?: string
   tags?: string[]
+  quantity?: number
 }
 
 // Adds properties for displaying rich list item of object
@@ -62,10 +63,16 @@ export interface BasicStockItemObject extends StockItemBaseObject {
   country?: string
   imageUrl?: string
   needsRestock?: boolean
+  isGiftCard?: boolean
+  giftCardCode?: string
+  giftCardAmount?: number
+  isMiscItem?: boolean
+  miscItemDescription?: string
+  miscItemAmount?: number
 }
 
 // Add all other properties in stock table in database
-export interface StockItemObject extends StockItemBaseObject {
+export interface StockItemObject extends BasicStockItemObject {
   country?: string
   releaseYear?: string
   barcode?: string
@@ -85,17 +92,11 @@ export interface StockItemObject extends StockItemBaseObject {
   dateModified?: string
   googleBooksItem?: any
   discogsItem?: any
-  isGiftCard?: boolean
-  giftCardCode?: string
-  giftCardAmount?: number
   giftCardRemaining?: number
   giftCardIsValid?: boolean
-  isMiscItem?: boolean
-  miscItemDescription?: string
-  miscItemAmount?: number
 }
 
-export interface StockItemPriceObject {
+export interface BasicStockPriceObject {
   totalSell?: number
   vendorCut?: number
   storeCut?: number
@@ -122,7 +123,7 @@ export interface StockQuantitiesObject extends BasicStockQuantitiesObject {
 export interface BasicStockObject {
   item?: BasicStockItemObject
   quantities?: BasicStockQuantitiesObject
-  price?: StockItemPriceObject
+  price?: BasicStockPriceObject
   vendorName?: string
 }
 

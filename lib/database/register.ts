@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
-import { RegisterObject, TillObject, VendorPaymentTypes } from 'lib/types'
+import { RegisterObject, TillObject } from 'lib/types/register'
+import { VendorPaymentTypes } from 'lib/types/vendor'
 import connection from './conn'
 import { js2mysql } from './utils/helpers'
 
@@ -27,26 +28,12 @@ export function dbGetCurrentRegister(db = connection) {
   return dbGetCurrentRegisterId(db).then(async (register_id) => {
     const register = await db('register').where(`id`, register_id).first()
     const cashGiven = await db('sale_transaction')
-      .select(
-        'sale_id',
-        'clerk_id',
-        'date',
-        'payment_method',
-        'amount',
-        'change_given'
-      )
+      .select('sale_id', 'clerk_id', 'date', 'payment_method', 'amount', 'change_given')
       .where({ register_id })
       .where(`is_deleted`, 0)
       .whereNotNull(`change_given`)
     const cashReceived = await db('sale_transaction')
-      .select(
-        'sale_id',
-        'clerk_id',
-        'date',
-        'payment_method',
-        'amount',
-        'cash_received'
-      )
+      .select('sale_id', 'clerk_id', 'date', 'payment_method', 'amount', 'cash_received')
       .where({ register_id })
       .where(`is_deleted`, 0)
       .whereNotNull(`cash_received`)
@@ -75,12 +62,7 @@ export function dbSetRegister(id, db = connection) {
   return db('global').where({ id: 'current_register' }).update({ num: id })
 }
 
-export async function dbCloseRegister(
-  id: number,
-  register: RegisterObject,
-  till: TillObject,
-  db = connection
-) {
+export async function dbCloseRegister(id: number, register: RegisterObject, till: TillObject, db = connection) {
   const trx = await db.transaction()
   try {
     const tillID = await dbCreateTill(till, db)
@@ -96,11 +78,7 @@ export async function dbCloseRegister(
   }
 }
 
-export async function dbOpenRegister(
-  register: RegisterObject,
-  till: TillObject,
-  db = connection
-) {
+export async function dbOpenRegister(register: RegisterObject, till: TillObject, db = connection) {
   const trx = await db.transaction()
   try {
     const tillID = await dbCreateTill(till, db)
@@ -110,7 +88,7 @@ export async function dbOpenRegister(
         openTillId: tillID,
         openDate: dayjs.utc().format(),
       },
-      db
+      db,
     )
     // logOpenRegister(clerk, null, registerId)
     dbSetRegister(registerId, db)
