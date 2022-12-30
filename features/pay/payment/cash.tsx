@@ -9,18 +9,16 @@ import Modal from 'components/modal'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
-import { useSaleProperties } from 'lib/hooks'
 import { useCurrentRegisterId } from 'lib/api/register'
 import { getCashVars } from 'lib/functions/pay'
 import { PaymentMethodTypes, SaleTransactionObject } from 'lib/types/sale'
 
-export default function Cash() {
+export default function Cash({ totalRemaining }) {
   extend(UTC)
   const { clerk } = useClerk()
   const { view, cart, closeView, setAlert, addCartTransaction } = useAppStore()
   const { sale = {} } = cart || {}
   const { registerId } = useCurrentRegisterId()
-  const { totalRemaining } = useSaleProperties(cart)
   const isRefund = totalRemaining < 0
   const [cashReceived, setCashReceived] = useState(`${Math.abs(totalRemaining).toFixed(2)}`)
   useEffect(() => {

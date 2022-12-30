@@ -3,15 +3,14 @@ import ScreenContainer from 'components/container/screen'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { useRouter } from 'next/router'
-import { useSaleProperties } from 'lib/hooks'
 import { SaleStateTypes } from 'lib/types/sale'
 import { saveCart } from 'lib/api/sale'
 import dayjs from 'dayjs'
 import { ModalButton } from 'lib/types'
 import SaleSummary from '../sale-summary'
-import Pay from './pay'
+import Pay from './sidebar'
 
-const PayScreen = () => {
+const PayScreen = ({ totalRemaining }) => {
   const { cart, view, resetCart, setAlert } = useAppStore()
   const { sale = {}, items = [] } = cart || {}
   const router = useRouter()
@@ -19,9 +18,7 @@ const PayScreen = () => {
     if (!sale?.id && items?.length === 0) router.replace('/sell')
   }, [sale, items])
   const { clerk } = useClerk()
-  const [addMoreItemsLoading] = useState(false)
   const [completeSaleLoading, setCompleteSaleLoading] = useState(false)
-  const { totalRemaining } = useSaleProperties(cart)
 
   function clickParkSale() {
     saveCart({ ...cart, sale: { ...sale, state: SaleStateTypes.Parked } }, sale?.state)
@@ -134,7 +131,7 @@ const PayScreen = () => {
           <SaleSummary cart={cart} />
         </div>
         <div className="w-1/3 p-2 flex flex-col justify-between">
-          <Pay />
+          <Pay totalRemaining={totalRemaining} />
           {/*<Action />*/}
         </div>
       </div>

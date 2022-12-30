@@ -12,24 +12,19 @@ import { makeGiftCardCode } from 'lib/functions/sell'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
-import { useSaleProperties } from 'lib/hooks'
 import { useCurrentRegisterId } from 'lib/api/register'
 import { useGiftCards } from 'lib/api/stock'
 import { GiftCardObject, StockItemObject } from 'lib/types/stock'
 import { PaymentMethodTypes, SaleTransactionObject } from 'lib/types/sale'
 
-export default function Gift() {
+export default function Gift({ totalRemaining }) {
   extend(UTC)
   const { clerk } = useClerk()
   const { view, cart, closeView, setAlert, addCartTransaction } = useAppStore()
   const { sale = {} } = cart || {}
   const { giftCards } = useGiftCards()
   const { registerId } = useCurrentRegisterId()
-  // const { logs, mutateLogs } = useLogs()
 
-  const { totalRemaining } = useSaleProperties(cart)
-
-  // State
   const isRefund = totalRemaining < 0
   const [giftCardPayment, setGiftCardPayment] = useState(`${Math.abs(totalRemaining).toFixed(2)}`)
   useEffect(() => {

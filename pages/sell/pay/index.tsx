@@ -8,17 +8,19 @@ import Cash from 'features/pay/payment/cash'
 import ReturnItemDialog from 'features/pay/return-item-dialog'
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import PayScreen from 'features/pay'
+import { useSaleProperties } from 'lib/hooks'
 
 export default function PayPage() {
   const { view, cart } = useAppStore()
+  const { totalRemaining } = useSaleProperties(cart)
 
   return (
     <>
-      <PayScreen />
-      {view?.acctPaymentDialog && <Acct />}
-      {view?.cardPaymentDialog && <Card />}
-      {view?.cashPaymentDialog && <Cash />}
-      {view?.giftPaymentDialog && <Gift />}
+      <PayScreen totalRemaining={totalRemaining} />
+      {view?.acctPaymentDialog && <Acct totalRemaining={totalRemaining} />}
+      {view?.cardPaymentDialog && <Card totalRemaining={totalRemaining} />}
+      {view?.cashPaymentDialog && <Cash totalRemaining={totalRemaining} />}
+      {view?.giftPaymentDialog && <Gift totalRemaining={totalRemaining} />}
       {view?.createCustomer && <CreateCustomerSidebar />}
       {view?.returnItemDialog && <ReturnItemDialog sale={cart} />}
     </>

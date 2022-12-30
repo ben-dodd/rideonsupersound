@@ -5,13 +5,12 @@ import ReturnIcon from '@mui/icons-material/KeyboardReturn'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useCustomers } from 'lib/api/customer'
-import { useSaleProperties } from 'lib/hooks'
 import { SaleStateTypes } from 'lib/types/sale'
+import PayButtons from './pay-buttons'
 
-export default function Pay() {
+export default function Pay({ totalRemaining }) {
   const { cart, openView, setCartSale, setCustomer } = useAppStore()
   const { sale = {}, items = [] } = cart || {}
-  const { totalRemaining } = useSaleProperties(cart)
   const { customers = [] } = useCustomers()
   // customers?.find((c) => c?.id === sale?.customerId)?.postalAddress
   return (
@@ -41,44 +40,7 @@ export default function Pay() {
       {sale?.state !== SaleStateTypes.Completed && totalRemaining === 0 && (
         <div className="font-sm">Click complete sale to finish.</div>
       )}
-      <div className="grid grid-cols-2 gap-2 mt-4">
-        <button
-          className="square-button"
-          onClick={() => {
-            openView(ViewProps.cashPaymentDialog)
-          }}
-          disabled={totalRemaining === 0}
-        >
-          CASH
-        </button>
-        <button
-          className="square-button"
-          onClick={() => {
-            openView(ViewProps.cardPaymentDialog)
-          }}
-          disabled={totalRemaining === 0}
-        >
-          CARD
-        </button>
-        <button
-          className="square-button"
-          onClick={() => {
-            openView(ViewProps.acctPaymentDialog)
-          }}
-          disabled={totalRemaining === 0}
-        >
-          ACCT
-        </button>
-        <button
-          className="square-button"
-          onClick={() => {
-            openView(ViewProps.giftPaymentDialog)
-          }}
-          disabled={totalRemaining === 0}
-        >
-          GIFT
-        </button>
-      </div>
+      <PayButtons totalRemaining={totalRemaining} />
       <div className={`${sale?.state === SaleStateTypes.Completed ? 'hidden' : ''}`}>
         {sale?.state === SaleStateTypes.Layby ? (
           <div className="mt-2">

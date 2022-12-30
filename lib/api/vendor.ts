@@ -13,7 +13,7 @@ export function useVendorFromVendorPayment(vendorPaymentId) {
 }
 
 export function useVendor(id) {
-  return useData(`vendor/${id}`, 'vendor')
+  return useData(id ? `vendor/${id}` : null, 'vendor')
 }
 
 export function createVendor(vendor) {

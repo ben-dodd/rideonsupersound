@@ -10,11 +10,10 @@ import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useCurrentRegisterId } from 'lib/api/register'
 import { useVendor, useVendors } from 'lib/api/vendor'
-import { useSaleProperties } from 'lib/hooks'
 import { PaymentMethodTypes, SaleTransactionObject } from 'lib/types/sale'
 import { VendorObject } from 'lib/types/vendor'
 
-export default function Acct() {
+export default function Acct({ totalRemaining }) {
   extend(UTC)
   const { clerk } = useClerk()
   const { view, cart, closeView, setAlert, addCartTransaction } = useAppStore()
@@ -22,8 +21,6 @@ export default function Acct() {
   const [vendorWrapper, setVendorWrapper] = useState(null)
   const { registerId } = useCurrentRegisterId()
   const { vendors } = useVendors()
-
-  const { totalRemaining } = useSaleProperties(cart)
   const { vendor } = useVendor(vendorWrapper?.value?.id)
   console.log(vendor)
   const isRefund = totalRemaining < 0
