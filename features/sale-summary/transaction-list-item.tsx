@@ -1,18 +1,11 @@
 import dayjs from 'dayjs'
 import { useGiftCards } from 'lib/api/stock'
 import { useVendorFromVendorPayment } from 'lib/api/vendor'
-import { PaymentMethodTypes, SaleObject, SaleTransactionObject } from 'lib/types/sale'
+import { PaymentMethodTypes, SaleTransactionObject } from 'lib/types/sale'
 import { GiftCardObject } from 'lib/types/stock'
 
-type TransactionListItemProps = {
-  transaction: SaleTransactionObject
-  sale: SaleObject
-}
-
-export default function TransactionListItem({ transaction }: TransactionListItemProps) {
-  // SWR
+export default function TransactionListItem({ transaction }: { transaction: SaleTransactionObject }) {
   const { giftCards } = useGiftCards()
-  console.log(transaction)
   const { vendor = {} } = useVendorFromVendorPayment(transaction?.vendorPayment || 0)
   const giftCard = giftCards?.find((g: GiftCardObject) => g?.id === transaction?.giftCardId)
 

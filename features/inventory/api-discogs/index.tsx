@@ -21,14 +21,9 @@ export default function DiscogsPanel() {
   }
 
   useEffect(() => {
-    if (
-      !Boolean(item?.discogsItem) &&
-      (Boolean(item?.artist) || Boolean(item?.title) || Boolean(item?.barcode))
-    )
+    if (!Boolean(item?.discogsItem) && (Boolean(item?.artist) || Boolean(item?.title) || Boolean(item?.barcode)))
       handleGetDiscogsOptions()
   }, [])
-
-  // console.log(discogsItem)
 
   return (
     <div className="flex flex-col h-inventory">
@@ -43,7 +38,6 @@ export default function DiscogsPanel() {
           className="icon-text-button"
           disabled={false}
           onClick={() => {
-            // saveSystemLog('Discogs Panel - sync clicked.', clerk?.id)
             updateStockItem({ discogsItem: null }, id)
             mutate(`stock/${id}`)
             handleGetDiscogsOptions()

@@ -3,7 +3,7 @@ import { logSaleParked } from 'lib/functions/log'
 import { ClerkObject, CustomerObject } from 'lib/types'
 import { getCartItemPrices } from 'lib/functions/sell'
 import { SaleItemObject, SaleObject, SaleTransactionObject } from 'lib/types/sale'
-import { StockItemObject, StockObject } from 'lib/types/stock'
+import { BasicStockObject, StockObject } from 'lib/types/stock'
 import { VendorPaymentObject, VendorSaleItemObject } from 'lib/types/vendor'
 
 export function sumPrices(saleItems: any[], items: any[], field: string) {
@@ -54,20 +54,21 @@ export function getStoreCut(price: any) {
   return sellNum - costNum
 }
 
-export function writeItemList(inventory: StockItemObject[], items: SaleItemObject[]) {
-  if (items && inventory) {
-    return items
-      .filter((item: SaleItemObject) => !item?.isDeleted)
-      .map((item: SaleItemObject) => {
-        let stockItem = inventory?.find((i) => i?.id === item?.itemId)
+export function writeItemList(stockList: BasicStockObject[], cartItems: SaleItemObject[]) {
+  if (cartItems && stockList) {
+    return cartItems
+      .filter((cartItem: SaleItemObject) => !cartItem?.isDeleted)
+      .map((cartItem: SaleItemObject) => {
+        let stockObject = stockList?.find((obj) => obj?.item?.id === cartItem?.itemId)
+        const { item = {} } = stockObject || {}
         if (item?.isGiftCard) {
-          return `Gift Card [${stockItem?.giftCardCode}]`
+          return `Gift Card [${item?.giftCardCode}]`
         } else {
-          let cartQuantity = item?.quantity || 1
+          let cartQuantity = cartItem?.quantity || 1
           let str = ''
           if (cartQuantity > 1) str = `${cartQuantity} x `
-          str = str + getItemDisplayName(stockItem)
-          if (item?.isRefunded) str = str + ' [REFUNDED]'
+          str = str + getItemDisplayName(item)
+          if (cartItem?.isRefunded) str = str + ' [REFUNDED]'
           return str
         }
       })

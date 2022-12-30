@@ -1,29 +1,22 @@
-import { saveSystemLog } from 'lib/functions/log'
-import { StockObject } from 'lib/types'
+import { StockItemObject } from 'lib/types/stock'
 import SyncIcon from '@mui/icons-material/Sync'
 import { useEffect, useState } from 'react'
 import { getGoogleBooksOptionsByItem } from 'lib/functions/googleBooks'
 import GoogleBooksItem from './google-books-item'
 import GoogleBooksOption from './google-books-option'
-import { useClerk } from 'lib/api/clerk'
 
 interface inventoryProps {
-  item: StockObject
+  item: StockItemObject
   setItem: Function
   disabled?: boolean
 }
 
-export default function GoogleBooksPanel({
-  item,
-  setItem,
-  disabled,
-}: inventoryProps) {
+export default function GoogleBooksPanel({ item, setItem, disabled }: inventoryProps) {
   // State
   const [googleBooksOptions, setGoogleBooksOptions] = useState(null)
 
   // Constants
   const googleBooksItem = item?.googleBooksItem
-  const { clerk } = useClerk()
 
   // Load
   useEffect(() => {
@@ -40,14 +33,12 @@ export default function GoogleBooksPanel({
     setGoogleBooksOptions(options)
   }
 
-  const handleGoogleBooksOptionClick = (googleBooksItem) => {
-    saveSystemLog(`Googlebooks Option clicked.`, clerk?.id)
+  const handleGoogleBooksOptionClick = (googleBooksItem) =>
     setItem({
       ...item,
       image_url: googleBooksItem?.volumeInfo?.imageLinks?.thumbnail || null,
       googleBooksItem,
     })
-  }
 
   return (
     <div className="flex flex-col h-inventory">
@@ -62,7 +53,6 @@ export default function GoogleBooksPanel({
           className="icon-text-button hover:bg-blue-100"
           disabled={disabled}
           onClick={() => {
-            saveSystemLog('Googlebooks Sync clicked.', clerk?.id)
             setItem({ ...item, googleBooksItem: null })
             handleGetGoogleBooksOptions()
           }}

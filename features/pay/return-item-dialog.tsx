@@ -4,7 +4,7 @@ import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
-import ItemListItem from './item-list-item'
+import ItemListItem from '../sale-summary/item-list-item'
 import { SaleItemObject, SaleStateTypes } from 'lib/types/sale'
 
 export default function ReturnItemsDialog({ sale }) {

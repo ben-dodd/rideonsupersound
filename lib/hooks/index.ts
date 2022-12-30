@@ -1,12 +1,12 @@
 import { axiosAuth } from 'lib/api'
 import { mysql2js } from 'lib/database/utils/helpers'
 import { getTotalPaid, roundToTenCents, sumPrices, writeItemList } from 'lib/functions/pay'
-import { StockObject } from 'lib/types/stock'
+import { BasicStockObject } from 'lib/types/stock'
 import { useState, useEffect } from 'react'
 
 export function useSaleProperties(cart): any {
   const [properties, setProperties] = useState({})
-  const [stockTable, setStockTable]: [StockObject[], Function] = useState([])
+  const [stockTable, setStockTable]: [BasicStockObject[], Function] = useState([])
   const { items = [], sale = {}, transactions = [] } = cart || {}
   // console.log(items, sale)
 
@@ -16,7 +16,7 @@ export function useSaleProperties(cart): any {
     console.log('getting cart items...')
     if (items?.length === 0) setStockTable([])
     else
-      axiosAuth.get(`api/stock/items?items=${items?.map((item) => item?.itemId)?.join('+')}`).then((data) => {
+      axiosAuth.get(`/api/stock/items?items=${items?.map((item) => item?.itemId)?.join('+')}`).then((data) => {
         setStockTable(mysql2js(data))
       })
   }, [items])

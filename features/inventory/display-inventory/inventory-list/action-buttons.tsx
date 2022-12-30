@@ -1,4 +1,3 @@
-import { saveSystemLog } from 'lib/functions/log'
 import ReturnIcon from '@mui/icons-material/AssignmentReturn'
 import ReceiveIcon from '@mui/icons-material/AssignmentReturned'
 import PrintIcon from '@mui/icons-material/Print'
@@ -14,7 +13,6 @@ export default function InventoryActionButtons() {
       <button
         className="icon-text-button"
         onClick={() => {
-          saveSystemLog('Inventory Nav - Receive stock clicked.', clerk?.id)
           openView(ViewProps.receiveStockScreen)
           closeView(ViewProps.returnStockScreen)
         }}
@@ -25,7 +23,6 @@ export default function InventoryActionButtons() {
       <button
         className="icon-text-button"
         onClick={() => {
-          saveSystemLog('Inventory Nav - Return stock clicked.', clerk?.id)
           openView(ViewProps.returnStockScreen)
           closeView(ViewProps.receiveStockScreen)
         }}
@@ -36,7 +33,6 @@ export default function InventoryActionButtons() {
       <button
         className="icon-text-button"
         onClick={() => {
-          saveSystemLog('Inventory Nav - Print labels clicked.', clerk?.id)
           openView(ViewProps.labelPrintDialog)
         }}
       >

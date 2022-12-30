@@ -15,8 +15,6 @@ export default function DiscogsOption({
   const { id } = router.query
   const { mutate } = useSWRConfig()
   const handleDiscogsOptionClick = async () => {
-    // console.log(discogsOption)
-    // saveSystemLog(`Discogs option clicked - ${discogsOption?.id}`, clerk?.id)
     setDiscogsItemToStockItem(discogsOption, overrideItemDetails)
       .then((update) => {
         console.log(update)
@@ -25,18 +23,12 @@ export default function DiscogsOption({
       .then(() => mutate(`stock/${id}`))
   }
   return (
-    <div
-      className="flex item-start cursor-pointer p-2 mb-8 hover:bg-gray-300"
-      onClick={handleDiscogsOptionClick}
-    >
+    <div className="flex item-start cursor-pointer p-2 mb-8 hover:bg-gray-300" onClick={handleDiscogsOptionClick}>
       <div className="w-32">
         <div className="w-32 h-32 relative">
           <img
             className="object-cover absolute"
-            src={
-              discogsOption?.thumb ||
-              `${process.env.NEXT_PUBLIC_RESOURCE_URL}img/default.png`
-            }
+            src={discogsOption?.thumb || `${process.env.NEXT_PUBLIC_RESOURCE_URL}img/default.png`}
             alt={discogsOption?.title || 'Album art'}
           />
         </div>
@@ -63,9 +55,7 @@ export default function DiscogsOption({
               {discogsOption?.identifiers?.map((id: any) => (
                 <div key={id?.value}>
                   <b>{id?.type}:</b>
-                  {` ${id?.value}${
-                    id?.description ? ` (${id?.description})` : ''
-                  }`}
+                  {` ${id?.value}${id?.description ? ` (${id?.description})` : ''}`}
                 </div>
               ))}
             </div>

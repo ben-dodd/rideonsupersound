@@ -1,4 +1,3 @@
-import { saveSystemLog } from 'lib/functions/log'
 import { StocktakeTemplateObject } from 'lib/types/stock'
 import NewIcon from '@mui/icons-material/AddBox'
 import { useState } from 'react'
@@ -17,7 +16,6 @@ export default function StocktakeNavActions() {
         className="icon-text-button"
         onClick={async () => {
           setIsLoading(true)
-          saveSystemLog('Stocktake Nav - New Stocktake clicked.', clerk?.id)
           let newStocktakeTemplate: StocktakeTemplateObject = {
             formatEnabled: true,
           }

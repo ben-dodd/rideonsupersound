@@ -13,6 +13,7 @@ export default function Pay() {
   const { sale = {}, items = [] } = cart || {}
   const { totalRemaining } = useSaleProperties(cart)
   const { customers = [] } = useCustomers()
+  // customers?.find((c) => c?.id === sale?.customerId)?.postalAddress
   return (
     <div className="flex flex-col justify-between">
       <div className="flex justify-between my-2">
