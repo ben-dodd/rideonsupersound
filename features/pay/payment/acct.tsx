@@ -1,12 +1,7 @@
 import dayjs, { extend } from 'dayjs'
 import UTC from 'dayjs/plugin/utc'
 import { useEffect, useState } from 'react'
-import {
-  ModalButton,
-  PaymentMethodTypes,
-  SaleTransactionObject,
-  VendorObject,
-} from 'lib/types'
+import { ModalButton } from 'lib/types'
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
 import Select from 'react-select'
@@ -16,6 +11,8 @@ import { ViewProps } from 'lib/store/types'
 import { useCurrentRegisterId } from 'lib/api/register'
 import { useVendor, useVendors } from 'lib/api/vendor'
 import { useSaleProperties } from 'lib/hooks'
+import { PaymentMethodTypes, SaleTransactionObject } from 'lib/types/sale'
+import { VendorObject } from 'lib/types/vendor'
 
 export default function Acct() {
   extend(UTC)
@@ -30,9 +27,7 @@ export default function Acct() {
   const { vendor } = useVendor(vendorWrapper?.value?.id)
   console.log(vendor)
   const isRefund = totalRemaining < 0
-  const [acctPayment, setAcctPayment] = useState(
-    `${Math.abs(totalRemaining)?.toFixed(2)}`
-  )
+  const [acctPayment, setAcctPayment] = useState(`${Math.abs(totalRemaining)?.toFixed(2)}`)
   useEffect(() => {
     setAcctPayment(`${Math.abs(totalRemaining).toFixed(2)}`)
   }, [totalRemaining])
@@ -57,9 +52,7 @@ export default function Acct() {
           saleId: sale?.id,
           clerkId: clerk?.id,
           paymentMethod: PaymentMethodTypes.Account,
-          amount: isRefund
-            ? parseFloat(acctPayment) * -100
-            : parseFloat(acctPayment) * 100,
+          amount: isRefund ? parseFloat(acctPayment) * -100 : parseFloat(acctPayment) * 100,
           registerId,
           vendor: vendorWrapper?.value,
           isRefund: isRefund,
@@ -70,9 +63,7 @@ export default function Acct() {
         setAlert({
           open: true,
           type: 'success',
-          message: `$${parseFloat(acctPayment)?.toFixed(2)} ACCOUNT ${
-            isRefund ? `REFUND` : `PAYMENT`
-          }`,
+          message: `$${parseFloat(acctPayment)?.toFixed(2)} ACCOUNT ${isRefund ? `REFUND` : `PAYMENT`}`,
         })
       },
       text: 'COMPLETE',
@@ -114,16 +105,14 @@ export default function Acct() {
             onChange={(v: any) => setVendorWrapper(v)}
           />
         </div>
-        <div className="text-center">{`Remaining to ${
-          isRefund ? 'refund' : 'pay'
-        }: $${Math.abs(totalRemaining)?.toFixed(2)}`}</div>
+        <div className="text-center">{`Remaining to ${isRefund ? 'refund' : 'pay'}: $${Math.abs(
+          totalRemaining,
+        )?.toFixed(2)}`}</div>
         {vendorWrapper ? (
           <>
             <div className="text-center font-bold">
               {`${isRefund ? `Currently` : `Remaining`} in account: ${
-                false
-                  ? `Loading...`
-                  : `$${(vendor?.totalOwing / 100)?.toFixed(2)}`
+                false ? `Loading...` : `$${(vendor?.totalOwing / 100)?.toFixed(2)}`
               }`}
             </div>
             <div className="text-center text-xl font-bold my-4">
@@ -140,16 +129,12 @@ export default function Acct() {
                 : vendor?.totalOwing / 100 < parseFloat(acctPayment)
                 ? `NOT ENOUGH IN ACCOUNT, VENDOR WILL OWE THE SHOP`
                 : parseFloat(acctPayment) < totalRemaining
-                ? `AMOUNT SHORT BY $${(
-                    totalRemaining - parseFloat(acctPayment)
-                  )?.toFixed(2)}`
+                ? `AMOUNT SHORT BY $${(totalRemaining - parseFloat(acctPayment))?.toFixed(2)}`
                 : 'ALL GOOD!'}
             </div>
           </>
         ) : (
-          <div className="text-center text-xl font-bold my-4">
-            SELECT VENDOR ACCOUNT TO USE
-          </div>
+          <div className="text-center text-xl font-bold my-4">SELECT VENDOR ACCOUNT TO USE</div>
         )}
       </>
     </Modal>

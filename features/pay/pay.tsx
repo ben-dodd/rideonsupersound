@@ -1,4 +1,4 @@
-import { CustomerObject, SaleStateTypes } from 'lib/types'
+import { CustomerObject } from 'lib/types'
 import CreateableSelect from 'components/inputs/createable-select'
 import TextField from 'components/inputs/text-field'
 import ReturnIcon from '@mui/icons-material/KeyboardReturn'
@@ -6,6 +6,7 @@ import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useCustomers } from 'lib/api/customer'
 import { useSaleProperties } from 'lib/hooks'
+import { SaleStateTypes } from 'lib/types/sale'
 
 export default function Pay() {
   const { cart, openView, setCartSale, setCustomer } = useAppStore()
@@ -17,11 +18,7 @@ export default function Pay() {
       <div className="flex justify-between my-2">
         <div
           className={`text-2xl font-bold ${
-            totalRemaining === 0
-              ? 'text-primary'
-              : totalRemaining < 0
-              ? 'text-secondary'
-              : 'text-tertiary'
+            totalRemaining === 0 ? 'text-primary' : totalRemaining < 0 ? 'text-secondary' : 'text-tertiary'
           }`}
         >
           {sale?.state === SaleStateTypes.Completed
@@ -85,21 +82,13 @@ export default function Pay() {
           GIFT
         </button>
       </div>
-      <div
-        className={`${
-          sale?.state === SaleStateTypes.Completed ? 'hidden' : ''
-        }`}
-      >
+      <div className={`${sale?.state === SaleStateTypes.Completed ? 'hidden' : ''}`}>
         {sale?.state === SaleStateTypes.Layby ? (
           <div className="mt-2">
             {sale?.customerId ? (
               <div>
                 <div className="font-bold">Customer</div>
-                <div>
-                  {customers?.find(
-                    (c: CustomerObject) => c?.id === sale?.customerId
-                  )?.name || ''}
-                </div>
+                <div>{customers?.find((c: CustomerObject) => c?.id === sale?.customerId)?.name || ''}</div>
               </div>
             ) : (
               <div>No customer set.</div>
@@ -107,17 +96,11 @@ export default function Pay() {
           </div>
         ) : (
           <>
-            <div className="font-bold mt-2">
-              Select customer to enable laybys and mail orders.
-            </div>
+            <div className="font-bold mt-2">Select customer to enable laybys and mail orders.</div>
             <CreateableSelect
               inputLabel="Select customer"
               value={sale?.customerId}
-              label={
-                customers?.find(
-                  (c: CustomerObject) => c?.id === sale?.customerId
-                )?.name || ''
-              }
+              label={customers?.find((c: CustomerObject) => c?.id === sale?.customerId)?.name || ''}
               onChange={(customerObject: any) => {
                 // saveSystemLog('SALE SCREEN customer selected.', clerk?.id)
                 setCartSale({ customerId: parseInt(customerObject?.value) })
@@ -164,14 +147,10 @@ export default function Pay() {
               multiline
               value={
                 sale?.postalAddress ||
-                customers?.find(
-                  (c: CustomerObject) => c?.id === sale?.customerId
-                )?.postalAddress ||
+                customers?.find((c: CustomerObject) => c?.id === sale?.customerId)?.postalAddress ||
                 ''
               }
-              onChange={(e: any) =>
-                setCartSale({ postalAddress: e.target.value })
-              }
+              onChange={(e: any) => setCartSale({ postalAddress: e.target.value })}
             />
           </div>
         ) : (

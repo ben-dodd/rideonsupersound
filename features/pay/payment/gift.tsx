@@ -1,12 +1,7 @@
 import dayjs, { extend } from 'dayjs'
 import UTC from 'dayjs/plugin/utc'
 import { useEffect, useMemo, useState } from 'react'
-import {
-  GiftCardObject,
-  ModalButton,
-  PaymentMethodTypes,
-  SaleTransactionObject,
-} from 'lib/types'
+import { ModalButton } from 'lib/types'
 
 import SyncIcon from '@mui/icons-material/Sync'
 
@@ -20,6 +15,8 @@ import { ViewProps } from 'lib/store/types'
 import { useSaleProperties } from 'lib/hooks'
 import { useCurrentRegisterId } from 'lib/api/register'
 import { useGiftCards } from 'lib/api/stock'
+import { GiftCardObject, StockItemObject } from 'lib/types/stock'
+import { PaymentMethodTypes, SaleTransactionObject } from 'lib/types/sale'
 
 export default function Gift() {
   extend(UTC)
@@ -34,9 +31,7 @@ export default function Gift() {
 
   // State
   const isRefund = totalRemaining < 0
-  const [giftCardPayment, setGiftCardPayment] = useState(
-    `${Math.abs(totalRemaining).toFixed(2)}`
-  )
+  const [giftCardPayment, setGiftCardPayment] = useState(`${Math.abs(totalRemaining).toFixed(2)}`)
   useEffect(() => {
     setGiftCardPayment(`${Math.abs(totalRemaining).toFixed(2)}`)
   }, [totalRemaining])
@@ -44,17 +39,14 @@ export default function Gift() {
   const giftCard: GiftCardObject = useMemo(() => {
     console.log('Gift card changed')
     let gc: GiftCardObject = giftCards?.find(
-      (giftCard: GiftCardObject) =>
-        giftCard?.giftCardCode === giftCardCode.toUpperCase()
+      (giftCard: GiftCardObject) => giftCard?.giftCardCode === giftCardCode.toUpperCase(),
     )
     if (gc?.giftCardRemaining / 100 < totalRemaining)
       setGiftCardPayment(`${Math.abs(gc.giftCardRemaining / 100).toFixed(2)}`)
     return gc
   }, [giftCardCode, giftCards, totalRemaining])
 
-  const [newGiftCardCode, setNewGiftCardCode] = useState(
-    makeGiftCardCode(giftCards)
-  )
+  const [newGiftCardCode, setNewGiftCardCode] = useState(makeGiftCardCode(giftCards))
   const [submitting, setSubmitting] = useState(false)
 
   // Constants
@@ -70,21 +62,18 @@ export default function Gift() {
         parseFloat(giftCardPayment) <= 0 ||
         giftCardPayment === '' ||
         isNaN(parseFloat(giftCardPayment)) ||
-        (!isRefund &&
-          (!giftCard || !giftCard?.giftCardIsValid || leftOver < 0)),
+        (!isRefund && (!giftCard || !giftCard?.giftCardIsValid || leftOver < 0)),
       loading: submitting,
       onClick: () => {
         setSubmitting(true)
-        let giftCardUpdate: GiftCardObject = {}
+        let giftCardUpdate: StockItemObject = {}
         if (isRefund) {
           giftCardUpdate = {
             isGiftCard: true,
             giftCardCode: newGiftCardCode,
             giftCardAmount: parseFloat(giftCardPayment) * 100,
             giftCardRemaining: parseFloat(giftCardPayment) * 100,
-            note: `Gift card created as refund payment${
-              cart?.sale?.id ? ` for sale #${cart?.sale?.id}` : ''
-            }.`,
+            note: `Gift card created as refund payment${cart?.sale?.id ? ` for sale #${cart?.sale?.id}` : ''}.`,
             giftCardIsValid: true,
           }
         } else {
@@ -100,9 +89,7 @@ export default function Gift() {
           saleId: sale?.id,
           clerkId: clerk?.id,
           paymentMethod: PaymentMethodTypes.GiftCard,
-          amount: isRefund
-            ? parseFloat(giftCardPayment) * -100
-            : parseFloat(giftCardPayment) * 100,
+          amount: isRefund ? parseFloat(giftCardPayment) * -100 : parseFloat(giftCardPayment) * 100,
           registerId,
           giftCardUpdate,
           isRefund,
@@ -122,9 +109,7 @@ export default function Gift() {
         setAlert({
           open: true,
           type: 'success',
-          message: `$${parseFloat(giftCardPayment)?.toFixed(2)} GIFT CARD  ${
-            isRefund ? 'REFUND' : 'PAYMENT'
-          }`,
+          message: `$${parseFloat(giftCardPayment)?.toFixed(2)} GIFT CARD  ${isRefund ? 'REFUND' : 'PAYMENT'}`,
         })
       },
       text: 'COMPLETE',
@@ -142,13 +127,8 @@ export default function Gift() {
       <>
         {isRefund ? (
           <div className="flex justify-between items-center">
-            <div className="text-8xl text-red-800 font-mono">
-              {newGiftCardCode}
-            </div>
-            <button
-              className="icon-button-small-mid"
-              onClick={() => setNewGiftCardCode(makeGiftCardCode(giftCards))}
-            >
+            <div className="text-8xl text-red-800 font-mono">{newGiftCardCode}</div>
+            <button className="icon-button-small-mid" onClick={() => setNewGiftCardCode(makeGiftCardCode(giftCards))}>
               <SyncIcon />
             </button>
           </div>
@@ -169,9 +149,9 @@ export default function Gift() {
           selectOnFocus
           onChange={(e: any) => setGiftCardPayment(e.target.value)}
         />
-        <div className="text-center">{`Remaining to ${
-          isRefund ? 'refund' : 'pay'
-        }: $${Math.abs(totalRemaining)?.toFixed(2)}`}</div>
+        <div className="text-center">{`Remaining to ${isRefund ? 'refund' : 'pay'}: $${Math.abs(
+          totalRemaining,
+        )?.toFixed(2)}`}</div>
         {!isRefund && (
           <div className="text-center font-bold">
             {!giftCardCode || giftCardCode === ''
@@ -182,11 +162,7 @@ export default function Gift() {
           </div>
         )}
         <div className="text-center text-xl font-bold my-4">
-          {(!isRefund &&
-            (!giftCardCode ||
-              giftCardCode === '' ||
-              giftCardPayment === '' ||
-              !giftCard)) ||
+          {(!isRefund && (!giftCardCode || giftCardCode === '' || giftCardPayment === '' || !giftCard)) ||
           parseFloat(giftCardPayment) === 0 ||
           submitting ? (
             `...`

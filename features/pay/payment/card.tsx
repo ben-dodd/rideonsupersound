@@ -1,10 +1,6 @@
 import dayjs from 'dayjs'
 import { useEffect, useState } from 'react'
-import {
-  ModalButton,
-  PaymentMethodTypes,
-  SaleTransactionObject,
-} from 'lib/types'
+import { ModalButton } from 'lib/types'
 
 // Components
 import TextField from 'components/inputs/text-field'
@@ -14,6 +10,7 @@ import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useSaleProperties } from 'lib/hooks'
 import { useCurrentRegisterId } from 'lib/api/register'
+import { PaymentMethodTypes, SaleTransactionObject } from 'lib/types/sale'
 
 export default function Cash() {
   const { clerk } = useClerk()
@@ -23,9 +20,7 @@ export default function Cash() {
   const { totalRemaining } = useSaleProperties(cart)
   const [submitting, setSubmitting] = useState(false)
   const isRefund = totalRemaining < 0
-  const [cardPayment, setCardPayment] = useState(
-    `${Math.abs(totalRemaining).toFixed(2)}`
-  )
+  const [cardPayment, setCardPayment] = useState(`${Math.abs(totalRemaining).toFixed(2)}`)
   console.log(registerId)
   useEffect(() => {
     setCardPayment(`${Math.abs(totalRemaining).toFixed(2)}`)
@@ -50,9 +45,7 @@ export default function Cash() {
           saleId: sale?.id,
           clerkId: clerk?.id,
           paymentMethod: PaymentMethodTypes.Card,
-          amount: isRefund
-            ? parseFloat(cardPayment) * -100
-            : parseFloat(cardPayment) * 100,
+          amount: isRefund ? parseFloat(cardPayment) * -100 : parseFloat(cardPayment) * 100,
           registerId,
           isRefund,
         }
@@ -62,9 +55,7 @@ export default function Cash() {
         setAlert({
           open: true,
           type: 'success',
-          message: `$${parseFloat(cardPayment)?.toFixed(2)} CARD ${
-            isRefund ? 'REFUND' : 'PAYMENT'
-          }`,
+          message: `$${parseFloat(cardPayment)?.toFixed(2)} CARD ${isRefund ? 'REFUND' : 'PAYMENT'}`,
         })
       },
       text: 'COMPLETE',
@@ -88,9 +79,9 @@ export default function Cash() {
           selectOnFocus
           onChange={(e: any) => setCardPayment(e.target.value)}
         />
-        <div className="text-center">{`Remaining to ${
-          isRefund ? 'refund' : 'pay'
-        }: $${Math.abs(totalRemaining)?.toFixed(2)}`}</div>
+        <div className="text-center">{`Remaining to ${isRefund ? 'refund' : 'pay'}: $${Math.abs(
+          totalRemaining,
+        )?.toFixed(2)}`}</div>
         <div className="text-center text-xl font-bold my-4">
           {cardPayment === '' || parseFloat(cardPayment) === 0
             ? '...'
@@ -101,9 +92,7 @@ export default function Cash() {
             : parseFloat(cardPayment) > Math.abs(totalRemaining)
             ? `${isRefund ? 'REFUND AMOUNT' : 'PAYMENT'} TOO HIGH`
             : parseFloat(cardPayment) < Math.abs(totalRemaining)
-            ? `AMOUNT SHORT BY $${(
-                totalRemaining - parseFloat(cardPayment)
-              )?.toFixed(2)}`
+            ? `AMOUNT SHORT BY $${(totalRemaining - parseFloat(cardPayment))?.toFixed(2)}`
             : 'ALL GOOD!'}
         </div>
       </>

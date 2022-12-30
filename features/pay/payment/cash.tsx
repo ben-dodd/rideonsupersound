@@ -1,11 +1,7 @@
 import dayjs, { extend } from 'dayjs'
 import UTC from 'dayjs/plugin/utc'
 import { useEffect, useState } from 'react'
-import {
-  ModalButton,
-  PaymentMethodTypes,
-  SaleTransactionObject,
-} from 'lib/types'
+import { ModalButton } from 'lib/types'
 
 // Components
 import TextField from 'components/inputs/text-field'
@@ -16,6 +12,7 @@ import { ViewProps } from 'lib/store/types'
 import { useSaleProperties } from 'lib/hooks'
 import { useCurrentRegisterId } from 'lib/api/register'
 import { getCashVars } from 'lib/functions/pay'
+import { PaymentMethodTypes, SaleTransactionObject } from 'lib/types/sale'
 
 export default function Cash() {
   extend(UTC)
@@ -25,9 +22,7 @@ export default function Cash() {
   const { registerId } = useCurrentRegisterId()
   const { totalRemaining } = useSaleProperties(cart)
   const isRefund = totalRemaining < 0
-  const [cashReceived, setCashReceived] = useState(
-    `${Math.abs(totalRemaining).toFixed(2)}`
-  )
+  const [cashReceived, setCashReceived] = useState(`${Math.abs(totalRemaining).toFixed(2)}`)
   useEffect(() => {
     setCashReceived(`${Math.abs(totalRemaining).toFixed(2)}`)
   }, [totalRemaining])
@@ -47,11 +42,7 @@ export default function Cash() {
       loading: submitting,
       onClick: () => {
         setSubmitting(true)
-        const { netAmount, cashFromCustomer, cashToCustomer } = getCashVars(
-          cashReceived,
-          totalRemaining,
-          isRefund
-        )
+        const { netAmount, cashFromCustomer, cashToCustomer } = getCashVars(cashReceived, totalRemaining, isRefund)
         let transaction: SaleTransactionObject = {
           date: dayjs.utc().format(),
           saleId: sale?.id,
@@ -72,11 +63,7 @@ export default function Cash() {
           message: `$${parseFloat(cashReceived)?.toFixed(2)} ${
             isRefund
               ? `CASH REFUNDED.`
-              : `CASH TAKEN.${
-                  parseFloat(changeToGive) > 0
-                    ? ` $${changeToGive} CHANGE GIVEN.`
-                    : ''
-                }`
+              : `CASH TAKEN.${parseFloat(changeToGive) > 0 ? ` $${changeToGive} CHANGE GIVEN.` : ''}`
           }`,
         })
       },
@@ -101,9 +88,9 @@ export default function Cash() {
           selectOnFocus
           onChange={(e: any) => setCashReceived(e.target.value)}
         />
-        <div className="text-center">{`Remaining to ${
-          isRefund ? 'refund' : 'pay'
-        }: $${Math.abs(totalRemaining)?.toFixed(2)}`}</div>
+        <div className="text-center">{`Remaining to ${isRefund ? 'refund' : 'pay'}: $${Math.abs(
+          totalRemaining,
+        )?.toFixed(2)}`}</div>
         <div className="text-center text-xl font-bold my-4">
           {cashReceived === '' || parseFloat(cashReceived) === 0
             ? '...'
@@ -118,9 +105,7 @@ export default function Cash() {
             : parseFloat(cashReceived) > totalRemaining
             ? `GIVE $${changeToGive} IN CHANGE`
             : parseFloat(cashReceived) < Math.abs(totalRemaining)
-            ? `AMOUNT SHORT BY $${(
-                totalRemaining - parseFloat(cashReceived)
-              )?.toFixed(2)}`
+            ? `AMOUNT SHORT BY $${(totalRemaining - parseFloat(cashReceived))?.toFixed(2)}`
             : 'ALL GOOD!'}
         </div>
       </>

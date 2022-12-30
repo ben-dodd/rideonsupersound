@@ -1,14 +1,14 @@
 import { useState } from 'react'
-import { ModalButton, SaleItemObject, SaleStateTypes } from 'lib/types'
+import { ModalButton } from 'lib/types'
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import ItemListItem from './item-list-item'
+import { SaleItemObject, SaleStateTypes } from 'lib/types/sale'
 
 export default function ReturnItemsDialog({ sale }) {
-  const { cart, view, setCart, setCartSale, closeView, setAlert } =
-    useAppStore()
+  const { cart, view, setCart, setCartSale, closeView, setAlert } = useAppStore()
   const { items = [] } = cart || {}
   const [refundItems, setRefundItems] = useState([])
   const [notes, setNotes] = useState('')
@@ -27,18 +27,13 @@ export default function ReturnItemsDialog({ sale }) {
       loading: submitting,
       onClick: () => {
         const updatedCartItems = cart?.items?.map((item: SaleItemObject) =>
-          refundItems.includes(item?.id)
-            ? { ...item, isRefunded: true, refundNote: notes }
-            : item
+          refundItems.includes(item?.id) ? { ...item, isRefunded: true, refundNote: notes } : item,
         )
         setCart({
           items: updatedCartItems,
         })
         setCartSale({
-          state:
-            sale?.state === SaleStateTypes.Completed
-              ? SaleStateTypes.InProgress
-              : sale?.state,
+          state: sale?.state === SaleStateTypes.Completed ? SaleStateTypes.InProgress : sale?.state,
         })
         closeDialog()
         setAlert({
@@ -64,9 +59,7 @@ export default function ReturnItemsDialog({ sale }) {
       <>
         <div className="help-text">Select items to return.</div>
         {items
-          ?.filter(
-            (item: SaleItemObject) => !item?.isDeleted && !item?.isRefunded
-          )
+          ?.filter((item: SaleItemObject) => !item?.isDeleted && !item?.isRefunded)
           ?.map((item: SaleItemObject) => (
             <div className="flex" key={item?.id}>
               <ItemListItem
@@ -75,9 +68,7 @@ export default function ReturnItemsDialog({ sale }) {
                 onClick={() => {
                   let newRefundItems = [...refundItems]
                   if (refundItems?.includes(item?.id))
-                    newRefundItems = newRefundItems.filter(
-                      (x: number) => x !== item?.id
-                    )
+                    newRefundItems = newRefundItems.filter((x: number) => x !== item?.id)
                   else newRefundItems.push(item?.id)
                   setRefundItems(newRefundItems)
                 }}

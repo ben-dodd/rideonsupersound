@@ -3,7 +3,9 @@ import utc from 'dayjs/plugin/utc'
 import { useClerks } from 'lib/api/clerk'
 import { useCustomers } from 'lib/api/customer'
 import { useSaleProperties } from 'lib/hooks'
-import { CustomerObject, OpenWeatherObject, SaleStateTypes } from 'lib/types'
+import { CustomerObject } from 'lib/types'
+import { SaleStateTypes } from 'lib/types/sale'
+import { OpenWeatherObject } from 'lib/types/weather'
 import { convertDegToCardinal, convertMPStoKPH } from 'lib/utils'
 // TODO need to fix cart/sale types
 export default async function SaleDetails({ cart }: { cart: any }) {
@@ -24,11 +26,7 @@ export default async function SaleDetails({ cart }: { cart: any }) {
       <div className="flex justify-between my-2">
         <div
           className={`text-2xl font-bold ${
-            totalRemaining === 0
-              ? 'text-primary'
-              : totalRemaining < 0
-              ? 'text-secondary'
-              : 'text-tertiary'
+            totalRemaining === 0 ? 'text-primary' : totalRemaining < 0 ? 'text-secondary' : 'text-tertiary'
           }`}
         >
           {sale?.state === SaleStateTypes.Completed
@@ -40,16 +38,13 @@ export default async function SaleDetails({ cart }: { cart: any }) {
             : 'LEFT TO PAY'}
         </div>
         <div className="text-2xl text-red-500 font-bold text-xl">
-          {totalRemaining === 0
-            ? ''
-            : `$${Math.abs(totalRemaining || 0)?.toFixed(2)}`}
+          {totalRemaining === 0 ? '' : `$${Math.abs(totalRemaining || 0)?.toFixed(2)}`}
         </div>
       </div>
       <div className="px-2">
         <div className="font-bold">Customer</div>
         <div className="mb-4">
-          {customers?.find((c: CustomerObject) => c?.id === sale?.customerId)
-            ?.name || 'Customer not set'}
+          {customers?.find((c: CustomerObject) => c?.id === sale?.customerId)?.name || 'Customer not set'}
         </div>
         <div className="font-bold">Sale Open</div>
         <div className="mb-4">
@@ -57,11 +52,7 @@ export default async function SaleDetails({ cart }: { cart: any }) {
             ? `${dayjs(sale?.dateSaleOpened).format('D MMMM YYYY, h:mm A')}${
                 sale?.saleOpenedBy
                   ? ` (opened by ${
-                      clerks
-                        ? clerks.find(
-                            (clerk: any) => clerk?.id === sale?.saleOpenedBy
-                          )?.name
-                        : 'unknown clerk'
+                      clerks ? clerks.find((clerk: any) => clerk?.id === sale?.saleOpenedBy)?.name : 'unknown clerk'
                     })`
                   : ''
               }`
@@ -73,11 +64,7 @@ export default async function SaleDetails({ cart }: { cart: any }) {
             ? `${dayjs(sale?.dateSaleClosed).format('D MMMM YYYY, h:mm A')}${
                 sale?.saleClosedBy
                   ? ` (closed by ${
-                      clerks
-                        ? clerks.find(
-                            (clerk: any) => clerk?.id === sale?.saleClosedBy
-                          )?.name
-                        : 'unknown clerk'
+                      clerks ? clerks.find((clerk: any) => clerk?.id === sale?.saleClosedBy)?.name : 'unknown clerk'
                     })`
                   : ''
               }`
@@ -86,9 +73,7 @@ export default async function SaleDetails({ cart }: { cart: any }) {
         {sale?.isMailOrder ? (
           <div>
             <div className="font-bold">Postage</div>
-            <div className="mb-4">
-              {sale?.postage ? `$${sale?.postage}` : 'N/A'}
-            </div>
+            <div className="mb-4">{sale?.postage ? `$${sale?.postage}` : 'N/A'}</div>
             <div className="font-bold">Postal Address</div>
             <div className="mb-4">{sale?.postalAddress || 'N/A'}</div>
           </div>
@@ -108,18 +93,11 @@ export default async function SaleDetails({ cart }: { cart: any }) {
             <div className="font-bold">Weather</div>
             <div className="flex">
               <div>
-                <img
-                  alt="Weather Icon"
-                  src={`http://openweathermap.org/img/w/${weather?.weather?.[0]?.icon}.png`}
-                />
+                <img alt="Weather Icon" src={`http://openweathermap.org/img/w/${weather?.weather?.[0]?.icon}.png`} />
               </div>
               <div>
                 <div className="font-bold">{`${weather?.weather?.[0]?.main} (${weather?.weather?.[0]?.description})`}</div>
-                <div>{`${weather?.main?.temp.toFixed(
-                  1
-                )}°C (felt like ${weather?.main?.feels_like.toFixed(
-                  1
-                )}°C)`}</div>
+                <div>{`${weather?.main?.temp.toFixed(1)}°C (felt like ${weather?.main?.feels_like.toFixed(1)}°C)`}</div>
                 {weather?.wind && (
                   <div>
                     Wind was {convertMPStoKPH(weather?.wind?.speed).toFixed(1)}
