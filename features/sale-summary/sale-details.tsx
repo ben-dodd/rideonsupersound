@@ -4,7 +4,7 @@ const SaleDetails = ({ cart }) => {
   const { totalRemaining, totalStoreCut, totalVendorCut, totalPrice, totalPaid, totalPostage } = useSaleProperties(cart)
 
   return (
-    <div className="h-2/5 overflow-y-scroll">
+    <>
       <div className="flex justify-end mt-2 pt-2 border-t border-gray-500">
         <div>VENDOR CUT</div>
         <div className={`text-right w-2/12 text-gray-600 ${totalVendorCut < 0 && 'text-red-400'}`}>
@@ -35,7 +35,7 @@ const SaleDetails = ({ cart }) => {
         <div>TOTAL OWING</div>
         <div className="text-right w-2/12 font-bold text-tertiary-dark">${totalRemaining?.toFixed(2)}</div>
       </div>
-    </div>
+    </>
   )
 }
 

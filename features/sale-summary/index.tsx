@@ -5,10 +5,20 @@ import SaleItems from './sale-items'
 export default function SaleSummary({ cart }) {
   const { items = [], transactions = [] } = cart || {}
   return (
-    <div className={`flex flex-col justify-start h-dialoglg bg-gray-100 p-4`}>
-      <SaleItems items={items} />
-      <TransactionItems transactions={transactions} />
-      <SaleDetails cart={cart} />
+    <div className={`flex flex-col justify-start h-inventory bg-gray-100 p-4 overflow-y-scroll`}>
+      <div className={`h-auto`}>
+        <SaleItems items={items} />
+      </div>
+      <div
+        className={`h-auto mt-1 pt-1 border-t border-gray-500 ${
+          !transactions || (transactions?.length === 0 && ' hidden')
+        }`}
+      >
+        <TransactionItems transactions={transactions} />
+      </div>
+      <div className="h-auto">
+        <SaleDetails cart={cart} />
+      </div>
     </div>
   )
 }
