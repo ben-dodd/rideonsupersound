@@ -96,6 +96,7 @@ export function getAllSaleItems(db = connection) {
 }
 
 export function dbCreateSale(sale, db = connection) {
+  console.log('CREATING SALE...', sale)
   return db('sale')
     .insert(js2mysql(sale))
     .then((rows) => rows[0])
@@ -158,10 +159,10 @@ export function dbUpdateSaleTransaction(id, update, db = connection) {
     .catch((e) => Error(e.message))
 }
 
-export async function dbSaveSale(cart, prevState, db = connection) {
+export async function dbSaveCart(cart, prevState, db = connection) {
   return db
     .transaction(async (trx) => {
-      const { sale, items, transactions } = cart
+      const { sale = {}, items = [], transactions = [] } = cart || {}
       const newSale = { ...sale }
       if (newSale?.id) {
         dbUpdateSale(newSale?.id, newSale, trx)
@@ -192,9 +193,12 @@ export async function dbSaveSale(cart, prevState, db = connection) {
       for (const trans of transactions) {
         await handleSaveSaleTransaction(trans, newSale, trx)
       }
+      console.log(newSale)
       return newSale?.id
     })
-    .then((id) => id)
+    .then((id) => {
+      return id
+    })
     .catch((e) => Error(e.message))
 }
 

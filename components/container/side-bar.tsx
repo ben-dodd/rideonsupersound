@@ -1,5 +1,6 @@
 import { ModalButton } from 'lib/types'
 
+// TODO make title left aligned with actions on right
 export default function SidebarContainer({ show, title, buttons, children }) {
   return (
     <div

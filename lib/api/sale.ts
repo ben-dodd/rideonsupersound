@@ -1,11 +1,12 @@
-import { CartObject, ClerkObject, HoldObject, SaleItemObject } from 'lib/types'
+import { ClerkObject } from 'lib/types'
+import { CartObject, HoldObject, SaleItemObject, SaleStateTypes } from 'lib/types/sale'
 import { axiosAuth, useData } from './'
 
 export function useSaleItemsForSale(saleId) {
   return useData(`sale/items/${saleId}`, 'saleItems')
 }
 
-export async function saveCart(cart: CartObject, prevState?: string) {
+export async function saveCart(cart: CartObject, prevState: string = SaleStateTypes.InProgress) {
   return axiosAuth.post(`/api/sale/save`, { cart, prevState })
 }
 

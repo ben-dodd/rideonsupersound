@@ -9,6 +9,7 @@ import { ViewProps } from 'lib/store/types'
 import { useSWRConfig } from 'swr'
 import { saveCart } from 'lib/api/sale'
 
+// TODO fix action icons alignment
 export default function ShoppingCartActions() {
   const { cart, setCart, setAlert, openConfirm, openView, closeView, resetCart, resetSellSearchBar } = useAppStore()
   const { sale = {}, items = [] } = cart || {}
@@ -18,10 +19,6 @@ export default function ShoppingCartActions() {
   function clearCart() {
     resetCart()
     closeView(ViewProps.cart)
-  }
-
-  function onClickLoadSales() {
-    openView(ViewProps.loadSalesDialog)
   }
 
   async function onClickSaveSale() {
@@ -64,7 +61,7 @@ export default function ShoppingCartActions() {
           message: 'SALE DISCARDED',
           undo: () => {
             // saveLog(`Cart uncleared.`, clerk?.id)
-            setCart({ cart })
+            setCart(cart)
           },
         })
         clearCart()
