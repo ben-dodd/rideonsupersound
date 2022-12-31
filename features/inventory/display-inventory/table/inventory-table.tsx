@@ -1,29 +1,24 @@
 import { useMemo } from 'react'
-import { StockObject } from 'lib/types/stock'
+import { StockItemSearchObject } from 'lib/types/stock'
 import TableContainer from 'components/container/table'
 import Table from 'components/table'
 import { mapInventoryItem } from 'lib/functions/displayInventory'
 import { useStockList } from 'lib/api/stock'
 import { useVendors } from 'lib/api/vendor'
+import { useRouter } from 'next/router'
 
 interface NumberProps {
   value: number
 }
 
 export default function InventoryTable() {
-  const { inventory, isInventoryLoading } = useStockList()
+  const { stockList, isStockListLoading } = useStockList()
   const { vendors, isVendorsLoading } = useVendors()
+  const router = useRouter()
 
-  // // Atoms
-  // const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom)
-
-  // Constants
   const data = useMemo(
-    () =>
-      inventory
-        ?.filter((t: StockObject) => !t?.isDeleted && !t?.isGiftCard && !t?.isMiscItem)
-        .map((t: StockObject) => mapInventoryItem(t, vendors)),
-    [inventory, vendors],
+    () => stockList?.map?.((t: StockItemSearchObject) => mapInventoryItem(t, vendors)),
+    [stockList, vendors],
   )
   const columns = useMemo(() => {
     // const openInventoryDialog = (item:any) => openInventoryModal(item?.row?.original?.id);
@@ -33,16 +28,7 @@ export default function InventoryTable() {
         Header: 'ID',
         width: 70,
         Cell: (params: any) => (
-          <span
-            className="cursor-pointer underline"
-            onClick={
-              () => null
-              // setLoadedItemId({
-              //   ...loadedItemId,
-              //   inventory: params?.row?.original?.id,
-              // })
-            }
-          >
+          <span className="cursor-pointer underline" onClick={() => router.push(`/stock/${params?.value}`)}>
             {params?.value}
           </span>
         ),
@@ -116,10 +102,10 @@ export default function InventoryTable() {
         width: 64,
       },
     ]
-  }, [inventory])
+  }, [stockList])
 
   return (
-    <TableContainer loading={isVendorsLoading || isInventoryLoading}>
+    <TableContainer loading={isVendorsLoading || isStockListLoading}>
       <Table
         color="bg-col2"
         colorLight="bg-col2-light"

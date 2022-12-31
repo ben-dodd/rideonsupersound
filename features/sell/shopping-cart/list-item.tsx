@@ -7,7 +7,7 @@ import ArrowUp from '@mui/icons-material/ArrowDropUp'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { getCartItemTotal, writeCartItemPriceBreakdown } from 'lib/functions/sell'
 import { useAppStore } from 'lib/store'
-import { useStockItem, useStockList } from 'lib/api/stock'
+import { useBasicStockItem, useStockList } from 'lib/api/stock'
 import { priceCentsString } from 'lib/utils'
 
 type SellListItemProps = {
@@ -19,15 +19,11 @@ type SellListItemProps = {
 
 export default function SellListItem({ cartItem, deleteCartItem }: SellListItemProps) {
   const { openConfirm, setCartItem } = useAppStore()
-  const { stockItem } = useStockItem(`${cartItem?.itemId}`)
+  const { stockItem } = useBasicStockItem(`${cartItem?.itemId}`)
   const { stockList = [] } = useStockList()
   const stockListItem = stockList.find((stock) => stock?.id === cartItem?.itemId) || {}
 
-  const {
-    item = stockListItem?.item || {},
-    quantities = { inStock: stockListItem?.quantity },
-    price = {},
-  } = stockItem || {}
+  const { item = stockListItem || {}, quantities = { inStock: stockListItem?.quantity }, price = {} } = stockItem || {}
   const [expanded, setExpanded] = useState(false)
 
   function onChangeCart(e: any, property: string) {

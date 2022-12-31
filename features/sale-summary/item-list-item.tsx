@@ -14,7 +14,7 @@ type SellListItemProps = {
 
 export default function ItemListItem({ saleItem, selected, onClick }: SellListItemProps) {
   const { stockItem } = useStockItem(`${saleItem?.itemId}`)
-  const { item = {}, price = {} } = stockItem || {}
+  const { item = {} } = stockItem || {}
 
   // TODO make image + sku a reusable component
 

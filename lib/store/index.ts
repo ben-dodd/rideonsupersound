@@ -52,7 +52,7 @@ export const useAppStore = createSelectors(
       endDate: dayjs().format('YYYY-MM-DD'),
     },
     salesViewClerks: [],
-    tableMode: false,
+    tableMode: true,
     compactMode: false,
     openView: (view) =>
       set(

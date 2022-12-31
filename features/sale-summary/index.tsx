@@ -4,8 +4,9 @@ import SaleItems from './sale-items'
 
 export default function SaleSummary({ cart }) {
   const { items = [], transactions = [] } = cart || {}
+  // TODO make sale summary editable for in progress sales
   return (
-    <div className={`flex flex-col justify-start h-inventory bg-gray-100 p-4 overflow-y-scroll`}>
+    <div className={`flex flex-col justify-start h-menu bg-gray-100 p-4 overflow-y-scroll`}>
       <div className={`h-auto`}>
         <SaleItems items={items} />
       </div>

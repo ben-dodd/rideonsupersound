@@ -4,7 +4,6 @@ import { SaleStateTypes } from 'lib/types/sale'
 
 // Material UI Components
 import {
-  useAsyncDebounce,
   useBlockLayout,
   useFilters,
   useGlobalFilter,
@@ -30,10 +29,10 @@ import { CSVLink } from 'react-csv'
 
 function GlobalFilter({ preGlobalFilteredRows, globalFilter, setGlobalFilter, skipPageResetRef, colorLight }) {
   const [searchValue, setSearchValue] = useState(globalFilter)
-  const onChange = useAsyncDebounce((value) => {
-    // skipPageResetRef.current = true;
-    setGlobalFilter(value || undefined)
-  }, 100)
+  // const onChange = useAsyncDebounce((value) => {
+  //   // skipPageResetRef.current = true;
+  //   setGlobalFilter(value || undefined)
+  // }, 100)
   return (
     <div
       className={`flex items-center ring-1 ring-gray-400 rounded-md mr-1 my-2 ml-3 w-auto ${
@@ -48,7 +47,7 @@ function GlobalFilter({ preGlobalFilteredRows, globalFilter, setGlobalFilter, sk
         value={searchValue || ''}
         onChange={(e) => {
           setSearchValue(e.target.value)
-          onChange(e.target.value)
+          // onChange(e.target.value)
         }}
         placeholder="SEARCH…"
       />

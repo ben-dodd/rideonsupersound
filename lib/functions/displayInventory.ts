@@ -1,4 +1,5 @@
-import { StockItemObject } from 'lib/types/stock'
+import { StockItemObject, StockItemSearchObject } from 'lib/types/stock'
+import { VendorObject } from 'lib/types/vendor'
 // import { VendorObject } from 'lib/types/vendor'
 
 export function getItemById(item_id: number, inventory: StockItemObject[]) {
@@ -43,30 +44,39 @@ export function getImageSrc(item: StockItemObject) {
   return `${process.env.NEXT_PUBLIC_RESOURCE_URL}img/${src}.png`
 }
 
-// export function mapInventoryItem(item: StockItemObject, vendors: VendorObject[]) {
-//   return {
-//     id: item?.id,
-//     title: item?.title || '-',
-//     artist: item?.artist || '-',
-//     vendor: `[${('000' + item?.vendorId || '').slice(-3)}] ${
-//       vendors?.filter((v: VendorObject) => v?.id === item?.vendorId)?.[0]?.name
-//     }`,
-//     section: `${item?.section || ''}${item?.section && item?.country === 'New Zealand' ? '/' : ''}${
-//       item?.country === 'New Zealand' ? 'NZ' : ''
-//     }`,
-//     media: item?.media || '-',
-//     format: item?.format || '-',
-//     cost: item?.vendorCut ? item?.vendorCut / 100 : 0,
-//     store: item?.vendorCut && item?.totalSell ? (item.totalSell - item.vendorCut) / 100 : 0,
-//     sell: item?.totalSell ? item?.totalSell / 100 : 0,
-//     profitMargin:
-//       item?.totalSell && item?.vendorCut && item?.totalSell > 0
-//         ? ((item?.totalSell - item?.vendorCut) / item?.totalSell) * 100
-//         : 0,
-//     quantity: item?.quantity || 0,
-//     quantityReceived: item?.quantityReceived || 0,
-//     quantityHoldLayby: item?.quantityHold + item?.quantityLayby,
-//     quantityReturned: Math.abs(item?.quantityReturned || 0),
-//     quantitySold: Math.abs(item?.quantitySold || 0),
-//   }
-// }
+export function mapInventoryItem(item: StockItemSearchObject, vendors: VendorObject[]) {
+  return {
+    id: item?.id,
+    title: item?.title || '-',
+    artist: item?.artist || '-',
+    vendor: `[${('000' + item?.vendorId || '').slice(-3)}] ${
+      vendors?.filter((v: VendorObject) => v?.id === item?.vendorId)?.[0]?.name
+    }`,
+    section: `${item?.section || ''}`,
+    // section: `${item?.section || ''}${item?.section && item?.country === 'New Zealand' ? '/' : ''}${
+    //   item?.country === 'New Zealand' ? 'NZ' : ''
+    // }`,
+    media: item?.media || '-',
+    format: item?.format || '-',
+    cost: '',
+    store: '',
+    sell: '',
+    profitMargin: '',
+    // cost: item?.vendorCut ? item?.vendorCut / 100 : 0,
+    // store: item?.vendorCut && item?.totalSell ? (item.totalSell - item.vendorCut) / 100 : 0,
+    // sell: item?.totalSell ? item?.totalSell / 100 : 0,
+    // profitMargin:
+    //   item?.totalSell && item?.vendorCut && item?.totalSell > 0
+    //     ? ((item?.totalSell - item?.vendorCut) / item?.totalSell) * 100
+    //     : 0,
+    quantity: item?.quantity || 0,
+    quantityReceived: '',
+    quantityHoldLayby: '',
+    quantityReturned: '',
+    quantitySold: '',
+    // quantityReceived: item?.quantityReceived || 0,
+    // quantityHoldLayby: item?.quantityHold + item?.quantityLayby,
+    // quantityReturned: Math.abs(item?.quantityReturned || 0),
+    // quantitySold: Math.abs(item?.quantitySold || 0),
+  }
+}

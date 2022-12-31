@@ -54,8 +54,8 @@ export default function ShoppingCart() {
     >
       <div className="flex flex-col h-menu px-2 bg-gray-200 text-black">
         <div className="flex justify-between relative">
-          <div className="text-lg font-bold my-2 tracking-wide self-center">
-            <div>Shopping Cart</div>
+          <div className="text-2xl font-bold my-2 tracking-wide self-center">
+            <div>SHOPPING CART</div>
             {sale?.id && (
               <div className="text-sm font-light">
                 <div>{`Sale #${sale?.id} // ${(sale?.state || SaleStateTypes.InProgress)?.toUpperCase()}`}</div>
@@ -141,3 +141,5 @@ export default function ShoppingCart() {
     </div>
   )
 }
+
+// TODO include postage price if it is there
