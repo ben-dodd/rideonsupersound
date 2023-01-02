@@ -149,6 +149,7 @@ export function dbDeleteSaleItem(id, db = connection) {
 export function dbCreateSaleTransaction(saleTransaction, db = connection) {
   return db('sale_transaction')
     .insert(js2mysql(saleTransaction))
+    .then((rows) => rows[0])
     .catch((e) => Error(e.message))
 }
 
@@ -164,6 +165,8 @@ export async function dbSaveCart(cart, prevState, db = connection) {
     .transaction(async (trx) => {
       const { sale = {}, items = [], transactions = [] } = cart || {}
       const newSale = { ...sale }
+      const newItems = []
+      const newTransactions = []
       if (newSale?.id) {
         dbUpdateSale(newSale?.id, newSale, trx)
       } else {
@@ -187,17 +190,19 @@ export async function dbSaveCart(cart, prevState, db = connection) {
       }
 
       for (const item of items) {
-        await handleSaveSaleItem(item, newSale, prevState, trx)
+        const newItem = await handleSaveSaleItem(item, newSale, prevState, trx)
+        newItems.push(newItem)
       }
 
       for (const trans of transactions) {
-        await handleSaveSaleTransaction(trans, newSale, trx)
+        const newTrans = await handleSaveSaleTransaction(trans, newSale, trx)
+        newTransactions.push(newTrans)
       }
-      console.log(newSale)
-      return newSale?.id
+      return { ...cart, sale: newSale, items: newItems, transactions: newTransactions }
     })
-    .then((id) => {
-      return id
+    .then((cart) => {
+      console.log(cart)
+      return cart
     })
     .catch((e) => Error(e.message))
 }
@@ -242,6 +247,7 @@ export async function dbDeleteSale(id, { sale, clerk, registerID }, db = connect
 async function handleSaveSaleItem(item, sale, prevState, db) {
   return db
     .transaction(async (trx) => {
+      const newItem = { ...item }
       // If sale is complete, validate gift card
       if (sale?.state === SaleStateTypes.Completed && item?.isGiftCard) {
         await dbUpdateStockItem(item?.itemId, { giftCardIsValid: true }, trx)
@@ -250,20 +256,19 @@ async function handleSaveSaleItem(item, sale, prevState, db) {
       await handleStockMovements(item, sale, prevState, trx)
       dbCheckIfRestockNeeded(item?.itemId, trx)
 
-      let itemId = item?.id
-
       // Add or update Sale Item
-      if (!itemId) {
+      if (!item?.id) {
         // Item is new to sale
         let newSaleItem = { ...item, saleId: sale?.id }
-        itemId = await dbCreateSaleItem(newSaleItem, trx)
+        const id = await dbCreateSaleItem(newSaleItem, trx)
+        newItem.id = id
       } else {
         // Item was already in sale, update in case discount, quantity has changed or item has been deleted
         dbUpdateSaleItem(item?.id, item, db)
       }
-      return itemId
+      return newItem
     })
-    .then((id) => id)
+    .then((item) => item)
     .catch((e) => Error(e.message))
 }
 
@@ -308,33 +313,41 @@ export function getStockMovementQuantityByAct(quantity, act) {
 
 async function handleSaveSaleTransaction(trans, sale, db) {
   if (!trans?.id) {
-    // Transaction is new to sale
-    let newSaleTransaction = { ...trans, saleId: sale?.id }
-    if (trans?.paymentMethod === PaymentMethodTypes.Account) {
-      // Add account payment as a store payment to the vendor
-      let vendorPaymentId = null
-      const vendorPayment = {
-        amount: trans?.amount,
-        clerkId: trans?.clerkId,
-        vendorId: trans?.vendor?.id,
-        type: trans?.isRefund ? VendorPaymentTypes.SaleRefund : VendorPaymentTypes.Sale,
-        date: dayjs.utc().format(),
-        registerId: trans?.registerId,
-      }
-      vendorPaymentId = await dbCreateVendorPayment(vendorPayment, db)
-      newSaleTransaction = { ...trans, vendorPayment: vendorPaymentId }
-    }
-    let giftCardId = null
-    if (trans?.paymentMethod === PaymentMethodTypes.GiftCard) {
-      if (!trans?.isRefund) {
-        // Gift card is new, create new one
-        giftCardId = await dbCreateStockItem(trans?.giftCardUpdate, db)
-      } else {
-        // Update gift card
-        await dbUpdateStockItem(trans?.giftCardUpdate, trans?.giftCardUpdate?.id, db)
-      }
-    }
-    if (giftCardId) newSaleTransaction = { ...newSaleTransaction, giftCardId }
-    await dbCreateSaleTransaction(newSaleTransaction, db)
+    return db
+      .transaction(async (trx) => {
+        // Transaction is new to sale
+        let newSaleTransaction = { ...trans, saleId: sale?.id }
+        if (trans?.paymentMethod === PaymentMethodTypes.Account) {
+          // Add account payment as a store payment to the vendor
+          let vendorPaymentId = null
+          const vendorPayment = {
+            amount: trans?.amount,
+            clerkId: trans?.clerkId,
+            vendorId: trans?.vendor?.id,
+            type: trans?.isRefund ? VendorPaymentTypes.SaleRefund : VendorPaymentTypes.Sale,
+            date: dayjs.utc().format(),
+            registerId: trans?.registerId,
+          }
+          vendorPaymentId = await dbCreateVendorPayment(vendorPayment, db)
+          delete trans?.vendor
+          newSaleTransaction = { ...trans, vendorPayment: vendorPaymentId }
+        }
+        if (trans?.paymentMethod === PaymentMethodTypes.GiftCard) {
+          if (trans?.isRefund) {
+            // Gift card is new, create new one
+            let giftCardId = await dbCreateStockItem(trans?.giftCardUpdate, db)
+            newSaleTransaction = { ...newSaleTransaction, giftCardId }
+          } else {
+            // Update gift card
+            await dbUpdateStockItem(trans?.giftCardUpdate, trans?.giftCardUpdate?.id, db)
+          }
+          delete newSaleTransaction?.giftCardUpdate
+        }
+        const id = await dbCreateSaleTransaction(newSaleTransaction, db)
+        return { ...newSaleTransaction, id }
+      })
+      .then((trans) => trans)
+      .catch((e) => Error(e.message))
   }
+  return null
 }

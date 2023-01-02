@@ -156,13 +156,21 @@ export const useAppStore = createSelectors(
           draft.receiveBasket.items.map((item) => (item?.key === key ? { ...item, ...update } : item))
         }),
       ),
+    mutateCart: async () => {
+      const newCart = await saveCart(get().cart, get().cart?.sale?.state)
+      set(
+        produce((draft) => {
+          draft.cart = newCart
+        }),
+      )
+    },
     setCustomer: (update) => {
       set(
         produce((draft) => {
           Object.entries(update).forEach(([key, value]) => (draft.cart.customer[key] = value))
         }),
       )
-      saveCart(get().cart, get().cart?.sale?.state)
+      get().mutateCart()
     },
     addCartTransaction: (transaction) => {
       set(
@@ -170,7 +178,7 @@ export const useAppStore = createSelectors(
           draft.cart.transactions.push(transaction)
         }),
       )
-      saveCart(get().cart, get().cart?.sale?.state)
+      get().mutateCart()
     },
     resetCart: () =>
       set(

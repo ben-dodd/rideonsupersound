@@ -6,7 +6,7 @@ import { GiftCardObject } from 'lib/types/stock'
 
 export default function TransactionListItem({ transaction }: { transaction: SaleTransactionObject }) {
   const { giftCards } = useGiftCards()
-  const { vendor = {} } = useVendorFromVendorPayment(transaction?.vendorPayment || 0)
+  const { vendor = {} } = useVendorFromVendorPayment(transaction?.vendorPayment)
   const giftCard = giftCards?.find((g: GiftCardObject) => g?.id === transaction?.giftCardId)
 
   return (

@@ -11,6 +11,7 @@ import { useCurrentRegisterId } from 'lib/api/register'
 import { useGiftCards } from 'lib/api/stock'
 import { GiftCardObject } from 'lib/types/stock'
 import { PaymentMethodTypes } from 'lib/types/sale'
+import { formSaleTransaction } from 'lib/functions/pay'
 
 export default function Gift({ totalRemaining }) {
   const { clerk } = useClerk()
@@ -48,17 +49,16 @@ export default function Gift({ totalRemaining }) {
         isNaN(parseFloat(giftCardPayment)) ||
         (!isRefund && (!giftCard || !giftCard?.giftCardIsValid || leftOver < 0)),
       onClick: () => {
-        const transaction = {
+        const transaction = formSaleTransaction({
           enteredAmount: giftCardPayment,
           paymentMethod: PaymentMethodTypes.GiftCard,
           isRefund,
           registerId,
           saleId: sale?.id,
           clerkId: clerk?.id,
-          totalRemaining,
           giftCard,
           newGiftCardCode,
-        }
+        })
         addCartTransaction(transaction)
         closeView(ViewProps.giftPaymentDialog)
         setAlert({
