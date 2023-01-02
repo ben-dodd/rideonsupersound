@@ -7,7 +7,7 @@ export function getItemById(item_id: number, inventory: StockItemObject[]) {
 }
 
 export function getItemSkuDisplayName(item: StockItemObject) {
-  return `[${getItemSku(item)}] ${getItemDisplayName(item)}`
+  return `[${getItemSku(item)}] ${getItemDisplayName(item)}${item?.format ? ` (${item?.format})` : ''}`
 }
 
 export function getItemSku(item: StockItemObject) {

@@ -3,12 +3,12 @@ import { Info, AddCircleOutline } from '@mui/icons-material'
 import React from 'react'
 import { skuScan } from 'lib/functions/sell'
 import { useAppStore } from 'lib/store'
-import { getItemDisplayName } from 'lib/functions/displayInventory'
+import { getItemSkuDisplayName } from 'lib/functions/displayInventory'
 import { useClerk } from 'lib/api/clerk'
 
 const Actions = ({ item, itemQuantity }) => {
   const router = useRouter()
-  const { sellSearchBar, addCartItem, openConfirm } = useAppStore()
+  const { sellSearchBar, resetSellSearchBar, addCartItem, openConfirm } = useAppStore()
   const { clerk } = useClerk()
   // TODO add question if item is on hold for someone
   function clickAddToCart() {
@@ -18,7 +18,7 @@ const Actions = ({ item, itemQuantity }) => {
         title: 'Are you sure you want to add to cart?',
         styledMessage: (
           <span>
-            There is no more of <b>{getItemDisplayName(item)}</b> in stock. Are you sure you want to add to cart?
+            There is no more of <b>{getItemSkuDisplayName(item)}</b> in stock. Are you sure you want to add to cart?
           </span>
         ),
         yesText: "YES, I'M SURE",
@@ -31,7 +31,12 @@ const Actions = ({ item, itemQuantity }) => {
     addCartItem({ itemId: item?.id, quantity: '1' }, clerk?.id)
   }
 
-  skuScan(sellSearchBar, item, handleAddItemToCart)
+  function handleInputSku() {
+    resetSellSearchBar()
+    clickAddToCart()
+  }
+
+  skuScan(sellSearchBar, item, handleInputSku)
 
   return (
     <div className="flex py-2">
