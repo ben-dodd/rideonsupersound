@@ -1,8 +1,6 @@
 import dayjs from 'dayjs'
 import { useEffect, useState } from 'react'
 import { ModalButton } from 'lib/types'
-
-// Components
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
 import { useClerk } from 'lib/api/clerk'
@@ -16,10 +14,8 @@ export default function Cash({ totalRemaining }) {
   const { view, cart, closeView, setAlert, addCartTransaction } = useAppStore()
   const { sale = {} } = cart || {}
   const { registerId } = useCurrentRegisterId()
-  const [submitting, setSubmitting] = useState(false)
   const isRefund = totalRemaining < 0
   const [cardPayment, setCardPayment] = useState(`${Math.abs(totalRemaining).toFixed(2)}`)
-  console.log(registerId)
   useEffect(() => {
     setCardPayment(`${Math.abs(totalRemaining).toFixed(2)}`)
   }, [totalRemaining])
@@ -29,15 +25,12 @@ export default function Cash({ totalRemaining }) {
     {
       type: 'ok',
       disabled:
-        submitting ||
         (!isRefund && parseFloat(cardPayment) > totalRemaining) ||
         (isRefund && parseFloat(cardPayment) < totalRemaining) ||
         parseFloat(cardPayment) <= 0 ||
         cardPayment === '' ||
         isNaN(parseFloat(cardPayment)),
-      loading: submitting,
       onClick: () => {
-        setSubmitting(true)
         let transaction: SaleTransactionObject = {
           date: dayjs.utc().format(),
           saleId: sale?.id,
@@ -48,7 +41,6 @@ export default function Cash({ totalRemaining }) {
           isRefund,
         }
         addCartTransaction(transaction)
-        setSubmitting(false)
         closeView(ViewProps.cardPaymentDialog)
         setAlert({
           open: true,

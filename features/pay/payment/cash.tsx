@@ -2,8 +2,6 @@ import dayjs, { extend } from 'dayjs'
 import UTC from 'dayjs/plugin/utc'
 import { useEffect, useState } from 'react'
 import { ModalButton } from 'lib/types'
-
-// Components
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
 import { useClerk } from 'lib/api/clerk'
@@ -24,7 +22,6 @@ export default function Cash({ totalRemaining }) {
   useEffect(() => {
     setCashReceived(`${Math.abs(totalRemaining).toFixed(2)}`)
   }, [totalRemaining])
-  const [submitting, setSubmitting] = useState(false)
 
   // Constants
   const changeToGive = (parseFloat(cashReceived) - totalRemaining)?.toFixed(2)
@@ -32,14 +29,11 @@ export default function Cash({ totalRemaining }) {
     {
       type: 'ok',
       disabled:
-        submitting ||
         parseFloat(cashReceived) <= 0 ||
         (isRefund && parseFloat(cashReceived) > Math.abs(totalRemaining)) ||
         cashReceived === '' ||
         isNaN(parseFloat(cashReceived)),
-      loading: submitting,
       onClick: () => {
-        setSubmitting(true)
         const { netAmount, cashFromCustomer, cashToCustomer } = getCashVars(cashReceived, totalRemaining, isRefund)
         let transaction: SaleTransactionObject = {
           date: dayjs.utc().format(),
@@ -53,7 +47,6 @@ export default function Cash({ totalRemaining }) {
           isRefund,
         }
         addCartTransaction(transaction)
-        setSubmitting(false)
         closeView(ViewProps.cashPaymentDialog)
         setAlert({
           open: true,
