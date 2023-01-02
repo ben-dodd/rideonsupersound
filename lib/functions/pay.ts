@@ -124,7 +124,7 @@ export function formSaleTransaction({
       }
     }
   } else if (paymentMethod === PaymentMethodTypes.Account) {
-    transaction.amount = isRefund ? parseFloat(enteredAmount) * -100 : parseFloat(enteredAmount) * 100
+    transaction.amount = isRefund ? amountInCents * -1 : amountInCents
     transaction.vendor = vendor
   }
   return transaction

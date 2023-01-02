@@ -137,6 +137,27 @@ describe('formSaleTransaction', () => {
     expect(trans.giftCardUpdate?.giftCardCode).toBe('PARTY')
     expect(trans.giftCardUpdate?.giftCardAmount).toBe(4000)
   })
+  it('should handle account payments', () => {
+    const trans = formSaleTransaction({
+      ...params,
+      paymentMethod: PaymentMethodTypes.Account,
+      enteredAmount: '30.50',
+      vendor: 666,
+    })
+    expect(trans.amount).toBe(3050)
+    expect(trans.vendor).toBe(666)
+  })
+  it('should handle account refunds', () => {
+    const trans = formSaleTransaction({
+      ...params,
+      paymentMethod: PaymentMethodTypes.Account,
+      enteredAmount: '30.50',
+      vendor: 666,
+      isRefund: true,
+    })
+    expect(trans.amount).toBe(-3050)
+    expect(trans.vendor).toBe(666)
+  })
 })
 
 describe('getGiftCardLeftOver', () => {
