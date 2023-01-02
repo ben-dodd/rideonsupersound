@@ -110,7 +110,7 @@ export function formSaleTransaction({
     transaction.cashReceived = cashFromCustomer
     transaction.changeGiven = cashToCustomer
   } else if (paymentMethod === PaymentMethodTypes.GiftCard) {
-    let giftCardUpdate: StockItemObject = getGiftCardUpdate(giftCard, amountInCents, newGiftCardCode, saleId, isRefund)
+    let giftCardUpdate: StockItemObject = getGiftCardUpdate(amountInCents, giftCard, newGiftCardCode, saleId, isRefund)
     transaction.amount = isRefund ? amountInCents * -1 : amountInCents
     transaction.giftCardUpdate = giftCardUpdate
     if (!isRefund) {
@@ -118,9 +118,9 @@ export function formSaleTransaction({
       transaction = {
         ...transaction,
         giftCardId: giftCardUpdate?.id,
-        giftCardTaken: giftCardUpdate?.giftCardIsValid,
+        giftCardTaken: !giftCardUpdate?.giftCardIsValid,
         giftCardRemaining: giftCardUpdate?.giftCardRemaining,
-        giftCardChange: leftOver < 10 ? leftOver * 100 : 0,
+        giftCardChange: leftOver < 1000 ? leftOver : 0,
       }
     }
   } else if (paymentMethod === PaymentMethodTypes.Account) {

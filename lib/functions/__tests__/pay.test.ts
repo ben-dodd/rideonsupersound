@@ -65,6 +65,78 @@ describe('formSaleTransaction', () => {
     expect(trans.changeGiven).toBe(1500)
     expect(trans.isRefund).toBeTruthy()
   })
+  const giftCard = {
+    id: 100,
+    isGiftCard: true,
+    giftCardCode: 'HOOPS',
+    giftCardAmount: 5000,
+    giftCardRemaining: 4000,
+    giftCardIsValid: true,
+  }
+  it('should handle gift card payments where gift card is not used up', () => {
+    const trans = formSaleTransaction({
+      ...params,
+      paymentMethod: PaymentMethodTypes.GiftCard,
+      enteredAmount: '15',
+      giftCard,
+    })
+    const giftCardUpdate = trans?.giftCardUpdate
+    expect(trans.amount).toBe(1500)
+    expect(trans.giftCardId).toBe(100)
+    expect(trans.giftCardTaken).toBeFalsy()
+    expect(trans.giftCardRemaining).toBe(2500)
+    expect(trans.giftCardChange).toBe(0)
+    expect(giftCardUpdate.giftCardCode).toBe('HOOPS')
+    expect(giftCardUpdate.giftCardAmount).toBe(5000)
+    expect(giftCardUpdate.giftCardRemaining).toBe(2500)
+  })
+  it('should handle gift card payments where gift card has less than $10 remaining', () => {
+    const trans = formSaleTransaction({
+      ...params,
+      paymentMethod: PaymentMethodTypes.GiftCard,
+      enteredAmount: '30.50',
+      giftCard,
+    })
+    const giftCardUpdate = trans?.giftCardUpdate
+    expect(trans.amount).toBe(3050)
+    expect(trans.giftCardId).toBe(100)
+    expect(trans.giftCardTaken).toBeTruthy()
+    expect(trans.giftCardRemaining).toBe(0)
+    expect(trans.giftCardChange).toBe(950)
+    expect(giftCardUpdate.giftCardCode).toBe('HOOPS')
+    expect(giftCardUpdate.giftCardAmount).toBe(5000)
+    expect(giftCardUpdate.giftCardRemaining).toBe(0)
+    expect(giftCardUpdate.giftCardIsValid).toBeFalsy()
+  })
+  it('should handle gift card payments where gift card is all used up', () => {
+    const trans = formSaleTransaction({
+      ...params,
+      paymentMethod: PaymentMethodTypes.GiftCard,
+      enteredAmount: '40.00',
+      giftCard,
+    })
+    const giftCardUpdate = trans?.giftCardUpdate
+    expect(trans.amount).toBe(4000)
+    expect(trans.giftCardId).toBe(100)
+    expect(trans.giftCardTaken).toBeTruthy()
+    expect(trans.giftCardRemaining).toBe(0)
+    expect(trans.giftCardChange).toBe(0)
+    expect(giftCardUpdate.giftCardCode).toBe('HOOPS')
+    expect(giftCardUpdate.giftCardAmount).toBe(5000)
+    expect(giftCardUpdate.giftCardRemaining).toBe(0)
+  })
+  it('should handle gift card refunds', () => {
+    const trans = formSaleTransaction({
+      ...params,
+      paymentMethod: PaymentMethodTypes.GiftCard,
+      enteredAmount: '40.00',
+      isRefund: true,
+      newGiftCardCode: 'PARTY',
+    })
+    expect(trans.amount).toBe(-4000)
+    expect(trans.giftCardUpdate?.giftCardCode).toBe('PARTY')
+    expect(trans.giftCardUpdate?.giftCardAmount).toBe(4000)
+  })
 })
 
 describe('getGiftCardLeftOver', () => {
