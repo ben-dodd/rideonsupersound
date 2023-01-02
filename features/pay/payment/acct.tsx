@@ -26,20 +26,17 @@ export default function Acct({ totalRemaining }) {
   useEffect(() => {
     setAcctPayment(`${Math.abs(totalRemaining).toFixed(2)}`)
   }, [totalRemaining])
-  const [submitting, setSubmitting] = useState(false)
   // TODO NEXT TO DO , pay/components/payment
 
   const buttons: ModalButton[] = [
     {
       type: 'ok',
       disabled:
-        submitting ||
         parseFloat(acctPayment) > Math.abs(totalRemaining) ||
         parseFloat(acctPayment) <= 0 ||
         acctPayment <= '' ||
         // (!isRefund && vendorVars?.totalOwing / 100 < parseFloat(acctPayment)) ||
         isNaN(parseFloat(acctPayment)),
-      loading: submitting,
       onClick: () => {
         const transaction = formSaleTransaction({
           enteredAmount: acctPayment,

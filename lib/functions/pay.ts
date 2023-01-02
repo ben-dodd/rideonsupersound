@@ -4,6 +4,7 @@ import { getCartItemPrices } from 'lib/functions/sell'
 import { PaymentMethodTypes, SaleItemObject, SaleTransactionObject } from 'lib/types/sale'
 import { BasicStockObject, StockItemObject } from 'lib/types/stock'
 import { VendorPaymentObject, VendorSaleItemObject } from 'lib/types/vendor'
+import { dollarsToCents } from 'lib/utils'
 
 export function sumPrices(saleItems: any[], items: any[], field: string) {
   if (saleItems?.length === 0 || items?.length === 0) return 0
@@ -79,22 +80,6 @@ export function roundToTenCents(dollars) {
   return Math.round((dollars + Number.EPSILON) * 10) / 10
 }
 
-export function getCashVars(cashReceived, totalRemaining, isRefund) {
-  return {
-    netAmount: isRefund
-      ? parseFloat(cashReceived) * -100
-      : parseFloat(cashReceived) >= totalRemaining
-      ? totalRemaining * 100
-      : parseFloat(cashReceived) * 100,
-    cashFromCustomer: isRefund ? null : parseFloat(cashReceived) * 100,
-    cashToCustomer: isRefund
-      ? parseFloat(cashReceived) * 100
-      : parseFloat(cashReceived) > totalRemaining
-      ? (parseFloat(cashReceived) - totalRemaining) * 100
-      : null,
-  }
-}
-
 export function formSaleTransaction({
   enteredAmount = '0',
   paymentMethod,
@@ -115,36 +100,19 @@ export function formSaleTransaction({
     isRefund,
     paymentMethod,
   }
-  if (paymentMethod === PaymentMethodTypes.Card)
-    transaction.amount = isRefund ? parseFloat(enteredAmount) * -100 : parseFloat(enteredAmount) * 100
+  let amountInCents = dollarsToCents(enteredAmount)
+  if (paymentMethod === PaymentMethodTypes.Card) transaction.amount = isRefund ? amountInCents * -1 : amountInCents
   else if (paymentMethod === PaymentMethodTypes.Cash) {
-    const { netAmount, cashFromCustomer, cashToCustomer } = getCashVars(enteredAmount, totalRemaining, isRefund)
+    const { netAmount, cashFromCustomer, cashToCustomer } = getCashVars(amountInCents, totalRemaining, isRefund)
     transaction.amount = netAmount
-    ;(transaction.cashReceived = cashFromCustomer), (transaction.changeGiven = cashToCustomer)
+    transaction.cashReceived = cashFromCustomer
+    transaction.changeGiven = cashToCustomer
   } else if (paymentMethod === PaymentMethodTypes.GiftCard) {
-    let giftCardUpdate: StockItemObject = {}
-    const remainingOnGiftCard = giftCard?.giftCardRemaining / 100
-    const leftOver: number = remainingOnGiftCard - parseFloat(enteredAmount)
-    if (isRefund) {
-      giftCardUpdate = {
-        isGiftCard: true,
-        giftCardCode: newGiftCardCode,
-        giftCardAmount: parseFloat(enteredAmount) * 100,
-        giftCardRemaining: parseFloat(enteredAmount) * 100,
-        note: `Gift card created as refund payment for sale #${saleId}`,
-        giftCardIsValid: true,
-      }
-    } else {
-      giftCardUpdate = { ...giftCard }
-      giftCardUpdate.giftCardRemaining = leftOver * 100
-      if (leftOver < 10) {
-        giftCardUpdate.giftCardIsValid = false
-        giftCardUpdate.giftCardRemaining = 0
-      }
-    }
-    transaction.amount = isRefund ? parseFloat(enteredAmount) * -100 : parseFloat(enteredAmount) * 100
+    let giftCardUpdate: StockItemObject = getGiftCardUpdate(giftCard, amountInCents, newGiftCardCode, saleId, isRefund)
+    transaction.amount = isRefund ? amountInCents * -1 : amountInCents
     transaction.giftCardUpdate = giftCardUpdate
     if (!isRefund) {
+      const leftOver = getGiftCardLeftOver(giftCard, amountInCents)
       transaction = {
         ...transaction,
         giftCardId: giftCardUpdate?.id,
@@ -158,4 +126,41 @@ export function formSaleTransaction({
     transaction.vendor = vendor
   }
   return transaction
+}
+
+export function getGiftCardLeftOver(giftCard, amountInCents) {
+  const leftOver: number = giftCard?.remainingOnGiftCard - amountInCents
+  return leftOver
+}
+
+export function getGiftCardUpdate(giftCard, amountInCents, newGiftCardCode, saleId, isRefund) {
+  let giftCardUpdate: StockItemObject = {}
+  const leftOver = getGiftCardLeftOver(giftCard, amountInCents)
+  if (isRefund) {
+    giftCardUpdate = {
+      isGiftCard: true,
+      giftCardCode: newGiftCardCode,
+      giftCardAmount: amountInCents,
+      giftCardRemaining: amountInCents,
+      note: `Gift card created as refund payment for sale #${saleId}`,
+      giftCardIsValid: true,
+    }
+  } else {
+    giftCardUpdate = { ...giftCard }
+    giftCardUpdate.giftCardRemaining = leftOver * 100
+    if (leftOver < 10) {
+      giftCardUpdate.giftCardIsValid = false
+      giftCardUpdate.giftCardRemaining = 0
+    }
+  }
+  return giftCardUpdate
+}
+
+export function getCashVars(centsReceived, totalRemaining, isRefund) {
+  const centsRemaining = dollarsToCents(totalRemaining)
+  return {
+    netAmount: isRefund ? centsReceived * -1 : centsReceived >= centsRemaining ? centsRemaining : centsReceived,
+    cashFromCustomer: isRefund ? null : centsReceived,
+    cashToCustomer: isRefund ? centsReceived : centsReceived > centsRemaining ? centsReceived - centsRemaining : null,
+  }
 }
