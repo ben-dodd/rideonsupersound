@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import { getItemDisplayName } from 'lib/functions/displayInventory'
 import { getCartItemPrices } from 'lib/functions/sell'
 import { PaymentMethodTypes, SaleItemObject, SaleTransactionObject } from 'lib/types/sale'
-import { BasicStockObject } from 'lib/types/stock'
+import { BasicStockObject, StockItemObject } from 'lib/types/stock'
 import { VendorPaymentObject, VendorSaleItemObject } from 'lib/types/vendor'
 
 export function sumPrices(saleItems: any[], items: any[], field: string) {
@@ -103,8 +103,10 @@ export function formSaleTransaction({
   saleId,
   clerkId,
   totalRemaining = 0,
+  giftCard = null,
+  newGiftCardCode = '',
 }) {
-  const transaction: SaleTransactionObject = {
+  let transaction: SaleTransactionObject = {
     date: dayjs.utc().format(),
     saleId,
     clerkId,
@@ -118,6 +120,38 @@ export function formSaleTransaction({
     const { netAmount, cashFromCustomer, cashToCustomer } = getCashVars(enteredAmount, totalRemaining, isRefund)
     transaction.amount = netAmount
     ;(transaction.cashReceived = cashFromCustomer), (transaction.changeGiven = cashToCustomer)
+  } else if (paymentMethod === PaymentMethodTypes.GiftCard) {
+    let giftCardUpdate: StockItemObject = {}
+    const remainingOnGiftCard = giftCard?.giftCardRemaining / 100
+    const leftOver: number = remainingOnGiftCard - parseFloat(enteredAmount)
+    if (isRefund) {
+      giftCardUpdate = {
+        isGiftCard: true,
+        giftCardCode: newGiftCardCode,
+        giftCardAmount: parseFloat(enteredAmount) * 100,
+        giftCardRemaining: parseFloat(enteredAmount) * 100,
+        note: `Gift card created as refund payment for sale #${saleId}`,
+        giftCardIsValid: true,
+      }
+    } else {
+      giftCardUpdate = { ...giftCard }
+      giftCardUpdate.giftCardRemaining = leftOver * 100
+      if (leftOver < 10) {
+        giftCardUpdate.giftCardIsValid = false
+        giftCardUpdate.giftCardRemaining = 0
+      }
+    }
+    transaction.amount = isRefund ? parseFloat(enteredAmount) * -100 : parseFloat(enteredAmount) * 100
+    transaction.giftCardUpdate = giftCardUpdate
+    if (!isRefund) {
+      transaction = {
+        ...transaction,
+        giftCardId: giftCardUpdate?.id,
+        giftCardTaken: giftCardUpdate?.giftCardIsValid,
+        giftCardRemaining: giftCardUpdate?.giftCardRemaining,
+        giftCardChange: leftOver < 10 ? leftOver * 100 : 0,
+      }
+    }
   }
   return transaction
 }
