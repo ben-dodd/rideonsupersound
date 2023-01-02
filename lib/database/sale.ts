@@ -349,5 +349,5 @@ async function handleSaveSaleTransaction(trans, sale, db) {
       .then((trans) => trans)
       .catch((e) => Error(e.message))
   }
-  return null
+  return trans
 }

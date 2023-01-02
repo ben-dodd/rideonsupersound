@@ -7,6 +7,7 @@ import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useCurrentRegisterId } from 'lib/api/register'
 import { PaymentMethodTypes } from 'lib/types/sale'
+import { formSaleTransaction } from 'lib/functions/pay'
 
 export default function Cash({ totalRemaining }) {
   const { clerk } = useClerk()
@@ -30,15 +31,15 @@ export default function Cash({ totalRemaining }) {
         cashReceived === '' ||
         isNaN(parseFloat(cashReceived)),
       onClick: () => {
-        const transaction = {
+        const transaction = formSaleTransaction({
           enteredAmount: cashReceived,
           paymentMethod: PaymentMethodTypes.Cash,
+          totalRemaining,
           isRefund,
           registerId,
           saleId: sale?.id,
           clerkId: clerk?.id,
-          totalRemaining,
-        }
+        })
         addCartTransaction(transaction)
         closeView(ViewProps.cashPaymentDialog)
         setAlert({

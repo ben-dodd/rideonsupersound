@@ -5,6 +5,8 @@ import { StoreState } from './types'
 import { v4 as uuid } from 'uuid'
 import { useSetWeatherToCart } from 'lib/api/external'
 import { saveCart } from 'lib/api/sale'
+import { mutate } from 'swr'
+import { PaymentMethodTypes } from 'lib/types/sale'
 
 type WithSelectors<S> = S extends { getState: () => infer T } ? S & { use: { [K in keyof T]: () => T[K] } } : never
 
@@ -156,8 +158,9 @@ export const useAppStore = createSelectors(
           draft.receiveBasket.items.map((item) => (item?.key === key ? { ...item, ...update } : item))
         }),
       ),
-    mutateCart: async () => {
+    mutateCart: async (mutates = []) => {
       const newCart = await saveCart(get().cart, get().cart?.sale?.state)
+      mutates.forEach((key) => mutate(key))
       set(
         produce((draft) => {
           draft.cart = newCart
@@ -178,7 +181,8 @@ export const useAppStore = createSelectors(
           draft.cart.transactions.push(transaction)
         }),
       )
-      get().mutateCart()
+      const mutates = transaction?.paymentMethod === PaymentMethodTypes.GiftCard ? [`stock/giftcard`] : []
+      get().mutateCart(mutates)
     },
     resetCart: () =>
       set(

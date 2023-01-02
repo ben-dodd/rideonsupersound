@@ -106,6 +106,7 @@ export function formSaleTransaction({
   if (paymentMethod === PaymentMethodTypes.Card) transaction.amount = isRefund ? amountInCents * -1 : amountInCents
   else if (paymentMethod === PaymentMethodTypes.Cash) {
     const { netAmount, cashFromCustomer, cashToCustomer } = getCashVars(amountInCents, totalRemaining, isRefund)
+    console.log(totalRemaining)
     transaction.amount = netAmount
     transaction.cashReceived = cashFromCustomer
     transaction.changeGiven = cashToCustomer

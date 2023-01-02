@@ -72,7 +72,7 @@ export interface StoreState {
   setSellSearchBar: (val: string) => void
   toggleSellSearchingOff: () => void
   setCart: (update: any) => void
-  mutateCart: () => void
+  mutateCart: (mutates?: string[]) => void
   addCartTransaction: (transaction: SaleTransactionObject) => void
   addCartItem: (newItem: SaleItemObject, clerkId: number) => void
   setCartItem: (id: number, update: any) => void

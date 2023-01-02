@@ -20,7 +20,6 @@ export default function Acct({ totalRemaining }) {
   const { registerId } = useCurrentRegisterId()
   const { vendors } = useVendors()
   const { vendor } = useVendor(vendorWrapper?.value?.id)
-  console.log(vendor)
   const isRefund = totalRemaining < 0
   const [acctPayment, setAcctPayment] = useState(`${Math.abs(totalRemaining)?.toFixed(2)}`)
   useEffect(() => {
