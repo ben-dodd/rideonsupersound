@@ -105,6 +105,7 @@ export function formSaleTransaction({
   totalRemaining = 0,
   giftCard = null,
   newGiftCardCode = '',
+  vendor = null,
 }) {
   let transaction: SaleTransactionObject = {
     date: dayjs.utc().format(),
@@ -152,6 +153,9 @@ export function formSaleTransaction({
         giftCardChange: leftOver < 10 ? leftOver * 100 : 0,
       }
     }
+  } else if (paymentMethod === PaymentMethodTypes.Account) {
+    transaction.amount = isRefund ? parseFloat(enteredAmount) * -100 : parseFloat(enteredAmount) * 100
+    transaction.vendor = vendor
   }
   return transaction
 }

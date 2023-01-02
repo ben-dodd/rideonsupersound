@@ -1,5 +1,3 @@
-import dayjs, { extend } from 'dayjs'
-import UTC from 'dayjs/plugin/utc'
 import { useEffect, useState } from 'react'
 import { ModalButton } from 'lib/types'
 import TextField from 'components/inputs/text-field'
@@ -10,11 +8,11 @@ import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useCurrentRegisterId } from 'lib/api/register'
 import { useVendor, useVendors } from 'lib/api/vendor'
-import { PaymentMethodTypes, SaleTransactionObject } from 'lib/types/sale'
+import { PaymentMethodTypes } from 'lib/types/sale'
 import { VendorObject } from 'lib/types/vendor'
+import { formSaleTransaction } from 'lib/functions/pay'
 
 export default function Acct({ totalRemaining }) {
-  extend(UTC)
   const { clerk } = useClerk()
   const { view, cart, closeView, setAlert, addCartTransaction } = useAppStore()
   const { sale = {} } = cart || {}
@@ -43,19 +41,16 @@ export default function Acct({ totalRemaining }) {
         isNaN(parseFloat(acctPayment)),
       loading: submitting,
       onClick: () => {
-        setSubmitting(true)
-        let transaction: SaleTransactionObject = {
-          date: dayjs.utc().format(),
+        const transaction = formSaleTransaction({
+          enteredAmount: acctPayment,
+          paymentMethod: PaymentMethodTypes.Account,
+          isRefund,
+          registerId,
           saleId: sale?.id,
           clerkId: clerk?.id,
-          paymentMethod: PaymentMethodTypes.Account,
-          amount: isRefund ? parseFloat(acctPayment) * -100 : parseFloat(acctPayment) * 100,
-          registerId,
           vendor: vendorWrapper?.value,
-          isRefund: isRefund,
-        }
+        })
         addCartTransaction(transaction)
-        setSubmitting(false)
         closeView(ViewProps.acctPaymentDialog)
         setAlert({
           open: true,
