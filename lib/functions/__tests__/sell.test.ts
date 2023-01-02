@@ -51,34 +51,24 @@ const giftCardItem = {
 const stockItemPrice3 = {}
 
 describe('writeCartItemPriceBreakdown', () => {
-  test.todo(
-    'should write out a price breakdown based on a cart item and an item'
-  )
+  test.todo('should write out a price breakdown based on a cart item and an item')
   it('should handle gift cards', () => {
-    expect(
-      writeCartItemPriceBreakdown(cartItem, giftCardItem, stockItemPrice3)
-    ).toBe('$30.00 GIFT CARD')
+    expect(writeCartItemPriceBreakdown(cartItem, { item: giftCardItem, price: stockItemPrice3 })).toBe(
+      '$30.00 GIFT CARD',
+    )
   })
   it('should handle misc items', () => {
-    expect(
-      writeCartItemPriceBreakdown(cartItem, miscItem, stockItemPrice3)
-    ).toBe('2 × $4.00')
+    expect(writeCartItemPriceBreakdown(cartItem, { item: miscItem, price: stockItemPrice3 })).toBe('2 × $4.00')
   })
   it('should handle normal items', () => {
-    expect(
-      writeCartItemPriceBreakdown(cartItem2, stockItem2, stockItemPrice2)
-    ).toBe('2 × $55.00')
+    expect(writeCartItemPriceBreakdown(cartItem2, { item: stockItem2, price: stockItemPrice2 })).toBe('2 × $55.00')
   })
   it('should handle discounts', () => {
-    expect(
-      writeCartItemPriceBreakdown(cartItem, stockItem, stockItemPrice)
-    ).toBe('2 × V50% × S25% × $3.00')
-    expect(
-      writeCartItemPriceBreakdown(cartItem3, stockItem, stockItemPrice)
-    ).toBe('1 × V50% × $3.00')
-    expect(
-      writeCartItemPriceBreakdown(cartItem4, stockItem, stockItemPrice)
-    ).toBe('1 × S25% × $3.00')
+    expect(writeCartItemPriceBreakdown(cartItem, { item: stockItem, price: stockItemPrice })).toBe(
+      '2 × V50% × S25% × $3.00',
+    )
+    expect(writeCartItemPriceBreakdown(cartItem3, { item: stockItem, price: stockItemPrice })).toBe('1 × V50% × $3.00')
+    expect(writeCartItemPriceBreakdown(cartItem4, { item: stockItem, price: stockItemPrice })).toBe('1 × S25% × $3.00')
   })
 })
 
@@ -114,14 +104,10 @@ describe('getCartItemStoreCut', () => {
 describe('getCartItemTotal', () => {
   it('should return the total price for an item after discounts have been applied', () => {
     expect(getCartItemTotal(cartItem, stockItem, stockItemPrice)).toEqual(400)
-    expect(getCartItemTotal(cartItem2, stockItem2, stockItemPrice2)).toEqual(
-      11000
-    )
+    expect(getCartItemTotal(cartItem2, stockItem2, stockItemPrice2)).toEqual(11000)
   })
   it('should return the gift card amount, where the item is a gift card', () => {
-    expect(getCartItemTotal(cartItem, giftCardItem, stockItemPrice3)).toEqual(
-      3000
-    )
+    expect(getCartItemTotal(cartItem, giftCardItem, stockItemPrice3)).toEqual(3000)
   })
   it('should return the misc item amount where the item is misc', () => {
     expect(getCartItemTotal(cartItem, miscItem, stockItemPrice3)).toEqual(400)
@@ -129,9 +115,7 @@ describe('getCartItemTotal', () => {
 })
 
 describe('getItemQuantity', () => {
-  it.todo(
-    'should get the quantity after removing the cart items from the total stock'
-  )
+  it.todo('should get the quantity after removing the cart items from the total stock')
 })
 
 describe('filterInventory', () => {
@@ -147,9 +131,7 @@ describe('makeGiftCardCode', () => {
     expect(makeGiftCardCode([{ giftCardCode: 'ABCDEF' }])).toHaveLength(6)
   })
   it('should not use codes that have already been used', () => {
-    const giftCards = 'ABCDEFGHIJKLMNOPQRSTUVWXY'
-      .split('')
-      .map((letter) => ({ giftCardCode: letter }))
+    const giftCards = 'ABCDEFGHIJKLMNOPQRSTUVWXY'.split('').map((letter) => ({ giftCardCode: letter }))
     expect(makeGiftCardCode(giftCards, 1)).toBe('Z')
   })
 })
