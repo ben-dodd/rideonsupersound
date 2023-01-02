@@ -2,17 +2,13 @@ import { useRouter } from 'next/router'
 
 export default function MenuItem({ item, defaultOnClick }) {
   const router = useRouter()
-  const handleOnClick = item?.onClick
-    ? item?.onClick
-    : () => defaultOnClick(item)
+  const handleOnClick = item?.onClick ? item?.onClick : () => defaultOnClick(item)
   return item?.type === 'divider' ? (
     <hr />
   ) : (
     <li
       className={`flex cursor-pointer content-center p-2 py-3 ${
-        router?.pathname === item?.page
-          ? 'text-white hover:bg-black bg-black'
-          : item?.class || ''
+        router?.pathname.includes(item?.page) ? 'text-white hover:bg-black bg-black' : item?.class || ''
       }`}
       onClick={handleOnClick}
     >
