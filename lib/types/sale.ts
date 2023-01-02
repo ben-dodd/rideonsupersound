@@ -74,7 +74,7 @@ export interface SaleTransactionObject {
   clerkId: number
   date?: string
   paymentMethod: PaymentMethodTypes
-  amount: number
+  amount?: number
   cashReceived?: number
   changeGiven?: number
   vendorPayment?: number

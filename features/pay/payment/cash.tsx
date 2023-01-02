@@ -1,5 +1,3 @@
-import dayjs, { extend } from 'dayjs'
-import UTC from 'dayjs/plugin/utc'
 import { useEffect, useState } from 'react'
 import { ModalButton } from 'lib/types'
 import TextField from 'components/inputs/text-field'
@@ -8,11 +6,9 @@ import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useCurrentRegisterId } from 'lib/api/register'
-import { getCashVars } from 'lib/functions/pay'
-import { PaymentMethodTypes, SaleTransactionObject } from 'lib/types/sale'
+import { PaymentMethodTypes } from 'lib/types/sale'
 
 export default function Cash({ totalRemaining }) {
-  extend(UTC)
   const { clerk } = useClerk()
   const { view, cart, closeView, setAlert, addCartTransaction } = useAppStore()
   const { sale = {} } = cart || {}
@@ -34,17 +30,14 @@ export default function Cash({ totalRemaining }) {
         cashReceived === '' ||
         isNaN(parseFloat(cashReceived)),
       onClick: () => {
-        const { netAmount, cashFromCustomer, cashToCustomer } = getCashVars(cashReceived, totalRemaining, isRefund)
-        let transaction: SaleTransactionObject = {
-          date: dayjs.utc().format(),
+        const transaction = {
+          enteredAmount: cashReceived,
+          paymentMethod: PaymentMethodTypes.Cash,
+          isRefund,
+          registerId,
           saleId: sale?.id,
           clerkId: clerk?.id,
-          paymentMethod: PaymentMethodTypes.Cash,
-          amount: netAmount,
-          cashReceived: cashFromCustomer,
-          changeGiven: cashToCustomer,
-          registerId,
-          isRefund,
+          totalRemaining,
         }
         addCartTransaction(transaction)
         closeView(ViewProps.cashPaymentDialog)

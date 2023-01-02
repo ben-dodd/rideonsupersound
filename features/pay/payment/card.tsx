@@ -1,4 +1,3 @@
-import dayjs from 'dayjs'
 import { useEffect, useState } from 'react'
 import { ModalButton } from 'lib/types'
 import TextField from 'components/inputs/text-field'
@@ -7,7 +6,8 @@ import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useCurrentRegisterId } from 'lib/api/register'
-import { PaymentMethodTypes, SaleTransactionObject } from 'lib/types/sale'
+import { PaymentMethodTypes } from 'lib/types/sale'
+import { formSaleTransaction } from 'lib/functions/pay'
 
 export default function Cash({ totalRemaining }) {
   const { clerk } = useClerk()
@@ -31,15 +31,14 @@ export default function Cash({ totalRemaining }) {
         cardPayment === '' ||
         isNaN(parseFloat(cardPayment)),
       onClick: () => {
-        let transaction: SaleTransactionObject = {
-          date: dayjs.utc().format(),
+        const transaction = formSaleTransaction({
+          enteredAmount: cardPayment,
+          paymentMethod: PaymentMethodTypes.Card,
+          isRefund,
+          registerId,
           saleId: sale?.id,
           clerkId: clerk?.id,
-          paymentMethod: PaymentMethodTypes.Card,
-          amount: isRefund ? parseFloat(cardPayment) * -100 : parseFloat(cardPayment) * 100,
-          registerId,
-          isRefund,
-        }
+        })
         addCartTransaction(transaction)
         closeView(ViewProps.cardPaymentDialog)
         setAlert({

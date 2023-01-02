@@ -1,9 +1,8 @@
+import dayjs from 'dayjs'
 import { getItemDisplayName } from 'lib/functions/displayInventory'
-import { logSaleParked } from 'lib/functions/log'
-import { ClerkObject, CustomerObject } from 'lib/types'
 import { getCartItemPrices } from 'lib/functions/sell'
-import { SaleItemObject, SaleObject, SaleTransactionObject } from 'lib/types/sale'
-import { BasicStockObject, StockObject } from 'lib/types/stock'
+import { PaymentMethodTypes, SaleItemObject, SaleTransactionObject } from 'lib/types/sale'
+import { BasicStockObject } from 'lib/types/stock'
 import { VendorPaymentObject, VendorSaleItemObject } from 'lib/types/vendor'
 
 export function sumPrices(saleItems: any[], items: any[], field: string) {
@@ -80,49 +79,6 @@ export function roundToTenCents(dollars) {
   return Math.round((dollars + Number.EPSILON) * 10) / 10
 }
 
-export async function useLoadSaleToCart(
-  cart: SaleObject,
-  setCart: Function,
-  sale: SaleObject,
-  clerk: ClerkObject,
-  registerID: number,
-  customers: CustomerObject[],
-) {
-  if (sale?.dateSaleOpened && (cart?.items || cart?.id !== sale?.id)) {
-    // Cart is loaded with a different sale or
-    // Cart has been started but not loaded into sale
-    await useSaveSaleAndPark(cart, clerk, registerID, customers)
-  }
-  setCart(sale)
-}
-
-export async function useSaveSaleAndPark(
-  cart: SaleObject,
-  clerk: ClerkObject,
-  registerID: number,
-  customers: CustomerObject[],
-  sales: SaleObject[],
-  mutateSales: Function,
-  inventory: StockObject[],
-  mutateInventory: Function,
-  giftCards: GiftCardObject[],
-  mutateGiftCards: Function,
-) {
-  const saleId = await useSaveSaleItemsTransactionsToDatabase(
-    { ...cart, state: SaleStateTypes.Parked },
-    clerk,
-    registerID,
-    sales,
-    mutateSales,
-    inventory,
-    mutateInventory,
-    giftCards,
-    mutateGiftCards,
-  )
-  logSaleParked(saleId, cart, customers, clerk)
-  mutateInventory && mutateInventory()
-}
-
 export function getCashVars(cashReceived, totalRemaining, isRefund) {
   return {
     netAmount: isRefund
@@ -137,4 +93,31 @@ export function getCashVars(cashReceived, totalRemaining, isRefund) {
       ? (parseFloat(cashReceived) - totalRemaining) * 100
       : null,
   }
+}
+
+export function formSaleTransaction({
+  enteredAmount = '0',
+  paymentMethod,
+  isRefund = false,
+  registerId,
+  saleId,
+  clerkId,
+  totalRemaining = 0,
+}) {
+  const transaction: SaleTransactionObject = {
+    date: dayjs.utc().format(),
+    saleId,
+    clerkId,
+    registerId,
+    isRefund,
+    paymentMethod,
+  }
+  if (paymentMethod === PaymentMethodTypes.Card)
+    transaction.amount = isRefund ? parseFloat(enteredAmount) * -100 : parseFloat(enteredAmount) * 100
+  else if (paymentMethod === PaymentMethodTypes.Cash) {
+    const { netAmount, cashFromCustomer, cashToCustomer } = getCashVars(enteredAmount, totalRemaining, isRefund)
+    transaction.amount = netAmount
+    ;(transaction.cashReceived = cashFromCustomer), (transaction.changeGiven = cashToCustomer)
+  }
+  return transaction
 }
