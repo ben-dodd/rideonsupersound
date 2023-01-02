@@ -7,11 +7,6 @@ const Summary = ({ totalRemaining }) => {
 
   return (
     <div>
-      <div className="flex justify-between border-b">
-        <div className={'text-2xl p-2 font-bold'}>{`${sale?.id ? `SALE #${sale?.id}` : `NEW SALE`} [${
-          sale?.state ? sale?.state.toUpperCase() : 'IN PROGRESS'
-        }]`}</div>
-      </div>
       <div className="flex justify-between my-2">
         <div
           className={`text-2xl font-bold p-2 ${
@@ -38,6 +33,11 @@ const Summary = ({ totalRemaining }) => {
           // TODO when totalRemaining is zero, the left to pay box should turn into a COMPLETE BUTTON
         )}
       </div>
+      {/* <div className="flex justify-between border-t">
+        <div className={'text-lg p-2 font-bold'}>{`${sale?.id ? `SALE #${sale?.id}` : `NEW SALE`} [${
+          sale?.state ? sale?.state.toUpperCase() : 'IN PROGRESS'
+        }]`}</div>
+      </div> */}
     </div>
   )
 }

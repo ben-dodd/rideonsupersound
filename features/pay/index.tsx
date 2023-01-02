@@ -17,7 +17,7 @@ const PayScreen = ({ totalRemaining }) => {
       <div className="w-2/3">
         <SaleSummary cart={cart} />
       </div>
-      <div className="w-1/3 p-2 flex flex-col justify-between">
+      <div className="w-1/3 p-2 flex flex-col justify-between shadow-md">
         <Pay totalRemaining={totalRemaining} />
       </div>
     </div>
