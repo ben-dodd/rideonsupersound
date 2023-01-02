@@ -129,11 +129,11 @@ export function formSaleTransaction({
 }
 
 export function getGiftCardLeftOver(giftCard, amountInCents) {
-  const leftOver: number = giftCard?.remainingOnGiftCard - amountInCents
-  return leftOver
+  const leftOver: number = giftCard?.giftCardRemaining - amountInCents
+  return leftOver < 0 ? 0 : leftOver
 }
 
-export function getGiftCardUpdate(giftCard, amountInCents, newGiftCardCode, saleId, isRefund) {
+export function getGiftCardUpdate(amountInCents, giftCard?, newGiftCardCode?, saleId?, isRefund?) {
   let giftCardUpdate: StockItemObject = {}
   const leftOver = getGiftCardLeftOver(giftCard, amountInCents)
   if (isRefund) {
@@ -147,8 +147,8 @@ export function getGiftCardUpdate(giftCard, amountInCents, newGiftCardCode, sale
     }
   } else {
     giftCardUpdate = { ...giftCard }
-    giftCardUpdate.giftCardRemaining = leftOver * 100
-    if (leftOver < 10) {
+    giftCardUpdate.giftCardRemaining = leftOver
+    if (leftOver < 1000) {
       giftCardUpdate.giftCardIsValid = false
       giftCardUpdate.giftCardRemaining = 0
     }
