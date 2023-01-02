@@ -1,4 +1,5 @@
-import { getCashVars, getGiftCardLeftOver, getGiftCardUpdate, roundToTenCents } from '../pay'
+import { PaymentMethodTypes } from 'lib/types/sale'
+import { formSaleTransaction, getCashVars, getGiftCardLeftOver, getGiftCardUpdate, roundToTenCents } from '../pay'
 
 describe('roundToTenCents', () => {
   it('should round to ten cents', () => {
@@ -8,6 +9,61 @@ describe('roundToTenCents', () => {
     expect(roundToTenCents(5.2)).toBe(5.2)
     expect(roundToTenCents(0.12)).toBe(0.1)
     expect(roundToTenCents(0.04)).toBe(0)
+  })
+})
+
+describe('formSaleTransaction', () => {
+  let params: any = {
+    saleId: 10,
+    clerkId: 11,
+    registerId: 12,
+  }
+  it('should apply basic properties', () => {
+    const trans = formSaleTransaction({ ...params, paymentMethod: PaymentMethodTypes.Card, enteredAmount: '25' })
+    expect(trans.date).toBeDefined()
+    expect(trans.saleId).toBe(10)
+    expect(trans.clerkId).toBe(11)
+    expect(trans.registerId).toBe(12)
+  })
+  it('should handle card payments', () => {
+    const trans = formSaleTransaction({ ...params, paymentMethod: PaymentMethodTypes.Card, enteredAmount: '25' })
+    expect(trans.amount).toBe(2500)
+    expect(trans.isRefund).toBeFalsy()
+  })
+  it('should handle card refunds', () => {
+    const trans = formSaleTransaction({
+      ...params,
+      paymentMethod: PaymentMethodTypes.Card,
+      enteredAmount: '25',
+      isRefund: true,
+    })
+    expect(trans.amount).toBe(-2500)
+    expect(trans.isRefund).toBeTruthy()
+  })
+  it('should handle cash payments', () => {
+    const trans = formSaleTransaction({
+      ...params,
+      paymentMethod: PaymentMethodTypes.Cash,
+      enteredAmount: '20',
+      totalRemaining: 15,
+    })
+    expect(trans.amount).toBe(1500)
+    expect(trans.cashReceived).toBe(2000)
+    expect(trans.changeGiven).toBe(500)
+    expect(trans.isRefund).toBeFalsy()
+  })
+  it('should handle cash refunds', () => {
+    const trans = formSaleTransaction({
+      ...params,
+      paymentMethod: PaymentMethodTypes.Cash,
+      enteredAmount: '15',
+      totalRemaining: 15,
+      isRefund: true,
+    })
+    expect(trans.amount).toBe(-1500)
+    expect(trans.cashReceived).toBe(null)
+    expect(trans.changeGiven).toBe(1500)
+    expect(trans.isRefund).toBeTruthy()
   })
 })
 

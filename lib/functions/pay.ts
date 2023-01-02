@@ -1,4 +1,5 @@
-import dayjs from 'dayjs'
+import dayjs, { extend } from 'dayjs'
+import utc from 'dayjs/plugin/utc'
 import { getItemDisplayName } from 'lib/functions/displayInventory'
 import { getCartItemPrices } from 'lib/functions/sell'
 import { PaymentMethodTypes, SaleItemObject, SaleTransactionObject } from 'lib/types/sale'
@@ -92,8 +93,9 @@ export function formSaleTransaction({
   newGiftCardCode = '',
   vendor = null,
 }) {
+  extend(utc)
   let transaction: SaleTransactionObject = {
-    date: dayjs.utc().format(),
+    date: dayjs().utc().format(),
     saleId,
     clerkId,
     registerId,
