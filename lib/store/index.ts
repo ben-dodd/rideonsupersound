@@ -4,6 +4,7 @@ import produce from 'immer'
 import { StoreState } from './types'
 import { v4 as uuid } from 'uuid'
 import { useSetWeatherToCart } from 'lib/api/external'
+import { saveCart } from 'lib/api/sale'
 
 type WithSelectors<S> = S extends { getState: () => infer T } ? S & { use: { [K in keyof T]: () => T[K] } } : never
 
@@ -155,18 +156,22 @@ export const useAppStore = createSelectors(
           draft.receiveBasket.items.map((item) => (item?.key === key ? { ...item, ...update } : item))
         }),
       ),
-    setCustomer: (update) =>
+    setCustomer: (update) => {
       set(
         produce((draft) => {
           Object.entries(update).forEach(([key, value]) => (draft.cart.customer[key] = value))
         }),
-      ),
-    addCartTransaction: (transaction) =>
+      )
+      saveCart(get().cart, get().cart?.sale?.state)
+    },
+    addCartTransaction: (transaction) => {
       set(
         produce((draft) => {
           draft.cart.transactions.push(transaction)
         }),
-      ),
+      )
+      saveCart(get().cart, get().cart?.sale?.state)
+    },
     resetCart: () =>
       set(
         produce((draft) => {

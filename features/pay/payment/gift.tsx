@@ -2,10 +2,7 @@ import dayjs, { extend } from 'dayjs'
 import UTC from 'dayjs/plugin/utc'
 import { useEffect, useMemo, useState } from 'react'
 import { ModalButton } from 'lib/types'
-
 import SyncIcon from '@mui/icons-material/Sync'
-
-// Components
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
 import { makeGiftCardCode } from 'lib/functions/sell'
@@ -43,8 +40,6 @@ export default function Gift({ totalRemaining }) {
 
   const [newGiftCardCode, setNewGiftCardCode] = useState(makeGiftCardCode(giftCards))
   const [submitting, setSubmitting] = useState(false)
-
-  // Constants
   const remainingOnGiftCard = giftCard?.giftCardRemaining / 100
   const leftOver: number = remainingOnGiftCard - parseFloat(giftCardPayment)
 
@@ -52,15 +47,12 @@ export default function Gift({ totalRemaining }) {
     {
       type: 'ok',
       disabled:
-        submitting ||
         parseFloat(giftCardPayment) > Math.abs(totalRemaining) ||
         parseFloat(giftCardPayment) <= 0 ||
         giftCardPayment === '' ||
         isNaN(parseFloat(giftCardPayment)) ||
         (!isRefund && (!giftCard || !giftCard?.giftCardIsValid || leftOver < 0)),
-      loading: submitting,
       onClick: () => {
-        setSubmitting(true)
         let giftCardUpdate: StockItemObject = {}
         if (isRefund) {
           giftCardUpdate = {
@@ -99,7 +91,6 @@ export default function Gift({ totalRemaining }) {
           }
         }
         addCartTransaction(transaction)
-        setSubmitting(false)
         closeView(ViewProps.giftPaymentDialog)
         setAlert({
           open: true,
