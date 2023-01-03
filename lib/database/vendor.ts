@@ -54,6 +54,73 @@ export function dbGetVendorNames(db = connection) {
   return db('vendor').select('id', 'name').where({ is_deleted: 0 })
 }
 
+export function dbGetVendorAccounts(db = connection) {
+  return dbGetVendorNames(db).then((vendors) =>
+    Promise.all(vendors?.map(async (vendor) => await dbGetVendorAccount(vendor, db))),
+  )
+}
+
+export async function dbGetVendorAccount(vendor, db = connection) {
+  const totalVendorPayments = await dbGetTotalVendorPayments(vendor?.id, db)
+  const totalVendorCut = await dbGetTotalVendorCut(vendor?.id, db)
+  return {
+    id: vendor?.id,
+    name: vendor?.name,
+    totalOwing: totalVendorCut - totalVendorPayments,
+  }
+}
+
+export function dbGetTotalVendorPayments(vendor_id, db = connection) {
+  return db('vendor_payment')
+    .sum('amount as totalAmount')
+    .where({ vendor_id })
+    .where({ is_deleted: 0 })
+    .then((res) => res[0].totalAmount)
+}
+
+export function dbGetVendorStockIds(vendor_id, db = connection) {
+  return db('stock')
+    .select('id')
+    .where({ vendor_id })
+    .where({ is_deleted: 0 })
+    .then((stock) => stock?.map((stock) => stock?.id))
+}
+
+export function dbGetTotalVendorCutFromVendorStockIds(stockIds, db = connection) {
+  return db('sale_item')
+    .join('sale', 'sale.id', 'sale_item.sale_id')
+    .join('stock_price', 'stock_price.stock_id', 'sale_item.item_id')
+    .select(
+      'sale_item.quantity',
+      'stock_price.vendor_cut',
+      'sale_item.vendor_discount',
+      `stock_price.date_valid_from`,
+      'sale.date_sale_opened',
+    )
+    .whereIn('sale_item.item_id', stockIds)
+    .where('sale_item.is_refunded', 0)
+    .where('sale_item.is_deleted', 0)
+    .where('sale.state', 'completed')
+    .where(`sale.is_deleted`, 0)
+    .whereRaw(
+      `stock_price.id = (
+              SELECT MAX(id) FROM stock_price WHERE stock_id = sale_item.item_id AND date_valid_from <= sale.date_sale_opened
+              )`,
+    )
+    .then((sales) => {
+      return sales?.reduce(
+        (acc, sale) => acc + (sale?.quantity * sale?.vendor_cut * (100 - (sale?.vendor_discount || 0))) / 100,
+        0,
+      )
+    })
+}
+
+export function dbGetTotalVendorCut(vendor_id, db = connection) {
+  return dbGetVendorStockIds(vendor_id, db)
+    .then((stockIds) => dbGetTotalVendorCutFromVendorStockIds(stockIds, db))
+    .catch((e) => Error(e.message))
+}
+
 export function dbGetVendor(id, db = connection) {
   return fullVendorQuery(db)
     .where({ id })

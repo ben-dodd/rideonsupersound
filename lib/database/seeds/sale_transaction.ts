@@ -1,4 +1,4 @@
-import { PaymentMethodTypes } from 'lib/types'
+import { PaymentMethodTypes } from 'lib/types/sale'
 
 exports.seed = (knex) =>
   knex('sale_transaction')
@@ -24,5 +24,5 @@ exports.seed = (knex) =>
           cash_received: 5000,
           register_id: 666,
         },
-      ])
+      ]),
     )

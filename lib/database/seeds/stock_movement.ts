@@ -1,4 +1,4 @@
-import { StockMovementTypes } from 'lib/types'
+import { StockMovementTypes } from 'lib/types/stock'
 
 exports.seed = (knex) =>
   knex('stock_movement')
@@ -105,5 +105,5 @@ exports.seed = (knex) =>
           act: StockMovementTypes.Unlayby,
           is_deleted: 0,
         },
-      ])
+      ]),
     )
