@@ -7,6 +7,7 @@ import { useSetWeatherToCart } from 'lib/api/external'
 import { saveCart } from 'lib/api/sale'
 import { mutate } from 'swr'
 import { PaymentMethodTypes } from 'lib/types/sale'
+import { useSetRegisterId } from 'lib/api/register'
 
 type WithSelectors<S> = S extends { getState: () => infer T } ? S & { use: { [K in keyof T]: () => T[K] } } : never
 
@@ -35,6 +36,7 @@ export const useAppStore = createSelectors(
       customer: {},
       items: [],
       transactions: [],
+      registerId: null,
     },
     loadedItemId: {},
     loadedVendorId: {},
@@ -118,6 +120,7 @@ export const useAppStore = createSelectors(
         produce((draft) => {
           if (get().cart.items.length === 0) {
             useSetWeatherToCart(get().setCartSale)
+            useSetRegisterId(get().setCart)
             draft.cart.sale.dateSaleOpened = dayjs.utc().format()
             draft.cart.sale.saleOpenedBy = clerkId
           }

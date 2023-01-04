@@ -47,6 +47,7 @@ export interface CartObject {
   customer?: CustomerObject
   items?: SaleItemObject[]
   transactions?: SaleTransactionObject[]
+  registerId?: number
 }
 
 export interface SaleItemObject {

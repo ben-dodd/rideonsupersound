@@ -8,6 +8,7 @@ import Image from 'next/image'
 export default function Pay({ totalRemaining }) {
   const { cart, setCartSale } = useAppStore()
   const { sale = {} } = cart || {}
+  // TODO if totalRemaining hasn't loaded it should show loading screen
 
   return (
     <div className="flex flex-col justify-between h-menu">

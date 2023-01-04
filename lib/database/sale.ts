@@ -96,10 +96,14 @@ export function getAllSaleItems(db = connection) {
 }
 
 export function dbCreateSale(sale, db = connection) {
+  console.log('creating new sale!...', sale)
   return db('sale')
     .insert(js2mysql(sale))
     .then((rows) => rows[0])
-    .catch((e) => Error(e.message))
+    .catch((e) => {
+      console.log(e)
+      Error(e.message)
+    })
 }
 
 export function dbCreateHold(hold, db = connection) {
@@ -170,7 +174,7 @@ export async function dbSaveCart(cart, prevState, db = connection) {
   console.log('Saving cart...', cart, prevState)
   return db
     .transaction(async (trx) => {
-      const { sale = {}, items = [], transactions = [] } = cart || {}
+      const { sale = {}, items = [], transactions = [], registerId = null } = cart || {}
       const newSale = { ...sale }
       newSale.state = newSale?.state || SaleStateTypes.InProgress
       const newItems = []
@@ -197,7 +201,7 @@ export async function dbSaveCart(cart, prevState, db = connection) {
       }
 
       for (const item of items) {
-        const newItem = await handleSaveSaleItem(item, newSale, prevState, trx)
+        const newItem = await handleSaveSaleItem(item, newSale, prevState, registerId, trx)
         newItems.push(newItem)
       }
 
@@ -253,7 +257,7 @@ export async function dbDeleteSale(id, { sale, clerk, registerID }, db = connect
     .catch((e) => Error(e.message))
 }
 
-async function handleSaveSaleItem(item, sale, prevState, db) {
+async function handleSaveSaleItem(item, sale, prevState, registerId, db) {
   return db
     .transaction(async (trx) => {
       const newItem = { ...item }
@@ -262,7 +266,7 @@ async function handleSaveSaleItem(item, sale, prevState, db) {
         await dbUpdateStockItem(item?.itemId, { giftCardIsValid: true }, trx)
       }
 
-      await handleStockMovements(item, sale, prevState, trx)
+      await handleStockMovements(item, sale, prevState, registerId, trx)
       dbCheckIfRestockNeeded(item?.itemId, trx)
 
       // Add or update Sale Item
@@ -281,7 +285,7 @@ async function handleSaveSaleItem(item, sale, prevState, db) {
     .catch((e) => Error(e.message))
 }
 
-async function handleStockMovements(item, sale, prevState, db) {
+async function handleStockMovements(item, sale, prevState, registerId = null, db) {
   // Add stock movement if it's a regular stock item
   if (
     !item?.isGiftCard &&
@@ -292,6 +296,8 @@ async function handleStockMovements(item, sale, prevState, db) {
     let stockMovement = {
       stockId: item?.itemId,
       clerkId: sale?.saleClosedBy,
+      saleId: sale?.id,
+      registerId,
       act: StockMovementTypes.Sold,
       quantity: 0,
     }

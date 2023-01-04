@@ -68,9 +68,7 @@ export default function ShoppingCart() {
           {items?.length > 0 ? (
             items
               // .filter((cartItem: SaleItemObject) => !cartItem?.isDeleted)
-              .map((cartItem) => (
-                <ListItem key={cartItem?.itemId} cartItem={cartItem} deleteCartItem={deleteCartItem} />
-              ))
+              .map((cartItem) => <ListItem key={cartItem?.itemId} cartItem={cartItem} />)
           ) : (
             <Tooltip title="To add items to the cart. Use the search bar and then add items with the (+) icon.">
               <div>No items in cart...</div>

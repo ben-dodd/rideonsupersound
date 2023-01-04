@@ -17,7 +17,7 @@ export async function getUSDExchangeRate() {
         apikey: process.env.NEXT_PUBLIC_API_LAYER_API_KEY,
       },
     },
-    (json) => json?.rates?.NZD ?? 1
+    (json) => json?.rates?.NZD ?? 1,
   )
 }
 
@@ -33,7 +33,7 @@ export function useSetWeatherToCart(setCartSale) {
     })
   }
   return axios(
-    `https://api.openweathermap.org/data/2.5/weather?${loc}&appid=${process.env.NEXT_PUBLIC_OPEN_WEATHER_API}&units=metric`
+    `https://api.openweathermap.org/data/2.5/weather?${loc}&appid=${process.env.NEXT_PUBLIC_OPEN_WEATHER_API}&units=metric`,
   ).then((res) => {
     setCartSale({
       weather: res.data,
@@ -50,7 +50,7 @@ export function getGeolocation() {
   } else
     return navigator.geolocation.getCurrentPosition(
       (position) => position?.coords,
-      () => console.log('Unable to retrieve location.')
+      () => console.log('Unable to retrieve location.'),
     )
 }
 
