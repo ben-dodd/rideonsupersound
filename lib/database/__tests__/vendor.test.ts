@@ -5,6 +5,7 @@ import {
   dbGetTotalVendorPayments,
   dbGetVendorAccount,
   dbGetVendorAccounts,
+  dbGetVendorFromVendorPayment,
   dbGetVendorStockIds,
 } from '../vendor'
 
@@ -14,10 +15,17 @@ beforeEach(() => testConn.seed.run())
 
 afterAll(() => testConn.destroy())
 
+describe('dbGetVendorFromVendorPayment', () => {
+  it('should return the name of the vendor who made the payment', () => {
+    dbGetVendorFromVendorPayment(8).then((res) => {
+      expect(res?.name).toBe('John Harris')
+    })
+  })
+})
+
 describe('dbGetVendorAccounts', () => {
   it('should return a list of all vendors with their id, name and amount owed by ROSS', () => {
     dbGetVendorAccounts(testConn).then((res) => {
-      console.log(res)
       expect(res).toHaveLength(7)
     })
   })
@@ -32,7 +40,7 @@ describe('dbGetVendorAccount', () => {
       expect(res).toEqual({ id: 2, name: 'Ben Dodd', totalOwing: 700 - -500 })
     })
     dbGetVendorAccount({ id: 42, name: 'John Harris' }, testConn).then((res) => {
-      expect(res).toEqual({ id: 42, name: 'John Harris', totalOwing: 2800 - 6000 })
+      expect(res).toEqual({ id: 42, name: 'John Harris', totalOwing: 2800 - 7700 })
     })
   })
   it.todo('should take into account transfers between vendors')
@@ -41,7 +49,7 @@ describe('dbGetVendorAccount', () => {
 describe('dbGetTotalVendorPayments', () => {
   it('should return the total payments made to the vendor', () => {
     dbGetTotalVendorPayments(42, testConn).then((res) => {
-      expect(res).toBe(6000)
+      expect(res).toBe(7700)
     })
   })
   it('should not count deleted vendor payments', () => {

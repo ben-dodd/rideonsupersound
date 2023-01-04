@@ -176,7 +176,11 @@ export function dbGetVendorByUid(uid, db = connection) {
 }
 
 export function dbGetVendorFromVendorPayment(vendorPaymentId, db = connection) {
-  return fullVendorQuery(db).join('vendor_payment', 'vendor_payment.id', vendorPaymentId).first()
+  return db('vendor_payment')
+    .leftJoin('vendor', 'vendor.id', 'vendor_payment.vendor_id')
+    .select('vendor.id', 'vendor.name')
+    .where('vendor_payment.id', vendorPaymentId)
+    .first()
 }
 
 export function dbUpdateVendor(vendor, id, db = connection) {

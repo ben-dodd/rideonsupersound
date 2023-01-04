@@ -96,7 +96,6 @@ export function getAllSaleItems(db = connection) {
 }
 
 export function dbCreateSale(sale, db = connection) {
-  console.log('CREATING SALE...', sale)
   return db('sale')
     .insert(js2mysql(sale))
     .then((rows) => rows[0])
@@ -330,7 +329,7 @@ async function handleSaveSaleTransaction(trans, sale, db) {
           }
           vendorPaymentId = await dbCreateVendorPayment(vendorPayment, db)
           delete trans?.vendor
-          newSaleTransaction = { ...trans, vendorPayment: vendorPaymentId }
+          newSaleTransaction = { ...trans, vendorPaymentId }
         }
         if (trans?.paymentMethod === PaymentMethodTypes.GiftCard) {
           if (trans?.isRefund) {

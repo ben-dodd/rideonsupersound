@@ -68,5 +68,14 @@ exports.seed = (knex) =>
           type: VendorPaymentTypes.TransferFrom,
           is_deleted: 0,
         },
+        {
+          id: 8,
+          clerk_id: 1,
+          vendor_id: 42,
+          register_id: 100,
+          amount: 1700,
+          type: VendorPaymentTypes.Sale,
+          is_deleted: 0,
+        },
       ]),
     )

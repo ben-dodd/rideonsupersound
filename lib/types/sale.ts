@@ -77,7 +77,7 @@ export interface SaleTransactionObject {
   amount?: number
   cashReceived?: number
   changeGiven?: number
-  vendorPayment?: number
+  vendorPaymentId?: number
   giftCardId?: number
   giftCardRemaining?: number
   giftCardTaken?: boolean

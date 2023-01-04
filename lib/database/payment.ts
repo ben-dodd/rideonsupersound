@@ -7,23 +7,19 @@ export function dbGetAllVendorPayments(db = connection) {
 }
 
 export function dbGetVendorPaymentsByVendorId(vendorId, db = connection) {
-  return db('vendor_payment')
-    .select('date', 'amount')
-    .where({ vendor_id: vendorId })
-    .andWhere(`is_deleted`, 0)
+  return db('vendor_payment').select('date', 'amount').where({ vendor_id: vendorId }).andWhere(`is_deleted`, 0)
 }
 
 export function dbGetVendorPaymentsByVendorUid(vendorUid, db = connection) {
   return dbGetVendorIdFromUid(vendorUid).then((vendorId) =>
-    db('vendor_payment')
-      .where({ vendor_id: vendorId })
-      .andWhere(`is_deleted`, 0)
-      .orderBy('date', 'desc')
+    db('vendor_payment').where({ vendor_id: vendorId }).andWhere(`is_deleted`, 0).orderBy('date', 'desc'),
   )
 }
 
 export function dbCreateVendorPayment(payment, db = connection) {
-  return db('vendor_payment').insert(js2mysql(payment))
+  return db('vendor_payment')
+    .insert(js2mysql(payment))
+    .then((rows) => rows[0])
 }
 
 export function dbUpdateVendorPayment(id, update, db = connection) {

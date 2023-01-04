@@ -9,16 +9,18 @@ import { getCartItemTotal, writeCartItemPriceBreakdown } from 'lib/functions/sel
 import { useAppStore } from 'lib/store'
 import { useBasicStockItem, useStockList } from 'lib/api/stock'
 import { priceCentsString } from 'lib/utils'
-
-type SellListItemProps = {
-  cartItem: SaleItemObject
-  deleteCartItem?: Function
-}
+import { deleteSale, deleteSaleItem } from 'lib/api/sale'
+import { ViewProps } from 'lib/store/types'
+import { useClerk } from 'lib/api/clerk'
+import { useCurrentRegisterId } from 'lib/api/register'
 
 // TODO make list items share more components
 
-export default function SellListItem({ cartItem, deleteCartItem }: SellListItemProps) {
-  const { openConfirm, setCartItem } = useAppStore()
+export default function SellListItem({ cartItem }: { cartItem: SaleItemObject }) {
+  const { cart, openConfirm, setCartItem, setCart, resetCart, closeView, setAlert } = useAppStore()
+  const { sale = {}, items = [], transactions = [] } = cart || {}
+  const { clerk } = useClerk()
+  const { registerId } = useCurrentRegisterId()
   const { stockItem } = useBasicStockItem(`${cartItem?.itemId}`)
   const { stockList = [] } = useStockList()
   const stockListItem = stockList.find((stock) => stock?.id === cartItem?.itemId) || {}
@@ -46,6 +48,28 @@ export default function SellListItem({ cartItem, deleteCartItem }: SellListItemP
         action: () => onChangeCart({ target: { value: newQuantity } }, 'quantity'),
       })
     } else onChangeCart(e, 'quantity')
+  }
+
+  function deleteCartItem(cartItem) {
+    let updatedCartItems = items?.filter((item) => item?.itemId !== cartItem?.itemId)
+    if (cartItem?.id)
+      // Cart has been saved to the database, delete sale_item
+      deleteSaleItem(cartItem?.id)
+    if (updatedCartItems.length < 1 && transactions?.length < 1) {
+      // No items left and no transactions, delete cart
+      closeView(ViewProps.cart)
+      resetCart()
+      if (sale?.id) deleteSale(sale?.id, { clerk, registerId })
+    } else {
+      setCart({
+        items: updatedCartItems,
+      })
+    }
+    setAlert({
+      open: true,
+      type: 'success',
+      message: `ITEM REMOVED FROM CART`,
+    })
   }
 
   return (
