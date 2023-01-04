@@ -120,11 +120,18 @@ export function dbCreateHold(hold, db = connection) {
 }
 
 export function dbUpdateSale(id, update, db = connection) {
+  const newUpdate = { ...update }
+  if (newUpdate?.weather) delete newUpdate.weather
   return db('sale')
     .where({ id })
-    .update(js2mysql(update))
-    .then(() => id)
-    .catch((e) => Error(e.message))
+    .update(js2mysql(newUpdate))
+    .then(() => {
+      return id
+    })
+    .catch((e) => {
+      // console.log(e)
+      Error(e.message)
+    })
 }
 
 export function dbCreateSaleItem(saleItem, db = connection) {
@@ -142,7 +149,7 @@ export function dbUpdateSaleItem(id, update, db = connection) {
 }
 
 export function dbDeleteSaleItem(id, db = connection) {
-  return dbUpdateSaleItem(id, { isDeleted: true }).catch((e) => Error(e.message))
+  return dbUpdateSaleItem(id, { isDeleted: true }, db).catch((e) => Error(e.message))
 }
 
 export function dbCreateSaleTransaction(saleTransaction, db = connection) {
@@ -160,16 +167,17 @@ export function dbUpdateSaleTransaction(id, update, db = connection) {
 }
 
 export async function dbSaveCart(cart, prevState, db = connection) {
+  console.log('Saving cart...', cart, prevState)
   return db
     .transaction(async (trx) => {
       const { sale = {}, items = [], transactions = [] } = cart || {}
       const newSale = { ...sale }
+      newSale.state = newSale?.state || SaleStateTypes.InProgress
       const newItems = []
       const newTransactions = []
       if (newSale?.id) {
         dbUpdateSale(newSale?.id, newSale, trx)
       } else {
-        newSale.state = newSale?.state || SaleStateTypes.InProgress
         newSale.id = await dbCreateSale(newSale, trx)
       }
       if (sale?.isMailOrder && sale?.state === SaleStateTypes.Completed) {
@@ -197,7 +205,9 @@ export async function dbSaveCart(cart, prevState, db = connection) {
         const newTrans = await handleSaveSaleTransaction(trans, newSale, trx)
         newTransactions.push(newTrans)
       }
-      return { ...cart, sale: newSale, items: newItems, transactions: newTransactions }
+      const newCart = { ...cart, sale: newSale, items: newItems, transactions: newTransactions }
+      console.log('new Cart issss', newCart)
+      return newCart
     })
     .then((cart) => {
       console.log(cart)
@@ -263,7 +273,7 @@ async function handleSaveSaleItem(item, sale, prevState, db) {
         newItem.id = id
       } else {
         // Item was already in sale, update in case discount, quantity has changed or item has been deleted
-        dbUpdateSaleItem(item?.id, item, db)
+        dbUpdateSaleItem(item?.id, item, trx)
       }
       return newItem
     })
@@ -273,7 +283,12 @@ async function handleSaveSaleItem(item, sale, prevState, db) {
 
 async function handleStockMovements(item, sale, prevState, db) {
   // Add stock movement if it's a regular stock item
-  if (!item?.isGiftCard && !item?.isMiscItem) {
+  if (
+    !item?.isGiftCard &&
+    !item?.isMiscItem &&
+    (sale?.state === SaleStateTypes.Completed ||
+      (sale?.state === SaleStateTypes.Layby && prevState !== SaleStateTypes.Layby))
+  ) {
     let stockMovement = {
       stockId: item?.itemId,
       clerkId: sale?.saleClosedBy,
@@ -327,22 +342,22 @@ async function handleSaveSaleTransaction(trans, sale, db) {
             date: dayjs.utc().format(),
             registerId: trans?.registerId,
           }
-          vendorPaymentId = await dbCreateVendorPayment(vendorPayment, db)
+          vendorPaymentId = await dbCreateVendorPayment(vendorPayment, trx)
           delete trans?.vendor
           newSaleTransaction = { ...trans, vendorPaymentId }
         }
         if (trans?.paymentMethod === PaymentMethodTypes.GiftCard) {
           if (trans?.isRefund) {
             // Gift card is new, create new one
-            let giftCardId = await dbCreateStockItem(trans?.giftCardUpdate, db)
+            let giftCardId = await dbCreateStockItem(trans?.giftCardUpdate, trx)
             newSaleTransaction = { ...newSaleTransaction, giftCardId }
           } else {
             // Update gift card
-            await dbUpdateStockItem(trans?.giftCardUpdate, trans?.giftCardUpdate?.id, db)
+            await dbUpdateStockItem(trans?.giftCardUpdate, trans?.giftCardUpdate?.id, trx)
           }
           delete newSaleTransaction?.giftCardUpdate
         }
-        const id = await dbCreateSaleTransaction(newSaleTransaction, db)
+        const id = await dbCreateSaleTransaction(newSaleTransaction, trx)
         return { ...newSaleTransaction, id }
       })
       .then((trans) => trans)

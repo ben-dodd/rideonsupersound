@@ -112,11 +112,13 @@ const Actions = ({ totalRemaining }) => {
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-4">
-        {buttons?.map((button, i) => (
-          <Button key={i} button={button} />
-        ))}
-      </div>
+      {totalRemaining !== 0 && (
+        <div className="grid grid-cols-2 gap-4">
+          {buttons?.map((button, i) => (
+            <Button key={i} button={button} />
+          ))}
+        </div>
+      )}
       <Button button={completeButton} />
     </>
   )
