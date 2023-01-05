@@ -70,7 +70,7 @@ export default function ShoppingCartActions() {
     })
   }
   return (
-    <div>
+    <div className="flex">
       <Tooltip title={sale?.state === SaleStateTypes.Layby ? 'Continue Layby' : 'Park sale'}>
         <button
           className="icon-button-small-white"

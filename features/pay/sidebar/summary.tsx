@@ -24,8 +24,8 @@ const Summary = ({ totalRemaining }) => {
         {totalRemaining !== 0 && (
           <div className="text-2xl text-green-200 font-bold p-2 rounded-md bg-black">
             {totalRemaining < 0
-              ? `${Math.abs(totalRemaining || 0)?.toFixed(2)}`
-              : `${(totalRemaining || 0)?.toFixed(2)}`}
+              ? `$${Math.abs(totalRemaining || 0)?.toFixed(2)}`
+              : `$${(totalRemaining || 0)?.toFixed(2)}`}
           </div>
         )}
       </div>

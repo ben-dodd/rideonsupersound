@@ -111,7 +111,7 @@ const Actions = ({ totalRemaining }) => {
   }
 
   return (
-    <>
+    <div>
       {totalRemaining !== 0 && (
         <div className="grid grid-cols-2 gap-4">
           {buttons?.map((button, i) => (
@@ -120,7 +120,7 @@ const Actions = ({ totalRemaining }) => {
         </div>
       )}
       <Button button={completeButton} />
-    </>
+    </div>
   )
 }
 

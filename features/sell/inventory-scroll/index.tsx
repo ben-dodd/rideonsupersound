@@ -10,7 +10,7 @@ export default function InventoryScroll() {
   const { stockList = [], isStockListLoading = true } = useStockList()
   const { sellSearchBar } = useAppStore()
   return (
-    <div className="h-inventory overflow-y-scroll px-2">
+    <div className="h-content overflow-y-scroll px-2">
       {isStockListLoading ? (
         <Loading />
       ) : sellSearchBar ? (

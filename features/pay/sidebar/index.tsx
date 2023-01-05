@@ -11,30 +11,38 @@ export default function Pay({ totalRemaining }) {
   // TODO if totalRemaining hasn't loaded it should show loading screen
 
   return (
-    <div className="flex flex-col justify-between h-menu">
-      <Summary totalRemaining={totalRemaining} />
-      {totalRemaining !== 0 && <PayButtons totalRemaining={totalRemaining} />}
-      {/* <CustomerForm />
+    <div className="flex flex-col justify-between h-main">
+      {totalRemaining !== undefined && totalRemaining !== null ? (
+        <>
+          <div>
+            <Summary totalRemaining={totalRemaining} />
+            {totalRemaining !== 0 && <PayButtons totalRemaining={totalRemaining} />}
+            {/* <CustomerForm />
       <MailOrderForm /> */}
-      {totalRemaining !== 0 && (
-        <TextField
-          inputLabel="Note"
-          multiline
-          rows={2}
-          value={sale?.note}
-          onChange={(e: any) => setCartSale({ note: e.target.value })}
-        />
+            {totalRemaining !== 0 && (
+              <TextField
+                inputLabel="Note"
+                multiline
+                rows={2}
+                value={sale?.note}
+                onChange={(e: any) => setCartSale({ note: e.target.value })}
+              />
+            )}
+          </div>
+          {totalRemaining === 0 && (
+            <Image
+              className="m-auto inline-block"
+              src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/reaper.png`}
+              alt="Sale Completed"
+              width={200}
+              height={200}
+            />
+          )}
+          <Actions totalRemaining={totalRemaining} />
+        </>
+      ) : (
+        <div className="w-full h-full flex justify-center items-center">...</div>
       )}
-      {totalRemaining === 0 && (
-        <Image
-          className="m-auto inline-block"
-          src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/reaper.png`}
-          alt="Sale Completed"
-          width={200}
-          height={200}
-        />
-      )}
-      <Actions totalRemaining={totalRemaining} />
     </div>
   )
 }

@@ -4,6 +4,6 @@ export default function TableContainer({ loading, children }) {
       <div className="loading-icon" />
     </div>
   ) : (
-    <div className="h-menu w-board overflow-x-hidden bg-white">{children}</div>
-  );
+    <div className="h-main w-board overflow-x-hidden bg-white">{children}</div>
+  )
 }

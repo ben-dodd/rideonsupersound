@@ -19,7 +19,7 @@ export default function Layout({ children }) {
         <title>R.O.S.S. P.O.S.</title>
       </Head>
       <Nav />
-      <div className="flex h-menu relative overflow-y-hidden">
+      <div className="flex h-main relative overflow-y-hidden">
         <Menu />
         <div className="h-full w-full absolute sm:static">{children}</div>
         {view?.helpDialog && <HelpDialog />}

@@ -45,6 +45,6 @@ export function useSaleProperties(cart): any {
       itemList: writeItemList(stockTable, items), // List of items written in full
     })
   }, [items, sale, transactions, stockTable])
-  console.log(properties)
+  if (!stockTable) return null
   return properties
 }

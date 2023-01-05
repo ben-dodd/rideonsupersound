@@ -171,7 +171,7 @@ export function dbUpdateSaleTransaction(id, update, db = connection) {
 }
 
 export async function dbSaveCart(cart, prevState, db = connection) {
-  console.log('Saving cart...', cart, prevState)
+  // TODO add itemList, totalSell etc. once sale completed
   return db
     .transaction(async (trx) => {
       const { sale = {}, items = [], transactions = [], registerId = null } = cart || {}

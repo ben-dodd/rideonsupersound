@@ -13,7 +13,7 @@ const PayScreen = ({ totalRemaining }) => {
   }, [sale, items])
 
   return (
-    <div className="flex items-start overflow-auto w-full h-menu">
+    <div className="flex items-start overflow-auto w-full h-main">
       <div className="w-2/3">
         <SaleSummary cart={cart} />
       </div>

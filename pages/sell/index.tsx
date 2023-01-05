@@ -14,9 +14,9 @@ import { useAppStore } from 'lib/store'
 import { useCurrentRegister } from 'lib/api/register'
 import { useRouter } from 'next/router'
 import Layout from 'components/layout'
-import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+import withRoleAuthorization from 'components/auth/roleAuthorization'
 
-export default function SellPage() {
+function SellPage() {
   const { currentRegister, isCurrentRegisterLoading } = useCurrentRegister()
   const { view, openView, closeView } = useAppStore()
   const router = useRouter()
@@ -36,12 +36,11 @@ export default function SellPage() {
     preventDefaultTouchmoveEvent: true,
   })
 
-  if (!currentRegister && !isCurrentRegisterLoading)
-    router.push('/register/open')
+  if (!currentRegister && !isCurrentRegisterLoading) router.push('/register/open')
 
   return (
     <div className={`flex relative overflow-x-hidden`} {...handlers}>
-      <div className="w-full sm:w-2/3 bg-gray-100">
+      <div className="h-main w-full sm:w-2/3 bg-gray-100">
         <SellSearchBar />
         <InventoryScroll />
       </div>
@@ -59,4 +58,4 @@ export default function SellPage() {
 
 SellPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export const getServerSideProps = withPageAuthRequired()
+export default withRoleAuthorization(SellPage, ['Clerk'])

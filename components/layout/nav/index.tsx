@@ -27,20 +27,17 @@ export default function Nav() {
   console.log(page)
 
   return (
-    <nav className={`py-2 ${bg[clerk?.colour]} text-white h-nav`}>
+    <nav className={`py-2 ${bg[clerk?.colour]} text-white h-navbar`}>
       <div className="flex justify-between items-center">
         <div className="flex items-center">
-          <div className="ml-4 text-black text-4xl font-black">
-            {clerk?.name?.toUpperCase()} @
-          </div>
+          <div className="ml-4 text-black text-2xl font-black">{clerk?.name?.toUpperCase()} @</div>
           <div className="ml-4">
             {/*<div className="sm:hidden">{`${clerk?.name?.toUpperCase()} @ R.O.S.S.`}</div>
             <div className="hidden sm:block">{`${clerk?.name?.toUpperCase()} @ RIDE ON SUPER SOUND`}</div>*/}
             <img
               src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/POS-RIDEONSUPERSOUNDLOGO.png`}
               alt="Ride On Super Sound"
-              height="42px"
-              width="493px"
+              width="250px"
             />
           </div>
         </div>
@@ -52,10 +49,7 @@ export default function Nav() {
           {page === 'jobs' && <TaskNavActions />}
           {page === 'stocktake' && <StocktakeNavActions />}
           {page === 'sale' && <SaleNavActions />}
-          <button
-            onClick={() => openView(ViewProps.helpDialog)}
-            className="text-brown-dark hover:text-brown"
-          >
+          <button onClick={() => openView(ViewProps.helpDialog)} className="text-brown-dark hover:text-brown">
             <HelpIcon />
           </button>
         </div>

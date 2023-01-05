@@ -19,9 +19,7 @@ export default function OpenRegisterScreen() {
   // State
   const [till, setTill] = useState({})
   const [notes, setNotes] = useState('')
-  const [openAmount, setOpenAmount]: [string, Function] = useState(
-    `${getAmountFromCashMap(till)}`
-  )
+  const [openAmount, setOpenAmount]: [string, Function] = useState(`${getAmountFromCashMap(till)}`)
   const [loading, setLoading] = useState(false)
 
   // Load
@@ -39,10 +37,7 @@ export default function OpenRegisterScreen() {
     }
     setLoading(true)
     // Save register to DB and mutate register with returned ID number
-    await mutateRegisterID(
-      saveAndOpenRegister(register, till, clerk, logs, mutateLogs),
-      false
-    )
+    await mutateRegisterID(saveAndOpenRegister(register, till, clerk, logs, mutateLogs), false)
     setLoading(false)
 
     // Reset State
@@ -72,11 +67,7 @@ export default function OpenRegisterScreen() {
       'twenty_cent',
       'ten_cent',
     ].forEach((denom) => {
-      if (
-        till[denom] &&
-        (isNaN(parseInt(till[denom])) || parseInt(till[denom]) < 0)
-      )
-        error = true
+      if (till[denom] && (isNaN(parseInt(till[denom])) || parseInt(till[denom]) < 0)) error = true
     })
     return error
   }
@@ -85,18 +76,12 @@ export default function OpenRegisterScreen() {
   const invalidOpenAmount = isNaN(parseFloat(`${openAmount}`))
 
   return (
-    <div
-      className={`flex justify-center bg-white h-menu${
-        page !== 'sell' || registerId > 0 ? ' hidden' : ''
-      }`}
-    >
+    <div className={`flex justify-center bg-white h-main${page !== 'sell' || registerId > 0 ? ' hidden' : ''}`}>
       <div className="flex flex-col justify-center h-full pt-4 max-w-md">
-        <div className="flex justify-center text-5xl font-bold pb-4">
-          REGISTER CLOSED
-        </div>
+        <div className="flex justify-center text-5xl font-bold pb-4">REGISTER CLOSED</div>
         <div className="text-sm">
-          Open register by entering the total float in the till. Either enter
-          the notes and coins or enter the total directly.
+          Open register by entering the total float in the till. Either enter the notes and coins or enter the total
+          directly.
         </div>
         <TextField
           startAdornment="$"
@@ -108,17 +93,9 @@ export default function OpenRegisterScreen() {
           onChange={(e: any) => setOpenAmount(e.target.value)}
         />
         <CashMap till={till} setTill={setTill} />
-        <TextField
-          inputLabel="Notes"
-          value={notes}
-          onChange={(e: any) => setNotes(e.target.value)}
-          multiline
-        />
+        <TextField inputLabel="Notes" value={notes} onChange={(e: any) => setNotes(e.target.value)} multiline />
         <div className="flex">
-          <button
-            className="modal__button--cancel"
-            onClick={() => setBypassRegister(true)}
-          >
+          <button className="modal__button--cancel" onClick={() => setBypassRegister(true)}>
             Bypass Register
           </button>
           <button

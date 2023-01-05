@@ -6,9 +6,9 @@ export default function SidebarContainer({ show, title, buttons, children }) {
     <div
       className={`absolute top-0 transition-offset duration-300 ${
         show ? 'left-0 sm:left-2/3' : 'left-full hidden'
-      } h-full w-full bg-yellow-200 sm:w-1/3 sm:h-menu`}
+      } h-full w-full bg-yellow-200 sm:w-1/3 sm:h-main`}
     >
-      <div className="flex flex-col h-menu px-2 bg-blue-300 text-black">
+      <div className="flex flex-col h-main px-2 bg-blue-300 text-black">
         {title && <div className="text-lg font-extrabold my-2 tracking-wide self-center">{title}</div>}
         {children}
         {buttons ? (
@@ -33,4 +33,4 @@ export default function SidebarContainer({ show, title, buttons, children }) {
 }
 
 //   show ? "left-0" : "left-full"
-// } sm:left-2/3 h-full w-full bg-yellow-200 sm:w-1/3 sm:h-menu`}
+// } sm:left-2/3 h-full w-full bg-yellow-200 sm:w-1/3 sm:h-main`}

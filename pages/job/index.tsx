@@ -12,15 +12,9 @@ export default function JobsPage() {
   return (
     <>
       <div className={`flex flex-col overflow-x-hidden`}>
-        <div className="bg-col10 text-4xl font-bold uppercase text-white p-2 mb-1">
-          Jobs
-        </div>
-        <div className="h-menu w-full overflow-y-scroll px-2 bg-white">
-          <Tabs
-            tabs={['Restocking', 'Mail Orders', 'Other Jobs']}
-            value={tab}
-            onChange={setTab}
-          />
+        <div className="bg-col10 text-4xl font-bold uppercase text-white p-2 mb-1">Jobs</div>
+        <div className="h-main w-full overflow-y-scroll px-2 bg-white">
+          <Tabs tabs={['Restocking', 'Mail Orders', 'Other Jobs']} value={tab} onChange={setTab} />
           <div hidden={tab !== 0}>
             <RestockTaskView />
           </div>

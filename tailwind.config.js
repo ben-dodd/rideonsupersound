@@ -1,12 +1,5 @@
 module.exports = {
-  content: [
-    './app/**/*.tsx',
-    './components/**/*.tsx',
-    './features/**/*.tsx',
-    './pages/**/*.tsx',
-    './views/**/*.tsx',
-    './index.tsx',
-  ],
+  content: ['./app/**/*.tsx', './components/**/*.tsx', './features/**/*.tsx', './pages/**/*.tsx', './index.tsx'],
   // future: {
   //   removeDeprecatedGapUtilities: true,
   //   purgeLayersByDefault: true,
@@ -85,41 +78,25 @@ module.exports = {
           DEFAULT: '#ff87ff',
           light: '#ffdeff',
         },
-        // nick: {
-        //   DEFAULT: "#faf989",
-        // },
-        // mieke: {
-        //   DEFAULT: "#d59ae4",
-        // },
-        // michael: {
-        //   DEFAULT: "#f9da88",
-        // },
-        // john: {
-        //   DEFAULT: "#f99bad",
-        // },
-        // isaac: {
-        //   DEFAULT: "#98f991",
-        // },
-        // guest: {
-        //   DEFAULT: "#97cafa",
-        // },
         brown: {
           dark: '#423e3e',
           DEFAULT: '#7c7474',
           light: '#908989',
         },
       },
-      // fontFamily: { sans: ["OpenDyslexic", "sans-serif"] },
-      // fontFamily: { sans: ["Varela Round", "sans-serif"] },
-      // fontFamily: { sans: ["Atkinson Hyperlegible", "sans-serif"] },
-      // fontFamily: { sans: ["Courier New"] },
       fontFamily: { sans: ['Nunito', 'sans-serif'] },
       height: {
-        nav: '4rem',
-        menu: `calc(100vh - 4rem)`,
-        menusm: `calc(100vh - 5rem)`,
-        search: '4rem',
-        inventory: `calc(100vh - 8rem)`,
+        navbar: '3rem',
+        main: `calc(100vh - 3rem)`,
+        header: '4rem',
+        headerlg: '6rem',
+        content: `calc(100vh - 7rem)`,
+        contentsm: `calc(100vh - 9rem)`,
+        // nav: '4rem',
+        // menu: `calc(100vh - 4rem)`,
+        // menusm: `calc(100vh - 5rem)`,
+        // search: '4rem',
+        // inventory: `calc(100vh - 8rem)`,
         dialoglg: `calc(100vh - 12rem)`,
         dialog: `calc(100vh - 16rem)`,
         dialogsm: `calc(100vh - 24rem)`,

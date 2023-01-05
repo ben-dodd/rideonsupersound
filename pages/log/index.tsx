@@ -10,20 +10,12 @@ export default function LogPage() {
 
   return (
     <div className={`flex flex-col overflow-x-hidden`}>
-      <div className="bg-col9 text-4xl font-bold uppercase text-white p-2 mb-1">
-        Logs
-      </div>
+      <div className="bg-col9 text-4xl font-bold uppercase text-white p-2 mb-1">Logs</div>
       <Tabs tabs={['Logs', 'Stock Movement']} value={tab} onChange={setTab} />
-      <div
-        hidden={tab !== 0}
-        className="h-menu w-full overflow-y-scroll px-2 bg-white"
-      >
+      <div hidden={tab !== 0} className="h-main w-full overflow-y-scroll px-2 bg-white">
         <LogView />
       </div>
-      <div
-        hidden={tab !== 1}
-        className="h-menu w-full overflow-y-scroll px-2 bg-white"
-      >
+      <div hidden={tab !== 1} className="h-main w-full overflow-y-scroll px-2 bg-white">
         <StockMovementView />
       </div>
     </div>
