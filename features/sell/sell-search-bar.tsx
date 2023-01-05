@@ -18,7 +18,7 @@ export default function SellSearchBar() {
   }
 
   return (
-    <div className="h-header py-2 px-2 mr-2 mb-4 flex w-full">
+    <div className="h-header py-2 px-2 flex w-full">
       <div
         className={`flex flex-1 my-1 items-center ring-1 ring-gray-400 w-auto bg-gray-100 hover:bg-gray-200 ${
           sellSearchBar && 'bg-pink-200 hover:bg-pink-300'

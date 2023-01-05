@@ -37,7 +37,7 @@ export default function Nav() {
             <img
               src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/POS-RIDEONSUPERSOUNDLOGO.png`}
               alt="Ride On Super Sound"
-              width="250px"
+              width="300px"
             />
           </div>
         </div>
