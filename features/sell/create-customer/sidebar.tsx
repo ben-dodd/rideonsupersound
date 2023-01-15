@@ -23,33 +23,43 @@ export default function CreateCustomerSidebar() {
   } = useAppStore()
   const [nameConflict, setNameConflict] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [newCustomer, setNewCustomer] = useState({ ...customer })
+
+  useEffect(() => {
+    setNewCustomer({ ...customer })
+  }, [customer])
 
   const handleClickCancel = () => {
     setCartSale({ customerId: null })
     closeSidebar()
   }
 
-  const handleClickOK = () =>
-    customer?.id ? onClickUpdateCustomer() : onClickCreateCustomer()
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    handleClickOK()
+  }
+
+  const handleClickOK = () => (customer?.id ? onClickUpdateCustomer() : onClickCreateCustomer())
 
   useEffect(() => {
-    setNameConflict(checkCustomerNameConflict(customer, customers))
-  }, [customers, customer])
+    setNameConflict(checkCustomerNameConflict(newCustomer, customers))
+  }, [customers, newCustomer])
   const { mutate } = useSWRConfig()
 
   const handleChange = (e) => {
-    setCustomer({ [e.target.name]: e.target.value })
+    setNewCustomer({ ...newCustomer, [e.target.name]: e.target.value })
   }
 
   function closeSidebar() {
+    setNewCustomer({})
     resetCustomer()
     closeView(ViewProps.createCustomer)
   }
 
   async function onClickCreateCustomer() {
     setSubmitting(true)
-    const newCustomer = await createCustomer(customer, clerk)
-    if (newCustomer instanceof Error) {
+    const createdCustomer = await createCustomer(newCustomer, clerk)
+    if (createdCustomer instanceof Error) {
       setAlert({
         open: true,
         type: 'error',
@@ -57,8 +67,7 @@ export default function CreateCustomerSidebar() {
       })
     } else {
       mutate('customer')
-      setCustomer(newCustomer)
-      setCartSale({ customerId: newCustomer?.id })
+      setCustomer(createdCustomer)
       closeSidebar()
     }
     setSubmitting(false)
@@ -66,7 +75,10 @@ export default function CreateCustomerSidebar() {
 
   async function onClickUpdateCustomer() {
     setSubmitting(true)
-    updateCustomer(customer, customer?.id)
+    await updateCustomer(newCustomer, newCustomer?.id)
+    mutate('customer')
+    setCustomer(newCustomer)
+    setSubmitting(false)
     closeSidebar()
   }
 
@@ -78,16 +90,16 @@ export default function CreateCustomerSidebar() {
     },
     {
       type: 'ok',
-      onClick: handleClickOK,
-      disabled: !customer?.name || nameConflict,
-      text: customer?.id ? 'UPDATE' : submitting ? 'CREATING...' : 'CREATE',
+      disabled: !newCustomer?.name || nameConflict,
+      text: newCustomer?.id ? 'UPDATE' : submitting ? 'CREATING...' : 'CREATE',
     },
   ]
 
   return (
     <SidebarContainer
       show={view?.createCustomer}
-      title={customer?.id ? 'Edit Customer' : 'Create New Customer'}
+      title={newCustomer?.id ? 'Edit Customer' : 'Create New Customer'}
+      handleSubmit={handleSubmit}
       buttons={buttons}
     >
       <TextField
@@ -96,28 +108,18 @@ export default function CreateCustomerSidebar() {
         fieldRequired
         error={nameConflict}
         errorText="Name already exists."
-        displayOnly={Boolean(customer?.id)}
-        value={customer?.name || ''}
+        displayOnly={Boolean(newCustomer?.id)}
+        value={newCustomer?.name || ''}
         onChange={handleChange}
       />
-      <TextField
-        id="email"
-        inputLabel="Email"
-        value={customer?.email || ''}
-        onChange={handleChange}
-      />
-      <TextField
-        id="phone"
-        inputLabel="Phone"
-        value={customer?.phone || ''}
-        onChange={handleChange}
-      />
+      <TextField id="email" inputLabel="Email" value={newCustomer?.email || ''} onChange={handleChange} />
+      <TextField id="phone" inputLabel="Phone" value={newCustomer?.phone || ''} onChange={handleChange} />
       <TextField
         id="postalAddress"
         inputLabel="Postal Address"
         multiline
         rows={4}
-        value={customer?.postalAddress || ''}
+        value={newCustomer?.postalAddress || ''}
         onChange={handleChange}
       />
       <TextField
@@ -125,7 +127,7 @@ export default function CreateCustomerSidebar() {
         inputLabel="Notes"
         multiline
         rows={4}
-        value={customer?.note || ''}
+        value={newCustomer?.note || ''}
         onChange={handleChange}
       />
     </SidebarContainer>

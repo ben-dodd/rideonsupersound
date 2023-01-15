@@ -1,7 +1,7 @@
 import { ModalButton } from 'lib/types'
 
 // TODO make title left aligned with actions on right
-export default function SidebarContainer({ show, title, buttons, children }) {
+export default function SidebarContainer({ show, title, buttons, handleSubmit, children }) {
   return (
     <div
       className={`absolute top-0 transition-offset duration-300 ${
@@ -10,23 +10,26 @@ export default function SidebarContainer({ show, title, buttons, children }) {
     >
       <div className="flex flex-col h-main px-2 bg-blue-300 text-black">
         {title && <div className="text-lg font-extrabold my-2 tracking-wide self-center">{title}</div>}
-        {children}
-        {buttons ? (
-          <div className="flex px-2 -mr-4 mb-4">
-            {buttons?.map((button: ModalButton, i: number) => (
-              <button
-                key={i}
-                className={`modal__button--${button?.type}`}
-                disabled={button?.disabled}
-                onClick={() => button?.onClick()}
-              >
-                {button?.text}
-              </button>
-            ))}
-          </div>
-        ) : (
-          <div />
-        )}
+        <form onSubmit={handleSubmit}>
+          {children}
+          {buttons ? (
+            <div className="flex px-2 -mr-4 mb-4">
+              {buttons?.map((button: ModalButton, i: number) => (
+                <button
+                  key={i}
+                  type={button?.type === 'ok' ? 'submit' : 'button'}
+                  className={`modal__button--${button?.type}`}
+                  disabled={button?.disabled}
+                  onClick={() => button?.onClick?.()}
+                >
+                  {button?.text}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div />
+          )}
+        </form>
       </div>
     </div>
   )

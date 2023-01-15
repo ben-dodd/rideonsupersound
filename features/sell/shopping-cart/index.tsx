@@ -8,41 +8,17 @@ import PayIcon from '@mui/icons-material/ShoppingCart'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useSaleProperties } from 'lib/hooks'
-import { createSale, deleteSale, deleteSaleItem } from 'lib/api/sale'
+import { createSale } from 'lib/api/sale'
 import { useClerk } from 'lib/api/clerk'
-import { useCurrentRegisterId } from 'lib/api/register'
 import { useRouter } from 'next/router'
 import { SaleStateTypes } from 'lib/types/sale'
 
 export default function ShoppingCart() {
-  const { cart, view, setCart, setCartSale, resetCart, setAlert, closeView, openView } = useAppStore()
+  const { cart, view, setCartSale, openView } = useAppStore()
   const { sale = {}, items = [], transactions = [] } = cart || {}
   const { clerk } = useClerk()
-  const { registerId } = useCurrentRegisterId()
   const router = useRouter()
-  const [loadingSale] = useState(false)
-
-  function deleteCartItem(cartItem) {
-    let updatedCartItems = items?.filter((item) => item?.itemId !== cartItem?.itemId)
-    if (cartItem?.id)
-      // Cart has been saved to the database, delete sale_item
-      deleteSaleItem(cartItem?.id)
-    if (updatedCartItems.length < 1 && transactions?.length < 1) {
-      // No items left and no transactions, delete cart
-      closeView(ViewProps.cart)
-      resetCart()
-      if (sale?.id) deleteSale(sale?.id, { clerk, registerId })
-    } else {
-      setCart({
-        items: updatedCartItems,
-      })
-    }
-    setAlert({
-      open: true,
-      type: 'success',
-      message: `ITEM REMOVED FROM CART`,
-    })
-  }
+  const [loadingSale, setLoadingSale] = useState(false)
 
   const { totalPrice, totalStoreCut, totalRemaining, totalPaid } = useSaleProperties(cart)
 
@@ -75,16 +51,6 @@ export default function ShoppingCart() {
             </Tooltip>
           )}
         </div>
-        {transactions?.length > 0 ? (
-          <div className="flex justify-end mt-2">
-            <div className="self-center">TOTAL PAID</div>
-            <div className={`self-center text-right ml-7 ${totalPaid < 0 ? 'text-red-500' : 'text-black'}`}>
-              {totalPaid < 0 && '-'}${Math.abs(totalPaid)?.toFixed(2)}
-            </div>
-          </div>
-        ) : (
-          <div />
-        )}
         <div className="pt-4">
           <div className="flex justify-between">
             <button
@@ -96,30 +62,48 @@ export default function ShoppingCart() {
               HOLD
             </button>
             <div>
-              <div className="flex justify-end mt-2">
+              {sale?.isMailOrder && (
+                <div className="flex justify-between mt-1">
+                  <div className="self-center">POSTAGE</div>
+                  <div className={`self-center text-right ml-4 text-black`}>
+                    ${sale?.postage ? Number(sale?.postage)?.toFixed(2) : '0.00'}
+                  </div>
+                </div>
+              )}
+              <div className="flex justify-between mt-1">
                 <div className="self-center">STORE CUT</div>
-                <div className={`self-center text-right ml-7 ${totalStoreCut < 0 ? 'text-red-500' : 'text-black'}`}>
+                <div className={`self-center text-right ml-4 ${totalStoreCut < 0 ? 'text-red-500' : 'text-black'}`}>
                   {totalStoreCut < 0 && '-'}${items?.length > 0 ? Math.abs(totalStoreCut)?.toFixed(2) : '0.00'}
                 </div>
               </div>
-              <div className="flex justify-end mt-1">
+              <div className="flex justify-between mt-1 font-bold">
                 <div className="self-center">TOTAL</div>
                 <div className="self-center text-right ml-4">${totalPrice?.toFixed(2)}</div>
               </div>
+              {transactions?.length > 0 && (
+                <div className="flex justify-between mt-1">
+                  <div className="self-center">TOTAL PAID</div>
+                  <div className={`self-center text-right ml-4 ${totalPaid < 0 ? 'text-red-500' : 'text-black'}`}>
+                    {totalPaid < 0 && '-'}${Math.abs(totalPaid)?.toFixed(2)}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
           <div>
             <button
-              className={`w-full my-4 modal__button--${totalRemaining < 0 ? 'cancel' : 'ok'}`}
+              className={`w-full my-4 modal__button--${totalRemaining < 0 ? 'alt1' : 'ok'}`}
               disabled={loadingSale || totalRemaining === 0}
               onClick={() => {
                 if (sale?.id) router.push('sell/pay')
-                else
+                else {
+                  setLoadingSale(true)
                   createSale(sale, clerk).then((id) => {
                     setCartSale({ id })
-                    console.log('new sale', id)
+                    setLoadingSale(false)
                     router.push('sell/pay')
                   })
+                }
               }}
             >
               {loadingSale ? (

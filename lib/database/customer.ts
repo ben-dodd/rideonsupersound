@@ -16,6 +16,5 @@ export function dbUpdateCustomer(update, id, db = connection) {
 export function dbCreateCustomer(customer, db = connection) {
   return db('customer')
     .insert(js2mysql(customer))
-    .returning('*')
     .then((rows) => rows[0])
 }

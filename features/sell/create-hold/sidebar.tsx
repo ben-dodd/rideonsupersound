@@ -11,7 +11,7 @@ import { useCustomers } from 'lib/api/customer'
 import { createHold } from 'lib/api/sale'
 
 export default function CreateHoldSidebar() {
-  const { cart, view, setAlert, setCartSale, setCustomer, resetCart, resetSellSearchBar, openView, closeView } =
+  const { cart, view, setAlert, setCartSale, setCart, resetCart, resetSellSearchBar, openView, closeView } =
     useAppStore()
   const { sale = {}, items = [] } = cart || {}
   const defaultHoldPeriod = 30
@@ -29,7 +29,13 @@ export default function CreateHoldSidebar() {
     closeView(ViewProps.createHold)
     setSubmitting(false)
   }
+  console.log('hold sale', sale)
   const numberOfItems = items?.reduce((acc, item) => parseInt(item?.quantity) + acc, 0)
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    onClickConfirmHold()
+  }
 
   async function onClickConfirmHold() {
     setSubmitting(true)
@@ -77,6 +83,7 @@ export default function CreateHoldSidebar() {
       show={view?.createHold}
       title={`Hold ${numberOfItems} Item${numberOfItems === 1 ? '' : 's'}`}
       buttons={buttons}
+      handleSubmit={handleSubmit}
     >
       <div className="flex-grow overflow-x-hidden overflow-y-scroll">
         {items?.length > 0 ? (
@@ -88,6 +95,7 @@ export default function CreateHoldSidebar() {
       <div>
         <CreateableSelect
           inputLabel="Select customer"
+          autoFocus
           fieldRequired
           value={sale?.customerId}
           label={customers?.find((c: CustomerObject) => c?.id === sale?.customerId)?.name || ''}
@@ -95,7 +103,7 @@ export default function CreateHoldSidebar() {
             setCartSale({ customerId: parseInt(customerObject?.value) })
           }}
           onCreateOption={(inputValue: string) => {
-            setCustomer({ name: inputValue })
+            setCart({ customer: { name: inputValue } })
             openView(ViewProps.createCustomer)
           }}
           options={customers?.map((val: CustomerObject) => ({

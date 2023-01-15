@@ -102,7 +102,15 @@
 }
 
 .square-button {
-  @apply text-xl py-8 cursor-pointer bg-tertiary-dark text-white w-full hover:bg-tertiary active:bg-tertiary-light disabled:pointer-events-none disabled:bg-gray-300;
+  @apply text-xl py-8 cursor-pointer text-white w-full disabled:pointer-events-none disabled:bg-gray-300;
+}
+
+.tertiary-button {
+  @apply bg-tertiary-dark hover:bg-tertiary active:bg-tertiary-light;
+}
+
+.secondary-button {
+  @apply bg-secondary-dark hover:bg-secondary active:bg-secondary-light;
 }
 
 .dialog__footer--actions-right {

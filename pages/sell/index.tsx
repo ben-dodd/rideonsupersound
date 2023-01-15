@@ -6,7 +6,7 @@ import TakeCashDialog from 'features/sale/register/take-cash'
 import InventoryScroll from 'features/sell/inventory-scroll'
 import GiftCardDialog from 'features/sell/inventory-scroll/gift-card-dialog'
 import MiscItemDialog from 'features/sell/inventory-scroll/misc-item-dialog'
-import SellSearchBar from 'features/sell/sell-search-bar'
+import SellSearchBar from 'features/sell/inventory-scroll/sell-search-bar'
 import ShoppingCart from 'features/sell/shopping-cart'
 import { useSwipeable } from 'react-swipeable'
 import { ViewProps } from 'lib/store/types'
@@ -15,6 +15,7 @@ import { useCurrentRegister } from 'lib/api/register'
 import { useRouter } from 'next/router'
 import Layout from 'components/layout'
 import withRoleAuthorization from 'components/auth/roleAuthorization'
+import CheckHoldsDialog from 'features/sell/inventory-scroll/check-holds-dialog'
 
 function SellPage() {
   const { currentRegister, isCurrentRegisterLoading } = useCurrentRegister()
@@ -49,6 +50,7 @@ function SellPage() {
       <CreateCustomerSidebar />
       {view?.miscItemDialog && <MiscItemDialog />}
       {view?.giftCardDialog && <GiftCardDialog />}
+      {view?.checkHoldsDialog && <CheckHoldsDialog />}
       {view?.closeRegisterScreen && <CloseRegisterScreen />}
       {view?.returnCashDialog && <ReturnCashDialog />}
       {view?.takeCashDialog && <TakeCashDialog />}

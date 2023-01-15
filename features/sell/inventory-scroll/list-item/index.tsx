@@ -16,7 +16,7 @@ import { useBasicStockItem } from 'lib/api/stock'
 
 export default function ListItem({ searchItem }: { searchItem: StockItemSearchObject }) {
   const { cart, sellIsSearching } = useAppStore()
-  const { stockItem } = useBasicStockItem(searchItem?.id, sellIsSearching)
+  const { stockItem, isStockItemLoading } = useBasicStockItem(searchItem?.id, sellIsSearching)
   const {
     item = searchItem,
     quantities = { inStock: searchItem?.quantity || 0 },
@@ -32,7 +32,12 @@ export default function ListItem({ searchItem }: { searchItem: StockItemSearchOb
       <div className="flex flex-col w-full px-2">
         <div className="flex justify-between border-b items-center border-gray-400">
           <Title item={item} />
-          <Actions item={item} itemQuantity={itemQuantity} />
+          <Actions
+            item={item}
+            itemQuantity={itemQuantity}
+            holdsQuantity={quantities?.hold}
+            isItemLoading={isStockItemLoading}
+          />
         </div>
         <div className="flex w-full h-full justify-between">
           <div className="flex flex-col justify-between w-full">

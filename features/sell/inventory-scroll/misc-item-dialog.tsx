@@ -36,7 +36,7 @@ export default function MiscItemDialog() {
             miscItemAmount: parseFloat(amount) * 100,
             note,
           },
-          clerk
+          clerk,
         )
         setSubmitting(false)
         addCartItem(
@@ -44,8 +44,9 @@ export default function MiscItemDialog() {
             itemId: newMiscItem?.id,
             quantity: '1',
             isMiscItem: true,
+            note,
           },
-          clerk?.id
+          clerk?.id,
         )
         clearDialog()
         setAlert({
@@ -80,18 +81,8 @@ export default function MiscItemDialog() {
           error={isNaN(parseFloat(amount))}
           onChange={(e: any) => setAmount(e.target.value)}
         />
-        <TextField
-          inputLabel="Description"
-          value={description}
-          onChange={(e: any) => setDescription(e.target.value)}
-        />
-        <TextField
-          inputLabel="Notes"
-          value={note}
-          onChange={(e: any) => setNote(e.target.value)}
-          multiline
-          rows={3}
-        />
+        <TextField inputLabel="Description" value={description} onChange={(e: any) => setDescription(e.target.value)} />
+        <TextField inputLabel="Notes" value={note} onChange={(e: any) => setNote(e.target.value)} multiline rows={3} />
       </>
     </Modal>
   )

@@ -55,6 +55,7 @@ export interface ConfirmModal {
   yesText?: string
   altText?: string
   noText?: string
+  buttons?: ModalButton[]
 }
 
 export interface LogObject {

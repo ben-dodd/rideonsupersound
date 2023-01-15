@@ -6,11 +6,10 @@ import { useAppStore } from 'lib/store'
 import { getItemSkuDisplayName } from 'lib/functions/displayInventory'
 import { useClerk } from 'lib/api/clerk'
 
-const Actions = ({ item, itemQuantity }) => {
+const Actions = ({ item, itemQuantity, holdsQuantity, isItemLoading }) => {
   const router = useRouter()
-  const { sellSearchBar, resetSellSearchBar, addCartItem, openConfirm } = useAppStore()
+  const { sellSearchBar, cart, resetSellSearchBar, addCartItem, openConfirm, closeConfirm } = useAppStore()
   const { clerk } = useClerk()
-  // TODO add question if item is on hold for someone
   function clickAddToCart() {
     if (itemQuantity < 1) {
       openConfirm({
@@ -27,9 +26,34 @@ const Actions = ({ item, itemQuantity }) => {
     } else handleAddItemToCart()
   }
 
-  function handleAddItemToCart() {
-    addCartItem({ itemId: item?.id, quantity: '1' }, clerk?.id)
-  }
+  const addItemToCart = () => addCartItem({ itemId: item?.id, quantity: '1' }, clerk?.id)
+
+  const checkHolds = (
+    <>
+      <div>Item is on hold for X people.</div>
+      <div className="flex flex-col">
+        <button className="bg-red-500" onClick={closeConfirm}>
+          Cancel
+        </button>
+        <button
+          className="bg-green-500"
+          onClick={() => {
+            closeConfirm()
+            addItemToCart()
+          }}
+        >
+          Add It Anyway
+        </button>
+      </div>
+    </>
+  )
+
+  const itemIsNotInCart = cart?.items?.findIndex((cartItem) => cartItem?.itemId === item?.id) < 0
+
+  const handleAddItemToCart = () =>
+    holdsQuantity > 0 && itemIsNotInCart
+      ? openConfirm({ open: true, title: 'Check Holds', styledMessage: checkHolds, buttons: [] })
+      : addItemToCart()
 
   function handleInputSku() {
     resetSellSearchBar()
@@ -53,7 +77,8 @@ const Actions = ({ item, itemQuantity }) => {
       <div className="self-center pl-1 hidden sm:inline">
         {/* <Tooltip title="Add item to sale."> */}
         <button
-          className="icon-button-large text-black hover:text-blue-500"
+          disabled={isItemLoading}
+          className={`icon-button-large text-black ${isItemLoading ? 'text-gray-400' : 'hover:text-blue-500'}`}
           // disabled={!item?.totalSell}
           onClick={clickAddToCart}
         >

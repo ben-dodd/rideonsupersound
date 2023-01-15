@@ -72,11 +72,26 @@ export default function SellListItem({ cartItem }: { cartItem: SaleItemObject })
     })
   }
 
+  const checkEditInputs = () => {
+    const update: SaleItemObject = {}
+    if (Number.isNaN(cartItem?.quantity) || Number(cartItem?.quantity) < 1) update.quantity = '1'
+    if (Number.isNaN(cartItem?.storeDiscount) || Number(cartItem?.storeDiscount) < 0) update.storeDiscount = null
+    if (Number.isNaN(cartItem.vendorDiscount) || Number(cartItem?.vendorDiscount) < 0) update.vendorDiscount = null
+    if (Number(cartItem?.storeDiscount) > 100) update.storeDiscount = '100'
+    if (Number(cartItem?.vendorDiscount) > 100) update.vendorDiscount = '100'
+    if (Object.keys(update).length > 0) setCartItem(cartItem?.itemId, update)
+  }
+
+  const miscOrGiftItem = item?.isMiscItem || item?.isGiftCard
+
   return (
     <>
       <div
         className={`flex w-full bg-black text-white relative pt cursor-pointer mt-2`}
-        onClick={() => setExpanded((expanded) => !expanded)}
+        onClick={() => {
+          if (expanded) checkEditInputs()
+          setExpanded((expanded) => !expanded)
+        }}
       >
         <div className="w-20">
           <div className="w-20 h-20 aspect-ratio-square relative">
@@ -112,11 +127,11 @@ export default function SellListItem({ cartItem }: { cartItem: SaleItemObject })
       </div>
       <div
         className={`text-black bg-white px-2 overflow-y-hidden transition-height duration-200 ${
-          expanded ? 'h-64' : 'h-0'
+          expanded ? (miscOrGiftItem ? 'h-48' : 'h-64') : 'h-0'
         }`}
       >
         <div>
-          {!item?.isGiftCard && !item?.isMiscItem && (
+          {!miscOrGiftItem && (
             <div className="flex justify-between items-end">
               <TextField
                 className="w-1/3"

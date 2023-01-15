@@ -6,7 +6,7 @@ const PayButtons = ({ totalRemaining }) => {
   return (
     <div className="grid grid-cols-2 gap-2 mt-4">
       <button
-        className="square-button"
+        className={`square-button ${totalRemaining < 0 ? 'secondary-button' : 'tertiary-button'}`}
         onClick={() => {
           openView(ViewProps.cashPaymentDialog)
         }}
@@ -15,7 +15,7 @@ const PayButtons = ({ totalRemaining }) => {
         CASH
       </button>
       <button
-        className="square-button"
+        className={`square-button ${totalRemaining < 0 ? 'secondary-button' : 'tertiary-button'}`}
         onClick={() => {
           openView(ViewProps.cardPaymentDialog)
         }}
@@ -24,7 +24,7 @@ const PayButtons = ({ totalRemaining }) => {
         CARD
       </button>
       <button
-        className="square-button"
+        className={`square-button ${totalRemaining < 0 ? 'secondary-button' : 'tertiary-button'}`}
         onClick={() => {
           openView(ViewProps.acctPaymentDialog)
         }}
@@ -33,7 +33,7 @@ const PayButtons = ({ totalRemaining }) => {
         ACCT
       </button>
       <button
-        className="square-button"
+        className={`square-button ${totalRemaining < 0 ? 'secondary-button' : 'tertiary-button'}`}
         onClick={() => {
           openView(ViewProps.giftPaymentDialog)
         }}

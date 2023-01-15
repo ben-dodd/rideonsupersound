@@ -7,7 +7,6 @@ export function useSaleItemsForSale(saleId) {
 }
 
 export async function saveCart(cart: CartObject, prevState: string = SaleStateTypes.InProgress) {
-  console.log('saving cart...', cart, prevState)
   return axiosAuth.post(`/api/sale/save`, { cart, prevState })
 }
 

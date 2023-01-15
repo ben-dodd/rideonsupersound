@@ -11,7 +11,6 @@ export default function SaleSummary({ cart }) {
     if (router.pathname?.includes('/sell')) router.push('/sell')
     else router.back()
   }
-  // TODO make sale summary editable for in progress sales
   return (
     <>
       <div className="flex h-header items-center bg-gray-100">

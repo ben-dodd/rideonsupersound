@@ -4,6 +4,8 @@ import PayButtons from './pay-buttons'
 import Summary from './summary'
 import Actions from './actions'
 import Image from 'next/image'
+import CustomerForm from './customer-form'
+import MailOrderForm from './mail-order-form'
 
 export default function Pay({ totalRemaining }) {
   const { cart, setCartSale } = useAppStore()
@@ -17,8 +19,8 @@ export default function Pay({ totalRemaining }) {
           <div>
             <Summary totalRemaining={totalRemaining} />
             {totalRemaining !== 0 && <PayButtons totalRemaining={totalRemaining} />}
-            {/* <CustomerForm />
-      <MailOrderForm /> */}
+            <CustomerForm />
+            <MailOrderForm />
             {totalRemaining !== 0 && (
               <TextField
                 inputLabel="Note"

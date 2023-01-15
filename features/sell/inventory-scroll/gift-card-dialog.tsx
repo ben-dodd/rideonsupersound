@@ -2,12 +2,12 @@ import { useState } from 'react'
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
 import { ModalButton } from 'lib/types'
-import SyncIcon from '@mui/icons-material/Sync'
 import { makeGiftCardCode } from 'lib/functions/sell'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { createStockItem, useGiftCards } from 'lib/api/stock'
+import { Sync } from '@mui/icons-material'
 
 export default function GiftCardDialog() {
   const { clerk } = useClerk()
@@ -42,7 +42,7 @@ export default function GiftCardDialog() {
             giftCardCode,
             note,
           },
-          clerk
+          clerk,
         )
         setSubmitting(false)
         addCartItem(
@@ -50,8 +50,9 @@ export default function GiftCardDialog() {
             itemId: newGiftCard?.id,
             quantity: '1',
             isGiftCard: true,
+            note,
           },
-          clerk?.id
+          clerk?.id,
         )
         clearDialog()
         setAlert({
@@ -65,20 +66,15 @@ export default function GiftCardDialog() {
   ]
 
   return (
-    <Modal
-      open={view?.giftCardDialog}
-      closeFunction={clearDialog}
-      title={'CREATE GIFT CARD'}
-      buttons={buttons}
-    >
+    <Modal open={view?.giftCardDialog} closeFunction={clearDialog} title={'CREATE GIFT CARD'} buttons={buttons}>
       <>
         <div className="flex justify-between items-center">
           <div className="text-8xl text-red-800 font-mono">{giftCardCode}</div>
           <button
-            className="icon-button-small-mid"
+            className="rounded-full bg-secondary hover:bg-secondary-light p-2"
             onClick={() => setGiftCardCode(makeGiftCardCode(giftCards))}
           >
-            <SyncIcon />
+            <Sync />
           </button>
         </div>
         <TextField
@@ -91,13 +87,7 @@ export default function GiftCardDialog() {
           error={isNaN(parseFloat(amount))}
           onChange={(e: any) => setAmount(e.target.value)}
         />
-        <TextField
-          inputLabel="Note"
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          multiline
-          rows={3}
-        />
+        <TextField inputLabel="Note" value={note} onChange={(e) => setNote(e.target.value)} multiline rows={3} />
       </>
     </Modal>
   )

@@ -32,7 +32,7 @@ export default function ConfirmModal() {
       open={confirmModal?.open}
       closeFunction={closeConfirm}
       title={confirmModal?.title || 'CONFIRM'}
-      buttons={buttons}
+      buttons={confirmModal?.buttons || buttons}
     >
       {confirmModal?.styledMessage || confirmModal?.message || 'Are you sure?'}
     </Modal>

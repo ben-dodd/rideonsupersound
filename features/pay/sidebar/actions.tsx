@@ -8,15 +8,20 @@ import { useClerk } from 'lib/api/clerk'
 import { useState } from 'react'
 import CircularProgress from '@mui/material/CircularProgress'
 import CheckCircleOutline from '@mui/icons-material/CheckCircleOutline'
-import { DryCleaning, Park } from '@mui/icons-material'
+import { Delete, DryCleaning, PanTool, Park } from '@mui/icons-material'
+import { ViewProps } from 'lib/store/types'
 
 const Actions = ({ totalRemaining }) => {
-  const { cart, resetCart, setAlert, openView, setCustomer } = useAppStore()
+  const { cart, resetCart, setAlert, openView, setCustomer, openConfirm, setCart, closeView } = useAppStore()
   const router = useRouter()
   const { sale = {} } = cart || {}
   const { clerk } = useClerk()
   const [completeSaleLoading, setCompleteSaleLoading] = useState(false)
   const { customers = [] } = useCustomers()
+  function clearCart() {
+    resetCart()
+    closeView(ViewProps.cart)
+  }
   function clickParkSale() {
     saveCart({ ...cart, sale: { ...sale, state: SaleStateTypes.Parked } }, sale?.state)
     resetCart()
@@ -68,7 +73,37 @@ const Actions = ({ totalRemaining }) => {
     })
   }
 
+  async function onClickDiscardSale() {
+    openConfirm({
+      open: true,
+      title: 'Are you sure?',
+      message: 'Are you sure you want to clear the cart of all items?',
+      yesText: 'DISCARD SALE',
+      action: () => {
+        // saveLog(`Cart cleared.`, clerk?.id)
+        setAlert({
+          open: true,
+          type: 'warning',
+          message: 'SALE DISCARDED',
+          undo: () => {
+            // saveLog(`Cart uncleared.`, clerk?.id)
+            setCart(cart)
+          },
+        })
+        clearCart()
+      },
+      noText: 'CANCEL',
+    })
+  }
+
   const buttons = [
+    {
+      icon: <PanTool />,
+      text: 'HOLD ITEMS',
+      onClick: () => openView(ViewProps.createHold),
+      type: 'cancel',
+      disabled: !sale?.customerId,
+    },
     {
       icon: <DryCleaning />,
       text: 'LAYBY',
@@ -83,6 +118,13 @@ const Actions = ({ totalRemaining }) => {
       type: 'cancel',
       disabled: sale?.state === SaleStateTypes.Layby || totalRemaining === 0,
     },
+    {
+      icon: <Delete />,
+      text: 'CANCEL',
+      onClick: onClickDiscardSale,
+      type: 'cancel',
+      disabled: false,
+    },
   ]
 
   const completeButton = {
@@ -94,10 +136,12 @@ const Actions = ({ totalRemaining }) => {
     loading: completeSaleLoading,
   }
 
+  const showCompleteSale = totalRemaining === 0
+
   const Button = ({ button }) => {
     const { icon, text, onClick, type = 'ok', loading, disabled } = button
     return (
-      <button className={`w-full my-4 modal__button--${type}`} disabled={disabled} onClick={onClick}>
+      <button className={`w-full modal__button--${type}`} disabled={disabled} onClick={onClick}>
         {loading ? (
           <span className="pr-4">
             <CircularProgress color="inherit" size={18} />
@@ -119,7 +163,7 @@ const Actions = ({ totalRemaining }) => {
           ))}
         </div>
       )}
-      <Button button={completeButton} />
+      {showCompleteSale && <Button button={completeButton} />}
     </div>
   )
 }

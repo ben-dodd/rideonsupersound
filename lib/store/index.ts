@@ -164,6 +164,7 @@ export const useAppStore = createSelectors(
     mutateCart: async (mutates = []) => {
       const newCart = await saveCart(get().cart, get().cart?.sale?.state)
       mutates.forEach((key) => mutate(key))
+      console.log('new cart is', newCart)
       set(
         produce((draft) => {
           draft.cart = newCart
@@ -174,6 +175,7 @@ export const useAppStore = createSelectors(
       set(
         produce((draft) => {
           Object.entries(update).forEach(([key, value]) => (draft.cart.customer[key] = value))
+          if (update?.id) draft.cart.sale.customerId = update?.id
         }),
       )
       get().mutateCart()
@@ -182,6 +184,22 @@ export const useAppStore = createSelectors(
       set(
         produce((draft) => {
           draft.cart.transactions.push(transaction)
+        }),
+      )
+      const mutates = transaction?.paymentMethod === PaymentMethodTypes.GiftCard ? [`stock/giftcard`] : []
+      get().mutateCart(mutates)
+    },
+    deleteCartTransaction: (transaction) => {
+      console.log('deleting', transaction)
+      set(
+        produce((draft) => {
+          console.log(get().cart.transactions)
+          console.log(transaction?.id)
+          const newTrans = get().cart.transactions.filter((trans) =>
+            trans?.id === transaction?.id ? { ...trans, isDeleted: true } : trans,
+          )
+          console.log(newTrans)
+          draft.cart.transactions = newTrans
         }),
       )
       const mutates = transaction?.paymentMethod === PaymentMethodTypes.GiftCard ? [`stock/giftcard`] : []

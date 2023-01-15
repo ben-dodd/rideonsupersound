@@ -74,6 +74,7 @@ export interface StoreState {
   setCart: (update: any) => void
   mutateCart: (mutates?: string[]) => void
   addCartTransaction: (transaction: SaleTransactionObject) => void
+  deleteCartTransaction: (transaction: SaleTransactionObject) => void
   addCartItem: (newItem: SaleItemObject, clerkId: number) => void
   setCartItem: (id: number, update: any) => void
   setCartSale: (update: any) => void

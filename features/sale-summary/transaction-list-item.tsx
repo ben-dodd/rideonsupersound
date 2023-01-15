@@ -1,10 +1,13 @@
+import { Delete } from '@mui/icons-material'
 import dayjs from 'dayjs'
 import { useGiftCards } from 'lib/api/stock'
 import { useVendorFromVendorPayment } from 'lib/api/vendor'
+import { useAppStore } from 'lib/store'
 import { PaymentMethodTypes, SaleTransactionObject } from 'lib/types/sale'
 import { GiftCardObject } from 'lib/types/stock'
 
 export default function TransactionListItem({ transaction }: { transaction: SaleTransactionObject }) {
+  const { deleteCartTransaction } = useAppStore()
   const { giftCards } = useGiftCards()
   const { vendor = {} } = useVendorFromVendorPayment(transaction?.vendorPaymentId)
   const giftCard = giftCards?.find((g: GiftCardObject) => g?.id === transaction?.giftCardId)
@@ -17,6 +20,9 @@ export default function TransactionListItem({ transaction }: { transaction: Sale
         transaction?.isDeleted ? 'line-through text-gray-400' : transaction?.isRefund ? 'text-red-500' : 'text-blue-500'
       }`}
     >
+      <button onClick={() => deleteCartTransaction(transaction)} className="border-rounded hover:opacity-50 mr-2">
+        <Delete />
+      </button>
       <div className="w-1/2">{dayjs(transaction?.date).format('D MMMM YYYY, h:mm A')}</div>
       <div className="w-1/4">
         {(`${transaction?.paymentMethod}${transaction?.isRefund ? ' REFUND' : ''}` || 'OTHER').toUpperCase()}
