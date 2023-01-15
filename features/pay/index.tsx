@@ -4,6 +4,10 @@ import { useRouter } from 'next/router'
 import SaleSummary from '../sale-summary'
 import Pay from './sidebar'
 import Loading from 'components/loading'
+import CreateHoldSidebar from 'features/sell/create-hold/sidebar'
+import CreateLaybySidebar from './create-layby/sidebar'
+import CreateCustomerSidebar from 'features/sell/create-customer/sidebar'
+import CreateMailOrder from './create-mail-order/sidebar'
 
 const PayScreen = ({ totalRemaining, isLoading }) => {
   const { cart } = useAppStore()
@@ -25,6 +29,10 @@ const PayScreen = ({ totalRemaining, isLoading }) => {
           <div className="w-1/3 h-main p-2 flex flex-col justify-between shadow-md">
             <Pay totalRemaining={totalRemaining} />
           </div>
+          <CreateHoldSidebar />
+          <CreateLaybySidebar />
+          <CreateMailOrder />
+          <CreateCustomerSidebar />
         </>
       )}
     </div>

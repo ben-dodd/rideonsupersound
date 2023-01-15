@@ -1,5 +1,4 @@
 import Layout from 'components/layout'
-import CreateCustomerSidebar from 'features/sell/create-customer/sidebar'
 import { useAppStore } from 'lib/store'
 import Acct from 'features/pay/payment/acct'
 import Card from 'features/pay/payment/card'
@@ -9,8 +8,6 @@ import ReturnItemDialog from 'features/pay/return-item-dialog'
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import PayScreen from 'features/pay'
 import { useSaleProperties } from 'lib/hooks'
-import CreateHoldSidebar from 'features/sell/create-hold/sidebar'
-import CreateLaybySidebar from 'features/pay/create-layby/sidebar'
 
 export default function PayPage() {
   const { view, cart } = useAppStore()
@@ -19,9 +16,6 @@ export default function PayPage() {
   return (
     <>
       <PayScreen totalRemaining={totalRemaining} isLoading={isLoading} />
-      <CreateHoldSidebar />
-      <CreateLaybySidebar />
-      <CreateCustomerSidebar />
       {view?.acctPaymentDialog && <Acct totalRemaining={totalRemaining} />}
       {view?.cardPaymentDialog && <Card totalRemaining={totalRemaining} />}
       {view?.cashPaymentDialog && <Cash totalRemaining={totalRemaining} />}
