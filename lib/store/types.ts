@@ -7,6 +7,7 @@ export interface StoreState {
     mainMenu?: boolean
     cart?: boolean
     createHold?: boolean
+    createLayby?: boolean
     createCustomer?: boolean
     closeRegisterScreen?: boolean
     receiveStockScreen?: boolean
@@ -97,6 +98,7 @@ export enum ViewProps {
   mainMenu = 'mainMenu',
   cart = 'cart',
   createHold = 'createHold',
+  createLayby = 'createLayby',
   createCustomer = 'createCustomer',
   closeRegisterScreen = 'closeRegisterScreen',
   receiveStockScreen = 'receiveStockScreen',

@@ -81,7 +81,7 @@ export default function CreateHoldSidebar() {
   return (
     <SidebarContainer
       show={view?.createHold}
-      title={`Hold ${numberOfItems} Item${numberOfItems === 1 ? '' : 's'}`}
+      title={`HOLD ${numberOfItems} ITEM${numberOfItems === 1 ? '' : 'S'}`}
       buttons={buttons}
       handleSubmit={handleSubmit}
     >

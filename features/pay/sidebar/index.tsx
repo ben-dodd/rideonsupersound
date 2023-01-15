@@ -4,23 +4,20 @@ import PayButtons from './pay-buttons'
 import Summary from './summary'
 import Actions from './actions'
 import Image from 'next/image'
-import CustomerForm from './customer-form'
-import MailOrderForm from './mail-order-form'
+import MailOrder from './mail-order'
 
 export default function Pay({ totalRemaining }) {
   const { cart, setCartSale } = useAppStore()
   const { sale = {} } = cart || {}
-  // TODO if totalRemaining hasn't loaded it should show loading screen
 
   return (
-    <div className="flex flex-col justify-between h-main">
+    <div className="flex flex-col justify-between h-full">
       {totalRemaining !== undefined && totalRemaining !== null ? (
         <>
           <div>
             <Summary totalRemaining={totalRemaining} />
             {totalRemaining !== 0 && <PayButtons totalRemaining={totalRemaining} />}
-            <CustomerForm />
-            <MailOrderForm />
+            <MailOrder />
             {totalRemaining !== 0 && (
               <TextField
                 inputLabel="Note"

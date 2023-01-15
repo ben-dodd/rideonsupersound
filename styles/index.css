@@ -181,7 +181,7 @@
 }
 
 .modal__button {
-  @apply w-full mt-2 mr-4 flex justify-center items-center border rounded-xl ring-4 py-4 cursor-pointer bg-white disabled:pointer-events-none disabled:bg-gray-300 disabled:text-gray-400 disabled:ring-gray-400;
+  @apply w-full flex justify-center items-center border rounded-xl ring-4 py-4 cursor-pointer bg-white disabled:pointer-events-none disabled:bg-gray-300 disabled:text-gray-400 disabled:ring-gray-400;
 }
 
 .modal__button--ok {

@@ -3,8 +3,9 @@ import { useAppStore } from 'lib/store'
 import { useRouter } from 'next/router'
 import SaleSummary from '../sale-summary'
 import Pay from './sidebar'
+import Loading from 'components/loading'
 
-const PayScreen = ({ totalRemaining }) => {
+const PayScreen = ({ totalRemaining, isLoading }) => {
   const { cart } = useAppStore()
   const { sale = {}, items = [] } = cart || {}
   const router = useRouter()
@@ -14,12 +15,18 @@ const PayScreen = ({ totalRemaining }) => {
 
   return (
     <div className="flex items-start overflow-auto w-full h-main">
-      <div className="w-2/3">
-        <SaleSummary cart={cart} />
-      </div>
-      <div className="w-1/3 p-2 flex flex-col justify-between shadow-md">
-        <Pay totalRemaining={totalRemaining} />
-      </div>
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <>
+          <div className="w-2/3">
+            <SaleSummary cart={cart} />
+          </div>
+          <div className="w-1/3 h-main p-2 flex flex-col justify-between shadow-md">
+            <Pay totalRemaining={totalRemaining} />
+          </div>
+        </>
+      )}
     </div>
   )
 }

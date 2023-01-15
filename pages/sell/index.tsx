@@ -15,7 +15,6 @@ import { useCurrentRegister } from 'lib/api/register'
 import { useRouter } from 'next/router'
 import Layout from 'components/layout'
 import withRoleAuthorization from 'components/auth/roleAuthorization'
-import CheckHoldsDialog from 'features/sell/inventory-scroll/check-holds-dialog'
 
 function SellPage() {
   const { currentRegister, isCurrentRegisterLoading } = useCurrentRegister()
@@ -50,7 +49,6 @@ function SellPage() {
       <CreateCustomerSidebar />
       {view?.miscItemDialog && <MiscItemDialog />}
       {view?.giftCardDialog && <GiftCardDialog />}
-      {view?.checkHoldsDialog && <CheckHoldsDialog />}
       {view?.closeRegisterScreen && <CloseRegisterScreen />}
       {view?.returnCashDialog && <ReturnCashDialog />}
       {view?.takeCashDialog && <TakeCashDialog />}

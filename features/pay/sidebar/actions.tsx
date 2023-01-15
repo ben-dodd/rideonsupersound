@@ -33,26 +33,6 @@ const Actions = ({ totalRemaining }) => {
     router.push('/sell')
   }
 
-  function clickLayby() {
-    let laybySale = { ...sale }
-    if (sale?.state !== SaleStateTypes.Layby) {
-      laybySale = {
-        ...sale,
-        state: SaleStateTypes.Layby,
-        dateLaybyStarted: dayjs.utc().format(),
-        laybyStartedBy: clerk?.id,
-      }
-      setAlert({
-        open: true,
-        type: 'success',
-        message: 'LAYBY STARTED.',
-      })
-    }
-    saveCart({ ...cart, sale: laybySale }, sale?.state)
-    resetCart()
-    router.push('/sell')
-  }
-
   // TODO should it complete automatically
   async function clickCompleteSale() {
     setCompleteSaleLoading(true)
@@ -101,29 +81,25 @@ const Actions = ({ totalRemaining }) => {
       icon: <PanTool />,
       text: 'HOLD ITEMS',
       onClick: () => openView(ViewProps.createHold),
-      type: 'cancel',
-      disabled: !sale?.customerId,
+      type: 'alt1',
     },
     {
       icon: <DryCleaning />,
       text: 'LAYBY',
-      onClick: clickLayby,
-      type: 'cancel',
-      disabled: !sale?.customerId || totalRemaining <= 0,
+      onClick: () => openView(ViewProps.createLayby),
+      type: 'alt1',
     },
     {
       icon: <Park />,
       text: 'PARK',
       onClick: clickParkSale,
-      type: 'cancel',
-      disabled: sale?.state === SaleStateTypes.Layby || totalRemaining === 0,
+      type: 'alt1',
     },
     {
       icon: <Delete />,
       text: 'CANCEL',
       onClick: onClickDiscardSale,
       type: 'cancel',
-      disabled: false,
     },
   ]
 
@@ -149,7 +125,7 @@ const Actions = ({ totalRemaining }) => {
         ) : (
           icon
         )}
-        {text}
+        <div className="ml-2">{text}</div>
       </button>
     )
   }

@@ -195,7 +195,7 @@ export const useAppStore = createSelectors(
         produce((draft) => {
           console.log(get().cart.transactions)
           console.log(transaction?.id)
-          const newTrans = get().cart.transactions.filter((trans) =>
+          const newTrans = get().cart.transactions.map((trans) =>
             trans?.id === transaction?.id ? { ...trans, isDeleted: true } : trans,
           )
           console.log(newTrans)

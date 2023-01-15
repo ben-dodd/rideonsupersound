@@ -52,9 +52,9 @@ export default function ShoppingCart() {
           )}
         </div>
         <div className="pt-4">
-          <div className="flex justify-between">
+          <div className="flex justify-between items-end">
             <button
-              className="fab-button__secondary w-1/3 mb-4"
+              className="fab-button__secondary w-1/3"
               disabled={transactions?.length > 0 || loadingSale || totalRemaining === 0}
               onClick={() => openView(ViewProps.createHold)}
             >

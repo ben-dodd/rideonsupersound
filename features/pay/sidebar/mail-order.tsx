@@ -3,7 +3,7 @@ import { useCustomers } from 'lib/api/customer'
 import { useAppStore } from 'lib/store'
 import { useEffect } from 'react'
 
-const MailOrderForm = () => {
+const MailOrder = () => {
   const { cart, setCartSale } = useAppStore()
   const { sale = {} } = cart || {}
   const { customers } = useCustomers()
@@ -62,4 +62,4 @@ const MailOrderForm = () => {
   )
 }
 
-export default MailOrderForm
+export default MailOrder
