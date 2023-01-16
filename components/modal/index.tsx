@@ -46,7 +46,7 @@ export default function Modal({
         )}
       </div>
       {buttons && (
-        <div className={`modal__button-div p-4 pt-6`}>
+        <div className={`grid gap-4 ${buttons?.length === 1 ? 'grid-cols-1' : 'grid-cols-2'} p-4 pt-6`}>
           {buttons.map((button: ModalButton, i: number) =>
             button?.data && !button?.disabled ? (
               <CSVLink

@@ -22,7 +22,7 @@ const Summary = ({ totalRemaining }) => {
             : 'LEFT TO PAY'}
         </div>
         {totalRemaining !== 0 && (
-          <div className="text-2xl text-green-200 font-bold p-2 rounded-md bg-black">
+          <div className="text-2xl text-green-200 font-bold p-2 rounded-md bg-black shadow-inner">
             {totalRemaining < 0
               ? `$${Math.abs(totalRemaining || 0)?.toFixed(2)}`
               : `$${(totalRemaining || 0)?.toFixed(2)}`}

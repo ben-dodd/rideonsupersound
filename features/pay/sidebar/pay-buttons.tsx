@@ -4,7 +4,7 @@ import { ViewProps } from 'lib/store/types'
 const PayButtons = ({ totalRemaining }) => {
   const { openView } = useAppStore()
   return (
-    <div className="grid grid-cols-2 gap-2 mt-4">
+    <div className="grid grid-cols-2 mt-4">
       <button
         className={`square-button ${totalRemaining < 0 ? 'secondary-button' : 'tertiary-button'}`}
         onClick={() => {

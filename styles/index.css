@@ -102,7 +102,7 @@
 }
 
 .square-button {
-  @apply text-xl py-8 cursor-pointer text-white w-full disabled:pointer-events-none disabled:bg-gray-300;
+  @apply text-xl py-8 cursor-pointer text-white w-full disabled:pointer-events-none disabled:bg-gray-300 border border-gray-100 shadow-md rounded-md;
 }
 
 .tertiary-button {

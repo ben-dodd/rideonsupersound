@@ -79,7 +79,7 @@ const Actions = ({ totalRemaining }) => {
   const buttons = [
     {
       icon: <PanTool />,
-      text: 'HOLD ITEMS',
+      text: 'HOLD',
       onClick: () => openView(ViewProps.createHold),
       type: 'alt1',
     },
@@ -90,16 +90,16 @@ const Actions = ({ totalRemaining }) => {
       type: 'alt1',
     },
     {
-      icon: <Park />,
-      text: 'PARK',
-      onClick: clickParkSale,
-      type: 'alt1',
-    },
-    {
       icon: <Delete />,
       text: 'CANCEL',
       onClick: onClickDiscardSale,
       type: 'cancel',
+    },
+    {
+      icon: <Park />,
+      text: 'PARK',
+      onClick: clickParkSale,
+      type: 'alt1',
     },
   ]
 
@@ -133,7 +133,7 @@ const Actions = ({ totalRemaining }) => {
   return (
     <div>
       {totalRemaining !== 0 && (
-        <div className="modal__button-div">
+        <div className={`grid gap-4 ${buttons?.length == 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
           {buttons?.map((button, i) => (
             <Button key={i} button={button} />
           ))}
