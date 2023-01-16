@@ -30,15 +30,11 @@ export default function Modal({
   children,
 }: ModalProps) {
   return (
-    <ModalBase
-      open={open}
-      onClose={closeFunction}
-      disableBackdropClick={disableBackdropClick}
-      width={width}
-    >
-      <div className="top-0 sticky">
-        {closeFunction && <CloseButton closeFunction={closeFunction} />}
+    <ModalBase open={open} onClose={closeFunction} disableBackdropClick={disableBackdropClick} width={width}>
+      <div className="modal__title-div">
+        <div />
         {title && <div className="modal__title">{title}</div>}
+        {closeFunction ? <CloseButton closeFunction={closeFunction} /> : <div />}
       </div>
       <div className="modal__body">
         {loading ? (
@@ -79,7 +75,7 @@ export default function Modal({
                 )}
                 {button?.text}
               </button>
-            )
+            ),
           )}
         </div>
       )}

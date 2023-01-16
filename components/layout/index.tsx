@@ -20,11 +20,11 @@ export default function Layout({ children }) {
       </Head>
       <Nav />
       <div className="flex h-main relative overflow-y-hidden">
-        <Menu />
-        <div className="h-full w-full absolute sm:static">{children}</div>
         {view?.helpDialog && <HelpDialog />}
         {confirmModal?.open && <ConfirmModal />}
         {alert?.open && <SnackAlert />}
+        <Menu />
+        <div className="h-full w-full absolute sm:static">{children}</div>
       </div>
     </>
   )

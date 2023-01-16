@@ -161,15 +161,19 @@
 
 /* Modal Container */
 .modal__close-button-div {
-  @apply flex justify-end bg-black;
+  @apply flex bg-black;
 }
 
 .modal__close-button {
   @apply p-2 text-white hover:text-gray-200 outline-none border-none mb-0 pb-0;
 }
 
+.modal__title-div {
+  @apply top-0 sticky flex justify-between items-start border-b border-gray-200 shadow-sm bg-primary text-white;
+}
+
 .modal__title {
-  @apply flex justify-center w-full text-4xl font-extrabold bg-black text-white mt-0 pt-0 mb-2 px-2;
+  @apply text-4xl font-extrabold py-4;
 }
 
 .modal__body {

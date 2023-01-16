@@ -2,10 +2,11 @@ import Modal from 'components/modal'
 import BackIcon from '@mui/icons-material/ArrowLeft'
 import SearchIcon from '@mui/icons-material/Search'
 import { useEffect, useState } from 'react'
-import { filterHelps, HelpObject } from 'lib/types/help'
+import { HelpObject } from 'lib/types/help'
 import HelpItem from './help-item'
 import HelpListItem from './help-list-item'
 import { useHelps } from 'lib/api/help'
+import { filterHelps } from 'lib/functions/help'
 import { useAppStore } from 'lib/store'
 import { useRouter } from 'next/router'
 import { ViewProps } from 'lib/store/types'
@@ -64,9 +65,7 @@ export default function HelpDialog() {
           {help ? (
             <HelpItem help={help} />
           ) : helpList && helpList?.length > 0 ? (
-            helpList?.map((h: HelpObject) => (
-              <HelpListItem key={h?.id} help={h} setHelp={setHelp} />
-            ))
+            helpList?.map((h: HelpObject) => <HelpListItem key={h?.id} help={h} setHelp={setHelp} />)
           ) : (
             'No help topics available.'
           )}
