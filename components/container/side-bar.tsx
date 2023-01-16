@@ -5,8 +5,8 @@ export default function SidebarContainer({ show, title, buttons, handleSubmit, c
   return (
     <div
       className={`absolute top-0 transition-offset duration-300 ${
-        show ? 'left-0 sm:left-sidebar' : 'left-full hidden'
-      } h-full w-full bg-yellow-200 sm:w-sidebar sm:h-main`}
+        show ? 'right-0' : '-right-sidebar hidden'
+      } h-full w-full bg-yellow-200 sm:w-sidebarSmall lg:w-sidebar sm:h-main`}
     >
       <div className="flex flex-col h-main p-2 bg-blue-300 text-black">
         {title && <div className="text-lg font-extrabold my-2 tracking-wide self-center">{title}</div>}

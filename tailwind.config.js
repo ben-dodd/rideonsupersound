@@ -116,10 +116,6 @@ module.exports = {
         imageMed: '120px',
         imageSmall: '80px',
       },
-      left: {
-        sidebar: `calc(12rem + (100vw - 12rem) * (2/3))`,
-        sidebarSmall: `calc(3rem + (100vw - 3rem) * (2/3))`,
-      },
       transitionProperty: { width: 'width', height: 'height' },
       gridTemplateColumns: {
         right: 'auto 200px 200px',
