@@ -3,22 +3,16 @@ import SidebarContainer from 'components/container/side-bar'
 import CreateableSelect from 'components/inputs/createable-select'
 import { CustomerObject, ModalButton } from 'lib/types'
 import { useAppStore } from 'lib/store'
-import { useClerk } from 'lib/api/clerk'
 import { ViewProps } from 'lib/store/types'
 import { useCustomers } from 'lib/api/customer'
 import { saveCart } from 'lib/api/sale'
 import { SaleStateTypes } from 'lib/types/sale'
-import { useRouter } from 'next/router'
 import TextField from 'components/inputs/text-field'
 
 export default function CreateMailOrder() {
-  const { cart, view, setAlert, setCartSale, setCart, resetCart, resetSellSearchBar, openView, closeView } =
-    useAppStore()
-  const { sale = {}, items = [] } = cart || {}
-  const { clerk } = useClerk()
+  const { cart, view, setCartSale, setCart, openView, closeView } = useAppStore()
+  const { sale = {} } = cart || {}
   const { customers } = useCustomers()
-  const [submitting, setSubmitting] = useState(false)
-  const router = useRouter()
   const [postage, setPostage] = useState(0)
   const [postalAddress, setPostalAddress] = useState('')
 
@@ -53,7 +47,7 @@ export default function CreateMailOrder() {
       type: 'ok',
       onClick: onClickCreateMailOrder,
       disabled: !sale?.customerId,
-      text: submitting ? 'LAYBYING...' : 'CONFIRM LAYBY',
+      text: 'ADD MAIL ORDER',
     },
   ]
 
