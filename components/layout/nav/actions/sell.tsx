@@ -3,9 +3,11 @@ import TakeCashIcon from '@mui/icons-material/MoneyOff'
 import CloseRegisterIcon from '@mui/icons-material/VpnKey'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
+import { useRouter } from 'next/router'
 
 export default function SellNavActions() {
   const { openView } = useAppStore()
+  const router = useRouter()
 
   return (
     <div className="flex">
@@ -17,7 +19,7 @@ export default function SellNavActions() {
         <TakeCashIcon className="mr-1" />
         Take Cash
       </button>
-      <button className="icon-text-button" onClick={() => openView(ViewProps.closeRegisterScreen)}>
+      <button className="icon-text-button" onClick={() => router.push('/register/close')}>
         <CloseRegisterIcon className="mr-1" />
         Close Register
       </button>

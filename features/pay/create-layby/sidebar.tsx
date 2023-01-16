@@ -12,16 +12,12 @@ import dayjs from 'dayjs'
 import { useRouter } from 'next/router'
 
 export default function CreateLaybySidebar() {
-  const { cart, view, setAlert, setCartSale, setCart, resetCart, resetSellSearchBar, openView, closeView } =
-    useAppStore()
-  const { sale = {}, items = [] } = cart || {}
+  const { cart, view, setAlert, setCartSale, setCart, resetCart, openView, closeView } = useAppStore()
+  const { sale = {} } = cart || {}
   const { clerk } = useClerk()
   const { customers } = useCustomers()
   const [submitting, setSubmitting] = useState(false)
   const router = useRouter()
-
-  console.log('layby sale', sale)
-  const numberOfItems = items?.reduce((acc, item) => parseInt(item?.quantity) + acc, 0)
 
   const handleSubmit = (e) => {
     e.preventDefault()

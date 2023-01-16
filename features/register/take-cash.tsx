@@ -5,64 +5,53 @@ import Modal from 'components/modal'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
-import { useCurrentRegister, useCurrentRegisterId } from 'lib/api/register'
-import { dollarsToCents } from 'lib/utils'
+import { savePettyCash, useCurrentRegisterId } from 'lib/api/register'
 import dayjs from 'dayjs'
+import { dollarsToCents } from 'lib/utils'
 
-export default function ReturnCashDialog() {
-  const { currentRegister } = useCurrentRegister()
-  // const { pettyCash, mutatePettyCash } = usePettyCash(currentRegister?.id)
-  // const { logs, mutateLogs } = useLogs()
+export default function TakeCashDialog() {
+  const { registerId } = useCurrentRegisterId()
   const { clerk } = useClerk()
   const { view, closeView, setAlert } = useAppStore()
-  const { registerId } = useCurrentRegisterId()
-
-  // State
-  const [amount, setAmount] = useState('0')
+  const [amount, setAmount] = useState(0)
   const [note, setNote] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
   const buttons: ModalButton[] = [
     {
       type: 'ok',
-      disabled:
-        submitting ||
-        parseFloat(amount) === 0 ||
-        amount <= '' ||
-        isNaN(parseFloat(amount)),
+      disabled: submitting || amount === 0 || amount <= 0 || isNaN(amount),
       loading: submitting,
       onClick: async () => {
         setSubmitting(true)
         const pettyCash = {
           registerId,
-          clerk_id: clerk?.id,
-          amount: dollarsToCents(amount),
-          isTake: false,
+          clerkId: clerk?.id,
+          amount: dollarsToCents(amount) * -1,
+          isTake: true,
           note,
           date: dayjs.utc().format(),
         }
-        const id = await savePettyCash(pettyCash)
-        setSubmitting(false)
-        closeView(ViewProps.returnCashDialog)
-        setAmount('0')
-        setNote('')
+        await savePettyCash(pettyCash)
         setAlert({
           open: true,
           type: 'success',
-          message: `$${
-            amount ? parseFloat(amount).toFixed(2) : 0.0
-          } put in the till.`,
+          message: `$${Number(amount)?.toFixed?.(2)} taken from the till.`,
         })
+        setSubmitting(false)
+        closeView(ViewProps.takeCashDialog)
+        setAmount(0)
+        setNote('')
       },
-      text: 'ADD THE CASH',
+      text: 'TAKE IT!',
     },
   ]
 
   return (
     <Modal
-      open={view?.returnCashDialog}
-      closeFunction={() => closeView(ViewProps.returnCashDialog)}
-      title={'ADD CASH'}
+      open={view?.takeCashDialog}
+      closeFunction={() => closeView(ViewProps.takeCashDialog)}
+      title={'TAKE CASH'}
       buttons={buttons}
     >
       <>
@@ -70,8 +59,8 @@ export default function ReturnCashDialog() {
           divClass="text-8xl"
           startAdornment="$"
           inputClass="text-center"
-          value={amount}
-          error={amount && isNaN(parseFloat(amount))}
+          inputType="number"
+          valueNum={amount}
           autoFocus={true}
           selectOnFocus
           onChange={(e: any) => setAmount(e.target.value)}

@@ -73,9 +73,7 @@ export function fFileDate(date?: Date | string) {
 }
 
 export function latestDate(dates: Date[] | string[]) {
-  return dates?.length > 0
-    ? dayjs.max(dates?.map((date: Date | string) => dayjs(date)))
-    : null
+  return dates?.length > 0 ? dayjs.max(dates?.map((date: Date | string) => dayjs(date))) : null
 }
 
 // export function authoriseUrl(url: string) {
@@ -106,4 +104,8 @@ export function priceDollarsString(amount: number | string) {
 
 export function eraseWhiteSpace(str) {
   return str.replace(/\s+/g, ' ').trim()
+}
+
+export function sumListField(list, field) {
+  return list?.reduce?.((acc: number, obj: any) => acc + obj?.[field], 0)
 }

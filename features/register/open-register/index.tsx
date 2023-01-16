@@ -1,15 +1,15 @@
 // Packages
 import TextField from 'components/inputs/text-field'
 import { logOpenRegister } from 'lib/functions/log'
-import { RegisterObject, TillObject } from 'lib/types'
 import OpenIcon from '@mui/icons-material/ShoppingCart'
 import CircularProgress from '@mui/material/CircularProgress'
 import { useEffect, useState } from 'react'
-import CashMap from './cash-map'
+import CashMap from '../cash-map'
 import { useAppStore } from 'lib/store'
 import { useClerk } from 'lib/api/clerk'
 import { useCurrentRegisterId } from 'lib/api/register'
 import { getAmountFromCashMap } from 'lib/functions/register'
+import { RegisterObject, TillObject } from 'lib/types/register'
 
 export default function OpenRegisterScreen() {
   const { clerk } = useClerk()
@@ -56,16 +56,16 @@ export default function OpenRegisterScreen() {
   function isError(till: TillObject) {
     let error = false
     ;[
-      'one_hundred_dollar',
-      'fifty_dollar',
-      'twenty_dollar',
-      'ten_dollar',
-      'five_dollar',
-      'two_dollar',
-      'one_dollar',
-      'fifty_cent',
-      'twenty_cent',
-      'ten_cent',
+      'oneHundredDollar',
+      'fiftyDollar',
+      'twentyDollar',
+      'tenDollar',
+      'fiveDollar',
+      'twoDollar',
+      'oneDollar',
+      'fiftyCent',
+      'twentyCent',
+      'tenCent',
     ].forEach((denom) => {
       if (till[denom] && (isNaN(parseInt(till[denom])) || parseInt(till[denom]) < 0)) error = true
     })

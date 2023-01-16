@@ -16,16 +16,18 @@ export default function Pay({ totalRemaining }) {
         <>
           <div>
             <Summary totalRemaining={totalRemaining} />
-            {totalRemaining !== 0 && <PayButtons totalRemaining={totalRemaining} />}
-            <MailOrder />
             {totalRemaining !== 0 && (
-              <TextField
-                inputLabel="Note"
-                multiline
-                rows={2}
-                value={sale?.note}
-                onChange={(e: any) => setCartSale({ note: e.target.value })}
-              />
+              <>
+                <PayButtons totalRemaining={totalRemaining} />
+                <MailOrder />
+                <TextField
+                  inputLabel="Note"
+                  multiline
+                  rows={2}
+                  value={sale?.note}
+                  onChange={(e: any) => setCartSale({ note: e.target.value })}
+                />
+              </>
             )}
           </div>
           {totalRemaining === 0 && (

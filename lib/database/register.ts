@@ -4,10 +4,6 @@ import { VendorPaymentTypes } from 'lib/types/vendor'
 import connection from './conn'
 import { js2mysql } from './utils/helpers'
 
-export function dbGetRegister(id, db = connection) {
-  return db('register').where({ id }).first()
-}
-
 export function dbGetRegisters(db = connection) {
   return db('register').where(`is_deleted`, 0)
 }
@@ -25,25 +21,32 @@ export function dbGetCurrentRegisterId(db = connection) {
 }
 
 export function dbGetCurrentRegister(db = connection) {
-  return dbGetCurrentRegisterId(db).then(async (register_id) => {
-    const register = await db('register').where(`id`, register_id).first()
-    const cashGiven = await db('sale_transaction')
-      .select('sale_id', 'clerk_id', 'date', 'payment_method', 'amount', 'change_given')
-      .where({ register_id })
-      .where(`is_deleted`, 0)
-      .whereNotNull(`change_given`)
-    const cashReceived = await db('sale_transaction')
-      .select('sale_id', 'clerk_id', 'date', 'payment_method', 'amount', 'cash_received')
-      .where({ register_id })
-      .where(`is_deleted`, 0)
-      .whereNotNull(`cash_received`)
-    const manualPayments = await db('vendor_payment')
-      .select('date', 'amount', 'clerk_id', 'vendor_id')
-      .where({ register_id })
-      .where(`type`, VendorPaymentTypes.Cash)
-    const pettyCash = await db('register_petty_cash').where({ register_id })
-    return { ...register, cashGiven, cashReceived, manualPayments, pettyCash }
-  })
+  return dbGetCurrentRegisterId(db).then((id) => dbGetRegister(id, db))
+}
+
+export function dbGetRegister(id = 0, db = connection) {
+  return db('register')
+    .where({ id })
+    .first()
+    .then(async (register) => {
+      const register_id = register?.id
+      const cashGiven = await db('sale_transaction')
+        .select('sale_id', 'clerk_id', 'date', 'payment_method', 'amount', 'change_given')
+        .where({ register_id })
+        .where(`is_deleted`, 0)
+        .whereNotNull(`change_given`)
+      const cashReceived = await db('sale_transaction')
+        .select('sale_id', 'clerk_id', 'date', 'payment_method', 'amount', 'cash_received')
+        .where({ register_id })
+        .where(`is_deleted`, 0)
+        .whereNotNull(`cash_received`)
+      const manualPayments = await db('vendor_payment')
+        .select('date', 'amount', 'clerk_id', 'vendor_id')
+        .where({ register_id })
+        .where(`type`, VendorPaymentTypes.Cash)
+      const pettyCash = await db('register_petty_cash').where({ register_id })
+      return { ...register, cashGiven, cashReceived, manualPayments, pettyCash }
+    })
 }
 
 export function dbCreateTill(till, db = connection) {

@@ -29,7 +29,6 @@ export default function CreateHoldSidebar() {
     closeView(ViewProps.createHold)
     setSubmitting(false)
   }
-  console.log('hold sale', sale)
   const numberOfItems = items?.reduce((acc, item) => parseInt(item?.quantity) + acc, 0)
 
   const handleSubmit = (e) => {

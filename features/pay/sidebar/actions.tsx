@@ -6,10 +6,10 @@ import { useRouter } from 'next/router'
 import dayjs from 'dayjs'
 import { useClerk } from 'lib/api/clerk'
 import { useState } from 'react'
-import CircularProgress from '@mui/material/CircularProgress'
 import CheckCircleOutline from '@mui/icons-material/CheckCircleOutline'
 import { Delete, DryCleaning, PanTool, Park } from '@mui/icons-material'
 import { ViewProps } from 'lib/store/types'
+import ActionButton from 'components/button/action-button'
 
 const Actions = ({ totalRemaining }) => {
   const { cart, resetCart, setAlert, openView, setCustomer, openConfirm, setCart, closeView } = useAppStore()
@@ -114,83 +114,18 @@ const Actions = ({ totalRemaining }) => {
 
   const showCompleteSale = totalRemaining === 0
 
-  const Button = ({ button }) => {
-    const { icon, text, onClick, type = 'ok', loading, disabled } = button
-    return (
-      <button className={`w-full modal__button--${type}`} disabled={disabled} onClick={onClick}>
-        {loading ? (
-          <span className="pr-4">
-            <CircularProgress color="inherit" size={18} />
-          </span>
-        ) : (
-          icon
-        )}
-        <div className="ml-2">{text}</div>
-      </button>
-    )
-  }
-
   return (
     <div>
       {totalRemaining !== 0 && (
         <div className={`grid gap-4 ${buttons?.length == 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
           {buttons?.map((button, i) => (
-            <Button key={i} button={button} />
+            <ActionButton key={i} button={button} />
           ))}
         </div>
       )}
-      {showCompleteSale && <Button button={completeButton} />}
+      {showCompleteSale && <ActionButton button={completeButton} />}
     </div>
   )
 }
 
 export default Actions
-
-// const buttons: ModalButton[] = [
-//   // REVIEW discard sale, do confirm dialog
-//   {
-//     type: 'cancel',
-//     onClick: () => {
-//       resetCart()
-//       router.push('/sell')
-//     },
-//     disabled: Boolean(cart?.transactions) || totalRemaining === 0,
-//     text: sale?.state === SaleStateTypes.Layby ? 'CANCEL LAYBY' : 'DISCARD SALE',
-//   },
-//   // {
-//   //   type: 'alt2',
-//   //   onClick: () => router.push('/sell'),
-//   //   disabled: totalRemaining === 0,
-//   //   loading: addMoreItemsLoading,
-//   //   text: 'CHANGE ITEMS',
-//   // },
-//   {
-//     type: 'alt3',
-//     onClick: clickParkSale,
-//     disabled: sale?.state === SaleStateTypes.Layby || totalRemaining === 0,
-//     text: 'PARK SALE',
-//   },
-//   {
-//     type: 'alt1',
-//     onClick: clickLayby,
-//     disabled: !sale?.customerId || totalRemaining <= 0,
-//     text: sale?.state === SaleStateTypes.Layby ? 'CONTINUE LAYBY' : 'START LAYBY',
-//   },
-//   {
-//     type: 'ok',
-//     onClick: clickCompleteSale,
-//     disabled: completeSaleLoading || totalRemaining !== 0 || sale?.state === SaleStateTypes.Completed,
-//     loading: completeSaleLoading,
-//     text: 'COMPLETE SALE',
-//   },
-// ]
-
-// const handleClickReturn = () => {
-//   if (totalRemaining === 0) {
-//     if (sale?.state === SaleStateTypes.Completed) resetCart()
-//     else {
-//       // clickCompleteSale()
-//     }
-//   }
-//   router.push('/sell')
-// }

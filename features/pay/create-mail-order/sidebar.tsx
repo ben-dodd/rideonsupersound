@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import SidebarContainer from 'components/container/side-bar'
 import CreateableSelect from 'components/inputs/createable-select'
 import { CustomerObject, ModalButton } from 'lib/types'
@@ -14,6 +14,12 @@ export default function CreateMailOrder() {
   const { customers } = useCustomers()
   const [postage, setPostage] = useState(sale?.postage)
   const [postalAddress, setPostalAddress] = useState(sale?.postalAddress)
+
+  useEffect(() => {
+    console.log('changing sale', sale?.postage)
+    setPostage(sale?.postage)
+    setPostalAddress(sale?.postalAddress)
+  }, [sale?.postage, sale?.postalAddress])
 
   const handleSubmit = (e) => {
     e.preventDefault()

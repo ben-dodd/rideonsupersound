@@ -42,7 +42,7 @@ export default function Nav() {
           </div>
         </div>
         <div className="flex mr-2">
-          {page === 'sell' && currentRegister?.id > 0 && <SellNavActions />}
+          {page.includes('/sell') && currentRegister?.id > 0 && <SellNavActions />}
           {page === 'inventory' && <InventoryNavActions />}
           {page === 'vendors' && <VendorNavActions />}
           {page === 'payments' && <PaymentNavActions />}
