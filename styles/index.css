@@ -169,7 +169,7 @@
 }
 
 .modal__title-div {
-  @apply top-0 sticky flex justify-between items-start border-b border-gray-200 shadow-sm bg-primary text-white;
+  @apply top-0 sticky flex justify-between items-start border-b border-gray-200 shadow-sm bg-primary text-white px-2;
 }
 
 .modal__title {
@@ -181,7 +181,7 @@
 }
 
 .modal__button-div {
-  @apply flex -mr-4 py-4 px-8;
+  @apply grid grid-cols-2 gap-4;
 }
 
 .modal__button {

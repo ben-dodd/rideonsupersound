@@ -135,7 +135,7 @@ export default function Menu({ badges }) {
         bg[clerk?.colour]
       } z-40 flex-shrink-0 whitespace-pre relative ${
         view?.mainMenu && 'w-full '
-      }sm:w-full sm:w-icons sm:border-r lg:w-menu transition-width duration-200 `}
+      }sm:w-full sm:w-menuSmall sm:border-r lg:w-menu transition-width duration-200 `}
     >
       <ul>
         {topMenu?.map((item: MenuType, i: number) => (

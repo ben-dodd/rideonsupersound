@@ -133,7 +133,7 @@ const Actions = ({ totalRemaining }) => {
   return (
     <div>
       {totalRemaining !== 0 && (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="modal__button-div">
           {buttons?.map((button, i) => (
             <Button key={i} button={button} />
           ))}
