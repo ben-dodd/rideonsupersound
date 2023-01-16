@@ -190,7 +190,6 @@ export const useAppStore = createSelectors(
       get().mutateCart(mutates)
     },
     deleteCartTransaction: (transaction) => {
-      console.log('deleting', transaction)
       set(
         produce((draft) => {
           console.log(get().cart.transactions)

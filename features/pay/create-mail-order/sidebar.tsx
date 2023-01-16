@@ -6,15 +6,14 @@ import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useCustomers } from 'lib/api/customer'
 import { saveCart } from 'lib/api/sale'
-import { SaleStateTypes } from 'lib/types/sale'
 import TextField from 'components/inputs/text-field'
 
 export default function CreateMailOrder() {
   const { cart, view, setCartSale, setCart, openView, closeView } = useAppStore()
   const { sale = {} } = cart || {}
   const { customers } = useCustomers()
-  const [postage, setPostage] = useState(0)
-  const [postalAddress, setPostalAddress] = useState('')
+  const [postage, setPostage] = useState(sale?.postage)
+  const [postalAddress, setPostalAddress] = useState(sale?.postalAddress)
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -22,17 +21,12 @@ export default function CreateMailOrder() {
   }
 
   async function onClickCreateMailOrder() {
-    let saleUpdate = { ...sale }
-    if (sale?.state !== SaleStateTypes.Layby) {
-      saleUpdate = {
-        ...sale,
-        isMailOrder: true,
-        postage,
-        postalAddress,
-      }
-    }
+    const saleUpdate = { isMailOrder: true, postage: Number(postage), postalAddress }
+    setCartSale(saleUpdate)
     saveCart({ ...cart, sale: saleUpdate }, sale?.state)
     closeView(ViewProps.createMailOrder)
+    setPostage(0)
+    setPostalAddress('')
   }
 
   const buttons: ModalButton[] = [
@@ -46,7 +40,7 @@ export default function CreateMailOrder() {
     {
       type: 'ok',
       onClick: onClickCreateMailOrder,
-      disabled: !sale?.customerId,
+      disabled: !sale?.customerId || !postalAddress || !postage,
       text: 'ADD MAIL ORDER',
     },
   ]
@@ -81,6 +75,7 @@ export default function CreateMailOrder() {
           inputLabel="Postage Fee"
           startAdornment="$"
           inputType="number"
+          error={Number.isNaN(postage)}
           valueNum={postage}
           onChange={(e: any) => setPostage(e.target.value)}
         />
