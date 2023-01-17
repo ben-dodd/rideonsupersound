@@ -51,7 +51,7 @@ export default function Menu({ badges }) {
     },
     {
       type: 'link',
-      page: '/vendor',
+      page: '/vendors',
       text: 'VENDORS',
       class: 'bg-col3-light hover:bg-col3',
       icon: <VendorsIcon />,
@@ -65,7 +65,7 @@ export default function Menu({ badges }) {
     },
     {
       type: 'link',
-      page: '/sale',
+      page: '/sales',
       text: 'SALES',
       class: 'bg-col5-light hover:bg-col5',
       icon: <SalesIcon />,

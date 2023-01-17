@@ -251,6 +251,24 @@ export const useAppStore = createSelectors(
           draft.bypassRegister = !get().bypassRegister
         }),
       ),
+    setSalesView: (update) =>
+      set(
+        produce((draft) => {
+          draft.salesView = update
+        }),
+      ),
+    setSalesViewRange: (update) =>
+      set(
+        produce((draft) => {
+          draft.salesViewRange = update
+        }),
+      ),
+    setSalesViewClerks: (update) =>
+      set(
+        produce((draft) => {
+          draft.salesViewClerks = update
+        }),
+      ),
     setLoadedStocktakeTemplateId: (id) =>
       set(
         produce((draft) => {

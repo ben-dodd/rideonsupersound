@@ -1,19 +1,13 @@
-import {
-  CalendarViewDay,
-  CalendarViewMonth,
-  CalendarViewWeek,
-  Close,
-} from '@mui/icons-material'
+import { CalendarViewDay, CalendarViewMonth, CalendarViewWeek, Close } from '@mui/icons-material'
 import { Chip, IconButton, Tooltip } from '@mui/material'
 import dayjs from 'dayjs'
-import { useAtom } from 'jotai'
 import { useClerks } from 'lib/api/clerk'
+import { useAppStore } from 'lib/store'
 
-export default function Filter() {
+export default function SalesViewFilter() {
+  const { salesView, setSalesView, salesViewRange, setSalesViewRange, salesViewClerks, setSalesViewClerks } =
+    useAppStore()
   const { clerks } = useClerks()
-  const [salesView, setSalesView] = useAtom(salesViewAtom)
-  const [salesViewRange, setSalesViewRange] = useAtom(salesViewRangeAtom)
-  const [salesViewClerks, setSalesViewClerks] = useAtom(salesViewClerksAtom)
   console.log(salesViewRange)
   return (
     <div>
@@ -30,9 +24,7 @@ export default function Filter() {
                 })
               }}
             >
-              <CalendarViewDay
-                className={`${salesView === 'day' ? 'text-primary' : ''}`}
-              />
+              <CalendarViewDay className={`${salesView === 'day' ? 'text-primary' : ''}`} />
             </IconButton>
           </Tooltip>
           <Tooltip title="View This Week's Sales">
@@ -45,9 +37,7 @@ export default function Filter() {
                 })
               }}
             >
-              <CalendarViewWeek
-                className={`${salesView === 'week' ? 'text-primary' : ''}`}
-              />
+              <CalendarViewWeek className={`${salesView === 'week' ? 'text-primary' : ''}`} />
             </IconButton>
           </Tooltip>
           <Tooltip title="View This Month's Sales">
@@ -60,9 +50,7 @@ export default function Filter() {
                 })
               }}
             >
-              <CalendarViewMonth
-                className={`${salesView === 'month' ? 'text-primary' : ''}`}
-              />
+              <CalendarViewMonth className={`${salesView === 'month' ? 'text-primary' : ''}`} />
             </IconButton>
           </Tooltip>
         </div>
@@ -93,11 +81,7 @@ export default function Filter() {
       </div>
       <div className="flex overflow-x-scroll mb-2">
         <div className="mr-1">
-          <Chip
-            icon={<Close />}
-            onClick={() => setSalesViewClerks([])}
-            size="small"
-          />
+          <Chip icon={<Close />} onClick={() => setSalesViewClerks([])} size="small" />
         </div>
         {clerks
           ?.sort((a, b) => a?.name?.localeCompare(b?.name))
@@ -106,17 +90,13 @@ export default function Filter() {
             <div key={clerk?.id} className="mr-1">
               <Chip
                 label={clerk?.name}
-                color={
-                  salesViewClerks?.includes(clerk?.id) ? 'secondary' : 'default'
-                }
+                color={salesViewClerks?.includes(clerk?.id) ? 'secondary' : 'default'}
                 size="small"
                 onClick={() =>
                   setSalesViewClerks(
                     salesViewClerks?.includes(clerk?.id)
-                      ? salesViewClerks?.filter(
-                          (clerkId) => clerkId !== clerk?.id
-                        )
-                      : [...salesViewClerks, clerk?.id]
+                      ? salesViewClerks?.filter((clerkId) => clerkId !== clerk?.id)
+                      : [...salesViewClerks, clerk?.id],
                   )
                 }
               />

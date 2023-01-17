@@ -88,6 +88,9 @@ export interface StoreState {
   resetReceiveBasket: () => void
   resetCustomer: () => void
   resetSellSearchBar: () => void
+  setSalesView: (update: any) => void
+  setSalesViewRange: (update: any) => void
+  setSalesViewClerks: (update: any) => void
   toggleTableMode: () => void
   toggleCompactMode: () => void
   toggleBypassRegister: () => void

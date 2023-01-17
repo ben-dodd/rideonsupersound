@@ -8,7 +8,7 @@ import { useCustomers } from 'lib/api/customer'
 import { useCurrentRegisterId } from 'lib/api/register'
 import SaleSummary from 'features/sale-summary'
 import SaleDetails from 'features/pay/sale-details'
-import { useSaleProperties } from 'lib/hooks'
+import { useSaleProperties } from 'lib/hooks/sale'
 import Layout from 'components/layout'
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 

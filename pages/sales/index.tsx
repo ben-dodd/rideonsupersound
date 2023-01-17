@@ -1,17 +1,12 @@
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import Layout from 'components/layout'
-import SaleList from 'features/sale/display-sales/sale-list'
-import SaleTable from 'features/sale/display-sales/sale-table'
+import SalesScreen from 'features/sale'
 import { useAppStore } from 'lib/store'
-
-// REVIEW add filter buttons to table for laybys etc.
-
 export default function SalesPage() {
   const { tableMode } = useAppStore()
   return (
     <div className={`flex relative overflow-x-hidden`}>
-      {tableMode && <SaleTable />}
-      {!tableMode && <SaleList />}
+      <SalesScreen />
     </div>
   )
 }

@@ -7,7 +7,7 @@ import Cash from 'features/pay/payment/cash'
 import ReturnItemDialog from 'features/pay/return-item-dialog'
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import PayScreen from 'features/pay'
-import { useSaleProperties } from 'lib/hooks'
+import { useSaleProperties } from 'lib/hooks/sale'
 
 export default function PayPage() {
   const { view, cart } = useAppStore()

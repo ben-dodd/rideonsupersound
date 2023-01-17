@@ -1,4 +1,4 @@
-import { useSaleProperties } from 'lib/hooks'
+import { useSaleProperties } from 'lib/hooks/sale'
 
 const SaleDetails = ({ cart }) => {
   const { totalRemaining, totalStoreCut, totalVendorCut, totalPrice, totalPaid, totalPostage } = useSaleProperties(cart)

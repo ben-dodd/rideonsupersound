@@ -2,7 +2,7 @@ import dayjs, { extend } from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { useClerks } from 'lib/api/clerk'
 import { useCustomers } from 'lib/api/customer'
-import { useSaleProperties } from 'lib/hooks'
+import { useSaleProperties } from 'lib/hooks/sale'
 import { CustomerObject } from 'lib/types'
 import { SaleObject, SaleStateTypes } from 'lib/types/sale'
 import { OpenWeatherObject } from 'lib/types/weather'
@@ -12,11 +12,7 @@ export default async function SaleDetails({ sale }: { sale: SaleObject }) {
   extend(utc)
   const { clerks } = useClerks()
   const { customers } = useCustomers()
-
-  // State
   const { totalRemaining } = useSaleProperties(sale)
-
-  // Constants
   const weather: OpenWeatherObject = jsonDecode(sale?.weather)
 
   return (

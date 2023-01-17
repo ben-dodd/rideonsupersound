@@ -375,3 +375,31 @@ async function handleSaveSaleTransaction(trans, sale, trx) {
   }
   return trans
 }
+
+export async function dbGetSalesList(startDate, endDate, db = connection) {
+  return db('sale_transaction')
+    .select(
+      `sale_transaction.id`,
+      `sale_transaction.sale_id`,
+      `sale_transaction.clerk_id`,
+      `sale_transaction.date`,
+      `sale_transaction.payment_method`,
+      `sale_transaction.amount`,
+      `sale_transaction.cash_received`,
+      `sale_transaction.change_given`,
+      `sale_transaction.vendor_payment_id`,
+      `sale_transaction.gift_card_id`,
+      `sale_transaction.gift_card_taken`,
+      `sale_transaction.gift_card_change`,
+      `sale_transaction.register_id`,
+      `sale_transaction.is_refund`,
+      `sale.item_list`,
+      `sale.total_price`,
+      `sale.store_cut`,
+      `sale.number_of_items`,
+    )
+    .leftJoin('sale', 'sale.id', 'sale_transaction.sale_id')
+    .where('sale_transaction.date', '>=', `${dayjs(startDate, 'YYYY-MM-DD').format('YYYY-MM-DD hh:mm:ss')}`)
+    .where('sale_transaction.date', '<=', `${dayjs(endDate, 'YYYY-MM-DD').format('YYYY-MM-DD hh:mm:ss')}`)
+    .orderBy('sale_transaction.date')
+}
