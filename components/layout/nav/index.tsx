@@ -13,6 +13,7 @@ import { ViewProps } from 'lib/store/types'
 import { useAppStore } from 'lib/store'
 import { useRouter } from 'next/router'
 import { useCurrentRegister } from 'lib/api/register'
+import OpenRegisterNavActions from './actions/open-register'
 
 // REVIEW fix all actions and clean up files
 
@@ -42,7 +43,7 @@ export default function Nav() {
           </div>
         </div>
         <div className="flex mr-2">
-          {page.includes('/sell') && currentRegister?.id > 0 && <SellNavActions />}
+          {page.includes('/sell') && (currentRegister?.id > 0 ? <SellNavActions /> : <OpenRegisterNavActions />)}
           {page === 'inventory' && <InventoryNavActions />}
           {page === 'vendors' && <VendorNavActions />}
           {page === 'payments' && <PaymentNavActions />}

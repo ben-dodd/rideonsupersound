@@ -66,38 +66,21 @@ export function dbSetRegister(id, db = connection) {
 }
 
 export async function dbCloseRegister(id: number, register: RegisterObject, till: TillObject, db = connection) {
-  const trx = await db.transaction()
-  try {
-    const tillID = await dbCreateTill(till, db)
-    dbUpdateRegister(id, {
-      closeTillId: tillID,
-      closeDate: dayjs.utc().format(),
-    })
-    dbSetRegister(0, db)
-    trx.commit()
-  } catch (err) {
-    // Roll back the transaction on error
-    trx.rollback()
-  }
+  return db
+    .transaction((trx) =>
+      dbCreateTill(till, trx)
+        .then((closeTillId) => dbUpdateRegister({ ...register, closeTillId, closeDate: dayjs.utc().format() }, id, trx))
+        .then(() => dbSetRegister(null, trx)),
+    )
+    .catch((e) => Error(e.message))
 }
 
 export async function dbOpenRegister(register: RegisterObject, till: TillObject, db = connection) {
-  const trx = await db.transaction()
-  try {
-    const tillID = await dbCreateTill(till, db)
-    const registerId = await dbCreateRegister(
-      {
-        ...register,
-        openTillId: tillID,
-        openDate: dayjs.utc().format(),
-      },
-      db,
+  return db
+    .transaction((trx) =>
+      dbCreateTill(till, trx)
+        .then((openTillId) => dbCreateRegister({ ...register, openTillId, openDate: dayjs.utc().format() }, trx))
+        .then((registerId) => dbSetRegister(registerId, trx)),
     )
-    // logOpenRegister(clerk, null, registerId)
-    dbSetRegister(registerId, db)
-    trx.commit()
-  } catch (err) {
-    // Roll back the transaction on error
-    trx.rollback()
-  }
+    .catch((e) => Error(e.message))
 }

@@ -18,6 +18,7 @@ const CloseRegisterSidebar = ({ register }) => {
   const [till, setTill]: [TillObject, Function] = useState({})
   const [notes, setNotes] = useState('')
   const [closeAmount, setCloseAmount] = useState(`${getAmountFromCashMap(till)}`)
+  const [loading, setLoading] = useState(false)
   useEffect(() => setCloseAmount(`${getAmountFromCashMap(till)}`), [till])
   const {
     openAmount,
@@ -30,6 +31,7 @@ const CloseRegisterSidebar = ({ register }) => {
   } = getRegisterValues(register, closeAmount)
 
   async function clickCloseRegister() {
+    setLoading(true)
     await closeRegister(
       register?.id,
       {
@@ -44,6 +46,7 @@ const CloseRegisterSidebar = ({ register }) => {
       },
       till,
     )
+    setLoading(false)
     router.push('/sell')
     setAlert({
       open: true,
@@ -57,12 +60,13 @@ const CloseRegisterSidebar = ({ register }) => {
       icon: <Cancel />,
       type: 'cancel',
       onClick: () => router.push('/sell'),
-      disabled: invalidCloseAmount,
+      disabled: loading,
       text: 'CANCEL',
     },
     {
       type: 'ok',
       icon: <Check />,
+      loading,
       onClick: clickCloseRegister,
       disabled: invalidCloseAmount,
       text: 'CLOSE REGISTER',

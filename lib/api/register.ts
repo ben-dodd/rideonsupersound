@@ -33,9 +33,10 @@ export function savePettyCash(pettyCash) {
     .catch((e) => Error(e.message))
 }
 
+export function openRegister(register, till) {
+  return axiosAuth.post(`/api/register/open`, { register, till }).catch((e) => Error(e.message))
+}
+
 export function closeRegister(id, register, till) {
-  return axiosAuth
-    .post(`/api/register/till`)
-    .then((id) => axiosAuth.patch(`/api/register/${id}`, { ...register, closeTillId: id }))
-    .catch((e) => Error(e.message))
+  return axiosAuth.patch(`/api/register/close`, { id, register, till }).catch((e) => Error(e.message))
 }
