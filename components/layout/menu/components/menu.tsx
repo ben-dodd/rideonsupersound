@@ -58,7 +58,7 @@ export default function Menu({ badges }) {
     },
     {
       type: 'link',
-      page: '/payment',
+      page: '/payments',
       text: 'PAYMENTS',
       class: 'bg-col4-light hover:bg-col4',
       icon: <PaymentsIcon />,
@@ -72,21 +72,21 @@ export default function Menu({ badges }) {
     },
     {
       type: 'link',
-      page: '/layby',
+      page: '/laybys',
       text: 'LAYBYS',
       class: 'bg-col6-light hover:bg-col6',
       icon: <LaybyIcon />,
     },
     {
       type: 'link',
-      page: '/hold',
+      page: '/holds',
       text: 'HOLDS',
       class: 'bg-col7-light hover:bg-col7',
       icon: <HoldsIcon />,
     },
     {
       type: 'link',
-      page: '/gift-card',
+      page: '/gift-cards',
       text: 'GIFT CARDS',
       class: 'bg-col8-light hover:bg-col8',
       icon: <GiftCardsIcon />,

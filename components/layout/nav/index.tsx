@@ -43,13 +43,13 @@ export default function Nav() {
           </div>
         </div>
         <div className="flex mr-2">
-          {page.includes('/sell') && (currentRegister?.id > 0 ? <SellNavActions /> : <OpenRegisterNavActions />)}
-          {page === 'inventory' && <InventoryNavActions />}
-          {page === 'vendors' && <VendorNavActions />}
-          {page === 'payments' && <PaymentNavActions />}
-          {page === 'jobs' && <TaskNavActions />}
-          {page === 'stocktake' && <StocktakeNavActions />}
-          {page === 'sale' && <SaleNavActions />}
+          {page.includes('sell') && (currentRegister?.id > 0 ? <SellNavActions /> : <OpenRegisterNavActions />)}
+          {page.includes('inventory') && <InventoryNavActions />}
+          {page.includes('vendors') && <VendorNavActions />}
+          {page.includes('payments') && <PaymentNavActions />}
+          {page.includes('jobs') && <TaskNavActions />}
+          {page.includes('stocktake') && <StocktakeNavActions />}
+          {page.includes('sales') && <SaleNavActions />}
           <button onClick={() => openView(ViewProps.helpDialog)} className="text-brown-dark hover:text-brown">
             <HelpIcon />
           </button>

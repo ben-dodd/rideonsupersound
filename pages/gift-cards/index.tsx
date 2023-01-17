@@ -1,11 +1,10 @@
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import Layout from 'components/layout'
-import GiftCardTable from '../../features/inventory/features/display-gift-cards/gift-card-table'
 
 export default function GiftCardPage() {
   return (
     <div className={`flex relative overflow-x-hidden`}>
-      <GiftCardTable />
+      <div>GIFT CARDS</div>
     </div>
   )
 }

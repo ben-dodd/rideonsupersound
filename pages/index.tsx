@@ -6,13 +6,14 @@ import { useCurrentRegisterId } from 'lib/api/register'
 
 export default function IndexPage() {
   const router = useRouter()
-  const { currentRegisterId, isCurrentRegisterIdLoading } = useCurrentRegisterId()
+  const { registerId, isRegisterIdLoading } = useCurrentRegisterId()
   useEffect(() => {
-    if (!isCurrentRegisterIdLoading) {
-      if (currentRegisterId) router?.push('/sell')
+    if (!isRegisterIdLoading) {
+      console.log('current id', registerId)
+      if (registerId) router?.push('/sell')
       else router?.push('/register/open')
     }
-  }, [currentRegisterId, isCurrentRegisterIdLoading, router])
+  }, [registerId, isRegisterIdLoading, router])
 
   return <Loading type="pyramid" size="full" />
 }

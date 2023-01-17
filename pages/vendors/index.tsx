@@ -2,23 +2,21 @@ import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import Layout from 'components/layout'
 import ChangePriceDialog from 'features/inventory/item-stock/change-price-dialog'
 import ChangeStockQuantityDialog from 'features/inventory/item-stock/change-stock-quantity-dialog'
-import VendorTable from 'features/vendor/display-vendors/vendor-table'
-import VendorScreen from 'features/vendor/item-vendor'
+import VendorsScreen from 'features/vendor'
 import { useAppStore } from 'lib/store'
 
-export default function VendorPage() {
+export default function VendorsPage() {
   const { view } = useAppStore()
   return (
     <div className={`flex relative overflow-x-hidden`}>
-      <VendorTable />
-      <VendorScreen />
+      <VendorsScreen />
       {view?.changePriceDialog && <ChangePriceDialog />}
       {view?.changeStockQuantityDialog && <ChangeStockQuantityDialog />}
     </div>
   )
 }
 
-VendorPage.getLayout = (page) => <Layout>{page}</Layout>
+VendorsPage.getLayout = (page) => <Layout>{page}</Layout>
 
 export const getServerSideProps = withPageAuthRequired()
 
