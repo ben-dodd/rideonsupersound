@@ -1,7 +1,13 @@
 import { ModalButton } from 'lib/types'
 
 // TODO make title left aligned with actions on right
-export default function SidebarContainer({ show, title, buttons, handleSubmit, children }) {
+export default function SidebarContainer({
+  show = false,
+  title = null,
+  buttons = null,
+  handleSubmit = null,
+  children,
+}) {
   return (
     <div
       className={`absolute top-0 transition-offset duration-300 ${

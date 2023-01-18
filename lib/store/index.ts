@@ -38,6 +38,7 @@ export const useAppStore = createSelectors(
       transactions: [],
       registerId: null,
     },
+    loadedGiftCardId: null,
     loadedItemId: {},
     loadedVendorId: {},
     loadedHoldId: {},
@@ -46,6 +47,7 @@ export const useAppStore = createSelectors(
     loadedStocktakeTemplateId: 0,
     createableCustomerName: '',
     sellSearchBar: '',
+    giftCardSearchBar: '',
     sellIsSearching: false,
     confirmModal: { open: false },
     alert: { open: false },
@@ -100,6 +102,13 @@ export const useAppStore = createSelectors(
         produce((draft) => {
           draft.sellSearchBar = val
           draft.sellIsSearching = true
+        }),
+      )
+    },
+    setGiftCardSearchBar: (val) => {
+      set(
+        produce((draft) => {
+          draft.giftCardSearchBar = val
         }),
       )
     },
@@ -279,6 +288,12 @@ export const useAppStore = createSelectors(
       set(
         produce((draft) => {
           draft.loadedVendorId = id
+        }),
+      ),
+    setLoadedGiftCardId: (id) =>
+      set(
+        produce((draft) => {
+          draft.loadedGiftCardId = id
         }),
       ),
   })),

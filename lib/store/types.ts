@@ -42,6 +42,7 @@ export interface StoreState {
     stocktakeTemplateSetupDialog?: boolean
   }
   cart: CartObject
+  loadedGiftCardId?: number
   loadedItemId?: any
   loadedVendorId?: any
   loadedHoldId?: any
@@ -51,6 +52,7 @@ export interface StoreState {
   createableCustomerName?: string
   sellSearchBar?: string
   sellIsSearching?: boolean
+  giftCardSearchBar?: string
   confirmModal?: ConfirmModal
   alert?: AlertProps
   receiveBasket?: {
@@ -72,6 +74,7 @@ export interface StoreState {
   setAlert: (alert: any) => void
   closeAlert: () => void
   setSellSearchBar: (val: string) => void
+  setGiftCardSearchBar: (val: string) => void
   toggleSellSearchingOff: () => void
   setCart: (update: any) => void
   mutateCart: (mutates?: string[]) => void
@@ -94,6 +97,7 @@ export interface StoreState {
   toggleTableMode: () => void
   toggleCompactMode: () => void
   toggleBypassRegister: () => void
+  setLoadedGiftCardId: (id: number) => void
   setLoadedStocktakeTemplateId: (id: number) => void
   setLoadedVendorId: (id: number) => void
 }

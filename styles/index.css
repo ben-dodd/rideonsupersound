@@ -257,3 +257,11 @@
 .help-text {
   @apply text-sm text-brown italic my-2;
 }
+
+.mid-screen {
+  @apply h-main w-full sm:w-2/3 bg-gray-100;
+}
+
+.list-item {
+  @apply flex w-full mb-2 text-black shadow-md border mr-4 rounded-md;
+}

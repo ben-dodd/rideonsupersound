@@ -30,6 +30,10 @@ export function useGiftCards() {
   return useData(`stock/giftcard`, 'giftCards')
 }
 
+export function useGiftCard(id) {
+  return useData(`stock/giftcard/${id}`, 'giftCard')
+}
+
 export function deleteStockItem(id) {
   return axiosAuth
     .post(`/api/stock/delete/${id}`)

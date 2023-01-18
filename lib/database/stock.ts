@@ -1,5 +1,5 @@
 import { StockMovementTypes } from 'lib/types/stock'
-import { dbGetAllSalesAndItems, getStockMovementQuantityByAct } from './sale'
+import { dbGetAllSalesAndItems, dbGetSaleTransactions, getStockMovementQuantityByAct } from './sale'
 import { js2mysql } from './utils/helpers'
 const connection = require('./conn')
 
@@ -155,6 +155,7 @@ export function dbGetGiftCards(db = connection) {
     .select(
       'id',
       'is_gift_card',
+      'gift_card_amount',
       'gift_card_code',
       'gift_card_remaining',
       'gift_card_is_valid',
@@ -164,6 +165,17 @@ export function dbGetGiftCards(db = connection) {
     )
     .where('is_gift_card', 1)
     .andWhere('is_deleted', 0)
+}
+
+export function dbGetGiftCard(id, db = connection) {
+  return dbGetGiftCards(db)
+    .where({ id })
+    .first()
+    .then((giftCard) =>
+      dbGetSaleTransactions(db)
+        .where(`sale_transaction.gift_card_id`, id)
+        .then((saleTransactions) => ({ giftCard, saleTransactions })),
+    )
 }
 
 export function dbCreateStockItem(stockItem, db = connection) {

@@ -376,7 +376,7 @@ async function handleSaveSaleTransaction(trans, sale, trx) {
   return trans
 }
 
-export async function dbGetSalesList(startDate, endDate, db = connection) {
+export function dbGetSaleTransactions(db = connection) {
   return db('sale_transaction')
     .select(
       `sale_transaction.id`,
@@ -399,6 +399,10 @@ export async function dbGetSalesList(startDate, endDate, db = connection) {
       `sale.number_of_items`,
     )
     .leftJoin('sale', 'sale.id', 'sale_transaction.sale_id')
+}
+
+export async function dbGetSalesList(startDate, endDate, db = connection) {
+  return dbGetSaleTransactions(db)
     .where('sale_transaction.date', '>=', `${dayjs(startDate, 'YYYY-MM-DD').format('YYYY-MM-DD hh:mm:ss')}`)
     .where('sale_transaction.date', '<=', `${dayjs(endDate, 'YYYY-MM-DD').format('YYYY-MM-DD hh:mm:ss')}`)
     .orderBy('sale_transaction.date')

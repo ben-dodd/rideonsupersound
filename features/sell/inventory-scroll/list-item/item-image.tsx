@@ -1,18 +1,18 @@
 import { getImageSrc, getItemSku } from 'lib/functions/displayInventory'
 import React from 'react'
 
-const ItemImage = ({ item }) => {
+const ItemImage = ({ item, width = 'w-imageMed', faded = item?.quantity < 1 }) => {
   return (
-    <div className="w-imageMed">
-      <div className={`w-imageMed${item?.quantity < 1 ? ' opacity-50' : ''}`}>
+    <div className={`${width}`}>
+      <div className={`${width}${faded ? ' opacity-50' : ''}`}>
         <img
-          className="object-cover h-imageMed w-full aspect-ratio-square"
+          className="object-cover w-full aspect-ratio-square"
           src={getImageSrc(item)}
           alt={item?.title || 'Inventory image'}
         />
-        <div className="h-8 text-lg font-bold text-center bg-black text-white w-imageMed">
-          {getItemSku(item)}
-        </div>
+        {item?.vendorId && (
+          <div className="h-8 text-lg font-bold text-center bg-black text-white w-imageMed">{getItemSku(item)}</div>
+        )}
       </div>
     </div>
   )
