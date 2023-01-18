@@ -17,7 +17,7 @@ const GiftCardListItem = ({ giftCard }: { giftCard: GiftCardObject }) => {
         <ItemImage item={giftCard} width="w-imageSmall" faded={!giftCard?.giftCardIsValid} />
         <div className="ml-2 text-4xl font-mono">{giftCard?.giftCardCode}</div>
       </div>
-      <div className="text-4xl">{`$${centsToDollars(giftCard?.giftCardRemaining)} / $${centsToDollars(
+      <div className="text-4xl pr-4">{`$${centsToDollars(giftCard?.giftCardRemaining)} / $${centsToDollars(
         giftCard?.giftCardAmount,
       )}`}</div>
     </div>
