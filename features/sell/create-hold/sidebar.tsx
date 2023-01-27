@@ -25,7 +25,7 @@ export default function CreateHoldSidebar() {
     setNote('')
     resetSellSearchBar()
     resetCart()
-    closeView(ViewProps.cart)
+    // closeView(ViewProps.cart)
     closeView(ViewProps.createHold)
     setSubmitting(false)
   }

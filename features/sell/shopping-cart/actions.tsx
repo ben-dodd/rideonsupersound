@@ -2,12 +2,11 @@ import { useState } from 'react'
 import CircularProgress from '@mui/material/CircularProgress'
 import Tooltip from '@mui/material/Tooltip'
 import { SaleStateTypes } from 'lib/types/sale'
-import DiscardSaleIcon from '@mui/icons-material/Close'
-import SaveSaleIcon from '@mui/icons-material/Save'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useSWRConfig } from 'swr'
 import { saveCart } from 'lib/api/sale'
+import { Delete, Save } from '@mui/icons-material'
 
 // TODO fix action icons alignment
 export default function ShoppingCartActions() {
@@ -77,7 +76,7 @@ export default function ShoppingCartActions() {
           onClick={sale?.state === SaleStateTypes.Layby ? onClickContinueLayby : onClickSaveSale}
           disabled={Boolean(saveSaleLoading || cart?.items?.length < 1)}
         >
-          {saveSaleLoading ? <CircularProgress color="inherit" size={16} /> : <SaveSaleIcon />}
+          {saveSaleLoading ? <CircularProgress color="inherit" size={16} /> : <Save />}
         </button>
       </Tooltip>
       {!sale?.id && (
@@ -87,7 +86,7 @@ export default function ShoppingCartActions() {
             onClick={onClickDiscardSale}
             disabled={Boolean(items?.length < 1)}
           >
-            <DiscardSaleIcon />
+            <Delete />
           </button>
         </Tooltip>
       )}

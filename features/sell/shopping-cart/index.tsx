@@ -34,7 +34,7 @@ export default function ShoppingCart() {
         <div className="flex justify-between relative">
           <div className="text-xl font-bold my-2 tracking-wide self-center">
             <div className="flex items-center">
-              <button className="hover:text-blue-500 px-2" onClick={handleBackClick}>
+              <button className="hover:text-blue-500 px-2 md:hidden" onClick={handleBackClick}>
                 <ArrowCircleLeftRounded />
               </button>
               SHOPPING CART
