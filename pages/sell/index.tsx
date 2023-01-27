@@ -40,7 +40,7 @@ function SellPage() {
 
   return (
     <div className={`flex relative overflow-x-hidden`} {...handlers}>
-      <div className="mid-screen">
+      <div className="h-main w-full md:w-2/3 bg-gray-100">
         <SellSearchBar />
         <InventoryScroll />
       </div>

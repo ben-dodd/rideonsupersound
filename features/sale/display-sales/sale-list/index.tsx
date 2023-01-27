@@ -3,7 +3,7 @@ import SalesViewFilter from './sales-view-filter'
 
 const SalesListView = () => {
   return (
-    <div>
+    <div className="h-content overflow-y-scroll">
       <SalesViewFilter />
       <SalesList />
     </div>

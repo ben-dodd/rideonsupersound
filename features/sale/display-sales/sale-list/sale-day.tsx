@@ -12,14 +12,20 @@ const SaleDay = ({ saleDay }) => {
     const saleDayClerks = []
     saleDay?.sales?.forEach((sale) => {
       sale?.transactions?.forEach((transaction) => {
-        if (!saleDayClerks.includes(transaction?.clerkId)) saleDayClerks?.push(transaction?.clerkId)
+        if (transaction?.clerkId && !saleDayClerks.includes(transaction?.clerkId))
+          saleDayClerks?.push(transaction?.clerkId)
       })
     })
     const saleNum = saleDay?.sales?.length
-    return `[${saleDayClerks
-      ?.map((saleDayClerk) => clerks?.find((clerk) => clerk?.id === saleDayClerk)?.name)
-      ?.join(', ')}; ${saleNum} SALES]`
+    return `[${
+      saleDayClerks?.length === 0
+        ? ''
+        : `${saleDayClerks
+            ?.map((saleDayClerk) => clerks?.find((clerk) => clerk?.id === saleDayClerk)?.name)
+            ?.join(', ')}; `
+    }${saleNum} SALES]`
   }
+
   return (
     <div>
       <div
