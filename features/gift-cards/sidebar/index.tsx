@@ -1,3 +1,4 @@
+import { CloseRounded } from '@mui/icons-material'
 import SidebarContainer from 'components/container/side-bar'
 import Loading from 'components/loading'
 import dayjs from 'dayjs'
@@ -8,40 +9,49 @@ import Link from 'next/link'
 import React from 'react'
 
 const GiftCardSidebar = () => {
-  const { loadedGiftCardId } = useAppStore()
+  const { loadedGiftCardId, setLoadedGiftCardId } = useAppStore()
   const { giftCard, isGiftCardLoading } = useGiftCard(loadedGiftCardId)
   console.log(giftCard)
   const { giftCard: card = {}, saleTransactions } = giftCard || {}
+  const closeSidebar = () => setLoadedGiftCardId(0)
   return (
     <SidebarContainer show={Boolean(loadedGiftCardId)}>
       {isGiftCardLoading ? (
         <Loading />
       ) : (
         <div>
-          <div className="text-center text-4xl font-mono pb-4">{card?.giftCardCode}</div>
-          <div>{`Created on ${dayjs(card?.dateCreated).format('DD/MM/YYYY')}`}</div>
-          <div>{`Initial amount: $${centsToDollars(card?.giftCardAmount)}`}</div>
-          <div>{`Total remaining: $${centsToDollars(card?.giftCardRemaining)}`}</div>
-          <div className="mt-2">{card?.note}</div>
-          <div className="border-t pt-2">
-            {saleTransactions?.length === 0 ? (
-              'Card has not been used'
-            ) : (
-              <div>
-                {saleTransactions?.map((trans) => (
-                  <div key={trans?.id} className="flex justify-between items-center border-b">
-                    <div className="flex">
-                      <div>{`${dayjs(trans?.date).format('DD/MM/YYYY')}`}</div>
-                      <Link
-                        href={`/sales/${trans?.saleId}`}
-                        className="hover:text-gray-600 pl-2"
-                      >{`[Sale #${trans?.saleId}]`}</Link>
+          <div className="flex justify-between items-start h-header">
+            <div />
+            <div className="text-4xl font-mono py-2">{card?.giftCardCode}</div>
+            <button onClick={closeSidebar}>
+              <CloseRounded />
+            </button>
+          </div>
+          <div className="p-4">
+            <div>{`Created on ${dayjs(card?.dateCreated).format('DD/MM/YYYY')}`}</div>
+            <div>{`Initial amount: $${centsToDollars(card?.giftCardAmount)}`}</div>
+            <div>{`Total remaining: $${centsToDollars(card?.giftCardRemaining)}`}</div>
+            <div className="mt-2">{card?.note}</div>
+            <div className="border-t pt-2">
+              {saleTransactions?.length === 0 ? (
+                'Card has not been used'
+              ) : (
+                <div>
+                  {saleTransactions?.map((trans) => (
+                    <div key={trans?.id} className="flex justify-between items-center border-b">
+                      <div className="flex">
+                        <div>{`${dayjs(trans?.date).format('DD/MM/YYYY')}`}</div>
+                        <Link
+                          href={`/sales/${trans?.saleId}`}
+                          className="hover:text-gray-600 pl-2"
+                        >{`[Sale #${trans?.saleId}]`}</Link>
+                      </div>
+                      <div>{`$${centsToDollars(trans?.amount)}`}</div>
                     </div>
-                    <div>{`$${centsToDollars(trans?.amount)}`}</div>
-                  </div>
-                ))}
-              </div>
-            )}
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

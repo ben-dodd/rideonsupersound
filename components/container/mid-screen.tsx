@@ -7,14 +7,15 @@ export default function MidScreenContainer({
   titleClass = '',
   isLoading = false,
   actionButtons = <div />,
+  full = false,
 }) {
   const router = useRouter()
   const handleBackClick = () => router.back()
   return (
-    <div className="mid-screen">
+    <div className={`h-main w-full ${full ? '' : 'md:w-2/3'} bg-gray-100`}>
       {title && (
         <div
-          className={`${titleClass} text-2xl font-bold uppercase p-2 mb-1 flex justify-between items-center border-b bg-white h-header`}
+          className={`${titleClass} text-2xl font-bold uppercase p-2 flex justify-between items-center border-b bg-white h-header`}
         >
           <div className="flex items-center">
             <button className="hover:text-blue-500 px-2" onClick={handleBackClick}>

@@ -94,12 +94,14 @@ export function dollarsToCents(amount: number | string) {
 }
 
 export function priceCentsString(cents: number | string) {
-  return `$${centsToDollars(cents)?.toFixed(2)}`
+  return isNaN(Number(cents))
+    ? 'N/A'
+    : centsToDollars(cents).toLocaleString('en-NZ', { style: 'currency', currency: 'NZD' })
 }
 
 export function priceDollarsString(amount: number | string) {
   const dollars = Number(amount)
-  return `$${dollars?.toFixed(2)}`
+  return isNaN(dollars) ? 'N/A' : dollars.toLocaleString('en-NZ', { style: 'currency', currency: 'NZD' })
 }
 
 export function eraseWhiteSpace(str) {

@@ -31,7 +31,7 @@ export function useGiftCards() {
 }
 
 export function useGiftCard(id) {
-  return useData(`stock/giftcard/${id}`, 'giftCard')
+  return useData(id ? `stock/giftcard/${id}` : null, 'giftCard')
 }
 
 export function deleteStockItem(id) {

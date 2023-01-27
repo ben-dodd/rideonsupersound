@@ -2,8 +2,6 @@ import { useState } from 'react'
 import { SaleItemObject } from 'lib/types/sale'
 import TextField from 'components/inputs/text-field'
 import { getImageSrc, getItemDisplayName, getItemSku } from 'lib/functions/displayInventory'
-import ArrowDown from '@mui/icons-material/ArrowDropDown'
-import ArrowUp from '@mui/icons-material/ArrowDropUp'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { getCartItemTotal, writeCartItemPriceBreakdown } from 'lib/functions/sell'
 import { useAppStore } from 'lib/store'
@@ -13,6 +11,7 @@ import { deleteSale, deleteSaleItem } from 'lib/api/sale'
 import { ViewProps } from 'lib/store/types'
 import { useClerk } from 'lib/api/clerk'
 import { useCurrentRegisterId } from 'lib/api/register'
+import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material'
 
 // TODO make list items share more components
 
@@ -114,12 +113,12 @@ export default function SellListItem({ cartItem }: { cartItem: SaleItemObject })
             {expanded ? (
               <div>
                 CLOSE PANEL
-                <ArrowUp />
+                <ArrowDropUp />
               </div>
             ) : (
               <div>
                 CLICK TO EDIT ITEM
-                <ArrowDown />
+                <ArrowDropDown />
               </div>
             )}
           </div>

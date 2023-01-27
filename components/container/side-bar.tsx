@@ -16,7 +16,7 @@ export default function SidebarContainer({
       // 'right-0' : '-right-sidebar hidden'
       // } h-full w-full bg-yellow-200 sm:w-sidebarSmall lg:w-sidebar sm:h-main
     >
-      <form onSubmit={handleSubmit} className="flex flex-col h-main px-2 bg-gray-200 text-black">
+      <form onSubmit={handleSubmit} className="flex flex-col h-main bg-gray-200 text-black">
         {title && <div className="text-lg font-extrabold my-2 tracking-wide self-center">{title}</div>}
         {children}
         {buttons ? (

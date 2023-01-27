@@ -10,7 +10,7 @@ export default function SalesViewFilter() {
   const { clerks } = useClerks()
   console.log(salesViewRange)
   return (
-    <div>
+    <div className="bg-white p-2 shadow-md">
       <div className="flex items-center my-2">
         <div className="flex items-center">
           <div className="font-bold mx-2">SET VIEW</div>

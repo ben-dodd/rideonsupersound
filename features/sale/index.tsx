@@ -1,11 +1,15 @@
+import MidScreenContainer from 'components/container/mid-screen'
+import { useSalesForRange } from 'lib/hooks/sales'
+import { useAppStore } from 'lib/store'
 import SalesListView from './display-sales/sale-list'
 
 const SalesScreen = () => {
+  const { salesViewRange } = useAppStore()
+  const { isLoading } = useSalesForRange(salesViewRange)
   return (
-    <div>
-      <div className="font-bold">SALES</div>
+    <MidScreenContainer title="SALES" isLoading={isLoading} titleClass="bg-col5" full={true}>
       <SalesListView />
-    </div>
+    </MidScreenContainer>
   )
 }
 
