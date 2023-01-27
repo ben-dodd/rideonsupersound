@@ -12,9 +12,9 @@ export default function SidebarContainer({
     <div
       className={`absolute top-0 transition-offset duration-300 ${
         show ? 'right-0' : '-right-sidebar hidden'
-      } h-full w-full bg-yellow-200 sm:w-sidebarSmall lg:w-sidebar sm:h-main`}
+      } h-full w- full sm:w-sidebarSmall lg:w-sidebar sm:h-main`}
     >
-      <div className="flex flex-col h-main p-2 bg-blue-300 text-black">
+      <div className="flex flex-col h-main p-2 bg-gray-200 text-black">
         {title && <div className="text-lg font-extrabold my-2 tracking-wide self-center">{title}</div>}
         <form onSubmit={handleSubmit} className="flex flex-col justify-between h-full">
           {children}

@@ -26,7 +26,7 @@ export default function ShoppingCart() {
     <div
       className={`absolute top-0 transition-offset duration-300 ${
         view?.cart ? 'left-0' : 'left-full'
-      } sm:left-2/3 h-full w-full bg-yellow-200 sm:w-1/3 sm:h-main`}
+      } sm:left-2/3 h-full w-full sm:w-1/3 sm:h-main`}
     >
       <div className="flex flex-col h-main px-2 bg-gray-200 text-black">
         <div className="flex justify-between relative">

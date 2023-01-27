@@ -11,7 +11,7 @@ export default function HoldListItem({ cartItem }: HoldListItemProps) {
   const { item = {} } = stockItem || {}
 
   return (
-    <div className="flex w-full bg-blue-100 text-black mb-2">
+    <div className="flex w-full bg-black text-white mb-2">
       <div className="w-20">
         <div className="w-20 h-20 aspect-ratio-square relative">
           <img
