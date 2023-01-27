@@ -12,26 +12,33 @@ import { createSale } from 'lib/api/sale'
 import { useClerk } from 'lib/api/clerk'
 import { useRouter } from 'next/router'
 import { SaleStateTypes } from 'lib/types/sale'
+import { ArrowCircleLeftRounded } from '@mui/icons-material'
 
 export default function ShoppingCart() {
-  const { cart, view, setCartSale, openView } = useAppStore()
+  const { cart, view, setCartSale, openView, closeView } = useAppStore()
   const { sale = {}, items = [], transactions = [] } = cart || {}
   const { clerk } = useClerk()
   const router = useRouter()
   const [loadingSale, setLoadingSale] = useState(false)
 
   const { totalPrice, totalStoreCut, totalRemaining, totalPaid } = useSaleProperties(cart)
+  const handleBackClick = () => closeView(ViewProps.cart)
 
   return (
     <div
       className={`absolute top-0 transition-offset duration-300 ${
         view?.cart ? 'left-0' : 'left-full'
-      } sm:left-2/3 h-full w-full sm:w-1/3 sm:h-main`}
+      } md:left-2/3 h-full w-full md:w-1/3 md:h-main`}
     >
       <div className="flex flex-col h-main px-2 bg-gray-200 text-black">
         <div className="flex justify-between relative">
           <div className="text-xl font-bold my-2 tracking-wide self-center">
-            <div>SHOPPING CART</div>
+            <div className="flex items-center">
+              <button className="hover:text-blue-500 px-2" onClick={handleBackClick}>
+                <ArrowCircleLeftRounded />
+              </button>
+              SHOPPING CART
+            </div>
             {sale?.id && (
               <div className="text-sm font-light">
                 <div>{`Sale #${sale?.id} // ${(sale?.state || SaleStateTypes.InProgress)?.toUpperCase()}`}</div>

@@ -259,7 +259,7 @@
 }
 
 .mid-screen {
-  @apply h-main w-full sm:w-2/3 bg-gray-100;
+  @apply h-main w-full md:w-2/3 bg-gray-100;
 }
 
 .list-item {
