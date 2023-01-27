@@ -8,7 +8,7 @@ export default function OpenRegisterNavActions() {
     <div className="flex">
       <button className="icon-text-button" onClick={() => router.push('/register/open')}>
         <VpnKey className="mr-1" />
-        Open Register
+        <div className="hidden lg:inline">Open Register</div>
       </button>
     </div>
   )

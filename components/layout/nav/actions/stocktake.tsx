@@ -25,7 +25,7 @@ export default function StocktakeNavActions() {
         }}
       >
         <NewIcon className="mr-1" />
-        New Stocktake Template
+        <div className="hidden lg:inline">New Stocktake Template</div>
       </button>
     </div>
   )

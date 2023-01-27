@@ -8,7 +8,7 @@ export default function VendorNavActions() {
     <div className="flex">
       <button className="icon-text-button" onClick={() => setLoadedVendorId({ ...loadedVendorId, vendors: -1 })}>
         <NewIcon className="mr-1" />
-        New Vendor
+        <div className="hidden lg:inline">New Vendor</div>
       </button>
     </div>
   )

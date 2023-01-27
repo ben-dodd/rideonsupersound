@@ -8,7 +8,7 @@ export default function TaskNavActions() {
     <div className="flex">
       <button className="icon-text-button" onClick={() => openView(ViewProps.taskDialog)}>
         <NewIcon className="mr-1" />
-        New Job
+        <div className="hidden lg:inline">New Job</div>
       </button>
     </div>
   )

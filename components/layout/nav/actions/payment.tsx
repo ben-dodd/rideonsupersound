@@ -10,15 +10,15 @@ export default function PaymentNavActions() {
     <div className="flex">
       <button className="icon-text-button" onClick={() => openView(ViewProps.cashVendorPaymentDialog)}>
         <NewIcon className="mr-1" />
-        New Manual Payment
+        <div className="hidden lg:inline">New Manual Payment</div>
       </button>
       <button className="icon-text-button" onClick={() => openView(ViewProps.transferVendorPaymentDialog)}>
         <TransferIcon className="mr-1" />
-        New Transfer
+        <div className="hidden lg:inline">New Transfer</div>
       </button>
       <button className="icon-text-button" onClick={() => openView(ViewProps.batchVendorPaymentScreen)}>
         <PayIcon className="mr-1" />
-        Batch Payment
+        <div className="hidden lg:inline">Batch Payment</div>
       </button>
     </div>
   )

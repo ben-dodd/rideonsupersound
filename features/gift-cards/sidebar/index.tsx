@@ -22,7 +22,7 @@ const GiftCardSidebar = () => {
           <div>{`Created on ${dayjs(card?.dateCreated).format('DD/MM/YYYY')}`}</div>
           <div>{`Initial amount: $${centsToDollars(card?.giftCardAmount)}`}</div>
           <div>{`Total remaining: $${centsToDollars(card?.giftCardRemaining)}`}</div>
-          <div>{card?.note}</div>
+          <div className="mt-2">{card?.note}</div>
           <div className="border-t pt-2">
             {saleTransactions?.length === 0 ? (
               'Card has not been used'

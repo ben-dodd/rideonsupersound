@@ -31,7 +31,7 @@ export default function Nav() {
     <nav className={`py-2 ${bg[clerk?.colour]} text-white h-navbar`}>
       <div className="flex justify-between items-center">
         <div className="flex items-center">
-          <div className="ml-4 text-black text-2xl font-black">{clerk?.name?.toUpperCase()} @</div>
+          <div className="hidden sm:inline ml-4 text-black text-2xl font-black">{clerk?.name?.toUpperCase()} @</div>
           <div className="ml-4">
             {/*<div className="sm:hidden">{`${clerk?.name?.toUpperCase()} @ R.O.S.S.`}</div>
             <div className="hidden sm:block">{`${clerk?.name?.toUpperCase()} @ RIDE ON SUPER SOUND`}</div>*/}

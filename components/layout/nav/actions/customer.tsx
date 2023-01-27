@@ -6,12 +6,9 @@ export default function CustomerNavActions() {
   const { openView } = useAppStore()
   return (
     <div className="flex">
-      <button
-        className="icon-text-button"
-        onClick={() => openView(ViewProps.createCustomer)}
-      >
+      <button className="icon-text-button" onClick={() => openView(ViewProps.createCustomer)}>
         <NewIcon className="mr-1" />
-        New Customer
+        <div className="hidden lg:inline">New Customer</div>
       </button>
     </div>
   )
