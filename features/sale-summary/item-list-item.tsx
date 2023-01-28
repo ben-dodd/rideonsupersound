@@ -21,7 +21,7 @@ export default function ItemListItem({ saleItem, selected, onClick }: SellListIt
   return (
     <div
       className={`flex w-full relative pt border-b mb-2${saleItem?.isRefunded ? ' opacity-50' : ''}${
-        onClick ? ' cursor-pointer' : ''
+        onClick ? ' cursor-pointer hover:bg-blue-100' : ''
       }${selected ? ' bg-red-100' : ''}`}
       onClick={onClick || null}
     >

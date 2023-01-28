@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import { useClerks } from 'lib/api/clerk'
 import { priceCentsString } from 'lib/utils'
-import { useRouter } from 'next-router-mock'
+import { useRouter } from 'next/router'
 
 const SaleDaySale = ({ sale }) => {
   const router = useRouter()
@@ -10,7 +10,10 @@ const SaleDaySale = ({ sale }) => {
     <div className="flex border-b border-gray-500 border-dotted" key={sale?.id}>
       <div
         className="w-5/12 hover:text-blue-500 cursor-pointer"
-        onClick={() => router.push(`sale/${sale?.id}`)}
+        onClick={() => {
+          console.log(`sales/${sale?.id}`)
+          router.push(`sales/${sale?.id}`)
+        }}
       >{`[${sale?.id}] ${sale?.itemList}`}</div>
       <div className="w-7/12 text-right">
         {sale?.transactions?.map((transaction) => (

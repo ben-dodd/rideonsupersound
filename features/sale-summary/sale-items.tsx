@@ -13,7 +13,11 @@ const SaleItems = ({ items }) => {
           isSell ? (
             <SellListItem key={saleItem?.itemId} cartItem={saleItem} />
           ) : (
-            <ItemListItem key={saleItem?.itemId} saleItem={saleItem} />
+            <ItemListItem
+              key={saleItem?.itemId}
+              saleItem={saleItem}
+              onClick={() => router.push(`/stock/${saleItem?.itemId}`)}
+            />
           ),
         )
       ) : (

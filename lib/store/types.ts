@@ -65,6 +65,7 @@ export interface StoreState {
   salesView?: string
   salesViewRange?: any
   salesViewClerks?: number[]
+  salesViewLaybys?: boolean
   tableMode?: boolean
   compactMode?: boolean
   openView: (view: ViewProps) => void
@@ -94,6 +95,7 @@ export interface StoreState {
   setSalesView: (update: any) => void
   setSalesViewRange: (update: any) => void
   setSalesViewClerks: (update: any) => void
+  toggleSalesViewLaybys: () => void
   toggleTableMode: () => void
   toggleCompactMode: () => void
   toggleBypassRegister: () => void

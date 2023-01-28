@@ -4,8 +4,8 @@ import GrandTotal from './grand-total'
 import SaleDay from './sale-day'
 
 export default function SalesList() {
-  const { salesViewRange, salesViewClerks } = useAppStore()
-  const { saleArray, grandTotal } = useSalesForRange({ salesViewRange, salesViewClerks })
+  const { salesViewRange, salesViewClerks, salesViewLaybys } = useAppStore()
+  const { saleArray, grandTotal } = useSalesForRange({ salesViewRange, salesViewClerks, salesViewLaybys })
   return (
     <div>
       {saleArray?.length === 0 ? (

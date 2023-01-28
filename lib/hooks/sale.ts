@@ -8,6 +8,7 @@ export function useSaleProperties(cart): any {
   const [properties, setProperties]: [any, Function] = useState({ isLoading: true })
   const [stockTable, setStockTable]: [BasicStockObject[], Function] = useState(null)
   const { items = [], sale = {}, transactions = [] } = cart || {}
+  console.log(cart)
   // console.log(items, sale)
 
   useEffect(() => {
@@ -23,7 +24,7 @@ export function useSaleProperties(cart): any {
   }, [items])
 
   useEffect(() => {
-    if (stockTable) {
+    if (stockTable?.length > 0) {
       const totalPostage = parseFloat(`${sale?.postage}`) || 0 // Postage: currently in dollars
       const nonRefundedItems = items?.filter((item) => !item?.isRefunded)
       const totalStoreCut = sumPrices(nonRefundedItems, stockTable, 'storePrice') / 100 // Total Amount of Sale goes to Store in dollars

@@ -59,6 +59,7 @@ export const useAppStore = createSelectors(
       endDate: dayjs().format('YYYY-MM-DD'),
     },
     salesViewClerks: [],
+    salesViewLaybys: false,
     tableMode: true,
     compactMode: false,
     openView: (view) =>
@@ -276,6 +277,12 @@ export const useAppStore = createSelectors(
       set(
         produce((draft) => {
           draft.salesViewClerks = update
+        }),
+      ),
+    toggleSalesViewLaybys: () =>
+      set(
+        produce((draft) => {
+          draft.salesViewLaybys = !get().salesViewLaybys
         }),
       ),
     setLoadedStocktakeTemplateId: (id) =>

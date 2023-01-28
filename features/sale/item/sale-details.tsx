@@ -2,18 +2,20 @@ import dayjs, { extend } from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { useClerks } from 'lib/api/clerk'
 import { useCustomers } from 'lib/api/customer'
-import { useSaleProperties } from 'lib/hooks/sale'
 import { CustomerObject } from 'lib/types'
-import { SaleObject, SaleStateTypes } from 'lib/types/sale'
+import { CartObject, SaleStateTypes } from 'lib/types/sale'
 import { OpenWeatherObject } from 'lib/types/weather'
 import { convertDegToCardinal, convertMPStoKPH } from 'lib/utils'
 
-export default async function SaleDetails({ sale }: { sale: SaleObject }) {
+export default function SaleDetails({ cart }: { cart: CartObject }) {
   extend(utc)
   const { clerks } = useClerks()
   const { customers } = useCustomers()
-  const { totalRemaining } = useSaleProperties(sale)
+  // const { totalRemaining } = useSaleProperties(cart)
+  const totalRemaining = 0
+  const { sale = {} } = cart || {}
   const weather: OpenWeatherObject = jsonDecode(sale?.weather)
+  console.log(cart)
 
   return (
     <div className="flex flex-col justify-between">

@@ -5,8 +5,16 @@ import { useClerks } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 
 export default function SalesViewFilter() {
-  const { salesView, setSalesView, salesViewRange, setSalesViewRange, salesViewClerks, setSalesViewClerks } =
-    useAppStore()
+  const {
+    salesView,
+    setSalesView,
+    salesViewRange,
+    setSalesViewRange,
+    salesViewClerks,
+    setSalesViewClerks,
+    salesViewLaybys,
+    toggleSalesViewLaybys,
+  } = useAppStore()
   const { clerks } = useClerks()
   console.log(salesViewRange)
   return (
@@ -78,6 +86,12 @@ export default function SalesViewFilter() {
             value={salesViewRange?.endDate}
           />
         </div>
+        <div className="mx-2">|</div>
+        <Chip
+          label="View Laybys Only"
+          color={salesViewLaybys ? 'secondary' : 'default'}
+          onClick={toggleSalesViewLaybys}
+        />
       </div>
       <div className="flex overflow-x-scroll mb-2">
         <div className="mr-1">

@@ -1,8 +1,8 @@
 import TransactionItems from './transaction-items'
-import SaleDetails from './sale-details'
 import SaleItems from './sale-items'
 import { ArrowCircleLeftRounded } from '@mui/icons-material'
 import { useRouter } from 'next/router'
+import SaleDetails from './sale-details'
 
 export default function SaleSummary({ cart }) {
   const { sale = {}, items = [], transactions = [] } = cart || {}

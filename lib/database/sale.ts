@@ -79,19 +79,23 @@ export function dbGetAllHolds(db = connection) {
   return db('hold').where(`is_deleted`, 0)
 }
 
-export function dbGetSale(id, db = connection) {
-  return db('sale').where({ id }).first()
+export async function dbGetSale(id, db = connection) {
+  const cart: any = {}
+  cart.sale = await db('sale').where({ id }).first()
+  cart.items = await dbGetSaleItemsBySaleId(id, db)
+  cart.transactions = await dbGetSaleTransactionsBySaleId(id, db)
+  return cart
 }
 
 export function dbGetSaleItemsBySaleId(saleId, db = connection) {
   return db('sale_item').where({ sale_id: saleId })
 }
 
-export function getSaleTransactionsBySaleId(saleId, db = connection) {
+export function dbGetSaleTransactionsBySaleId(saleId, db = connection) {
   return db('sale_transaction').where({ sale_id: saleId })
 }
 
-export function getAllSaleItems(db = connection) {
+export function dbGetAllSaleItems(db = connection) {
   return db('sale_item')
 }
 
@@ -397,13 +401,32 @@ export function dbGetSaleTransactions(db = connection) {
       `sale.total_price`,
       `sale.store_cut`,
       `sale.number_of_items`,
+      `sale.state`,
     )
     .leftJoin('sale', 'sale.id', 'sale_transaction.sale_id')
 }
 
-export async function dbGetSalesList(startDate, endDate, db = connection) {
-  return dbGetSaleTransactions(db)
+export async function dbGetSalesList(startDate, endDate, clerks, laybysOnly = false, db = connection) {
+  console.log(
+    'Get sale list',
+    startDate,
+    endDate,
+    clerks?.split(',')?.map((clerk) => Number(clerk)),
+    laybysOnly,
+  )
+  let baseQuery = dbGetSaleTransactions(db)
     .where('sale_transaction.date', '>=', `${dayjs(startDate, 'YYYY-MM-DD').format('YYYY-MM-DD hh:mm:ss')}`)
     .where('sale_transaction.date', '<=', `${dayjs(endDate, 'YYYY-MM-DD').format('YYYY-MM-DD hh:mm:ss')}`)
-    .orderBy('sale_transaction.date')
+  if (laybysOnly) baseQuery = baseQuery.where('sale.state', SaleStateTypes.Layby)
+  if (clerks?.length > 0)
+    baseQuery = baseQuery.whereIn(
+      'sale_transaction.clerk_id',
+      clerks?.split(',')?.map((clerk) => {
+        console.log(clerk)
+        console.log(Number(clerk))
+        return Number(clerk)
+      }),
+    )
+  // console.log(baseQuery)
+  return baseQuery.orderBy('sale_transaction.date')
 }

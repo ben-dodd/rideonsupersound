@@ -3,10 +3,7 @@ import { requireScope } from 'lib/api/utils'
 import { NextAuthenticatedApiRequest } from '@serverless-jwt/next/dist/types'
 import { dbGetSale, dbUpdateSale } from 'lib/database/sale'
 
-const apiRoute = async (
-  req: NextAuthenticatedApiRequest,
-  res: NextApiResponse
-) => {
+const apiRoute = async (req: NextAuthenticatedApiRequest, res: NextApiResponse) => {
   if (req.method === 'GET') {
     const { id } = req.query
     try {
