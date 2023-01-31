@@ -18,11 +18,12 @@ export default function RestockJob({ item }: ListItemProps) {
   const { inventory, mutateInventory } = useInventory()
   const { logs, mutateLogs } = useLogs()
   const [clerk] = useAtom(clerkAtom)
+  console.log(inventory?.find((stock) => stock?.id === item?.id))
 
   return (
     <div className={`flex w-full border-b border-yellow-100 py-1 text-sm`}>
       <div className="flex flex-col sm:flex-row w-full justify-between">
-        <div className="flex flex-col sm:flex-row w-3/5">
+        <div className="flex flex-col sm:flex-row">
           <div className="mx-2">
             <input
               className="cursor-pointer"
@@ -48,7 +49,12 @@ export default function RestockJob({ item }: ListItemProps) {
           </div>
           <div>{`${getItemSkuDisplayNameById(item?.id, inventory)}${
             item?.format ? ` (${item?.format})` : ''
-          }`}</div>
+          } `}</div>
+          <div
+            className={`ml-2 font-bold${
+              item?.quantity < 1 ? ' text-red-500' : ''
+            }`}
+          >{`${item?.quantity} in Stock`}</div>
         </div>
       </div>
     </div>
