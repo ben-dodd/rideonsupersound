@@ -21,10 +21,12 @@ export default function RestockJob({ item }: ListItemProps) {
   console.log(inventory?.find((stock) => stock?.id === item?.id))
 
   return (
-    <div className={`flex w-full border-b border-yellow-100 py-1 text-sm`}>
+    <div
+      className={`flex w-full border-b border-yellow-100 py-1 text-sm hover:bg-gray-100`}
+    >
       <div className="flex flex-col sm:flex-row w-full justify-between">
-        <div className="flex flex-col sm:flex-row">
-          <div className="mx-2">
+        <div className="flex flex-col sm:flex-row w-full">
+          <div className="w-1/12">
             <input
               className="cursor-pointer"
               type="checkbox"
@@ -47,11 +49,13 @@ export default function RestockJob({ item }: ListItemProps) {
               }}
             />
           </div>
-          <div>{`${getItemSkuDisplayNameById(item?.id, inventory)}${
-            item?.format ? ` (${item?.format})` : ''
-          } `}</div>
+          <div className="w-1/6">{item?.format || ''}</div>
+          <div className="w-7/12">{`${getItemSkuDisplayNameById(
+            item?.id,
+            inventory
+          )}`}</div>
           <div
-            className={`ml-2 font-bold${
+            className={`w-1/6 font-bold${
               item?.quantity < 1 ? ' text-red-500' : ''
             }`}
           >{`${item?.quantity} in Stock`}</div>
