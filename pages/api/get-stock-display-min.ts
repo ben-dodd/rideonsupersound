@@ -19,10 +19,10 @@ const handler: NextApiHandler = async (req, res) => {
         image_url
       FROM stock
       WHERE NOT is_deleted
-      AND NOT is_misc_item
-      AND NOT is_misc_item IS NULL
-      AND NOT is_gift_card
-      AND NOT is_gift_card IS NULL
+      AND (NOT is_misc_item
+      OR is_misc_item IS NULL)
+      AND (NOT is_gift_card
+      OR is_gift_card IS NULL)
       `
     )
 

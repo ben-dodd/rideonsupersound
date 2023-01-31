@@ -40,7 +40,8 @@ export function getItemSkuDisplayNameById(
   item_id: number,
   inventory: StockObject[]
 ) {
-  let item = inventory?.filter((i) => i?.id === item_id)[0]
+  let item = inventory?.find((i) => i?.id === item_id)
+  if (!item) console.log('Missing', item_id)
   return `[${getItemSku(item)}] ${getItemDisplayName(item)}`
 }
 
