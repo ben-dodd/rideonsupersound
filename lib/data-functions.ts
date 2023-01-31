@@ -41,7 +41,7 @@ export function getItemSkuDisplayNameById(
   inventory: StockObject[]
 ) {
   let item = inventory?.find((i) => i?.id === item_id)
-  if (!item) console.log('Missing', item_id)
+  if (!item) return '...'
   return `[${getItemSku(item)}] ${getItemDisplayName(item)}`
 }
 

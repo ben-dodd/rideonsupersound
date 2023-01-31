@@ -15,8 +15,7 @@ const handler: NextApiHandler = async (req, res) => {
         title,
         display_as,
         media,
-        format,
-        image_url
+        format
       FROM stock
       WHERE NOT is_deleted
       AND (NOT is_misc_item

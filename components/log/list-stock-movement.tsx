@@ -11,8 +11,6 @@ export default function ListStockMovement({ sm }: ListItemProps) {
   // SWR
   const { clerks } = useClerks()
   const { stockDisplay } = useStockDisplayMin()
-  if (!sm?.stock_id) console.log(sm)
-  console.log(stockDisplay?.length)
 
   return (
     <div className="flex w-full border-b border-yellow-100 py-1 font-mono text-xs text-black">
