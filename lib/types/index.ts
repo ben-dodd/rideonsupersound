@@ -55,6 +55,7 @@ export interface ConfirmModal {
   yesText?: string
   altText?: string
   noText?: string
+  yesButtonOnly?: boolean
   buttons?: ModalButton[]
 }
 

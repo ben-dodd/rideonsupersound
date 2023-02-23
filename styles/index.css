@@ -259,5 +259,5 @@
 }
 
 .list-item {
-  @apply flex w-full mb-2 text-black shadow-md border mr-4 rounded-md;
+  @apply flex w-full mb-2 text-black shadow-sm border mr-4 rounded-md;
 }

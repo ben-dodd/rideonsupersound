@@ -62,7 +62,7 @@ export default function ShoppingCart() {
           <div className="flex justify-between items-end">
             <button
               className="fab-button__secondary w-1/3"
-              disabled={transactions?.length > 0 || loadingSale || totalRemaining === 0}
+              disabled={transactions?.length > 0 || loadingSale || !totalRemaining}
               onClick={() => openView(ViewProps.createHold)}
             >
               <HoldIcon className="mr-2" />
@@ -80,12 +80,12 @@ export default function ShoppingCart() {
               <div className="flex justify-between mt-1">
                 <div className="self-center">STORE CUT</div>
                 <div className={`self-center text-right ml-4 ${totalStoreCut < 0 ? 'text-red-500' : 'text-black'}`}>
-                  {totalStoreCut < 0 && '-'}${items?.length > 0 ? Math.abs(totalStoreCut)?.toFixed(2) : '0.00'}
+                  {totalStoreCut < 0 && '-'}${Math.abs(totalStoreCut || 0)?.toFixed(2)}
                 </div>
               </div>
               <div className="flex justify-between mt-1 font-bold">
                 <div className="self-center">TOTAL</div>
-                <div className="self-center text-right ml-4">${totalPrice?.toFixed(2)}</div>
+                <div className="self-center text-right ml-4">${(totalPrice || 0)?.toFixed(2)}</div>
               </div>
               {transactions?.length > 0 && (
                 <div className="flex justify-between mt-1">
@@ -100,7 +100,7 @@ export default function ShoppingCart() {
           <div>
             <button
               className={`w-full my-4 modal__button--${totalRemaining < 0 ? 'alt1' : 'ok'}`}
-              disabled={loadingSale || totalRemaining === 0}
+              disabled={loadingSale || !totalRemaining}
               onClick={() => {
                 if (sale?.id) router.push('sell/pay')
                 else {
@@ -122,7 +122,7 @@ export default function ShoppingCart() {
               )}
               {totalRemaining < 0
                 ? `REFUND $${Math.abs(totalRemaining)?.toFixed(2)}`
-                : `PAY $${totalRemaining?.toFixed(2)}`}
+                : `PAY${totalRemaining ? ` $${totalRemaining?.toFixed(2)}` : ''}`}
             </button>
           </div>
         </div>

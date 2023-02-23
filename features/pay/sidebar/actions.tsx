@@ -1,4 +1,3 @@
-import { useCustomers } from 'lib/api/customer'
 import { useAppStore } from 'lib/store'
 import { SaleStateTypes } from 'lib/types/sale'
 import { saveCart } from 'lib/api/sale'
@@ -12,12 +11,11 @@ import { ViewProps } from 'lib/store/types'
 import ActionButton from 'components/button/action-button'
 
 const Actions = ({ totalRemaining }) => {
-  const { cart, resetCart, setAlert, openView, setCustomer, openConfirm, setCart, closeView } = useAppStore()
+  const { cart, resetCart, setAlert, openView, openConfirm, setCart, closeView } = useAppStore()
   const router = useRouter()
-  const { sale = {} } = cart || {}
+  const { sale = {}, transactions = [] } = cart || {}
   const { clerk } = useClerk()
   const [completeSaleLoading, setCompleteSaleLoading] = useState(false)
-  const { customers = [] } = useCustomers()
   function clearCart() {
     resetCart()
     closeView(ViewProps.cart)
@@ -54,26 +52,34 @@ const Actions = ({ totalRemaining }) => {
   }
 
   async function onClickDiscardSale() {
-    openConfirm({
-      open: true,
-      title: 'Are you sure?',
-      message: 'Are you sure you want to clear the cart of all items?',
-      yesText: 'DISCARD SALE',
-      action: () => {
-        // saveLog(`Cart cleared.`, clerk?.id)
-        setAlert({
+    transactions?.filter((transaction) => !transaction?.isDeleted)?.length > 0
+      ? openConfirm({
           open: true,
-          type: 'warning',
-          message: 'SALE DISCARDED',
-          undo: () => {
-            // saveLog(`Cart uncleared.`, clerk?.id)
-            setCart(cart)
-          },
+          title: 'Hold up',
+          message:
+            'To cancel this sale you need to delete the transactions already entered. Click on the rubbish bin icon on the left of each transaction to cancel it.',
+          yesButtonOnly: true,
         })
-        clearCart()
-      },
-      noText: 'CANCEL',
-    })
+      : openConfirm({
+          open: true,
+          title: 'Are you sure?',
+          message: 'Are you sure you want to clear the cart of all items?',
+          yesText: 'DISCARD SALE',
+          action: () => {
+            // saveLog(`Cart cleared.`, clerk?.id)
+            setAlert({
+              open: true,
+              type: 'warning',
+              message: 'SALE DISCARDED',
+              undo: () => {
+                // saveLog(`Cart uncleared.`, clerk?.id)
+                setCart(cart)
+              },
+            })
+            clearCart()
+          },
+          noText: 'CANCEL',
+        })
   }
 
   const buttons = [

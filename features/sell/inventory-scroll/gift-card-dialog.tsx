@@ -69,9 +69,9 @@ export default function GiftCardDialog() {
     <Modal open={view?.giftCardDialog} closeFunction={clearDialog} title={'CREATE GIFT CARD'} buttons={buttons}>
       <>
         <div className="flex justify-between items-center">
-          <div className="text-8xl text-red-800 font-mono">{giftCardCode}</div>
+          <div className="text-8xl text-brown-dark font-mono">{giftCardCode}</div>
           <button
-            className="rounded-full bg-secondary hover:bg-secondary-light p-2"
+            className="rounded-full bg-brown-dark hover:bg-brown text-white p-2"
             onClick={() => setGiftCardCode(makeGiftCardCode(giftCards))}
           >
             <Sync />

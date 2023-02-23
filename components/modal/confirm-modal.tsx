@@ -12,21 +12,20 @@ export default function ConfirmModal() {
   }
 
   // Buttons
-  const buttons: ModalButton[] = [
-    {
-      text: confirmModal?.noText || 'CANCEL',
-      onClick: closeModal,
-      type: 'cancel',
+  const noButton = {
+    text: confirmModal?.noText || 'CANCEL',
+    onClick: closeModal,
+    type: 'cancel',
+  }
+  const yesButton = {
+    text: confirmModal?.yesText || 'OK',
+    onClick: () => {
+      confirmModal?.action && confirmModal.action()
+      closeConfirm()
     },
-    {
-      text: confirmModal?.yesText || 'OK',
-      onClick: () => {
-        confirmModal?.action()
-        closeConfirm()
-      },
-      type: 'ok',
-    },
-  ]
+    type: 'ok',
+  }
+  const buttons: ModalButton[] = confirmModal?.yesButtonOnly ? [yesButton] : [noButton, yesButton]
   return (
     <Modal
       open={confirmModal?.open}

@@ -67,7 +67,7 @@ const Actions = ({ item, itemQuantity, holdsQuantity, isItemLoading }) => {
       <div className="self-center pl-8 hidden sm:inline">
         {/* <Tooltip title="View and edit item details."> */}
         <button
-          className="icon-button-large text-black hover:text-blue-500"
+          className="icon-button-large text-brown-dark hover:text-brown"
           onClick={() => router.push(`/stock/${item?.id}`)}
         >
           <Info style={{ fontSize: '40px' }} />
@@ -78,7 +78,7 @@ const Actions = ({ item, itemQuantity, holdsQuantity, isItemLoading }) => {
         {/* <Tooltip title="Add item to sale."> */}
         <button
           disabled={isItemLoading}
-          className={`icon-button-large text-black ${isItemLoading ? 'text-gray-400' : 'hover:text-blue-500'}`}
+          className={`icon-button-large text-brown-dark ${isItemLoading ? 'text-gray-400' : 'hover:text-brown'}`}
           // disabled={!item?.totalSell}
           onClick={clickAddToCart}
         >

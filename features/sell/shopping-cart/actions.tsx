@@ -79,7 +79,7 @@ export default function ShoppingCartActions() {
           {saveSaleLoading ? <CircularProgress color="inherit" size={16} /> : <Save />}
         </button>
       </Tooltip>
-      {!sale?.id && (
+      {cart?.transactions?.filter((transaction) => !transaction.isDeleted)?.length === 0 && (
         <Tooltip title="Discard sale">
           <button
             className="icon-button-small-white"
