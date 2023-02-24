@@ -67,10 +67,12 @@ const Actions = ({ item, itemQuantity, holdsQuantity, isItemLoading }) => {
       <div className="self-center pl-8 hidden sm:inline">
         {/* <Tooltip title="View and edit item details."> */}
         <button
-          className="icon-button-large text-brown-dark hover:text-brown"
+          // className="icon-button-large text-brown-dark hover:text-brown"
+          className={`pill-button`}
           onClick={() => router.push(`/stock/${item?.id}`)}
         >
-          <Info style={{ fontSize: '40px' }} />
+          <Info style={{ fontSize: '40px' }} className="mr-2" />
+          INFO
         </button>
         {/* </Tooltip> */}
       </div>
@@ -78,11 +80,13 @@ const Actions = ({ item, itemQuantity, holdsQuantity, isItemLoading }) => {
         {/* <Tooltip title="Add item to sale."> */}
         <button
           disabled={isItemLoading}
-          className={`icon-button-large text-brown-dark ${isItemLoading ? 'text-gray-400' : 'hover:text-brown'}`}
+          className={`pill-button`}
+          // className={`icon-button-large text-brown-dark ${isItemLoading ? 'text-gray-400' : 'hover:text-brown'}`}
           // disabled={!item?.totalSell}
           onClick={clickAddToCart}
         >
-          <AddCircleOutline style={{ fontSize: '40px' }} />
+          <AddCircleOutline style={{ fontSize: '40px' }} className="mr-2" />
+          ADD
         </button>
         {/* </Tooltip> */}
       </div>

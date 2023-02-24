@@ -31,7 +31,7 @@ export default function Modal({
 }: ModalProps) {
   return (
     <ModalBase open={open} onClose={closeFunction} disableBackdropClick={disableBackdropClick} width={width}>
-      <div className="modal__title-div">
+      <div className={`modal__title-div`}>
         <div />
         {title && <div className="modal__title">{title}</div>}
         {closeFunction ? <CloseButton closeFunction={closeFunction} /> : <div />}

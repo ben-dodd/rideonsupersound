@@ -11,15 +11,15 @@ export default function SellNavActions() {
 
   return (
     <div className="flex">
-      <button className="icon-text-button" onClick={() => openView(ViewProps.returnCashDialog)}>
+      <button className="nav-action-button" onClick={() => openView(ViewProps.returnCashDialog)}>
         <AddCashIcon className="mr-1" />
         <div className="hidden lg:inline">Add Cash</div>
       </button>
-      <button className="icon-text-button" onClick={() => openView(ViewProps.takeCashDialog)}>
+      <button className="nav-action-button" onClick={() => openView(ViewProps.takeCashDialog)}>
         <TakeCashIcon className="mr-1" />
         <div className="hidden lg:inline">Take Cash</div>
       </button>
-      <button className="icon-text-button" onClick={() => router.push('/register/close')}>
+      <button className="nav-action-button" onClick={() => router.push('/register/close')}>
         <CloseRegisterIcon className="mr-1" />
         <div className="hidden lg:inline">Close Register</div>
       </button>

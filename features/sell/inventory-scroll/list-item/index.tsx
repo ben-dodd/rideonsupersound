@@ -27,7 +27,7 @@ export default function ListItem({ searchItem }: { searchItem: StockItemSearchOb
   const itemQuantity = getItemQuantity(stockItem, cart?.items)
 
   return (
-    <div className={`list-item ${quantities?.inStock < 1 ? 'bg-pink-200' : 'bg-gray-200'}`}>
+    <div className={`list-item bg-gray-200 pr-2 ${quantities?.inStock < 1 && 'opacity-50'}`}>
       <ItemImage item={item} />
       <div className="flex flex-col w-full px-2">
         <div className="flex justify-between border-b items-center border-gray-400">
