@@ -97,7 +97,7 @@ const Actions = ({ totalRemaining }) => {
     },
     {
       icon: <Delete />,
-      text: 'CANCEL',
+      text: 'DELETE',
       onClick: onClickDiscardSale,
       type: 'cancel',
     },

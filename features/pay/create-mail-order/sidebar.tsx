@@ -58,7 +58,7 @@ export default function CreateMailOrder() {
       buttons={buttons}
       handleSubmit={handleSubmit}
     >
-      <div>
+      <div className="flex-grow overflow-y-scroll px-1">
         <CreateableSelect
           inputLabel="Select customer"
           autoFocus

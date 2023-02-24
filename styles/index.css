@@ -90,7 +90,7 @@
 }
 
 .pill-button {
-  @apply flex justify-between items-center text-sm rounded-full py-1 pl-2 pr-4 whitespace-nowrap cursor-pointer bg-white text-brown hover:bg-gray-100 hover:shadow-sm disabled:pointer-events-none disabled:bg-gray-300;
+  @apply flex justify-between items-center text-sm rounded-full py-1 pl-2 pr-4 text-lg whitespace-nowrap cursor-pointer bg-white text-brown border hover:bg-gray-100 hover:shadow-sm disabled:pointer-events-none disabled:bg-gray-300;
 }
 
 .nav-action-button {

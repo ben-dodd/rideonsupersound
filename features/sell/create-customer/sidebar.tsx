@@ -98,38 +98,40 @@ export default function CreateCustomerSidebar() {
   return (
     <SidebarContainer
       show={view?.createCustomer}
-      title={newCustomer?.id ? 'Edit Customer' : 'Create New Customer'}
+      title={newCustomer?.id ? 'EDIT CUSTOMER' : 'CREATE NEW CUSTOMER'}
       handleSubmit={handleSubmit}
       buttons={buttons}
     >
-      <TextField
-        inputLabel="Name"
-        id="name"
-        fieldRequired
-        error={nameConflict}
-        errorText="Name already exists."
-        displayOnly={Boolean(newCustomer?.id)}
-        value={newCustomer?.name || ''}
-        onChange={handleChange}
-      />
-      <TextField id="email" inputLabel="Email" value={newCustomer?.email || ''} onChange={handleChange} />
-      <TextField id="phone" inputLabel="Phone" value={newCustomer?.phone || ''} onChange={handleChange} />
-      <TextField
-        id="postalAddress"
-        inputLabel="Postal Address"
-        multiline
-        rows={4}
-        value={newCustomer?.postalAddress || ''}
-        onChange={handleChange}
-      />
-      <TextField
-        id="note"
-        inputLabel="Notes"
-        multiline
-        rows={4}
-        value={newCustomer?.note || ''}
-        onChange={handleChange}
-      />
+      <div className="flex-grow overflow-y-scroll px-1">
+        <TextField
+          inputLabel="Name"
+          id="name"
+          fieldRequired
+          error={nameConflict}
+          errorText="Name already exists."
+          displayOnly={Boolean(newCustomer?.id)}
+          value={newCustomer?.name || ''}
+          onChange={handleChange}
+        />
+        <TextField id="email" inputLabel="Email" value={newCustomer?.email || ''} onChange={handleChange} />
+        <TextField id="phone" inputLabel="Phone" value={newCustomer?.phone || ''} onChange={handleChange} />
+        <TextField
+          id="postalAddress"
+          inputLabel="Postal Address"
+          multiline
+          rows={4}
+          value={newCustomer?.postalAddress || ''}
+          onChange={handleChange}
+        />
+        <TextField
+          id="note"
+          inputLabel="Notes"
+          multiline
+          rows={4}
+          value={newCustomer?.note || ''}
+          onChange={handleChange}
+        />
+      </div>
     </SidebarContainer>
   )
 }

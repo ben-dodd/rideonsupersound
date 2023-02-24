@@ -67,7 +67,7 @@ export default function CreateLaybySidebar() {
       buttons={buttons}
       handleSubmit={handleSubmit}
     >
-      <div>
+      <div className="flex-grow overflow-y-scroll px-1">
         <CreateableSelect
           inputLabel="Select customer"
           autoFocus

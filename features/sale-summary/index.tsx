@@ -13,9 +13,10 @@ export default function SaleSummary({ cart }) {
   }
   return (
     <>
-      <div className="flex h-header items-center bg-gray-100">
-        <button className="hover:text-blue-500 p-2" onClick={handleBackClick}>
-          <ArrowCircleLeftRounded />
+      <div className="flex h-header items-center bg-gray-white shadow-sm border-b">
+        <button className="pill-button mx-2" onClick={handleBackClick}>
+          <ArrowCircleLeftRounded className="mr-2" />
+          BACK
         </button>
         <div className={'text-2xl p-2 font-bold'}>{`${sale?.id ? `SALE #${sale?.id}` : `NEW SALE`} [${
           sale?.state ? sale?.state.toUpperCase() : 'IN PROGRESS'
