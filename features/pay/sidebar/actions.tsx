@@ -20,6 +20,7 @@ const Actions = ({ totalRemaining }) => {
     resetCart()
     closeView(ViewProps.cart)
   }
+
   function clickParkSale() {
     saveCart({ ...cart, sale: { ...sale, state: SaleStateTypes.Parked } }, sale?.state)
     resetCart()

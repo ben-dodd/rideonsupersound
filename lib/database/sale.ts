@@ -175,14 +175,18 @@ export function dbUpdateSaleTransaction(id, update, db = connection) {
 }
 
 export async function dbSaveCart(cart, prevState, db = connection) {
-  // TODO add itemList, totalSell etc. once sale completed
   return db
     .transaction(async (trx) => {
       const { sale = {}, items = [], transactions = [], registerId = null } = cart || {}
-      const newSale = { ...sale }
-      newSale.state = newSale?.state || SaleStateTypes.InProgress
+      const newSale = {
+        ...sale,
+        state: sale?.state || SaleStateTypes.InProgress,
+      }
       const newItems = []
       const newTransactions = []
+
+      console.log(newSale)
+
       if (newSale?.id) {
         dbUpdateSale(newSale?.id, newSale, trx)
       } else {
@@ -215,6 +219,7 @@ export async function dbSaveCart(cart, prevState, db = connection) {
       for (const trans of transactions) {
         promises.push(handleSaveSaleTransaction(trans, newSale, trx).then((newTrans) => newTransactions.push(newTrans)))
       }
+
       return Promise.all(promises)
         .then(() => {
           const newCart = { ...cart, sale: newSale, items: newItems, transactions: newTransactions }

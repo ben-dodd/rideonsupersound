@@ -1,3 +1,4 @@
+import ItemImage from 'features/sell/inventory-scroll/list-item/item-image'
 import { useAppStore } from 'lib/store'
 import { GiftCardObject } from 'lib/types/stock'
 import { centsToDollars } from 'lib/utils'
@@ -13,10 +14,10 @@ const GiftCardListItem = ({ giftCard }: { giftCard: GiftCardObject }) => {
       onClick={() => setLoadedGiftCardId(giftCard?.id)}
     >
       <div className="flex items-center">
-        {/* <ItemImage item={giftCard} width="w-imageSmall" faded={!giftCard?.giftCardIsValid} /> */}
-        <div className="ml-2 text-xl font-mono">{giftCard?.giftCardCode}</div>
+        <ItemImage item={giftCard} width="w-imageSmall" faded={!giftCard?.giftCardIsValid} />
+        <div className="ml-2 text-4xl font-mono">{giftCard?.giftCardCode}</div>
       </div>
-      <div className="text-xl pr-4">{`$${centsToDollars(giftCard?.giftCardRemaining)} / $${centsToDollars(
+      <div className="text-4xl pr-4">{`$${centsToDollars(giftCard?.giftCardRemaining)} / $${centsToDollars(
         giftCard?.giftCardAmount,
       )}`}</div>
     </div>

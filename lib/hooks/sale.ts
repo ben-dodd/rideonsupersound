@@ -1,11 +1,14 @@
 import { axiosAuth } from 'lib/api'
 import { mysql2js } from 'lib/database/utils/helpers'
 import { getTotalPaid, roundToTenCents, sumPrices, writeItemList } from 'lib/functions/pay'
+import { useAppStore } from 'lib/store'
 import { BasicStockObject } from 'lib/types/stock'
+import { dollarsToCents } from 'lib/utils'
 import { useState, useEffect } from 'react'
 
 export function useSaleProperties(cart): any {
   const [properties, setProperties]: [any, Function] = useState({ isLoading: true })
+  const { setCartSale } = useAppStore()
   const [stockTable, setStockTable]: [BasicStockObject[], Function] = useState(null)
   const { items = [], sale = {}, transactions = [] } = cart || {}
   console.log(cart)
@@ -34,6 +37,10 @@ export function useSaleProperties(cart): any {
       const totalPrice = totalItemPrice + totalPostage // TotalPrice + postage
       const totalPaid = roundToTenCents(getTotalPaid(transactions) / 100)
       const totalRemaining = roundToTenCents(totalPrice - totalPaid) // Amount remaining to pay
+      const numberOfItems = items
+        ?.filter((item) => !item.isRefunded && !item?.isDeleted)
+        ?.reduce((acc, item) => acc + parseInt(item?.quantity), 0) // Total number of items in sale
+      const itemList = writeItemList(stockTable, items) // List of items written in full
       setProperties({
         isLoading: false,
         totalItemPrice,
@@ -43,10 +50,14 @@ export function useSaleProperties(cart): any {
         totalStoreCut,
         totalVendorCut,
         totalRemaining,
-        numberOfItems: items
-          ?.filter((item) => !item.isRefunded && !item?.isDeleted)
-          ?.reduce((acc, item) => acc + parseInt(item?.quantity), 0), // Total number of items in sale
-        itemList: writeItemList(stockTable, items), // List of items written in full
+        numberOfItems,
+        itemList,
+      })
+      setCartSale({
+        storeCut: dollarsToCents(totalStoreCut),
+        totalPrice: dollarsToCents(totalPrice),
+        numberOfItems,
+        itemList,
       })
     }
   }, [items, sale, transactions, stockTable])
