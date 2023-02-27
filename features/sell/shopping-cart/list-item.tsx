@@ -86,7 +86,7 @@ export default function SellListItem({ cartItem }: { cartItem: SaleItemObject })
   return (
     <>
       <div
-        className={`flex w-full bg-black text-white relative pt cursor-pointer mt-2`}
+        className={`flex w-full relative pt cursor-pointer mt-2`}
         onClick={() => {
           if (expanded) checkEditInputs()
           setExpanded((expanded) => !expanded)

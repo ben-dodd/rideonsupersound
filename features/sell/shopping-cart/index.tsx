@@ -30,11 +30,11 @@ export default function ShoppingCart() {
         view?.cart ? 'left-0' : 'left-full'
       } md:left-2/3 h-full w-full md:w-1/3 md:h-main`}
     >
-      <div className="flex flex-col h-main px-2 bg-gray-200 text-black">
+      <div className="flex flex-col h-main px-2 bg-brown-dark text-white">
         <div className="flex justify-between relative">
           <div className="text-xl font-bold my-2 tracking-wide self-center">
             <div className="flex items-center">
-              <button className="hover:text-blue-500 px-2 md:hidden" onClick={handleBackClick}>
+              <button className="hover:text-brown-light px-2 md:hidden" onClick={handleBackClick}>
                 <ArrowCircleLeftRounded />
               </button>
               SHOPPING CART

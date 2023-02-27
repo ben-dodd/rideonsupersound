@@ -106,7 +106,7 @@
 }
 
 .icon-button-small-white {
-  @apply p-1 sm:p-2 text-black hover:text-blue-500 disabled:text-gray-500 disabled:pointer-events-none;
+  @apply p-1 sm:p-2 text-brown-light hover:text-white disabled:text-brown disabled:pointer-events-none;
 }
 
 .square-button {
@@ -268,4 +268,12 @@
 
 .list-item {
   @apply flex w-full mb-2 text-black shadow-sm border mr-4 rounded-md;
+}
+
+.list-item-compact {
+  @apply flex w-full border p-2;
+}
+
+.link-blue {
+  @apply text-blue-200 hover:text-blue-400;
 }

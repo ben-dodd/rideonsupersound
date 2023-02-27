@@ -12,7 +12,7 @@ export default function MidScreenContainer({
   const router = useRouter()
   const handleBackClick = () => router.back()
   return (
-    <div className={`h-main w-full ${full ? '' : 'md:w-2/3'} bg-gray-100`}>
+    <div className={`h-main w-full ${full ? '' : 'sm:w-boardMainSmall lg:w-boardMain'} bg-gray-100`}>
       {title && (
         <div
           className={`${titleClass} text-2xl font-bold uppercase p-2 flex justify-between items-center border-b bg-white h-header`}

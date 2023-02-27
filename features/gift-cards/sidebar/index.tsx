@@ -23,11 +23,16 @@ const GiftCardSidebar = () => {
           <div className="flex justify-between items-start h-header">
             <div />
             <div className="text-4xl font-mono py-2">{card?.giftCardCode}</div>
-            <button onClick={closeSidebar}>
+            <button className="mt-2" onClick={closeSidebar}>
               <CloseRounded />
             </button>
           </div>
           <div className="p-4">
+            {card?.giftCardIsValid ? (
+              <div className="text-xl mb-2 text-green-200">VALID</div>
+            ) : (
+              <div className="text-xl mb-2 text-red-200">NOT VALID</div>
+            )}
             <div>{`Created on ${dayjs(card?.dateCreated).format('DD/MM/YYYY')}`}</div>
             <div>{`Initial amount: $${centsToDollars(card?.giftCardAmount)}`}</div>
             <div>{`Total remaining: $${centsToDollars(card?.giftCardRemaining)}`}</div>
@@ -43,7 +48,7 @@ const GiftCardSidebar = () => {
                         <div>{`${dayjs(trans?.date).format('DD/MM/YYYY')}`}</div>
                         <Link
                           href={`/sales/${trans?.saleId}`}
-                          className="hover:text-gray-600 pl-2"
+                          className="link-blue pl-2"
                         >{`[Sale #${trans?.saleId}]`}</Link>
                       </div>
                       <div>{`$${centsToDollars(trans?.amount)}`}</div>
