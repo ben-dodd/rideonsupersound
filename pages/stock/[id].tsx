@@ -39,9 +39,7 @@ export default function InventoryItemScreen() {
         <div>
           {hasBeenSold ? (
             <>
-              <div className="text-red-500 text-lg text-center p-2 border-red-500">
-                SORRY
-              </div>
+              <div className="text-red-500 text-lg text-center p-2 border-red-500">SORRY</div>
               <div>
                 {`This item has already been sold, so can't be deleted. Use CHANGE
                 STOCK LEVEL if it's out of stock.`}
@@ -63,37 +61,28 @@ export default function InventoryItemScreen() {
   }
 
   const Menu = () => (
-    <div className="absolute top-7 right-7 bg-white shadow-2xl rounded-lg py-4 px-6 z-5">
-      <div className="block mb-2 text-gray-700 hover:text-gray-900">
-        <button
-          className="flex"
-          onClick={() => openView(ViewProps.stockEditDialog)}
-        >
-          <Edit />
+    <div className="absolute top-7 right-7 bg-white shadow-2xl z-5 border">
+      <div className="block text-gray-700 hover:bg-blue-500 hover:text-white p-2">
+        <button className="flex w-full" onClick={() => openView(ViewProps.stockEditDialog)}>
+          <Edit className="mr-2" />
           Edit
         </button>
       </div>
-      <div className="block mb-2 text-gray-700 hover:text-gray-900">
-        <button
-          className="flex"
-          onClick={() => openView(ViewProps.changePriceDialog)}
-        >
-          <Delete />
+      <div className="block text-gray-700 hover:bg-blue-500 hover:text-white p-2">
+        <button className="flex w-full" onClick={() => openView(ViewProps.changePriceDialog)}>
+          <Delete className="mr-2" />
           Change Price{' '}
         </button>
       </div>
-      <div className="block mb-2 text-gray-700 hover:text-gray-900">
-        <button
-          className="flex"
-          onClick={() => openView(ViewProps.changeStockQuantityDialog)}
-        >
-          <Delete />
+      <div className="block text-gray-700 hover:bg-blue-500 hover:text-white p-2">
+        <button className="flex w-full" onClick={() => openView(ViewProps.changeStockQuantityDialog)}>
+          <Delete className="mr-2" />
           Change Quantities
         </button>
       </div>
-      <div className="block mb-2 text-gray-700 hover:text-gray-900">
-        <button className="flex" onClick={onClickDelete}>
-          <Delete />
+      <div className="block text-gray-700 hover:bg-blue-500 hover:text-white p-2">
+        <button className="flex w-full" onClick={onClickDelete}>
+          <Delete className="mr-2" />
           Delete Item
         </button>
       </div>
@@ -105,10 +94,8 @@ export default function InventoryItemScreen() {
   ) : (
     <>
       <div>
-        <div className="flex w-full bg-red-400 justify-between p-2 h-nav border-b drop-shadow-md">
-          <div className="text-2xl font-bold">{`STOCK ${getItemSkuDisplayName(
-            item
-          )}`}</div>
+        <div className="flex w-full bg-brown-dark text-white justify-between p-2 h-nav">
+          <div className="text-2xl font-bold">{`STOCK ${getItemSkuDisplayName(item)}`}</div>
           <div>
             {menuVisible && <Menu />}
             <button onClick={toggleMenu}>
@@ -116,7 +103,7 @@ export default function InventoryItemScreen() {
             </button>
           </div>
         </div>
-        <div className="flex flex-col w-full h-inventory overflow-y-scroll">
+        <div className="flex flex-col w-full h-inventory overflow-y-scroll px-2">
           <Tabs
             tabs={
               item?.media === 'Mixed'
@@ -141,16 +128,7 @@ export default function InventoryItemScreen() {
               </div>
             </div>
           </div>
-          <div
-            hidden={
-              !(
-                tab === 1 &&
-                (item?.media === 'Audio' ||
-                  item?.media === 'Video' ||
-                  item?.media === 'Mixed')
-              )
-            }
-          >
+          <div hidden={!(tab === 1 && (item?.media === 'Audio' || item?.media === 'Video' || item?.media === 'Mixed'))}>
             <DiscogsPanel />
           </div>
           <div hidden={!(tab === 1 && item?.media === 'Literature')}>

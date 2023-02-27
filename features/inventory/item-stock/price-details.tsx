@@ -1,7 +1,6 @@
 import { useStockItem } from 'lib/api/stock'
 import { getGrossProfit, getProfitMargin } from 'lib/functions/pay'
 import { useAppStore } from 'lib/store'
-import { ViewProps } from 'lib/store/types'
 import { useRouter } from 'next/router'
 
 export default function PriceDetails() {
@@ -18,50 +17,38 @@ export default function PriceDetails() {
           {(!item?.isNew && !item?.cond) ||
           !(
             item?.discogsItem?.priceSuggestions &&
-            item?.discogsItem?.priceSuggestions[
-              item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)'
-            ]?.value
+            item?.discogsItem?.priceSuggestions[item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)']?.value
           ) ? (
             <div />
           ) : (
             <>
-              <div className="px-1 text-xs mt-2 mb-2">DISCOGS</div>
+              <div className="text-xs mt-2 mb-2">DISCOGS</div>
               <div className="font-bold text-xl">
                 {`$${parseFloat(
-                  item?.discogsItem?.priceSuggestions[
-                    item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)'
-                  ]?.value
+                  item?.discogsItem?.priceSuggestions[item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)']?.value,
                 )?.toFixed(2)}`}
               </div>
             </>
           )}
         </div>
         <div>
-          <div className="px-1 text-xs mt-2 mb-2">COST PRICE</div>
+          <div className="text-xs mt-2 mb-2">COST PRICE</div>
           <div className="font-bold text-xl">
-            {price?.vendorCut
-              ? `$${(price?.vendorCut / 100)?.toFixed(2)}`
-              : 'N/A'}
+            {price?.vendorCut ? `$${(price?.vendorCut / 100)?.toFixed(2)}` : 'N/A'}
           </div>
         </div>
         <div>
-          <div className="px-1 text-xs mt-2 mb-2">STORE CUT</div>
-          <div className="font-bold text-xl">
-            {getGrossProfit(price) || 'N/A'}
-          </div>
+          <div className="text-xs mt-2 mb-2">STORE CUT</div>
+          <div className="font-bold text-xl">{getGrossProfit(price) || 'N/A'}</div>
         </div>
         <div>
-          <div className="px-1 text-xs mt-2 mb-2">MARGIN</div>
-          <div className="font-bold text-xl">
-            {getProfitMargin(price) || 'N/A'}
-          </div>
+          <div className="text-xs mt-2 mb-2">MARGIN</div>
+          <div className="font-bold text-xl">{getProfitMargin(price) || 'N/A'}</div>
         </div>
         <div className="col-start-5 col-end-7">
           <div className="flex justify-center items-center p-4 bg-tertiary-dark">
             <div className="font-bold text-4xl text-white">
-              {price?.totalSell
-                ? `$${(price?.totalSell / 100)?.toFixed(2)}`
-                : 'N/A'}
+              {price?.totalSell ? `$${(price?.totalSell / 100)?.toFixed(2)}` : 'N/A'}
             </div>
           </div>
           {/* <button

@@ -26,7 +26,7 @@ export default function StockItemDisplay() {
             value: `[${item?.vendorId}] ${
               vendors?.filter((v: VendorObject) => v?.id === item?.vendorId)?.[0]?.name || ''
             }`,
-            link: `/vendor/${item?.vendorId}`,
+            link: `/vendors/${item?.vendorId}`,
           },
           { label: 'Barcode', value: item?.barcode },
           { label: 'Format', value: item?.format },

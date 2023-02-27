@@ -271,7 +271,7 @@
 }
 
 .list-item-compact {
-  @apply flex w-full border p-2;
+  @apply flex w-full p-2 hover:text-green-200 hover:bg-black cursor-pointer items-center justify-between;
 }
 
 .link-blue {

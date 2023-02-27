@@ -76,6 +76,10 @@ export function latestDate(dates: Date[] | string[]) {
   return dates?.length > 0 ? dayjs.max(dates?.map((date: Date | string) => dayjs(date))) : null
 }
 
+export function isPreApp(date?: Date | string) {
+  return dayjs(date).isBefore(dayjs('2018-01-01'))
+}
+
 // export function authoriseUrl(url: string) {
 //   let k = process.env.NEXT_PUBLIC_SWR_API_KEY
 //   if (!url || !k) return null

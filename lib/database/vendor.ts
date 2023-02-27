@@ -48,6 +48,7 @@ export function dbGetVendors(db = connection) {
       'uid',
     )
     .where({ is_deleted: 0 })
+    .orderBy('name')
 }
 
 export function dbGetVendorNames(db = connection) {

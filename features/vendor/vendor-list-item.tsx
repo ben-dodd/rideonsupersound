@@ -5,13 +5,8 @@ import React from 'react'
 const VendorListItem = ({ vendor }: { vendor: VendorObject }) => {
   const router = useRouter()
   return (
-    <div
-      className={`list-item hover:bg-gray-200 cursor-pointer items-center justify-between`}
-      onClick={() => router.push(`/vendor/${vendor?.id}`)}
-    >
-      <div className="flex items-center text-xl w-full p-2">
-        <div className="w-1/4">{vendor?.name}</div>
-      </div>
+    <div className={`list-item-compact`} onClick={() => router.push(`/vendors/${vendor?.id}`)}>
+      <div>{`[${`000${vendor?.id}`.slice(-3)}] ${vendor?.name}`}</div>
     </div>
   )
 }

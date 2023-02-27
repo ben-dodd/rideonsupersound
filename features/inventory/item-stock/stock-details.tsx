@@ -1,12 +1,13 @@
 import dayjs from 'dayjs'
 import { useRouter } from 'next/router'
 import { useStockItem } from 'lib/api/stock'
+import { isPreApp, priceCentsString } from 'lib/utils'
 
 export default function StockDetails() {
   const router = useRouter()
   const { id } = router.query
   const { stockItem } = useStockItem(`${id}`)
-  const { quantities = {}, stockMovements = [] } = stockItem || {}
+  const { quantities = {}, stockMovements = [], stockPrices = [] } = stockItem || {}
 
   return (
     <>
@@ -44,22 +45,47 @@ export default function StockDetails() {
       >
         CHANGE STOCK LEVEL
       </button> */}
-      <div className="font-bold py-2">Stock Movement Logs</div>
-      <div className="h-dialogsm overflow-y-scroll">
-        {stockMovements?.length === 0 ? (
-          <div>No stock movements found.</div>
-        ) : (
-          <div>
-            {stockItem?.stockMovements?.map((s) => (
-              <div key={s?.id} className={`flex hover:bg-gray-200 p-2 justify-between`}>
-                <div className="mr-2">{dayjs(s?.dateMoved).format('D MMMM YYYY, h:mm A')}</div>
-                <div className={`mr-2 font-bold ${s?.quantity < 1 ? 'text-red-500' : 'text-blue-500'}`}>{`${
-                  s?.act === 'adjustment' ? (s?.quantity < 1 ? '-' : '+') : ''
-                }${Math.abs(s?.quantity)} ${s?.act}`}</div>
-              </div>
-            ))}
-          </div>
-        )}
+      <div className="bg-gray-100 p-2 my-2">
+        <div className="text-xl py-2 border-b">Stock Movement Logs</div>
+        <div>
+          {stockMovements?.length === 0 ? (
+            <div>No stock movements found.</div>
+          ) : (
+            <div>
+              {stockMovements?.map((s) => (
+                <div key={s?.id} className={`flex p-2 justify-between`}>
+                  <div className="mr-2">
+                    {isPreApp(s?.dateMoved) ? 'Pre-App' : dayjs(s?.dateMoved).format('D MMMM YYYY, h:mm A')}
+                  </div>
+                  <div className={`mr-2 font-bold ${s?.quantity < 1 ? 'text-red-500' : 'text-blue-500'}`}>{`${
+                    s?.act === 'adjustment' ? (s?.quantity < 1 ? '-' : '+') : ''
+                  }${Math.abs(s?.quantity)} ${s?.act}`}</div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="bg-gray-100 p-2 my-2">
+        <div className="text-xl py-2 border-b">Stock Price Logs</div>
+        <div>
+          {stockPrices?.length === 0 ? (
+            <div>No stock prices found.</div>
+          ) : (
+            <div>
+              {stockPrices?.map((s) => (
+                <div key={s?.id} className={`flex p-2 justify-between`}>
+                  <div className="mr-2">
+                    {isPreApp(s?.dateValidFrom) ? 'Pre-App' : dayjs(s?.dateValidFrom).format('D MMMM YYYY, h:mm A')}
+                  </div>
+                  <div className={`mr-2 font-bold`}>{`(Vendor ${priceCentsString(
+                    s?.vendorCut,
+                  )}/Store ${priceCentsString(s?.totalSell - s?.vendorCut)}) ${priceCentsString(s?.totalSell)}`}</div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </>
   )
