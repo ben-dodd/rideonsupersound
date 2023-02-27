@@ -1,24 +1,21 @@
-import { StockItemObject } from 'lib/types/stock'
 import SyncIcon from '@mui/icons-material/Sync'
 import { useEffect, useState } from 'react'
 import { getGoogleBooksOptionsByItem } from 'lib/functions/googleBooks'
 import GoogleBooksItem from './google-books-item'
 import GoogleBooksOption from './google-books-option'
+import { useRouter } from 'next/router'
+import { useStockItem } from 'lib/api/stock'
+import { useSWRConfig } from 'swr'
 
-interface inventoryProps {
-  item: StockItemObject
-  setItem: Function
-  disabled?: boolean
-}
-
-export default function GoogleBooksPanel({ item, setItem, disabled }: inventoryProps) {
-  // State
+export default function GoogleBooksPanel() {
+  const router = useRouter()
+  const { id } = router.query
+  const { stockItem } = useStockItem(`${id}`)
+  const { item = {} } = stockItem || {}
   const [googleBooksOptions, setGoogleBooksOptions] = useState(null)
+  const googleBooksItem = item?.googleBooksItem || null
+  const { mutate } = useSWRConfig()
 
-  // Constants
-  const googleBooksItem = item?.googleBooksItem
-
-  // Load
   useEffect(() => {
     if (
       item?.media === 'Literature' &&
@@ -26,7 +23,7 @@ export default function GoogleBooksPanel({ item, setItem, disabled }: inventoryP
       (Boolean(item?.artist) || Boolean(item?.title))
     )
       handleGetGoogleBooksOptions()
-  }, [item])
+  }, [])
 
   const handleGetGoogleBooksOptions = async () => {
     const options = await getGoogleBooksOptionsByItem(item)

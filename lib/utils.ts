@@ -77,7 +77,7 @@ export function latestDate(dates: Date[] | string[]) {
 }
 
 export function isPreApp(date?: Date | string) {
-  return dayjs(date).isBefore(dayjs('2018-01-01'))
+  return !dayjs(date).isValid() || dayjs(date).isBefore(dayjs('2018-01-01'))
 }
 
 // export function authoriseUrl(url: string) {
