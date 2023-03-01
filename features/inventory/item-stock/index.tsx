@@ -85,12 +85,14 @@ const StockItemScreen = ({ item, sales }) => {
             </div>
           </div>
         </div>
+        <div hidden={tab !== 1}>
+          <SalesDetails sales={sales} />
+        </div>
         <div hidden={!(tab === 2 && (item?.media === 'Audio' || item?.media === 'Video' || item?.media === 'Mixed'))}>
           <DiscogsPanel />
         </div>
-        <div hidden={!(tab === 2 && item?.media === 'Literature')}>{/* <GoogleBooksPanel /> */}</div>
-        <div hidden={tab !== 1}>
-          <SalesDetails sales={sales} />
+        <div hidden={!(tab === 2 && item?.media === 'Literature') && !(tab === 3 && item?.media === 'Mixed')}>
+          {/* <GoogleBooksPanel /> */}
         </div>
       </div>
     </div>

@@ -2,6 +2,7 @@ import dayjs from 'dayjs'
 import { useRouter } from 'next/router'
 import { useStockItem } from 'lib/api/stock'
 import { isPreApp, priceCentsString } from 'lib/utils'
+import { MonetizationOnRounded, ShoppingCartCheckoutRounded, StackedBarChartRounded } from '@mui/icons-material'
 
 export default function StockDetails() {
   const router = useRouter()
@@ -11,32 +12,37 @@ export default function StockDetails() {
 
   return (
     <>
-      <div className="grid grid-cols-4 justify-items-start rounded border p-2 mt-2">
-        <div className="stock-indicator__container">IN STOCK</div>
-        <div
-          className={`stock-indicator__number ${quantities?.inStock <= 0 ? 'bg-tertiary-light' : 'bg-primary-light'}`}
-        >
-          {`${quantities?.inStock}`}
+      <div className="rounded border p-2 mt-2">
+        <div className="text-xl py-2 border-b">
+          <StackedBarChartRounded /> Stock Quantities
         </div>
-        <div className="stock-indicator__container">RECEIVED</div>
-        <div className="stock-indicator__number bg-secondary-light">{`${quantities?.received}`}</div>
-        <div className="stock-indicator__container">SOLD</div>
-        <div className="stock-indicator__number bg-secondary-light">{`${quantities?.sold}`}</div>
-        <div className="stock-indicator__container">RETURNED</div>
-        <div className="stock-indicator__number bg-secondary-light">{`${quantities?.returned}`}</div>
-        <div className="stock-indicator__container">LAYBY/HOLD</div>
-        <div className="stock-indicator__number bg-secondary-light">{`${quantities?.laybyHold}`}</div>
-        <div className="stock-indicator__container">DISCARD/LOST</div>
-        <div className="stock-indicator__number bg-secondary-light">{`${quantities?.discardedLost}`}</div>
-        <div className="stock-indicator__container">REFUNDED</div>
-        <div className="stock-indicator__number bg-secondary-light">{`${quantities?.refunded}`}</div>
-        <div className="stock-indicator__container">ADJUSTMENT</div>
-        <div
-          className={`stock-indicator__number ${
-            quantities?.adjustment < 0 ? 'bg-tertiary-light' : 'bg-secondary-light'
-          }`}
-        >
-          {`${quantities?.adjustment}`}
+        <div className="grid grid-cols-4 justify-items-start">
+          <div className="stock-indicator__container">IN STOCK</div>
+          <div
+            className={`stock-indicator__number ${quantities?.inStock <= 0 ? 'bg-tertiary-light' : 'bg-primary-light'}`}
+          >
+            {`${quantities?.inStock}`}
+          </div>
+          <div className="stock-indicator__container">RECEIVED</div>
+          <div className="stock-indicator__number bg-secondary-light">{`${quantities?.received}`}</div>
+          <div className="stock-indicator__container">SOLD</div>
+          <div className="stock-indicator__number bg-secondary-light">{`${quantities?.sold}`}</div>
+          <div className="stock-indicator__container">RETURNED</div>
+          <div className="stock-indicator__number bg-secondary-light">{`${quantities?.returned}`}</div>
+          <div className="stock-indicator__container">LAYBY/HOLD</div>
+          <div className="stock-indicator__number bg-secondary-light">{`${quantities?.laybyHold}`}</div>
+          <div className="stock-indicator__container">DISCARD/LOST</div>
+          <div className="stock-indicator__number bg-secondary-light">{`${quantities?.discardedLost}`}</div>
+          <div className="stock-indicator__container">REFUNDED</div>
+          <div className="stock-indicator__number bg-secondary-light">{`${quantities?.refunded}`}</div>
+          <div className="stock-indicator__container">ADJUSTMENT</div>
+          <div
+            className={`stock-indicator__number ${
+              quantities?.adjustment < 0 ? 'bg-tertiary-light' : 'bg-secondary-light'
+            }`}
+          >
+            {`${quantities?.adjustment}`}
+          </div>
         </div>
       </div>
       {/* <button
@@ -45,8 +51,10 @@ export default function StockDetails() {
       >
         CHANGE STOCK LEVEL
       </button> */}
-      <div className="bg-gray-100 p-2 my-2">
-        <div className="text-xl py-2 border-b">Stock Movement Logs</div>
+      <div className="rounded border p-2 my-2">
+        <div className="text-xl py-2 border-b">
+          <ShoppingCartCheckoutRounded /> Stock Movement Logs
+        </div>
         <div>
           {stockMovements?.length === 0 ? (
             <div>No stock movements found.</div>
@@ -66,8 +74,10 @@ export default function StockDetails() {
           )}
         </div>
       </div>
-      <div className="bg-gray-100 p-2 my-2">
-        <div className="text-xl py-2 border-b">Stock Price Logs</div>
+      <div className="rounded border p-2 my-2">
+        <div className="text-xl py-2 border-b">
+          <MonetizationOnRounded /> Stock Price Logs
+        </div>
         <div>
           {stockPrices?.length === 0 ? (
             <div>No stock prices found.</div>

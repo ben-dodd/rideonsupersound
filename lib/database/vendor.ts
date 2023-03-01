@@ -135,25 +135,33 @@ export function dbGetVendor(id, db = connection) {
       // Do calculations
       const totalPaid = payments.reduce((acc: number, payment: VendorPaymentObject) => acc + payment?.amount, 0)
       const totalStoreCut = sales
-        ?.filter((s) => !s?.isRefunded)
+        ?.filter((s) => !s?.is_refunded)
         ?.reduce((acc, saleItem) => {
-          const stockItem = items?.find((item) => item?.id === saleItem?.itemId)
-          const { totalSell = 0, vendorCut = 0 } = stockItem
+          const stockItem = items?.find((item) => item?.id === saleItem?.item_id)
+          const { totalSell = 0, vendorCut = 0 } = stockItem || {}
           const price = { totalSell, vendorCut }
           const storePrice = getCartItemStoreCut(saleItem, price)
           return acc + storePrice
-        })
+        }, 0)
       const totalSell = sales
-        ?.filter((s) => !s?.isRefunded)
+        ?.filter((s) => !s?.is_refunded)
         ?.reduce((acc, saleItem) => {
-          const stockItem = items?.find((item) => item?.id === saleItem?.itemId)
-          const { totalSell = 0, vendorCut = 0 } = stockItem
+          const stockItem = items?.find((item) => item?.id === saleItem?.item_id)
+          const { totalSell = 0, vendorCut = 0 } = stockItem || {}
           const price = { totalSell, vendorCut }
           const totalPrice = getCartItemTotal(saleItem, stockItem, price)
           return acc + totalPrice
-        })
-      const lastPaid = dayjs.max(payments?.map((p) => p?.date))
-      const lastSold = dayjs.max(sales?.map((s) => s?.dateSaleClosed))
+        }, 0)
+      // console.log(payments)
+      const lastPaid = dayjs.max(
+        payments?.map((p) => {
+          // console.log('Payment')
+          // console.log(p)
+          return dayjs(p?.date)
+        }),
+      )
+      // console.log(sales)
+      const lastSold = dayjs.max(sales?.filter((s) => s?.date_sale_closed)?.map((s) => dayjs(s?.date_sale_closed)))
       const totalOwing = totalSell - totalPaid
 
       // Return object

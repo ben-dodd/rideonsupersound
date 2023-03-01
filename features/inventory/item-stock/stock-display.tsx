@@ -7,11 +7,10 @@ import { VendorObject } from 'lib/types/vendor'
 
 export default function StockItemDisplay() {
   const { id } = router.query
-  const { stockItem, isStockItemLoading } = useStockItem(`${id}`)
+  const { stockItem } = useStockItem(`${id}`)
   // TODO fix up stock item type so it can be used here
   const { item = {} } = stockItem || {}
   const { vendors } = useVendors()
-  // TODO fix up display so it looks nice
 
   return (
     <div>
@@ -24,7 +23,7 @@ export default function StockItemDisplay() {
           {
             label: 'Vendor',
             value: `[${item?.vendorId}] ${
-              vendors?.filter((v: VendorObject) => v?.id === item?.vendorId)?.[0]?.name || ''
+              vendors?.filter?.((v: VendorObject) => v?.id === item?.vendorId)?.[0]?.name || ''
             }`,
             link: `/vendors/${item?.vendorId}`,
           },

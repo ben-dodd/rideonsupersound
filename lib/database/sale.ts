@@ -57,22 +57,21 @@ export function dbGetAllSalesAndItems(db = connection) {
       'stock.title',
       'sale.date_sale_opened',
       'sale.date_sale_closed',
-      'sale.store_cut',
-      'sale.total_price',
+      'sale.store_cut as sale_store_cut',
+      'sale.total_price as sale_total_price',
       'sale.number_of_items',
       'sale.item_list',
-      'stock_price.vendor_cut',
-      'stock_price.total_sell',
-      'stock_price.date_valid_from as datePriceValidFrom',
+      'stock_price.vendor_cut as item_vendor_cut',
+      'stock_price.total_sell as item_total_sell',
+      'stock_price.date_valid_from as date_price_valid_from',
     )
-    .where(`stock_price.date_valid_from`, '<=', 'sale.date_sale_opened')
-    .andWhereRaw(
+    .where('sale.state', 'completed')
+    .where(`sale.is_deleted`, 0)
+    .where(`sale_item.is_deleted`, 0)
+    .whereRaw(
       `stock_price.id = (
-    SELECT MAX(id) FROM stock_price WHERE stock_id = sale_item.item_id)`,
+    SELECT MAX(id) FROM stock_price WHERE stock_id = sale_item.item_id AND stock_price.date_valid_from <= sale.date_sale_opened)`,
     )
-    .andWhere('sale.state', 'completed')
-    .andWhere(`sale.is_deleted`, 0)
-    .andWhere(`sale_item.is_deleted`, 0)
 }
 
 export function dbGetAllHolds(db = connection) {
