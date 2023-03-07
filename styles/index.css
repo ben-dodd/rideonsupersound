@@ -275,9 +275,9 @@
 }
 
 .link-blue {
-  @apply text-blue-400 hover:text-blue-600;
+  @apply text-blue-400 hover:text-blue-600 cursor-pointer;
 }
 
 .link-red {
-  @apply text-red-400 hover:text-red-600;
+  @apply text-red-400 hover:text-red-600 cursor-pointer;
 }

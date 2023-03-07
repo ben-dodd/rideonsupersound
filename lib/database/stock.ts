@@ -135,7 +135,9 @@ export function dbGetStockItem(id, basic = false, db = connection) {
       quantities.discardedLost = quantities.discarded + quantities.lost
       quantities.refunded = getQuantities([StockMovementTypes.Unsold], stockMovements)
       quantities.adjustment = getQuantities([StockMovementTypes.Adjustment], stockMovements)
-      const sales = await dbGetAllSalesAndItems(db).where(`sale_item.item_id`, item?.id)
+      const sales = await dbGetAllSalesAndItems(db)
+        .where(`sale_item.item_id`, item?.id)
+        .orderBy('date_sale_closed', 'desc')
       return { item, quantities, price, sales, stockMovements, stockPrices }
     })
     .catch((err) => {

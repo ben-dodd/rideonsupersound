@@ -9,12 +9,10 @@ export function useData(url: string, label: string) {
       .get(`/api/${url}`)
       .then((data) => mysql2js(data))
       .catch((error) => {
-        console.error(error)
-        throw new Error()
+        throw error
       }),
   )
 
-  console.log('Error: ', error)
   return {
     [camelCase(label)]: data,
     [`is${pascalCase(label)}Loading`]: !error && data === undefined,

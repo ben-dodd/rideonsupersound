@@ -9,8 +9,11 @@ export default function StockDetails() {
   const router = useRouter()
   const { id } = router.query
   const { stockItem } = useStockItem(`${id}`)
-  const { quantities = {}, stockMovements = [], stockPrices = [] } = stockItem || {}
+  const { quantities = {}, stockMovements = [], stockPrices = [], sales = [] } = stockItem || {}
   let runningQuantity = quantities?.inStock || 0
+  let prevQuantity = 0
+
+  console.log(stockItem)
 
   return (
     <>
@@ -44,24 +47,44 @@ export default function StockDetails() {
           </div>
         </div>
       </SectionPanel>
-      <SectionPanel icon={<ShoppingCartCheckoutRounded />} title="Stock Movement Logs">
+      <SectionPanel
+        icon={<ShoppingCartCheckoutRounded />}
+        title="Stock Movement Logs"
+        closedByDefault={stockMovements?.length > 10}
+      >
         <div>
           {stockMovements?.length === 0 ? (
             <div>No stock movements found.</div>
           ) : (
             <div>
               {stockMovements?.map((s, i) => {
-                if (i !== 0) runningQuantity += s?.quantity || 0
+                runningQuantity -= prevQuantity || 0
+                prevQuantity = s?.quantity
+                const saleId = s?.saleId
+                  ? s?.saleId
+                  : s?.act === 'sold'
+                  ? sales?.find((sale) => sale?.dateSaleClosed === s?.dateMoved)?.id
+                  : null
                 return (
                   <div key={s?.id} className={`flex p-2 justify-between`}>
-                    <div className="mr-2">
+                    <div className="mr-2 flex">
                       {isPreApp(s?.dateMoved) ? 'Pre-App' : dayjs(s?.dateMoved).format('D MMMM YYYY, h:mm A')}
+                      {saleId ? (
+                        <div
+                          className="link-blue ml-2"
+                          onClick={() => router.push(`/sales/${saleId}`)}
+                        >{`[Sale #${saleId}]`}</div>
+                      ) : (
+                        <div />
+                      )}
                     </div>
                     <div className="flex">
                       <div className={`mr-2 font-bold ${s?.quantity < 1 ? 'text-red-500' : 'text-blue-500'}`}>{`${
                         s?.act === 'adjustment' ? (s?.quantity < 1 ? '-' : '+') : ''
                       }${Math.abs(s?.quantity)} ${s?.act}`}</div>
-                      <div className="ml-2">{`(${runningQuantity} in stock)`}</div>
+                      <div
+                        className={`ml-2 ${runningQuantity < 0 ? 'text-red-500' : 'text-black'}`}
+                      >{`(${runningQuantity} in stock)`}</div>
                     </div>
                   </div>
                 )

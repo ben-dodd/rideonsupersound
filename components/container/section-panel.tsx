@@ -1,8 +1,8 @@
 import { ExpandLess, ExpandMore } from '@mui/icons-material'
 import { useState } from 'react'
 
-const SectionPanel = ({ icon, title, children }) => {
-  const [panelOpen, setPanelOpen] = useState(true)
+const SectionPanel = ({ icon, title, children, closedByDefault = false }) => {
+  const [panelOpen, setPanelOpen] = useState(!closedByDefault)
   const togglePanel = () => setPanelOpen((panelOpen) => !panelOpen)
   return (
     <div className="rounded border mt-2">

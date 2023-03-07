@@ -49,7 +49,7 @@ export default function MidScreenContainer({
           <div className="loading-icon" />
         </div>
       ) : (
-        children
+        <div className="h-content overflow-y-scroll">{children}</div>
       )}
     </div>
   )
