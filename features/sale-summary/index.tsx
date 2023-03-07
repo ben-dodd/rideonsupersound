@@ -9,9 +9,7 @@ export default function SaleSummary({ cart }) {
       <div>
         <SaleItems items={items} />
       </div>
-      <div
-        className={`mt-1 pt-1 border-t border-gray-500 ${!transactions || (transactions?.length === 0 && ' hidden')}`}
-      >
+      <div className={`mt-1 pt-1 ${!transactions || (transactions?.length === 0 && ' hidden')}`}>
         <TransactionItems transactions={transactions} />
       </div>
       <div>

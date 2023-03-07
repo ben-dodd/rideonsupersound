@@ -1,5 +1,4 @@
 import InfoBox from 'components/container/info-box'
-import SidebarContainer from 'components/container/side-bar'
 import dayjs from 'dayjs'
 import { useClerks } from 'lib/api/clerk'
 import { useCustomers } from 'lib/api/customer'
@@ -38,7 +37,7 @@ export default function SaleDetailsSidebar({ cart }: { cart: CartObject }) {
   ]
 
   return (
-    <SidebarContainer show>
+    <div className="h-full border p-2">
       <InfoBox data={saleInfo} />
       {weather?.weather?.[0] && (
         <div className="p-2 my-2 rounded">
@@ -60,7 +59,7 @@ export default function SaleDetailsSidebar({ cart }: { cart: CartObject }) {
           </div>
         </div>
       )}
-    </SidebarContainer>
+    </div>
   )
 }
 

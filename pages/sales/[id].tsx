@@ -5,7 +5,6 @@ import SaleItemScreen from 'features/sale/item'
 import { useSale } from 'lib/api/sale'
 import ErrorScreen from 'components/container/error-screen'
 import Loading from 'components/loading'
-import SaleDetailsSidebar from 'features/sale/item/sale-details-sidebar'
 
 export default function SaleItemPage() {
   const router = useRouter()
@@ -16,10 +15,7 @@ export default function SaleItemPage() {
   ) : isSaleLoading ? (
     <Loading />
   ) : (
-    <>
-      <SaleItemScreen cart={sale} />
-      <SaleDetailsSidebar cart={sale} />
-    </>
+    <SaleItemScreen cart={sale} />
   )
 }
 

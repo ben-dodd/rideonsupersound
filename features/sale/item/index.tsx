@@ -1,6 +1,7 @@
 import MidScreenContainer from 'components/container/mid-screen'
 import SaleSummary from 'features/sale-summary'
 import React from 'react'
+import SaleDetailsSidebar from './sale-details-sidebar'
 
 const SaleItemScreen = ({ cart }) => {
   // const { clerk } = useClerk()
@@ -58,9 +59,17 @@ const SaleItemScreen = ({ cart }) => {
       }]`}
       titleClass={'bg-brown-dark text-white'}
       showBackButton
+      full
       dark
     >
-      <SaleSummary cart={cart} />
+      <div className="flex">
+        <div className="w-2/3">
+          <SaleSummary cart={cart} />
+        </div>
+        <div className="w-1/3">
+          <SaleDetailsSidebar cart={cart} />
+        </div>
+      </div>
     </MidScreenContainer>
   )
 }
