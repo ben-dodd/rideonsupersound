@@ -7,7 +7,7 @@ const BackButton = ({
   dark = false,
 }: {
   handleBackClick?: MouseEventHandler<HTMLButtonElement>
-  dark: boolean
+  dark?: boolean
 }) => {
   const router = useRouter()
   const handleClick = handleBackClick ? handleBackClick : () => router.back()

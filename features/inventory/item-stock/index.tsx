@@ -9,7 +9,6 @@ import { useRouter } from 'next/router'
 import { useState } from 'react'
 import DiscogsPanel from '../api-discogs'
 import PriceDetails from './price-details'
-import SalesDetails from './sales-details'
 import StockDetails from './stock-details'
 import StockItemDisplay from './stock-display'
 
@@ -59,12 +58,12 @@ const StockItemScreen = ({ item, sales }) => {
         <Tabs
           tabs={
             item?.media === 'Mixed'
-              ? ['General Information', 'Sales', 'Discogs', 'GoogleBooks']
+              ? ['General Information', 'Discogs', 'GoogleBooks']
               : item?.media === 'Audio'
-              ? ['General Information', 'Sales', 'Discogs']
+              ? ['General Information', 'Discogs']
               : item?.media === 'Literature'
-              ? ['General Information', 'Sales', 'GoogleBooks']
-              : ['General Information', 'Sales']
+              ? ['General Information', 'GoogleBooks']
+              : null
           }
           value={tab}
           onChange={setTab}
@@ -81,13 +80,10 @@ const StockItemScreen = ({ item, sales }) => {
               </div>
             </div>
           </div>
-          <div hidden={tab !== 1}>
-            <SalesDetails sales={sales} />
-          </div>
-          <div hidden={!(tab === 2 && (item?.media === 'Audio' || item?.media === 'Video' || item?.media === 'Mixed'))}>
+          <div hidden={!(tab === 1 && (item?.media === 'Audio' || item?.media === 'Video' || item?.media === 'Mixed'))}>
             <DiscogsPanel />
           </div>
-          <div hidden={!(tab === 2 && item?.media === 'Literature') && !(tab === 3 && item?.media === 'Mixed')}>
+          <div hidden={!(tab === 1 && item?.media === 'Literature') && !(tab === 2 && item?.media === 'Mixed')}>
             {/* <GoogleBooksPanel /> */}
           </div>
         </div>

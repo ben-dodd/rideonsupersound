@@ -33,7 +33,7 @@ export default function StockItemDisplay() {
           { label: 'Size', value: item?.size },
           {
             label: 'Condition',
-            value: item?.isNew ? 'New' : `Used (${item?.cond})`,
+            value: item?.isNew ? 'New' : `Used (${item?.cond || 'Condition Not Set'})`,
           },
           { label: 'Section', value: item?.section },
           { label: 'Country', value: item?.country },

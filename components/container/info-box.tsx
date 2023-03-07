@@ -18,7 +18,11 @@ const InfoBox = ({ title, image, data }: { title?: string; image?: string; data:
         typeof row?.value === 'boolean' ? (
           <div className="flex py-1 text-sm items-center" key={row?.label}>
             <div className="mr-2 text-brown-dark">{row?.label}</div>
-            {row?.value ? <CheckCircle style={{ fontSize: '20px' }} /> : <Cancel style={{ fontSize: '20px' }} />}
+            {row?.value ? (
+              <CheckCircle style={{ fontSize: '20px' }} className="text-green-500" />
+            ) : (
+              <Cancel style={{ fontSize: '20px' }} className="text-red-500" />
+            )}
           </div>
         ) : row?.value ? (
           <div className="flex py-1" key={row?.label}>
