@@ -12,8 +12,7 @@ export default function StockDetails() {
   const { quantities = {}, stockMovements = [], stockPrices = [], sales = [] } = stockItem || {}
   let runningQuantity = quantities?.inStock || 0
   let prevQuantity = 0
-
-  console.log(stockItem)
+  let saleIndex = 0
 
   return (
     <>
@@ -60,11 +59,8 @@ export default function StockDetails() {
               {stockMovements?.map((s, i) => {
                 runningQuantity -= prevQuantity || 0
                 prevQuantity = s?.quantity
-                const saleId = s?.saleId
-                  ? s?.saleId
-                  : s?.act === 'sold'
-                  ? sales?.find((sale) => sale?.dateSaleClosed === s?.dateMoved)?.id
-                  : null
+                const saleId = s?.saleId ? s?.saleId : s?.act === 'sold' ? sales[saleIndex]?.id : null
+                if (s?.act === 'sold') saleIndex++
                 return (
                   <div key={s?.id} className={`flex p-2 justify-between`}>
                     <div className="mr-2 flex">
