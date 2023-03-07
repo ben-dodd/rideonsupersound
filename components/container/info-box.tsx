@@ -5,7 +5,7 @@ import { useRouter } from 'next/router'
 const InfoBox = ({ title, image, data }: { title?: string; image?: string; data: any }) => {
   const router = useRouter()
   return (
-    <div className="bg-gray-100 text-brown rounded p-2 my-2 border-2 border-brown max-w-md">
+    <div className="bg-gray-100 text-brown rounded p-2 my-2 border border-brown max-w-md">
       {title && <div className="text-xl text-black mt-2 mb-4">{title}</div>}
       {image && (
         <div className="flex justify-center">
@@ -15,12 +15,15 @@ const InfoBox = ({ title, image, data }: { title?: string; image?: string; data:
         </div>
       )}
       {data?.map((row) =>
-        row?.value ? (
+        typeof row?.value === 'boolean' ? (
+          <div className="flex py-1 text-sm items-center" key={row?.label}>
+            <div className="mr-2 text-brown-dark">{row?.label}</div>
+            {row?.value ? <CheckCircle style={{ fontSize: '20px' }} /> : <Cancel style={{ fontSize: '20px' }} />}
+          </div>
+        ) : row?.value ? (
           <div className="flex py-1" key={row?.label}>
-            <div className="flex">
-              <div className="font-bold mr-2 text-brown-dark">{row?.label}</div>
-              <div>{typeof row?.value == 'boolean' ? row?.value ? <CheckCircle /> : <Cancel /> : row?.value}</div>
-            </div>
+            <div className="font-bold mr-2 text-brown-dark">{row?.label}</div>
+            <div>{row?.value}</div>
             {row?.link ? (
               <button className="ml-2 link-blue" onClick={() => router.push(row?.link)}>
                 <LinkOutlined />

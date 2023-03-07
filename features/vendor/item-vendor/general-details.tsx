@@ -1,4 +1,4 @@
-import InfoBox from 'components/infoBox'
+import InfoBox from 'components/container/info-box'
 import dayjs from 'dayjs'
 import { useClerks } from 'lib/api/clerk'
 import { centsToDollars, priceDollarsString } from 'lib/utils'

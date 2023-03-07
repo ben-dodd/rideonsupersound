@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import { useStockItem } from 'lib/api/stock'
 import { isPreApp, priceCentsString } from 'lib/utils'
 import { MonetizationOnRounded, ShoppingCartCheckoutRounded, StackedBarChartRounded } from '@mui/icons-material'
+import SectionPanel from 'components/container/section-panel'
 
 export default function StockDetails() {
   const router = useRouter()
@@ -12,10 +13,7 @@ export default function StockDetails() {
 
   return (
     <>
-      <div className="rounded border p-2 mt-2">
-        <div className="text-xl py-2 border-b">
-          <StackedBarChartRounded /> Stock Quantities
-        </div>
+      <SectionPanel icon={<StackedBarChartRounded />} title="Stock Quantities">
         <div className="grid grid-cols-4 justify-items-start">
           <div className="stock-indicator__container">IN STOCK</div>
           <div
@@ -44,17 +42,8 @@ export default function StockDetails() {
             {`${quantities?.adjustment}`}
           </div>
         </div>
-      </div>
-      {/* <button
-        onClick={() => openView(ViewProps.changeStockQuantityDialog)}
-        className="bg-brown-dark hover:bg-brown p-2 w-full text-white"
-      >
-        CHANGE STOCK LEVEL
-      </button> */}
-      <div className="rounded border p-2 my-2">
-        <div className="text-xl py-2 border-b">
-          <ShoppingCartCheckoutRounded /> Stock Movement Logs
-        </div>
+      </SectionPanel>
+      <SectionPanel icon={<ShoppingCartCheckoutRounded />} title="Stock Movement Logs">
         <div>
           {stockMovements?.length === 0 ? (
             <div>No stock movements found.</div>
@@ -73,11 +62,8 @@ export default function StockDetails() {
             </div>
           )}
         </div>
-      </div>
-      <div className="rounded border p-2 my-2">
-        <div className="text-xl py-2 border-b">
-          <MonetizationOnRounded /> Stock Price Logs
-        </div>
+      </SectionPanel>
+      <SectionPanel icon={<MonetizationOnRounded />} title="Stock Price Logs">
         <div>
           {stockPrices?.length === 0 ? (
             <div>No stock prices found.</div>
@@ -96,7 +82,7 @@ export default function StockDetails() {
             </div>
           )}
         </div>
-      </div>
+      </SectionPanel>
     </>
   )
 }

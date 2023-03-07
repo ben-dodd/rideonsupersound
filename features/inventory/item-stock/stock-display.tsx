@@ -2,7 +2,7 @@ import { getImageSrc, getItemSku } from 'lib/functions/displayInventory'
 import { useVendors } from 'lib/api/vendor'
 import router from 'next/router'
 import { useStockItem } from 'lib/api/stock'
-import InfoBox from 'components/infoBox'
+import InfoBox from 'components/container/info-box'
 import { VendorObject } from 'lib/types/vendor'
 
 export default function StockItemDisplay() {
