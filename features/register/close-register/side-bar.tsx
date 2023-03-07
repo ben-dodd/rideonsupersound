@@ -1,8 +1,8 @@
 import { Cancel, Check } from '@mui/icons-material'
-import ActionButton from 'components/button/action-button'
+import SidebarContainer from 'components/container/side-bar'
 import TextField from 'components/inputs/text-field'
 import { useClerk } from 'lib/api/clerk'
-import { closeRegister } from 'lib/api/register'
+import { closeRegister, useCurrentRegister } from 'lib/api/register'
 import { getAmountFromCashMap, getRegisterValues } from 'lib/functions/register'
 import { useAppStore } from 'lib/store'
 import { TillObject } from 'lib/types/register'
@@ -11,11 +11,12 @@ import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import CashMap from '../cash-map'
 
-const CloseRegisterSidebar = ({ register }) => {
+const CloseRegisterSidebar = () => {
   const { setAlert } = useAppStore()
   const router = useRouter()
   const { clerk } = useClerk()
   const [till, setTill]: [TillObject, Function] = useState({})
+  const { currentRegister } = useCurrentRegister()
   const [notes, setNotes] = useState('')
   const [closeAmount, setCloseAmount] = useState(`${getAmountFromCashMap(till)}`)
   const [loading, setLoading] = useState(false)
@@ -28,12 +29,12 @@ const CloseRegisterSidebar = ({ register }) => {
     closeExpectedAmount,
     invalidCloseAmount,
     closeDiscrepancy,
-  } = getRegisterValues(register, closeAmount)
+  } = getRegisterValues(currentRegister, closeAmount)
 
   async function clickCloseRegister() {
     setLoading(true)
     await closeRegister(
-      register?.id,
+      currentRegister?.id,
       {
         closeAmount: dollarsToCents(closeAmount),
         closedById: clerk?.id,
@@ -74,7 +75,7 @@ const CloseRegisterSidebar = ({ register }) => {
   ]
 
   return (
-    <div>
+    <SidebarContainer show={true} buttons={buttons}>
       <div className="flex mb-4">
         <div className="w-1/2">
           <div className="text-3xl">Start Float</div>
@@ -120,12 +121,7 @@ const CloseRegisterSidebar = ({ register }) => {
       </div>
       <CashMap till={till} setTill={setTill} />
       <TextField inputLabel="Notes" value={notes} onChange={(e: any) => setNotes(e.target.value)} multiline />
-      <div className={`grid gap-4 grid-cols-2`}>
-        {buttons?.map((button, i) => (
-          <ActionButton key={i} button={button} />
-        ))}
-      </div>
-    </div>
+    </SidebarContainer>
   )
 }
 

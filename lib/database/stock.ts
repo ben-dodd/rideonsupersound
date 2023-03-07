@@ -103,6 +103,7 @@ export function dbGetStockItem(id, basic = false, db = connection) {
     .where({ id })
     .first()
     .then(async (item) => {
+      if (!item) throw new Error('Item not found.')
       if (item?.discogsItem) item.discogsItem = JSON.parse(item.discogsItem)
       if (item?.googleBooksItem) item.googleBooksItem = JSON.parse(item.googleBooksItem)
       const stockMovements = await db('stock_movement')
@@ -136,6 +137,10 @@ export function dbGetStockItem(id, basic = false, db = connection) {
       quantities.adjustment = getQuantities([StockMovementTypes.Adjustment], stockMovements)
       const sales = await dbGetAllSalesAndItems(db).where(`sale_item.item_id`, item?.id)
       return { item, quantities, price, sales, stockMovements, stockPrices }
+    })
+    .catch((err) => {
+      console.error(err)
+      throw new Error(err.message)
     })
 }
 

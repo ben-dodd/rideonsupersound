@@ -15,15 +15,15 @@ export default function CreateCustomerSidebar() {
   const {
     view,
     cart: { customer },
-    setCustomer,
+    setCart,
     setCartSale,
-    resetCustomer,
     closeView,
     setAlert,
   } = useAppStore()
   const [nameConflict, setNameConflict] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [newCustomer, setNewCustomer] = useState({ ...customer })
+  const setCustomer = (customer) => setCart({ customer })
 
   useEffect(() => {
     setNewCustomer({ ...customer })
@@ -52,7 +52,6 @@ export default function CreateCustomerSidebar() {
 
   function closeSidebar() {
     setNewCustomer({})
-    resetCustomer()
     closeView(ViewProps.createCustomer)
   }
 

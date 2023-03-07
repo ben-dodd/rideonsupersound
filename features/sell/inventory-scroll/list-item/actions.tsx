@@ -5,10 +5,18 @@ import { skuScan } from 'lib/functions/sell'
 import { useAppStore } from 'lib/store'
 import { getItemSkuDisplayName } from 'lib/functions/displayInventory'
 import { useClerk } from 'lib/api/clerk'
+import { Pages } from 'lib/store/types'
 
 const Actions = ({ item, itemQuantity, holdsQuantity, isItemLoading }) => {
   const router = useRouter()
-  const { sellSearchBar, cart, resetSellSearchBar, addCartItem, openConfirm, closeConfirm } = useAppStore()
+  const {
+    sellPage: { searchBar },
+    cart,
+    resetSearchBar,
+    addCartItem,
+    openConfirm,
+    closeConfirm,
+  } = useAppStore()
   const { clerk } = useClerk()
   function clickAddToCart() {
     if (itemQuantity < 1) {
@@ -56,11 +64,11 @@ const Actions = ({ item, itemQuantity, holdsQuantity, isItemLoading }) => {
       : addItemToCart()
 
   function handleInputSku() {
-    resetSellSearchBar()
+    resetSearchBar(Pages.sellPage)
     clickAddToCart()
   }
 
-  skuScan(sellSearchBar, item, handleInputSku)
+  skuScan(searchBar, item, handleInputSku)
 
   return (
     <div className="flex py-2">

@@ -22,7 +22,7 @@ const VendorsScreen = () => {
               <VendorListItem key={vendor?.id} vendor={vendor} />
             ))}
         </div>
-      </div>{' '}
+      </div>
     </MidScreenContainer>
   )
 }

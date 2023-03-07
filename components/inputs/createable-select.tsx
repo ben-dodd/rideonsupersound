@@ -46,7 +46,7 @@ export default function CreateableSelect({
     <div className={className || ''} key={`${id || inputLabel || ''}--div-main`}>
       {inputLabel && <div className={`transition-all px-1 text-xs mt-2 mb-2 ${labelClass || ''}`}>{inputLabel}</div>}
       <div
-        className={`mb-1 flex transition-all items-center rounded-sm ${
+        className={`mb-1 flex transition-all items-center rounded-sm text-brown ${
           error || (fieldRequired && !value) ? 'ring-2 ring-red-500 bg-red-100 hover:bg-red-200' : ''
         } ${divClass || ''} ${displayOnly && 'bg-white hover:bg-white'}`}
         key={`${id || inputLabel || ''}--div`}

@@ -6,13 +6,12 @@ import { CustomerObject, ModalButton } from 'lib/types'
 import ListItem from './list-item'
 import { useAppStore } from 'lib/store'
 import { useClerk } from 'lib/api/clerk'
-import { ViewProps } from 'lib/store/types'
+import { Pages, ViewProps } from 'lib/store/types'
 import { useCustomers } from 'lib/api/customer'
 import { createHold } from 'lib/api/sale'
 
 export default function CreateHoldSidebar() {
-  const { cart, view, setAlert, setCartSale, setCart, resetCart, resetSellSearchBar, openView, closeView } =
-    useAppStore()
+  const { cart, view, setAlert, setCartSale, setCart, resetCart, resetSearchBar, openView, closeView } = useAppStore()
   const { sale = {}, items = [] } = cart || {}
   const defaultHoldPeriod = 30
   const { clerk } = useClerk()
@@ -23,9 +22,8 @@ export default function CreateHoldSidebar() {
   const resetHold = () => {
     setHoldPeriod(defaultHoldPeriod)
     setNote('')
-    resetSellSearchBar()
+    resetSearchBar(Pages.sellPage)
     resetCart()
-    // closeView(ViewProps.cart)
     closeView(ViewProps.createHold)
     setSubmitting(false)
   }

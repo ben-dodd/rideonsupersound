@@ -72,14 +72,14 @@ export default function ShoppingCart() {
               {sale?.isMailOrder && (
                 <div className="flex justify-between mt-1">
                   <div className="self-center">POSTAGE</div>
-                  <div className={`self-center text-right ml-4 text-black`}>
+                  <div className={`self-center text-right ml-4 text-white`}>
                     ${sale?.postage ? Number(sale?.postage)?.toFixed(2) : '0.00'}
                   </div>
                 </div>
               )}
               <div className="flex justify-between mt-1">
                 <div className="self-center">STORE CUT</div>
-                <div className={`self-center text-right ml-4 ${totalStoreCut < 0 ? 'text-red-500' : 'text-black'}`}>
+                <div className={`self-center text-right ml-4 ${totalStoreCut < 0 ? 'text-red-500' : 'text-white'}`}>
                   {totalStoreCut < 0 && '-'}${Math.abs(totalStoreCut || 0)?.toFixed(2)}
                 </div>
               </div>
@@ -90,7 +90,7 @@ export default function ShoppingCart() {
               {transactions?.length > 0 && (
                 <div className="flex justify-between mt-1">
                   <div className="self-center">TOTAL PAID</div>
-                  <div className={`self-center text-right ml-4 ${totalPaid < 0 ? 'text-red-500' : 'text-black'}`}>
+                  <div className={`self-center text-right ml-4 ${totalPaid < 0 ? 'text-red-500' : 'text-white'}`}>
                     {totalPaid < 0 && '-'}${Math.abs(totalPaid)?.toFixed(2)}
                   </div>
                 </div>

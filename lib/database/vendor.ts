@@ -44,7 +44,7 @@ export function dbGetVendors(db = connection) {
       'phone',
       'last_contacted',
       'store_credit_only',
-      'email_vendor as emailVendor',
+      'email_vendor',
       'uid',
     )
     .where({ is_deleted: 0 })
@@ -137,29 +137,21 @@ export function dbGetVendor(id, db = connection) {
       const totalStoreCut = sales
         ?.filter((s) => !s?.is_refunded)
         ?.reduce((acc, saleItem) => {
-          const stockItem = items?.find((item) => item?.id === saleItem?.item_id)
-          const { totalSell = 0, vendorCut = 0 } = stockItem || {}
-          const price = { totalSell, vendorCut }
+          console.log(saleItem)
+          const price = { totalSell: saleItem?.item_total_sell, vendorCut: saleItem?.item_vendor_cut }
           const storePrice = getCartItemStoreCut(saleItem, price)
           return acc + storePrice
         }, 0)
       const totalSell = sales
         ?.filter((s) => !s?.is_refunded)
         ?.reduce((acc, saleItem) => {
-          const stockItem = items?.find((item) => item?.id === saleItem?.item_id)
-          const { totalSell = 0, vendorCut = 0 } = stockItem || {}
-          const price = { totalSell, vendorCut }
+          const stockItem = {} // actual stock item not required as it will never be a gift card or misc item for a vendor
+          const price = { totalSell: saleItem?.item_total_sell, vendorCut: saleItem?.item_vendor_cut }
           const totalPrice = getCartItemTotal(saleItem, stockItem, price)
           return acc + totalPrice
         }, 0)
       // console.log(payments)
-      const lastPaid = dayjs.max(
-        payments?.map((p) => {
-          // console.log('Payment')
-          // console.log(p)
-          return dayjs(p?.date)
-        }),
-      )
+      const lastPaid = dayjs.max(payments?.map((p) => dayjs(p?.date)))
       // console.log(sales)
       const lastSold = dayjs.max(sales?.filter((s) => s?.date_sale_closed)?.map((s) => dayjs(s?.date_sale_closed)))
       const totalOwing = totalSell - totalPaid

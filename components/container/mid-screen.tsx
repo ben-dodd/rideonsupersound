@@ -1,5 +1,4 @@
-import { ArrowCircleLeftRounded } from '@mui/icons-material'
-import { useRouter } from 'next/router'
+import BackButton from 'components/button/back-button'
 
 export default function MidScreenContainer({
   children,
@@ -8,19 +7,16 @@ export default function MidScreenContainer({
   isLoading = false,
   actionButtons = <div />,
   full = false,
+  showBackButton = false,
 }) {
-  const router = useRouter()
-  const handleBackClick = () => router.back()
   return (
-    <div className={`h-main w-full ${full ? '' : 'sm:w-boardMainSmall lg:w-boardMain'} bg-gray-100`}>
+    <div className={`h-main w-full ${full ? '' : 'sm:w-boardMainSmall lg:w-boardMain'}`}>
       {title && (
         <div
           className={`${titleClass} text-2xl font-bold uppercase p-2 flex justify-between items-center border-b bg-white h-header`}
         >
           <div className="flex items-center">
-            <button className="hover:text-blue-500 px-2" onClick={handleBackClick}>
-              <ArrowCircleLeftRounded />
-            </button>
+            {showBackButton && <BackButton />}
             {title}
           </div>
           {actionButtons}

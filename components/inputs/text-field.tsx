@@ -61,7 +61,7 @@ export default function TextField({
         className={`mb-1 flex transition-all items-center rounded-sm ${
           isError || (fieldRequired && !value && !valueNum)
             ? 'ring-2 ring-red-500 bg-red-100 hover:bg-red-200'
-            : 'ring-1 ring-gray-400 bg-white hover:bg-gray-100'
+            : 'ring-1 ring-gray-400 bg-white hover:bg-gray-100 text-brown'
         } ${divClass || ''} ${displayOnly && 'bg-white hover:bg-white'}`}
         key={`${id || inputLabel || ''}--div`}
       >

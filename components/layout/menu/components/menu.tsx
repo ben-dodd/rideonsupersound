@@ -1,7 +1,6 @@
 import { bg } from 'lib/types'
 import InventoryIcon from '@mui/icons-material/Category'
 import LaybyIcon from '@mui/icons-material/DryCleaning'
-import LogoutIcon from '@mui/icons-material/ExitToApp'
 import LogsIcon from '@mui/icons-material/GridOn'
 import SellIcon from '@mui/icons-material/LocalAtm'
 import SalesIcon from '@mui/icons-material/MonetizationOn'
@@ -114,13 +113,6 @@ export default function Menu({ badges }) {
       text: 'STOCKTAKE',
       class: 'bg-col1-light hover:bg-col1',
       icon: <StocktakeIcon />,
-    },
-    {
-      type: 'link',
-      page: '/api/auth/logout',
-      text: 'SWITCH CLERK',
-      class: 'bg-col2-light hover:bg-col2',
-      icon: <LogoutIcon />,
     },
   ]
 

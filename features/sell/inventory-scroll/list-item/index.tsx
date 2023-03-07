@@ -15,8 +15,11 @@ import {
 import { useBasicStockItem } from 'lib/api/stock'
 
 export default function ListItem({ searchItem }: { searchItem: StockItemSearchObject }) {
-  const { cart, sellIsSearching } = useAppStore()
-  const { stockItem, isStockItemLoading } = useBasicStockItem(searchItem?.id, sellIsSearching)
+  const {
+    cart,
+    sellPage: { isSearching },
+  } = useAppStore()
+  const { stockItem, isStockItemLoading } = useBasicStockItem(searchItem?.id, isSearching)
   const {
     item = searchItem,
     quantities = { inStock: searchItem?.quantity || 0 },

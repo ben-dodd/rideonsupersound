@@ -2,10 +2,11 @@ import React from 'react'
 import { CheckCircle, Cancel, LinkOutlined } from '@mui/icons-material'
 import { useRouter } from 'next/router'
 
-const InfoBox = ({ image, data }) => {
+const InfoBox = ({ title, image, data }: { title?: string; image?: string; data: any }) => {
   const router = useRouter()
   return (
-    <div className="bg-brown text-white rounded-lg p-2">
+    <div className="bg-gray-100 text-brown rounded p-2 my-2 border-2 border-brown max-w-md">
+      {title && <div className="text-xl text-black mt-2 mb-4">{title}</div>}
       {image && (
         <div className="flex justify-center">
           <div className="w-52 h-52 aspect-ratio-square">
@@ -15,9 +16,9 @@ const InfoBox = ({ image, data }) => {
       )}
       {data?.map((row) =>
         row?.value ? (
-          <div className="flex border-b py-2" key={row?.label}>
+          <div className="flex py-1" key={row?.label}>
             <div className="flex">
-              <div className="font-bold mr-2 text-red-200">{row?.label?.toUpperCase()}</div>
+              <div className="font-bold mr-2 text-brown-dark">{row?.label}</div>
               <div>{typeof row?.value == 'boolean' ? row?.value ? <CheckCircle /> : <Cancel /> : row?.value}</div>
             </div>
             {row?.link ? (

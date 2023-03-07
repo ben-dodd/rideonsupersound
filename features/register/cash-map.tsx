@@ -23,7 +23,7 @@ export default function CashMap({ till, setTill }: { till: TillObject; setTill: 
   ]
 
   return (
-    <div className="bg-secondary-light p-2 mt-2 rounded-md">
+    <div className="border-2 p-2 mt-2 rounded-md">
       <div className="text-2xl">Notes</div>
       <div className="grid grid-cols-5 gap-2 mb-2">
         {noteInputs.map((input) => (

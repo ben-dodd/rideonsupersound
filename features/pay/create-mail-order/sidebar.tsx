@@ -16,7 +16,6 @@ export default function CreateMailOrder() {
   const [postalAddress, setPostalAddress] = useState(sale?.postalAddress)
 
   useEffect(() => {
-    console.log('changing sale', sale?.postage)
     setPostage(sale?.postage)
     setPostalAddress(sale?.postalAddress)
   }, [sale?.postage, sale?.postalAddress])

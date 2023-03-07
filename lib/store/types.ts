@@ -6,6 +6,7 @@ export interface StoreState {
   view: {
     mainMenu?: boolean
     cart?: boolean
+    checkHoldsDialog?: boolean
     createHold?: boolean
     createLayby?: boolean
     createMailOrder?: boolean
@@ -41,42 +42,47 @@ export interface StoreState {
     stocktakeTemplateScreen?: boolean
     stocktakeTemplateSetupDialog?: boolean
   }
-  cart: CartObject
-  loadedGiftCardId?: number
-  loadedItemId?: any
-  loadedVendorId?: any
-  loadedHoldId?: any
-  loadedSaleId?: any
-  loadedStocktakeId?: number
-  loadedStocktakeTemplateId?: number
-  createableCustomerName?: string
-  sellSearchBar?: string
-  sellIsSearching?: boolean
-  giftCardSearchBar?: string
   confirmModal?: ConfirmModal
   alert?: AlertProps
+  cart: CartObject
   receiveBasket?: {
     items: any[]
     clerkId?: number
     registerId?: number
     vendorId?: number
   }
-  bypassRegister?: boolean
-  salesView?: string
-  salesViewRange?: any
-  salesViewClerks?: number[]
-  salesViewLaybys?: boolean
-  tableMode?: boolean
-  compactMode?: boolean
+  sellPage?: {
+    searchBar?: string
+    isSearching?: boolean
+    bypassRegister?: boolean
+    createableCustomerName?: string
+  }
+  inventoryPage?: any
+  vendorsPage?: any
+  paymentsPage?: any
+  registersPage?: any
+  salesPage?: {
+    viewPeriod?: string
+    rangeStartDate?: string
+    rangeEndDate?: string
+    clerkIds?: number[]
+    viewLaybysOnly?: boolean
+  }
+  laybysPage?: any
+  holdsPage?: any
+  giftCardsPage?: {
+    searchBar?: string
+    loadedGiftCard?: number
+  }
+  logsPage?: any
+  jobsPage?: any
+  stocktakesPage?: any
   openView: (view: ViewProps) => void
   closeView: (view: ViewProps) => void
   openConfirm: (confirm: any) => void
   closeConfirm: () => void
   setAlert: (alert: any) => void
   closeAlert: () => void
-  setSellSearchBar: (val: string) => void
-  setGiftCardSearchBar: (val: string) => void
-  toggleSellSearchingOff: () => void
   setCart: (update: any) => void
   mutateCart: (mutates?: string[]) => void
   addCartTransaction: (transaction: SaleTransactionObject) => void
@@ -84,29 +90,23 @@ export interface StoreState {
   addCartItem: (newItem: SaleItemObject, clerkId: number) => void
   setCartItem: (id: number, update: any) => void
   setCartSale: (update: any) => void
-  setCustomer: (update: any) => void
   setReceiveBasket: (update: any) => void
   addReceiveBasketItem: (newItem: any) => void
   updateReceiveBasketItem: (key: any, update: any) => void
   resetCart: () => void
   resetReceiveBasket: () => void
   resetCustomer: () => void
-  resetSellSearchBar: () => void
-  setSalesView: (update: any) => void
-  setSalesViewRange: (update: any) => void
-  setSalesViewClerks: (update: any) => void
-  toggleSalesViewLaybys: () => void
-  toggleTableMode: () => void
-  toggleCompactMode: () => void
-  toggleBypassRegister: () => void
-  setLoadedGiftCardId: (id: number) => void
-  setLoadedStocktakeTemplateId: (id: number) => void
-  setLoadedVendorId: (id: number) => void
+  setSearchBar: (page: Pages, val: string) => void
+  setPage: (page: Pages, update: any) => void
+  togglePageOption: (page: Pages, option: string) => void
+  resetSearchBar: (page: Pages) => void
+  resetPage: (page: Pages) => void
 }
 
 export enum ViewProps {
   mainMenu = 'mainMenu',
   cart = 'cart',
+  checkHoldsDialog = 'checkHoldsDialog',
   createHold = 'createHold',
   createLayby = 'createLayby',
   createMailOrder = 'createMailOrder',
@@ -141,4 +141,19 @@ export enum ViewProps {
   stocktakeScreen = 'stocktakeScreen',
   stocktakeTemplateScreen = 'stocktakeTemplateScreen',
   stocktakeTemplateSetupDialog = 'stocktakeTemplateSetupDialog',
+}
+
+export enum Pages {
+  sellPage = 'sellPage',
+  inventoryPage = 'inventoryPage',
+  vendorsPage = 'vendorsPage',
+  paymentsPage = 'paymentsPage',
+  registersPage = 'registersPage',
+  salesPage = 'salesPage',
+  laybysPage = 'laybysPage',
+  holdsPage = 'holdsPage',
+  giftCardsPage = 'giftCardsPage',
+  logsPage = 'logsPage',
+  jobsPage = 'jobsPage',
+  stocktakesPage = 'stocktakesPage',
 }

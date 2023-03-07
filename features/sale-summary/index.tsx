@@ -1,8 +1,8 @@
 import TransactionItems from './transaction-items'
 import SaleItems from './sale-items'
-import { ArrowCircleLeftRounded } from '@mui/icons-material'
 import { useRouter } from 'next/router'
 import SaleDetails from './sale-details'
+import BackButton from 'components/button/back-button'
 
 export default function SaleSummary({ cart }) {
   const { sale = {}, items = [], transactions = [] } = cart || {}
@@ -14,10 +14,7 @@ export default function SaleSummary({ cart }) {
   return (
     <>
       <div className="flex h-header items-center bg-gray-white shadow-sm border-b">
-        <button className="pill-button mx-2" onClick={handleBackClick}>
-          <ArrowCircleLeftRounded className="mr-2" />
-          BACK
-        </button>
+        <BackButton handleBackClick={handleBackClick} />
         <div className={'text-2xl p-2 font-bold'}>{`${sale?.id ? `SALE #${sale?.id}` : `NEW SALE`} [${
           sale?.state ? sale?.state.toUpperCase() : 'IN PROGRESS'
         }]`}</div>

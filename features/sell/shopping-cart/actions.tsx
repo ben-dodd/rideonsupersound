@@ -3,14 +3,14 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Tooltip from '@mui/material/Tooltip'
 import { SaleStateTypes } from 'lib/types/sale'
 import { useAppStore } from 'lib/store'
-import { ViewProps } from 'lib/store/types'
+import { Pages, ViewProps } from 'lib/store/types'
 import { useSWRConfig } from 'swr'
 import { saveCart } from 'lib/api/sale'
 import { Delete, Save } from '@mui/icons-material'
 
 // TODO fix action icons alignment
 export default function ShoppingCartActions() {
-  const { cart, setCart, setAlert, openConfirm, closeView, resetCart, resetSellSearchBar } = useAppStore()
+  const { cart, setCart, setAlert, openConfirm, closeView, resetCart, resetSearchBar } = useAppStore()
   const { sale = {}, items = [] } = cart || {}
   const [saveSaleLoading, setSaveSaleLoading] = useState(false)
   const { mutate } = useSWRConfig()
@@ -29,7 +29,7 @@ export default function ShoppingCartActions() {
       type: 'success',
       message: 'SALE PARKED',
     })
-    resetSellSearchBar()
+    resetSearchBar(Pages.sellPage)
     clearCart()
     setSaveSaleLoading(false)
   }

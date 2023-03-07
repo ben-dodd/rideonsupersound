@@ -8,15 +8,17 @@ import { StockItemSearchObject } from 'lib/types/stock'
 export default function InventoryScroll() {
   const maxItemsInList = 50
   const { stockList = [], isStockListLoading = true } = useStockList()
-  const { sellSearchBar } = useAppStore()
+  const {
+    sellPage: { searchBar },
+  } = useAppStore()
   return (
     <div className="h-content overflow-y-scroll px-2">
       {isStockListLoading ? (
         <Loading />
-      ) : sellSearchBar ? (
+      ) : searchBar ? (
         <>
           {stockList
-            ?.filter((item: StockItemSearchObject) => filterInventory(item, sellSearchBar))
+            ?.filter((item: StockItemSearchObject) => filterInventory(item, searchBar))
             ?.sort(sortInventory)
             ?.slice(0, maxItemsInList)
             ?.map((item: StockItemSearchObject) => <ListItem searchItem={item} key={item?.id} />) || []}

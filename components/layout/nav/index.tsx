@@ -1,31 +1,19 @@
-import InventoryNavActions from './actions/inventory'
-import PaymentNavActions from './actions/payment'
-import SellNavActions from './actions/sell'
-import TaskNavActions from './actions/task'
-import VendorNavActions from './actions/vendor'
-
 import { bg } from 'lib/types'
 import HelpIcon from '@mui/icons-material/Help'
-import SaleNavActions from './actions/sale'
-import StocktakeNavActions from './actions/stocktake'
 import { useClerk } from 'lib/api/clerk'
 import { ViewProps } from 'lib/store/types'
 import { useAppStore } from 'lib/store'
 import { useRouter } from 'next/router'
-import { useCurrentRegister } from 'lib/api/register'
-import OpenRegisterNavActions from './actions/open-register'
+import { ExitToApp } from '@mui/icons-material'
+import { Tooltip } from '@mui/material'
 
 // REVIEW fix all actions and clean up files
 
 export default function Nav() {
-  const { currentRegister } = useCurrentRegister()
-
-  // Atoms
   const { clerk } = useClerk()
   const { openView } = useAppStore()
   const router = useRouter()
   const page = router.pathname
-  console.log(page)
 
   return (
     <nav className={`py-2 ${bg[clerk?.colour]} text-white h-navbar`}>
@@ -43,16 +31,23 @@ export default function Nav() {
           </div>
         </div>
         <div className="flex mr-2">
-          {page.includes('sell') && (currentRegister?.id > 0 ? <SellNavActions /> : <OpenRegisterNavActions />)}
+          {/* {page.includes('sell') && (currentRegister?.id > 0 ? <SellNavActions /> : <OpenRegisterNavActions />)}
           {page.includes('inventory') && <InventoryNavActions />}
           {page.includes('vendors') && <VendorNavActions />}
           {page.includes('payments') && <PaymentNavActions />}
           {page.includes('jobs') && <TaskNavActions />}
           {page.includes('stocktake') && <StocktakeNavActions />}
-          {page.includes('sales') && <SaleNavActions />}
-          <button onClick={() => openView(ViewProps.helpDialog)} className="text-brown-dark hover:text-brown">
-            <HelpIcon />
-          </button>
+          {page.includes('sales') && <SaleNavActions />} */}
+          <Tooltip title="Open Help">
+            <button onClick={() => openView(ViewProps.helpDialog)} className="text-brown-dark hover:text-brown">
+              <HelpIcon />
+            </button>
+          </Tooltip>
+          <Tooltip title="Close Register and Sign Out">
+            <button onClick={() => router.push('/register/close')} className="ml-2 text-brown-dark hover:text-brown">
+              <ExitToApp />
+            </button>
+          </Tooltip>
         </div>
         {/*<button
           className="px-4 sm:hidden"

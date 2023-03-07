@@ -11,11 +11,7 @@ const verifyJwt = NextJwtVerifier({
 export const requireScope = (scope: string, apiRoute: NextApiHandler) => {
   return verifyJwt(async (req: NextAuthenticatedApiRequest, res) => {
     const { claims } = req.identityContext
-    if (
-      !claims ||
-      !claims.permissions ||
-      (claims.permissions as string).indexOf(scope) === -1
-    ) {
+    if (!claims || !claims.permissions || (claims.permissions as string).indexOf(scope) === -1) {
       return res.status(403).json({
         error: 'access_denied',
         error_description: `Token does not contain the required '${scope}' scope`,
@@ -26,9 +22,7 @@ export const requireScope = (scope: string, apiRoute: NextApiHandler) => {
 }
 
 export const checkRole = (role: string, session: Session) => {
-  if (
-    session?.user?.['https://rideonsupersound.vercel.app/roles']?.includes(role)
-  ) {
+  if (session?.user?.['https://rideonsupersound.vercel.app/roles']?.includes(role)) {
     // Use is authenticated
     return { props: {} }
   } else {
@@ -40,5 +34,18 @@ export const checkRole = (role: string, session: Session) => {
       },
       props: {},
     }
+  }
+}
+
+export const withErrorHandling = (handler) => async (req, res) => {
+  try {
+    await handler(req, res)
+  } catch (error) {
+    console.log('HI ERROR', error.status, 'code', error.code, 'message', error.message)
+    console.error(error)
+    res.status(error.status || 500).json({
+      code: error.code,
+      error: error.message,
+    })
   }
 }

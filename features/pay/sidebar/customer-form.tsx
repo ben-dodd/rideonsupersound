@@ -6,7 +6,7 @@ import { CustomerObject } from 'lib/types'
 import { SaleStateTypes } from 'lib/types/sale'
 
 const CustomerForm = () => {
-  const { cart, setCartSale, openView, setCustomer } = useAppStore()
+  const { cart, setCart, setCartSale, openView } = useAppStore()
   const { sale = {} } = cart || {}
   const { customers = [] } = useCustomers()
 
@@ -34,7 +34,7 @@ const CustomerForm = () => {
               setCartSale({ customerId: parseInt(customerObject?.value) })
             }}
             onCreateOption={(inputValue: string) => {
-              setCustomer({ name: inputValue })
+              setCart({ customer: { name: inputValue } })
               openView(ViewProps.createCustomer)
             }}
             options={customers?.map((val: CustomerObject) => ({
