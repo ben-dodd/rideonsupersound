@@ -1,12 +1,8 @@
-import React from 'react'
-
 const DropdownMenu = ({ open, setOpen, items }) => {
   return (
-    <div className="relative">
+    <div className="relative text-sm">
       <div
-        className={`absolute top-7 right-7 bg-white shadow-2xl z-50 border transition-height duration-500 ${
-          open ? '' : 'hidden'
-        }`}
+        className={`absolute bg-white shadow-2xl z-50 border transition-height duration-500 ${open ? '' : 'hidden'}`}
       >
         {items?.map((item, i) => (
           <div key={i} className="block text-gray-700 hover:bg-blue-500 hover:text-white p-2">

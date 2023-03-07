@@ -41,8 +41,6 @@ export const withErrorHandling = (handler) => async (req, res) => {
   try {
     await handler(req, res)
   } catch (error) {
-    console.log('HI ERROR', error.status, 'code', error.code, 'message', error.message)
-    console.error(error)
     res.status(error.status || 500).json({
       code: error.code,
       error: error.message,

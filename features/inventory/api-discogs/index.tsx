@@ -6,6 +6,7 @@ import DiscogsOption from './discogs-option'
 import { useRouter } from 'next/router'
 import { updateStockItem, useStockItem } from 'lib/api/stock'
 import { useSWRConfig } from 'swr'
+import { parseJSON } from 'lib/utils'
 
 export default function DiscogsPanel() {
   const router = useRouter()
@@ -13,7 +14,7 @@ export default function DiscogsPanel() {
   const { stockItem } = useStockItem(`${id}`)
   const { item = {} } = stockItem || {}
   const [discogsOptions, setDiscogsOptions] = useState(null)
-  const discogsItem = item?.discogsItem || null
+  const discogsItem = parseJSON(item?.discogsItem, null)
   const { mutate } = useSWRConfig()
 
   const handleGetDiscogsOptions = () => {

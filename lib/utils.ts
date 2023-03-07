@@ -58,7 +58,7 @@ export function convertMPStoKPH(mps: number) {
   return mps * 1.609
 }
 
-export const parseJSON = (inputString, fallback) => {
+export const parseJSON = (inputString, fallback?) => {
   if (inputString) {
     try {
       return JSON.parse(inputString)

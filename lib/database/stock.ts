@@ -139,7 +139,6 @@ export function dbGetStockItem(id, basic = false, db = connection) {
       return { item, quantities, price, sales, stockMovements, stockPrices }
     })
     .catch((err) => {
-      console.error(err)
       throw new Error(err.message)
     })
 }

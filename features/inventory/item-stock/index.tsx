@@ -1,5 +1,5 @@
-import { Delete, Edit, Settings } from '@mui/icons-material'
-import DropdownMenu from 'components/dropdown-menu'
+import { Delete, Edit } from '@mui/icons-material'
+import MidScreenContainer from 'components/container/mid-screen'
 import Tabs from 'components/navigation/tabs'
 import { deleteStockItem } from 'lib/api/stock'
 import { getItemSkuDisplayName } from 'lib/functions/displayInventory'
@@ -16,10 +16,7 @@ import StockItemDisplay from './stock-display'
 const StockItemScreen = ({ item, sales }) => {
   const { openConfirm, openView } = useAppStore()
   const [tab, setTab] = useState(0)
-  const [menuVisible, setMenuVisible] = useState(false)
   const router = useRouter()
-
-  const toggleMenu = () => setMenuVisible((isVisible) => !isVisible)
 
   function onClickDelete() {
     // REVIEW Delete inventory item
@@ -50,17 +47,15 @@ const StockItemScreen = ({ item, sales }) => {
   ]
 
   return (
-    <div>
-      <div className="flex w-full bg-brown-dark text-white justify-between p-2 h-nav">
-        <div className="text-2xl font-bold">{`STOCK ${getItemSkuDisplayName(item)}`}</div>
-        <div>
-          <DropdownMenu items={menuItems} open={menuVisible} setOpen={setMenuVisible} />
-          <button onClick={toggleMenu}>
-            <Settings />
-          </button>
-        </div>
-      </div>
-      <div className="flex flex-col w-full h-content overflow-y-scroll px-2 pt-2">
+    <MidScreenContainer
+      title={`STOCK ${getItemSkuDisplayName(item)}`}
+      titleClass="bg-brown-dark text-white"
+      menuItems={menuItems}
+      showBackButton
+      full
+      dark
+    >
+      <>
         <Tabs
           tabs={
             item?.media === 'Mixed'
@@ -74,28 +69,30 @@ const StockItemScreen = ({ item, sales }) => {
           value={tab}
           onChange={setTab}
         />
-        <div hidden={tab !== 0}>
-          <div className="flex">
-            <div className="w-1/3">
-              <StockItemDisplay />
-            </div>
-            <div className="w-2/3 ml-4">
-              <PriceDetails />
-              <StockDetails />
+        <div className="px-2">
+          <div hidden={tab !== 0}>
+            <div className="flex">
+              <div className="w-1/3">
+                <StockItemDisplay />
+              </div>
+              <div className="w-2/3 ml-4">
+                <PriceDetails />
+                <StockDetails />
+              </div>
             </div>
           </div>
+          <div hidden={tab !== 1}>
+            <SalesDetails sales={sales} />
+          </div>
+          <div hidden={!(tab === 2 && (item?.media === 'Audio' || item?.media === 'Video' || item?.media === 'Mixed'))}>
+            <DiscogsPanel />
+          </div>
+          <div hidden={!(tab === 2 && item?.media === 'Literature') && !(tab === 3 && item?.media === 'Mixed')}>
+            {/* <GoogleBooksPanel /> */}
+          </div>
         </div>
-        <div hidden={tab !== 1}>
-          <SalesDetails sales={sales} />
-        </div>
-        <div hidden={!(tab === 2 && (item?.media === 'Audio' || item?.media === 'Video' || item?.media === 'Mixed'))}>
-          <DiscogsPanel />
-        </div>
-        <div hidden={!(tab === 2 && item?.media === 'Literature') && !(tab === 3 && item?.media === 'Mixed')}>
-          {/* <GoogleBooksPanel /> */}
-        </div>
-      </div>
-    </div>
+      </>
+    </MidScreenContainer>
   )
 }
 

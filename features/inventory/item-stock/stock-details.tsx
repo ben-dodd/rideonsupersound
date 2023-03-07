@@ -10,6 +10,7 @@ export default function StockDetails() {
   const { id } = router.query
   const { stockItem } = useStockItem(`${id}`)
   const { quantities = {}, stockMovements = [], stockPrices = [] } = stockItem || {}
+  let runningQuantity = quantities?.inStock || 0
 
   return (
     <>
@@ -49,16 +50,22 @@ export default function StockDetails() {
             <div>No stock movements found.</div>
           ) : (
             <div>
-              {stockMovements?.map((s) => (
-                <div key={s?.id} className={`flex p-2 justify-between`}>
-                  <div className="mr-2">
-                    {isPreApp(s?.dateMoved) ? 'Pre-App' : dayjs(s?.dateMoved).format('D MMMM YYYY, h:mm A')}
+              {stockMovements?.map((s, i) => {
+                if (i !== 0) runningQuantity += s?.quantity || 0
+                return (
+                  <div key={s?.id} className={`flex p-2 justify-between`}>
+                    <div className="mr-2">
+                      {isPreApp(s?.dateMoved) ? 'Pre-App' : dayjs(s?.dateMoved).format('D MMMM YYYY, h:mm A')}
+                    </div>
+                    <div className="flex">
+                      <div className={`mr-2 font-bold ${s?.quantity < 1 ? 'text-red-500' : 'text-blue-500'}`}>{`${
+                        s?.act === 'adjustment' ? (s?.quantity < 1 ? '-' : '+') : ''
+                      }${Math.abs(s?.quantity)} ${s?.act}`}</div>
+                      <div className="ml-2">{`(${runningQuantity} in stock)`}</div>
+                    </div>
                   </div>
-                  <div className={`mr-2 font-bold ${s?.quantity < 1 ? 'text-red-500' : 'text-blue-500'}`}>{`${
-                    s?.act === 'adjustment' ? (s?.quantity < 1 ? '-' : '+') : ''
-                  }${Math.abs(s?.quantity)} ${s?.act}`}</div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </div>

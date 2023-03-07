@@ -5,10 +5,10 @@ import { useRouter } from 'next/router'
 const InfoBox = ({ title, image, data }: { title?: string; image?: string; data: any }) => {
   const router = useRouter()
   return (
-    <div className="bg-gray-100 text-brown rounded p-2 my-2 border border-brown max-w-md">
+    <div className="bg-white text-brown rounded p-2 my-2 border max-w-md">
       {title && <div className="text-xl text-black mt-2 mb-4">{title}</div>}
       {image && (
-        <div className="flex justify-center">
+        <div className="flex">
           <div className="w-52 h-52 aspect-ratio-square">
             <img className="h-full w-full object-cover" src={image} alt={'Info Box Image'} />
           </div>
