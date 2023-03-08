@@ -59,7 +59,7 @@ export default function StockDetails() {
               {stockMovements?.map((s, i) => {
                 runningQuantity -= prevQuantity || 0
                 prevQuantity = s?.quantity
-                const saleId = s?.saleId ? s?.saleId : s?.act === 'sold' ? sales[saleIndex]?.id : null
+                const saleId = s?.saleId ? s?.saleId : s?.act === 'sold' ? sales[saleIndex]?.saleId : null
                 if (s?.act === 'sold') saleIndex++
                 return (
                   <div key={s?.id} className={`flex p-2 justify-between`}>

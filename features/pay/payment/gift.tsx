@@ -64,7 +64,7 @@ export default function Gift({ totalRemaining }) {
         setAlert({
           open: true,
           type: 'success',
-          message: `$${parseFloat(giftCardPayment)?.toFixed(2)} GIFT CARD  ${isRefund ? 'REFUND' : 'PAYMENT'}`,
+          message: `$${parseFloat(giftCardPayment)?.toFixed(2)} GIFT VOUCHER  ${isRefund ? 'REFUND' : 'PAYMENT'}`,
         })
       },
       text: 'COMPLETE',
@@ -76,7 +76,7 @@ export default function Gift({ totalRemaining }) {
     <Modal
       open={view?.giftPaymentDialog}
       closeFunction={() => closeView(ViewProps.giftPaymentDialog)}
-      title={isRefund ? `GIFT CARD REFUND` : `GIFT CARD PAYMENT`}
+      title={isRefund ? `GIFT VOUCHER REFUND` : `GIFT VOUCHER PAYMENT`}
       buttons={buttons}
     >
       <>
@@ -110,9 +110,9 @@ export default function Gift({ totalRemaining }) {
         {!isRefund && (
           <div className="text-center font-bold">
             {!giftCardCode || giftCardCode === ''
-              ? 'ENTER GIFT CARD CODE'
+              ? 'ENTER GIFT VOUCHER CODE'
               : !giftCard
-              ? 'INVALID GIFT CARD CODE'
+              ? 'INVALID GIFT VOUCHER CODE'
               : `$${remainingOnGiftCard?.toFixed(2)} LEFT ON CARD`}
           </div>
         )}
@@ -129,7 +129,7 @@ export default function Gift({ totalRemaining }) {
           ) : isRefund ? (
             `ALL GOOD!`
           ) : !giftCard?.giftCardIsValid ? (
-            `GIFT CARD IS NOT VALID`
+            `GIFT VOUCHER IS NOT VALID`
           ) : remainingOnGiftCard < parseFloat(giftCardPayment) ? (
             `NOT ENOUGH ON CARD`
           ) : leftOver >= 10 ? (

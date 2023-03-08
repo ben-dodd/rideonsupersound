@@ -158,24 +158,26 @@ export function dbGetStockItems(itemIds, db = connection) {
 
 export function dbGetGiftCards(db = connection) {
   return db('stock')
-    .select(
-      'id',
-      'is_gift_card',
-      'gift_card_amount',
-      'gift_card_code',
-      'gift_card_remaining',
-      'gift_card_is_valid',
-      'note',
-      'date_created',
-      'date_modified',
-    )
+    .select('id', 'gift_card_amount', 'gift_card_code', 'gift_card_remaining', 'gift_card_is_valid')
     .where('is_gift_card', 1)
-    .andWhere('is_deleted', 0)
+    .where('is_deleted', 0)
 }
 
 export function dbGetGiftCard(id, db = connection) {
-  return dbGetGiftCards(db)
-    .where({ id })
+  return db('stock')
+    .leftJoin('sale_item', 'sale_item.item_id', 'stock.id')
+    .select(
+      'stock.id',
+      'stock.gift_card_amount',
+      'stock.gift_card_code',
+      'stock.gift_card_remaining',
+      'stock.gift_card_is_valid',
+      'stock.note',
+      'stock.date_created',
+      'stock.date_modified',
+      'sale_item.sale_id',
+    )
+    .where('stock.id', id)
     .first()
     .then((giftCard) =>
       dbGetSaleTransactions(db)

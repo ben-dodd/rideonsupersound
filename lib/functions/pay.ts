@@ -63,7 +63,7 @@ export function writeItemList(stockList: BasicStockObject[], cartItems: SaleItem
         let stockObject = stockList?.find((obj) => obj?.item?.id === cartItem?.itemId)
         const { item = {} } = stockObject || {}
         if (item?.isGiftCard) {
-          return `Gift Card [${item?.giftCardCode}]`
+          return `Gift Voucher [${item?.giftCardCode}]`
         } else {
           let cartQuantity = cartItem?.quantity || 1
           let str = ''

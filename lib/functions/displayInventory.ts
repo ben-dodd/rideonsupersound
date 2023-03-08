@@ -19,7 +19,7 @@ export function getItemSku(item: StockItemObject) {
 export function getItemDisplayName(item: StockItemObject) {
   // Add special cases e.g. for comics
   // Might be better as a span component
-  if (item?.isGiftCard) return `Gift Card [${item?.giftCardCode?.toUpperCase()}]`
+  if (item?.isGiftCard) return `Gift Voucher [${item?.giftCardCode?.toUpperCase()}]`
   // let inventoryItem: any = item
   if (item?.isMiscItem) return item?.miscItemDescription
   if (item?.displayAs) return item?.displayAs

@@ -16,7 +16,7 @@ export function writeCartItemPriceBreakdown(cartItem: SaleItemObject, stockItem:
   // Writes out the sale item in the following form:
   // 1 x V10% x R50% x $27.00
   if (item?.isGiftCard) {
-    return `${priceCentsString(item?.giftCardAmount)} GIFT CARD`
+    return `${priceCentsString(item?.giftCardAmount)} GIFT VOUCHER`
   }
   if (item?.isMiscItem) {
     return `${cartItem?.quantity} × ${priceCentsString(item?.miscItemAmount)}`

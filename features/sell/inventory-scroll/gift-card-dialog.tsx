@@ -58,15 +58,15 @@ export default function GiftCardDialog() {
         setAlert({
           open: true,
           type: 'success',
-          message: `NEW GIFT CARD CREATED`,
+          message: `NEW GIFT VOUCHER CREATED`,
         })
       },
-      text: 'CREATE GIFT CARD',
+      text: 'CREATE GIFT VOUCHER',
     },
   ]
 
   return (
-    <Modal open={view?.giftCardDialog} closeFunction={clearDialog} title={'CREATE GIFT CARD'} buttons={buttons}>
+    <Modal open={view?.giftCardDialog} closeFunction={clearDialog} title={'CREATE GIFT VOUCHER'} buttons={buttons}>
       <>
         <div className="flex justify-between items-center">
           <div className="text-8xl text-brown-dark font-mono">{giftCardCode}</div>

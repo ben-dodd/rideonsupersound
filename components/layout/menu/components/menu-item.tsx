@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router'
 
-export default function MenuItem({ item, defaultOnClick }) {
+export default function MenuItem({ item, listClass, defaultOnClick }) {
   const router = useRouter()
   const handleOnClick = item?.onClick ? item?.onClick : () => defaultOnClick(item)
   return item?.type === 'divider' ? (
@@ -8,7 +8,7 @@ export default function MenuItem({ item, defaultOnClick }) {
   ) : (
     <li
       className={`flex cursor-pointer content-center p-2 py-3 ${
-        router?.pathname.includes(item?.page) ? 'text-white hover:bg-black bg-black' : item?.class || ''
+        router?.pathname.includes(item?.page) ? 'text-white hover:bg-black bg-black' : listClass || ''
       }`}
       onClick={handleOnClick}
     >

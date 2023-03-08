@@ -7,7 +7,6 @@ import { getVendorReport } from './create-report'
 const ExportVendorReportDialog = ({ vendor }) => {
   const { view, closeView } = useAppStore()
   const buttons: ModalButton[] = [
-    { type: 'cancel', text: 'CANCEL' },
     {
       type: 'ok',
       onClick: () => getVendorReport(vendor),

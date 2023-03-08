@@ -4,18 +4,21 @@ import Loading from 'components/loading'
 import dayjs from 'dayjs'
 import { useGiftCard } from 'lib/api/stock'
 import { useAppStore } from 'lib/store'
+import { Pages } from 'lib/store/types'
 import { centsToDollars } from 'lib/utils'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import React from 'react'
 
 const GiftCardSidebar = () => {
-  const { loadedGiftCardId, setLoadedGiftCardId } = useAppStore()
-  const { giftCard, isGiftCardLoading } = useGiftCard(loadedGiftCardId)
+  const { giftCardsPage, setPage } = useAppStore()
+  const router = useRouter()
+  const { giftCard, isGiftCardLoading } = useGiftCard(giftCardsPage?.loadedGiftCard)
   console.log(giftCard)
   const { giftCard: card = {}, saleTransactions } = giftCard || {}
-  const closeSidebar = () => setLoadedGiftCardId(0)
+  const closeSidebar = () => setPage(Pages.giftCardsPage, { loadedGiftCard: 0 })
   return (
-    <SidebarContainer show={Boolean(loadedGiftCardId)}>
+    <SidebarContainer show={Boolean(giftCardsPage?.loadedGiftCard)}>
       {isGiftCardLoading ? (
         <Loading />
       ) : (
@@ -33,7 +36,15 @@ const GiftCardSidebar = () => {
             ) : (
               <div className="text-xl mb-2 text-red-200">NOT VALID</div>
             )}
-            <div>{`Created on ${dayjs(card?.dateCreated).format('DD/MM/YYYY')}`}</div>
+            <div>
+              <span>{`Purchased on ${dayjs(card?.dateCreated).format('DD/MM/YYYY')}`}</span>{' '}
+              {card?.saleId && (
+                <a
+                  className="link-blue"
+                  onClick={() => router.push(`/sales/${card?.saleId}`)}
+                >{`[Sale #${card?.saleId}]`}</a>
+              )}
+            </div>
             <div>{`Initial amount: $${centsToDollars(card?.giftCardAmount)}`}</div>
             <div>{`Total remaining: $${centsToDollars(card?.giftCardRemaining)}`}</div>
             <div className="mt-2">{card?.note}</div>

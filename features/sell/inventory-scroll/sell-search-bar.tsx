@@ -32,7 +32,7 @@ export default function SellSearchBar() {
         </button>
         <button className="icon-text-button" onClick={() => openView(ViewProps.giftCardDialog)}>
           <GiftCardsIcon className="mr-1" />
-          Gift Card
+          Gift Voucher
         </button>
       </div>
     </div>

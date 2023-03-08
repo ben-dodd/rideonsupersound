@@ -54,7 +54,7 @@ describe('writeCartItemPriceBreakdown', () => {
   test.todo('should write out a price breakdown based on a cart item and an item')
   it('should handle gift cards', () => {
     expect(writeCartItemPriceBreakdown(cartItem, { item: giftCardItem, price: stockItemPrice3 })).toBe(
-      '$30.00 GIFT CARD',
+      '$30.00 GIFT VOUCHER',
     )
   })
   it('should handle misc items', () => {

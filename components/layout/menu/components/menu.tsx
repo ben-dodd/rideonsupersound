@@ -1,7 +1,9 @@
 import { bg } from 'lib/types'
 import InventoryIcon from '@mui/icons-material/Category'
 import LaybyIcon from '@mui/icons-material/DryCleaning'
-import LogsIcon from '@mui/icons-material/GridOn'
+// import LogsIcon from '@mui/icons-material/GridOn'
+import OrdersIcon from '@mui/icons-material/LocalShipping'
+import ClerksIcon from '@mui/icons-material/PeopleAlt'
 import SellIcon from '@mui/icons-material/LocalAtm'
 import SalesIcon from '@mui/icons-material/MonetizationOn'
 import StocktakeIcon from '@mui/icons-material/Numbers'
@@ -27,6 +29,8 @@ type MenuType = {
   onClick: any
 }
 
+const classList = [...Array(10)].map((_, i) => `bg-col${i + 1}-light hover:bg-col${i + 1}`)
+
 export default function Menu({ badges }) {
   const router = useRouter()
   const { view, closeView } = useAppStore()
@@ -38,80 +42,75 @@ export default function Menu({ badges }) {
       page: '/sell',
       text: 'SELL',
       badge: badges.numCartItems,
-      class: 'bg-col1-light hover:bg-col1',
       icon: <SellIcon />,
     },
     {
       type: 'link',
       page: '/inventory',
-      text: 'INVENTORY',
-      class: 'bg-col2-light hover:bg-col2',
+      text: 'STOCK',
       icon: <InventoryIcon />,
     },
     {
       type: 'link',
       page: '/vendors',
       text: 'VENDORS',
-      class: 'bg-col3-light hover:bg-col3',
       icon: <VendorsIcon />,
-    },
-    {
-      type: 'link',
-      page: '/payments',
-      text: 'PAYMENTS',
-      class: 'bg-col4-light hover:bg-col4',
-      icon: <PaymentsIcon />,
     },
     {
       type: 'link',
       page: '/sales',
       text: 'SALES',
-      class: 'bg-col5-light hover:bg-col5',
       icon: <SalesIcon />,
     },
     {
       type: 'link',
       page: '/laybys',
       text: 'LAYBYS',
-      class: 'bg-col6-light hover:bg-col6',
       icon: <LaybyIcon />,
     },
     {
       type: 'link',
       page: '/holds',
       text: 'HOLDS',
-      class: 'bg-col7-light hover:bg-col7',
       icon: <HoldsIcon />,
     },
     {
       type: 'link',
-      page: '/gift-cards',
-      text: 'GIFT CARDS',
-      class: 'bg-col8-light hover:bg-col8',
-      icon: <GiftCardsIcon />,
+      page: '/orders',
+      text: 'ORDERS',
+      icon: <OrdersIcon />,
     },
-  ]
-  const bottomMenu = [
     {
       type: 'link',
-      page: '/log',
-      text: 'LOGS',
-      class: 'bg-col9-light hover:bg-col9',
-      icon: <LogsIcon />,
+      page: '/gift-cards',
+      text: 'GIFT VOUCHERS',
+      icon: <GiftCardsIcon />,
     },
     {
       type: 'link',
       page: '/jobs',
       text: 'JOBS',
       badge: badges.numJobsToDo,
-      class: 'bg-col10-light hover:bg-col10',
       icon: <JobsIcon />,
+    },
+  ]
+  const bottomMenu = [
+    {
+      type: 'link',
+      page: '/payments',
+      text: 'BUSINESS',
+      icon: <PaymentsIcon />,
+    },
+    {
+      type: 'link',
+      page: '/clerks',
+      text: 'CLERKS',
+      icon: <ClerksIcon />,
     },
     {
       type: 'link',
       page: '/stocktake',
       text: 'STOCKTAKE',
-      class: 'bg-col1-light hover:bg-col1',
       icon: <StocktakeIcon />,
     },
   ]
@@ -131,13 +130,13 @@ export default function Menu({ badges }) {
     >
       <ul>
         {topMenu?.map((item: MenuType, i: number) => (
-          <MenuItem key={i} item={item} defaultOnClick={defaultOnClick} />
+          <MenuItem key={i} item={item} listClass={classList[i % 10]} defaultOnClick={defaultOnClick} />
         ))}
       </ul>
       <PyramidImage />
       <ul>
         {bottomMenu?.map((item: MenuType, i: number) => (
-          <MenuItem key={i} item={item} defaultOnClick={defaultOnClick} />
+          <MenuItem key={i} item={item} listClass={classList[i % 10]} defaultOnClick={defaultOnClick} />
         ))}
       </ul>
     </div>

@@ -23,7 +23,7 @@ export default function GiftCardTable() {
           return a > b ? 1 : b > a ? -1 : 0
         },
       },
-      { Header: 'Gift Card Code', accessor: 'code' },
+      { Header: 'Gift Voucher Code', accessor: 'code' },
       {
         Header: 'Initial Value',
         accessor: 'initial',
@@ -52,7 +52,7 @@ export default function GiftCardTable() {
         colorDark="bg-col8-dark"
         data={data}
         columns={columns}
-        heading={'Gift Cards'}
+        heading={'Gift Vouchers'}
         sortOptions={[{ id: 'date', desc: true }]}
       />
     </TableContainer>
