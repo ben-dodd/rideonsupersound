@@ -15,14 +15,16 @@ const InventoryScreen = () => {
   const handleSearch = (e) => setSearchBar(Pages.inventoryPage, e.target.value)
 
   return (
-    <MidScreenContainer title="STOCK" isLoading={isStockListLoading} titleClass="bg-col2" full={true}>
+    <MidScreenContainer title="Stock List" isLoading={isStockListLoading} titleClass="bg-col2" full={true}>
       <div className="h-content overflow-y-scroll">
         <div className="px-2">
           <SearchInput searchValue={searchBar} handleSearch={handleSearch} />
         </div>
         <div className="px-2">
           {stockList
-            ?.filter?.((stockItem) => stockItem?.name?.toUpperCase?.()?.includes(searchBar?.toUpperCase()))
+            ?.filter?.((stockItem) =>
+              `${stockItem?.artist} ${stockItem?.title}`?.toUpperCase?.()?.includes(searchBar?.toUpperCase()),
+            )
             ?.map((stockItem) => (
               <StockListItem key={stockItem?.id} item={stockItem} />
             ))}
