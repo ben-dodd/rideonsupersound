@@ -177,7 +177,7 @@
 }
 
 .modal__title-div {
-  @apply top-0 sticky flex justify-between items-start border-b border-gray-200 shadow-sm text-brown px-2;
+  @apply top-0 sticky flex justify-between items-start border-b border-gray-200 bg-gray-100 text-brown-dark shadow-sm px-2;
 }
 
 .modal__title {
