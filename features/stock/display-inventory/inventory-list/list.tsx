@@ -14,7 +14,7 @@ export default function List() {
 
   return (
     <MidScreenContainer
-      title={'Inventory'}
+      title={'Stock'}
       titleClass={'bg-col2'}
       isLoading={isInventoryLoading || isVendorsLoading}
       actionButtons={<InventoryActionButtons />}

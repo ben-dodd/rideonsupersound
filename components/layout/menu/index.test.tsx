@@ -23,7 +23,7 @@ describe('Menu', () => {
     expect(sellListItem).toHaveClass('bg-black')
     expect(sellListItem).toHaveTextContent('SELL')
     expect(inventoryListItem).not.toHaveClass('bg-black')
-    expect(inventoryListItem).toHaveTextContent('INVENTORY')
+    expect(inventoryListItem).toHaveTextContent('STOCK')
   })
 
   it('goes to a new page when clicked', () => {
@@ -31,7 +31,7 @@ describe('Menu', () => {
     const listItems = screen.getAllByRole('listitem')
 
     const inventoryListItem = listItems[1]
-    expect(inventoryListItem).toHaveTextContent('INVENTORY')
+    expect(inventoryListItem).toHaveTextContent('STOCK')
     fireEvent.click(inventoryListItem)
     expect(mockRouter.pathname).toBe('/inventory')
 

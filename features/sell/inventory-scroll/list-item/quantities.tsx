@@ -5,7 +5,7 @@ const Quantities = ({ quantities, price, itemQuantity, isInCart }) => {
   const notLoaded: boolean = price?.totalSell === undefined || price?.totalSell === null
   return (
     <div className="flex justify-between items-end">
-      {/* <Tooltip title="Go to the INVENTORY screen to receive or return items."> */}
+      {/* <Tooltip title="Go to the STOCK screen to receive or return items."> */}
       <div className={`text-md ${!notLoaded && itemQuantity < 1 && 'text-red-500'}`}>
         {notLoaded
           ? '...'

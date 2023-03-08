@@ -32,7 +32,7 @@ export default function ListItem({ item }: ListItemProps) {
             // layout="fill"
             // objectFit="cover"
             src={getImageSrc(item)}
-            alt={item?.title || 'Inventory image'}
+            alt={item?.title || 'Stock image'}
           />
         </div>
         <div className="text-lg font-bold text-center bg-black text-white">{getItemSku(item)}</div>
@@ -55,7 +55,7 @@ export default function ListItem({ item }: ListItemProps) {
         <div className="text-xs">{`${vendor ? `Selling for ${vendor?.name}` : ''}`}</div>
 
         <div className="flex justify-between items-end">
-          <Tooltip title="Go to the INVENTORY screen to receive or return items.">
+          <Tooltip title="Go to the STOCK screen to receive or return items.">
             <div className={`text-md ${itemQuantity < 1 && 'text-red-500'}`}>{`${itemQuantity} in stock${
               getHoldQuantity(item) > 0 ? `, ${getHoldQuantity(item)} on hold` : ''
             }${getLaybyQuantity(item) > 0 ? `, ${getLaybyQuantity(item)} on layby` : ''}`}</div>

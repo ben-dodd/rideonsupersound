@@ -15,7 +15,7 @@ const InventoryScreen = () => {
   const handleSearch = (e) => setSearchBar(Pages.inventoryPage, e.target.value)
 
   return (
-    <MidScreenContainer title="INVENTORY" isLoading={isStockListLoading} titleClass="bg-col2" full={true}>
+    <MidScreenContainer title="STOCK" isLoading={isStockListLoading} titleClass="bg-col2" full={true}>
       <div className="h-content overflow-y-scroll">
         <div className="px-2">
           <SearchInput searchValue={searchBar} handleSearch={handleSearch} />

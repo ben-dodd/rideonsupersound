@@ -30,7 +30,7 @@ export default function ItemListItem({ saleItem, selected, onClick }: SellListIt
           <img
             className="object-cover w-full h-full absolute"
             src={getImageSrc(item)}
-            alt={item?.title || 'Inventory image'}
+            alt={item?.title || 'Stock image'}
           />
           {!item?.isGiftCard && !item?.isMiscItem && (
             <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white text-sm flex justify-center items-center">

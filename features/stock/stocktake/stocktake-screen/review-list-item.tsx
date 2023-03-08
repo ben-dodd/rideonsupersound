@@ -1,15 +1,6 @@
 import Select from 'react-select'
-import {
-  getImageSrc,
-  getItemDisplayName,
-  getItemSku,
-} from 'lib/functions/displayInventory'
-import {
-  StockObject,
-  StocktakeItemObject,
-  StocktakeObject,
-  StocktakeReviewDecisions,
-} from 'lib/types'
+import { getImageSrc, getItemDisplayName, getItemSku } from 'lib/functions/displayInventory'
+import { StockObject, StocktakeItemObject, StocktakeObject, StocktakeReviewDecisions } from 'lib/types'
 import CheckIcon from '@mui/icons-material/CheckCircleOutline'
 import EditIcon from '@mui/icons-material/Edit'
 
@@ -19,14 +10,8 @@ interface reviewListItemProps {
   stocktake: StocktakeObject
 }
 
-export default function ReviewListItem({
-  stocktakeItem,
-  stockItem,
-  stocktake,
-}: reviewListItemProps) {
-  const { stocktakeItems, mutateStocktakeItems } = useStocktakeItemsByStocktake(
-    stocktake?.id
-  )
+export default function ReviewListItem({ stocktakeItem, stockItem, stocktake }: reviewListItemProps) {
+  const { stocktakeItems, mutateStocktakeItems } = useStocktakeItemsByStocktake(stocktake?.id)
   const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom)
   const { vendors } = useVendors()
   const vendor = vendors?.filter((v) => v?.id === stockItem?.vendor_id)?.[0]
@@ -41,7 +26,7 @@ export default function ReviewListItem({
               // layout="fill"
               // objectFit="cover"
               src={getImageSrc(stockItem)}
-              alt={stockItem?.title || 'Inventory image'}
+              alt={stockItem?.title || 'Stock image'}
             />
             {!stockItem?.is_gift_card && !stockItem?.is_misc_item && (
               <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white text-sm flex justify-center items-center">
@@ -53,14 +38,10 @@ export default function ReviewListItem({
         <div className="ml-2">
           <div>{getItemDisplayName(stockItem)}</div>
 
-          <div className="">{`${
-            stockItem?.section ? `${stockItem.section} / ` : ''
-          }${stockItem?.format} [${
+          <div className="">{`${stockItem?.section ? `${stockItem.section} / ` : ''}${stockItem?.format} [${
             stockItem?.is_new ? 'NEW' : stockItem?.cond?.toUpperCase() || 'USED'
           }]`}</div>
-          <div className="text-sm">
-            {`${vendor ? `Selling for ${vendor?.name}` : ''}`}
-          </div>
+          <div className="text-sm">{`${vendor ? `Selling for ${vendor?.name}` : ''}`}</div>
         </div>
       </div>
       <div className="w-4/12 flex flex-col justify-center">
@@ -72,21 +53,15 @@ export default function ReviewListItem({
             className={`w-full border border-4 ${
               !stocktakeItem?.review_decision
                 ? 'border-red-500'
-                : stocktakeItem?.review_decision ===
-                  StocktakeReviewDecisions?.review
+                : stocktakeItem?.review_decision === StocktakeReviewDecisions?.review
                 ? 'border-orange-300'
-                : stocktakeItem?.review_decision ===
-                  StocktakeReviewDecisions?.keep
+                : stocktakeItem?.review_decision === StocktakeReviewDecisions?.keep
                 ? 'border-blue-500'
                 : 'border-green-500'
             }`}
             value={{
-              value:
-                stocktakeItem?.review_decision ||
-                StocktakeReviewDecisions?.review,
-              label:
-                stocktakeItem?.review_decision ||
-                StocktakeReviewDecisions?.review,
+              value: stocktakeItem?.review_decision || StocktakeReviewDecisions?.review,
+              label: stocktakeItem?.review_decision || StocktakeReviewDecisions?.review,
             }}
             options={(stocktakeItem?.quantity_difference > 0
               ? [
@@ -114,10 +89,8 @@ export default function ReviewListItem({
               }
               updateStocktakeItemInDatabase(newStocktakeItem)
               mutateStocktakeItems(
-                (stocktakeItems || [])?.map((si) =>
-                  si?.id === stocktakeItem?.id ? newStocktakeItem : si
-                ),
-                false
+                (stocktakeItems || [])?.map((si) => (si?.id === stocktakeItem?.id ? newStocktakeItem : si)),
+                false,
               )
             }}
           />
@@ -130,9 +103,7 @@ export default function ReviewListItem({
               ? 'bg-red-200 hover:bg-red-300 animate-spin'
               : 'bg-gray-200 hover:bg-gray-300 '
           }`}
-          onClick={() =>
-            setLoadedItemId({ ...loadedItemId, stocktake: stockItem?.id })
-          }
+          onClick={() => setLoadedItemId({ ...loadedItemId, stocktake: stockItem?.id })}
         >
           <EditIcon />
         </button>
@@ -146,13 +117,7 @@ export default function ReviewListItem({
             <CheckIcon className="text-white" />
           </div>
         ) : (
-          <div
-            className={`${
-              stocktakeItem?.quantity_difference < 0
-                ? 'bg-red-500'
-                : 'bg-orange-500'
-            } text-center`}
-          >
+          <div className={`${stocktakeItem?.quantity_difference < 0 ? 'bg-red-500' : 'bg-orange-500'} text-center`}>
             <div className="text-white">
               {stocktakeItem?.quantity_difference < 0
                 ? stocktakeItem?.quantity_difference

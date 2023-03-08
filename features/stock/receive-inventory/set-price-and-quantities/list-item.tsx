@@ -2,28 +2,17 @@ import RadioButton from 'components/inputs/radio-button'
 import SettingsSelect from 'components/inputs/settings-select'
 import TextField from 'components/inputs/text-field'
 import { getPriceSuggestion } from 'lib/functions/discogs'
-import {
-  getImageSrc,
-  getItemDisplayName,
-  getItemSku,
-} from 'lib/functions/displayInventory'
+import { getImageSrc, getItemDisplayName, getItemSku } from 'lib/functions/displayInventory'
 import { getProfitMargin, getStoreCut } from 'lib/functions/pay'
 import { useAppStore } from 'lib/store'
 import { StockItemObject, StockItemPriceObject } from 'lib/types'
 
 export default function ListItem({ receiveItem }) {
   const { updateReceiveBasketItem } = useAppStore()
-  const {
-    item = {},
-    price = {},
-  }: { item: StockItemObject; price: StockItemPriceObject } = receiveItem || {}
+  const { item = {}, price = {} }: { item: StockItemObject; price: StockItemPriceObject } = receiveItem || {}
   const priceSuggestion = getPriceSuggestion(item)
-  const totalSell = parseFloat(
-    receiveItem?.totalSell || (price?.totalSell || 0) / 100
-  )
-  const vendorCut = parseFloat(
-    receiveItem?.vendorCut || (price?.vendorCut || 0) / 100
-  )
+  const totalSell = parseFloat(receiveItem?.totalSell || (price?.totalSell || 0) / 100)
+  const vendorCut = parseFloat(receiveItem?.vendorCut || (price?.vendorCut || 0) / 100)
   const profitMargin = getProfitMargin({
     totalSell,
     vendorCut,
@@ -35,11 +24,7 @@ export default function ListItem({ receiveItem }) {
       <div className="flex">
         <div className="w-20">
           <div className="w-20 h-20 relative">
-            <img
-              className="object-cover absolute"
-              src={getImageSrc(item)}
-              alt={item?.title || 'Inventory image'}
-            />
+            <img className="object-cover absolute" src={getImageSrc(item)} alt={item?.title || 'Stock image'} />
             {!item?.isGiftCard && !item?.isMiscItem && item?.id && (
               <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white text-sm flex justify-center items-center">
                 {getItemSku(item)}
@@ -49,9 +34,7 @@ export default function ListItem({ receiveItem }) {
         </div>
         <div className="ml-2">
           <div>{getItemDisplayName(item)}</div>
-          <div className="text-sm italic">
-            {priceSuggestion ? `Discogs suggest ${priceSuggestion}` : ''}
-          </div>
+          <div className="text-sm italic">{priceSuggestion ? `Discogs suggest ${priceSuggestion}` : ''}</div>
         </div>
       </div>
       <div>
@@ -62,10 +45,7 @@ export default function ListItem({ receiveItem }) {
             group={`${receiveItem?.key}isNew`}
             value={`${Boolean(item?.isNew)}`}
             onChange={(value: string) =>
-              updateReceiveBasketItem(
-                receiveItem?.key,
-                value === 'true' ? { isNew: 1, cond: null } : { isNew: 0 }
-              )
+              updateReceiveBasketItem(receiveItem?.key, value === 'true' ? { isNew: 1, cond: null } : { isNew: 0 })
             }
             options={[
               { id: `new${receiveItem?.key}`, value: 'true', label: 'New' },
@@ -75,9 +55,7 @@ export default function ListItem({ receiveItem }) {
           <SettingsSelect
             className="w-full"
             object={item}
-            customEdit={(e) =>
-              updateReceiveBasketItem(receiveItem?.key, { cond: e.value })
-            }
+            customEdit={(e) => updateReceiveBasketItem(receiveItem?.key, { cond: e.value })}
             dbField="cond"
             sorted={false}
             isCreateDisabled={true}
@@ -87,9 +65,7 @@ export default function ListItem({ receiveItem }) {
           <SettingsSelect
             className="w-1/2"
             object={item}
-            customEdit={(e) =>
-              updateReceiveBasketItem(receiveItem?.key, { section: e.value })
-            }
+            customEdit={(e) => updateReceiveBasketItem(receiveItem?.key, { section: e.value })}
             inputLabel="SECTION"
             dbField="section"
             isCreateDisabled={true}
@@ -97,9 +73,7 @@ export default function ListItem({ receiveItem }) {
           <SettingsSelect
             className="w-1/2 ml-2"
             object={item}
-            customEdit={(e) =>
-              updateReceiveBasketItem(receiveItem?.key, { country: e.value })
-            }
+            customEdit={(e) => updateReceiveBasketItem(receiveItem?.key, { country: e.value })}
             inputLabel="COUNTRY"
             dbField="country"
           />
@@ -110,10 +84,7 @@ export default function ListItem({ receiveItem }) {
             className="w-24 mr-6"
             startAdornment={'$'}
             disabled={Boolean(item?.id)}
-            value={`${
-              receiveItem?.vendorCut ||
-              (item?.vendorCut ? item?.vendorCut / 100 : '')
-            }`}
+            value={`${receiveItem?.vendorCut || (item?.vendorCut ? item?.vendorCut / 100 : '')}`}
             onChange={(e: any) =>
               updateReceiveBasketItem(receiveItem?.key, {
                 vendorCut: e.target.value,
@@ -124,10 +95,7 @@ export default function ListItem({ receiveItem }) {
             inputLabel="TOTAL SELL"
             className="w-24 mr-6"
             startAdornment={'$'}
-            value={`${
-              receiveItem?.totalSell ||
-              (item?.totalSell ? item?.totalSell / 100 : '')
-            }`}
+            value={`${receiveItem?.totalSell || (item?.totalSell ? item?.totalSell / 100 : '')}`}
             onChange={(e: any) =>
               updateReceiveBasketItem(receiveItem?.key, {
                 totalSell: e.target.value,

@@ -17,7 +17,7 @@ export default function HoldListItem({ cartItem }: HoldListItemProps) {
           <img
             className="object-cover w-full h-full absolute"
             src={getImageSrc(item)}
-            alt={item?.title || 'Inventory image'}
+            alt={item?.title || 'Stock image'}
           />
           {!item?.isGiftCard && !item?.isMiscItem && (
             <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white flex justify-center items-center text-sm">

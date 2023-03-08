@@ -1,21 +1,11 @@
 import TextField from 'components/inputs/text-field'
-import {
-  getImageSrc,
-  getItemDisplayName,
-  getItemSku,
-} from 'lib/functions/displayInventory'
+import { getImageSrc, getItemDisplayName, getItemSku } from 'lib/functions/displayInventory'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
 import { useVendors } from 'lib/api/vendor'
 
-export default function CountedListItem({
-  stocktakeItem,
-  stockItem,
-  stocktake,
-}) {
-  const { stocktakeItems, mutateStocktakeItems } = useStocktakeItemsByStocktake(
-    stocktake?.id
-  )
+export default function CountedListItem({ stocktakeItem, stockItem, stocktake }) {
+  const { stocktakeItems, mutateStocktakeItems } = useStocktakeItemsByStocktake(stocktake?.id)
   const { vendors } = useVendors()
   const vendor = vendors?.filter((v) => v?.id === stockItem?.vendor_id)?.[0]
   return (
@@ -28,7 +18,7 @@ export default function CountedListItem({
               // layout="fill"
               // objectFit="cover"
               src={getImageSrc(stockItem)}
-              alt={stockItem?.title || 'Inventory image'}
+              alt={stockItem?.title || 'Stock image'}
             />
             {!stockItem?.is_gift_card && !stockItem?.is_misc_item && (
               <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white text-sm flex justify-center items-center">
@@ -40,14 +30,10 @@ export default function CountedListItem({
         <div className="ml-2">
           <div>{getItemDisplayName(stockItem)}</div>
 
-          <div className="">{`${
-            stockItem?.section ? `${stockItem.section} / ` : ''
-          }${stockItem?.format} [${
+          <div className="">{`${stockItem?.section ? `${stockItem.section} / ` : ''}${stockItem?.format} [${
             stockItem?.is_new ? 'NEW' : stockItem?.cond?.toUpperCase() || 'USED'
           }]`}</div>
-          <div className="text-sm">
-            {`${vendor ? `Selling for ${vendor?.name}` : ''}`}
-          </div>
+          <div className="text-sm">{`${vendor ? `Selling for ${vendor?.name}` : ''}`}</div>
         </div>
       </div>
       {/* <div className="text-xl">{`$${((item?.total_sell || 0) / 100)?.toFixed(
@@ -65,15 +51,11 @@ export default function CountedListItem({
             const newStocktakeItem = {
               ...stocktakeItem,
               quantity_counted: parseInt(e.target.value) || 0,
-              quantity_difference:
-                (parseInt(e.target.value) || 0) -
-                stocktakeItem?.quantity_recorded,
+              quantity_difference: (parseInt(e.target.value) || 0) - stocktakeItem?.quantity_recorded,
             }
             updateStocktakeItemInDatabase(newStocktakeItem)
             mutateStocktakeItems(
-              (stocktakeItems || [])?.map((si) =>
-                si?.id === stocktakeItem?.id ? newStocktakeItem : si
-              )
+              (stocktakeItems || [])?.map((si) => (si?.id === stocktakeItem?.id ? newStocktakeItem : si)),
             )
           }}
         />
@@ -94,7 +76,7 @@ export default function CountedListItem({
             deleteStocktakeItemFromDatabase(stocktakeItem?.id)
             mutateStocktakeItems(
               stocktakeItems?.filter((si) => si?.id !== stocktakeItem?.id),
-              false
+              false,
             )
           }}
         >

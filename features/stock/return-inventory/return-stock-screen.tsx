@@ -182,7 +182,7 @@ export default function ReturnStockScreen() {
                                 // layout="fill"
                                 // objectFit="cover"
                                 src={getImageSrc(item)}
-                                alt={item?.title || 'Inventory image'}
+                                alt={item?.title || 'Stock image'}
                               />
                               {!item?.is_gift_card && !item?.is_misc_item && (
                                 <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white text-sm flex justify-center items-center">
