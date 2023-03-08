@@ -57,7 +57,7 @@ export default function StockEditDialog({ stockItem }) {
         <div className="flex justify-start w-full">
           <div className="pr-2 w-52 mr-2">
             <div className="w-52 h-52 relative">
-              <img className="object-cover absolute" src={getImageSrc(item)} alt={item?.title || 'Inventory image'} />
+              <img className="object-cover absolute" src={getImageSrc(item)} alt={item?.title || 'Stock image'} />
               {item?.id && (
                 <div className="absolute w-52 h-8 bg-opacity-50 bg-black text-white flex justify-center items-center">
                   {getItemSku(item)}

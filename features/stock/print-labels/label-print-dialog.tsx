@@ -112,7 +112,7 @@ export default function LabelPrintDialog() {
                         <img
                           className={`object-cover h-12 ${item?.quantity < 1 ? ' opacity-50' : ''}`}
                           src={getImageSrc(item)}
-                          alt={item?.title || 'Inventory image'}
+                          alt={item?.title || 'Stock image'}
                         />
                       </div>
                       <div>
@@ -142,7 +142,7 @@ export default function LabelPrintDialog() {
                         <img
                           className={`object-cover h-12 ${item?.quantity < 1 ? ' opacity-50' : ''}`}
                           src={getImageSrc(item)}
-                          alt={item?.title || 'Inventory image'}
+                          alt={item?.title || 'Stock image'}
                         />
                       </div>
                       <div>

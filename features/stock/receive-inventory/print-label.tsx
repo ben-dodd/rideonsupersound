@@ -1,28 +1,19 @@
 import { logPrintLabels } from 'lib/functions/log'
 import dayjs from 'dayjs'
 import { CSVLink } from 'react-csv'
-import {
-  getImageSrc,
-  getItemDisplayName,
-  getItemSku,
-} from 'lib/functions/displayInventory'
+import { getImageSrc, getItemDisplayName, getItemSku } from 'lib/functions/displayInventory'
 import { getLabelPrinterCSV } from 'lib/functions/printLabels'
 import { useClerk } from 'lib/api/clerk'
 
 export default function PrintLabel({ receivedStock }) {
   // const { logs, mutateLogs } = useLogs()
   const { clerk } = useClerk()
-  const totalItemCount = receivedStock?.reduce(
-    (prev, curr) => prev + parseInt(curr?.quantity),
-    0
-  )
+  const totalItemCount = receivedStock?.reduce((prev, curr) => prev + parseInt(curr?.quantity), 0)
 
   function getStock() {
     let res = []
     receivedStock?.forEach((receiveItem) => {
-      ;[...Array(parseInt(receiveItem?.quantity))]?.forEach(() =>
-        res.push(receiveItem?.item)
-      )
+      ;[...Array(parseInt(receiveItem?.quantity))]?.forEach(() => res.push(receiveItem?.item))
     })
     return res
   }
@@ -42,15 +33,13 @@ export default function PrintLabel({ receivedStock }) {
                   // layout="fill"
                   // objectFit="cover"
                   src={getImageSrc(item?.item)}
-                  alt={item?.title || 'Inventory image'}
+                  alt={item?.title || 'Stock image'}
                 />
-                {!item?.item?.is_gift_card &&
-                  !item?.item?.is_misc_item &&
-                  item?.item?.id && (
-                    <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white text-sm flex justify-center items-center">
-                      {getItemSku(item?.item)}
-                    </div>
-                  )}
+                {!item?.item?.is_gift_card && !item?.item?.is_misc_item && item?.item?.id && (
+                  <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white text-sm flex justify-center items-center">
+                    {getItemSku(item?.item)}
+                  </div>
+                )}
               </div>
             </div>
             <div>
