@@ -1,5 +1,7 @@
 /* eslint-disable unused-imports/no-unused-vars */
 
+import { StockItemObject } from './stock'
+
 export enum VendorPaymentTypes {
   Sale = 'sale', // vendor bought something with account
   SaleRefund = 'sale refund', // vendor refunded something onto their account
@@ -12,6 +14,8 @@ export enum VendorPaymentTypes {
 
 export interface VendorSaleItemObject {
   id?: number
+  artist?: string
+  displayAs?: string
   saleId?: number
   itemId?: number
   quantity?: number
@@ -19,12 +23,15 @@ export interface VendorSaleItemObject {
   vendorDiscount?: number
   vendorId?: number
   format: string
-  vendorCut?: number
-  totalSell?: number
+  itemVendorCut?: number
+  itemTotalSell?: number
   datePriceValidFrom?: string
   dateSaleOpened?: string
   dateSaleClosed?: string
   isRefunded?: boolean
+  itemList?: string
+  saleStoreCut?: number
+  saleTotalPrice?: number
 }
 
 export interface VendorPaymentObject {
@@ -69,4 +76,7 @@ export interface VendorObject {
   totalItemsInStock?: number
   lastPaid?: string
   lastSold?: string
+  items?: StockItemObject[]
+  sales?: VendorSaleItemObject[]
+  payments?: VendorPaymentObject[]
 }

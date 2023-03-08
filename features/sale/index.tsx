@@ -4,7 +4,8 @@ import { useAppStore } from 'lib/store'
 import SalesListView from './display-sales/sale-list'
 
 const SalesScreen = () => {
-  const { salesViewRange } = useAppStore()
+  const { salesPage } = useAppStore()
+  const salesViewRange = {}
   const { isLoading } = useSalesForRange(salesViewRange)
   return (
     <MidScreenContainer title="SALES" isLoading={isLoading} titleClass="bg-col5" full={true}>

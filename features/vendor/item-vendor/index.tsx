@@ -9,24 +9,25 @@ import GeneralDetails from './general-details'
 
 export default function VendorScreen({ vendor }: { vendor: VendorObject }) {
   const [tab, setTab] = useState(0)
+  const { sales = [], payments = [], items = [] } = vendor || {}
   console.log(vendor)
 
   return (
-    <MidScreenContainer title={`VENDOR ${vendor?.name}`} titleClass="bg-brown-dark text-white" showBackButton full>
+    <MidScreenContainer title={`VENDOR ${vendor?.name}`} titleClass="bg-brown-dark text-white" showBackButton full dark>
       <div className="flex">
-        <div className="w-1/3 px-2">
+        <div className="w-1/4 px-2">
           <GeneralDetails vendor={vendor} />
         </div>
-        <div className="w-2/3">
-          <Tabs tabs={['Items', 'Sales', 'Payments']} value={tab} onChange={setTab} />
+        <div className="w-3/4 px-2">
+          <Tabs tabs={['Sales', 'Payments', 'Stock']} value={tab} onChange={setTab} />
+          <div hidden={tab !== 0}>
+            <VendorSales sales={sales} />
+          </div>
           <div hidden={tab !== 1}>
-            <VendorItems />
+            <VendorPayments payments={payments} />
           </div>
           <div hidden={tab !== 2}>
-            <VendorSales />
-          </div>
-          <div hidden={tab !== 3}>
-            <VendorPayments />
+            <VendorItems items={items} />
           </div>
         </div>
       </div>

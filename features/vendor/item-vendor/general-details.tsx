@@ -1,7 +1,7 @@
 import InfoBox from 'components/container/info-box'
 import dayjs from 'dayjs'
 import { useClerks } from 'lib/api/clerk'
-import { centsToDollars, priceDollarsString } from 'lib/utils'
+import { priceCentsString } from 'lib/utils'
 
 export default function GeneralDetails({ vendor }) {
   const { clerks } = useClerks()
@@ -29,9 +29,9 @@ export default function GeneralDetails({ vendor }) {
   const monthItemsSold = monthSales?.reduce?.((total, sale) => total + sale?.quantity, 0) || 0
 
   const accountSummary = [
-    { label: 'TOTAL TAKE TO DATE', value: priceDollarsString(centsToDollars(vendor?.totalSell)) },
-    { label: 'TOTAL PAID TO DATE', value: priceDollarsString(centsToDollars(vendor?.totalPaid)) },
-    { label: 'PAYMENT OWING', value: priceDollarsString(centsToDollars(vendor?.totalOwing)) },
+    { label: 'TOTAL TAKE TO DATE', value: priceCentsString(vendor?.totalSell) },
+    { label: 'TOTAL PAID TO DATE', value: priceCentsString(vendor?.totalPaid) },
+    { label: 'PAYMENT OWING', value: priceCentsString(vendor?.totalOwing) },
   ]
 
   const itemsSoldSummary = [
