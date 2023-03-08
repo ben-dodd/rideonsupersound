@@ -17,15 +17,16 @@ export default function StockItemDisplay() {
       <InfoBox
         image={getImageSrc(item)}
         data={[
-          { label: 'SKU', value: getItemSku(item) },
-          { label: 'Artist', value: item?.artist },
-          { label: 'Title', value: item?.title },
+          { label: 'SKU', value: getItemSku(item), alwaysDisplay: true },
+          { label: 'Artist', value: item?.artist, alwaysDisplay: true },
+          { label: 'Title', value: item?.title, alwaysDisplay: true },
           {
             label: 'Vendor',
             value: `[${item?.vendorId}] ${
               vendors?.filter?.((v: VendorObject) => v?.id === item?.vendorId)?.[0]?.name || ''
             }`,
             link: `/vendors/${item?.vendorId}`,
+            alwaysDisplay: true,
           },
           { label: 'Barcode', value: item?.barcode },
           { label: 'Format', value: item?.format },
@@ -39,8 +40,8 @@ export default function StockItemDisplay() {
           { label: 'Country', value: item?.country },
           { label: 'Genre/Tags', value: item?.genre?.join?.(', ') },
           { label: 'Description/Notes', value: item?.description },
-          { label: 'Listed on Website', value: Boolean(item?.doListOnWebsite) },
-          { label: 'No-Quantity Item', value: Boolean(item?.hasNoQuantity) },
+          { label: 'Listed on website', value: Boolean(item?.doListOnWebsite), alwaysDisplay: true },
+          { label: 'Item has no quantity', value: Boolean(item?.hasNoQuantity) },
         ]}
       />
     </div>

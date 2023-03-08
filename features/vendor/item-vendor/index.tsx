@@ -13,19 +13,21 @@ export default function VendorScreen({ vendor }: { vendor: VendorObject }) {
 
   return (
     <MidScreenContainer title={`VENDOR ${vendor?.name}`} titleClass="bg-brown-dark text-white" showBackButton full>
-      <div className="flex flex-col w-full h-content overflow-y-scroll px-2 pt-2">
-        <Tabs tabs={['General Details', 'Items', 'Sales', 'Payments']} value={tab} onChange={setTab} />
-        <div hidden={tab !== 0}>
+      <div className="flex">
+        <div className="w-1/3 px-2">
           <GeneralDetails vendor={vendor} />
         </div>
-        <div hidden={tab !== 1}>
-          <VendorItems />
-        </div>
-        <div hidden={tab !== 2}>
-          <VendorSales />
-        </div>
-        <div hidden={tab !== 3}>
-          <VendorPayments />
+        <div className="w-2/3">
+          <Tabs tabs={['Items', 'Sales', 'Payments']} value={tab} onChange={setTab} />
+          <div hidden={tab !== 1}>
+            <VendorItems />
+          </div>
+          <div hidden={tab !== 2}>
+            <VendorSales />
+          </div>
+          <div hidden={tab !== 3}>
+            <VendorPayments />
+          </div>
         </div>
       </div>
     </MidScreenContainer>

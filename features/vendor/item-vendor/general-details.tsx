@@ -5,54 +5,81 @@ import { centsToDollars, priceDollarsString } from 'lib/utils'
 
 export default function GeneralDetails({ vendor }) {
   const { clerks } = useClerks()
-
-  const bankAccountMask = [
-    /\d/,
-    /\d/,
-    '-',
-    /\d/,
-    /\d/,
-    /\d/,
-    /\d/,
-    '-',
-    /\d/,
-    /\d/,
-    /\d/,
-    /\d/,
-    /\d/,
-    /\d/,
-    /\d/,
-    '-',
-    /\d/,
-    /\d/,
-    /\d/,
-  ]
-
   const vendorData = [
-    { label: 'Name', value: vendor?.name },
+    { label: 'Vendor ID', value: vendor?.id, alwaysDisplay: true },
+    { label: 'Name', value: vendor?.name, alwaysDisplay: true },
     { label: 'Vendor Category', value: vendor?.vendorCategory },
     { label: 'Staff Contact', value: clerks?.find((clerk) => clerk?.id === vendor?.clerkId)?.name },
-    { label: 'Bank Account Number', value: vendor?.bankAccountNumber },
-    { label: 'Store Credit Only', value: Boolean(vendor?.storeCreditOnly) },
-    { label: 'Email Vendor', value: Boolean(vendor?.emailVendor) },
+    { label: 'Bank Account Number', value: vendor?.bankAccountNumber, alwaysDisplay: true },
     { label: 'Contact Name', value: vendor?.contactName },
     { label: 'Email', value: vendor?.email, link: `mailto:${vendor?.email}` },
     { label: 'Phone', value: vendor?.phone, link: `tel:${vendor?.phone}` },
     { label: 'Postal Address', value: vendor?.postalAddress },
     { label: 'Notes', value: vendor?.note },
+    { label: 'Pay by store credit only', value: Boolean(vendor?.storeCreditOnly) },
+    { label: 'Email this vendor?', value: Boolean(vendor?.emailVendor) },
   ]
-  const vendorStats = [
-    { label: 'Total Sales', value: vendor?.sales?.length || 0 },
-    { label: 'Last Sale', value: vendor?.lastSold ? dayjs(vendor?.lastSold).format('D MMMM YYYY') : 'N/A' },
-    { label: 'Last Paid', value: vendor?.lastPaid ? dayjs(vendor?.lastPaid).format('D MMMM YYYY') : 'N/A' },
-    { label: 'Total Take', value: priceDollarsString(centsToDollars(vendor?.totalSell)) },
-    { label: 'Total Paid', value: priceDollarsString(centsToDollars(vendor?.totalPaid)) },
-    { label: 'Total Owed', value: priceDollarsString(centsToDollars(vendor?.totalOwing)) },
+
+  const yearSales = vendor?.sales?.filter((sale) => dayjs(sale?.dateSaleClosed).isAfter(dayjs().subtract(12, 'month')))
+
+  const monthSales = vendor?.sales?.filter((sale) => dayjs(sale?.dateSaleClosed).isAfter(dayjs().subtract(1, 'month')))
+
+  const totalItemsSold = vendor?.sales?.reduce?.((total, sale) => total + sale?.quantity, 0) || 0
+  const yearItemsSold = yearSales?.reduce?.((total, sale) => total + sale?.quantity, 0) || 0
+  const monthItemsSold = monthSales?.reduce?.((total, sale) => total + sale?.quantity, 0) || 0
+
+  const accountSummary = [
+    { label: 'TOTAL TAKE TO DATE', value: priceDollarsString(centsToDollars(vendor?.totalSell)) },
+    { label: 'TOTAL PAID TO DATE', value: priceDollarsString(centsToDollars(vendor?.totalPaid)) },
+    { label: 'PAYMENT OWING', value: priceDollarsString(centsToDollars(vendor?.totalOwing)) },
   ]
+
+  const itemsSoldSummary = [
+    { label: 'TOTAL ITEMS SOLD', value: totalItemsSold },
+    { label: 'ITEMS SOLD IN THE LAST YEAR', value: yearItemsSold },
+    { label: 'ITEMS SOLD IN THE LAST MONTH', value: monthItemsSold },
+  ]
+
+  const lastSummary = [
+    { label: 'LAST PAID', value: vendor?.lastPaid ? dayjs(vendor?.lastPaid).format('D MMMM YYYY') : 'N/A' },
+    { label: 'LAST SALE', value: vendor?.lastSold ? dayjs(vendor?.lastSold).format('D MMMM YYYY') : 'N/A' },
+  ]
+
   return (
     <>
-      <InfoBox title="General Details" data={vendorData} />
-      <InfoBox title="Stats" data={vendorStats} />
+      <InfoBox data={vendorData} />
+      <div className="max-w-md grid grid-cols-2 border-b mb-2 items-center">
+        {accountSummary.map((row) => (
+          <>
+            <div className="text-xs">{row.label}</div>
+            <div className="font-bold text-right">{row.value}</div>
+          </>
+        ))}
+      </div>
+      <div className="max-w-md grid grid-cols-2 border-b mb-2 items-center">
+        {itemsSoldSummary.map((row) => (
+          <>
+            <div className="text-xs">{row.label}</div>
+            <div className="font-bold text-right">{row.value}</div>
+          </>
+        ))}
+      </div>
+      <div className="max-w-md grid grid-cols-2 border-b  mb-2 items-center">
+        {lastSummary.map((row) => (
+          <>
+            <div className="text-xs">{row.label}</div>
+            <div className="text-right">{row.value}</div>
+          </>
+        ))}
+      </div>
+      <a
+        target="_blank"
+        className="link-blue"
+        href={`https://rideonsupersound.vercel.app/vendor/${vendor?.uid}`}
+        rel="noreferrer"
+      >
+        View Vendor Sheet
+      </a>
     </>
   )
 }

@@ -2,7 +2,15 @@ import React from 'react'
 import { CheckCircle, Cancel, LinkOutlined } from '@mui/icons-material'
 import { useRouter } from 'next/router'
 
-const InfoBox = ({ title, image, data }: { title?: string; image?: string; data: any }) => {
+interface infoOption {
+  label?: string
+  value?: any
+  link?: string
+  alwaysDisplay?: boolean
+  isHorizontalRule?: boolean
+}
+
+const InfoBox = ({ title, image, data }: { title?: string; image?: string; data: infoOption[] }) => {
   const router = useRouter()
   return (
     <div className="bg-white text-brown rounded p-2 my-2 border max-w-md">
@@ -15,19 +23,25 @@ const InfoBox = ({ title, image, data }: { title?: string; image?: string; data:
         </div>
       )}
       {data?.map((row) =>
-        typeof row?.value === 'boolean' ? (
-          <div className="flex py-1 text-sm items-center" key={row?.label}>
-            <div className="mr-2 text-brown-dark">{row?.label}</div>
-            {row?.value ? (
-              <CheckCircle style={{ fontSize: '20px' }} className="text-green-500" />
-            ) : (
-              <Cancel style={{ fontSize: '20px' }} className="text-red-500" />
-            )}
-          </div>
-        ) : row?.value ? (
-          <div className="flex py-1" key={row?.label}>
+        row?.isHorizontalRule ? (
+          <div className="border-b py-1" />
+        ) : typeof row?.value === 'boolean' ? (
+          row?.value || row?.alwaysDisplay ? (
+            <div className={`flex py-1 text-sm items-center`} key={row?.label}>
+              <div className="mr-2 text-brown-dark">{row?.label}</div>
+              {row?.value ? (
+                <CheckCircle style={{ fontSize: '20px' }} className="text-green-500" />
+              ) : (
+                <Cancel style={{ fontSize: '20px' }} className="text-red-500" />
+              )}
+            </div>
+          ) : (
+            <div key={row?.label} />
+          )
+        ) : row?.value || row?.alwaysDisplay ? (
+          <div className={`flex py-1`} key={row?.label}>
             <div className="font-bold mr-2 text-brown-dark">{row?.label}</div>
-            <div>{row?.value}</div>
+            <div>{row?.value || 'N/A'}</div>
             {row?.link ? (
               <button className="ml-2 link-blue" onClick={() => router.push(row?.link)}>
                 <LinkOutlined />

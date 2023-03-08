@@ -1,14 +1,12 @@
 import { useStockItem } from 'lib/api/stock'
 import { getGrossProfit, getProfitMargin } from 'lib/functions/pay'
-import { useAppStore } from 'lib/store'
 import { useRouter } from 'next/router'
 
 export default function PriceDetails() {
   const router = useRouter()
   const { id } = router.query
   const { stockItem } = useStockItem(`${id}`)
-  const { item = {}, price = {}, stockPrices = [] } = stockItem || {}
-  const { openView } = useAppStore()
+  const { item = {}, price = {} } = stockItem || {}
 
   return (
     <>
