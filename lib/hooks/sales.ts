@@ -3,7 +3,19 @@ import { axiosAuth } from 'lib/api'
 import { mysql2js } from 'lib/database/utils/helpers'
 import { useState, useEffect } from 'react'
 
-export function useSalesForRange({ viewPeriod, rangeStartDate, rangeEndDate, clerkIds, viewLaybysOnly }) {
+export function useSalesForRange({
+  viewPeriod,
+  rangeStartDate,
+  rangeEndDate,
+  clerkIds,
+  viewLaybysOnly,
+}: {
+  viewPeriod?: string
+  rangeStartDate?: string
+  rangeEndDate?: string
+  clerkIds?: number[]
+  viewLaybysOnly?: boolean
+}) {
   const [properties, setProperties]: [any, Function] = useState({ isLoading: true })
   const [sales, setSales]: [any, Function] = useState(null)
 

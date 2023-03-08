@@ -1,7 +1,7 @@
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import Layout from 'components/layout'
-import ChangePriceDialog from 'features/inventory/item-stock/change-price-dialog'
-import ChangeStockQuantityDialog from 'features/inventory/item-stock/change-stock-quantity-dialog'
+import ChangePriceDialog from 'features/stock/item-stock/change-price-dialog'
+import ChangeStockQuantityDialog from 'features/stock/item-stock/change-stock-quantity-dialog'
 import VendorsScreen from 'features/vendor'
 import { useAppStore } from 'lib/store'
 

@@ -5,8 +5,7 @@ import TextField from 'components/inputs/text-field'
 import { ModalButton } from 'lib/types'
 import { getImageSrc, getItemDisplayName, getItemSku } from 'lib/functions/displayInventory'
 import { createVendor, useVendors } from 'lib/api/vendor'
-import { updateStockItem, useStockItem } from 'lib/api/stock'
-import router from 'next/router'
+import { updateStockItem } from 'lib/api/stock'
 import { useState } from 'react'
 import { ViewProps } from 'lib/store/types'
 import { useAppStore } from 'lib/store'
@@ -14,9 +13,7 @@ import Modal from 'components/modal'
 import { useSWRConfig } from 'swr'
 import { VendorObject } from 'lib/types/vendor'
 
-export default function StockEditDialog() {
-  const { id } = router.query
-  const { stockItem, isStockItemLoading } = useStockItem(`${id}`)
+export default function StockEditDialog({ stockItem }) {
   const { view, closeView, setAlert } = useAppStore()
   const [item, setItem] = useState(stockItem?.item || {})
   const handleChange = (e) => setItem({ ...item, [e.target.name]: e.target.value })
@@ -33,14 +30,14 @@ export default function StockEditDialog() {
       loading: submitting,
       onClick: async () => {
         setSubmitting(true)
-        await updateStockItem(item, id)
-        mutate(`stock/${id}`)
+        await updateStockItem(item, stockItem?.id)
+        mutate(`stock/${stockItem?.id}`)
         setSubmitting(false)
         closeView(ViewProps.stockEditDialog)
         setAlert({
           open: true,
           type: 'success',
-          message: `STOCK ITEM EDITED`,
+          message: `STOCK ITEM UPDATED`,
         })
       },
       text: 'UPDATE ITEM',
@@ -53,7 +50,7 @@ export default function StockEditDialog() {
       closeFunction={() => closeView(ViewProps.stockEditDialog)}
       title={'EDIT ITEM'}
       buttons={buttons}
-      loading={isStockItemLoading}
+      loading={false}
       width="max-w-screen-md"
     >
       <div>
@@ -70,20 +67,23 @@ export default function StockEditDialog() {
           </div>
           <div className="w-full">
             <TextField
+              id="artist"
               value={item?.artist || ''}
-              onChange={(e: any) => setItem({ ...item, artist: e.target.value })}
+              onChange={handleChange}
               inputLabel="ARTIST"
               disabled={disabled}
             />
             <TextField
+              id="title"
               value={item?.title || ''}
-              onChange={(e: any) => setItem({ ...item, title: e.target.value })}
+              onChange={handleChange}
               inputLabel="TITLE"
               disabled={disabled}
             />
             <TextField
+              id="displayAs"
               value={item?.displayAs || getItemDisplayName(item)}
-              onChange={(e: any) => setItem({ ...item, displayAs: e.target.value })}
+              onChange={handleChange}
               inputLabel="DISPLAY NAME"
               disabled={disabled}
             />

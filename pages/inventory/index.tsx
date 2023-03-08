@@ -1,9 +1,9 @@
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import Layout from 'components/layout'
-import InventoryScreen from 'features/inventory'
-import LabelPrintDialog from 'features/inventory/print-labels/label-print-dialog'
-import ReceiveStockScreen from 'features/inventory/receive-inventory'
-import ReturnStockScreen from 'features/inventory/return-inventory/return-stock-screen'
+import InventoryScreen from 'features/stock'
+import LabelPrintDialog from 'features/stock/print-labels/label-print-dialog'
+import ReceiveStockScreen from 'features/stock/receive-inventory'
+import ReturnStockScreen from 'features/stock/return-inventory/return-stock-screen'
 import { useAppStore } from 'lib/store'
 
 export default function InventoryPage() {

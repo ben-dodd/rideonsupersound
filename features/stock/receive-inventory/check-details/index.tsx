@@ -1,6 +1,6 @@
 import Tabs from 'components/navigation/tabs'
-import DiscogsPanel from 'features/inventory/api-discogs'
-import GoogleBooksPanel from 'features/inventory/api-google-books'
+import DiscogsPanel from 'features/stock/api-discogs'
+import GoogleBooksPanel from 'features/stock/api-google-books'
 import { useAppStore } from 'lib/store'
 import { useState } from 'react'
 import Items from './items'
@@ -34,42 +34,22 @@ export default function CheckDetails() {
       <Tabs
         tabs={[
           'General Details',
-          item?.media === 'Audio'
-            ? 'Discogs'
-            : item?.media === 'Literature'
-            ? 'GoogleBooks'
-            : null,
+          item?.media === 'Audio' ? 'Discogs' : item?.media === 'Literature' ? 'GoogleBooks' : null,
         ]}
         value={mode}
         onChange={setMode}
       />
       <div className="flex w-full">
         <div className="w-3/5 mr-4">
-          {item?.id && (
-            <div className="bg-red-500 p-2 mb-2 text-white">
-              Item already in stock. Editing disabled.
-            </div>
-          )}
+          {item?.id && <div className="bg-red-500 p-2 mb-2 text-white">Item already in stock. Editing disabled.</div>}
           <div hidden={mode !== 0}>
-            <InventoryItemForm
-              item={item}
-              setItem={setItemAndBasket}
-              disabled={item?.id}
-            />
+            <InventoryItemForm item={item} setItem={setItemAndBasket} disabled={item?.id} />
           </div>
           <div hidden={!(mode === 1 && item?.media === 'Audio')}>
-            <DiscogsPanel
-              item={item}
-              setItem={setItemAndBasket}
-              disabled={item?.id}
-            />
+            <DiscogsPanel item={item} setItem={setItemAndBasket} disabled={item?.id} />
           </div>
           <div hidden={!(mode === 1 && item?.media === 'Literature')}>
-            <GoogleBooksPanel
-              item={item}
-              setItem={setItemAndBasket}
-              disabled={item?.id}
-            />
+            <GoogleBooksPanel item={item} setItem={setItemAndBasket} disabled={item?.id} />
           </div>
         </div>
         <div className="w-2/5">

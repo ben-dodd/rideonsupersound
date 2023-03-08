@@ -1,5 +1,5 @@
 import TextField from 'components/inputs/text-field'
-import DiscogsOption from 'features/inventory/api-discogs/discogs-option'
+import DiscogsOption from 'features/stock/api-discogs/discogs-option'
 import { getDiscogsOptions } from 'lib/functions/discogs'
 import { useAppStore } from 'lib/store'
 import debounce from 'lodash/debounce'
@@ -36,8 +36,7 @@ export default function Discogs() {
   return (
     <div>
       <div className="helper-text mb-2">
-        Use the barcode scanner to scan the item and select the correct option
-        from Discogs.
+        Use the barcode scanner to scan the item and select the correct option from Discogs.
       </div>
       <TextField
         key={key}

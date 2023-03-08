@@ -41,6 +41,8 @@ export interface StoreState {
     stocktakeScreen?: boolean
     stocktakeTemplateScreen?: boolean
     stocktakeTemplateSetupDialog?: boolean
+    exportVendorReportDialog?: boolean
+    vendorEditDialog?: boolean
   }
   confirmModal?: ConfirmModal
   alert?: AlertProps
@@ -141,6 +143,8 @@ export enum ViewProps {
   stocktakeScreen = 'stocktakeScreen',
   stocktakeTemplateScreen = 'stocktakeTemplateScreen',
   stocktakeTemplateSetupDialog = 'stocktakeTemplateSetupDialog',
+  exportVendorReportDialog = 'exportVendorReportDialog',
+  vendorEditDialog = 'vendorEditDialog',
 }
 
 export enum Pages {
