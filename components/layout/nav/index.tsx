@@ -16,7 +16,7 @@ export default function Nav() {
   const page = router.pathname
 
   return (
-    <nav className={`py-2 ${bg[clerk?.colour]} text-white h-navbar z-30 relative select-none`}>
+    <nav className={`py-2 ${bg[clerk?.colour]} text-white h-navbar select-none`}>
       <div className="flex justify-between items-center">
         <div className="flex items-center">
           <div className="hidden sm:inline ml-4 text-black text-2xl font-black">{clerk?.name?.toUpperCase()} @</div>
