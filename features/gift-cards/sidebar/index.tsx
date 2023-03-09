@@ -1,6 +1,6 @@
 import { CloseRounded } from '@mui/icons-material'
 import SidebarContainer from 'components/container/side-bar'
-import Loading from 'components/loading'
+import Loading from 'components/placeholders/loading'
 import dayjs from 'dayjs'
 import { useGiftCard } from 'lib/api/stock'
 import { useAppStore } from 'lib/store'

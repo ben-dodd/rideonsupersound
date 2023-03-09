@@ -1,6 +1,6 @@
 import Layout from 'components/layout'
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
-import Loading from 'components/loading'
+import Loading from 'components/placeholders/loading'
 import OpenRegisterScreen from 'features/register/open-register'
 
 export default function OpenRegisterPage() {

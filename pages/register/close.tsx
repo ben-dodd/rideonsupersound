@@ -1,6 +1,6 @@
 import Layout from 'components/layout'
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
-import Loading from 'components/loading'
+import Loading from 'components/placeholders/loading'
 import CloseRegisterScreen from 'features/register/close-register'
 import { useCurrentRegister } from 'lib/api/register'
 import CloseRegisterSidebar from 'features/register/close-register/side-bar'

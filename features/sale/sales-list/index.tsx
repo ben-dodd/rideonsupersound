@@ -1,9 +1,9 @@
 import SearchInput from 'components/inputs/search-input'
-import Loading from 'components/loading'
+import Loading from 'components/placeholders/loading'
 import { useSales } from 'lib/api/sale'
 import { useAppStore } from 'lib/store'
 import { Pages } from 'lib/store/types'
-import SaleListItem from './sale-list-item'
+import SaleListItem from '../sale-list-item'
 
 const SalesList = () => {
   const { sales, isSalesLoading } = useSales()

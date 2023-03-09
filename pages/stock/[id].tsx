@@ -2,7 +2,7 @@
 import { useRouter } from 'next/router'
 import { useAppStore } from 'lib/store'
 import { useStockItem } from 'lib/api/stock'
-import Loading from 'components/loading'
+import Loading from 'components/placeholders/loading'
 import Layout from 'components/layout'
 import ChangePriceDialog from 'features/stock/item-stock/change-price-dialog'
 import ChangeStockQuantityDialog from 'features/stock/item-stock/change-stock-quantity-dialog'

@@ -6,6 +6,8 @@ import { Pages } from 'lib/store/types'
 import { useState } from 'react'
 import SalesCalendarView from './calendar-view'
 import SalesListView from './calendar-view'
+import LaybysList from './laybys'
+import ParkedSalesList from './parked-sales'
 import SalesList from './sales-list'
 
 const SalesScreen = () => {
@@ -15,15 +17,27 @@ const SalesScreen = () => {
   return (
     <MidScreenContainer title="SALES" titleClass="bg-col5" full={true}>
       <Tabs
-        tabs={['Sales List', 'Parked Sales', 'Laybys', 'Holds', 'Calendar View', 'Stats', 'Export Report']}
+        tabs={['Sales List', 'Calendar View', 'Parked Sales', 'Laybys', 'Holds', 'Stats', 'Export Report']}
         value={tab}
         onChange={setTab}
       />
       <div hidden={tab !== 0}>
         <SalesList />
       </div>
-      <div hidden={tab !== 4}>
+      <div hidden={tab !== 1}>
         <SalesCalendarView />
+      </div>
+      <div hidden={tab !== 2}>
+        <ParkedSalesList />
+      </div>
+      <div hidden={tab !== 3}>
+        <LaybysList />
+      </div>
+      <div hidden={tab !== 4}>
+        <LaybysList />
+      </div>
+      <div hidden={tab !== 5}>
+        <LaybysList />
       </div>
     </MidScreenContainer>
   )

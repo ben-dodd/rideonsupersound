@@ -1,6 +1,6 @@
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import Layout from 'components/layout'
-import Loading from 'components/loading'
+import Loading from 'components/placeholders/loading'
 import ExportVendorReportDialog from 'features/vendor/export-vendor-report-dialog'
 import VendorScreen from 'features/vendor/item-vendor'
 import VendorEditDialog from 'features/vendor/vendor-edit-dialog'

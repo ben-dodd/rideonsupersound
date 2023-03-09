@@ -1,6 +1,6 @@
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import { useRouter } from 'next/router'
-import Loading from 'components/loading'
+import Loading from 'components/placeholders/loading'
 import { useEffect } from 'react'
 import { useCurrentRegisterId } from 'lib/api/register'
 

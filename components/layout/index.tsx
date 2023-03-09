@@ -4,7 +4,7 @@ import Menu from './menu'
 import ConfirmModal from 'components/modal/confirm-modal'
 import SnackAlert from 'components/alert'
 import { useClerk } from 'lib/api/clerk'
-import Loading from 'components/loading'
+import Loading from 'components/placeholders/loading'
 import { useAppStore } from 'lib/store'
 import HelpDialog from 'features/help'
 

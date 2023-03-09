@@ -51,9 +51,9 @@ export function useSales() {
 }
 
 export function useParkedSales() {
-  return useData(`parkedSales`, 'sales/parked')
+  return useData(`sale/parked`, 'parkedSales')
 }
 
 export function useLaybys() {
-  return useData(`laybys`, 'sales/layby')
+  return useData(`sale/layby`, 'laybys')
 }

@@ -1,6 +1,6 @@
 import { filterInventory, sortInventory } from 'lib/functions/sell'
 import ListItem from './list-item'
-import Loading from 'components/loading'
+import Loading from 'components/placeholders/loading'
 import { useStockList } from 'lib/api/stock'
 import { useAppStore } from 'lib/store'
 import { StockItemSearchObject } from 'lib/types/stock'
