@@ -20,7 +20,7 @@ const SalesList = () => {
       </div>
       <div className="px-2">
         {sales
-          ?.filter?.((sale) => `${sale?.id}`?.includes(searchBar?.toUpperCase()))
+          ?.filter?.((sale) => searchBar === '' || searchBar === `${sale?.id}`)
           ?.map((sale) => (
             <SaleListItem key={sale?.id} sale={sale} />
           ))}

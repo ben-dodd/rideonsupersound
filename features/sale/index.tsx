@@ -6,6 +6,7 @@ import { Pages } from 'lib/store/types'
 import { useState } from 'react'
 import SalesCalendarView from './calendar-view'
 import SalesListView from './calendar-view'
+import SalesList from './sales-list'
 
 const SalesScreen = () => {
   const { salesPage, setPage } = useAppStore()
@@ -18,7 +19,9 @@ const SalesScreen = () => {
         value={tab}
         onChange={setTab}
       />
-      <div hidden={tab !== 0}></div>
+      <div hidden={tab !== 0}>
+        <SalesList />
+      </div>
       <div hidden={tab !== 4}>
         <SalesCalendarView />
       </div>

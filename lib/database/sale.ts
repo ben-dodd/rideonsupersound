@@ -24,13 +24,17 @@ export function dbGetAllSales(db = connection) {
       'total_price',
       'number_of_items',
       'item_list',
-      'is_mail_order',
-      'postage',
-      'postal_address',
-      'weather',
-      'note',
     )
     .where(`is_deleted`, 0)
+    .orderBy('date_sale_opened', 'desc')
+}
+
+export function dbGetAllParkedSales(db = connection) {
+  return dbGetAllSales(db).where(`state`, SaleStateTypes.Parked)
+}
+
+export function dbGetAllLaybys(db = connection) {
+  return dbGetAllSales(db).where(`state`, SaleStateTypes.Layby)
 }
 
 export function dbGetAllSalesAndItems(db = connection) {

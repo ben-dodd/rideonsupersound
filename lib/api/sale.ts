@@ -49,3 +49,11 @@ export function deleteSaleItem(id) {
 export function useSales() {
   return useData(`sale`, 'sales')
 }
+
+export function useParkedSales() {
+  return useData(`parkedSales`, 'sales/parked')
+}
+
+export function useLaybys() {
+  return useData(`laybys`, 'sales/layby')
+}
