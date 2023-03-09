@@ -29,7 +29,18 @@ type MenuType = {
   onClick: any
 }
 
-const classList = [...Array(10)].map((_, i) => `bg-col${i + 1}-light hover:bg-col${i + 1}`)
+const classList = [
+  'bg-col1-light hover:bg-col1',
+  'bg-col2-light hover:bg-col2',
+  'bg-col3-light hover:bg-col3',
+  'bg-col4-light hover:bg-col4',
+  'bg-col5-light hover:bg-col5',
+  'bg-col6-light hover:bg-col6',
+  'bg-col7-light hover:bg-col7',
+  'bg-col8-light hover:bg-col8',
+  'bg-col9-light hover:bg-col9',
+  'bg-col10-light hover:bg-col10',
+]
 
 export default function Menu({ badges }) {
   const router = useRouter()

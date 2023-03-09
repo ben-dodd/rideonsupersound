@@ -1,9 +1,5 @@
 module.exports = {
   content: ['./app/**/*.tsx', './components/**/*.tsx', './features/**/*.tsx', './pages/**/*.tsx', './index.tsx'],
-  // future: {
-  //   removeDeprecatedGapUtilities: true,
-  //   purgeLayersByDefault: true,
-  // },
   theme: {
     extend: {
       colors: {
