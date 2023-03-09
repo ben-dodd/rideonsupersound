@@ -112,7 +112,7 @@ module.exports = {
         imageMed: '120px',
         imageSmall: '80px',
         imageXSmall: '40px',
-        dropdown: `12rem`,
+        dropdown: `18rem`,
       },
       transitionProperty: { width: 'width', height: 'height' },
       gridTemplateColumns: {

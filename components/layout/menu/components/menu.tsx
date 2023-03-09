@@ -7,11 +7,14 @@ import ClerksIcon from '@mui/icons-material/PeopleAlt'
 import SellIcon from '@mui/icons-material/LocalAtm'
 import SalesIcon from '@mui/icons-material/MonetizationOn'
 import StocktakeIcon from '@mui/icons-material/Numbers'
+import BankIcon from '@mui/icons-material/AccountBalance'
 // import HoldsIcon from '@mui/icons-material/PanTool'
-import PaymentsIcon from '@mui/icons-material/Receipt'
+import RegistersIcon from '@mui/icons-material/Storefront'
+// import PaymentsIcon from '@mui/icons-material/Receipt'
 import GiftCardsIcon from '@mui/icons-material/Redeem'
 import VendorsIcon from '@mui/icons-material/Store'
 import JobsIcon from '@mui/icons-material/Task'
+import MyIcon from '@mui/icons-material/Face5'
 import MenuItem from './menu-item'
 import PyramidImage from './pyramid-image'
 import { useRouter } from 'next/router'
@@ -93,6 +96,12 @@ export default function Menu({ badges }) {
     },
     {
       type: 'link',
+      page: '/registers',
+      text: 'REGISTERS',
+      icon: <RegistersIcon />,
+    },
+    {
+      type: 'link',
       page: '/gift-cards',
       text: 'GIFT VOUCHERS',
       icon: <GiftCardsIcon />,
@@ -108,10 +117,22 @@ export default function Menu({ badges }) {
   const bottomMenu = [
     {
       type: 'link',
-      page: '/payments',
-      text: 'PAYMENTS',
-      icon: <PaymentsIcon />,
+      page: '/my',
+      text: 'MyROSS',
+      icon: <MyIcon />,
     },
+    {
+      type: 'link',
+      page: '/bank',
+      text: 'BANK',
+      icon: <BankIcon />,
+    },
+    // {
+    //   type: 'link',
+    //   page: '/payments',
+    //   text: 'PAYMENTS',
+    //   icon: <PaymentsIcon />,
+    // },
     {
       type: 'link',
       page: '/clerks',

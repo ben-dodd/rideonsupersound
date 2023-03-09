@@ -59,6 +59,9 @@ export interface StoreState {
     bypassRegister?: boolean
     createableCustomerName?: string
   }
+  ordersPage?: {
+    tab?: number
+  }
   stockPage?: {
     tab?: number
     searchBar?: string
@@ -163,7 +166,7 @@ export enum Pages {
   sellPage = 'sellPage',
   stockPage = 'stockPage',
   vendorsPage = 'vendorsPage',
-  paymentsPage = 'paymentsPage',
+  // paymentsPage = 'paymentsPage',
   registersPage = 'registersPage',
   salesPage = 'salesPage',
   salesCalendarPage = 'salesCalendarPage',
@@ -171,6 +174,7 @@ export enum Pages {
   laybysPage = 'laybysPage',
   holdsPage = 'holdsPage',
   saleStatsPage = 'saleStatsPage',
+  ordersPage = 'ordersPage',
   giftCardsPage = 'giftCardsPage',
   logsPage = 'logsPage',
   jobsPage = 'jobsPage',

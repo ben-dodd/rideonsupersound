@@ -1,3 +1,4 @@
+import { DisplaySettings, Summarize } from '@mui/icons-material'
 import MidScreenContainer from 'components/container/mid-screen'
 import Tabs from 'components/navigation/tabs'
 import ComingSoon from 'components/placeholders/coming-soon'
@@ -18,10 +19,14 @@ const SalesScreen = () => {
   const setTab = (tab) => setPage(Pages.salesPage, { tab })
   // const isFull = !(tab === 4 && holdsPage?.loadedHold)
   const isFull = true
+  const menuItems = [
+    { text: 'Create Report', icon: <Summarize />, onClick: null },
+    { text: 'Manage Settings', icon: <DisplaySettings />, onClick: null },
+  ]
   return (
-    <MidScreenContainer title="SALES" titleClass="bg-col4" full={isFull}>
+    <MidScreenContainer title="SALES" titleClass="bg-col4" full={isFull} menuItems={menuItems}>
       <Tabs
-        tabs={['Sales List', 'Calendar View', 'Parked Sales', 'Laybys', 'Holds', 'Stats', 'Export Report']}
+        tabs={['Sales List', 'Calendar View', 'Parked Sales', 'Laybys', 'Holds', 'Stats']}
         value={tab}
         onChange={setTab}
       />
@@ -31,7 +36,6 @@ const SalesScreen = () => {
       {tab === 3 && <LaybysList />}
       {tab === 4 && <HoldsList />}
       {tab === 5 && <ComingSoon />}
-      {tab === 6 && <ComingSoon />}
     </MidScreenContainer>
   )
 }

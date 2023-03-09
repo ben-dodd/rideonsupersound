@@ -46,6 +46,9 @@ const initState = {
     bypassRegister: false,
     createableCustomerName: '',
   },
+  ordersPage: {
+    tab: 0,
+  },
   stockPage: {
     searchBar: '',
   },

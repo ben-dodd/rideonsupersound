@@ -1,28 +1,30 @@
+import { AccountBalance, AddCircle, DisplaySettings, Money, TransferWithinAStation } from '@mui/icons-material'
 import MidScreenContainer from 'components/container/mid-screen'
-import SearchInput from 'components/inputs/search-input'
-import { useVendors } from 'lib/api/vendor'
-import React, { useState } from 'react'
-import VendorListItem from './vendor-list-item'
+import Tabs from 'components/navigation/tabs'
+import ComingSoon from 'components/placeholders/coming-soon'
+import { useAppStore } from 'lib/store'
+import { Pages } from 'lib/store/types'
+import React from 'react'
+import VendorList from './vendor-list'
 
 const VendorsScreen = () => {
-  const { vendors, isVendorsLoading } = useVendors()
-  const [searchValue, setSearchValue] = useState('')
-  const handleSearch = (e) => setSearchValue(e.target.value)
-  console.log('vendors', vendors)
+  const {
+    vendorsPage: { tab },
+    setPage,
+  } = useAppStore()
+  const setTab = (tab) => setPage(Pages.vendorsPage, { tab })
+  const menuItems = [
+    { text: 'New Vendor', icon: <AddCircle />, onClick: null },
+    { text: 'Manually Pay Vendor', icon: <Money />, onClick: null },
+    { text: 'Transfer Credit Between Vendors', icon: <TransferWithinAStation />, onClick: null },
+    { text: 'Start New Batch Payment', icon: <AccountBalance />, onClick: null },
+    { text: 'Manage Settings', icon: <DisplaySettings />, onClick: null },
+  ]
   return (
-    <MidScreenContainer title="Vendors" isLoading={isVendorsLoading} titleClass="bg-col3" full={true}>
-      <div className="h-content overflow-y-scroll">
-        <div className="px-2">
-          <SearchInput searchValue={searchValue} handleSearch={handleSearch} />
-        </div>
-        <div className="px-2">
-          {vendors
-            ?.filter?.((vendor) => vendor?.name?.toUpperCase?.()?.includes(searchValue?.toUpperCase()))
-            ?.map((vendor) => (
-              <VendorListItem key={vendor?.id} vendor={vendor} />
-            ))}
-        </div>
-      </div>
+    <MidScreenContainer title="Vendors" isLoading={false} titleClass="bg-col3" full={true} menuItems={menuItems}>
+      <Tabs tabs={['Vendor List', 'Balance Sheet']} value={tab} onChange={setTab} />
+      {tab === 0 && <VendorList />}
+      {tab === 1 && <ComingSoon />}
     </MidScreenContainer>
   )
 }

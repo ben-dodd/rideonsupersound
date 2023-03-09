@@ -5,9 +5,9 @@ import { useAppStore } from 'lib/store'
 import ComingSoon from 'components/placeholders/coming-soon'
 import StockList from './stock-list'
 import { Pages } from 'lib/store/types'
-import { Edit } from '@mui/icons-material'
+import { AutoFixHigh, CollectionsBookmark, DisplaySettings, EventBusy, Print } from '@mui/icons-material'
 
-const InventoryScreen = () => {
+const StockScreen = () => {
   const { stockList, isStockListLoading } = useStockList()
   const {
     stockPage: { tab },
@@ -17,10 +17,11 @@ const InventoryScreen = () => {
   const setTab = (tab) => setPage(Pages.stockPage, { tab })
   // const isFull = !(tab === 4 && holdsPage?.loadedHold)
   const menuItems = [
-    { text: 'Receive Stock', icon: <Edit />, onClick: null },
-    { text: 'Return Stock to Vendor', icon: <Edit />, onClick: null },
-    { text: 'Bulk Edit Items', icon: <Edit />, onClick: null },
-    { text: 'Manage Settings', icon: <Edit />, onClick: null },
+    { text: 'Receive Stock', icon: <CollectionsBookmark />, onClick: null },
+    { text: 'Return Stock to Vendor', icon: <EventBusy />, onClick: null },
+    { text: 'Print Labels', icon: <Print />, onClick: null },
+    { text: 'Bulk Edit Items', icon: <AutoFixHigh />, onClick: null },
+    { text: 'Manage Settings', icon: <DisplaySettings />, onClick: null },
   ]
 
   return (
@@ -47,4 +48,4 @@ const InventoryScreen = () => {
   )
 }
 
-export default InventoryScreen
+export default StockScreen
