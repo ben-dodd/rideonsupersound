@@ -80,7 +80,7 @@ module.exports = {
           light: '#908989',
         },
       },
-      fontFamily: { sans: ['Nunito', 'sans-serif'] },
+      fontFamily: { sans: ['Nunito', 'sans-serif'], creep: ['Creepster', 'cursive'] },
       height: {
         navbar: '3rem',
         main: `calc(100vh - 3rem)`,

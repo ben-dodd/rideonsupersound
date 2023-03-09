@@ -1,36 +1,24 @@
 import React from 'react'
 import Image from 'next/image'
 
-const Loading = ({
-  size = 'md',
-  type = 'spin',
-}: {
-  size?: 'full' | 'md' | 'sm'
-  type?: 'spin' | 'pyramid'
-}) => {
+const ComingSoon = ({ message = 'Coming Soon...' }: { message?: string }) => {
   return (
     <div
-      className={`flex ${
-        size === 'full'
-          ? 'h-screen w-screen'
-          : size === 'md'
-          ? 'h-full w-full'
-          : 'h-full w-full'
-      }`}
+      className={`flex h-full w-full items-center justify-center
+      `}
     >
-      {type === 'spin' ? (
-        <div className="loading-icon" />
-      ) : (
+      <div>
         <Image
           className="m-auto inline-block"
-          src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/loading.gif`}
+          src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/reaper.png`}
           alt="Loading"
           width={200}
           height={200}
         />
-      )}
+        <div className="text-4xl text-col4-dark mt-2 font-creep">{message}</div>
+      </div>
     </div>
   )
 }
 
-export default Loading
+export default ComingSoon

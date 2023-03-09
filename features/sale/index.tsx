@@ -1,5 +1,6 @@
 import MidScreenContainer from 'components/container/mid-screen'
 import Tabs from 'components/navigation/tabs'
+import ComingSoon from 'components/placeholders/coming-soon'
 import { useSalesForRange } from 'lib/hooks/sales'
 import { useAppStore } from 'lib/store'
 import { Pages } from 'lib/store/types'
@@ -34,11 +35,10 @@ const SalesScreen = () => {
         <LaybysList />
       </div>
       <div hidden={tab !== 4}>
-        <LaybysList />
+        <ComingSoon />
       </div>
-      <div hidden={tab !== 5}>
-        <LaybysList />
-      </div>
+      <div hidden={tab !== 5}></div>
+      <div hidden={tab !== 6}></div>
     </MidScreenContainer>
   )
 }
