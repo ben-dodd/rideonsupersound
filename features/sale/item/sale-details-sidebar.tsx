@@ -22,11 +22,11 @@ export default function SaleDetailsSidebar({ cart }: { cart: CartObject }) {
     { label: 'Total Remaining to Pay', value: totalRemaining ? priceDollarsString(totalRemaining) : null },
     { label: 'Customer', value: customers?.find((c: CustomerObject) => c?.id === sale?.customerId)?.name },
     {
-      label: 'Open Date/Time',
+      label: 'Opened',
       value: sale?.dateSaleOpened ? `${dayjs(sale?.dateSaleOpened).format('D MMMM YYYY, h:mm A')}` : 'N/A',
     },
     {
-      label: 'Close Date/Time',
+      label: 'Closed',
       value: sale?.dateSaleClosed ? `${dayjs(sale?.dateSaleClosed).format('D MMMM YYYY, h:mm A')}` : 'Sale not closed',
     },
     { label: 'Opened By', value: clerks?.find((clerk: any) => clerk?.id === sale?.saleOpenedBy)?.name },
