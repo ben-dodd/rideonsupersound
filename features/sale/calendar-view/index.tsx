@@ -1,7 +1,7 @@
 import SalesList from './sales-list'
 import SalesViewFilter from './sales-view-filter'
 
-const SalesListView = () => {
+const SalesCalendarView = () => {
   return (
     <div className="h-content overflow-y-scroll">
       <SalesViewFilter />
@@ -10,4 +10,4 @@ const SalesListView = () => {
   )
 }
 
-export default SalesListView
+export default SalesCalendarView

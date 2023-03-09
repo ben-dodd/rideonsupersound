@@ -1,15 +1,27 @@
 import MidScreenContainer from 'components/container/mid-screen'
+import Tabs from 'components/navigation/tabs'
 import { useSalesForRange } from 'lib/hooks/sales'
 import { useAppStore } from 'lib/store'
-import SalesListView from './display-sales/sale-list'
+import { Pages } from 'lib/store/types'
+import { useState } from 'react'
+import SalesCalendarView from './calendar-view'
+import SalesListView from './calendar-view'
 
 const SalesScreen = () => {
-  const { salesPage } = useAppStore()
-  const salesViewRange = {}
-  const { isLoading } = useSalesForRange(salesViewRange)
+  const { salesPage, setPage } = useAppStore()
+  const tab = salesPage?.tab || 0
+  const setTab = (tab) => setPage(Pages.salesPage, { tab })
   return (
-    <MidScreenContainer title="SALES" isLoading={isLoading} titleClass="bg-col5" full={true}>
-      <SalesListView />
+    <MidScreenContainer title="SALES" titleClass="bg-col5" full={true}>
+      <Tabs
+        tabs={['Sales List', 'Parked Sales', 'Laybys', 'Holds', 'Calendar View', 'Stats', 'Export Report']}
+        value={tab}
+        onChange={setTab}
+      />
+      <div hidden={tab !== 0}></div>
+      <div hidden={tab !== 4}>
+        <SalesCalendarView />
+      </div>
     </MidScreenContainer>
   )
 }

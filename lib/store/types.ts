@@ -64,14 +64,20 @@ export interface StoreState {
   paymentsPage?: any
   registersPage?: any
   salesPage?: {
+    tab?: number
+    searchBar?: string
+  }
+  salesCalendarPage?: {
     viewPeriod?: string
     rangeStartDate?: string
     rangeEndDate?: string
     clerkIds?: number[]
     viewLaybysOnly?: boolean
   }
+  parkedSalesPage?: any
   laybysPage?: any
   holdsPage?: any
+  saleStatsPage?: any
   giftCardsPage?: {
     searchBar?: string
     loadedGiftCard?: number
@@ -154,8 +160,11 @@ export enum Pages {
   paymentsPage = 'paymentsPage',
   registersPage = 'registersPage',
   salesPage = 'salesPage',
+  salesCalendarPage = 'salesCalendarPage',
+  parkedSalesPage = 'parkedSalesPage',
   laybysPage = 'laybysPage',
   holdsPage = 'holdsPage',
+  saleStatsPage = 'saleStatsPage',
   giftCardsPage = 'giftCardsPage',
   logsPage = 'logsPage',
   jobsPage = 'jobsPage',

@@ -1,13 +1,13 @@
 import { bg } from 'lib/types'
 import InventoryIcon from '@mui/icons-material/Category'
-import LaybyIcon from '@mui/icons-material/DryCleaning'
-// import LogsIcon from '@mui/icons-material/GridOn'
+// import LaybyIcon from '@mui/icons-material/DryCleaning'
+import LogsIcon from '@mui/icons-material/GridOn'
 import OrdersIcon from '@mui/icons-material/LocalShipping'
 import ClerksIcon from '@mui/icons-material/PeopleAlt'
 import SellIcon from '@mui/icons-material/LocalAtm'
 import SalesIcon from '@mui/icons-material/MonetizationOn'
 import StocktakeIcon from '@mui/icons-material/Numbers'
-import HoldsIcon from '@mui/icons-material/PanTool'
+// import HoldsIcon from '@mui/icons-material/PanTool'
 import PaymentsIcon from '@mui/icons-material/Receipt'
 import GiftCardsIcon from '@mui/icons-material/Redeem'
 import VendorsIcon from '@mui/icons-material/Store'
@@ -73,18 +73,18 @@ export default function Menu({ badges }) {
       text: 'SALES',
       icon: <SalesIcon />,
     },
-    {
-      type: 'link',
-      page: '/laybys',
-      text: 'LAYBYS',
-      icon: <LaybyIcon />,
-    },
-    {
-      type: 'link',
-      page: '/holds',
-      text: 'HOLDS',
-      icon: <HoldsIcon />,
-    },
+    // {
+    //   type: 'link',
+    //   page: '/laybys',
+    //   text: 'LAYBYS',
+    //   icon: <LaybyIcon />,
+    // },
+    // {
+    //   type: 'link',
+    //   page: '/holds',
+    //   text: 'HOLDS',
+    //   icon: <HoldsIcon />,
+    // },
     {
       type: 'link',
       page: '/orders',
@@ -109,7 +109,7 @@ export default function Menu({ badges }) {
     {
       type: 'link',
       page: '/payments',
-      text: 'BUSINESS',
+      text: 'PAYMENTS',
       icon: <PaymentsIcon />,
     },
     {
@@ -117,6 +117,12 @@ export default function Menu({ badges }) {
       page: '/clerks',
       text: 'CLERKS',
       icon: <ClerksIcon />,
+    },
+    {
+      type: 'link',
+      page: '/logs',
+      text: 'LOGS',
+      icon: <LogsIcon />,
     },
     {
       type: 'link',

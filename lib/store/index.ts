@@ -54,15 +54,21 @@ const initState = {
   },
   paymentsPage: {},
   registersPage: {},
-  salesPage: {
+  salesListPage: {
+    tab: 0,
+    searchBar: '',
+  },
+  salesCalendarPage: {
     viewPeriod: 'day',
     rangeStartDate: dayjs().startOf('week').format('YYYY-MM-DD'),
     rangeEndDate: dayjs().format('YYYY-MM-DD'),
     clerkIds: [],
     viewLaybysOnly: false,
   },
+  parkedSalesPage: {},
   laybysPage: {},
   holdsPage: {},
+  saleStatsPage: {},
   giftCardsPage: {
     searchBar: '',
     loadedGiftCard: null,

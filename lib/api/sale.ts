@@ -45,3 +45,7 @@ export function deleteSale(id, { clerk, registerId }) {
 export function deleteSaleItem(id) {
   return axiosAuth.patch(`/api/sale/item/delete/${id}`)
 }
+
+export function useSales() {
+  return useData(`sale`, 'sales')
+}

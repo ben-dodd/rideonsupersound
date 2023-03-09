@@ -6,9 +6,9 @@ import { useAppStore } from 'lib/store'
 import { Pages } from 'lib/store/types'
 
 export default function SalesViewFilter() {
-  const { salesPage, setPage, togglePageOption } = useAppStore()
+  const { salesCalendarPage, setPage, togglePageOption } = useAppStore()
   const { clerks } = useClerks()
-  const { viewPeriod, rangeStartDate, rangeEndDate, clerkIds, viewLaybysOnly } = salesPage || {}
+  const { viewPeriod, rangeStartDate, rangeEndDate, clerkIds, viewLaybysOnly } = salesCalendarPage || {}
   return (
     <div className="bg-white p-2 shadow-md">
       <div className="flex items-center my-2">
@@ -17,7 +17,7 @@ export default function SalesViewFilter() {
           <Tooltip title="View Today's Sales">
             <IconButton
               onClick={() => {
-                setPage(Pages.salesPage, {
+                setPage(Pages.salesCalendarPage, {
                   viewPeriod: 'day',
                   rangeStartDate: dayjs().format('YYYY-MM-DD'),
                   rangeEndDate: dayjs().format('YYYY-MM-DD'),
@@ -30,7 +30,7 @@ export default function SalesViewFilter() {
           <Tooltip title="View This Week's Sales">
             <IconButton
               onClick={() => {
-                setPage(Pages.salesPage, {
+                setPage(Pages.salesCalendarPage, {
                   viewPeriod: 'week',
                   rangeStartDate: dayjs().startOf('week').format('YYYY-MM-DD'),
                   rangeEndDate: dayjs().format('YYYY-MM-DD'),
@@ -43,7 +43,7 @@ export default function SalesViewFilter() {
           <Tooltip title="View This Month's Sales">
             <IconButton
               onClick={() => {
-                setPage(Pages.salesPage, {
+                setPage(Pages.salesCalendarPage, {
                   viewPeriod: 'month',
                   rangeStartDate: dayjs().startOf('month').format('YYYY-MM-DD'),
                   rangeEndDate: dayjs().format('YYYY-MM-DD'),
@@ -60,7 +60,7 @@ export default function SalesViewFilter() {
           <input
             type="date"
             onChange={(e) => {
-              setPage(Pages.salesPage, { viewPeriod: null, rangeStartDate: e.target.value })
+              setPage(Pages.salesCalendarPage, { viewPeriod: null, rangeStartDate: e.target.value })
             }}
             value={rangeStartDate}
           />
@@ -68,7 +68,7 @@ export default function SalesViewFilter() {
           <input
             type="date"
             onChange={(e) => {
-              setPage(Pages.salesPage, { viewPeriod: null, rangeEndDate: e.target.value })
+              setPage(Pages.salesCalendarPage, { viewPeriod: null, rangeEndDate: e.target.value })
             }}
             value={rangeEndDate}
           />
@@ -77,12 +77,12 @@ export default function SalesViewFilter() {
         <Chip
           label="View Laybys Only"
           color={viewLaybysOnly ? 'secondary' : 'default'}
-          onClick={() => togglePageOption(Pages.salesPage, 'viewLaybysOnly')}
+          onClick={() => togglePageOption(Pages.salesCalendarPage, 'viewLaybysOnly')}
         />
       </div>
       <div className="flex overflow-x-scroll mb-2">
         <div className="mr-1">
-          <Chip icon={<Close />} onClick={() => setPage(Pages.salesPage, { clerkIds: [] })} size="small" />
+          <Chip icon={<Close />} onClick={() => setPage(Pages.salesCalendarPage, { clerkIds: [] })} size="small" />
         </div>
         {clerks
           ?.sort((a, b) => a?.name?.localeCompare(b?.name))
@@ -95,7 +95,7 @@ export default function SalesViewFilter() {
                 size="small"
                 onClick={() =>
                   setPage(
-                    Pages.salesPage,
+                    Pages.salesCalendarPage,
                     clerkIds?.includes(clerk?.id)
                       ? clerkIds?.filter((clerkId) => clerkId !== clerk?.id)
                       : [...clerkIds, clerk?.id],

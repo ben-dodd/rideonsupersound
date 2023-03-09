@@ -3,7 +3,6 @@ import { useRouter } from 'next/router'
 export default function MenuItem({ item, listClass, defaultOnClick }) {
   const router = useRouter()
   const handleOnClick = item?.onClick ? item?.onClick : () => defaultOnClick(item)
-  console.log(listClass)
   return item?.type === 'divider' ? (
     <hr />
   ) : (

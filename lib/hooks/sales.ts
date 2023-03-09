@@ -4,13 +4,11 @@ import { mysql2js } from 'lib/database/utils/helpers'
 import { useState, useEffect } from 'react'
 
 export function useSalesForRange({
-  viewPeriod,
   rangeStartDate,
   rangeEndDate,
   clerkIds,
   viewLaybysOnly,
 }: {
-  viewPeriod?: string
   rangeStartDate?: string
   rangeEndDate?: string
   clerkIds?: number[]
