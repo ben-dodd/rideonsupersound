@@ -1,7 +1,5 @@
-import { Settings } from '@mui/icons-material'
 import BackButton from 'components/button/back-button'
 import DropdownMenu from 'components/dropdown-menu'
-import { useState } from 'react'
 
 export default function MidScreenContainer({
   children,
@@ -14,8 +12,6 @@ export default function MidScreenContainer({
   showBackButton = false,
   menuItems = null,
 }) {
-  const [menuVisible, setMenuVisible] = useState(false)
-  const toggleMenu = () => setMenuVisible((isVisible) => !isVisible)
   return (
     <div className={`h-main w-full ${full ? '' : 'sm:w-boardMainSmall lg:w-boardMain'}`}>
       {title && (
@@ -27,21 +23,7 @@ export default function MidScreenContainer({
             {title}
           </div>
           {actionButtons}
-          {menuItems ? (
-            <>
-              <DropdownMenu items={menuItems} open={menuVisible} setOpen={setMenuVisible} />
-              <button
-                onClick={toggleMenu}
-                className={`${dark ? 'hover:text-yellow-200 ' : 'hover:text-gray-600 '}${
-                  menuVisible ? (dark ? 'text-yellow-200' : 'text-gray-600') : ''
-                }`}
-              >
-                <Settings />
-              </button>
-            </>
-          ) : (
-            <div />
-          )}
+          {menuItems ? <DropdownMenu items={menuItems} dark={dark} /> : <div />}
         </div>
       )}
       {isLoading ? (

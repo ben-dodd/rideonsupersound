@@ -141,7 +141,7 @@ export default function Menu({ badges }) {
     <div
       className={`w-0 overflow-y-auto flex flex-col h-main justify-between select-none ${
         bg[clerk?.colour]
-      } z-40 flex-shrink-0 whitespace-pre relative ${
+      } z-20 flex-shrink-0 whitespace-pre ${
         view?.mainMenu && 'w-full '
       }sm:w-full sm:w-menuSmall sm:border-r lg:w-menu transition-width duration-200 `}
     >

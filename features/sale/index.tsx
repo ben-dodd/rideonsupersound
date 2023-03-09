@@ -19,7 +19,7 @@ const SalesScreen = () => {
   // const isFull = !(tab === 4 && holdsPage?.loadedHold)
   const isFull = true
   return (
-    <MidScreenContainer title="SALES" titleClass="bg-col5" full={isFull}>
+    <MidScreenContainer title="SALES" titleClass="bg-col4" full={isFull}>
       <Tabs
         tabs={['Sales List', 'Calendar View', 'Parked Sales', 'Laybys', 'Holds', 'Stats', 'Export Report']}
         value={tab}

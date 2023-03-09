@@ -5,6 +5,7 @@ import { useAppStore } from 'lib/store'
 import ComingSoon from 'components/placeholders/coming-soon'
 import StockList from './stock-list'
 import { Pages } from 'lib/store/types'
+import { Edit } from '@mui/icons-material'
 
 const InventoryScreen = () => {
   const { stockList, isStockListLoading } = useStockList()
@@ -15,9 +16,21 @@ const InventoryScreen = () => {
   } = useAppStore()
   const setTab = (tab) => setPage(Pages.stockPage, { tab })
   // const isFull = !(tab === 4 && holdsPage?.loadedHold)
+  const menuItems = [
+    { text: 'Receive Stock', icon: <Edit />, onClick: null },
+    { text: 'Return Stock to Vendor', icon: <Edit />, onClick: null },
+    { text: 'Bulk Edit Items', icon: <Edit />, onClick: null },
+    { text: 'Manage Settings', icon: <Edit />, onClick: null },
+  ]
 
   return (
-    <MidScreenContainer title="Stock List" isLoading={isStockListLoading} titleClass="bg-col2" full={true}>
+    <MidScreenContainer
+      title="Stock List"
+      isLoading={isStockListLoading}
+      titleClass="bg-col2"
+      full={true}
+      menuItems={menuItems}
+    >
       <Tabs
         tabs={['Stock List', 'Category View', 'Recent Arrivals', 'Recently Sold', 'Sections', 'Category Manager']}
         value={tab}
