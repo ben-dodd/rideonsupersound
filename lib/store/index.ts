@@ -46,7 +46,7 @@ const initState = {
     bypassRegister: false,
     createableCustomerName: '',
   },
-  inventoryPage: {
+  stockPage: {
     searchBar: '',
   },
   vendorsPage: {

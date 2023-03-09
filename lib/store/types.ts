@@ -59,7 +59,10 @@ export interface StoreState {
     bypassRegister?: boolean
     createableCustomerName?: string
   }
-  inventoryPage?: any
+  stockPage?: {
+    tab?: number
+    searchBar?: string
+  }
   vendorsPage?: any
   paymentsPage?: any
   registersPage?: any
@@ -158,7 +161,7 @@ export enum ViewProps {
 
 export enum Pages {
   sellPage = 'sellPage',
-  inventoryPage = 'inventoryPage',
+  stockPage = 'stockPage',
   vendorsPage = 'vendorsPage',
   paymentsPage = 'paymentsPage',
   registersPage = 'registersPage',

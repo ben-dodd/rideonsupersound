@@ -13,37 +13,25 @@ import ParkedSalesList from './parked-sales'
 import SalesList from './sales-list'
 
 const SalesScreen = () => {
-  const { salesPage, setPage } = useAppStore()
+  const { salesPage, holdsPage, setPage } = useAppStore()
   const tab = salesPage?.tab || 0
   const setTab = (tab) => setPage(Pages.salesPage, { tab })
+  // const isFull = !(tab === 4 && holdsPage?.loadedHold)
+  const isFull = true
   return (
-    <MidScreenContainer title="SALES" titleClass="bg-col5" full={true}>
+    <MidScreenContainer title="SALES" titleClass="bg-col5" full={isFull}>
       <Tabs
         tabs={['Sales List', 'Calendar View', 'Parked Sales', 'Laybys', 'Holds', 'Stats', 'Export Report']}
         value={tab}
         onChange={setTab}
       />
-      <div hidden={tab !== 0}>
-        <SalesList />
-      </div>
-      <div hidden={tab !== 1}>
-        <SalesCalendarView />
-      </div>
-      <div hidden={tab !== 2}>
-        <ParkedSalesList />
-      </div>
-      <div hidden={tab !== 3}>
-        <LaybysList />
-      </div>
-      <div hidden={tab !== 4}>
-        <HoldsList />
-      </div>
-      <div hidden={tab !== 5} className="h-contentsm">
-        <ComingSoon />
-      </div>
-      <div hidden={tab !== 6} className="h-contentsm">
-        <ComingSoon />
-      </div>
+      {tab === 0 && <SalesList />}
+      {tab === 1 && <SalesCalendarView />}
+      {tab === 2 && <ParkedSalesList />}
+      {tab === 3 && <LaybysList />}
+      {tab === 4 && <HoldsList />}
+      {tab === 5 && <ComingSoon />}
+      {tab === 6 && <ComingSoon />}
     </MidScreenContainer>
   )
 }

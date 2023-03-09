@@ -15,6 +15,24 @@ const HoldsSidebar = () => {
   const hold = holds?.find((hold) => hold?.id === holdsPage?.loadedHold)
   console.log(hold)
   const closeSidebar = () => setPage(Pages.holdsPage, { loadedHold: 0 })
+
+  // const buttons: ModalButton[] = [
+  //   {
+  //     type: 'cancel',
+  //     onClick: () => {
+  //       closeView(ViewProps.cart)
+  //       closeView(ViewProps.createHold)
+  //     },
+  //     text: 'CANCEL',
+  //   },
+  //   {
+  //     type: 'ok',
+  //     onClick: onClickConfirmHold,
+  //     disabled: !sale?.customerId || items.length === 0 || !holdPeriod,
+  //     text: submitting ? 'HOLDING...' : 'CONFIRM HOLD',
+  //   },
+  // ]
+
   return (
     <SidebarContainer show={Boolean(holdsPage?.loadedHold)}>
       {isHoldsLoading ? (

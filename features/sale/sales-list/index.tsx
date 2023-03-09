@@ -10,7 +10,6 @@ const SalesList = () => {
   const { salesPage, setSearchBar } = useAppStore()
   const searchBar = salesPage?.searchBar || ''
   const handleSearch = (e) => setSearchBar(Pages.salesPage, e.target.value)
-  console.log(sales)
   return isSalesLoading ? (
     <Loading />
   ) : (

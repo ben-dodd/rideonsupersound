@@ -1,4 +1,4 @@
-import { getItemSkuDisplayName } from '../../lib/functions/displayInventory'
+import { getItemSkuDisplayName } from '../../../lib/functions/displayInventory'
 import { StockItemSearchObject } from 'lib/types/stock'
 import { useRouter } from 'next/router'
 import { useVendors } from 'lib/api/vendor'
