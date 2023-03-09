@@ -5,7 +5,7 @@ import { HoldObject } from 'lib/types/sale'
 
 export default function HoldsListItem({ hold }: { hold: HoldObject }) {
   const { setPage } = useAppStore()
-  const openHoldDialog = () => setPage(Pages.holdsPage, { loadedHoldId: hold?.id })
+  const openHoldDialog = () => setPage(Pages.holdsPage, { loadedHold: hold?.id })
   return (
     <div className={`list-item-compact text-sm`} onClick={openHoldDialog}>
       <div className="w-1/2">{`${getItemSkuDisplayName(hold)}`}</div>

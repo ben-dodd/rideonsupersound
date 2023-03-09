@@ -67,7 +67,9 @@ const initState = {
   },
   parkedSalesPage: {},
   laybysPage: {},
-  holdsPage: {},
+  holdsPage: {
+    loadedHold: null,
+  },
   saleStatsPage: {},
   giftCardsPage: {
     searchBar: '',

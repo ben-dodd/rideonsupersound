@@ -76,7 +76,10 @@ export interface StoreState {
   }
   parkedSalesPage?: any
   laybysPage?: any
-  holdsPage?: any
+  holdsPage?: {
+    searchBar?: string
+    loadedHold?: number
+  }
   saleStatsPage?: any
   giftCardsPage?: {
     searchBar?: string

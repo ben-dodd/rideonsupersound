@@ -1,9 +1,12 @@
 import Loading from 'components/placeholders/loading'
 import { useCurrentHolds } from 'lib/api/sale'
+import { useAppStore } from 'lib/store'
 import HoldsListItem from './holds-list-item'
+import HoldsSidebar from './sidebar'
 
 const HoldsList = () => {
   const { currentHolds, isCurrentHoldsLoading } = useCurrentHolds()
+  const { holdsPage } = useAppStore()
   console.log(currentHolds)
   return isCurrentHoldsLoading ? (
     <Loading />
@@ -14,6 +17,7 @@ const HoldsList = () => {
           <HoldsListItem key={hold?.id} hold={hold} />
         ))}
       </div>
+      {holdsPage?.loadedHold && <HoldsSidebar />}
     </div>
   )
 }
