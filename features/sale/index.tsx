@@ -7,6 +7,7 @@ import { Pages } from 'lib/store/types'
 import { useState } from 'react'
 import SalesCalendarView from './calendar-view'
 import SalesListView from './calendar-view'
+import HoldsList from './holds-list'
 import LaybysList from './laybys'
 import ParkedSalesList from './parked-sales'
 import SalesList from './sales-list'
@@ -34,8 +35,8 @@ const SalesScreen = () => {
       <div hidden={tab !== 3}>
         <LaybysList />
       </div>
-      <div hidden={tab !== 4} className="h-contentsm">
-        <ComingSoon />
+      <div hidden={tab !== 4}>
+        <HoldsList />
       </div>
       <div hidden={tab !== 5} className="h-contentsm">
         <ComingSoon />

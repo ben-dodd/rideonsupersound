@@ -79,7 +79,27 @@ export function dbGetAllSalesAndItems(db = connection) {
 }
 
 export function dbGetAllHolds(db = connection) {
-  return db('hold').where(`is_deleted`, 0)
+  return db('hold')
+    .leftJoin('stock', 'stock.id', 'hold.item_id')
+    .leftJoin('clerk as open_clerk', 'open_clerk.id', 'hold.started_by')
+    .leftJoin('clerk as close_clerk', 'close_clerk.id', 'hold.removed_from_hold_by')
+    .leftJoin('customer', 'customer.id', 'hold.customer_id')
+    .select(
+      'hold.*',
+      'customer.name as customer_name',
+      'stock.artist as artist',
+      'stock.title as title',
+      'stock.format as format',
+      'stock.vendor_id as vendor_id',
+      'open_clerk.name as open_clerk_name',
+      'close_clerk.name as close_clerk_name',
+    )
+    .where(`hold.is_deleted`, 0)
+    .orderBy('hold.date_created', 'desc')
+}
+
+export function dbGetAllCurrentHolds(db = connection) {
+  return dbGetAllHolds(db).where(`hold.date_removed_from_hold`, null)
 }
 
 export async function dbGetSale(id, db = connection) {

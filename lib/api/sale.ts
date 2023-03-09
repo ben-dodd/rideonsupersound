@@ -57,3 +57,11 @@ export function useParkedSales() {
 export function useLaybys() {
   return useData(`sale/layby`, 'laybys')
 }
+
+export function useHolds() {
+  return useData(`sale/hold`, 'holds')
+}
+
+export function useCurrentHolds() {
+  return useData(`sale/hold/current`, 'currentHolds')
+}
