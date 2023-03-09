@@ -91,22 +91,22 @@ export async function nukeSaleInDatabase(
   )
   sale?.items?.forEach((saleItem) => {
     deleteSaleItemFromDatabase(saleItem?.id)
-    if (!saleItem?.is_refunded)
-      saveStockMovementToDatabase(
-        saleItem,
-        clerk,
-        registerID,
-        StockMovementTypes.Unsold,
-        'Sale nuked.',
-        sale?.id
-      )
+    // if (!saleItem?.is_refunded)
+    //   saveStockMovementToDatabase(
+    //     saleItem,
+    //     clerk,
+    //     registerID,
+    //     StockMovementTypes.Unsold,
+    //     'Sale nuked.',
+    //     sale?.id
+    //   )
   })
   sale?.transactions?.forEach((saleTransaction) => {
     if (saleTransaction?.vendor_payment_id)
       deleteVendorPaymentFromDatabase(saleTransaction?.vendor_payment_id)
     deleteSaleTransactionFromDatabase(saleTransaction?.id)
   })
-  // deleteStockMovementsFromDatabase(sale?.id);
+  deleteStockMovementsFromDatabase(sale?.id)
   deleteSaleFromDatabase(sale?.id)
 }
 
