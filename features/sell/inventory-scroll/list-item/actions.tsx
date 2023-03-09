@@ -79,8 +79,7 @@ const Actions = ({ item, itemQuantity, holdsQuantity, isItemLoading }) => {
           className={`pill-button`}
           onClick={() => router.push(`/stock/${item?.id}`)}
         >
-          <Info style={{ fontSize: '40px' }} className="mr-2" />
-          INFO
+          <Info style={{ fontSize: '40px' }} />
         </button>
         {/* </Tooltip> */}
       </div>
@@ -93,8 +92,7 @@ const Actions = ({ item, itemQuantity, holdsQuantity, isItemLoading }) => {
           // disabled={!item?.totalSell}
           onClick={clickAddToCart}
         >
-          <AddCircleOutline style={{ fontSize: '40px' }} className="mr-2" />
-          ADD
+          <AddCircleOutline style={{ fontSize: '40px' }} />
         </button>
         {/* </Tooltip> */}
       </div>
