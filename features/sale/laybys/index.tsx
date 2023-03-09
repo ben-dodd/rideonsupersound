@@ -8,7 +8,7 @@ const LaybysList = () => {
   return isLaybysLoading ? (
     <Loading />
   ) : (
-    <div className="h-content overflow-y-scroll">
+    <div className="h-contentsm overflow-y-scroll">
       {/* <div className="px-2">
         <SearchInput searchValue={searchBar} handleSearch={handleSearch} />
       </div> */}

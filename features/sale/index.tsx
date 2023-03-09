@@ -34,11 +34,15 @@ const SalesScreen = () => {
       <div hidden={tab !== 3}>
         <LaybysList />
       </div>
-      <div hidden={tab !== 4}>
+      <div hidden={tab !== 4} className="h-contentsm">
         <ComingSoon />
       </div>
-      <div hidden={tab !== 5}></div>
-      <div hidden={tab !== 6}></div>
+      <div hidden={tab !== 5} className="h-contentsm">
+        <ComingSoon />
+      </div>
+      <div hidden={tab !== 6} className="h-contentsm">
+        <ComingSoon />
+      </div>
     </MidScreenContainer>
   )
 }
