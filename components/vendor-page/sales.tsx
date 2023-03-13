@@ -35,7 +35,7 @@ export default function Sales({ sales, vendorStock }) {
                 key={`${sale?.sale_id}-${sale?.item_id}`}
                 className="flex py-2 text-xs border-b hover:bg-gradient-to-r from-white via-orange-200 to-white"
               >
-                <div className="w-2/12 px-1 md:w-1/12">
+                <div className="w-3/12 px-1 md:w-1/12">
                   <div className="hidden md:inline">
                     {dayjs(sale?.date_sale_closed).format('DD/MM/YYYY h:mma')}
                   </div>
@@ -46,7 +46,7 @@ export default function Sales({ sales, vendorStock }) {
                 <div className="w-1/12 px-1 hidden md:inline">
                   {stockItem?.quantity}
                 </div>
-                <div className="w-2/12 px-1">{stockItem?.format}</div>
+                <div className="w-1/12 px-1">{stockItem?.format}</div>
                 <div className="w-2/12 px-1">{stockItem?.artist}</div>
                 <div className="w-2/12 md:w-3/12 px-1">{`${stockItem?.title}${
                   sale?.is_refunded ? ' [REFUNDED]' : ''
