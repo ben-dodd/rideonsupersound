@@ -29,7 +29,7 @@ export function getTotalOwing(totalPayments: VendorPaymentObject[], totalSales: 
 
   const totalSell: any = totalSales?.reduce(
     (acc: number, sale: VendorSaleItemObject) =>
-      acc + (sale?.quantity * sale?.vendorCut * (100 - sale?.vendorDiscount || 0)) / 100,
+      acc + (sale?.quantity * sale?.itemVendorCut * (100 - sale?.vendorDiscount || 0)) / 100,
     0,
   )
   return totalSell - totalPaid
@@ -45,8 +45,12 @@ export function getGrossProfit(price: any) {
 export function getProfitMargin(price: any) {
   let sellNum = price?.totalSell || 0,
     costNum = price?.vendorCut || 0
-  if (sellNum > 0) return `${(((sellNum - costNum) / sellNum) * 100)?.toFixed(1)}%`
-  else return ''
+  if (sellNum > 0) return ((sellNum - costNum) / sellNum) * 100
+  else return null
+}
+
+export function getProfitMarginString(price: any) {
+  return `${getProfitMargin(price)?.toFixed(1)}%`
 }
 
 export function getStoreCut(price: any) {

@@ -181,7 +181,7 @@
 }
 
 .modal__title {
-  @apply text-4xl font-extrabold py-4;
+  @apply text-2xl font-extrabold py-4;
 }
 
 .modal__body {

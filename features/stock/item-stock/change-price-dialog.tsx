@@ -8,6 +8,8 @@ import { ViewProps } from 'lib/store/types'
 import { useRouter } from 'next/router'
 import { createStockPrice, useStockItem } from 'lib/api/stock'
 import { useSWRConfig } from 'swr'
+import { centsToDollars, dollarsToCents } from 'lib/utils'
+import { getProfitMargin, getStoreCut } from 'lib/functions/pay'
 
 export default function ChangePriceDialog() {
   const { clerk } = useClerk()
@@ -17,32 +19,80 @@ export default function ChangePriceDialog() {
   const { mutate } = useSWRConfig()
 
   const { stockItem, isStockItemLoading } = useStockItem(`${id}`)
-  const { item = {}, price = {} } = stockItem || {}
+  const { item = {}, price: currPrice = {} } = stockItem || {}
 
-  const [totalSell, setTotalSell] = useState('')
-  const [vendorCut, setVendorCut] = useState('')
+  const [price, setPrice] = useState({ totalSell: '', vendorCut: '', storeCut: '', margin: '' })
   const [notes, setNotes] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
-    setTotalSell(`${(price?.totalSell / 100)?.toFixed(2)}`)
-    setVendorCut(`${(price?.vendorCut / 100)?.toFixed(2)}`)
-  }, [price])
+    setPrice({
+      totalSell: centsToDollars(currPrice?.totalSell).toFixed(2),
+      vendorCut: centsToDollars(currPrice?.vendorCut).toFixed(2),
+      storeCut: centsToDollars(getStoreCut(currPrice)).toFixed(2),
+      margin: getProfitMargin(currPrice).toFixed(1),
+    })
+  }, [currPrice])
+
+  const handleSetPrice = (event) => {
+    const value = parseFloat(event.target.value)
+    const textboxId = event.target.id
+    if (isNaN(value) || (textboxId === 'margin' && value >= 100)) {
+      setPrice({ ...price, [textboxId]: event.target.value })
+      // Handle invalid input here
+      return
+    }
+    let modifiedPrice = { ...price }
+
+    switch (textboxId) {
+      case 'totalSell':
+        modifiedPrice.totalSell = `${value}`
+        modifiedPrice.storeCut = (value - parseFloat(price?.vendorCut)).toFixed(2)
+        modifiedPrice.margin = getProfitMargin(modifiedPrice)?.toFixed(1)
+        setPrice(modifiedPrice)
+        break
+      case 'vendorCut':
+        modifiedPrice.vendorCut = `${value}`
+        modifiedPrice.storeCut = (parseFloat(price?.totalSell) - value).toFixed(2)
+        modifiedPrice.margin = getProfitMargin(modifiedPrice)?.toFixed(1)
+        setPrice(modifiedPrice)
+        break
+      case 'margin':
+        modifiedPrice.margin = `${value}`
+        modifiedPrice.totalSell = (parseFloat(price?.vendorCut) / (1 - value / 100)).toFixed(2)
+        modifiedPrice.storeCut = (parseFloat(modifiedPrice?.totalSell) - parseFloat(modifiedPrice?.vendorCut)).toFixed(
+          2,
+        )
+        setPrice(modifiedPrice)
+        break
+      case 'storeCut':
+        modifiedPrice.storeCut = `${value}`
+        modifiedPrice.totalSell = (parseFloat(price?.vendorCut) + value).toFixed(2)
+        modifiedPrice.margin = getProfitMargin(modifiedPrice).toFixed(1)
+        setPrice(modifiedPrice)
+        break
+      default:
+        // Handle unknown textboxId here
+        break
+    }
+  }
 
   const buttons: ModalButton[] = [
     {
       type: 'ok',
       disabled:
-        (totalSell !== '' && isNaN(parseFloat(totalSell))) ||
-        (vendorCut !== '' && isNaN(parseFloat(vendorCut))),
+        (price?.totalSell !== '' && isNaN(parseFloat(price?.totalSell))) ||
+        (price?.vendorCut !== '' && isNaN(parseFloat(price?.vendorCut))) ||
+        (price?.margin !== '' && isNaN(parseFloat(price?.margin))) ||
+        (price?.totalSell !== '' && isNaN(parseFloat(price?.totalSell))),
       loading: submitting,
       onClick: async () => {
         setSubmitting(true)
         await createStockPrice({
           stockId: item?.id,
           clerkId: clerk?.id,
-          totalSell: parseFloat(totalSell) * 100,
-          vendorCut: parseFloat(vendorCut) * 100,
+          totalSell: dollarsToCents(price?.totalSell),
+          vendorCut: dollarsToCents(price?.vendorCut),
           note: 'New stock priced.',
         })
         mutate(`stock/${id}`)
@@ -71,47 +121,44 @@ export default function ChangePriceDialog() {
       <>
         <div className="grid grid-cols-2 gap-4">
           <TextField
+            id="totalSell"
             inputLabel="Total Sell"
             divClass="text-4xl"
             startAdornment="$"
             inputClass="text-center"
-            value={totalSell}
-            error={isNaN(parseFloat(totalSell))}
-            onChange={(e: any) => setTotalSell(e.target.value)}
+            value={price?.totalSell}
+            error={isNaN(parseFloat(price?.totalSell))}
+            onChange={handleSetPrice}
           />
           <TextField
+            id="vendorCut"
             inputLabel="Vendor Cut"
             divClass="text-4xl w-full"
             startAdornment="$"
             inputClass="text-center"
-            value={vendorCut}
-            error={isNaN(parseFloat(vendorCut))}
-            onChange={(e: any) => setVendorCut(e.target.value)}
+            value={price?.vendorCut}
+            error={isNaN(parseFloat(price?.vendorCut))}
+            onChange={handleSetPrice}
           />
           <TextField
+            id="margin"
             inputLabel="Margin"
             divClass="text-4xl"
             endAdornment="%"
             inputClass="text-center"
-            displayOnly
-            value={
-              (
-                ((parseFloat(totalSell) - parseFloat(vendorCut)) /
-                  parseFloat(totalSell)) *
-                100
-              )?.toFixed(1) || 'N/A'
-            }
+            value={price?.margin}
+            error={isNaN(parseFloat(price?.margin)) || parseFloat(price?.margin) >= 100}
+            onChange={handleSetPrice}
           />
           <TextField
+            id="storeCut"
             inputLabel="Store Cut"
             divClass="text-4xl"
             startAdornment="$"
             inputClass="text-center"
-            displayOnly
-            value={
-              (parseFloat(totalSell) - parseFloat(vendorCut)).toFixed(2) ||
-              'N/A'
-            }
+            value={price?.storeCut}
+            error={isNaN(parseFloat(price?.storeCut))}
+            onChange={handleSetPrice}
           />
         </div>
         <TextField

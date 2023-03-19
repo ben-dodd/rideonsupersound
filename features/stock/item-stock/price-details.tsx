@@ -1,5 +1,5 @@
 import { useStockItem } from 'lib/api/stock'
-import { getGrossProfit, getProfitMargin } from 'lib/functions/pay'
+import { getGrossProfit, getProfitMarginString } from 'lib/functions/pay'
 import { useRouter } from 'next/router'
 
 export default function PriceDetails() {
@@ -41,7 +41,7 @@ export default function PriceDetails() {
         </div>
         <div>
           <div className="text-xs mt-2 mb-2">MARGIN</div>
-          <div className="font-bold text-xl">{getProfitMargin(price) || 'N/A'}</div>
+          <div className="font-bold text-xl">{getProfitMarginString(price) || 'N/A'}</div>
         </div>
         <div className="col-start-5 col-end-7">
           <div className="flex justify-center items-center p-4 bg-tertiary-dark">

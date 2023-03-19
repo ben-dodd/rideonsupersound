@@ -1,4 +1,4 @@
-import { Delete, Edit } from '@mui/icons-material'
+import { AttachMoney, Delete, Edit, LibraryAdd } from '@mui/icons-material'
 import MidScreenContainer from 'components/container/mid-screen'
 import Tabs from 'components/navigation/tabs'
 import { deleteStockItem } from 'lib/api/stock'
@@ -40,8 +40,8 @@ const StockItemScreen = ({ item, sales }) => {
 
   const menuItems = [
     { text: 'Edit', icon: <Edit />, onClick: () => openView(ViewProps.stockEditDialog) },
-    { text: 'Change Price', icon: <Delete />, onClick: () => openView(ViewProps.changePriceDialog) },
-    { text: 'Change Quantities', icon: <Delete />, onClick: () => openView(ViewProps.changeStockQuantityDialog) },
+    { text: 'Change Price', icon: <AttachMoney />, onClick: () => openView(ViewProps.changePriceDialog) },
+    { text: 'Change Quantities', icon: <LibraryAdd />, onClick: () => openView(ViewProps.changeStockQuantityDialog) },
     { text: 'Delete Item', icon: <Delete />, onClick: onClickDelete },
   ]
 
