@@ -34,11 +34,11 @@ export default function ChangePriceDialog() {
     })
   }, [currPrice])
 
-  const handleSetPrice = (event) => {
-    const value = parseFloat(event.target.value)
-    const textboxId = event.target.id
+  const handleSetPrice = (e) => {
+    const value = parseFloat(e.target.value)
+    const textboxId = e.target.id
     if (isNaN(value) || (textboxId === 'margin' && value >= 100)) {
-      setPrice({ ...price, [textboxId]: event.target.value })
+      setPrice({ ...price, [textboxId]: e.target.value })
       // Handle invalid input here
       return
     }
@@ -46,27 +46,27 @@ export default function ChangePriceDialog() {
 
     switch (textboxId) {
       case 'totalSell':
-        modifiedPrice.totalSell = `${value}`
+        modifiedPrice.totalSell = e.target.value
         modifiedPrice.storeCut = (value - parseFloat(price?.vendorCut)).toFixed(2)
         modifiedPrice.margin = getProfitMargin(modifiedPrice)?.toFixed(1)
         setPrice(modifiedPrice)
         break
       case 'vendorCut':
-        modifiedPrice.vendorCut = `${value}`
+        modifiedPrice.vendorCut = e.target.value
         modifiedPrice.storeCut = (parseFloat(price?.totalSell) - value).toFixed(2)
         modifiedPrice.margin = getProfitMargin(modifiedPrice)?.toFixed(1)
         setPrice(modifiedPrice)
         break
       case 'margin':
-        modifiedPrice.margin = `${value}`
-        modifiedPrice.totalSell = (parseFloat(price?.vendorCut) / (1 - value / 100)).toFixed(2)
+        modifiedPrice.margin = e.target.value
+        modifiedPrice.totalSell = Math.round(parseFloat(price?.vendorCut) / (1 - value / 100)).toFixed(2)
         modifiedPrice.storeCut = (parseFloat(modifiedPrice?.totalSell) - parseFloat(modifiedPrice?.vendorCut)).toFixed(
           2,
         )
         setPrice(modifiedPrice)
         break
       case 'storeCut':
-        modifiedPrice.storeCut = `${value}`
+        modifiedPrice.storeCut = e.target.value
         modifiedPrice.totalSell = (parseFloat(price?.vendorCut) + value).toFixed(2)
         modifiedPrice.margin = getProfitMargin(modifiedPrice).toFixed(1)
         setPrice(modifiedPrice)
