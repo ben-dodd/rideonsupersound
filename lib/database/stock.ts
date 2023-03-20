@@ -6,10 +6,12 @@ const connection = require('./conn')
 export function dbGetStockList(db = connection) {
   return db('stock')
     .leftJoin('stock_movement', 'stock.id', 'stock_movement.stock_id')
+    .leftJoin('vendor', 'stock.vendor_id', 'vendor.id')
     .groupBy('stock.id')
     .select(
       'stock.id',
       'stock.vendor_id',
+      'vendor.name as vendor_name',
       'stock.artist',
       'stock.title',
       'stock.display_as',

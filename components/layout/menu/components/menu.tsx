@@ -60,7 +60,7 @@ export default function Menu({ badges }) {
     },
     {
       type: 'link',
-      page: '/inventory',
+      page: '/stock',
       text: 'STOCK',
       icon: <InventoryIcon />,
     },

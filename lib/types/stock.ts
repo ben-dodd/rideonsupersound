@@ -51,6 +51,7 @@ export interface StockItemSearchObject extends StockItemBaseObject {
   cond?: string
   tags?: string[]
   quantity?: number
+  vendorName?: string
 }
 
 // Adds properties for displaying rich list item of object

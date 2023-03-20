@@ -36,7 +36,7 @@ export function useGiftCard(id) {
 
 export function deleteStockItem(id) {
   return axiosAuth
-    .post(`/api/stock/delete/${id}`)
+    .patch(`/api/stock/delete/${id}`)
     .then((res) => res.data)
     .catch((e) => Error(e.message))
 }

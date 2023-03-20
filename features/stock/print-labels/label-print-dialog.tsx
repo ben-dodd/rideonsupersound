@@ -15,14 +15,14 @@ import { useClerk } from 'lib/api/clerk'
 import { useStockList } from 'lib/api/stock'
 import { useVendors } from 'lib/api/vendor'
 import { ViewProps } from 'lib/store/types'
-import { StockObject } from 'lib/types/stock'
+import { StockItemObject } from 'lib/types/stock'
 
 export default function LabelPrintDialog() {
   const { view, closeView } = useAppStore()
   const { clerk } = useClerk()
 
   // SWR
-  const { stockDisplay } = useStockList()
+  const { stockList } = useStockList()
   const { vendors } = useVendors()
   // const { logs, mutateLogs } = useLogs()
 
@@ -97,7 +97,7 @@ export default function LabelPrintDialog() {
             <div className="overflow-y-scroll pt-2">
               {stockDisplay
                 ?.filter((item) => filterInventory(item, search))
-                ?.map((item: StockObject) => {
+                ?.map((item: StockItemObject) => {
                   if (search === `${('00000' + item?.id || '').slice(-5)}`) {
                     addItem(item)
                   }

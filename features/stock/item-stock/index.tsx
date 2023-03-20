@@ -7,6 +7,7 @@ import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
+import { useSWRConfig } from 'swr'
 import DiscogsPanel from '../api-discogs'
 import PriceDetails from './price-details'
 import StockDetails from './stock-details'
@@ -16,6 +17,7 @@ const StockItemScreen = ({ item, sales }) => {
   const { openConfirm, openView } = useAppStore()
   const [tab, setTab] = useState(0)
   const router = useRouter()
+  const { mutate } = useSWRConfig()
 
   function onClickDelete() {
     // REVIEW Delete inventory item
@@ -33,7 +35,8 @@ const StockItemScreen = ({ item, sales }) => {
         ? () => {}
         : async () =>
             deleteStockItem(item?.id)?.then(() => {
-              router.back()
+              router.push('/stock')
+              mutate('stock')
             }),
     })
   }
