@@ -1,13 +1,7 @@
 // const testCon = require('../testConn')
 import testCon from '../testConn'
-import {
-  dbCheckIfRestockNeeded,
-  dbCreateStockMovement,
-  dbGetStockItem,
-  dbGetStockItems,
-  dbGetWebStock,
-} from '../stock'
-import { StockMovementTypes } from 'lib/types'
+import { dbCheckIfRestockNeeded, dbCreateStockMovement, dbGetStockItem, dbGetStockItems, dbGetWebStock } from '../stock'
+import { StockMovementTypes } from 'lib/types/stock'
 
 beforeAll(() => testCon.migrate.latest())
 
@@ -70,10 +64,7 @@ describe('checkIfRestockNeeded', () => {
         .catch((e) => Error(e.message))
     }))
   it('wont flag restock if there is no more in stock', () => {
-    return dbCreateStockMovement(
-      { stockId: 1, quantity: -3, act: StockMovementTypes.Sold },
-      testCon
-    )
+    return dbCreateStockMovement({ stockId: 1, quantity: -3, act: StockMovementTypes.Sold }, testCon)
       .then(() => dbCheckIfRestockNeeded(1, testCon))
       .then((needsRestock) => {
         expect(needsRestock).toBeFalsy()

@@ -200,6 +200,7 @@ export function dbCreateStockMovement(stockMovement, db = connection) {
   return db('stock_movement')
     .insert(js2mysql(stockMovement))
     .then((res) => {
+      console.log('stockmovement res', res.dataß)
       return res.data
     })
     .catch((e) => Error(e.message))
@@ -231,7 +232,7 @@ export async function dbReceiveStock(receiveStock: any, db = connection) {
           if (receiveItem?.item?.id) {
             await dbCreateStockMovement(
               {
-                item_id: receiveItem?.item?.id,
+                stockId: receiveItem?.item?.id,
                 quantity: receiveItem?.quantity,
                 clerkId,
                 registerId,
@@ -285,6 +286,7 @@ export async function dbReceiveStock(receiveStock: any, db = connection) {
 }
 
 export async function dbReturnStock(returnStock: any, db = connection) {
+  console.log('Return stock', returnStock)
   return db
     .transaction(async (trx) => {
       const { clerkId, registerId, vendorId, items, note } = returnStock
@@ -292,20 +294,11 @@ export async function dbReturnStock(returnStock: any, db = connection) {
         items
           .filter((returnItem: any) => parseInt(`${returnItem?.quantity}`) > 0)
           .forEach(async (returnItem: any) => {
-            await dbGetStockItem(returnItem?.id, trx).then((stockItem) =>
-              dbUpdateStockItem(
-                returnItem?.id,
-                {
-                  quantityReturn: (stockItem?.quantityReturned || 0) + parseInt(returnItem?.quantity),
-                  quantity: (stockItem?.quantity || 0) - parseInt(returnItem?.quantity),
-                },
-                trx,
-              ),
-            )
+            console.log('Creating stock movement for', returnItem?.id)
             await dbCreateStockMovement(
               {
-                itemId: parseInt(returnItem?.id),
-                quantity: `${returnItem?.quantity}`,
+                stockId: parseInt(returnItem?.id),
+                quantity: parseInt(`${returnItem?.quantity}`) * -1,
                 clerkId,
                 registerId,
                 act: StockMovementTypes?.Returned,

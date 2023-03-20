@@ -264,18 +264,19 @@ export async function dbDeleteSale(id, { sale, clerk, registerID }, db = connect
       await sale?.items?.forEach((saleItem) => {
         dbUpdateSaleItem(saleItem?.id, { isDeleted: true }, trx)
         // TODO should this delete the original sale stock movement instead?
-        if (!saleItem?.isRefunded)
-          dbCreateStockMovement(
-            {
-              item: saleItem,
-              clerk,
-              registerID,
-              act: StockMovementTypes.Unsold,
-              note: 'Sale nuked.',
-              saleId: sale?.id,
-            },
-            trx,
-          )
+        // TODO change to how it is in current one
+        // if (!saleItem?.isRefunded)
+        //   dbCreateStockMovement(
+        //     {
+        //       stockId: saleItem?.id,
+        //       clerk,
+        //       registerID,
+        //       act: StockMovementTypes.Unsold,
+        //       note: 'Sale nuked.',
+        //       saleId: sale?.id,
+        //     },
+        //     trx,
+        //   )
       })
       await sale?.transactions?.forEach((saleTransaction) => {
         if (saleTransaction?.vendorPaymentId)

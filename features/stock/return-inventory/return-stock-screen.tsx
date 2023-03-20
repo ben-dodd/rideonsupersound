@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { ModalButton } from 'lib/types'
 import TextField from 'components/inputs/text-field'
 import Select from 'react-select'
-import ScreenContainer from 'components/container/screen'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { getImageSrc, getItemDisplayName, getItemSku, getItemSkuDisplayName } from 'lib/functions/displayInventory'
 import { returnStock, useStockList } from 'lib/api/stock'
@@ -11,21 +10,19 @@ import { useCurrentRegisterId } from 'lib/api/register'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
-import { StockObject } from 'lib/types/stock'
+import { StockItemSearchObject } from 'lib/types/stock'
 import { VendorObject } from 'lib/types/vendor'
+import Modal from 'components/modal'
 
 export default function ReturnStockScreen() {
-  const { inventory, mutateInventory } = useStockList()
-  // const { logs, mutateLogs } = useLogs()
+  const { stockList } = useStockList()
   const { vendors } = useVendors()
   const { clerk } = useClerk()
   const { view, closeView, setAlert } = useAppStore()
   const { registerId } = useCurrentRegisterId()
-
-  // State
   const [vendorWrapper, setVendorWrapper] = useState(null)
   const [returnItems, setReturnItems] = useState([])
-  const [notes, setNotes] = useState('')
+  const [note, setNote] = useState('')
 
   const [submitting, setSubmitting] = useState(false)
 
@@ -33,7 +30,7 @@ export default function ReturnStockScreen() {
     closeView(ViewProps.returnStockScreen)
     setVendorWrapper(null)
     setReturnItems([])
-    setNotes('')
+    setNote('')
   }
 
   const buttons: ModalButton[] = [
@@ -44,9 +41,9 @@ export default function ReturnStockScreen() {
     },
     {
       type: 'ok',
-      onClick: () => {
+      onClick: async () => {
         setSubmitting(true)
-        returnStock(vendorWrapper?.value, returnItems, notes, clerk, registerId, inventory, mutateInventory)
+        await returnStock({ clerkId: clerk?.id, registerId, vendorId: vendorWrapper?.value, items: returnItems, note })
         setSubmitting(false)
         setAlert({
           open: true,
@@ -63,7 +60,7 @@ export default function ReturnStockScreen() {
         returnItems?.filter(
           (returnItem: any) =>
             isNaN(returnItem?.quantity) ||
-            inventory?.find((i: StockObject) => i?.id === parseInt(returnItem?.id))?.quantity <
+            stockList?.find((i: StockItemSearchObject) => i?.id === parseInt(returnItem?.id))?.quantity <
               parseInt(`${returnItem?.quantity}`) ||
             returnItem?.quantity < 0,
         ).length > 0,
@@ -73,27 +70,27 @@ export default function ReturnStockScreen() {
 
   console.log(returnItems)
 
-  const returnOptions = inventory
+  const returnOptions = stockList
     ?.filter(
-      (item: StockObject) =>
+      (item: StockItemSearchObject) =>
         item?.vendorId === vendorWrapper?.value &&
         returnItems?.filter((i) => i?.id === item?.id)?.length === 0 &&
         item?.quantity > 0,
     )
-    ?.map((item: StockObject) => ({
+    ?.map((item: StockItemSearchObject) => ({
       value: item?.id,
       label: getItemSkuDisplayName(item),
     }))
 
   return (
-    <ScreenContainer
-      show={view?.returnStockScreen}
+    <Modal
+      open={view?.returnStockScreen}
       closeFunction={closeFunction}
       title={'RETURN STOCK'}
       buttons={buttons}
-      titleClass="bg-col2"
+      width="max-w-dialog"
     >
-      <div className="w-full">
+      <div className="h-dialogsm">
         <div className="help-text">
           Select the vendor that you are returning stock to, then select the items and add how many of each they are
           taking.
@@ -124,7 +121,7 @@ export default function ReturnStockScreen() {
                 setReturnItems([
                   {
                     id: item?.value,
-                    quantity: inventory?.find((i: StockObject) => i?.id === item?.value)?.quantity || 1,
+                    quantity: stockList?.find((i: StockItemSearchObject) => i?.id === item?.value)?.quantity || 1,
                   },
                   ...returnItems,
                 ])
@@ -134,8 +131,8 @@ export default function ReturnStockScreen() {
                   actionMeta?.action === 'input-change' &&
                   returnOptions?.filter((opt) => newValue === `${('00000' + opt?.value || '').slice(-5)}`)?.length > 0
                 ) {
-                  let returnItem = inventory?.filter(
-                    (i: StockObject) =>
+                  let returnItem = stockList?.filter(
+                    (i: StockItemSearchObject) =>
                       i?.id ===
                       returnOptions?.find((opt) => newValue === `${('00000' + opt?.value || '').slice(-5)}`)?.[0]
                         ?.value,
@@ -148,15 +145,12 @@ export default function ReturnStockScreen() {
                     ...returnItems,
                   ])
                 }
-                // if () {
-                //   addItemToCart();
-                // }
               }}
             />
             <TextField
               inputLabel="Notes"
-              value={notes}
-              onChange={(e: any) => setNotes(e.target.value)}
+              value={note}
+              onChange={(e: any) => setNote(e.target.value)}
               multiline
               rows={3}
             />
@@ -171,7 +165,9 @@ export default function ReturnStockScreen() {
                 )} ITEMS`}</div>
                 <div className="h-full overflow-y-scroll">
                   {returnItems?.map((returnItem: any, i: number) => {
-                    const item = inventory?.find((i: StockObject) => i?.id === parseInt(returnItem?.id))
+                    const item: StockItemSearchObject = stockList?.find(
+                      (i: StockItemSearchObject) => i?.id === parseInt(returnItem?.id),
+                    )
                     return (
                       <div className="flex justify-between my-2 border-b w-full" key={`${returnItem?.id}-${i}`}>
                         <div className="flex">
@@ -184,11 +180,9 @@ export default function ReturnStockScreen() {
                                 src={getImageSrc(item)}
                                 alt={item?.title || 'Stock image'}
                               />
-                              {!item?.is_gift_card && !item?.is_misc_item && (
-                                <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white text-sm flex justify-center items-center">
-                                  {getItemSku(item)}
-                                </div>
-                              )}
+                              <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white text-sm flex justify-center items-center">
+                                {getItemSku(item)}
+                              </div>
                             </div>
                           </div>
                           <div className="ml-2">
@@ -208,11 +202,16 @@ export default function ReturnStockScreen() {
                             max={item?.quantity || 0}
                             min={0}
                             valueNum={returnItem?.quantity}
-                            onChange={(e: any) =>
-                              returnItems?.map((i) =>
-                                i?.id === returnItem?.id ? { ...returnItem, quantity: e.target.value } : returnItem,
+                            onChange={(e: any) => {
+                              console.log(e.target.value)
+                              setReturnItems(
+                                returnItems?.map((returnListItem) =>
+                                  returnListItem?.id === returnItem?.id
+                                    ? { ...returnItem, quantity: e.target.value }
+                                    : returnListItem,
+                                ),
                               )
-                            }
+                            }}
                           />
                           <button
                             className="bg-gray-200 hover:bg-gray-300 p-1 w-10 h-10 rounded-full mr-8"
@@ -234,6 +233,6 @@ export default function ReturnStockScreen() {
           </div>
         </div>
       </div>
-    </ScreenContainer>
+    </Modal>
   )
 }

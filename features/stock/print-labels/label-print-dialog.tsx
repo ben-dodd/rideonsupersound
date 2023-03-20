@@ -4,29 +4,20 @@ import { v4 as uuid } from 'uuid'
 
 import Modal from 'components/modal'
 import { logPrintLabels } from 'lib/functions/log'
-import { filterInventory } from 'lib/functions/sell'
 import DeleteIcon from '@mui/icons-material/Delete'
-import SearchIcon from '@mui/icons-material/Search'
+import Select from 'react-select'
 import dayjs from 'dayjs'
 import { getImageSrc, getItemSkuDisplayName } from 'lib/functions/displayInventory'
 import { getLabelPrinterCSV } from 'lib/functions/printLabels'
 import { useAppStore } from 'lib/store'
 import { useClerk } from 'lib/api/clerk'
 import { useStockList } from 'lib/api/stock'
-import { useVendors } from 'lib/api/vendor'
 import { ViewProps } from 'lib/store/types'
-import { StockItemObject } from 'lib/types/stock'
 
 export default function LabelPrintDialog() {
   const { view, closeView } = useAppStore()
   const { clerk } = useClerk()
-
-  // SWR
   const { stockList } = useStockList()
-  const { vendors } = useVendors()
-  // const { logs, mutateLogs } = useLogs()
-
-  // State
   const [search, setSearch] = useState('')
   const [items, setItems] = useState([])
 
@@ -76,92 +67,75 @@ export default function LabelPrintDialog() {
         <div className="help-text">
           Search items and add to the list. Then click print to download the CSV file for the label printer.
         </div>
-        <div className="grid grid-cols-2 gap-10 pt-2">
+        <div className="font-bold text-xl mt-4">Add Items</div>
+        <Select
+          className="w-full text-xs"
+          isDisabled={!vendorWrapper?.value}
+          value={null}
+          options={returnOptions}
+          onChange={(item: any) =>
+            setReturnItems([
+              {
+                id: item?.value,
+                quantity: inventory?.find((i: StockObject) => i?.id === item?.value)?.quantity || 1,
+              },
+              ...returnItems,
+            ])
+          }
+          onInputChange={(newValue, actionMeta, prevInputValue) => {
+            if (
+              actionMeta?.action === 'input-change' &&
+              returnOptions?.filter((opt) => newValue === `${('00000' + opt?.value || '').slice(-5)}`)?.length > 0
+            ) {
+              let returnItem = inventory?.filter(
+                (i: StockObject) =>
+                  i?.id ===
+                  returnOptions?.find((opt) => newValue === `${('00000' + opt?.value || '').slice(-5)}`)?.[0]?.value,
+              )
+              setReturnItems([
+                {
+                  id: returnItem?.id,
+                  quantity: returnItem?.quantity || 1,
+                },
+                ...returnItems,
+              ])
+            }
+            // if () {
+            //   addItemToCart();
+            // }
+          }}
+        />
+        <div>
+          <div className="font-bold">SELECTED ITEMS</div>
           <div>
-            <div
-              className={`flex items-center ring-1 ring-gray-400 w-auto bg-gray-100 hover:bg-gray-200 ${
-                search && 'bg-pink-200 hover:bg-pink-300'
-              }`}
-            >
-              <div className="pl-3 pr-1">
-                <SearchIcon />
-              </div>
-              <input
-                autoFocus
-                className="w-full py-1 px-2 outline-none bg-transparent text-2xl"
-                value={search || ''}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="SEARCH…"
-              />
-            </div>
-            <div className="overflow-y-scroll pt-2">
-              {stockDisplay
-                ?.filter((item) => filterInventory(item, search))
-                ?.map((item: StockItemObject) => {
-                  if (search === `${('00000' + item?.id || '').slice(-5)}`) {
-                    addItem(item)
-                  }
-                  const vendor = vendors?.filter((v) => v?.id === item?.vendorId)?.[0]
-                  return (
-                    <div
-                      className="hover:bg-gray-100 cursor-pointer py-2 px-2 border-b border-black flex"
-                      onClick={() => addItem(item)}
-                      key={item?.id}
-                    >
-                      <div className="w-12 mr-2">
-                        <img
-                          className={`object-cover h-12 ${item?.quantity < 1 ? ' opacity-50' : ''}`}
-                          src={getImageSrc(item)}
-                          alt={item?.title || 'Stock image'}
-                        />
-                      </div>
-                      <div>
-                        <div className="font-bold">{getItemSkuDisplayName(item)}</div>
-                        <div className="text-sm">{`${item?.section ? `${item.section} / ` : ''}${item?.format} [${
-                          item?.isNew ? 'NEW' : item?.cond?.toUpperCase() || 'USED'
-                        }]`}</div>
-                        <div className="text-sm">{`${vendor ? `Selling for ${vendor?.name}` : ''}`}</div>
-                      </div>
-                    </div>
-                  )
-                })}
-            </div>
-          </div>
-          <div>
-            <div className="font-bold">SELECTED ITEMS</div>
-            <div>
-              {items?.map((item) => {
-                const vendor = vendors?.filter((v) => v?.id === item?.vendor_id)?.[0]
-                return (
-                  <div
-                    key={item?.key}
-                    className="flex items-center justify-between hover:bg-gray-100 my-2 border-b border-black"
-                  >
-                    <div className="flex">
-                      <div className="w-12 mr-2">
-                        <img
-                          className={`object-cover h-12 ${item?.quantity < 1 ? ' opacity-50' : ''}`}
-                          src={getImageSrc(item)}
-                          alt={item?.title || 'Stock image'}
-                        />
-                      </div>
-                      <div>
-                        <div className="font-bold">{getItemSkuDisplayName(item)}</div>
-                        <div className="text-sm">{`${item?.section ? `${item.section} / ` : ''}${item?.format} [${
-                          item?.is_new ? 'NEW' : item?.cond?.toUpperCase() || 'USED'
-                        }]`}</div>
-                        <div className="text-sm">{`${vendor ? `Selling for ${vendor?.name}` : ''}`}</div>
-                      </div>
-                    </div>
-                    <div>
-                      <button className="py-2 text-tertiary hover:text-tertiary-dark" onClick={() => deleteItem(item)}>
-                        <DeleteIcon />
-                      </button>
-                    </div>
+            {items?.map((item) => (
+              <div
+                key={item?.key}
+                className="flex items-center justify-between hover:bg-gray-100 my-2 border-b border-black"
+              >
+                <div className="flex">
+                  <div className="w-12 mr-2">
+                    <img
+                      className={`object-cover h-12 ${item?.quantity < 1 ? ' opacity-50' : ''}`}
+                      src={getImageSrc(item)}
+                      alt={item?.title || 'Stock image'}
+                    />
                   </div>
-                )
-              })}
-            </div>
+                  <div>
+                    <div className="font-bold">{getItemSkuDisplayName(item)}</div>
+                    <div className="text-sm">{`${item?.section ? `${item.section} / ` : ''}${item?.format} [${
+                      item?.is_new ? 'NEW' : item?.cond?.toUpperCase() || 'USED'
+                    }]`}</div>
+                    <div className="text-sm">{`Selling for ${item?.vendorName || '...'}`}</div>
+                  </div>
+                </div>
+                <div>
+                  <button className="py-2 text-tertiary hover:text-tertiary-dark" onClick={() => deleteItem(item)}>
+                    <DeleteIcon />
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
