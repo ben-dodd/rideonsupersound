@@ -1,32 +1,40 @@
 import { useState } from 'react'
 import { ModalButton } from 'lib/types'
-import { v4 as uuid } from 'uuid'
 
 import Modal from 'components/modal'
-import { logPrintLabels } from 'lib/functions/log'
 import DeleteIcon from '@mui/icons-material/Delete'
 import Select from 'react-select'
 import dayjs from 'dayjs'
-import { getImageSrc, getItemSkuDisplayName } from 'lib/functions/displayInventory'
+import { getImageSrc, getItemDisplayName, getItemSku, getItemSkuDisplayName } from 'lib/functions/displayInventory'
 import { getLabelPrinterCSV } from 'lib/functions/printLabels'
 import { useAppStore } from 'lib/store'
-import { useClerk } from 'lib/api/clerk'
 import { useStockList } from 'lib/api/stock'
 import { ViewProps } from 'lib/store/types'
+import { StockItemSearchObject } from 'lib/types/stock'
+import TextField from 'components/inputs/text-field'
 
 export default function LabelPrintDialog() {
   const { view, closeView } = useAppStore()
-  const { clerk } = useClerk()
   const { stockList } = useStockList()
-  const [search, setSearch] = useState('')
-  const [items, setItems] = useState([])
+  const [printItems, setPrintItems] = useState([])
 
   function closeDialog() {
-    setItems([])
     closeView(ViewProps.labelPrintDialog)
+    setPrintItems([])
   }
 
-  // Constants
+  const explodeItems = () => {
+    const csvItems = []
+    printItems?.forEach((printItem) => {
+      const stockItem = stockList?.find((stockListItem) => stockListItem?.id === printItem?.id)
+      let quantityArray = [...Array(parseInt(`${printItem?.quantity || 1}`))]
+      quantityArray.forEach(() => {
+        csvItems.push(stockItem)
+      })
+    })
+    return csvItems
+  }
+
   const buttons: ModalButton[] = [
     {
       type: 'cancel',
@@ -35,25 +43,20 @@ export default function LabelPrintDialog() {
     },
     {
       type: 'ok',
-      data: getLabelPrinterCSV(items),
+      data: getLabelPrinterCSV(explodeItems()),
       headers: ['SKU', 'ARTIST', 'TITLE', 'NEW/USED', 'SELL PRICE', 'SECTION', 'BARCODE'],
       fileName: `label-print-${dayjs().format('YYYY-MM-DD')}.csv`,
       text: 'PRINT LABELS',
       onClick: () => {
-        logPrintLabels(clerk, 'label print dialog')
         closeDialog()
       },
     },
   ]
 
-  function addItem(item) {
-    setItems([...items, { ...item, key: uuid() }])
-    setSearch('')
-  }
-
-  function deleteItem(item) {
-    setItems([...items?.filter?.((i) => i?.key !== item?.key)])
-  }
+  const printOptions = stockList?.map((item: StockItemSearchObject) => ({
+    value: item?.id,
+    label: getItemSkuDisplayName(item),
+  }))
 
   return (
     <Modal
@@ -63,80 +66,110 @@ export default function LabelPrintDialog() {
       buttons={buttons}
       width={'max-w-dialog'}
     >
-      <div className="h-dialog">
+      <div className="h-dialogsm">
         <div className="help-text">
           Search items and add to the list. Then click print to download the CSV file for the label printer.
         </div>
         <div className="font-bold text-xl mt-4">Add Items</div>
+
         <Select
           className="w-full text-xs"
-          isDisabled={!vendorWrapper?.value}
           value={null}
-          options={returnOptions}
+          options={printOptions}
           onChange={(item: any) =>
-            setReturnItems([
+            setPrintItems([
               {
                 id: item?.value,
-                quantity: inventory?.find((i: StockObject) => i?.id === item?.value)?.quantity || 1,
+                quantity: 1,
               },
-              ...returnItems,
+              ...printItems,
             ])
           }
           onInputChange={(newValue, actionMeta, prevInputValue) => {
             if (
               actionMeta?.action === 'input-change' &&
-              returnOptions?.filter((opt) => newValue === `${('00000' + opt?.value || '').slice(-5)}`)?.length > 0
+              printOptions?.filter((opt) => newValue === `${('00000' + opt?.value || '').slice(-5)}`)?.length > 0
             ) {
-              let returnItem = inventory?.filter(
-                (i: StockObject) =>
+              let item = stockList?.filter(
+                (i: StockItemSearchObject) =>
                   i?.id ===
-                  returnOptions?.find((opt) => newValue === `${('00000' + opt?.value || '').slice(-5)}`)?.[0]?.value,
+                  printOptions?.find((opt) => newValue === `${('00000' + opt?.value || '').slice(-5)}`)?.[0]?.value,
               )
-              setReturnItems([
+              setPrintItems([
                 {
-                  id: returnItem?.id,
-                  quantity: returnItem?.quantity || 1,
+                  id: item?.id,
+                  quantity: 1,
                 },
-                ...returnItems,
+                ...printItems,
               ])
             }
-            // if () {
-            //   addItemToCart();
-            // }
           }}
         />
-        <div>
-          <div className="font-bold">SELECTED ITEMS</div>
-          <div>
-            {items?.map((item) => (
-              <div
-                key={item?.key}
-                className="flex items-center justify-between hover:bg-gray-100 my-2 border-b border-black"
-              >
-                <div className="flex">
-                  <div className="w-12 mr-2">
-                    <img
-                      className={`object-cover h-12 ${item?.quantity < 1 ? ' opacity-50' : ''}`}
-                      src={getImageSrc(item)}
-                      alt={item?.title || 'Stock image'}
-                    />
-                  </div>
-                  <div>
-                    <div className="font-bold">{getItemSkuDisplayName(item)}</div>
-                    <div className="text-sm">{`${item?.section ? `${item.section} / ` : ''}${item?.format} [${
-                      item?.is_new ? 'NEW' : item?.cond?.toUpperCase() || 'USED'
-                    }]`}</div>
-                    <div className="text-sm">{`Selling for ${item?.vendorName || '...'}`}</div>
-                  </div>
-                </div>
-                <div>
-                  <button className="py-2 text-tertiary hover:text-tertiary-dark" onClick={() => deleteItem(item)}>
-                    <DeleteIcon />
-                  </button>
-                </div>
+        <div className="mt-4">
+          {printItems?.length > 0 ? (
+            <div className="h-dialog">
+              <div className="font-bold text-xl">{`PRINTING ${printItems?.reduce(
+                (prev, returnItem) => (prev += parseInt(returnItem?.quantity)),
+                0,
+              )} LABELS`}</div>
+              <div className="h-full overflow-y-scroll">
+                {printItems?.map((printItem: any, i: number) => {
+                  const item: StockItemSearchObject = stockList?.find(
+                    (i: StockItemSearchObject) => i?.id === parseInt(printItem?.id),
+                  )
+                  return (
+                    <div className="flex justify-between my-2 border-b w-full" key={`${printItem?.id}-${i}`}>
+                      <div className="flex">
+                        <div className="w-20">
+                          <div className="w-20 h-20 relative">
+                            <img
+                              className="object-cover absolute"
+                              src={getImageSrc(item)}
+                              alt={item?.title || 'Stock image'}
+                            />
+                            <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white text-sm flex justify-center items-center">
+                              {getItemSku(item)}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="ml-2">
+                          {getItemDisplayName(item)}
+                          <div
+                            className={`mt-2 text-sm font-bold ${item?.quantity <= 0 ? 'text-tertiary' : 'text-black'}`}
+                          >{`${item?.quantity || 0} in stock.`}</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-end">
+                        <TextField
+                          className="w-16 mr-6"
+                          inputType="number"
+                          min={0}
+                          valueNum={printItem?.quantity}
+                          onChange={(e: any) => {
+                            setPrintItems(
+                              printItems?.map((printListItem) =>
+                                printListItem?.id === printItem?.id
+                                  ? { ...printItem, quantity: e.target.value }
+                                  : printListItem,
+                              ),
+                            )
+                          }}
+                        />
+                        <button
+                          className="bg-gray-200 hover:bg-gray-300 p-1 w-10 h-10 rounded-full mr-8"
+                          onClick={() => setPrintItems(printItems?.filter((i) => i?.id !== printItem?.id))}
+                        >
+                          <DeleteIcon />
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
-            ))}
-          </div>
+            </div>
+          ) : (
+            <div>Select items from the drop-down menu.</div>
+          )}
         </div>
       </div>
     </Modal>

@@ -3,7 +3,7 @@ import Layout from 'components/layout'
 import InventoryScreen from 'features/stock'
 import LabelPrintDialog from 'features/stock/print-labels/label-print-dialog'
 import ReceiveStockScreen from 'features/stock/receive-inventory'
-import ReturnStockScreen from 'features/stock/return-inventory/return-stock-screen'
+import ReturnStockScreen from 'features/stock/return-stock-dialog'
 import { useAppStore } from 'lib/store'
 
 export default function InventoryPage() {

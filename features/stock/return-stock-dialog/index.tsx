@@ -26,7 +26,7 @@ export default function ReturnStockScreen() {
 
   const [submitting, setSubmitting] = useState(false)
 
-  function closeFunction() {
+  function closeDialog() {
     closeView(ViewProps.returnStockScreen)
     setVendorWrapper(null)
     setReturnItems([])
@@ -36,7 +36,7 @@ export default function ReturnStockScreen() {
   const buttons: ModalButton[] = [
     {
       type: 'cancel',
-      onClick: closeFunction,
+      onClick: closeDialog,
       text: 'CANCEL',
     },
     {
@@ -50,7 +50,7 @@ export default function ReturnStockScreen() {
           type: 'success',
           message: `ITEMS RETURNED TO VENDOR`,
         })
-        closeFunction()
+        closeDialog()
       },
       loading: submitting,
       disabled:
@@ -68,8 +68,6 @@ export default function ReturnStockScreen() {
     },
   ]
 
-  console.log(returnItems)
-
   const returnOptions = stockList
     ?.filter(
       (item: StockItemSearchObject) =>
@@ -85,7 +83,7 @@ export default function ReturnStockScreen() {
   return (
     <Modal
       open={view?.returnStockScreen}
-      closeFunction={closeFunction}
+      closeFunction={closeDialog}
       title={'RETURN STOCK'}
       buttons={buttons}
       width="max-w-dialog"
@@ -156,7 +154,6 @@ export default function ReturnStockScreen() {
             />
           </div>
           <div className="w-2/3 pl-8">
-            {/* <div className="font-bold text-xl">Items to Return</div> */}
             {returnItems?.length > 0 ? (
               <div className="h-dialog">
                 <div className="font-bold text-xl">{`RETURNING ${returnItems?.reduce(
@@ -175,8 +172,6 @@ export default function ReturnStockScreen() {
                             <div className="w-20 h-20 relative">
                               <img
                                 className="object-cover absolute"
-                                // layout="fill"
-                                // objectFit="cover"
                                 src={getImageSrc(item)}
                                 alt={item?.title || 'Stock image'}
                               />
@@ -203,7 +198,6 @@ export default function ReturnStockScreen() {
                             min={0}
                             valueNum={returnItem?.quantity}
                             onChange={(e: any) => {
-                              console.log(e.target.value)
                               setReturnItems(
                                 returnItems?.map((returnListItem) =>
                                   returnListItem?.id === returnItem?.id
