@@ -8,14 +8,14 @@ import dayjs from 'dayjs'
 import { getImageSrc, getItemDisplayName, getItemSku, getItemSkuDisplayName } from 'lib/functions/displayInventory'
 import { getLabelPrinterCSV } from 'lib/functions/printLabels'
 import { useAppStore } from 'lib/store'
-import { useStockList } from 'lib/api/stock'
 import { ViewProps } from 'lib/store/types'
 import { StockItemSearchObject } from 'lib/types/stock'
 import TextField from 'components/inputs/text-field'
+import { usePrintLabelStockList } from 'lib/api/stock'
 
 export default function LabelPrintDialog() {
   const { view, closeView } = useAppStore()
-  const { stockList } = useStockList()
+  const { printLabelStockList, isPrintLabelStockListLoading } = usePrintLabelStockList()
   const [printItems, setPrintItems] = useState([])
 
   function closeDialog() {
@@ -26,7 +26,7 @@ export default function LabelPrintDialog() {
   const explodeItems = () => {
     const csvItems = []
     printItems?.forEach((printItem) => {
-      const stockItem = stockList?.find((stockListItem) => stockListItem?.id === printItem?.id)
+      const stockItem = printLabelStockList?.find((stockListItem) => stockListItem?.id === printItem?.id)
       let quantityArray = [...Array(parseInt(`${printItem?.quantity || 1}`))]
       quantityArray.forEach(() => {
         csvItems.push(stockItem)
@@ -53,7 +53,7 @@ export default function LabelPrintDialog() {
     },
   ]
 
-  const printOptions = stockList?.map((item: StockItemSearchObject) => ({
+  const printOptions = printLabelStockList?.map((item: StockItemSearchObject) => ({
     value: item?.id,
     label: getItemSkuDisplayName(item),
   }))
@@ -65,6 +65,7 @@ export default function LabelPrintDialog() {
       title={'LABEL PRINT'}
       buttons={buttons}
       width={'max-w-dialog'}
+      loading={isPrintLabelStockListLoading}
     >
       <div className="h-dialogsm">
         <div className="help-text">
@@ -90,7 +91,7 @@ export default function LabelPrintDialog() {
               actionMeta?.action === 'input-change' &&
               printOptions?.filter((opt) => newValue === `${('00000' + opt?.value || '').slice(-5)}`)?.length > 0
             ) {
-              let item = stockList?.filter(
+              let item = printLabelStockList?.filter(
                 (i: StockItemSearchObject) =>
                   i?.id ===
                   printOptions?.find((opt) => newValue === `${('00000' + opt?.value || '').slice(-5)}`)?.[0]?.value,
@@ -114,7 +115,7 @@ export default function LabelPrintDialog() {
               )} LABELS`}</div>
               <div className="h-full overflow-y-scroll">
                 {printItems?.map((printItem: any, i: number) => {
-                  const item: StockItemSearchObject = stockList?.find(
+                  const item: StockItemSearchObject = printLabelStockList?.find(
                     (i: StockItemSearchObject) => i?.id === parseInt(printItem?.id),
                   )
                   return (

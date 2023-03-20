@@ -29,6 +29,28 @@ export function dbGetStockList(db = connection) {
     .where(`stock.is_gift_card`, 0)
 }
 
+export function dbGetPrintLabelStockList(db = connection) {
+  return db('stock')
+    .leftJoin('vendor', 'stock.vendor_id', 'vendor.id')
+    .leftJoin('stock_price', 'stock.id', 'stock_price.stock_id')
+    .select(
+      'stock.id',
+      'stock.vendor_id',
+      'vendor.name as vendor_name',
+      'stock_price.total_sell',
+      'stock.artist',
+      'stock.title',
+      'stock.display_as',
+      'stock.format',
+      'stock.section',
+      'stock.is_new',
+    )
+    .where(`stock.is_deleted`, 0)
+    .where(`stock.is_misc_item`, 0)
+    .where(`stock.is_gift_card`, 0)
+    .whereRaw(`(stock_price.id = (SELECT MAX(id) FROM stock_price WHERE stock_id = stock.id))`)
+}
+
 // export function dbGetStockList(db = connection) {
 //   return db('stock')
 //     .leftJoin('stock_movement', 'stock.id', 'stock_movement.stock_id')

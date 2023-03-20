@@ -7,6 +7,10 @@ export function useStockList() {
   return useData(`stock`, 'stockList')
 }
 
+export function usePrintLabelStockList() {
+  return useData(`stock/label`, 'printLabelStockList')
+}
+
 export function useBasicStockItem(id: string | number, wait?: boolean) {
   return useData(wait ? null : `stock/${id}?basic=true`, 'stockItem')
 }
