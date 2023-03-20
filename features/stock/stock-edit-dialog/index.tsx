@@ -12,10 +12,12 @@ import { useAppStore } from 'lib/store'
 import Modal from 'components/modal'
 import { useSWRConfig } from 'swr'
 import { VendorObject } from 'lib/types/vendor'
+import { StockItemObject } from 'lib/types/stock'
+import { getObjectDifference } from 'lib/utils'
 
-export default function StockEditDialog({ stockItem }) {
+export default function StockEditDialog({ stockItem: { item: currItem } }) {
   const { view, closeView, setAlert } = useAppStore()
-  const [item, setItem] = useState(stockItem?.item || {})
+  const [item, setItem]: [StockItemObject, Function] = useState(currItem || {})
   const handleChange = (e) => setItem({ ...item, [e.target.name]: e.target.value })
   const { vendors } = useVendors()
   const disabled = false
@@ -30,8 +32,9 @@ export default function StockEditDialog({ stockItem }) {
       loading: submitting,
       onClick: async () => {
         setSubmitting(true)
-        await updateStockItem(item, stockItem?.id)
-        mutate(`stock/${stockItem?.id}`)
+        const update = getObjectDifference(item, currItem)
+        await updateStockItem(update, currItem?.id)
+        mutate(`stock/${currItem?.id}`)
         setSubmitting(false)
         closeView(ViewProps.stockEditDialog)
         setAlert({
@@ -57,8 +60,12 @@ export default function StockEditDialog({ stockItem }) {
         <div className="flex justify-start w-full">
           <div className="pr-2 w-52 mr-2">
             <div className="w-52 h-52 relative">
-              <img className="object-cover absolute" src={getImageSrc(item)} alt={item?.title || 'Stock image'} />
-              {item?.id && (
+              <img
+                className="object-cover absolute"
+                src={getImageSrc(item)}
+                alt={item?.title || currItem?.title || 'Stock image'}
+              />
+              {currItem?.id && (
                 <div className="absolute w-52 h-8 bg-opacity-50 bg-black text-white flex justify-center items-center">
                   {getItemSku(item)}
                 </div>
@@ -97,7 +104,7 @@ export default function StockEditDialog({ stockItem }) {
                   onChange={(vendorObject: any) =>
                     setItem({
                       ...item,
-                      vendor_id: parseInt(vendorObject?.value),
+                      vendorId: parseInt(vendorObject?.value),
                     })
                   }
                   onCreateOption={async (vendorName: string) => {
@@ -150,7 +157,7 @@ export default function StockEditDialog({ stockItem }) {
               inputLabel="CONDITION"
               group="isNew"
               value={item?.isNew ? 'true' : 'false'}
-              onChange={(value: string) => setItem({ ...item, is_new: value === 'true' ? 1 : 0 })}
+              onChange={(value: string) => setItem({ ...item, isNew: value === 'true' ? 1 : 0 })}
               options={[
                 { id: 'new', value: 'true', label: 'New' },
                 { id: 'used', value: 'false', label: 'Used' },
@@ -200,7 +207,7 @@ export default function StockEditDialog({ stockItem }) {
             <input
               type="checkbox"
               className="cursor-pointer"
-              checked={item?.doListOnWebsite === 0 ? false : true}
+              checked={item?.doListOnWebsite}
               onChange={(e) => setItem({ ...item, doListOnWebsite: e.target.checked ? 1 : 0 })}
             />
             <div className="ml-2">List on website</div>
@@ -209,7 +216,7 @@ export default function StockEditDialog({ stockItem }) {
             <input
               type="checkbox"
               className="cursor-pointer"
-              checked={item?.hasNoQuantity === 1 ? true : false}
+              checked={item?.hasNoQuantity}
               onChange={(e) => setItem({ ...item, hasNoQuantity: e.target.checked ? 1 : 0 })}
             />
             <div className="ml-2">Item has no stock quantity (e.g. lathe cut services)</div>

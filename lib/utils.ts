@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import { differenceWith, isEqual, toPairs } from 'lodash'
 
 export function camelCase(str: string) {
   if (!str) return str
@@ -114,4 +115,11 @@ export function eraseWhiteSpace(str) {
 
 export function sumListField(list, field) {
   return list?.reduce?.((acc: number, obj: any) => acc + obj?.[field], 0)
+}
+
+export function getObjectDifference(obj1, obj2) {
+  const diffArray = differenceWith(toPairs(obj1), toPairs(obj2), isEqual)
+  let diffObj = {}
+  diffArray?.forEach?.((el) => (diffObj[el[0]] = el[1]))
+  return diffObj
 }
