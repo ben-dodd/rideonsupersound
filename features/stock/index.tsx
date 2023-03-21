@@ -21,8 +21,8 @@ const StockScreen = () => {
     { text: 'Receive Stock', icon: <CollectionsBookmark />, onClick: () => openView(ViewProps.receiveStockScreen) },
     { text: 'Return Stock to Vendor', icon: <EventBusy />, onClick: () => openView(ViewProps.returnStockScreen) },
     { text: 'Print Labels', icon: <Print />, onClick: () => openView(ViewProps.labelPrintDialog) },
-    { text: 'Bulk Edit Items', icon: <AutoFixHigh />, onClick: null },
-    { text: 'Manage Settings', icon: <DisplaySettings />, onClick: null },
+    { text: 'Bulk Edit Items', icon: <AutoFixHigh />, onClick: null, disabled: true },
+    { text: 'Manage Settings', icon: <DisplaySettings />, onClick: null, disabled: true },
   ]
 
   return (

@@ -33,9 +33,14 @@ const DropdownMenu = ({
         }`}
       >
         {items?.map((item, i) => (
-          <div key={i} className="block text-gray-700 hover:bg-blue-500 hover:text-white">
+          <div
+            key={i}
+            className={`block text-gray-700 ${
+              item?.disabled ? 'cursor-default text-gray-300' : 'hover:bg-blue-500 hover:text-white'
+            }`}
+          >
             <button
-              className="flex items-center justify-start flex-nowrap w-dropdown p-2"
+              className={`flex items-center justify-start flex-nowrap w-dropdown p-2`}
               onClick={() => {
                 setMenuVisible(false)
                 item?.onClick?.()

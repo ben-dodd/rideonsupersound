@@ -51,6 +51,7 @@ const initState = {
   },
   stockPage: {
     searchBar: '',
+    tab: 0,
   },
   vendorsPage: {
     searchBar: '',
