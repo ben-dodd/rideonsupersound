@@ -22,6 +22,7 @@ export function dbGetStockList(db = connection) {
       'stock.is_new',
       'stock.cond',
       'stock.tags',
+      'stock.needs_restock',
     )
     .sum('stock_movement.quantity as quantity')
     .where(`stock.is_deleted`, 0)
@@ -178,6 +179,10 @@ export function getQuantities(types, stockMovements, reverse = false) {
 
 export function dbGetStockItems(itemIds, db = connection) {
   return Promise.all(itemIds?.map((itemId) => dbGetStockItem(itemId, true, db)))
+}
+
+export function dbGetStockMovements(limit, db = connection) {
+  return db('stock_movement').limit(limit)
 }
 
 export function dbGetGiftCards(db = connection) {

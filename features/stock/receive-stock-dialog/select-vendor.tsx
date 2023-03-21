@@ -11,7 +11,6 @@ export default function SelectVendor() {
     <div>
       <div className="font-bold text-xl mt-4">Select Vendor</div>
       <CreateableSelect
-        inputLabel="Select vendor"
         value={receiveBasket?.vendorId}
         label={vendors?.find((v: VendorObject) => v?.id === receiveBasket?.vendorId)?.name || ''}
         onChange={(vendorObject: any) => {

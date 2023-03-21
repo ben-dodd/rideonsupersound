@@ -1,8 +1,9 @@
 import { useJobs } from 'lib/api/jobs'
 import { TaskObject } from 'lib/types'
 import dayjs from 'dayjs'
+import ListJob from './list-job'
 
-export default function JobView(filter) {
+export default function JobView({ filter }) {
   const { jobs, isJobsLoading } = useJobs()
   return isJobsLoading ? (
     <div className="w-full flex h-full">
@@ -12,7 +13,7 @@ export default function JobView(filter) {
     jobs
       ?.filter(filter)
       ?.sort(sortJobs)
-      ?.map((task: TaskObject) => <ListTask task={task} key={task?.id} />)
+      ?.map((task: TaskObject) => <ListJob task={task} key={task?.id} />)
   )
 }
 

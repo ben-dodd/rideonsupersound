@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
-import { RoleTypes, SaleObject } from 'lib/types'
+import { RoleTypes } from 'lib/types'
+import { SaleObject } from 'lib/types/sale'
 import { axiosAuth, useData } from './'
 
 export function useJobsToDo() {
@@ -13,9 +14,7 @@ export function useJobs() {
 export async function createMailOrderTask(sale: SaleObject, customer: string) {
   return axiosAuth
     .post(`/api/job`, {
-      description: `Post Sale ${sale?.id} (${sale?.itemList}) to ${
-        `${customer}\n` || ''
-      }${sale?.postalAddress}`,
+      description: `Post Sale ${sale?.id} (${sale?.itemList}) to ${`${customer}\n` || ''}${sale?.postalAddress}`,
       createdByClerkId: sale?.saleOpenedBy,
       assignedTo: RoleTypes?.MC,
       dateCreated: dayjs.utc().format(),
@@ -27,7 +26,7 @@ export async function createMailOrderTask(sale: SaleObject, customer: string) {
 
 export function updateJob(update: any, id) {
   return axiosAuth
-    .patch(`/api/job/${id}`)
+    .patch(`/api/job/${id}`, update)
     .then((res) => res.data)
     .catch((e) => Error(e.message))
 }

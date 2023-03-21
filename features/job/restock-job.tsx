@@ -1,18 +1,15 @@
 // DB
 import { getItemSkuDisplayName } from 'lib/functions/displayInventory'
-import { logRestockItem } from 'lib/functions/log'
-import { StockObject } from 'lib/types/stock'
+import { StockItemSearchObject } from 'lib/types/stock'
 import { completeRestockTask } from 'lib/functions/job'
 import { useStockList } from 'lib/api/stock'
-import { useClerk } from 'lib/api/clerk'
 
 type ListItemProps = {
-  item: StockObject
+  item: StockItemSearchObject
 }
 
 export default function RestockJob({ item }: ListItemProps) {
-  const { inventory, mutateInventory } = useStockList()
-  const { clerk } = useClerk()
+  const { stockList, mutateStockList } = useStockList()
 
   return (
     <div className={`flex w-full border-b border-yellow-100 py-1 text-sm`}>
@@ -23,12 +20,13 @@ export default function RestockJob({ item }: ListItemProps) {
               className="cursor-pointer"
               type="checkbox"
               onChange={() => {
-                mutateInventory(
-                  inventory?.map((i) => (i?.id === item?.id ? { ...item, needsRestock: false } : i)),
+                mutateStockList(
+                  stockList?.map((i: StockItemSearchObject) =>
+                    i?.id === item?.id ? { ...item, needsRestock: false } : i,
+                  ),
                   false,
                 )
                 completeRestockTask(item?.id)
-                logRestockItem(item, clerk)
               }}
             />
           </div>

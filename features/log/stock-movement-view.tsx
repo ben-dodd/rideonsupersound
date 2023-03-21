@@ -1,23 +1,16 @@
-import ListStockMovement from 'features/log/components/list-stock-movement'
 import { useClerks } from 'lib/api/clerk'
-import { StockMovementObject } from 'lib/types'
+import { useStockMovements } from 'lib/api/stock'
+import { StockMovementObject } from 'lib/types/stock'
+import ListStockMovement from './list-stock-movement'
 
 export function StockMovementView() {
   const { clerks } = useClerks()
   const { stockMovements, isStockMovementsLoading } = useStockMovements(200)
-  const { stockDisplay } = useStockDisplayMin()
   return isStockMovementsLoading ? (
     <div className="w-full flex h-full">
       <div className="loading-icon" />
     </div>
   ) : (
-    stockMovements?.map((sm: StockMovementObject) => (
-      <ListStockMovement
-        sm={sm}
-        clerks={clerks}
-        stockDisplay={stockDisplay}
-        key={sm?.id}
-      />
-    ))
+    stockMovements?.map((sm: StockMovementObject) => <ListStockMovement sm={sm} clerks={clerks} key={sm?.id} />)
   )
 }

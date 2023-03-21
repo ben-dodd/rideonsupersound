@@ -52,6 +52,7 @@ export interface StockItemSearchObject extends StockItemBaseObject {
   tags?: string[]
   quantity?: number
   vendorName?: string
+  needsRestock?: boolean
 }
 
 // Adds properties for displaying rich list item of object
@@ -171,6 +172,7 @@ export interface StockMovementObject {
   act?: string
   note?: string
   dateMoved?: string
+  itemDisplayName?: string
 }
 
 export interface StocktakeObject {

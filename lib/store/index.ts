@@ -79,8 +79,10 @@ const initState = {
     searchBar: '',
     loadedGiftCard: null,
   },
-  logsPage: {},
-  jobsPage: {},
+  logsPage: { tab: 0 },
+  jobsPage: {
+    tab: 0,
+  },
   stocktakesPage: {},
 }
 
