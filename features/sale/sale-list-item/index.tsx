@@ -13,7 +13,7 @@ export default function SaleListItem({ sale }: { sale: SaleObject }) {
       <div className="w-1/12">{`${sale?.state?.toUpperCase?.()}`}</div>
       <div className="w-1/6">{`${dayjs(sale?.dateSaleOpened).format('D MMM YYYY, H:mmA')}`}</div>
       <div className="w-1/2">{`${sale?.itemList}`}</div>
-      <div className="w-1/12">{`${clerkName}`}</div>
+      <div className="w-1/12">{`${clerkName || '...'}`}</div>
     </div>
   )
 }

@@ -7,7 +7,6 @@ import HoldsSidebar from './sidebar'
 const HoldsList = () => {
   const { currentHolds, isCurrentHoldsLoading } = useCurrentHolds()
   const { holdsPage } = useAppStore()
-  console.log(currentHolds)
   return isCurrentHoldsLoading ? (
     <Loading />
   ) : (

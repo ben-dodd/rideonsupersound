@@ -128,6 +128,14 @@ export const useAppStore = createSelectors(
           Object.entries(update).forEach(([key, value]) => (draft.cart[key] = value))
         }),
       ),
+    loadSaleToCart: (sale) => {
+      console.log('LOAD SALE TO CART (NEEDS DOING)', sale)
+      set(
+        produce((draft) => {
+          Object.entries(sale).forEach(([key, value]) => (draft.cart[key] = value))
+        }),
+      )
+    },
     mutateCart: async (mutates = []) => {
       const newCart = await saveCart(get().cart, get().cart?.sale?.state)
       mutates.forEach((key) => mutate(key))

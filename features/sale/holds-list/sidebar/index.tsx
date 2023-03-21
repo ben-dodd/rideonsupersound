@@ -1,40 +1,64 @@
 import { CloseRounded } from '@mui/icons-material'
 import SidebarContainer from 'components/container/side-bar'
+import TextField from 'components/inputs/text-field'
 import Loading from 'components/placeholders/loading'
-import { useHolds } from 'lib/api/sale'
-import { getItemSkuDisplayName } from 'lib/functions/displayInventory'
+import dayjs from 'dayjs'
+import HoldListItem from 'features/sell/create-hold/list-item'
+import { updateHold, useHolds } from 'lib/api/sale'
 import { useAppStore } from 'lib/store'
 import { Pages } from 'lib/store/types'
-import { useRouter } from 'next/router'
-import React from 'react'
+import { ModalButton } from 'lib/types'
+import { getObjectDifference } from 'lib/utils'
+import React, { useState } from 'react'
 
 const HoldsSidebar = () => {
-  const { holdsPage, setPage } = useAppStore()
-  const router = useRouter()
+  const { holdsPage, setPage, setAlert } = useAppStore()
   const { holds, isHoldsLoading } = useHolds()
-  const hold = holds?.find((hold) => hold?.id === holdsPage?.loadedHold)
+  const originalHold = holds?.find((hold) => hold?.id === holdsPage?.loadedHold)
+  const [hold, setHold] = useState(originalHold || {})
+  const [submitting, setSubmitting] = useState(false)
   console.log(hold)
   const closeSidebar = () => setPage(Pages.holdsPage, { loadedHold: 0 })
 
-  // const buttons: ModalButton[] = [
-  //   {
-  //     type: 'cancel',
-  //     onClick: () => {
-  //       closeView(ViewProps.cart)
-  //       closeView(ViewProps.createHold)
-  //     },
-  //     text: 'CANCEL',
-  //   },
-  //   {
-  //     type: 'ok',
-  //     onClick: onClickConfirmHold,
-  //     disabled: !sale?.customerId || items.length === 0 || !holdPeriod,
-  //     text: submitting ? 'HOLDING...' : 'CONFIRM HOLD',
-  //   },
-  // ]
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    onClickUpdateHold()
+  }
+
+  async function onClickUpdateHold() {
+    setSubmitting(true)
+    await updateHold(getObjectDifference(hold, originalHold), originalHold?.id)
+    setSubmitting(false)
+    closeSidebar()
+    setHold({})
+    setAlert({
+      open: true,
+      type: 'success',
+      message: `HOLD UPDATED.`,
+    })
+  }
+
+  const buttons: ModalButton[] = [
+    {
+      type: 'cancel',
+      onClick: () => {
+        closeSidebar()
+        setHold({})
+      },
+      text: 'CANCEL',
+    },
+    {
+      type: 'ok',
+      onClick: onClickUpdateHold,
+      disabled:
+        (hold?.holdPeriod === originalHold?.holdPeriod && hold?.note === originalHold?.note) ||
+        isNaN(parseInt(hold?.holdPeriod)),
+      text: submitting ? 'UPDATING...' : 'UPDATE HOLD',
+    },
+  ]
 
   return (
-    <SidebarContainer show={Boolean(holdsPage?.loadedHold)}>
+    <SidebarContainer show={Boolean(holdsPage?.loadedHold)} buttons={buttons} handleSubmit={handleSubmit}>
       {isHoldsLoading ? (
         <Loading />
       ) : (
@@ -47,7 +71,24 @@ const HoldsSidebar = () => {
             </button>
           </div>
           <div className="p-4">
-            <div className="text-xl mb-2 text-green-200">{getItemSkuDisplayName(hold)}</div>
+            <HoldListItem cartItem={hold} />
+            <div>{`Item held for ${hold?.customerName} (hold set up by ${hold?.openClerkName})`}</div>
+            <div>{`Item held for ${dayjs().diff(hold?.dateFrom, 'day')} of ${hold?.holdPeriod || 30} days.`}</div>
+            <TextField
+              inputLabel="Hold Period"
+              inputType="number"
+              min={0}
+              error={isNaN(parseInt(hold?.holdPeriod)) || hold?.holdPeriod < 0}
+              valueNum={hold?.holdPeriod}
+              onChange={(e: any) => setHold({ ...hold, holdPeriod: e.target.value })}
+            />
+            <TextField
+              inputLabel="Notes"
+              className="mb-4"
+              value={hold?.note}
+              onChange={(e: any) => setHold({ ...hold, note: e.target.value })}
+              multiline
+            />
           </div>
         </div>
       )}

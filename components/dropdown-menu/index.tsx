@@ -1,18 +1,31 @@
 import { Settings } from '@mui/icons-material'
 import { useState } from 'react'
 
-const DropdownMenu = ({ items, dark }) => {
+const DropdownMenu = ({
+  items,
+  dark = false,
+  icon,
+  buttonClass,
+}: {
+  items: any[]
+  dark?: boolean
+  icon?: any
+  buttonClass?: string
+}) => {
   const [menuVisible, setMenuVisible] = useState(false)
   const toggleMenu = () => setMenuVisible((isVisible) => !isVisible)
   return (
-    <div className="relative">
+    <div className="flex items-center relative h-full">
       <button
         onClick={toggleMenu}
-        className={`${dark ? 'hover:text-yellow-200 ' : 'hover:text-gray-600 '}${
-          menuVisible ? (dark ? 'text-yellow-200' : 'text-gray-600') : ''
-        }`}
+        className={
+          buttonClass ||
+          `${dark ? 'hover:text-yellow-200 ' : 'hover:text-gray-600 '}${
+            menuVisible ? (dark ? 'text-yellow-200' : 'text-gray-600') : ''
+          }`
+        }
       >
-        <Settings />
+        {icon || <Settings />}
       </button>
       <div
         className={`absolute bg-white top-6 right-6 text-sm opacity-90 shadow-lg z-50 border transition-height duration-500 ${

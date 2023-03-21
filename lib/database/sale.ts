@@ -165,6 +165,18 @@ export function dbUpdateSale(id, update, db = connection) {
     })
 }
 
+export function dbUpdateHold(id, update, db = connection) {
+  return db('hold')
+    .where({ id })
+    .update(js2mysql(update))
+    .then(() => {
+      return id
+    })
+    .catch((e) => {
+      Error(e.message)
+    })
+}
+
 export function dbCreateSaleItem(saleItem, db = connection) {
   return db('sale_item')
     .insert(js2mysql(saleItem))

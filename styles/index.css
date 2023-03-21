@@ -106,7 +106,7 @@
 }
 
 .icon-button-small-white {
-  @apply p-1 sm:p-2 text-brown-light hover:text-white disabled:text-brown disabled:pointer-events-none;
+  @apply p-1 sm:p-2 text-gray-200 hover:text-white disabled:text-brown-light disabled:pointer-events-none;
 }
 
 .square-button {

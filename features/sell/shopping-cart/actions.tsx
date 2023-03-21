@@ -5,12 +5,15 @@ import { SaleStateTypes } from 'lib/types/sale'
 import { useAppStore } from 'lib/store'
 import { Pages, ViewProps } from 'lib/store/types'
 import { useSWRConfig } from 'swr'
-import { saveCart } from 'lib/api/sale'
-import { Delete, Save } from '@mui/icons-material'
+import { saveCart, useParkedSales } from 'lib/api/sale'
+import { Delete, Folder, Save } from '@mui/icons-material'
+import DropdownMenu from 'components/dropdown-menu'
+import dayjs from 'dayjs'
 
 // TODO fix action icons alignment
 export default function ShoppingCartActions() {
-  const { cart, setCart, setAlert, openConfirm, closeView, resetCart, resetSearchBar } = useAppStore()
+  const { cart, setCart, loadSaleToCart, setAlert, openConfirm, closeView, resetCart, resetSearchBar } = useAppStore()
+  const { parkedSales } = useParkedSales()
   const { sale = {}, items = [] } = cart || {}
   const [saveSaleLoading, setSaveSaleLoading] = useState(false)
   const { mutate } = useSWRConfig()
@@ -19,6 +22,11 @@ export default function ShoppingCartActions() {
     resetCart()
     closeView(ViewProps.cart)
   }
+
+  const parkedSaleItems = parkedSales?.map((sale) => ({
+    text: `[${dayjs(sale?.dateSaleOpened).format('DD/MM/YYYY h:mma')}] ${sale?.itemList}`,
+    onClick: () => loadSaleToCart(sale),
+  }))
 
   async function onClickSaveSale() {
     setSaveSaleLoading(true)
@@ -68,8 +76,12 @@ export default function ShoppingCartActions() {
       noText: 'CANCEL',
     })
   }
+
   return (
     <div className="flex">
+      <Tooltip title={`Open Parked Sales`}>
+        <DropdownMenu items={parkedSaleItems} icon={<Folder />} buttonClass="icon-button-small-white" />
+      </Tooltip>
       <Tooltip title={sale?.state === SaleStateTypes.Layby ? 'Continue Layby' : 'Park sale'}>
         <button
           className="icon-button-small-white"

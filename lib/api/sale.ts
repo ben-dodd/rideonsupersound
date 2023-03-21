@@ -30,6 +30,10 @@ export function updateSale(id, update) {
   return axiosAuth.patch(`/api/sale/${id}`, { update })
 }
 
+export function updateHold(id, update) {
+  return axiosAuth.patch(`/api/sale/hold/${id}`, { update })
+}
+
 export function createSaleItem(saleItem: SaleItemObject) {
   return axiosAuth.post(`/api/sale/item`, saleItem)
 }
