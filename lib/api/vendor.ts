@@ -21,13 +21,7 @@ export function useVendor(id) {
 }
 
 export function createVendor(vendor) {
-  return axiosAuth
-    .post(`/api/vendor`, vendor)
-    .then((res) => {
-      const id = res.data
-      return id
-    })
-    .catch((e) => Error(e.message))
+  return axiosAuth.post(`/api/vendor`, vendor)
 }
 
 export function updateVendor(id, update) {

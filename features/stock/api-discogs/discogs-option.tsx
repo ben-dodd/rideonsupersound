@@ -1,24 +1,42 @@
 import { DiscogsItem } from 'lib/types/discogs'
-import { updateStockItem } from 'lib/api/stock'
+import { createStockItem, updateStockItem } from 'lib/api/stock'
 import { useRouter } from 'next/router'
 import { useSWRConfig } from 'swr'
 import { setDiscogsItemToStockItem } from 'lib/functions/discogs'
+import { useClerk } from 'lib/api/clerk'
 
 export default function DiscogsOption({
   discogsOption,
   overrideItemDetails = false,
+  isNew = false,
+  vendorId,
+  setItem,
 }: {
   discogsOption: DiscogsItem
   overrideItemDetails?: boolean
+  isNew?: boolean
+  vendorId?: number
+  setItem?: Function
 }) {
   const router = useRouter()
   const { id } = router.query
   const { mutate } = useSWRConfig()
+  const { clerk } = useClerk()
   const handleDiscogsOptionClick = async () => {
+    console.log('handle discogs clicked')
     setDiscogsItemToStockItem(discogsOption, overrideItemDetails)
-      .then((update) => {
+      .then(async (update) => {
         console.log(update)
-        return updateStockItem(update, id)
+        let newId = id
+        if (isNew) {
+          const newItem = await createStockItem({ ...update, vendorId }, clerk?.id)
+          setItem(newItem)
+          newId = newItem?.id
+        } else {
+          await updateStockItem(update, id)
+        }
+        console.log('New ID', newId)
+        return newId
       })
       .then(() => mutate(`stock/${id}`))
   }

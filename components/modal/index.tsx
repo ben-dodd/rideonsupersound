@@ -38,7 +38,7 @@ export default function Modal({
       </div>
       <div className="modal__body">
         {loading ? (
-          <div className="loading-screen">
+          <div className="loading-screen h-dialogsm">
             <div className="loading-icon" />
           </div>
         ) : (

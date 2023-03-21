@@ -1,6 +1,4 @@
 import Tabs from 'components/navigation/tabs'
-import DiscogsPanel from 'features/stock/api-discogs'
-import GoogleBooksPanel from 'features/stock/api-google-books'
 import { useAppStore } from 'lib/store'
 import { useState } from 'react'
 import Items from './items'
@@ -42,7 +40,7 @@ export default function CheckDetails() {
       <div className="flex w-full">
         <div className="w-3/5 mr-4">
           {item?.id && <div className="bg-red-500 p-2 mb-2 text-white">Item already in stock. Editing disabled.</div>}
-          <div hidden={mode !== 0}>
+          {/* <div hidden={mode !== 0}>
             <InventoryItemForm item={item} setItem={setItemAndBasket} disabled={item?.id} />
           </div>
           <div hidden={!(mode === 1 && item?.media === 'Audio')}>
@@ -50,7 +48,7 @@ export default function CheckDetails() {
           </div>
           <div hidden={!(mode === 1 && item?.media === 'Literature')}>
             <GoogleBooksPanel item={item} setItem={setItemAndBasket} disabled={item?.id} />
-          </div>
+          </div> */}
         </div>
         <div className="w-2/5">
           <Items onClick={onItemClick} />

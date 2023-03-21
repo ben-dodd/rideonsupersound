@@ -1,4 +1,3 @@
-import ScreenContainer from 'components/container/screen'
 import Stepper from 'components/navigation/stepper'
 import { ModalButton } from 'lib/types'
 import { useState } from 'react'
@@ -12,15 +11,14 @@ import { useCurrentRegisterId } from 'lib/api/register'
 import { ViewProps } from 'lib/store/types'
 import { useClerk } from 'lib/api/clerk'
 import { receiveStock } from 'lib/api/stock'
+import Modal from 'components/modal'
 
-export default function ReceiveStockScreen() {
+export default function ReceiveStockDialog() {
   const { receiveBasket, resetReceiveBasket, view, openConfirm, closeView } = useAppStore()
   const { clerk } = useClerk()
   const [step, setStep] = useState(0)
   const [receivedStock, setReceivedStock] = useState(null)
   const [receiveLoading, setReceiveLoading] = useState(false)
-
-  // SWR
   const { registerId } = useCurrentRegisterId()
 
   const buttons: ModalButton[][] = [
@@ -134,19 +132,19 @@ export default function ReceiveStockScreen() {
   // Step 6 - print labels
 
   return (
-    <ScreenContainer
-      show={view?.receiveStockScreen}
+    <Modal
+      open={view?.receiveStockScreen}
       closeFunction={() => closeView(ViewProps.receiveStockScreen)}
       title={'RECEIVE STOCK'}
       buttons={buttons[step]}
-      titleClass="bg-col2"
+      width="max-w-dialog"
     >
-      <div className="flex flex-col w-full">
+      <div className="flex flex-col w-full h-dialog">
         <Stepper
           steps={['Select vendor', 'Add items', 'Check details', 'Set price and quantities', 'Print labels']}
           value={step}
           onChange={setStep}
-          disabled
+          // disabled
           selectedBg="bg-col2"
           notSelectedBg="bg-gray-200"
           selectedText="text-col2-dark"
@@ -180,7 +178,7 @@ export default function ReceiveStockScreen() {
           </div>
         )}
       </div>
-    </ScreenContainer>
+    </Modal>
   )
 
   function isDisabled() {

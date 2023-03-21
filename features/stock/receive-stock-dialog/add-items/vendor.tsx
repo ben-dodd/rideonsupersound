@@ -1,11 +1,11 @@
 import { getItemSkuDisplayName } from 'lib/functions/displayInventory'
 import { useStockList } from 'lib/api/stock'
 import { useAppStore } from 'lib/store'
-import { StockObject } from 'lib/types/stock'
+import { StockItemSearchObject } from 'lib/types/stock'
 import Select from 'react-select'
 
 export default function Vendor() {
-  const { inventory } = useStockList()
+  const { stockList } = useStockList()
   const { receiveBasket, addReceiveBasketItem } = useAppStore()
   const addItem = (item: any) => addReceiveBasketItem(item?.value)
   return (
@@ -15,13 +15,13 @@ export default function Vendor() {
         <Select
           className="w-full self-stretch"
           value={null}
-          options={inventory
+          options={stockList
             ?.filter(
-              (item: StockObject) =>
+              (item: StockItemSearchObject) =>
                 item?.vendorId === receiveBasket?.vendorId &&
                 !receiveBasket?.items?.map((item) => item?.item?.id).includes(item?.id),
             )
-            ?.map((item: StockObject) => ({
+            ?.map((item: StockItemSearchObject) => ({
               value: item,
               label: getItemSkuDisplayName(item),
             }))}

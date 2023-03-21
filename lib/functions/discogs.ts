@@ -1,13 +1,8 @@
 import axios from 'axios'
-import { StockItemObject } from 'lib/types'
 import { DiscogsItem } from 'lib/types/discogs'
+import { StockItemObject } from 'lib/types/stock'
 
-export async function getDiscogsOptions({
-  query,
-  artist,
-  title,
-  barcode,
-}: any) {
+export async function getDiscogsOptions({ query, artist, title, barcode }: any) {
   return axios(`https://api.discogs.com/database/search`, {
     params: {
       query,
@@ -24,9 +19,7 @@ export async function getDiscogsOptions({
 
 export async function getDiscogsItem({ master_id, resource_url }: any) {
   if (!master_id && !resource_url) return null
-  return axios(
-    master_id ? `https://api.discogs.com/masters/${master_id}` : resource_url
-  )
+  return axios(master_id ? `https://api.discogs.com/masters/${master_id}` : resource_url)
     .then((res) => res?.data)
     .catch((e) => Error(e.message))
 }
@@ -35,7 +28,7 @@ export async function getDiscogsPriceSuggestions({ id }: any) {
   return axios(
     `https://api.discogs.com/marketplace/price_suggestions/${id || ''}?token=${
       process.env.NEXT_PUBLIC_DISCOGS_PERSONAL_ACCESS_TOKEN
-    }`
+    }`,
   )
     .then((res) => res.data)
     .catch((e) => Error(e.message))
@@ -43,17 +36,12 @@ export async function getDiscogsPriceSuggestions({ id }: any) {
 
 export async function getDiscogsItemArtistDetails({ artists }: any) {
   if (!artists) return []
-  return Promise.all(
-    artists
-      .filter((artist) => artist.resource_url)
-      .map((artist) => axios(artist.resource_url))
-  ).then((data) => data.filter((artist) => typeof artist === 'object'))
+  return Promise.all(artists.filter((artist) => artist.resource_url).map((artist) => axios(artist.resource_url))).then(
+    (data) => data.filter((artist) => typeof artist === 'object'),
+  )
 }
 
-export async function setDiscogsItemToStockItem(
-  discogsOption: DiscogsItem,
-  overrideItemDetails: boolean
-) {
+export async function setDiscogsItemToStockItem(discogsOption: DiscogsItem, overrideItemDetails: boolean) {
   const detailedDiscogsItem = await getDiscogsItem(discogsOption)
   const priceSuggestions = await getDiscogsPriceSuggestions(discogsOption)
 
@@ -62,14 +50,15 @@ export async function setDiscogsItemToStockItem(
     ...detailedDiscogsItem,
     priceSuggestions,
   }
+  console.log(discogsItem)
   let update = {
     thumbUrl: discogsOption?.thumb || null,
     imageUrl: discogsOption?.cover_image || null,
-    discogsItem: JSON.stringify(discogsItem),
+    discogsItem,
+    // discogsItem: JSON.stringify(discogsItem),
   }
 
-  if (overrideItemDetails)
-    update = { ...update, ...mergeStockAndDiscogsItems(discogsItem) }
+  if (overrideItemDetails) update = { ...update, ...mergeStockAndDiscogsItems(discogsItem) }
 
   return update
 }
@@ -82,16 +71,8 @@ export function mergeStockAndDiscogsItems(discogsItem) {
     format: getFormatFromDiscogs(discogsItem?.format),
     media: 'Audio',
     genre: [
-      ...(discogsItem?.genre
-        ? Array.isArray(discogsItem?.genre)
-          ? discogsItem?.genre
-          : [discogsItem?.genre]
-        : []),
-      ...(discogsItem?.style
-        ? Array.isArray(discogsItem?.style)
-          ? discogsItem?.style
-          : [discogsItem?.style]
-        : []),
+      ...(discogsItem?.genre ? (Array.isArray(discogsItem?.genre) ? discogsItem?.genre : [discogsItem?.genre]) : []),
+      ...(discogsItem?.style ? (Array.isArray(discogsItem?.style) ? discogsItem?.style : [discogsItem?.style]) : []),
     ],
     title: discogsItem?.title,
     release_year: discogsItem?.year?.toString(),
@@ -128,14 +109,10 @@ export function getFormatFromDiscogs(formats: string[]) {
 export function getPriceSuggestion(item: StockItemObject) {
   if (item?.discogsItem?.priceSuggestions) {
     const priceSuggestions = item?.discogsItem?.priceSuggestions
-    return priceSuggestions[item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)']
-      ?.value
-      ? `$${parseFloat(
-          priceSuggestions[item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)']
-            ?.value
-        )?.toFixed(2)} NZD (${
-          item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)'
-        } condition)`
+    return priceSuggestions[item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)']?.value
+      ? `$${parseFloat(priceSuggestions[item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)']?.value)?.toFixed(
+          2,
+        )} NZD (${item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)'} condition)`
       : null
   }
   return null

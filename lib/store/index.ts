@@ -39,7 +39,7 @@ const initState = {
     transactions: [],
     registerId: null,
   },
-  receiveBasket: { items: [] },
+  receiveBasket: { vendorId: null, items: [] },
   sellPage: {
     searchBar: '',
     isSearching: false,
@@ -211,7 +211,7 @@ export const useAppStore = createSelectors(
     setReceiveBasket: (update) =>
       set(
         produce((draft) => {
-          Object.entries(update).forEach(([, value]) => (draft.receiveBasket.key = value))
+          Object.entries(update).forEach(([key, value]) => (draft.receiveBasket[key] = value))
         }),
       ),
     addReceiveBasketItem: (newItem) =>

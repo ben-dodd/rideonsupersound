@@ -64,7 +64,8 @@ export default function Discogs() {
           <DiscogsOption
             discogsOption={discogsOption}
             key={k}
-            item={{ vendorId: receiveBasket?.vendorId }}
+            vendorId={receiveBasket?.vendorId}
+            isNew={true}
             setItem={addItem}
             overrideItemDetails={true}
           />

@@ -28,7 +28,13 @@ const fullVendorQuery = (db) =>
   )
 
 export function dbCreateVendor(vendor: VendorObject, db = connection) {
-  return db('vendor').insert(js2mysql(vendor))
+  return db('vendor')
+    .insert(js2mysql(vendor))
+    .then((rows) => rows[0])
+    .catch((e) => {
+      console.log(e)
+      Error(e.message)
+    })
 }
 
 export function dbGetVendors(db = connection) {

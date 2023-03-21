@@ -222,7 +222,7 @@ export function dbCreateStockMovement(stockMovement, db = connection) {
   return db('stock_movement')
     .insert(js2mysql(stockMovement))
     .then((res) => {
-      console.log('stockmovement res', res.dataß)
+      console.log('stockmovement res', res.data)
       return res.data
     })
     .catch((e) => Error(e.message))

@@ -5,11 +5,11 @@ import { getPriceSuggestion } from 'lib/functions/discogs'
 import { getImageSrc, getItemDisplayName, getItemSku } from 'lib/functions/displayInventory'
 import { getProfitMargin, getStoreCut } from 'lib/functions/pay'
 import { useAppStore } from 'lib/store'
-import { StockItemObject, StockItemPriceObject } from 'lib/types'
+import { StockItemObject, StockPriceObject } from 'lib/types/stock'
 
 export default function ListItem({ receiveItem }) {
   const { updateReceiveBasketItem } = useAppStore()
-  const { item = {}, price = {} }: { item: StockItemObject; price: StockItemPriceObject } = receiveItem || {}
+  const { item = {}, price = {} }: { item: StockItemObject; price: StockPriceObject } = receiveItem || {}
   const priceSuggestion = getPriceSuggestion(item)
   const totalSell = parseFloat(receiveItem?.totalSell || (price?.totalSell || 0) / 100)
   const vendorCut = parseFloat(receiveItem?.vendorCut || (price?.vendorCut || 0) / 100)
@@ -79,12 +79,12 @@ export default function ListItem({ receiveItem }) {
           />
         </div>
         <div className="self-center flex items-center">
-          <TextField
+          {/* <TextField
             inputLabel="VENDOR CUT"
             className="w-24 mr-6"
             startAdornment={'$'}
             disabled={Boolean(item?.id)}
-            value={`${receiveItem?.vendorCut || (item?.vendorCut ? item?.vendorCut / 100 : '')}`}
+            value={`${receiveItem?.price?.vendorCut || (item?.vendorCut ? item?.vendorCut / 100 : '')}`}
             onChange={(e: any) =>
               updateReceiveBasketItem(receiveItem?.key, {
                 vendorCut: e.target.value,
@@ -101,7 +101,7 @@ export default function ListItem({ receiveItem }) {
                 totalSell: e.target.value,
               })
             }
-          />
+          /> */}
           <TextField
             displayOnly={true}
             inputLabel="STORE CUT"

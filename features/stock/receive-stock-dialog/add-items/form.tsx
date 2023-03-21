@@ -1,13 +1,13 @@
-import { StockObject } from 'lib/types'
 import { ChevronRight } from '@mui/icons-material'
 import { useState } from 'react'
 import { useAppStore } from 'lib/store'
 import StockEditDialog from 'features/stock/stock-edit-dialog'
+import { StockItemObject } from 'lib/types/stock'
 
 export default function Form() {
   const { addReceiveBasketItem } = useAppStore()
   const defaultItem = { isNew: true, doListOnWebsite: true }
-  const [item, setItem] = useState<StockObject>(defaultItem)
+  const [item, setItem] = useState<StockItemObject>(defaultItem)
   return (
     <div>
       <div className="flex justify-end">
@@ -19,7 +19,7 @@ export default function Form() {
           Add Item <ChevronRight />
         </button>
       </div>
-      <StockEditDialog item={item} setItem={setItem} />
+      <StockEditDialog stockItem={{ item }} />
     </div>
   )
 }
