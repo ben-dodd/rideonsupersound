@@ -182,7 +182,7 @@ export function dbGetStockItems(itemIds, db = connection) {
 }
 
 export function dbGetStockMovements(limit, db = connection) {
-  return db('stock_movement').limit(limit)
+  return db('stock_movement').orderBy('id', 'desc').limit(limit)
 }
 
 export function dbGetGiftCards(db = connection) {

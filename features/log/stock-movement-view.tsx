@@ -6,6 +6,7 @@ import ListStockMovement from './list-stock-movement'
 export function StockMovementView() {
   const { clerks } = useClerks()
   const { stockMovements, isStockMovementsLoading } = useStockMovements(200)
+  console.log(stockMovements)
   return isStockMovementsLoading ? (
     <div className="w-full flex h-full">
       <div className="loading-icon" />
