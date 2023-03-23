@@ -43,11 +43,16 @@ export default function Nav() {
               <HelpIcon />
             </button>
           </Tooltip>
-          <Tooltip title="Close Register and Sign Out">
-            <button onClick={() => router.push('/register/close')} className="ml-2 text-brown-dark hover:text-brown">
+          <Tooltip title="Sign Out">
+            <button onClick={() => router.push('/api/auth/logout')} className="ml-2 text-brown-dark hover:text-brown">
               <ExitToApp />
             </button>
           </Tooltip>
+          {/* <Tooltip title="Close Register and Sign Out">
+            <button onClick={() => router.push('/register/close')} className="ml-2 text-brown-dark hover:text-brown">
+              <ExitToApp />
+            </button>
+          </Tooltip> */}
         </div>
         {/*<button
           className="px-4 sm:hidden"

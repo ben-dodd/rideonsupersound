@@ -9,6 +9,7 @@ export function useRegisters() {
 }
 
 export function useCurrentRegisterId() {
+  console.log('calling current register id')
   return useData(`register/id`, 'registerId')
 }
 
@@ -21,6 +22,7 @@ export function useSetRegisterId(setCart) {
 }
 
 export function useCurrentRegister() {
+  console.log('Calling current register')
   return useData(`register/current`, 'currentRegister')
 }
 

@@ -14,7 +14,6 @@ import RegistersIcon from '@mui/icons-material/Storefront'
 import GiftCardsIcon from '@mui/icons-material/Redeem'
 import VendorsIcon from '@mui/icons-material/Store'
 import JobsIcon from '@mui/icons-material/Task'
-import MyIcon from '@mui/icons-material/Face5'
 import MenuItem from './menu-item'
 import PyramidImage from './pyramid-image'
 import { useRouter } from 'next/router'
@@ -115,12 +114,12 @@ export default function Menu({ badges }) {
     },
   ]
   const bottomMenu = [
-    {
-      type: 'link',
-      page: '/my',
-      text: 'MyROSS',
-      icon: <MyIcon />,
-    },
+    // {
+    //   type: 'link',
+    //   page: '/my',
+    //   text: 'MyROSS',
+    //   icon: <MyIcon />,
+    // },
     {
       type: 'link',
       page: '/bank',
