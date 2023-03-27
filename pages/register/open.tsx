@@ -15,3 +15,12 @@ export default function OpenRegisterPage() {
 OpenRegisterPage.getLayout = (page) => <Layout>{page}</Layout>
 
 export const getServerSideProps = withPageAuthRequired()
+
+// export async function getServerSideProps(context) {
+//   console.log(context)
+//   console.log(withPageAuthRequired(context))
+//   return withPageAuthRequired(context)
+//   // return {
+//   //   props: {}, // will be passed to the page component as props
+//   // }
+// }

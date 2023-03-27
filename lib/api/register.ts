@@ -14,7 +14,6 @@ export function useCurrentRegisterId() {
 }
 
 export function useSetRegisterId(setCart) {
-  console.log('calling usesetregister')
   return axiosAuth.get('/api/register/id').then((registerId) => {
     console.log('Setting register id', registerId)
     setCart({ registerId })
@@ -22,7 +21,6 @@ export function useSetRegisterId(setCart) {
 }
 
 export function useCurrentRegister() {
-  console.log('Calling current register')
   return useData(`register/current`, 'currentRegister')
 }
 

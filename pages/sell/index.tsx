@@ -14,9 +14,10 @@ import { useAppStore } from 'lib/store'
 import { useCurrentRegister } from 'lib/api/register'
 import { useRouter } from 'next/router'
 import Layout from 'components/layout'
-import withRoleAuthorization from 'components/auth/roleAuthorization'
+import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+// import withRoleAuthorization from 'components/auth/roleAuthorization'
 
-function SellPage() {
+export default function SellPage() {
   const { currentRegister, isCurrentRegisterLoading } = useCurrentRegister()
   const { view, openView, closeView } = useAppStore()
   const router = useRouter()
@@ -58,4 +59,6 @@ function SellPage() {
 
 SellPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export default withRoleAuthorization(SellPage, ['Clerk'])
+export const getServerSideProps = withPageAuthRequired()
+
+// export default withRoleAuthorization(SellPage, ['Clerk'])

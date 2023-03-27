@@ -1,6 +1,4 @@
-import Alert from '@mui/material/Alert'
-import Slide from '@mui/material/Slide'
-import Snackbar from '@mui/material/Snackbar'
+import { Alert, Slide, Snackbar } from '@mui/material'
 import { useAppStore } from 'lib/store'
 
 export default function SnackAlert() {
