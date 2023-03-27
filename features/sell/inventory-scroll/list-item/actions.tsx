@@ -73,14 +73,16 @@ const Actions = ({ item, itemQuantity, holdsQuantity, isItemLoading }) => {
   return (
     <div className="flex py-2">
       <div className="self-center pl-8 hidden sm:inline">
-        {/* <Tooltip title="View and edit item details."> */}
-        <button
-          // className="icon-button-large text-brown-dark hover:text-brown"
-          className={`pill-button`}
-          onClick={() => router.push(`/stock/${item?.id}`)}
-        >
-          <Info style={{ fontSize: '40px' }} />
-        </button>
+        <span>
+          {/* <Tooltip title="View and edit item details."> */}
+          <button
+            // className="icon-button-large text-brown-dark hover:text-brown"
+            className={`pill-button`}
+            onClick={() => router.push(`/stock/${item?.id}`)}
+          >
+            <Info style={{ fontSize: '40px' }} />
+          </button>
+        </span>
         {/* </Tooltip> */}
       </div>
       <div className="self-center pl-1 hidden sm:inline">

@@ -229,18 +229,17 @@ export async function dbSaveCart(cart, prevState, db = connection) {
       }
       if (sale?.isMailOrder && sale?.state === SaleStateTypes.Completed) {
         const customer = await dbGetCustomer(sale?.customerId, trx)
-        dbCreateJob(
-          {
-            description: `Post Sale ${sale?.id} (${sale?.itemList}) to ${`${customer?.name}\n` || ''}${
-              sale?.postalAddress
-            }`,
-            createdByClerkId: sale?.saleOpenedBy,
-            assignedTo: RoleTypes?.MC,
-            dateCreated: dayjs.utc().format(),
-            isPostMailOrder: true,
-          },
-          trx,
-        )
+        const mailOrderJob = {
+          description: `Post Sale ${sale?.id} (${sale?.itemList}) to ${`${customer?.name}\n` || ''}${
+            sale?.postalAddress
+          }`,
+          createdByClerkId: sale?.saleOpenedBy,
+          assignedTo: RoleTypes?.MC,
+          dateCreated: dayjs.utc().format(),
+          isPostMailOrder: true,
+        }
+        console.log('Creating job', mailOrderJob)
+        dbCreateJob(mailOrderJob, trx)
       }
 
       const promises = []

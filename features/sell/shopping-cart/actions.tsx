@@ -83,23 +83,27 @@ export default function ShoppingCartActions() {
         <DropdownMenu items={parkedSaleItems} icon={<Folder />} buttonClass="icon-button-small-white" />
       </Tooltip>
       <Tooltip title={sale?.state === SaleStateTypes.Layby ? 'Continue Layby' : 'Park sale'}>
-        <button
-          className="icon-button-small-white"
-          onClick={sale?.state === SaleStateTypes.Layby ? onClickContinueLayby : onClickSaveSale}
-          disabled={Boolean(saveSaleLoading || cart?.items?.length < 1)}
-        >
-          {saveSaleLoading ? <CircularProgress color="inherit" size={16} /> : <Save />}
-        </button>
+        <span className="flex items-center">
+          <button
+            className="icon-button-small-white"
+            onClick={sale?.state === SaleStateTypes.Layby ? onClickContinueLayby : onClickSaveSale}
+            disabled={Boolean(saveSaleLoading || cart?.items?.length < 1)}
+          >
+            {saveSaleLoading ? <CircularProgress color="inherit" size={16} /> : <Save />}
+          </button>
+        </span>
       </Tooltip>
       {cart?.transactions?.filter((transaction) => !transaction.isDeleted)?.length === 0 && (
         <Tooltip title="Discard sale">
-          <button
-            className="icon-button-small-white"
-            onClick={onClickDiscardSale}
-            disabled={Boolean(items?.length < 1)}
-          >
-            <Delete />
-          </button>
+          <span className="flex items-center">
+            <button
+              className="icon-button-small-white"
+              onClick={onClickDiscardSale}
+              disabled={Boolean(items?.length < 1)}
+            >
+              <Delete />
+            </button>
+          </span>
         </Tooltip>
       )}
     </div>

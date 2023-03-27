@@ -10,7 +10,8 @@ export function dbGetJobs(db = connection) {
 }
 
 export function dbCreateJob(job, db = connection) {
-  return db('task').insert(job)
+  console.log('creating job', js2mysql(job))
+  return db('task').insert(js2mysql(job))
 }
 
 export function dbUpdateJob(update, id, db = connection) {
