@@ -1,7 +1,8 @@
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import Layout from 'components/layout'
-import ChangePriceDialog from 'features/stock/item-stock/change-price-dialog'
-import ChangeStockQuantityDialog from 'features/stock/item-stock/change-stock-quantity-dialog'
+import BatchPaymentScreen from 'features/vendor/payment/batch-payment-screen'
+import CashPaymentDialog from 'features/vendor/payment/cash-payment-dialog'
+import TransferVendorPaymentDialog from 'features/vendor/payment/transfer-payment-dialog'
 import VendorsScreen from 'features/vendor'
 import { useAppStore } from 'lib/store'
 
@@ -10,8 +11,9 @@ export default function VendorsPage() {
   return (
     <div className={`flex relative overflow-x-hidden`}>
       <VendorsScreen />
-      {view?.changePriceDialog && <ChangePriceDialog />}
-      {view?.changeStockQuantityDialog && <ChangeStockQuantityDialog />}
+      {view?.cashVendorPaymentDialog && <CashPaymentDialog />}
+      {view?.batchVendorPaymentScreen && <BatchPaymentScreen />}
+      {view?.transferVendorPaymentDialog && <TransferVendorPaymentDialog />}
     </div>
   )
 }

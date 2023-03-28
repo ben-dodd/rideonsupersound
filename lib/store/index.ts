@@ -55,6 +55,7 @@ const initState = {
   },
   vendorsPage: {
     searchBar: '',
+    tab: 0,
   },
   paymentsPage: {},
   registersPage: {},

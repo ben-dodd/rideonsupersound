@@ -2,13 +2,14 @@ import { useState } from 'react'
 import Select from 'react-select'
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
-import { ModalButton, VendorObject, VendorPaymentTypes } from 'lib/types'
+import { ModalButton } from 'lib/types'
 import dayjs from 'dayjs'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { createVendorPayment, useVendor, useVendors } from 'lib/api/vendor'
 import { ViewProps } from 'lib/store/types'
 import { useCurrentRegisterId } from 'lib/api/register'
+import { VendorObject, VendorPaymentTypes } from 'lib/types/vendor'
 
 export default function TransferVendorPaymentDialog() {
   const { clerk } = useClerk()
@@ -59,11 +60,7 @@ export default function TransferVendorPaymentDialog() {
         setSubmitting(false)
         resetAndCloseDialog()
       },
-      disabled:
-        !vendorPayId ||
-        !vendorReceiveId ||
-        !payment ||
-        parseFloat(payment) <= 0,
+      disabled: !vendorPayId || !vendorReceiveId || !payment || parseFloat(payment) <= 0,
     },
   ]
 
@@ -91,8 +88,7 @@ export default function TransferVendorPaymentDialog() {
             label:
               vendorPayId === 'store'
                 ? 'R.O.S.S.'
-                : vendors?.find((v: VendorObject) => v?.id === vendorPayId)
-                    ?.name || '',
+                : vendors?.find((v: VendorObject) => v?.id === vendorPayId)?.name || '',
           }}
           options={[{ value: 'store', label: 'R.O.S.S.' }]?.concat(
             vendors
@@ -100,7 +96,7 @@ export default function TransferVendorPaymentDialog() {
               .map((val: VendorObject) => ({
                 value: val?.id,
                 label: val?.name || '',
-              }))
+              })),
           )}
           onChange={(vendorObject: any) => setVendorPay(vendorObject?.value)}
         />
@@ -109,17 +105,13 @@ export default function TransferVendorPaymentDialog() {
           className="w-full"
           value={{
             value: vendorReceiveId,
-            label:
-              vendors?.find((v: VendorObject) => v?.id === vendorReceiveId)
-                ?.name || '',
+            label: vendors?.find((v: VendorObject) => v?.id === vendorReceiveId)?.name || '',
           }}
           options={vendors?.map((val: VendorObject) => ({
             value: val?.id,
             label: val?.name || '',
           }))}
-          onChange={(vendorObject: any) =>
-            setVendorReceive(vendorObject?.value)
-          }
+          onChange={(vendorObject: any) => setVendorReceive(vendorObject?.value)}
         />
         <TextField
           className="mt-4"
@@ -142,16 +134,10 @@ export default function TransferVendorPaymentDialog() {
         <div className="mt-4 text-center">
           {vendorPayId === 'store'
             ? 'R.O.S.S. PAYS'
-            : vendorPayId > 0 &&
-              `PAYING VENDOR HAS $${(
-                (payVendor?.totalOwing || 0) / 100
-              )?.toFixed(2)}`}
+            : vendorPayId > 0 && `PAYING VENDOR HAS $${((payVendor?.totalOwing || 0) / 100)?.toFixed(2)}`}
         </div>
         <div className="text-center">
-          {vendorReceiveId > 0 &&
-            `RECEIVING VENDOR HAS $${(
-              (receiveVendor?.totalOwing || 0) / 100
-            )?.toFixed(2)}`}
+          {vendorReceiveId > 0 && `RECEIVING VENDOR HAS $${((receiveVendor?.totalOwing || 0) / 100)?.toFixed(2)}`}
         </div>
         <div className="my-4 text-center text-xl font-bold">
           {vendorPayId === 0 || vendorReceiveId === 0

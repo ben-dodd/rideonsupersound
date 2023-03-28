@@ -1,7 +1,7 @@
 // Packages
 import { useState } from 'react'
 import Select from 'react-select'
-import { ModalButton, VendorObject, VendorPaymentTypes } from 'lib/types'
+import { ModalButton } from 'lib/types'
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
 import dayjs from 'dayjs'
@@ -10,6 +10,7 @@ import { createVendorPayment, useVendor, useVendors } from 'lib/api/vendor'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
+import { VendorObject, VendorPaymentTypes } from 'lib/types/vendor'
 
 export default function CashPaymentDialog() {
   const { registerId } = useCurrentRegisterId()
@@ -77,24 +78,18 @@ export default function CashPaymentDialog() {
         <Select
           className="w-full"
           value={{ value: paymentType, label: paymentType?.toUpperCase() }}
-          options={[VendorPaymentTypes.Cash, VendorPaymentTypes.DC]?.map(
-            (type) => ({
-              value: type,
-              label: type?.toUpperCase(),
-            })
-          )}
-          onChange={(paymentObject: any) =>
-            setPaymentType(paymentObject?.value)
-          }
+          options={[VendorPaymentTypes.Cash, VendorPaymentTypes.DC]?.map((type) => ({
+            value: type,
+            label: type?.toUpperCase(),
+          }))}
+          onChange={(paymentObject: any) => setPaymentType(paymentObject?.value)}
         />
         <div className="text-sm mt-2">Select Vendor</div>
         <Select
           className="w-full"
           value={{
             value: vendorId,
-            label:
-              vendors?.find((v: VendorObject) => v?.id === vendorId)?.name ||
-              '',
+            label: vendors?.find((v: VendorObject) => v?.id === vendorId)?.name || '',
           }}
           options={vendors?.map((val: VendorObject) => ({
             value: val?.id,
@@ -121,8 +116,7 @@ export default function CashPaymentDialog() {
           onChange={(e: any) => setNotes(e.target.value)}
         />
         <div className="mt-4 text-center">
-          {vendorId > 0 &&
-            `VENDOR OWED $${(vendor?.totalOwing / 100)?.toFixed(2)}`}
+          {vendorId > 0 && `VENDOR OWED $${(vendor?.totalOwing / 100)?.toFixed(2)}`}
         </div>
         <div className="my-4 text-center text-xl font-bold">
           {vendorId > 0

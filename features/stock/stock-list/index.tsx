@@ -28,7 +28,7 @@ const StockList = () => {
         {filteredList?.slice(0, limit)?.map((stockItem) => (
           <StockListItem key={stockItem?.id} item={stockItem} />
         ))}
-        {limit < filteredList?.length && <LoadMoreButton onClick={() => setLimit((limit) => limit + 50)} />}
+        {limit < stockList?.length && <LoadMoreButton onClick={() => setLimit((limit) => limit + 50)} />}
       </div>
     </div>
   )

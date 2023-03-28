@@ -36,7 +36,7 @@ const DropdownMenu = ({
           <div
             key={i}
             className={`block text-gray-700 ${
-              item?.disabled ? 'cursor-default text-gray-300' : 'hover:bg-blue-500 hover:text-white'
+              item?.disabled ? 'cursor-default text-gray-200' : 'hover:bg-blue-500 hover:text-white'
             }`}
           >
             <button
