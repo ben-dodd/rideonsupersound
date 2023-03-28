@@ -1,11 +1,13 @@
 import connection from './conn'
 
-export function dbGetLogs(limit?, db = connection) {
+export function dbGetLogs(limit = 50, db = connection) {
   return db('log')
-    .where({ is_deleted: 0 })
-    .andWhereNot({ table_id: 'system' })
-    .orderBy('date_created', 'desc')
-    .limit(limit || 500)
+    .leftJoin('clerk', 'clerk.id', 'log.clerk_id')
+    .select('log.*', 'clerk.name as clerk_name')
+    .where('log.is_deleted', 0)
+    .andWhereNot('log.table_id', 'system')
+    .orderBy('log.date_created', 'desc')
+    .limit(limit)
 }
 
 export function dbCreateLog(log, db = connection) {

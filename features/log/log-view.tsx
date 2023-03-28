@@ -1,18 +1,22 @@
+import LoadMoreButton from 'components/button/load-more-button'
 import ListLog from 'features/log/list-log'
-import { useClerks } from 'lib/api/clerk'
 import { useLogs } from 'lib/api/log'
 import { LogObject } from 'lib/types'
+import { useState } from 'react'
 
 export function LogView() {
-  const { clerks } = useClerks()
-  const { logs, isLogsLoading } = useLogs()
+  const [limit, setLimit] = useState(50)
+  const { logs, isLogsLoading } = useLogs(limit)
   return isLogsLoading ? (
     <div className="w-full flex h-full">
       <div className="loading-icon" />
     </div>
   ) : (
-    logs?.map((log: LogObject) => (
-      <ListLog log={log} clerks={clerks} key={log?.id} />
-    ))
+    <div className="px-2">
+      {logs?.map((log: LogObject) => (
+        <ListLog log={log} key={log?.id} />
+      ))}
+      <LoadMoreButton onClick={() => setLimit((limit) => limit + 50)} />
+    </div>
   )
 }

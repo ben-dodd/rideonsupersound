@@ -63,6 +63,7 @@ export interface LogObject {
   id?: number
   log: string
   clerkId?: number
+  clerkName?: string
   tableId?: string
   rowId?: number
   dateCreated?: string

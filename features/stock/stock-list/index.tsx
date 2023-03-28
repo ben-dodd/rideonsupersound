@@ -1,3 +1,4 @@
+import LoadMoreButton from 'components/button/load-more-button'
 import SearchInput from 'components/inputs/search-input'
 import { useStockList } from 'lib/api/stock'
 import { useAppStore } from 'lib/store'
@@ -27,14 +28,7 @@ const StockList = () => {
         {filteredList?.slice(0, limit)?.map((stockItem) => (
           <StockListItem key={stockItem?.id} item={stockItem} />
         ))}
-        {limit < filteredList?.length && (
-          <button
-            className="my-2 p-2 mx-auto w-full border hover:bg-gray-100"
-            onClick={() => setLimit((limit) => limit + 50)}
-          >
-            LOAD MORE...
-          </button>
-        )}
+        {limit < filteredList?.length && <LoadMoreButton onClick={() => setLimit((limit) => limit + 50)} />}
       </div>
     </div>
   )

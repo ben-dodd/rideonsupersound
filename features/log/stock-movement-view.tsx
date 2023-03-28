@@ -1,17 +1,22 @@
-import { useClerks } from 'lib/api/clerk'
+import LoadMoreButton from 'components/button/load-more-button'
 import { useStockMovements } from 'lib/api/stock'
 import { StockMovementObject } from 'lib/types/stock'
+import { useState } from 'react'
 import ListStockMovement from './list-stock-movement'
 
 export function StockMovementView() {
-  const { clerks } = useClerks()
-  const { stockMovements, isStockMovementsLoading } = useStockMovements(200)
-  console.log(stockMovements)
+  const [limit, setLimit] = useState(50)
+  const { stockMovements, isStockMovementsLoading } = useStockMovements(limit)
   return isStockMovementsLoading ? (
     <div className="w-full flex h-full">
       <div className="loading-icon" />
     </div>
   ) : (
-    stockMovements?.map((sm: StockMovementObject) => <ListStockMovement sm={sm} key={sm?.id} />)
+    <div className="px-2">
+      {stockMovements?.map((sm: StockMovementObject) => (
+        <ListStockMovement sm={sm} key={sm?.id} />
+      ))}
+      <LoadMoreButton onClick={() => setLimit((limit) => limit + 50)} />
+    </div>
   )
 }

@@ -1,8 +1,8 @@
 import { LogObject } from 'lib/types'
 import { axiosAuth, useData } from './'
 
-export function useLogs() {
-  return useData(`log`, 'logs')
+export function useLogs(limit = 50) {
+  return useData(`log/${limit}`, 'logs')
 }
 
 export async function createLog(log: LogObject) {

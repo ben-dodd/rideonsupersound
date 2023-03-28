@@ -38,8 +38,8 @@ export function useGiftCard(id) {
   return useData(id ? `stock/giftcard/${id}` : null, 'giftCard')
 }
 
-export function useStockMovements(limit) {
-  return useData(limit ? `stock/movement/50` : `stock/movement/${limit}`, 'stockMovements')
+export function useStockMovements(limit = 50) {
+  return useData(`stock/movement/${limit}`, 'stockMovements')
 }
 
 export function deleteStockItem(id) {
