@@ -33,18 +33,10 @@ const StockScreen = () => {
       full={true}
       menuItems={menuItems}
     >
-      <Tabs
-        tabs={['Stock List', 'Category View', 'Recent Arrivals', 'Recently Sold', 'Sections', 'Category Manager']}
-        value={tab}
-        onChange={setTab}
-      />
+      <Tabs tabs={['Stock List', 'Recent Arrivals', 'Recently Sold']} value={tab} onChange={setTab} />
       {tab === 0 && <StockList />}
       {tab === 1 && <ComingSoon />}
       {tab === 2 && <ComingSoon />}
-      {tab === 3 && <ComingSoon />}
-      {tab === 4 && <ComingSoon />}
-      {tab === 5 && <ComingSoon />}
-      {tab === 6 && <ComingSoon />}
     </MidScreenContainer>
   )
 }

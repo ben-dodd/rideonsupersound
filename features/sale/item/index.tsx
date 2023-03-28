@@ -1,3 +1,4 @@
+import { Delete, Edit, EventBusy } from '@mui/icons-material'
 import MidScreenContainer from 'components/container/mid-screen'
 import SaleSummary from 'features/sale-summary'
 import React from 'react'
@@ -52,6 +53,12 @@ const SaleItemScreen = ({ cart }) => {
   //   </button>
   // </div>
 
+  const menuItems = [
+    { text: 'Refund Items', icon: <EventBusy />, onClick: null },
+    { text: 'Edit Sale', icon: <Edit />, onClick: null, adminOnly: true },
+    { text: 'Delete Sale', icon: <Delete />, onClick: null, adminOnly: true },
+  ]
+
   return (
     <MidScreenContainer
       title={`${sale?.id ? `SALE #${sale?.id}` : `NEW SALE`} [${
@@ -61,6 +68,7 @@ const SaleItemScreen = ({ cart }) => {
       showBackButton
       full
       dark
+      menuItems={menuItems}
     >
       <div className="flex">
         <div className="w-2/3">

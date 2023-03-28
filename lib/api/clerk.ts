@@ -1,5 +1,9 @@
 import { useData } from './'
 
+export function useMe() {
+  return useData(`auth/me`, 'me')
+}
+
 export function useClerk() {
   return useData(`clerk`, 'clerk')
 }
