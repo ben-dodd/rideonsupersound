@@ -1,4 +1,4 @@
-import { snakeCase, transform, camelCase, isObject, isArray } from 'lodash'
+import { snakeCase, transform, camelCase, isObject, isArray, isBoolean } from 'lodash'
 
 export const js2mysql = (obj: any) => (typeof obj === 'object' ? convertKeyCaseSingleLayer(obj, 'snakeCase') : obj)
 
@@ -25,5 +25,5 @@ export const convertKeyCaseSingleLayer = (obj: any, keyCase: 'camelCase' | 'snak
       : keyCase === 'snakeCase'
       ? snakeCase(String(key))
       : key
-    acc[convertedKey] = isObject(value) ? JSON.stringify(value) : value
+    acc[convertedKey] = isObject(value) ? JSON.stringify(value) : isBoolean(value) ? (value ? 1 : 0) : value
   })

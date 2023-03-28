@@ -165,6 +165,7 @@ export interface StockMovementObject {
   id?: number
   stockId?: number
   clerkId?: number
+  clerkName?: string
   quantity?: number
   saleId?: number
   registerId?: number

@@ -105,7 +105,7 @@ export default function ShoppingCart() {
                 if (sale?.id) router.push('sell/pay')
                 else {
                   setLoadingSale(true)
-                  createSale(sale, clerk).then((id) => {
+                  createSale({ ...sale, state: SaleStateTypes.InProgress }, clerk).then((id) => {
                     setCartSale({ id })
                     setLoadingSale(false)
                     router.push('sell/pay')

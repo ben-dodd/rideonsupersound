@@ -1,3 +1,4 @@
+import { getItemSkuDisplayName } from 'lib/functions/displayInventory'
 import { StockMovementTypes } from 'lib/types/stock'
 import { dbGetAllSalesAndItems, dbGetSaleTransactions, getStockMovementQuantityByAct } from './sale'
 import { js2mysql } from './utils/helpers'
@@ -182,7 +183,47 @@ export function dbGetStockItems(itemIds, db = connection) {
 }
 
 export function dbGetStockMovements(limit, db = connection) {
-  return db('stock_movement').orderBy('id', 'desc').limit(limit)
+  return db('stock_movement')
+    .leftJoin('clerk', 'clerk.id', 'stock_movement.clerk_id')
+    .leftJoin('stock', 'stock.id', 'stock_movement.stock_id')
+    .select(
+      'stock_movement.id',
+      'stock_movement.date_moved',
+      'stock_movement.act',
+      'stock_movement.quantity',
+      'clerk.name as clerk_name',
+      'stock_movement.stock_id',
+      'stock.vendor_id as stock_vendor_id',
+      'stock.is_gift_card as stock_is_gift_card',
+      'stock.is_misc_item as stock_is_misc_item',
+      'stock.gift_card_code as stock_gift_card_code',
+      'stock.misc_item_description as stock_misc_item_description',
+      'stock.display_as as stock_display_as',
+      'stock.artist as stock_artist',
+      'stock.title as stock_title',
+    )
+    .orderBy('id', 'desc')
+    .limit(limit)
+    .then((dataRows) => {
+      return dataRows?.map((row) => ({
+        id: row?.id,
+        date_moved: row?.date_moved,
+        act: row?.act,
+        quantity: row?.quantity,
+        clerk_name: row?.clerk_name,
+        item_display_name: getItemSkuDisplayName({
+          id: row?.stock_id,
+          vendorId: row?.stock_vendor_id,
+          isGiftCard: row?.stock_is_gift_card,
+          isMiscItem: row?.stock_is_misc_item,
+          giftCardCode: row?.stock_gift_card_code,
+          miscItemDescription: row?.stock_misc_item_description,
+          displayAs: row?.stock_display_as,
+          artist: row?.stock_artist,
+          title: row?.stock_title,
+        }),
+      }))
+    })
 }
 
 export function dbGetGiftCards(db = connection) {
@@ -226,9 +267,8 @@ export function dbUpdateStockItem(update, id, db = connection) {
 export function dbCreateStockMovement(stockMovement, db = connection) {
   return db('stock_movement')
     .insert(js2mysql(stockMovement))
-    .then((res) => {
-      console.log('stockmovement res', res.data)
-      return res.data
+    .then((rows) => {
+      return rows?.[0]
     })
     .catch((e) => Error(e.message))
 }

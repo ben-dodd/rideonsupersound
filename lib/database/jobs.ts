@@ -11,7 +11,12 @@ export function dbGetJobs(db = connection) {
 
 export function dbCreateJob(job, db = connection) {
   console.log('creating job', js2mysql(job))
-  return db('task').insert(js2mysql(job))
+  return db('task')
+    .insert(js2mysql(job))
+    .then((rows) => {
+      console.log(rows)
+      return rows[0]
+    })
 }
 
 export function dbUpdateJob(update, id, db = connection) {

@@ -12,6 +12,6 @@ export function StockMovementView() {
       <div className="loading-icon" />
     </div>
   ) : (
-    stockMovements?.map((sm: StockMovementObject) => <ListStockMovement sm={sm} clerks={clerks} key={sm?.id} />)
+    stockMovements?.map((sm: StockMovementObject) => <ListStockMovement sm={sm} key={sm?.id} />)
   )
 }

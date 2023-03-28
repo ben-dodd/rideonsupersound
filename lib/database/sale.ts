@@ -210,6 +210,7 @@ export function dbUpdateSaleTransaction(id, update, db = connection) {
 }
 
 export async function dbSaveCart(cart, prevState, db = connection) {
+  console.log('dbSaveCart called', cart)
   return db
     .transaction(async (trx) => {
       const { sale = {}, items = [], transactions = [], registerId = null } = cart || {}

@@ -26,7 +26,7 @@ export default function CreateMailOrder() {
   }
 
   async function onClickCreateMailOrder() {
-    const saleUpdate = { isMailOrder: true, postage: Number(postage), postalAddress }
+    const saleUpdate = { ...sale, isMailOrder: true, postage: Number(postage), postalAddress }
     setCartSale(saleUpdate)
     saveCart({ ...cart, sale: saleUpdate }, sale?.state)
     closeView(ViewProps.createMailOrder)
