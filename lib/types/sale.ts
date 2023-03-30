@@ -93,6 +93,7 @@ export interface SaleTransactionObject {
 export interface HoldObject {
   id?: number
   customerId?: number
+  customerName?: string
   itemId?: number
   quantity?: number
   vendorDiscount?: number
@@ -100,6 +101,7 @@ export interface HoldObject {
   holdPeriod?: number
   dateFrom?: string
   startedBy?: number
+  openClerkName?: string
   dateRemovedFromHold?: string
   removedFromHoldBy?: number
   isSold?: boolean

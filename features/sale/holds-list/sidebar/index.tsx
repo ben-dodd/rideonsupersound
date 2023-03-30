@@ -8,22 +8,28 @@ import { updateHold, useHolds } from 'lib/api/sale'
 import { useAppStore } from 'lib/store'
 import { Pages } from 'lib/store/types'
 import { ModalButton } from 'lib/types'
+import { HoldObject } from 'lib/types/sale'
 import { getObjectDifference } from 'lib/utils'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 const HoldsSidebar = () => {
   const { holdsPage, setPage, setAlert } = useAppStore()
   const { holds, isHoldsLoading } = useHolds()
-  const originalHold = holds?.find((hold) => hold?.id === holdsPage?.loadedHold)
-  const [hold, setHold] = useState(originalHold || {})
+  const [originalHold, setOriginalHold]: [HoldObject, Function] = useState({})
+  const [hold, setHold]: [HoldObject, Function] = useState({})
   const [submitting, setSubmitting] = useState(false)
-  console.log(hold)
   const closeSidebar = () => setPage(Pages.holdsPage, { loadedHold: 0 })
 
   const handleSubmit = (e) => {
     e.preventDefault()
     onClickUpdateHold()
   }
+
+  useEffect(() => {
+    const originalHold = holds?.find((hold) => hold?.id === holdsPage?.loadedHold)
+    setHold(originalHold || {})
+    setOriginalHold(originalHold || {})
+  }, [holds, holdsPage?.loadedHold])
 
   async function onClickUpdateHold() {
     setSubmitting(true)
@@ -52,7 +58,7 @@ const HoldsSidebar = () => {
       onClick: onClickUpdateHold,
       disabled:
         (hold?.holdPeriod === originalHold?.holdPeriod && hold?.note === originalHold?.note) ||
-        isNaN(parseInt(hold?.holdPeriod)),
+        isNaN(parseInt(`${hold?.holdPeriod}`)),
       text: submitting ? 'UPDATING...' : 'UPDATE HOLD',
     },
   ]
@@ -78,7 +84,7 @@ const HoldsSidebar = () => {
               inputLabel="Hold Period"
               inputType="number"
               min={0}
-              error={isNaN(parseInt(hold?.holdPeriod)) || hold?.holdPeriod < 0}
+              error={isNaN(parseInt(`${hold?.holdPeriod}`)) || hold?.holdPeriod < 0}
               valueNum={hold?.holdPeriod}
               onChange={(e: any) => setHold({ ...hold, holdPeriod: e.target.value })}
             />

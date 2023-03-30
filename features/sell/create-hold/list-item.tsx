@@ -1,12 +1,9 @@
 import { getImageSrc, getItemDisplayName, getItemSku } from 'lib/functions/displayInventory'
 import { useStockItem } from 'lib/api/stock'
-import { SaleItemObject } from 'lib/types/sale'
+import { HoldObject } from 'lib/types/sale'
 import { writeCartItemPriceBreakdown } from 'lib/functions/sell'
 
-type HoldListItemProps = {
-  cartItem: SaleItemObject
-}
-export default function HoldListItem({ cartItem }: HoldListItemProps) {
+export default function HoldListItem({ cartItem }: { cartItem: HoldObject }) {
   const { stockItem } = useStockItem(`${cartItem?.itemId}`)
   const { item = {} } = stockItem || {}
 
