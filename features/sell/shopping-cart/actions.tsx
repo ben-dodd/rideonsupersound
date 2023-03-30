@@ -5,14 +5,18 @@ import { SaleStateTypes } from 'lib/types/sale'
 import { useAppStore } from 'lib/store'
 import { Pages, ViewProps } from 'lib/store/types'
 import { useSWRConfig } from 'swr'
-import { saveCart, useParkedSales } from 'lib/api/sale'
+import { deleteSale, saveCart, useParkedSales } from 'lib/api/sale'
 import { Delete, Folder, Save } from '@mui/icons-material'
 import DropdownMenu from 'components/dropdown-menu'
 import dayjs from 'dayjs'
+import { useCurrentRegisterId } from 'lib/api/register'
+import { useClerk } from 'lib/api/clerk'
 
 // TODO fix action icons alignment
 export default function ShoppingCartActions() {
   const { cart, setCart, loadSaleToCart, setAlert, openConfirm, closeView, resetCart, resetSearchBar } = useAppStore()
+  const { currentRegisterId } = useCurrentRegisterId()
+  const { clerk } = useClerk()
   const { parkedSales } = useParkedSales()
   const { sale = {}, items = [] } = cart || {}
   const [saveSaleLoading, setSaveSaleLoading] = useState(false)
@@ -25,7 +29,7 @@ export default function ShoppingCartActions() {
 
   const parkedSaleItems = parkedSales?.map((sale) => ({
     text: `[${dayjs(sale?.dateSaleOpened).format('DD/MM/YYYY h:mma')}] ${sale?.itemList}`,
-    onClick: () => loadSaleToCart(sale),
+    onClick: () => loadSaleToCart(sale?.id),
   }))
 
   async function onClickSaveSale() {
@@ -55,26 +59,42 @@ export default function ShoppingCartActions() {
   }
 
   async function onClickDiscardSale() {
-    openConfirm({
-      open: true,
-      title: 'Are you sure?',
-      message: 'Are you sure you want to clear the cart of all items?',
-      yesText: 'DISCARD SALE',
-      action: () => {
-        // saveLog(`Cart cleared.`, clerk?.id)
-        setAlert({
+    const hasID = cart?.sale?.id
+    const hasTransactions = cart?.transactions?.filter((transaction) => !transaction.isDeleted)?.length > 0
+    const hasItems = cart?.items?.length > 0
+    hasTransactions
+      ? openConfirm({
           open: true,
-          type: 'warning',
-          message: 'SALE DISCARDED',
-          undo: () => {
-            // saveLog(`Cart uncleared.`, clerk?.id)
-            setCart(cart)
-          },
+          title: 'Hang on',
+          message:
+            'Transactions have already been made for this sale. To delete the sale you will first need to open up the sale to delete the transactions.',
+          yesText: 'OK',
+          yesButtonOnly: true,
         })
-        clearCart()
-      },
-      noText: 'CANCEL',
-    })
+      : openConfirm({
+          open: true,
+          title: 'Are you sure?',
+          message: hasID
+            ? 'Are you sure you want to delete this sale? '
+            : 'Are you sure you want to clear the cart of all items?',
+          yesText: `${hasID ? 'DELETE' : 'DISCARD'} SALE`,
+          action: () => {
+            // saveLog(`Cart cleared.`, clerk?.id)
+            setAlert({
+              open: true,
+              type: 'warning',
+              message: `SALE ${hasID ? 'DELETED' : 'DISCARDED'}`,
+              undo: () => {
+                // saveLog(`Cart uncleared.`, clerk?.id)
+                hasID && console.log('TODO - save sale again')
+                setCart(cart)
+              },
+            })
+            deleteSale(sale?.id, clerk?.id, currentRegisterId)
+            clearCart()
+          },
+          noText: 'CANCEL',
+        })
   }
 
   return (
@@ -93,19 +113,17 @@ export default function ShoppingCartActions() {
           </button>
         </span>
       </Tooltip>
-      {cart?.transactions?.filter((transaction) => !transaction.isDeleted)?.length === 0 && (
-        <Tooltip title="Discard sale">
-          <span className="flex items-center">
-            <button
-              className="icon-button-small-white"
-              onClick={onClickDiscardSale}
-              disabled={Boolean(items?.length < 1)}
-            >
-              <Delete />
-            </button>
-          </span>
-        </Tooltip>
-      )}
+      <Tooltip title="Discard sale">
+        <span className="flex items-center">
+          <button
+            className="icon-button-small-white"
+            onClick={onClickDiscardSale}
+            disabled={Boolean(items?.length < 1)}
+          >
+            <Delete />
+          </button>
+        </span>
+      </Tooltip>
     </div>
   )
 }

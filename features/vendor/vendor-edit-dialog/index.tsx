@@ -5,7 +5,7 @@ import Select from 'react-select'
 import MaskedInput from 'react-text-mask'
 import { useClerks } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
-import { updateVendor } from 'lib/api/vendor'
+import { createVendor, updateVendor } from 'lib/api/vendor'
 import { useState } from 'react'
 import Modal from 'components/modal'
 import { ViewProps } from 'lib/store/types'
@@ -16,7 +16,7 @@ export default function VendorEditDialog({ vendor }) {
   const { setAlert, view, closeView } = useAppStore()
   const [editVendor, setEditVendor] = useState({
     name: vendor?.name || '',
-    category: vendor?.category || '',
+    vendorCategory: vendor?.vendorCategory || '',
     clerkId: vendor?.clerkId || null,
     bankAccountNumber: vendor?.bankAccountNumber || '',
     storeCreditOnly: vendor?.storeCreditOnly || false,
@@ -63,17 +63,18 @@ export default function VendorEditDialog({ vendor }) {
       loading: submitting,
       onClick: async () => {
         setSubmitting(true)
-        await updateVendor(vendor?.id, editVendor)
+        vendor?.id ? await updateVendor(vendor?.id, editVendor) : await createVendor(editVendor)
+        mutate(`vendor`)
         mutate(`vendor/${vendor?.id}`)
         setSubmitting(false)
-        closeView(ViewProps.stockEditDialog)
+        closeView(ViewProps.vendorEditDialog)
         setAlert({
           open: true,
           type: 'success',
-          message: `VENDOR UPDATED`,
+          message: `VENDOR ${vendor?.id ? 'UPDATED' : 'CREATED'}`,
         })
       },
-      text: 'UPDATE VENDOR',
+      text: `${vendor?.id ? 'UPDATE' : 'CREATE NEW'} VENDOR`,
     },
   ]
 
@@ -81,7 +82,7 @@ export default function VendorEditDialog({ vendor }) {
     <Modal
       open={view?.vendorEditDialog}
       closeFunction={() => closeView(ViewProps.vendorEditDialog)}
-      title={'EDIT VENDOR'}
+      title={`${vendor?.id ? 'EDIT' : 'NEW'} VENDOR`}
       buttons={buttons}
       width="max-w-screen-md"
     >
@@ -94,7 +95,6 @@ export default function VendorEditDialog({ vendor }) {
           dbField="vendorCategory"
           isCreateDisabled={true}
         />
-
         <div className="input-label">Staff Contact</div>
         <div className="w-full">
           <Select

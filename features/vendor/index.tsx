@@ -15,7 +15,7 @@ const VendorsScreen = () => {
   } = useAppStore()
   const setTab = (tab) => setPage(Pages.vendorsPage, { tab })
   const menuItems = [
-    { text: 'New Vendor', icon: <AddCircle />, onClick: null },
+    { text: 'New Vendor', icon: <AddCircle />, onClick: () => openView(ViewProps.vendorEditDialog) },
     { text: 'Manually Pay Vendor', icon: <Money />, onClick: () => openView(ViewProps.cashVendorPaymentDialog) },
     {
       text: 'Transfer Credit Between Vendors',

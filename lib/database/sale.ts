@@ -105,6 +105,7 @@ export function dbGetAllCurrentHolds(db = connection) {
 export async function dbGetSale(id, db = connection) {
   const cart: any = {}
   cart.sale = await db('sale').where({ id }).first()
+  cart.customer = cart?.sale?.customer_id ? await dbGetCustomer(cart?.sale?.customer_id) : null
   cart.items = await dbGetSaleItemsBySaleId(id, db)
   cart.transactions = await dbGetSaleTransactionsBySaleId(id, db)
   return cart

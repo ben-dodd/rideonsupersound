@@ -5,6 +5,7 @@ import CashPaymentDialog from 'features/vendor/payment/cash-payment-dialog'
 import TransferVendorPaymentDialog from 'features/vendor/payment/transfer-payment-dialog'
 import VendorsScreen from 'features/vendor'
 import { useAppStore } from 'lib/store'
+import VendorEditDialog from 'features/vendor/vendor-edit-dialog'
 
 export default function VendorsPage() {
   const { view } = useAppStore()
@@ -14,6 +15,7 @@ export default function VendorsPage() {
       {view?.cashVendorPaymentDialog && <CashPaymentDialog />}
       {view?.batchVendorPaymentScreen && <BatchPaymentScreen />}
       {view?.transferVendorPaymentDialog && <TransferVendorPaymentDialog />}
+      {view?.vendorEditDialog && <VendorEditDialog vendor={{}} />}
     </div>
   )
 }

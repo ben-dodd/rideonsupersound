@@ -26,7 +26,7 @@ export function createVendor(vendor) {
 
 export function updateVendor(id, update) {
   return axiosAuth
-    .patch(`/api/vendor/${id}`, { update })
+    .patch(`/api/vendor/${id}`, update)
     .then((res) => res.data)
     .catch((e) => Error(e.message))
 }

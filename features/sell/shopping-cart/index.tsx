@@ -13,6 +13,7 @@ import { useClerk } from 'lib/api/clerk'
 import { useRouter } from 'next/router'
 import { SaleStateTypes } from 'lib/types/sale'
 import { ArrowCircleLeftRounded } from '@mui/icons-material'
+import { priceDollarsString } from 'lib/utils'
 
 export default function ShoppingCart() {
   const { cart, view, setCartSale, openView, closeView } = useAppStore()
@@ -69,12 +70,10 @@ export default function ShoppingCart() {
               HOLD
             </button>
             <div>
-              {sale?.isMailOrder && (
+              {sale?.isMailOrder && sale?.postage > 0 && (
                 <div className="flex justify-between mt-1">
                   <div className="self-center">POSTAGE</div>
-                  <div className={`self-center text-right ml-4 text-white`}>
-                    ${sale?.postage ? Number(sale?.postage)?.toFixed(2) : '0.00'}
-                  </div>
+                  <div className={`self-center text-right ml-4 text-white`}>{priceDollarsString(sale?.postage)}</div>
                 </div>
               )}
               <div className="flex justify-between mt-1">

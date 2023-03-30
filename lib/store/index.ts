@@ -8,6 +8,8 @@ import { saveCart } from 'lib/api/sale'
 import { mutate } from 'swr'
 import { PaymentMethodTypes } from 'lib/types/sale'
 import { useSetRegisterId } from 'lib/api/register'
+import { axiosAuth } from 'lib/api'
+import { mysql2js } from 'lib/database/utils/helpers'
 
 type WithSelectors<S> = S extends { getState: () => infer T } ? S & { use: { [K in keyof T]: () => T[K] } } : never
 
@@ -132,13 +134,16 @@ export const useAppStore = createSelectors(
           Object.entries(update).forEach(([key, value]) => (draft.cart[key] = value))
         }),
       ),
-    loadSaleToCart: (sale) => {
-      console.log('LOAD SALE TO CART (NEEDS DOING)', sale)
-      set(
-        produce((draft) => {
-          Object.entries(sale).forEach(([key, value]) => (draft.cart[key] = value))
-        }),
-      )
+    loadSaleToCart: (saleId) => {
+      console.log('LOading sale to cart', saleId)
+      return axiosAuth.get(`api/sale/${saleId}`).then((newCart) => {
+        console.log('got sale', mysql2js(newCart))
+        return set(
+          produce((draft) => {
+            draft.cart = mysql2js(newCart)
+          }),
+        )
+      })
     },
     mutateCart: async (mutates = []) => {
       const newCart = await saveCart(get().cart, get().cart?.sale?.state)
