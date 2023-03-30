@@ -14,6 +14,7 @@ const handler: NextApiHandler = async (req, res) => {
     stocktake_id,
     date_moved,
   } = req.body
+  console.log('Date moved', date_moved)
   try {
     if (!k || k !== process.env.NEXT_PUBLIC_SWR_API_KEY)
       return res.status(401).json({ message: 'Resource Denied.' })

@@ -1114,7 +1114,7 @@ export async function saveStockPriceToDatabase(
           clerk_id: clerk?.id,
           vendor_cut,
           total_sell,
-          date_valid_from: dayjs.utc().format,
+          date_valid_from: dayjs.utc().format(),
           note,
         }),
       }
@@ -1161,7 +1161,7 @@ export async function saveStockMovementToDatabase(
           note,
           sale_id,
           stocktake_id,
-          date_moved: dayjs.utc().format,
+          date_moved: dayjs.utc().format(),
         }),
       }
     )
