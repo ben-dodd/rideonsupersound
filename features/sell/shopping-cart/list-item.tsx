@@ -58,7 +58,7 @@ export default function SellListItem({ cartItem }: { cartItem: SaleItemObject })
       // No items left and no transactions, delete cart
       closeView(ViewProps.cart)
       resetCart()
-      if (sale?.id) deleteSale(sale?.id, { clerk, registerId })
+      if (sale?.id) deleteSale(sale?.id)
     } else {
       setCart({
         items: updatedCartItems,

@@ -70,11 +70,13 @@ export default function ShoppingCart() {
               HOLD
             </button>
             <div>
-              {sale?.isMailOrder && sale?.postage > 0 && (
+              {sale?.isMailOrder && sale?.postage > 0 ? (
                 <div className="flex justify-between mt-1">
                   <div className="self-center">POSTAGE</div>
                   <div className={`self-center text-right ml-4 text-white`}>{priceDollarsString(sale?.postage)}</div>
                 </div>
+              ) : (
+                <div />
               )}
               <div className="flex justify-between mt-1">
                 <div className="self-center">STORE CUT</div>
@@ -129,5 +131,3 @@ export default function ShoppingCart() {
     </div>
   )
 }
-
-// TODO include postage price if it is there

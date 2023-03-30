@@ -196,6 +196,13 @@ export function dbDeleteSaleItem(id, db = connection) {
   return dbUpdateSaleItem(id, { isDeleted: true }, db).catch((e) => Error(e.message))
 }
 
+export function dbDeleteStockMovementForSale(id, db = connection) {
+  return db('stock_movement')
+    .where({ sale_id: id })
+    .update({ is_deleted: 1 })
+    .catch((e) => Error(e.message))
+}
+
 export function dbCreateSaleTransaction(saleTransaction, db = connection) {
   return db('sale_transaction')
     .insert(js2mysql(saleTransaction))
@@ -271,26 +278,14 @@ export async function dbSaveCart(cart, prevState, db = connection) {
     .catch((e) => Error(e.message))
 }
 
-export async function dbDeleteSale(id, { sale, clerk, registerID }, db = connection) {
+export async function dbDeleteSale(id, db = connection) {
   return db
     .transaction(async (trx) => {
+      const sale = await dbGetSale(id, trx)
       await sale?.items?.forEach((saleItem) => {
         dbUpdateSaleItem(saleItem?.id, { isDeleted: true }, trx)
-        // TODO should this delete the original sale stock movement instead?
-        // TODO change to how it is in current one
-        // if (!saleItem?.isRefunded)
-        //   dbCreateStockMovement(
-        //     {
-        //       stockId: saleItem?.id,
-        //       clerk,
-        //       registerID,
-        //       act: StockMovementTypes.Unsold,
-        //       note: 'Sale nuked.',
-        //       saleId: sale?.id,
-        //     },
-        //     trx,
-        //   )
       })
+      await dbDeleteStockMovementForSale(sale?.id, trx)
       await sale?.transactions?.forEach((saleTransaction) => {
         if (saleTransaction?.vendorPaymentId)
           dbUpdateVendorPayment(

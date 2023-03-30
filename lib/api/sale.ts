@@ -42,8 +42,8 @@ export function updateSaleItem(id, update) {
   return axiosAuth.patch(`/api/sale/item/${id}`, { update })
 }
 
-export function deleteSale(id, clerk, registerId) {
-  return axiosAuth.patch(`/api/sale/delete/${id}`, { clerk, registerId })
+export function deleteSale(id) {
+  return axiosAuth.patch(`/api/sale/delete/${id}`)
 }
 
 export function deleteSaleItem(id) {

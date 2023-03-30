@@ -90,7 +90,7 @@ export default function ShoppingCartActions() {
                 setCart(cart)
               },
             })
-            deleteSale(sale?.id, clerk?.id, currentRegisterId)
+            deleteSale(sale?.id)
             clearCart()
           },
           noText: 'CANCEL',

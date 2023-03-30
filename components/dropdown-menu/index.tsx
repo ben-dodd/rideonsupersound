@@ -17,8 +17,6 @@ const DropdownMenu = ({
   const [menuVisible, setMenuVisible] = useState(false)
   const { me } = useMe()
   const isAdmin = isUserAdmin(me)
-  console.log(me)
-  console.log('isAdmin', isAdmin)
   const toggleMenu = () => setMenuVisible((isVisible) => !isVisible)
   return (
     <div className="flex items-center relative h-full">
