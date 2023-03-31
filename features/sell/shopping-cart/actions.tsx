@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import CircularProgress from '@mui/material/CircularProgress'
 import Tooltip from '@mui/material/Tooltip'
 import { SaleStateTypes } from 'lib/types/sale'
@@ -9,15 +9,11 @@ import { deleteSale, saveCart, useParkedSales } from 'lib/api/sale'
 import { Delete, Folder, Save } from '@mui/icons-material'
 import DropdownMenu from 'components/dropdown-menu'
 import dayjs from 'dayjs'
-import { useCurrentRegisterId } from 'lib/api/register'
-import { useClerk } from 'lib/api/clerk'
 
-// TODO fix action icons alignment
 export default function ShoppingCartActions() {
   const { cart, setCart, loadSaleToCart, setAlert, openConfirm, closeView, resetCart, resetSearchBar } = useAppStore()
-  const { currentRegisterId } = useCurrentRegisterId()
-  const { clerk } = useClerk()
   const { parkedSales } = useParkedSales()
+  const [parkedSaleItems, setParkedSaleItems] = useState([])
   const { sale = {}, items = [] } = cart || {}
   const [saveSaleLoading, setSaveSaleLoading] = useState(false)
   const { mutate } = useSWRConfig()
@@ -27,20 +23,26 @@ export default function ShoppingCartActions() {
     closeView(ViewProps.cart)
   }
 
-  const parkedSaleItems = parkedSales?.map((sale) => ({
-    text: `[${dayjs(sale?.dateSaleOpened).format('DD/MM/YYYY h:mma')}] ${sale?.itemList}`,
-    onClick: () => loadSaleToCart(sale?.id),
-  }))
+  useEffect(() => {
+    setParkedSaleItems(
+      parkedSales?.map((sale) => ({
+        text: `[${dayjs(sale?.dateSaleOpened).format('DD/MM/YYYY h:mma')}] ${sale?.itemList}`,
+        onClick: () => loadSaleToCart(sale?.id),
+      })),
+    )
+  }, [parkedSales, loadSaleToCart])
 
   async function onClickSaveSale() {
     setSaveSaleLoading(true)
     await saveCart({ ...cart, sale: { ...sale, state: SaleStateTypes.Parked } }, sale?.state)
     mutate('stock')
+    mutate(`sale/parked`)
     setAlert({
       open: true,
       type: 'success',
       message: 'SALE PARKED',
     })
+
     resetSearchBar(Pages.sellPage)
     clearCart()
     setSaveSaleLoading(false)
@@ -61,7 +63,6 @@ export default function ShoppingCartActions() {
   async function onClickDiscardSale() {
     const hasID = cart?.sale?.id
     const hasTransactions = cart?.transactions?.filter((transaction) => !transaction.isDeleted)?.length > 0
-    const hasItems = cart?.items?.length > 0
     hasTransactions
       ? openConfirm({
           open: true,
@@ -90,7 +91,9 @@ export default function ShoppingCartActions() {
                 setCart(cart)
               },
             })
-            deleteSale(sale?.id)
+            deleteSale(sale?.id).then(() => {
+              mutate(`sale/parked`)
+            })
             clearCart()
           },
           noText: 'CANCEL',
