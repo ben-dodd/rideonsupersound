@@ -62,18 +62,23 @@ export function dbGetVendorNames(db = connection) {
 }
 
 export function dbGetVendorAccounts(db = connection) {
-  return dbGetVendorNames(db).then((vendors) =>
-    Promise.all(vendors?.map(async (vendor) => await dbGetVendorAccount(vendor, db))),
-  )
+  return db('vendor')
+    .select('id', 'name', 'last_contacted')
+    .where({ is_deleted: 0 })
+    .then((vendors) => Promise.all(vendors?.map(async (vendor) => await dbGetVendorAccount(vendor, db))))
 }
 
 export async function dbGetVendorAccount(vendor, db = connection) {
   const totalVendorPayments = await dbGetTotalVendorPayments(vendor?.id, db)
   const totalVendorCut = await dbGetTotalVendorCut(vendor?.id, db)
+  const lastPaid = await dbGetVendorLastPaid(vendor?.id, db)
+  const lastSold = await dbGetVendorLastSold(vendor?.id, db)
   return {
     id: vendor?.id,
     name: vendor?.name,
     totalOwing: totalVendorCut - totalVendorPayments,
+    lastPaid,
+    lastSold,
   }
 }
 
@@ -83,6 +88,27 @@ export function dbGetTotalVendorPayments(vendor_id, db = connection) {
     .where({ vendor_id })
     .where({ is_deleted: 0 })
     .then((res) => res[0].totalAmount)
+}
+
+export function dbGetVendorLastPaid(vendor_id, db = connection) {
+  return db('vendor_payment')
+    .select('date')
+    .where({ vendor_id })
+    .where({ is_deleted: 0 })
+    .orderBy('id', 'desc')
+    .first()
+    .then((rows) => rows?.date || null)
+}
+
+export function dbGetVendorLastSold(vendor_id, db = connection) {
+  return db('stock')
+    .leftJoin('stock_movement', 'stock_movement.stock_id', 'stock.id')
+    .select('stock_movement.date_moved')
+    .where('stock.vendor_id', vendor_id)
+    .where('stock_movement.is_deleted', 0)
+    .orderBy('stock_movement.id', 'desc')
+    .first()
+    .then((rows) => rows?.date_moved || null)
 }
 
 export function dbGetVendorStockIds(vendor_id, db = connection) {
