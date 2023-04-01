@@ -4,7 +4,7 @@ import { getCartItemStoreCut, getCartItemTotal } from 'lib/functions/sell'
 import { VendorObject, VendorPaymentObject } from 'lib/types/vendor'
 import { dbGetAllVendorPayments } from './payment'
 import { dbGetAllSalesAndItems } from './sale'
-import { dbGetStockList } from './stock'
+import { dbGetSimpleStockCount, dbGetStockList } from './stock'
 import { js2mysql } from './utils/helpers'
 import { modulusCheck } from 'lib/functions/payment'
 import { dollarsToCents } from 'lib/utils'
@@ -75,12 +75,15 @@ export async function dbGetVendorAccount(vendor, db = connection) {
   const totalVendorCut = await dbGetTotalVendorCut(vendor?.id, db)
   const lastPaid = await dbGetVendorLastPaid(vendor?.id, db)
   const lastSold = await dbGetVendorLastSold(vendor?.id, db)
+  const hasNegativeQuantityItems = await dbGetVendorHasNegativeQuantityItems(vendor?.id, db)
   return {
-    id: vendor?.id,
-    name: vendor?.name,
+    ...vendor,
+    totalVendorCut,
+    totalVendorPayments,
     totalOwing: totalVendorCut - totalVendorPayments,
     lastPaid,
     lastSold,
+    hasNegativeQuantityItems,
   }
 }
 
@@ -271,4 +274,10 @@ export function dbCreateBatchVendorPayments(batchPayment, db = connection) {
       })
     return successfulPayments
   })
+}
+
+export function dbGetVendorHasNegativeQuantityItems(vendor_id, db = connection) {
+  return dbGetSimpleStockCount(db)
+    .where({ vendor_id })
+    .then((dataRows) => dataRows?.filter((stock) => stock?.quantity < 0)?.length > 0)
 }

@@ -11,11 +11,7 @@ interface KiwiBankBatchFileProps {
 }
 
 // This function writes a KBB file
-export function writeKiwiBankBatchFile({
-  transactions,
-  batchNumber,
-  sequenceNumber,
-}: KiwiBankBatchFileProps) {
+export function writeKiwiBankBatchFile({ transactions, batchNumber, sequenceNumber }: KiwiBankBatchFileProps) {
   let validTransactions = getValidTransactions(transactions)
   let transactionAmount = getTotalTransactionAmount(validTransactions)
   let transactionCount = getTotalTransactionCount(validTransactions)
@@ -30,9 +26,7 @@ export function writeKiwiBankBatchFile({
 }
 
 function getValidTransactions(transactions) {
-  return transactions.filter((transaction) =>
-    checkKiwibankTransactionIsValid(transaction)
-  )
+  return transactions.filter((transaction) => checkKiwibankTransactionIsValid(transaction))
 }
 
 function checkKiwibankTransactionIsValid(transaction) {
@@ -40,10 +34,7 @@ function checkKiwibankTransactionIsValid(transaction) {
 }
 
 function getTotalTransactionAmount(transactions) {
-  return transactions.reduce(
-    (sum, transaction) => sum + parseInt(transaction.amount),
-    0
-  )
+  return transactions.reduce((sum, transaction) => sum + parseInt(transaction.amount), 0)
 }
 
 function getTotalTransactionCount(transactions) {
@@ -52,12 +43,8 @@ function getTotalTransactionCount(transactions) {
 
 function getHashTotal(transactions) {
   let hashTotal = transactions.reduce(
-    (sum, transaction) =>
-      sum +
-      parseInt(
-        `${transaction?.accountNumber}`.replace(/\D/g, '')?.slice(2, 13)
-      ),
-    0
+    (sum, transaction) => sum + parseInt(`${transaction?.accountNumber}`.replace(/\D/g, '')?.slice(2, 13)),
+    0,
   )
   return `00000000000${hashTotal}`.slice(-11)
 }
@@ -106,27 +93,14 @@ function writeKBBFooter({ transactionAmount, transactionCount, hashTotal }) {
 }
 
 function writeOutKBBFile(kbb) {
-  return encodeURI(
-    `data:text/csv;charset=utf-8,${kbb
-      .map((rowArray) => `${rowArray.join(',')}`)
-      .join('\r\n')}`
-  )
+  return encodeURI(`data:text/csv;charset=utf-8,${kbb.map((rowArray) => `${rowArray.join(',')}`).join('\r\n')}`)
 }
 
-export function writePaymentNotificationEmail({
-  vendors,
-  includeUnchecked,
-  includeNoBank,
-}: any) {
+export function writePaymentNotificationEmail({ vendors, includeUnchecked, includeNoBank }: any) {
   let csvContent = 'data:text/csv;charset=utf-8,'
-  csvContent +=
-    'CODE,NAME,RECIPIENT,ACCOUNT,OWING,LINK,DATE,CHECKED,VALID BANK NUM,STORE CREDIT ONLY\r\n'
+  csvContent += 'CODE,NAME,RECIPIENT,ACCOUNT,OWING,LINK,DATE,CHECKED,VALID BANK NUM,STORE CREDIT ONLY\r\n'
   let vendorArrays = vendors
-    ?.filter(
-      (v) =>
-        (includeUnchecked || v?.is_checked) &&
-        (includeNoBank || modulusCheck(v?.bank_account_number))
-    )
+    ?.filter((v) => (includeUnchecked || v?.is_checked) && (includeNoBank || modulusCheck(v?.bank_account_number)))
     ?.map((v) => [
       v?.id,
       v?.name,
@@ -193,10 +167,7 @@ export function modulusCheck(accountNumber) {
   } else if (accountNumberObj.bank === '25') {
     // Do Modulus 10A Checks
     return modulus10ACheck(accountNumberObj)
-  } else if (
-    accountNumberObj.bank === '09' &&
-    accountNumberObj.branch === '0000'
-  ) {
+  } else if (accountNumberObj.bank === '09' && accountNumberObj.branch === '0000') {
     // Do Modulus 11D Checks
     return modulus11DCheck(accountNumberObj)
   } else if (
@@ -215,10 +186,7 @@ export function modulusCheck(accountNumber) {
 }
 
 function modulusNumCheck(weightings, checkDigits, modulus = 11) {
-  let sum = weightings.reduce(
-    (summed, weighting, i) => summed + weighting * checkDigits[i],
-    0
-  )
+  let sum = weightings.reduce((summed, weighting, i) => summed + weighting * checkDigits[i], 0)
   return sum % modulus === 0
 }
 
@@ -231,9 +199,7 @@ function modulus11ACheck(accountNumberObj) {
   //   (iv) The weightings for the calculation are from left to right: 6, 3, 7, 9, 10, 5, 8, 4, 2, 1
   //    The products are added together and the sum divided by 11. If the remainder is zero the account check digits, e.g.  Account Number 01-0902-0068389-00
   // (vi) Dividing by 11 gives 16 with a remainder of 0 (no remainder). Thus, the check digit is correct.
-  let checkDigits = `${accountNumberObj.branch}${accountNumberObj.account.slice(
-    1
-  )}`
+  let checkDigits = `${accountNumberObj.branch}${accountNumberObj.account.slice(1)}`
     .split('')
     .map((numStr) => parseInt(numStr))
   let weightings = [6, 3, 7, 9, 10, 5, 8, 4, 2, 1]
@@ -249,9 +215,7 @@ function modulus11BCheck(accountNumberObj) {
   //   (iv) The weightings for the calculation are from left to right: 7, 6, 5, 4, 3, 2, 1
   //    The products are added together and the sum divided by 11. If the remainder is zero the account check digits, e.g.  Account Number 08-6523-1954512-001
   // (vi) Dividing by 11 gives 11 with a remainder of 0 (no remainder). Thus, the check digit is correct.
-  let checkDigits = accountNumberObj.account
-    .split('')
-    .map((numStr) => parseInt(numStr))
+  let checkDigits = accountNumberObj.account.split('').map((numStr) => parseInt(numStr))
   let weightings = [7, 6, 5, 4, 3, 2, 1]
   return modulusNumCheck(weightings, checkDigits)
 }
@@ -283,9 +247,7 @@ function modulus11DCheck(accountNumberObj) {
   //    The digits of each product are added together. This step is repeated for any result that has more than one digit. The results of these additions are added and the sum is divided by 11. If the remainder is zero the account check digits, e.g. Account Number: 09-0000-00007471-2
   // (vi) Dividing by 11 gives 2 with a remainder of 0 (no remainder). Thus, the check digit is correct.
   //  (vii) In addition to checking the account number it also necessary to check the serial number
-  let checkDigits = `${accountNumberObj.account.slice(-3)}${
-    accountNumberObj.suffix
-  }`
+  let checkDigits = `${accountNumberObj.account.slice(-3)}${accountNumberObj.suffix}`
     .split('')
     .map((numStr) => parseInt(numStr))
   let weightings = [5, 4, 3, 2, 1]
@@ -307,9 +269,16 @@ function modulus10ACheck(accountNumberObj) {
   //   (iv) The weightings for the calculation are from left to right: 1, 7, 3, 1, 7, 3, 1
   //    The products are added together and the sum divided by 10. If the remainder is zero the account check digits, e.g Account Number: 25-2500-2608486-001
   // (vi) Dividing by 10 gives 11 with a remainder of 0 (no remainder). Thus, the check digit is correct.
-  let checkDigits = accountNumberObj.account
-    .split('')
-    .map((numStr) => parseInt(numStr))
+  let checkDigits = accountNumberObj.account.split('').map((numStr) => parseInt(numStr))
   let weightings = [1, 7, 3, 1, 7, 3, 1]
   return modulusNumCheck(weightings, checkDigits, 10)
 }
+
+export const checkDefaultChecked = (vendor) =>
+  modulusCheck(vendor?.bankAccountNumber) &&
+  !vendor?.storeCreditOnly &&
+  (vendor?.totalOwing >= 2000 ||
+    (dayjs().diff(vendor?.lastPaid, 'month') >= 3 && vendor?.totalOwing > 0) ||
+    (dayjs().diff(vendor?.lastSold, 'month') >= 3 && !vendor?.lastPaid))
+    ? true
+    : false

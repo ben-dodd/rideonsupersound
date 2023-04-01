@@ -31,6 +31,16 @@ export function dbGetStockList(db = connection) {
     .where(`stock.is_gift_card`, 0)
 }
 
+export function dbGetSimpleStockCount(db = connection) {
+  return db('stock')
+    .leftJoin('stock_movement', 'stock.id', 'stock_movement.stock_id')
+    .select('stock.id', 'stock.vendor_id', 'stock.artist', 'stock.title')
+    .sum('stock_movement.quantity as quantity')
+    .where(`stock.is_deleted`, 0)
+    .where(`stock.is_misc_item`, 0)
+    .where(`stock.is_gift_card`, 0)
+}
+
 export function dbGetPrintLabelStockList(db = connection) {
   return db('stock')
     .leftJoin('vendor', 'stock.vendor_id', 'vendor.id')

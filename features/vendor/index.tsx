@@ -25,7 +25,7 @@ const VendorsScreen = () => {
     {
       text: 'Start New Batch Payment',
       icon: <AccountBalance />,
-      onClick: () => openView(ViewProps.batchVendorPaymentScreen),
+      onClick: () => openView(ViewProps.batchVendorPaymentDialog),
     },
     { text: 'Manage Settings', icon: <DisplaySettings />, onClick: null, disabled: true },
   ]

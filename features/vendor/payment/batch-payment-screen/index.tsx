@@ -1,15 +1,14 @@
 import { useEffect, useState } from 'react'
-import ScreenContainer from 'components/container/screen'
 import { ModalButton } from 'lib/types'
-import dayjs from 'dayjs'
-import { modulusCheck } from 'lib/functions/payment'
+import { checkDefaultChecked } from 'lib/functions/payment'
 import CheckBatchPayments from './check-batch-payments'
 import SelectBatchPayments from './select-batch-payments'
 import { useAppStore } from 'lib/store'
 import { useCurrentRegisterId } from 'lib/api/register'
 import { useClerk } from 'lib/api/clerk'
-import { useVendorAccounts } from 'lib/api/vendor'
+import { createVendorBatchPayment, useVendorAccounts } from 'lib/api/vendor'
 import { ViewProps } from 'lib/store/types'
+import Modal from 'components/modal'
 
 // Icons
 
@@ -35,15 +34,6 @@ export default function BatchPaymentScreen() {
         }),
     )
   }, [vendorAccounts])
-
-  const checkDefaultChecked = (vendor) =>
-    modulusCheck(vendor?.bankAccountNumber) &&
-    !vendor?.storeCreditOnly &&
-    (vendor?.totalOwing >= 2000 ||
-      (dayjs().diff(vendor?.lastPaid, 'month') >= 3 && vendor?.totalOwing > 0) ||
-      (dayjs().diff(vendor?.lastSold, 'month') >= 3 && !vendor?.lastPaid))
-      ? true
-      : false
 
   const buttons: ModalButton[] =
     stage === 0
@@ -80,26 +70,25 @@ export default function BatchPaymentScreen() {
                   action: () => {
                     // saveSystemLog(`Batch Payment closed without Emailing`, clerk?.id)
                     closeView(ViewProps.batchVendorPaymentDialog)
-                    createBatchPayment({ vendorList, clerkId: clerk?.id, registerId, emailed })
+                    createVendorBatchPayment({ vendorList, clerkId: clerk?.id, registerId, emailed })
                   },
                 })
               } else {
                 // saveSystemLog(`Batch Payment closed with Emailing`, clerk?.id)
                 closeView(ViewProps.batchVendorPaymentDialog)
-                createBatchPayment({ vendorList, clerkId: clerk?.id, registerId, emailed })
+                createVendorBatchPayment({ vendorList, clerkId: clerk?.id, registerId, emailed })
               }
             },
           },
         ]
 
   return (
-    <ScreenContainer
-      show={view?.batchVendorPaymentScreen}
-      closeFunction={() => closeView(ViewProps.batchVendorPaymentScreen)}
+    <Modal
+      open={view?.batchVendorPaymentDialog}
+      closeFunction={() => closeView(ViewProps.batchVendorPaymentDialog)}
       title={'BATCH PAYMENTS'}
       buttons={buttons}
-      titleClass="bg-col4"
-      loading={isInventoryLoading || isVendorPaymentsLoading || isVendorsLoading || isSalesLoading}
+      loading={isVendorAccountsLoading}
     >
       <>
         <div className="w-full" hidden={stage === 1}>
@@ -109,6 +98,6 @@ export default function BatchPaymentScreen() {
           <CheckBatchPayments vendorList={vendorList} setKbbLoaded={setKbbLoaded} setEmailed={setEmailed} />
         </div>
       </>
-    </ScreenContainer>
+    </Modal>
   )
 }
