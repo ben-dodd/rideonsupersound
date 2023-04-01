@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { RoleTypes } from 'lib/types'
+import { RoleTypes, TaskObject } from 'lib/types'
 import { SaleObject } from 'lib/types/sale'
 import { axiosAuth, useData } from './'
 
@@ -9,6 +9,13 @@ export function useJobsToDo() {
 
 export function useJobs() {
   return useData(`job`, 'jobs')
+}
+
+export async function createTask(task: TaskObject) {
+  return axiosAuth
+    .post(`/api/job`, task)
+    .then((res) => res.data)
+    .catch((e) => Error(e.message))
 }
 
 export async function createMailOrderTask(sale: SaleObject, customer: string) {

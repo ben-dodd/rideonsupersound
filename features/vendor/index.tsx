@@ -22,7 +22,11 @@ const VendorsScreen = () => {
       icon: <TransferWithinAStation />,
       onClick: () => openView(ViewProps.transferVendorPaymentDialog),
     },
-    { text: 'Start New Batch Payment', icon: <AccountBalance />, onClick: null, disabled: true },
+    {
+      text: 'Start New Batch Payment',
+      icon: <AccountBalance />,
+      onClick: () => openView(ViewProps.batchVendorPaymentScreen),
+    },
     { text: 'Manage Settings', icon: <DisplaySettings />, onClick: null, disabled: true },
   ]
   return (

@@ -20,7 +20,6 @@ const StockItemScreen = ({ item, sales }) => {
   const { mutate } = useSWRConfig()
 
   function onClickDelete() {
-    // REVIEW Delete inventory item
     const hasBeenSold = sales?.length > 0
     openConfirm({
       open: true,

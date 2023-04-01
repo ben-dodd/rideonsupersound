@@ -8,6 +8,8 @@ import Select from 'react-select'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
+import { createTask } from 'lib/api/jobs'
+import { useSWRConfig } from 'swr'
 
 export default function JobDialog() {
   const { clerk } = useClerk()
@@ -16,6 +18,7 @@ export default function JobDialog() {
   const [assignedTo, setAssignedTo] = useState(null)
   const [isPriority, setIsPriority] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const { mutate } = useSWRConfig()
 
   function clearDialog() {
     setDescription('')
@@ -50,7 +53,9 @@ export default function JobDialog() {
           createdByClerkId: clerk?.id,
           dateCreated: dayjs.utc().format(),
         }
-        const jobId = await saveTaskToDatabase(newTask)
+        const jobId = await createTask(newTask)
+        console.log(jobId)
+        mutate(`job`)
         // mutateJobs([...jobs, { ...newTask, jobId }], false)
         setSubmitting(false)
         clearDialog()
@@ -66,12 +71,7 @@ export default function JobDialog() {
   ]
 
   return (
-    <Modal
-      open={view?.taskDialog}
-      closeFunction={clearDialog}
-      title={'NEW JOB'}
-      buttons={buttons}
-    >
+    <Modal open={view?.taskDialog} closeFunction={clearDialog} title={'NEW JOB'} buttons={buttons}>
       <div className="h-dialogsm">
         <TextField
           inputLabel="Description"
@@ -102,7 +102,4 @@ export default function JobDialog() {
       </div>
     </Modal>
   )
-}
-function saveTaskToDatabase(newTask: TaskObject) {
-  throw new Error('Function not implemented.')
 }

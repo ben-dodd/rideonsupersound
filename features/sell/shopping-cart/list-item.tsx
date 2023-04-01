@@ -125,7 +125,7 @@ export default function SellListItem({ cartItem }: { cartItem: SaleItemObject })
         </div>
       </div>
       <div
-        className={`text-black bg-white px-2 overflow-y-hidden transition-height duration-200 ${
+        className={`text-black bg-white px-2 overflow-y-hidden transition-height duration-200 border-b ${
           expanded ? (miscOrGiftItem ? 'h-48' : 'h-64') : 'h-0'
         }`}
       >
