@@ -39,3 +39,14 @@ export function createVendorPayment(payment) {
     })
     .catch((e) => Error(e.message))
 }
+
+export function createVendorBatchPayment(batchPayment) {
+  return axiosAuth
+    .post(`/api/vendor/payment/batch`, batchPayment)
+    .then((res) => {
+      // Returns list of successful payments (vendor id, name and pay amount)
+      console.log(res.data)
+      return res.data
+    })
+    .catch((e) => Error(e.message))
+}

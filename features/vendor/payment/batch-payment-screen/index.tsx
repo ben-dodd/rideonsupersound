@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
 import ScreenContainer from 'components/container/screen'
-import { ClerkObject, ModalButton } from 'lib/types'
+import { ModalButton } from 'lib/types'
 import dayjs from 'dayjs'
 import { modulusCheck } from 'lib/functions/payment'
 import CheckBatchPayments from './check-batch-payments'
 import SelectBatchPayments from './select-batch-payments'
 import { useAppStore } from 'lib/store'
-import { useCurrentRegister, useCurrentRegisterId } from 'lib/api/register'
+import { useCurrentRegisterId } from 'lib/api/register'
 import { useClerk } from 'lib/api/clerk'
-import { useVendors } from 'lib/api/vendor'
+import { useVendorAccounts } from 'lib/api/vendor'
 import { ViewProps } from 'lib/store/types'
 
 // Icons
@@ -18,51 +18,27 @@ export default function BatchPaymentScreen() {
   const { registerId } = useCurrentRegisterId()
   const { clerk } = useClerk()
 
-  const { inventory, isInventoryLoading } = useInventory()
-  const { sales, isSalesLoading } = useSalesJoined()
-  const { vendorPayments, isVendorPaymentsLoading, mutateVendorPayments } = useVendorPayments()
-  const { currentRegister } = useCurrentRegister()
-  const { vendors, isVendorsLoading } = useVendors()
-  // const { logs, mutateLogs } = useLogs()
-
+  const { vendorAccounts, isVendorAccountsLoading } = useVendorAccounts()
   const [vendorList, setVendorList] = useState([])
   const [stage, setStage] = useState(0)
   const [kbbLoaded, setKbbLoaded] = useState(false)
   const [emailed, setEmailed] = useState(false)
 
-  useEffect(
-    () => {
-      let vList = []
-      vendors
-        ?.filter((vendor) => vendor?.id !== 666)
-        ?.forEach((v) => {
-          let vendorVars = getVendorDetails(inventory, sales, vendorPayments, v?.id)
-          vList.push({
-            ...v,
-            ...vendorVars,
-            is_checked: checkValid({ ...v, ...vendorVars }),
-            payAmount: ((vendorVars?.totalOwing > 0 ? vendorVars?.totalOwing : 0) / 100)?.toFixed(2),
-          })
-        })
-      setVendorList(
-        vList?.sort((a, b) => {
-          if (!a?.is_checked && b?.is_checked) return 1
-          if (!b?.is_checked && a?.is_checked) return -1
+  useEffect(() => {
+    setVendorList(
+      vendorAccounts
+        ?.map((vendorAccount) => ({ ...vendorAccount, isChecked: checkDefaultChecked(vendorAccount) }))
+        ?.sort((a, b) => {
+          if (!a?.isChecked && b?.isChecked) return 1
+          if (!b?.isChecked && a?.isChecked) return -1
           return b?.totalOwing - a?.totalOwing
         }),
-      )
-    },
-    [
-      // isVendorsLoading,
-      // isInventoryLoading,
-      // isSalesLoading,
-      // isVendorPaymentsLoading,
-    ],
-  )
+    )
+  }, [vendorAccounts])
 
-  const checkValid = (vendor) =>
-    modulusCheck(vendor?.bank_account_number) &&
-    !vendor?.store_credit_only &&
+  const checkDefaultChecked = (vendor) =>
+    modulusCheck(vendor?.bankAccountNumber) &&
+    !vendor?.storeCreditOnly &&
     (vendor?.totalOwing >= 2000 ||
       (dayjs().diff(vendor?.lastPaid, 'month') >= 3 && vendor?.totalOwing > 0) ||
       (dayjs().diff(vendor?.lastSold, 'month') >= 3 && !vendor?.lastPaid))
@@ -102,15 +78,15 @@ export default function BatchPaymentScreen() {
                   ),
                   yesText: "YES, I'M SURE",
                   action: () => {
-                    saveSystemLog(`Batch Payment closed without Emailing`, clerk?.id)
-                    closeView(ViewProps.batchVendorPaymentScreen)
-                    completeBatchPayment(vendorList, clerk, registerId, emailed, vendorPayments, mutateVendorPayments)
+                    // saveSystemLog(`Batch Payment closed without Emailing`, clerk?.id)
+                    closeView(ViewProps.batchVendorPaymentDialog)
+                    createBatchPayment({ vendorList, clerkId: clerk?.id, registerId, emailed })
                   },
                 })
               } else {
-                saveSystemLog(`Batch Payment closed with Emailing`, clerk?.id)
-                closeView(ViewProps.batchVendorPaymentScreen)
-                completeBatchPayment(vendorList, clerk, registerId, emailed, vendorPayments, mutateVendorPayments)
+                // saveSystemLog(`Batch Payment closed with Emailing`, clerk?.id)
+                closeView(ViewProps.batchVendorPaymentDialog)
+                createBatchPayment({ vendorList, clerkId: clerk?.id, registerId, emailed })
               }
             },
           },
@@ -135,46 +111,4 @@ export default function BatchPaymentScreen() {
       </>
     </ScreenContainer>
   )
-}
-
-function completeBatchPayment(
-  vendorList: any[],
-  clerk: ClerkObject,
-  registerID: number,
-  emailed: boolean,
-  vendorPayments: any,
-  mutateVendorPayments: Function,
-) {
-  console.log(vendorList)
-  if (emailed) {
-    console.log(vendorList?.filter((v) => v?.is_checked))
-    vendorList
-      ?.filter((v) => v?.is_checked)
-      ?.forEach((v) => {
-        updateVendorInDatabase({
-          id: v?.id,
-          lastContacted: dayjs.utc().format(),
-        })
-      })
-  }
-  vendorList
-    ?.filter((v) => v?.is_checked && modulusCheck(v?.bank_account_number) && parseFloat(v?.payAmount))
-    ?.forEach(async (vendor: any) => {
-      let vendorPayment = {
-        amount: Math.round(parseFloat(vendor?.payAmount || '0') * 100),
-        date: dayjs.utc().format(),
-        bank_account_number: vendor?.bank_account_number,
-        batchNumber: `${registerID}`,
-        sequenceNumber: 'Batch',
-        clerk_id: clerk?.id,
-        vendor_id: vendor?.id,
-        register_id: registerID,
-        type: 'batch',
-      }
-      // console.log(vendorPayment);
-      createVendorPaymentInDatabase(vendorPayment).then((vendorPaymentId) => {
-        mutateVendorPayments([...vendorPayments, { ...vendorPayment, vendorPaymentId }])
-        logBatchPayment(vendor, clerk, vendorPaymentId)
-      })
-    })
 }

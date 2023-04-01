@@ -6,6 +6,8 @@ import { dbGetAllVendorPayments } from './payment'
 import { dbGetAllSalesAndItems } from './sale'
 import { dbGetStockList } from './stock'
 import { js2mysql } from './utils/helpers'
+import { modulusCheck } from 'lib/functions/payment'
+import { dollarsToCents } from 'lib/utils'
 
 const fullVendorQuery = (db) =>
   db('vendor').select(
@@ -63,7 +65,7 @@ export function dbGetVendorNames(db = connection) {
 
 export function dbGetVendorAccounts(db = connection) {
   return db('vendor')
-    .select('id', 'name', 'last_contacted')
+    .select('id', 'name', 'last_contacted', 'bank_account_number', 'store_credit_only', 'email_vendor')
     .where({ is_deleted: 0 })
     .then((vendors) => Promise.all(vendors?.map(async (vendor) => await dbGetVendorAccount(vendor, db))))
 }
@@ -235,4 +237,38 @@ export function dbGetVendorIdFromUid(vendorUid, db = connection) {
 
 export function dbCreateVendorPayment(payment: VendorPaymentObject, db = connection) {
   return db('vendor_payment').insert(js2mysql(payment))
+}
+
+export function dbCreateBatchVendorPayments(batchPayment, db = connection) {
+  return db.transaction(async (trx) => {
+    const { vendorList = [], clerkId, registerId, emailed = false } = batchPayment || {}
+    const successfulPayments = []
+    vendorList
+      ?.filter(
+        (vendor) => vendor?.isChecked && modulusCheck(vendor?.bankAccountNumber) && parseFloat(vendor?.payAmount),
+      )
+      .forEach(async (vendor) => {
+        const vendorId = vendor?.id
+        if (emailed) {
+          await dbUpdateVendor({ lastUpdated: dayjs.utc().format() }, vendorId, trx)
+        }
+        const amount = dollarsToCents(vendor?.payment)
+        const paymentId = await dbCreateVendorPayment(
+          {
+            amount,
+            date: dayjs.utc().format(),
+            bankAccountNumber: vendor?.bankAccountNumber,
+            batchNumber: `${registerId}`,
+            sequenceNumber: 'Batch',
+            clerkId,
+            vendorId,
+            registerId,
+            type: 'batch',
+          },
+          trx,
+        )
+        successfulPayments.push({ paymentId, vendorId, name: vendor?.name, amount })
+      })
+    return successfulPayments
+  })
 }
