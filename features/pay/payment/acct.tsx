@@ -34,7 +34,6 @@ export default function Acct({ totalRemaining }) {
         parseFloat(acctPayment) <= 0 ||
         acctPayment <= '' ||
         isVendorAccountsLoading ||
-        // (!isRefund && vendorVars?.totalOwing / 100 < parseFloat(acctPayment)) ||
         isNaN(parseFloat(acctPayment)),
       onClick: () => {
         const transaction = formSaleTransaction({

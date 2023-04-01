@@ -6,7 +6,7 @@ import { useAppStore } from 'lib/store'
 import { Pages, ViewProps } from 'lib/store/types'
 import { useSWRConfig } from 'swr'
 import { deleteSale, saveCart, useParkedSales } from 'lib/api/sale'
-import { CarRepair, Delete, Folder } from '@mui/icons-material'
+import { Delete, DirectionsCar, DryCleaning, Folder } from '@mui/icons-material'
 import DropdownMenu from 'components/dropdown-menu'
 import dayjs from 'dayjs'
 
@@ -114,7 +114,13 @@ export default function ShoppingCartActions() {
             onClick={sale?.state === SaleStateTypes.Layby ? onClickContinueLayby : onClickSaveSale}
             disabled={Boolean(saveSaleLoading || cart?.items?.length < 1)}
           >
-            {saveSaleLoading ? <CircularProgress color="inherit" size={16} /> : <CarRepair />}
+            {saveSaleLoading ? (
+              <CircularProgress color="inherit" size={16} />
+            ) : sale?.state === SaleStateTypes.Layby ? (
+              <DryCleaning />
+            ) : (
+              <DirectionsCar />
+            )}
           </button>
         </span>
       </Tooltip>

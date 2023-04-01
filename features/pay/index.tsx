@@ -9,7 +9,7 @@ import CreateCustomerSidebar from 'features/sell/create-customer/sidebar'
 import { saveCart } from 'lib/api/sale'
 import CreateMailOrder from './create-mail-order/sidebar'
 import MidScreenContainer from 'components/container/mid-screen'
-import { Clear, DryCleaning, Park } from '@mui/icons-material'
+import { Clear, DirectionsCar, DryCleaning } from '@mui/icons-material'
 import { SaleStateTypes } from 'lib/types/sale'
 import { ViewProps } from 'lib/store/types'
 
@@ -69,7 +69,7 @@ const PayScreen = ({ totalRemaining, isLoading }) => {
   }
 
   const menuItems = [
-    { text: 'Park Sale', icon: <Park />, onClick: () => clickParkSale() },
+    { text: 'Park Sale', icon: <DirectionsCar />, onClick: () => clickParkSale() },
     { text: 'Start Layby', icon: <DryCleaning />, onClick: () => openView(ViewProps.createLayby) },
     { text: 'Abort Sale', icon: <Clear />, onClick: null },
   ]
