@@ -6,28 +6,16 @@ import { Tooltip } from '@mui/material'
 import dayjs from 'dayjs'
 import { useCurrentRegisterId } from 'lib/api/register'
 import { useState } from 'react'
-import {
-  modulusCheck,
-  writeKiwiBankBatchFile,
-  writePaymentNotificationEmail,
-} from 'lib/functions/payment'
+import { modulusCheck, writeKiwiBankBatchFile, writePaymentNotificationEmail } from 'lib/functions/payment'
+import { dollarsToCents } from 'lib/utils'
 
-export default function CheckBatchPayments({
-  vendorList,
-  setKbbLoaded,
-  setEmailed,
-}) {
+export default function CheckBatchPayments({ vendorList, setKbbLoaded, setEmailed }) {
   const { registerID } = useCurrentRegisterId()
-  const totalPay = vendorList?.reduce(
-    (prev, v) => (v?.is_checked ? parseFloat(v?.payAmount) : 0) + prev,
-    0
-  )
-  const vendorNum = vendorList?.reduce(
-    (prev, v) => (v?.is_checked ? 1 : 0) + prev,
-    0
-  )
+  const totalPay = vendorList?.reduce((prev, v) => (v?.isChecked ? parseFloat(v?.payAmount) : 0) + prev, 0)
+  const vendorNum = vendorList?.reduce((prev, v) => (v?.isChecked ? 1 : 0) + prev, 0)
   const [includeUnchecked, setIncludeUnchecked] = useState(false)
   const [includeNoBank, setIncludeNoBank] = useState(false)
+  console.log(vendorList)
 
   return (
     <div>
@@ -38,24 +26,19 @@ export default function CheckBatchPayments({
             onClick={() => {
               let csvContent = writeKiwiBankBatchFile({
                 transactions: vendorList
-                  ?.filter((v) => v?.is_checked)
+                  ?.filter((v) => v?.isChecked)
                   ?.map((vendor: any) => ({
                     name: vendor?.name || '',
-                    vendor_id: `${vendor?.id || ''}`,
-                    accountNumber: vendor?.bank_account_number || '',
-                    amount: Math.round(
-                      parseFloat(vendor?.payAmount || '0') * 100
-                    ),
+                    vendorId: `${vendor?.id || ''}`,
+                    accountNumber: vendor?.bankAccountNumber || '',
+                    amount: dollarsToCents(vendor?.payAmount),
                   })),
                 batchNumber: `${registerID}`,
                 sequenceNumber: 'Batch',
               })
               var link = document.createElement('a')
               link.setAttribute('href', csvContent)
-              link.setAttribute(
-                'download',
-                `batch-payment-${dayjs().format('YYYY-MM-DD')}.kbb`
-              )
+              link.setAttribute('download', `batch-payment-${dayjs().format('YYYY-MM-DD')}.kbb`)
               document.body.appendChild(link)
               link.click()
               setKbbLoaded(true)
@@ -73,10 +56,7 @@ export default function CheckBatchPayments({
               })
               var link = document.createElement('a')
               link.setAttribute('href', csvContent)
-              link.setAttribute(
-                'download',
-                `batch-payment-email-list-${dayjs().format('YYYY-MM-DD')}.csv`
-              )
+              link.setAttribute('download', `batch-payment-email-list-${dayjs().format('YYYY-MM-DD')}.csv`)
               document.body.appendChild(link)
               link.click()
               setEmailed(true)
@@ -102,24 +82,19 @@ export default function CheckBatchPayments({
               checked={includeNoBank}
               onChange={(e) => setIncludeNoBank(e.target.checked)}
             />
-            <div className="ml-2">
-              Include vendors with no bank account number
-            </div>
+            <div className="ml-2">Include vendors with no bank account number</div>
           </div>
         </div>
         <div className="text-red-400 text-2xl font-bold text-right">
-          {vendorList?.filter((v) => isNaN(parseFloat(v?.payAmount)))?.length >
-          0
+          {vendorList?.filter((v) => isNaN(parseFloat(v?.payAmount)))?.length > 0
             ? `CHECK PAY ENTRIES`
-            : `PAY $${parseFloat(totalPay).toFixed(
-                2
-              )}\nto ${vendorNum} VENDORS`}
+            : `PAY $${parseFloat(totalPay).toFixed(2)}\nto ${vendorNum} VENDORS`}
         </div>
       </div>
       <div className="text-sm">
         <div className="font-bold">NOTE</div>
-        Vendors with $0 payments or vendors with invalid bank account numbers
-        will not be added to the KBB file, only the email CSV.
+        Vendors with $0 payments or vendors with invalid bank account numbers will not be added to the KBB file, only
+        the email CSV.
       </div>
       <div className="w-full">
         <div className="flex font-bold py-2 px-2 border-b border-black">
@@ -129,26 +104,16 @@ export default function CheckBatchPayments({
         </div>
         <div className="h-dialog overflow-y-scroll">
           {vendorList
-            ?.filter((v) => v?.is_checked)
+            ?.filter((v) => v?.isChecked)
             ?.map((v) => {
-              let invalidBankAccountNumber = !modulusCheck(
-                v?.bank_account_number
-              )
-              let negativeQuantity =
-                v?.totalItems?.filter((i) => i?.quantity < 0)?.length > 0
+              let invalidBankAccountNumber = !modulusCheck(v?.bankAccountNumber)
+              let negativeQuantity = v?.totalItems?.filter((i) => i?.quantity < 0)?.length > 0
               return (
-                <div
-                  key={v?.id}
-                  className={`border-b flex${
-                    parseFloat(v?.payAmount) <= 0 ? ' opacity-50' : ''
-                  }`}
-                >
+                <div key={v?.id} className={`border-b flex${parseFloat(v?.payAmount) <= 0 ? ' opacity-50' : ''}`}>
                   <div className="w-1/2">{`[${v?.id}] ${v?.name}`}</div>
-                  <div className="w-1/4">{`$${parseFloat(v?.payAmount)?.toFixed(
-                    2
-                  )}`}</div>
+                  <div className="w-1/4">{`$${parseFloat(v?.payAmount)?.toFixed(2)}`}</div>
                   <div className="flex w-1/4">
-                    {v?.store_credit_only ? (
+                    {v?.storeCreditOnly ? (
                       <div className="text-blue-500 pl-2">
                         <Tooltip title="Vendor wants Store Credit Only">
                           <StoreCreditOnlyIcon />
@@ -158,18 +123,8 @@ export default function CheckBatchPayments({
                       <div />
                     )}
                     {invalidBankAccountNumber ? (
-                      <Tooltip
-                        title={`${
-                          v?.bank_account_number ? 'Invalid' : 'Missing'
-                        } Bank Account Number`}
-                      >
-                        <div
-                          className={`${
-                            v?.bank_account_number
-                              ? 'text-orange-500'
-                              : 'text-red-500'
-                          } pl-2 flex`}
-                        >
+                      <Tooltip title={`${v?.bankAccountNumber ? 'Invalid' : 'Missing'} Bank Account Number`}>
+                        <div className={`${v?.bankAccountNumber ? 'text-orange-500' : 'text-red-500'} pl-2 flex`}>
                           <NoBankDetailsIcon />
                         </div>
                       </Tooltip>
@@ -185,9 +140,7 @@ export default function CheckBatchPayments({
                     ) : (
                       <div />
                     )}
-                    {!negativeQuantity &&
-                    !invalidBankAccountNumber &&
-                    !v?.store_credit_only ? (
+                    {!negativeQuantity && !invalidBankAccountNumber && !v?.storeCreditOnly ? (
                       <Tooltip title="Everything looks good!">
                         <div className="text-green-500 pl-2">
                           <CheckIcon />

@@ -7,11 +7,13 @@ import dayjs from 'dayjs'
 import { useState } from 'react'
 import { checkDefaultChecked, modulusCheck } from 'lib/functions/payment'
 import { priceCentsString } from 'lib/utils'
+import { useRouter } from 'next/router'
 
 export default function SelectBatchPayments({ vendorList, setVendorList }) {
   const [checked, setChecked] = useState(true)
   const totalPay = vendorList?.reduce((prev, v) => (v?.isChecked ? parseFloat(v?.payAmount) : 0) + prev, 0)
   const vendorNum = vendorList?.filter((v) => v?.isChecked)?.length
+  const router = useRouter()
 
   return (
     <div>
@@ -100,7 +102,10 @@ export default function SelectBatchPayments({ vendorList, setVendorList }) {
                     )
                   }
                 />
-                <div className="pl-4">{`[${v?.id}] ${v?.name}`}</div>
+                <div
+                  className="pl-4 link-blue"
+                  onClick={() => router.push(`/vendors/${v?.id}`)}
+                >{`[${v?.id}] ${v?.name}`}</div>
               </div>
               <div className="w-1/12">{priceCentsString(v?.totalSell)}</div>
               <div className={`w-1/12${v?.totalOwing < 0 ? ' text-red-500' : ''}`}>{`${

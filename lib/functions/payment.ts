@@ -73,12 +73,12 @@ function writeKBBTransactionRecord({ transaction, batchNumber }) {
     transaction?.amount, // Transaction amount in cents. Max length 12
     transaction?.name?.slice(0, 20), // Other party name. Payee name for DC. Max length 20.
     'RideOn Pay'.slice(0, 12), // Other part reference. Max length 12.
-    `${transaction?.vendor_id} ${transaction?.name}`?.slice(0, 12), // Other party code details. Max length. 12.
+    `${transaction?.vendorId} ${transaction?.name}`?.slice(0, 12), // Other party code details. Max length. 12.
     '', // Other part alpha ref - Leave blank
     `Reg ${batchNumber}`?.slice(0, 12), // Other party particulars. Max length 12
     'Ride On Super Sound'.slice(0, 20), // This party name. Max length 20.
     `Reg ${batchNumber}`?.slice(0, 12), // This party code. Max length 12.
-    `${transaction?.vendor_id} ${transaction?.name}`?.slice(0, 12), // This party reference. Max length 12.
+    `${transaction?.vendorId} ${transaction?.name}`?.slice(0, 12), // This party reference. Max length 12.
     `Seq ${dayjs.utc().format('YYMMDD')}`?.slice(0, 12), // This party particulars. Max length 12.
   ]
 }
@@ -100,18 +100,18 @@ export function writePaymentNotificationEmail({ vendors, includeUnchecked, inclu
   let csvContent = 'data:text/csv;charset=utf-8,'
   csvContent += 'CODE,NAME,RECIPIENT,ACCOUNT,OWING,LINK,DATE,CHECKED,VALID BANK NUM,STORE CREDIT ONLY\r\n'
   let vendorArrays = vendors
-    ?.filter((v) => (includeUnchecked || v?.is_checked) && (includeNoBank || modulusCheck(v?.bank_account_number)))
+    ?.filter((v) => (includeUnchecked || v?.isChecked) && (includeNoBank || modulusCheck(v?.bankAccountNumber)))
     ?.map((v) => [
       v?.id,
       v?.name,
       v?.email,
-      v?.bank_account_number,
+      v?.bankAccountNumber,
       v?.payAmount,
       `https://rideonsupersound.vercel.app/vendor/${v?.uid}`,
       dayjs().format('DD/MM/YYYY'),
-      v?.is_checked,
-      modulusCheck(v?.bank_account_number),
-      Boolean(v?.store_credit_only),
+      v?.isChecked,
+      modulusCheck(v?.bankAccountNumber),
+      Boolean(v?.storeCreditOnly),
     ])
   // console.log(vendorArrays);
   vendorArrays?.forEach((vendorArray) => {

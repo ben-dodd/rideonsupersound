@@ -9,10 +9,11 @@ import { useClerk } from 'lib/api/clerk'
 import { createVendorBatchPayment, useVendorAccounts } from 'lib/api/vendor'
 import { ViewProps } from 'lib/store/types'
 import Modal from 'components/modal'
+import { centsToDollars } from 'lib/utils'
 
 // Icons
 
-export default function BatchPaymentScreen() {
+export default function BatchPaymentDialog() {
   const { view, closeView, openConfirm } = useAppStore()
   const { registerId } = useCurrentRegisterId()
   const { clerk } = useClerk()
@@ -26,7 +27,11 @@ export default function BatchPaymentScreen() {
   useEffect(() => {
     setVendorList(
       vendorAccounts
-        ?.map((vendorAccount) => ({ ...vendorAccount, isChecked: checkDefaultChecked(vendorAccount) }))
+        ?.map((vendorAccount) => ({
+          ...vendorAccount,
+          isChecked: checkDefaultChecked(vendorAccount),
+          payAmount: centsToDollars(vendorAccount?.totalOwing),
+        }))
         ?.sort((a, b) => {
           if (!a?.isChecked && b?.isChecked) return 1
           if (!b?.isChecked && a?.isChecked) return -1
@@ -89,6 +94,7 @@ export default function BatchPaymentScreen() {
       title={'BATCH PAYMENTS'}
       buttons={buttons}
       loading={isVendorAccountsLoading}
+      width={'max-w-full'}
     >
       <>
         <div className="w-full" hidden={stage === 1}>
