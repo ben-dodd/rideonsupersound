@@ -1,10 +1,12 @@
+import dayjs from 'dayjs'
+
 export async function returnHoldToStock(
   hold: HoldObject,
   clerk: ClerkObject,
   holds: HoldObject[],
   mutateHolds: Function,
   mutateInventory: Function,
-  registerID: number
+  registerId: number,
 ) {
   updateHoldInDatabase({
     ...hold,
@@ -13,14 +15,14 @@ export async function returnHoldToStock(
   })
   mutateHolds(
     holds?.filter((h) => h?.id !== hold?.id),
-    false
+    false,
   )
   createStockMovementInDatabase(
     { item_id: hold?.item_id, quantity: hold?.quantity?.toString() },
     clerk,
-    registerID,
+    registerId,
     StockMovementTypes.Unhold,
-    hold?.note
+    hold?.note,
   )
   mutateInventory()
 }

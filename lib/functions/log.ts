@@ -19,9 +19,9 @@ export function saveLog(log: string, clerkId: number, tableId?: string, rowId?: 
   createLog(logObj)
 }
 
-export function logOpenRegister(clerk, openAmount, registerID) {
+export function logOpenRegister(clerk, openAmount, registerId) {
   const log = `Register opened with $${openAmount ? parseFloat(openAmount) : 0} in the till.`
-  saveLog(log, clerk?.id, 'register', registerID)
+  saveLog(log, clerk?.id, 'register', registerId)
   return log
 }
 

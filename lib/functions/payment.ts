@@ -96,10 +96,10 @@ function writeOutKBBFile(kbb) {
   return encodeURI(`data:text/csv;charset=utf-8,${kbb.map((rowArray) => `${rowArray.join(',')}`).join('\r\n')}`)
 }
 
-export function writePaymentNotificationEmail({ vendors, includeUnchecked, includeNoBank }: any) {
+export function writePaymentNotificationEmail({ vendorList, includeUnchecked, includeNoBank }: any) {
   let csvContent = 'data:text/csv;charset=utf-8,'
   csvContent += 'CODE,NAME,RECIPIENT,ACCOUNT,OWING,LINK,DATE,CHECKED,VALID BANK NUM,STORE CREDIT ONLY\r\n'
-  let vendorArrays = vendors
+  let vendorArrays = vendorList
     ?.filter((v) => (includeUnchecked || v?.isChecked) && (includeNoBank || modulusCheck(v?.bankAccountNumber)))
     ?.map((v) => [
       v?.id,

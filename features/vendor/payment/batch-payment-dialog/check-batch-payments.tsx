@@ -10,7 +10,7 @@ import { modulusCheck, writeKiwiBankBatchFile, writePaymentNotificationEmail } f
 import { dollarsToCents } from 'lib/utils'
 
 export default function CheckBatchPayments({ vendorList, setKbbLoaded, setEmailed }) {
-  const { registerID } = useCurrentRegisterId()
+  const { registerId } = useCurrentRegisterId()
   const totalPay = vendorList?.reduce((prev, v) => (v?.isChecked ? parseFloat(v?.payAmount) : 0) + prev, 0)
   const vendorNum = vendorList?.reduce((prev, v) => (v?.isChecked ? 1 : 0) + prev, 0)
   const [includeUnchecked, setIncludeUnchecked] = useState(false)
@@ -33,7 +33,7 @@ export default function CheckBatchPayments({ vendorList, setKbbLoaded, setEmaile
                     accountNumber: vendor?.bankAccountNumber || '',
                     amount: dollarsToCents(vendor?.payAmount),
                   })),
-                batchNumber: `${registerID}`,
+                batchNumber: `${registerId}`,
                 sequenceNumber: 'Batch',
               })
               var link = document.createElement('a')

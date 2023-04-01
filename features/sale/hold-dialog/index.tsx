@@ -105,7 +105,7 @@ export default function HoldDialog() {
   function addHoldToCart() {
     // TODO do we need to check if it is another customer?
     saveSystemLog('Hold dialog - Add hold to cart.', clerk?.id)
-    returnHoldToStock(hold, clerk, holds, mutateHolds, mutateInventory, registerID)
+    returnHoldToStock(hold, clerk, holds, mutateHolds, mutateInventory, registerId)
     closeDialog()
 
     let newItems = cart?.items || []

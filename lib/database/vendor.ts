@@ -65,7 +65,7 @@ export function dbGetVendorNames(db = connection) {
 
 export function dbGetVendorAccounts(db = connection) {
   return db('vendor')
-    .select('id', 'name', 'last_contacted', 'bank_account_number', 'store_credit_only', 'email_vendor')
+    .select('id', 'uid', 'name', 'email', 'last_contacted', 'bank_account_number', 'store_credit_only', 'email_vendor')
     .where({ is_deleted: 0 })
     .then((vendors) => Promise.all(vendors?.map(async (vendor) => await dbGetVendorAccount(vendor, db))))
 }
