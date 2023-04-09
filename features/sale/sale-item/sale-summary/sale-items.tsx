@@ -3,21 +3,20 @@ import { SaleItemObject } from 'lib/types/sale'
 import { useRouter } from 'next/router'
 import ItemListItem from './item-list-item'
 
-const SaleItems = ({ items }) => {
+const SaleItems = ({ items, isCompleted }) => {
   const router = useRouter()
-  const isSell = router.pathname.includes('/sell')
   return (
     <>
       {items?.length > 0 ? (
         items?.map((saleItem: SaleItemObject) =>
-          isSell ? (
-            <SellListItem key={saleItem?.itemId} cartItem={saleItem} />
-          ) : (
+          isCompleted ? (
             <ItemListItem
               key={saleItem?.itemId}
               saleItem={saleItem}
               onClick={() => router.push(`/stock/${saleItem?.itemId}`)}
             />
+          ) : (
+            <SellListItem key={saleItem?.itemId} cartItem={saleItem} />
           ),
         )
       ) : (

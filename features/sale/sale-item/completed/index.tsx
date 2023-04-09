@@ -1,19 +1,19 @@
 import { Delete, Edit, EventBusy } from '@mui/icons-material'
 import MidScreenContainer from 'components/container/mid-screen'
-import SaleSummary from 'features/sale-summary'
+import SaleSummary from 'features/sale/sale-item/sale-summary'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import React from 'react'
 import SaleDetailsSidebar from './sale-details-sidebar'
 
-const SaleItemScreen = ({ cart }) => {
+const CompletedSaleScreen = ({ saleObject }) => {
   // const { clerk } = useClerk()
   // const { clerks } = useClerks()
   // const { cart, setCart, openConfirm } = useAppStore()
   // const [loadToCartLoading, setLoadToCartLoading] = useState(false)
   // const [nukeSaleLoading, setNukeSaleLoading] = useState(false)
   const { openView } = useAppStore()
-  const { sale = {} } = cart || {}
+  const { sale = {} } = saleObject || {}
 
   // TODO make sale info screen for LAYBY and SALES screen that needs to be activated to go to the SELL screen. So only one active sale will be present at a time.
   // BUG fix bug where close register screen appears (pressing TAB) - have fixed by just hiding sidebars and screens
@@ -64,9 +64,7 @@ const SaleItemScreen = ({ cart }) => {
 
   return (
     <MidScreenContainer
-      title={`${sale?.id ? `SALE #${sale?.id}` : `NEW SALE`} [${
-        sale?.state ? sale?.state.toUpperCase() : 'IN PROGRESS'
-      }]`}
+      title={`SALE #${sale?.id} [COMPLETED]`}
       titleClass={'bg-brown-dark text-white'}
       showBackButton
       full
@@ -75,14 +73,14 @@ const SaleItemScreen = ({ cart }) => {
     >
       <div className="flex">
         <div className="w-2/3">
-          <SaleSummary cart={cart} />
+          <SaleSummary saleObject={saleObject} />
         </div>
         <div className="w-1/3">
-          <SaleDetailsSidebar cart={cart} />
+          <SaleDetailsSidebar saleObject={saleObject} />
         </div>
       </div>
     </MidScreenContainer>
   )
 }
 
-export default SaleItemScreen
+export default CompletedSaleScreen

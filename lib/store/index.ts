@@ -135,7 +135,7 @@ export const useAppStore = createSelectors(
         }),
       ),
     loadSaleToCart: (saleId) => {
-      console.log('LOading sale to cart', saleId)
+      console.log('Loading sale to cart', saleId)
       return axiosAuth.get(`api/sale/${saleId}`).then((newCart) => {
         console.log('got sale', mysql2js(newCart))
         return set(
@@ -167,12 +167,12 @@ export const useAppStore = createSelectors(
     deleteCartTransaction: (transaction) => {
       set(
         produce((draft) => {
-          console.log(get().cart.transactions)
-          console.log(transaction?.id)
+          // console.log(get().cart.transactions)
+          // console.log(transaction?.id)
           const newTrans = get().cart.transactions.map((trans) =>
             trans?.id === transaction?.id ? { ...trans, isDeleted: true } : trans,
           )
-          console.log(newTrans)
+          // console.log(newTrans)
           draft.cart.transactions = newTrans
         }),
       )

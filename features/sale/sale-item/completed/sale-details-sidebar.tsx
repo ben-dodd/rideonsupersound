@@ -3,24 +3,20 @@ import dayjs from 'dayjs'
 import { useClerks } from 'lib/api/clerk'
 import { useCustomers } from 'lib/api/customer'
 import { CustomerObject } from 'lib/types'
-import { CartObject } from 'lib/types/sale'
 import { OpenWeatherObject } from 'lib/types/weather'
 import { convertDegToCardinal, convertMPStoKPH, parseJSON, priceDollarsString } from 'lib/utils'
 import { camelCase, startCase } from 'lodash'
 
-export default function SaleDetailsSidebar({ cart }: { cart: CartObject }) {
+export default function SaleDetailsSidebar({ saleObject }) {
   const { clerks } = useClerks()
   const { customers } = useCustomers()
-  // const { totalRemaining } = useSaleProperties(cart)
   const totalRemaining = 0
-  const { sale = {} } = cart || {}
+  const { sale = {} } = saleObject || {}
   const weather: OpenWeatherObject = parseJSON(sale?.weather)
-  console.log(cart)
 
   const saleInfo = [
     { label: 'Status', value: startCase(camelCase(sale?.state)) },
     { label: 'Total Remaining to Pay', value: totalRemaining ? priceDollarsString(totalRemaining) : null },
-    { label: 'Customer', value: customers?.find((c: CustomerObject) => c?.id === sale?.customerId)?.name },
     {
       label: 'Opened',
       value: sale?.dateSaleOpened ? `${dayjs(sale?.dateSaleOpened).format('D MMMM YYYY, h:mm A')}` : 'N/A',
@@ -31,14 +27,19 @@ export default function SaleDetailsSidebar({ cart }: { cart: CartObject }) {
     },
     { label: 'Opened By', value: clerks?.find((clerk: any) => clerk?.id === sale?.saleOpenedBy)?.name },
     { label: 'Closed By', value: clerks?.find((clerk: any) => clerk?.id === sale?.saleClosedBy)?.name },
+    { label: 'Notes', value: sale?.note },
+  ]
+
+  const mailOrderInfo = [
+    { label: 'Customer', value: customers?.find((c: CustomerObject) => c?.id === sale?.customerId)?.name },
     { label: 'Postage', value: sale?.postage ? priceDollarsString(sale?.postage) : null },
     { label: 'Postal Address', value: sale?.postalAddress },
-    { label: 'Notes', value: sale?.note },
   ]
 
   return (
     <div className="h-full border p-2">
-      <InfoBox data={saleInfo} />
+      <InfoBox title="Sale Details" data={saleInfo} />
+      {sale?.isMailOrder ? <InfoBox title="Mail Order" data={mailOrderInfo} /> : <div />}
       {weather?.weather?.[0] && (
         <div className="p-2 my-2 rounded">
           <div className="font-bold">Weather</div>

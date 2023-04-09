@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import { SaleTransactionObject } from 'lib/types/sale'
 import TransactionListItem from './transaction-list-item'
 
-const TransactionItems = ({ transactions }) => {
+const TransactionItems = ({ transactions, isCompleted }) => {
   return (
     <>
       {[...transactions]
@@ -12,7 +12,7 @@ const TransactionItems = ({ transactions }) => {
           return a > b ? 1 : b > a ? -1 : 0
         })
         ?.map((transaction: SaleTransactionObject) => (
-          <TransactionListItem key={transaction?.id} transaction={transaction} />
+          <TransactionListItem key={transaction?.id} transaction={transaction} isCompleted />
         ))}
     </>
   )

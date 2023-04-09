@@ -7,7 +7,7 @@ export function useSaleItemsForSale(saleId) {
 }
 
 export function useSale(saleId) {
-  return useData(`sale/${saleId}`, 'sale')
+  return useData(`sale/${saleId}`, 'saleObject')
 }
 
 export async function saveCart(cart: CartObject, prevState: string = SaleStateTypes.InProgress) {

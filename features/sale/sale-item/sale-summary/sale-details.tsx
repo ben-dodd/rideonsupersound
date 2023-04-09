@@ -1,8 +1,8 @@
-import { useSaleProperties } from 'lib/hooks/sale'
 import { priceDollarsString } from 'lib/utils'
 
-const SaleDetails = ({ cart }) => {
-  const { totalRemaining, totalStoreCut, totalVendorCut, totalPrice, totalPaid, totalPostage } = useSaleProperties(cart)
+const SaleDetails = ({ saleObject }) => {
+  console.log(saleObject.props)
+  const { totalRemaining, totalStoreCut, totalVendorCut, totalPrice, totalPaid, totalPostage } = saleObject?.props || {}
 
   return (
     <>
