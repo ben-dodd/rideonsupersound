@@ -9,10 +9,10 @@ export default function SaleSummary({ saleObject }) {
   return (
     <div className="flex flex-col h-content p-2">
       <div>
-        <SaleItems items={items} isCompleted />
+        <SaleItems items={items} isCompleted={isCompleted} />
       </div>
       <div className={`mt-1 pt-1 ${!transactions || (transactions?.length === 0 && ' hidden')}`}>
-        <TransactionItems transactions={transactions} isCompleted />
+        <TransactionItems transactions={transactions} isCompleted={isCompleted} />
       </div>
       <div>
         <SaleDetails saleObject={saleObject} />

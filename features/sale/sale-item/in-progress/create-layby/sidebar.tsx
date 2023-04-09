@@ -10,14 +10,17 @@ import { saveCart } from 'lib/api/sale'
 import { SaleStateTypes } from 'lib/types/sale'
 import dayjs from 'dayjs'
 import { useRouter } from 'next/router'
+import { useSWRConfig } from 'swr'
 
-export default function CreateLaybySidebar() {
-  const { cart, view, setAlert, setCartSale, setCart, resetCart, openView, closeView } = useAppStore()
+export default function CreateLaybySidebar({ saleObject }) {
+  const { cart, view, setAlert, resetCart, openView, closeView, setCreateableCustomerName } = useAppStore()
   const { sale = {} } = cart || {}
   const { clerk } = useClerk()
   const { customers } = useCustomers()
   const [submitting, setSubmitting] = useState(false)
+  const [customerId, setCustomerId] = useState(saleObject?.sale?.customerId || null)
   const router = useRouter()
+  const { mutate } = useSWRConfig()
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -39,7 +42,7 @@ export default function CreateLaybySidebar() {
         message: 'LAYBY STARTED.',
       })
     }
-    saveCart({ ...cart, sale: laybySale }, sale?.state)
+    await saveCart({ ...cart, sale: laybySale }, sale?.state, mutate)
     resetCart()
     router.push('/sell')
   }
@@ -72,13 +75,13 @@ export default function CreateLaybySidebar() {
           inputLabel="Select customer"
           autoFocus
           fieldRequired
-          value={sale?.customerId}
+          value={customerId}
           label={customers?.find((c: CustomerObject) => c?.id === sale?.customerId)?.name || ''}
           onChange={(customerObject: any) => {
-            setCartSale({ customerId: parseInt(customerObject?.value) })
+            setCustomerId(parseInt(customerObject?.value))
           }}
           onCreateOption={(inputValue: string) => {
-            setCart({ customer: { name: inputValue } })
+            setCreateableCustomerName(inputValue)
             openView(ViewProps.createCustomer)
           }}
           options={customers?.map((val: CustomerObject) => ({

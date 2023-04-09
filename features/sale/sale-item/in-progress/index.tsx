@@ -11,11 +11,13 @@ import MidScreenContainer from 'components/container/mid-screen'
 import { Clear, DirectionsCar, DryCleaning, PostAdd } from '@mui/icons-material'
 import { SaleStateTypes } from 'lib/types/sale'
 import { ViewProps } from 'lib/store/types'
+import { useSWRConfig } from 'swr'
 
 const InProgressSaleScreen = ({ saleObject }) => {
   const { cart, resetCart, setCart, openView, closeView, setAlert, openConfirm } = useAppStore()
   const { sale = {}, props: { totalRemaining = 0 } = {}, transactions = [] } = saleObject || {}
   const router = useRouter()
+  const { mutate } = useSWRConfig()
   // useEffect(() => {
   //   if (!sale?.id && items?.length === 0) router.replace('/sell')
   // }, [sale, items])
@@ -25,8 +27,16 @@ const InProgressSaleScreen = ({ saleObject }) => {
     closeView(ViewProps.cart)
   }
 
-  function clickParkSale() {
-    saveCart({ ...cart, sale: { ...sale, state: SaleStateTypes.Parked } }, sale?.state)
+  async function clickParkSale() {
+    const newCart = await saveCart(
+      {
+        ...saleObject,
+        sale: { ...saleObject?.sale, state: SaleStateTypes.Parked },
+      },
+      sale?.state,
+    )
+    mutate(`/sale/${sale?.id}`, newCart)
+    // saveCart({ ...cart, sale: { ...sale, state: SaleStateTypes.Parked } }, sale?.state)
     resetCart()
     setAlert({
       open: true,
@@ -94,11 +104,11 @@ const InProgressSaleScreen = ({ saleObject }) => {
           <SaleSummary saleObject={saleObject} />
         </div>
         <div className="w-1/3 h-content p-2 flex flex-col justify-between shadow-md">
-          <Pay totalRemaining={totalRemaining} />
+          <Pay saleObject={saleObject} />
         </div>
       </div>
       <CreateHoldSidebar />
-      <CreateLaybySidebar />
+      <CreateLaybySidebar saleObject={saleObject} />
       <CreateMailOrder />
       <CreateCustomerSidebar />
     </MidScreenContainer>

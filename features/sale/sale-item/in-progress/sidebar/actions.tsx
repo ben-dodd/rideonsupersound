@@ -7,13 +7,15 @@ import { useClerk } from 'lib/api/clerk'
 import { useState } from 'react'
 import CheckCircleOutline from '@mui/icons-material/CheckCircleOutline'
 import ActionButton from 'components/button/action-button'
+import { useSWRConfig } from 'swr'
 
-const Actions = ({ totalRemaining }) => {
-  const { cart, resetCart, setAlert } = useAppStore()
+const Actions = ({ saleObject }) => {
+  const { resetCart, setAlert } = useAppStore()
   const router = useRouter()
-  const { sale = {} } = cart || {}
+  const { mutate } = useSWRConfig()
   const { clerk } = useClerk()
   const [completeSaleLoading, setCompleteSaleLoading] = useState(false)
+  const { sale = {}, props: { totalRemaining = 0 } = {} } = saleObject || {}
 
   // TODO should it complete automatically
   async function clickCompleteSale() {
@@ -21,10 +23,10 @@ const Actions = ({ totalRemaining }) => {
     let completedSale = {
       ...sale,
       state: SaleStateTypes.Completed,
-      saleClosedBy: clerk?.id,
-      dateSaleClosed: dayjs.utc().format(),
+      saleClosedBy: sale?.saleClosedBy || clerk?.id,
+      dateSaleClosed: sale?.dateSaleClosed || dayjs.utc().format(),
     }
-    await saveCart({ ...cart, sale: completedSale }, sale?.state)
+    await saveCart({ ...saleObject, sale: completedSale }, sale?.state, mutate)
     resetCart()
     router.push('/sell')
     setCompleteSaleLoading(false)

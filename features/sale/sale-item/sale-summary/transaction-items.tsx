@@ -12,7 +12,7 @@ const TransactionItems = ({ transactions, isCompleted }) => {
           return a > b ? 1 : b > a ? -1 : 0
         })
         ?.map((transaction: SaleTransactionObject) => (
-          <TransactionListItem key={transaction?.id} transaction={transaction} isCompleted />
+          <TransactionListItem key={transaction?.id} transaction={transaction} isCompleted={isCompleted} />
         ))}
     </>
   )

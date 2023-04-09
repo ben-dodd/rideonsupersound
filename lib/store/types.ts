@@ -46,6 +46,7 @@ export interface StoreState {
   }
   confirmModal?: ConfirmModal
   alert?: AlertProps
+  createableCustomerName?: string
   cart: CartObject
   receiveBasket?: {
     items: any[]
@@ -100,6 +101,7 @@ export interface StoreState {
   closeConfirm: () => void
   setAlert: (alert: any) => void
   closeAlert: () => void
+  setCreateableCustomerName: (name: string) => void
   setCart: (update: any) => void
   loadSaleToCart: (sale: SaleObject) => void
   mutateCart: (mutates?: string[]) => void

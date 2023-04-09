@@ -8,11 +8,14 @@ import { ViewProps } from 'lib/store/types'
 import { useCurrentRegisterId } from 'lib/api/register'
 import { PaymentMethodTypes } from 'lib/types/sale'
 import { formSaleTransaction } from 'lib/functions/pay'
+import { useSWRConfig } from 'swr'
+import { saveCart } from 'lib/api/sale'
 
-export default function Cash({ totalRemaining }) {
+export default function Cash({ saleObject }) {
   const { clerk } = useClerk()
-  const { view, cart, closeView, setAlert, addCartTransaction } = useAppStore()
-  const { sale = {} } = cart || {}
+  const { view, closeView, setAlert } = useAppStore()
+  const { mutate } = useSWRConfig()
+  const { props: { totalRemaining = 0 } = {}, transactions = [], sale = {} } = saleObject || {}
   const { registerId } = useCurrentRegisterId()
   const isRefund = totalRemaining < 0
   const [cashReceived, setCashReceived] = useState(`${Math.abs(totalRemaining).toFixed(2)}`)
@@ -30,8 +33,8 @@ export default function Cash({ totalRemaining }) {
         (isRefund && parseFloat(cashReceived) > Math.abs(totalRemaining)) ||
         cashReceived === '' ||
         isNaN(parseFloat(cashReceived)),
-      onClick: () => {
-        const transaction = formSaleTransaction({
+      onClick: async () => {
+        const newTransaction = formSaleTransaction({
           enteredAmount: cashReceived,
           paymentMethod: PaymentMethodTypes.Cash,
           totalRemaining,
@@ -40,7 +43,8 @@ export default function Cash({ totalRemaining }) {
           saleId: sale?.id,
           clerkId: clerk?.id,
         })
-        addCartTransaction(transaction)
+        const newTransactions = [...transactions, newTransaction]
+        await saveCart({ ...saleObject, transactions: newTransactions }, saleObject?.sale?.state, mutate)
         closeView(ViewProps.cashPaymentDialog)
         setAlert({
           open: true,

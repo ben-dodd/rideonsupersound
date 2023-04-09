@@ -7,9 +7,11 @@ import { ViewProps } from 'lib/store/types'
 import { useCustomers } from 'lib/api/customer'
 import { saveCart } from 'lib/api/sale'
 import TextField from 'components/inputs/text-field'
+import { useSWRConfig } from 'swr'
 
 export default function CreateMailOrder() {
   const { cart, view, setCartSale, setCart, openView, closeView } = useAppStore()
+  const { mutate } = useSWRConfig()
   const { sale = {} } = cart || {}
   const { customers } = useCustomers()
   const [postage, setPostage] = useState(sale?.postage)
@@ -27,8 +29,7 @@ export default function CreateMailOrder() {
 
   async function onClickCreateMailOrder() {
     const saleUpdate = { ...sale, isMailOrder: true, postage: Number(postage), postalAddress }
-    setCartSale(saleUpdate)
-    saveCart({ ...cart, sale: saleUpdate }, sale?.state)
+    saveCart({ ...cart, sale: saleUpdate }, sale?.state, mutate)
     closeView(ViewProps.createMailOrder)
     setPostage(0)
     setPostalAddress('')

@@ -32,19 +32,15 @@ export default function ReturnItemDialog({ saleObject }) {
         const updatedCartItems = items?.map((item: SaleItemObject) =>
           refundItems.includes(item?.id) ? { ...item, isRefunded: true, refundNote: notes } : item,
         )
-        const newCart = await saveCart({
-          ...saleObject,
-          items: updatedCartItems,
-          sale: { ...saleObject?.sale, state: SaleStateTypes.InProgress },
-        })
-        mutate(`/sale/${sale?.id}`, newCart)
-        // updateSale(sale?.id, { state: SaleStateTypes.InProgress })
-        // setCart({
-        //   items: updatedCartItems,
-        // })
-        // setCartSale({
-        //   state: sale?.state === SaleStateTypes.Completed ? SaleStateTypes.InProgress : sale?.state,
-        // })
+        await saveCart(
+          {
+            ...saleObject,
+            items: updatedCartItems,
+            sale: { ...saleObject?.sale, state: SaleStateTypes.InProgress },
+          },
+          saleObject?.state,
+          mutate,
+        )
         closeDialog()
         setAlert({
           open: true,

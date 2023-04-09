@@ -1,6 +1,6 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import { CustomerObject } from '.'
-import { GiftCardObject } from './stock'
+import { GiftCardObject, StockItemObject } from './stock'
 import { VendorObject } from './vendor'
 
 export enum SaleStateTypes {
@@ -47,7 +47,9 @@ export interface CartObject {
   customer?: CustomerObject
   items?: SaleItemObject[]
   transactions?: SaleTransactionObject[]
+  stock?: StockItemObject[]
   registerId?: number
+  props?: any
 }
 
 export interface SaleItemObject {

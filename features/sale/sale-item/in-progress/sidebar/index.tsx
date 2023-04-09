@@ -6,9 +6,9 @@ import Actions from './actions'
 import Image from 'next/image'
 import MailOrder from './mail-order'
 
-export default function Pay({ totalRemaining }) {
-  const { cart, setCartSale } = useAppStore()
-  const { sale = {} } = cart || {}
+export default function Pay({ saleObject }) {
+  const { setCartSale } = useAppStore()
+  const { sale = {}, props: { totalRemaining = 0 } = {} } = saleObject || {}
 
   return (
     <div className="flex flex-col justify-between h-full">
@@ -39,7 +39,7 @@ export default function Pay({ totalRemaining }) {
               height={200}
             />
           )}
-          <Actions totalRemaining={totalRemaining} />
+          <Actions saleObject={saleObject} />
         </>
       ) : (
         <div className="w-full h-full flex justify-center items-center">...</div>

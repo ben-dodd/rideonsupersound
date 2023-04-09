@@ -328,9 +328,16 @@ async function handleSaveSaleItem(item, sale, prevState, registerId, trx) {
   // return db
   //   .transaction(async (trx) => {
   const newItem = { ...item }
-  // If sale is complete, validate gift card
-  if (sale?.state === SaleStateTypes.Completed && item?.isGiftCard) {
-    await dbUpdateStockItem(item?.itemId, { giftCardIsValid: true }, trx)
+
+  // handle gift cards
+  if (item?.isGiftCard) {
+    if (sale?.state === SaleStateTypes.Completed) {
+      // If sale is completed, validate gift card
+      await dbUpdateStockItem(item?.itemId, { giftCardIsValid: true }, trx)
+    } else if (prevState === SaleStateTypes.Completed && sale?.state !== SaleStateTypes.Completed) {
+      // If sale was complete and is now in progress, invalidate gift card
+      await dbUpdateStockItem(item?.itemId, { giftCardIsValid: false }, trx)
+    }
   }
 
   await handleStockMovements(item, sale, prevState, registerId, trx)
@@ -347,7 +354,6 @@ async function handleSaveSaleItem(item, sale, prevState, registerId, trx) {
     dbUpdateSaleItem(item?.id, item, trx)
   }
   return newItem
-  // }) h((e) => Error(e.message))
 }
 
 async function handleStockMovements(item, sale, prevState, registerId = null, db) {

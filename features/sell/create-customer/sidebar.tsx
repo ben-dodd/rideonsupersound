@@ -15,6 +15,7 @@ export default function CreateCustomerSidebar() {
   const {
     view,
     cart: { customer },
+    createableCustomerName,
     setCart,
     setCartSale,
     closeView,
@@ -24,6 +25,7 @@ export default function CreateCustomerSidebar() {
   const [submitting, setSubmitting] = useState(false)
   const [newCustomer, setNewCustomer] = useState({ ...customer })
   const setCustomer = (customer) => setCart({ customer })
+  const { mutate } = useSWRConfig()
 
   useEffect(() => {
     setNewCustomer({ ...customer })
@@ -44,7 +46,6 @@ export default function CreateCustomerSidebar() {
   useEffect(() => {
     setNameConflict(checkCustomerNameConflict(newCustomer, customers))
   }, [customers, newCustomer])
-  const { mutate } = useSWRConfig()
 
   const handleChange = (e) => {
     setNewCustomer({ ...newCustomer, [e.target.name]: e.target.value })

@@ -10,14 +10,17 @@ import { useCurrentRegisterId } from 'lib/api/register'
 import { useVendorAccounts } from 'lib/api/vendor'
 import { PaymentMethodTypes } from 'lib/types/sale'
 import { formSaleTransaction } from 'lib/functions/pay'
+import { saveCart } from 'lib/api/sale'
+import { useSWRConfig } from 'swr'
 
-export default function Acct({ totalRemaining }) {
+export default function Acct({ saleObject }) {
   const { clerk } = useClerk()
-  const { view, cart, closeView, setAlert, addCartTransaction } = useAppStore()
-  const { sale = {} } = cart || {}
+  const { view, closeView, setAlert } = useAppStore()
+  const { mutate } = useSWRConfig()
   const { registerId } = useCurrentRegisterId()
   const { vendorAccounts, isVendorAccountsLoading } = useVendorAccounts()
   const [vendor, setVendor] = useState(null)
+  const { props: { totalRemaining = 0 } = {}, transactions = [], sale = {} } = saleObject || {}
   const isRefund = totalRemaining < 0
   const [acctPayment, setAcctPayment] = useState(`${Math.abs(totalRemaining)?.toFixed(2)}`)
   useEffect(() => {
@@ -35,8 +38,8 @@ export default function Acct({ totalRemaining }) {
         acctPayment <= '' ||
         isVendorAccountsLoading ||
         isNaN(parseFloat(acctPayment)),
-      onClick: () => {
-        const transaction = formSaleTransaction({
+      onClick: async () => {
+        const newTransaction = formSaleTransaction({
           enteredAmount: acctPayment,
           paymentMethod: PaymentMethodTypes.Account,
           isRefund,
@@ -45,7 +48,10 @@ export default function Acct({ totalRemaining }) {
           clerkId: clerk?.id,
           vendor: vendor?.value,
         })
-        addCartTransaction(transaction)
+        const newTransactions = [...transactions, newTransaction]
+        await saveCart({ ...saleObject, transactions: newTransactions }, saleObject?.sale?.state, mutate)
+        mutate(`vendor/accounts`)
+        // addCartTransaction(transaction)
         closeView(ViewProps.acctPaymentDialog)
         setAlert({
           open: true,

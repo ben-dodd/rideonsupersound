@@ -34,6 +34,7 @@ const initState = {
   view: {},
   confirmModal: { open: false },
   alert: { open: false },
+  createableCustomerName: '',
   cart: {
     sale: { id: null, customerId: null },
     customer: {},
@@ -126,6 +127,12 @@ export const useAppStore = createSelectors(
       set(
         produce((draft) => {
           draft.alert = null
+        }),
+      ),
+    setCreateableCustomerName: (name) =>
+      set(
+        produce((draft) => {
+          draft.createableCustomerName = name
         }),
       ),
     setCart: (update) =>
