@@ -155,10 +155,17 @@ export const useAppStore = createSelectors(
     loadSaleToCart: (newCart) => {
       const alert = { open: true, type: 'success', message: 'SALE LOADED' }
       const oldCart = get().cart
-      console.log(oldCart)
-      console.log(newCart)
-      if (oldCart?.items?.length > 0) {
-        saveCart({ ...oldCart, sale: { ...oldCart?.sale, state: SaleStateTypes.Parked } }, oldCart?.sale?.state)
+      if (oldCart?.items?.length > 0 && oldCart?.sale?.id !== newCart?.sale?.id) {
+        saveCart(
+          {
+            ...oldCart,
+            sale: {
+              ...oldCart?.sale,
+              state: oldCart?.sale?.state === SaleStateTypes.InProgress ? SaleStateTypes.Parked : oldCart?.sale?.state,
+            },
+          },
+          oldCart?.sale?.state,
+        )
         alert.type = 'warning'
         alert.message = 'SALE LOADED. PREVIOUS CART HAS BEEN PARKED.'
       }

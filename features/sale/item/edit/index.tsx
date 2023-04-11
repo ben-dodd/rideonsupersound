@@ -12,26 +12,12 @@ import { ViewProps } from 'lib/store/types'
 import { useSWRConfig } from 'swr'
 import CreateMailOrder from './create-mail-order/sidebar'
 import Pay from './pay'
-import { useEffect } from 'react'
 
 const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
   const { cart, resetCart, setCart, openView, closeView, setAlert, openConfirm } = useAppStore()
   const { sale = {}, transactions = [] } = cart || {}
   const router = useRouter()
   const { mutate } = useSWRConfig()
-
-  useEffect(() => {
-    const handleRouteChange = () => {
-      console.log('resetting cart')
-      resetCart()
-    }
-
-    router.events.on('routeChangeComplete', handleRouteChange)
-
-    return () => {
-      router.events.off('routeChangeComplete', handleRouteChange)
-    }
-  }, [router.events])
 
   function clearCart() {
     resetCart()
@@ -46,13 +32,14 @@ const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
       },
       sale?.state,
     )
+    router.push('/sell')
     mutate(`/sale/${sale?.id}`, newCart)
     setAlert({
       open: true,
       type: 'success',
       message: 'SALE PARKED',
     })
-    router.push('/sell')
+    clearCart()
   }
 
   async function clickContinueLayby() {
@@ -60,8 +47,9 @@ const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
       if (sale?.state !== SaleStateTypes.Layby) {
         saveCart({ ...cart, sale: { ...sale, state: SaleStateTypes.Layby } })
       }
-      setAlert({ open: true, type: 'success', message: 'LAYBY CONTINUED' })
       router.push('/sell')
+      setAlert({ open: true, type: 'success', message: 'LAYBY CONTINUED' })
+      clearCart()
     } else {
       openView(ViewProps.createLayby)
     }
@@ -136,7 +124,7 @@ const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
     >
       <div className="flex h-content">
         <div className="w-2/3">
-          <SaleSummary cart={cart} />
+          <SaleSummary cart={cart} isEditable />
         </div>
         <div className="w-1/3 h-content p-2 flex flex-col justify-between shadow-md">
           <Pay totalRemaining={totalRemaining} />

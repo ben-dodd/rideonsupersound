@@ -1,12 +1,9 @@
 import SaleItems from './sale-items'
 import SaleDetails from './sale-details'
-import { useRouter } from 'next-router-mock'
 import TransactionItems from './transaction-items'
 
-export default function SaleSummary({ cart }) {
+export default function SaleSummary({ cart, isEditable = false }) {
   const { items = [], transactions = [] } = cart || {}
-  const router = useRouter()
-  const isEditable = router.pathname.includes('/sell')
   return (
     <div className="flex flex-col h-content p-2">
       <div>

@@ -1,6 +1,6 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import { ConfirmModal, AlertProps } from 'lib/types'
-import { CartObject, SaleItemObject, SaleObject, SaleTransactionObject } from 'lib/types/sale'
+import { CartObject, SaleItemObject, SaleTransactionObject } from 'lib/types/sale'
 
 export interface StoreState {
   view: {
@@ -104,7 +104,7 @@ export interface StoreState {
   setCreateableCustomerName: (name: string) => void
   setCart: (update: any) => void
   loadSaleToCartById: (saleId: number) => void
-  loadSaleToCart: (sale: SaleObject) => void
+  loadSaleToCart: (sale: CartObject) => void
   mutateCart: (mutates?: string[]) => void
   addCartTransaction: (transaction: SaleTransactionObject) => void
   deleteCartTransaction: (transaction: SaleTransactionObject) => void
