@@ -6,16 +6,13 @@ import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import ItemListItem from '../sale-summary/item-list-item'
 import { SaleItemObject, SaleStateTypes } from 'lib/types/sale'
-import { saveCart } from 'lib/api/sale'
-import { useSWRConfig } from 'swr'
 
-export default function ReturnItemDialog({ saleObject }) {
-  const { view, closeView, setAlert } = useAppStore()
-  const { items = [], sale = {} } = saleObject || {}
+export default function ReturnItemsDialog({ sale }) {
+  const { cart, view, setCart, setCartSale, closeView, setAlert } = useAppStore()
+  const { items = [] } = cart || {}
   const [refundItems, setRefundItems] = useState([])
   const [notes, setNotes] = useState('')
   const [submitting] = useState(false)
-  const { mutate } = useSWRConfig()
 
   function closeDialog() {
     closeView(ViewProps.returnItemDialog)
@@ -28,19 +25,16 @@ export default function ReturnItemDialog({ saleObject }) {
     {
       type: 'ok',
       loading: submitting,
-      onClick: async () => {
-        const updatedCartItems = items?.map((item: SaleItemObject) =>
+      onClick: () => {
+        const updatedCartItems = cart?.items?.map((item: SaleItemObject) =>
           refundItems.includes(item?.id) ? { ...item, isRefunded: true, refundNote: notes } : item,
         )
-        await saveCart(
-          {
-            ...saleObject,
-            items: updatedCartItems,
-            sale: { ...saleObject?.sale, state: SaleStateTypes.InProgress },
-          },
-          saleObject?.state,
-          mutate,
-        )
+        setCart({
+          items: updatedCartItems,
+        })
+        setCartSale({
+          state: sale?.state === SaleStateTypes.Completed ? SaleStateTypes.InProgress : sale?.state,
+        })
         closeDialog()
         setAlert({
           open: true,
@@ -58,7 +52,7 @@ export default function ReturnItemDialog({ saleObject }) {
     <Modal
       open={view?.returnItemDialog}
       closeFunction={closeDialog}
-      title={'REFUND ITEMS'}
+      title={'RETURN ITEMS'}
       buttons={buttons}
       width="max-w-xl"
     >

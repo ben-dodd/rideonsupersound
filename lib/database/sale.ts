@@ -7,16 +7,8 @@ import { VendorPaymentTypes } from 'lib/types/vendor'
 import { dbGetCustomer } from './customer'
 import { dbCreateJob } from './jobs'
 import { dbCreateVendorPayment, dbUpdateVendorPayment } from './payment'
-import {
-  dbCheckIfRestockNeeded,
-  dbCreateStockItem,
-  dbCreateStockMovement,
-  dbGetStockItems,
-  dbUpdateStockItem,
-} from './stock'
+import { dbCheckIfRestockNeeded, dbCreateStockItem, dbCreateStockMovement, dbUpdateStockItem } from './stock'
 import { js2mysql } from './utils/helpers'
-import { getSaleObjectProps } from 'lib/functions/pay'
-import { dollarsToCents } from 'lib/utils'
 
 export function dbGetAllSales(db = connection) {
   return db('sale')
@@ -111,25 +103,12 @@ export function dbGetAllCurrentHolds(db = connection) {
 }
 
 export async function dbGetSale(id, db = connection) {
-  const saleObject: any = {}
-  saleObject.sale = await db('sale').where({ id }).first()
-  saleObject.customer = saleObject?.sale?.customer_id ? await dbGetCustomer(saleObject?.sale?.customer_id) : null
-  saleObject.items = await dbGetSaleItemsBySaleId(id, db)
-  saleObject.stock = await dbGetStockItems(
-    saleObject?.items?.map((item) => item?.item_id),
-    db,
-  )
-  saleObject.transactions = await dbGetSaleTransactionsBySaleId(id, db)
-  saleObject.props = getSaleObjectProps(saleObject)
-  const { totalStoreCut, totalPrice, numberOfItems, itemList } = saleObject?.props || {}
-  saleObject.sale = {
-    ...saleObject.sale,
-    storeCut: dollarsToCents(totalStoreCut),
-    totalPrice: dollarsToCents(totalPrice),
-    numberOfItems,
-    itemList,
-  }
-  return saleObject
+  const cart: any = {}
+  cart.sale = await db('sale').where({ id }).first()
+  cart.customer = cart?.sale?.customer_id ? await dbGetCustomer(cart?.sale?.customer_id) : null
+  cart.items = await dbGetSaleItemsBySaleId(id, db)
+  cart.transactions = await dbGetSaleTransactionsBySaleId(id, db)
+  return cart
 }
 
 export function dbGetSaleItemsBySaleId(saleId, db = connection) {
@@ -285,14 +264,15 @@ export async function dbSaveCart(cart, prevState, db = connection) {
       }
 
       return Promise.all(promises)
-        .then(async () => {
-          const newCart = await dbGetSale(newSale?.id)
+        .then(() => {
+          const newCart = { ...cart, sale: newSale, items: newItems, transactions: newTransactions }
           console.log('new Cart issss', newCart)
           return newCart
         })
         .catch((e) => console.error(e.message))
     })
     .then((cart) => {
+      console.log(cart)
       return cart
     })
     .catch((e) => Error(e.message))

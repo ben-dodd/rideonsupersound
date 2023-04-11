@@ -21,6 +21,7 @@ export default function ShoppingCart() {
   const { clerk } = useClerk()
   const router = useRouter()
   const [loadingSale, setLoadingSale] = useState(false)
+
   const { totalPrice, totalStoreCut, totalRemaining, totalPaid } = useSaleProperties(cart)
   const handleBackClick = () => closeView(ViewProps.cart)
 
@@ -102,13 +103,13 @@ export default function ShoppingCart() {
               className={`w-full my-4 modal__button--${totalRemaining < 0 ? 'alt1' : 'ok'}`}
               disabled={loadingSale || !totalRemaining}
               onClick={() => {
-                if (sale?.id) router.push(`sales/${sale?.id}`)
+                if (sale?.id) router.push('sell/pay')
                 else {
                   setLoadingSale(true)
                   createSale({ ...sale, state: SaleStateTypes.InProgress }, clerk).then((id) => {
                     setCartSale({ id })
                     setLoadingSale(false)
-                    router.push(`sales/${id}`)
+                    router.push('sell/pay')
                   })
                 }
               }}

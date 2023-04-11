@@ -1,6 +1,5 @@
 import dayjs, { extend } from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import { mysql2js } from 'lib/database/utils/helpers'
 import { getItemDisplayName } from 'lib/functions/displayInventory'
 import { getCartItemPrices } from 'lib/functions/sell'
 import { PaymentMethodTypes, SaleItemObject, SaleTransactionObject } from 'lib/types/sale'
@@ -169,33 +168,5 @@ export function getCashVars(centsReceived, totalRemaining, isRefund) {
     netAmount: isRefund ? centsReceived * -1 : centsReceived >= centsRemaining ? centsRemaining : centsReceived,
     cashFromCustomer: isRefund ? null : centsReceived,
     cashToCustomer: isRefund ? centsReceived : centsReceived > centsRemaining ? centsReceived - centsRemaining : null,
-  }
-}
-
-export function getSaleObjectProps(saleObject) {
-  const { stock = [], sale = {}, items = [], transactions = [] } = mysql2js(saleObject) || {}
-  const totalPostage = parseFloat(`${sale?.postage}`) || 0 // Postage: currently in dollars
-  const nonRefundedItems = items?.filter((item) => !item?.isRefunded)
-  const totalStoreCut = sumPrices(nonRefundedItems, stock, 'storePrice') / 100 // Total Amount of Sale goes to Store in dollars
-  const totalPriceUnrounded = sumPrices(nonRefundedItems, stock, 'totalPrice') / 100 // Total Amount of Sale in dollars
-  const totalVendorCut = totalPriceUnrounded - totalStoreCut // Total Vendor Cut in dollars
-  const totalItemPrice = roundToTenCents(totalPriceUnrounded)
-  const totalPrice = totalItemPrice + totalPostage // TotalPrice + postage
-  const totalPaid = roundToTenCents(getTotalPaid(transactions) / 100)
-  const totalRemaining = roundToTenCents(totalPrice - totalPaid) // Amount remaining to pay
-  const numberOfItems = items
-    ?.filter((item) => !item.isRefunded && !item?.isDeleted)
-    ?.reduce((acc, item) => acc + parseInt(item?.quantity), 0) // Total number of items in sale
-  const itemList = writeItemList(stock, items) // List of items written in full
-  return {
-    totalItemPrice,
-    totalPrice,
-    totalPostage,
-    totalPaid,
-    totalStoreCut,
-    totalVendorCut,
-    totalRemaining,
-    numberOfItems,
-    itemList,
   }
 }

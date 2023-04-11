@@ -172,7 +172,6 @@ export enum Pages {
   // paymentsPage = 'paymentsPage',
   registersPage = 'registersPage',
   salesPage = 'salesPage',
-  salesListPage = 'salesListPage',
   salesCalendarPage = 'salesCalendarPage',
   parkedSalesPage = 'parkedSalesPage',
   laybysPage = 'laybysPage',

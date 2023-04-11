@@ -9,10 +9,10 @@ import SaleListItem from '../sale-list-item'
 
 const SalesList = () => {
   const { sales, isSalesLoading } = useSales()
-  const { salesListPage, setSearchBar } = useAppStore()
-  const searchBar = salesListPage?.searchBar || ''
+  const { salesPage, setSearchBar } = useAppStore()
+  const searchBar = salesPage?.searchBar || ''
   const [limit, setLimit] = useState(50)
-  const handleSearch = (e) => setSearchBar(Pages.salesListPage, e.target.value)
+  const handleSearch = (e) => setSearchBar(Pages.salesPage, e.target.value)
   const filteredList = sales?.filter?.((sale) => searchBar === '' || searchBar === `${sale?.id}`)
   return isSalesLoading ? (
     <Loading />
