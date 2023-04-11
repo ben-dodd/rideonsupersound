@@ -142,13 +142,13 @@ export const useAppStore = createSelectors(
           Object.entries(update).forEach(([key, value]) => (draft.cart[key] = value))
         }),
       )
-      get().mutateCart(prevState)
+      get().cart?.sale?.id && get().mutateCart(prevState)
     },
     loadSaleToCartById: (saleId) => {
       console.log('Loading sale to cart', saleId)
       return axiosAuth.get(`api/sale/${saleId}`).then((newCart) => {
         console.log('got sale', mysql2js(newCart))
-        return set(
+        set(
           produce((draft) => {
             draft.cart = mysql2js(newCart)
           }),
@@ -172,7 +172,7 @@ export const useAppStore = createSelectors(
         alert.type = 'warning'
         alert.message = 'SALE LOADED. PREVIOUS CART HAS BEEN PARKED.'
       }
-      return set(
+      set(
         produce((draft) => {
           draft.cart = newCart
           draft.alert = alert
@@ -241,16 +241,16 @@ export const useAppStore = createSelectors(
           draft.cart.items[index] = { ...get().cart.items[index], ...update }
         }),
       )
-      get().mutateCart(prevState)
+      get().cart?.sale?.id && get().mutateCart(prevState)
     },
     setCartSale: (update) => {
-      const prevState = get().cart?.sale?.state
+      // const prevState = get().cart?.sale?.state
       set(
         produce((draft) => {
           Object.entries(update).forEach(([key, value]) => (draft.cart.sale[key] = value))
         }),
       )
-      get().mutateCart(prevState)
+      // get().cart?.sale?.id && get().mutateCart(prevState)
     },
     setCustomer: (update) => {
       set(

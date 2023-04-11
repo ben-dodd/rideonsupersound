@@ -109,8 +109,10 @@ export function dbGetAllCurrentHolds(db = connection) {
 }
 
 export async function dbGetSale(id, db = connection) {
+  console.log('getting carrrt', id)
   const cart: any = {}
   cart.sale = await db('sale').where({ id }).first()
+  if (!cart?.sale) cart.sale = {}
   cart.customer = cart?.sale?.customer_id ? await dbGetCustomer(cart?.sale?.customer_id) : null
   cart.items = await dbGetSaleItemsBySaleId(id, db)
   cart.transactions = await dbGetSaleTransactionsBySaleId(id, db)
@@ -224,68 +226,72 @@ export function dbUpdateSaleTransaction(id, update, db = connection) {
 }
 
 export async function dbSaveCart(cart, prevState, db = connection) {
-  console.log('dbSaveCart called', cart)
-  return (
-    db
-      .transaction(async (trx) => {
-        const { sale = {}, items = [], transactions = [], registerId = null } = cart || {}
-        const newSale = {
-          ...sale,
-          state: sale?.state || SaleStateTypes.InProgress,
+  return db
+    .transaction(async (trx) => {
+      console.log('Beginning transaction')
+      const { sale = {}, items = [], transactions = [], registerId = null } = cart || {}
+      const newSale = {
+        ...sale,
+        state: sale?.state || SaleStateTypes.InProgress,
+      }
+
+      if (newSale?.id) {
+        console.log('Updating sale:', newSale.id)
+        await dbUpdateSale(newSale?.id, newSale, trx)
+      } else {
+        console.log('Creating new sale')
+        newSale.id = await dbCreateSale(newSale, trx)
+      }
+      if (sale?.isMailOrder && sale?.state === SaleStateTypes.Completed) {
+        console.log('Creating mail order job')
+        const customer = await dbGetCustomer(sale?.customerId, trx)
+        const mailOrderJob = {
+          description: `Post Sale ${sale?.id} (${sale?.itemList}) to ${`${customer?.name}\n` || ''}${
+            sale?.postalAddress
+          }`,
+          createdByClerkId: sale?.saleOpenedBy,
+          assignedTo: RoleTypes?.MC,
+          dateCreated: dayjs.utc().format(),
+          isPostMailOrder: true,
         }
-        const newItems = []
-        const newTransactions = []
+        dbCreateJob(mailOrderJob, trx)
+      }
 
-        // console.log(newSale)
+      const promises = []
 
-        if (newSale?.id) {
-          dbUpdateSale(newSale?.id, newSale, trx)
-        } else {
-          newSale.id = await dbCreateSale(newSale, trx)
-        }
-        if (sale?.isMailOrder && sale?.state === SaleStateTypes.Completed) {
-          const customer = await dbGetCustomer(sale?.customerId, trx)
-          const mailOrderJob = {
-            description: `Post Sale ${sale?.id} (${sale?.itemList}) to ${`${customer?.name}\n` || ''}${
-              sale?.postalAddress
-            }`,
-            createdByClerkId: sale?.saleOpenedBy,
-            assignedTo: RoleTypes?.MC,
-            dateCreated: dayjs.utc().format(),
-            isPostMailOrder: true,
-          }
-          // console.log('Creating job', mailOrderJob)
-          dbCreateJob(mailOrderJob, trx)
-        }
+      for (const item of items) {
+        console.log('Handling sale item:', item.id)
+        promises.push(handleSaveSaleItem(item, newSale, prevState, registerId, trx))
+      }
 
-        const promises = []
+      console.log('Handling transactions:', transactions)
 
-        for (const item of items) {
-          promises.push(
-            handleSaveSaleItem(item, newSale, prevState, registerId, trx).then((newItem) => newItems.push(newItem)),
-          )
-        }
+      for (const trans of transactions) {
+        console.log('Handling new trans:', trans)
+        promises.push(handleSaveSaleTransaction(trans, newSale, trx))
+      }
 
-        for (const trans of transactions) {
-          promises.push(
-            handleSaveSaleTransaction(trans, newSale, trx).then((newTrans) => newTransactions.push(newTrans)),
-          )
-        }
+      console.log('Getting new sale:', newSale?.id)
 
-        return Promise.all(promises)
-          .then(() => dbGetSale(sale?.id, trx))
-          .then((newCart) => {
-            console.log('new Cart issss', newCart)
-            return newCart
-          })
-          .catch((e) => console.error(e.message))
-      })
-      // .then((cart) => {
-      //   // console.log(cart)
-      //   return cart
-      // })
-      .catch((e) => Error(e.message))
-  )
+      await Promise.all(promises).catch((e) => console.error(e.message)) // catch any unhandled promise rejections
+
+      console.log('All promises waited for')
+
+      return dbGetSale(newSale?.id, trx)
+        .then((newCart) => {
+          console.log('New cart is:', mysql2js(newCart))
+          return mysql2js(newCart)
+        })
+        .catch((e) => console.error(e.message))
+    })
+    .then((cart) => {
+      console.log('Transaction succeeded')
+      return cart
+    })
+    .catch((e) => {
+      console.error('Transaction failed:', e.message)
+      return Error(e.message)
+    })
 }
 
 export async function dbDeleteSale(id, db = connection) {
@@ -350,7 +356,16 @@ export async function dbReverseGiftCardTransaction(trans: SaleTransactionObject,
         await dbUpdateStockItem({ giftCardAmount: newAmount }, trans?.giftCardId, db)
       } else {
         // If giftcard is invalid, need to see if you can validate it again
-        const newAmount = giftCard?.giftCardRemaining + trans?.giftCardChange + trans?.giftCardTaken
+        console.log(
+          'new gift card amount =',
+          giftCard.giftCardRemaining,
+          ' + ',
+          trans?.giftCardChange,
+          ' + ',
+          trans?.amount,
+        )
+        const newAmount = giftCard?.giftCardRemaining + trans?.giftCardChange + trans?.amount
+        console.log(newAmount)
         await dbUpdateStockItem({ giftCardAmount: newAmount, giftCardIsValid: true }, trans?.giftCardId, db)
       }
     })
@@ -374,7 +389,7 @@ async function handleSaveSaleItem(item, sale, prevState, registerId, trx) {
   }
 
   await handleStockMovements(item, sale, prevState, registerId, trx)
-  await dbCheckIfRestockNeeded(item?.itemId, trx)
+  await dbCheckIfRestockNeeded(item?.itemId, sale?.state, trx)
 
   // Add or update Sale Item
   if (!item?.id) {

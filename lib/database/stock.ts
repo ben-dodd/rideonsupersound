@@ -2,6 +2,7 @@ import { getItemSkuDisplayName } from 'lib/functions/displayInventory'
 import { StockMovementTypes } from 'lib/types/stock'
 import { dbGetAllSalesAndItems, dbGetSaleTransactions, getStockMovementQuantityByAct } from './sale'
 import { js2mysql } from './utils/helpers'
+import { SaleStateTypes } from 'lib/types/sale'
 const connection = require('./conn')
 
 export function dbGetStockList(db = connection) {
@@ -442,12 +443,14 @@ export function dbGetWebStock(condition = '', db = connection) {
     .then((stock) => stock.filter((stockItem) => stockItem?.quantity > 0))
 }
 
-export function dbCheckIfRestockNeeded(itemId, db = connection) {
+export function dbCheckIfRestockNeeded(itemId, state, db = connection) {
   return db('stock_movement')
     .sum('quantity as totalQuantity')
     .where('stock_id', itemId)
     .first()
     .then((res) =>
-      res.totalQuantity > 0 ? dbUpdateStockItem({ needsRestock: true }, itemId, db).then(() => true) : false,
+      res.totalQuantity > 0 && (state === SaleStateTypes.Completed || state === SaleStateTypes.Layby)
+        ? dbUpdateStockItem({ needsRestock: true }, itemId, db).then(() => true)
+        : false,
     )
 }

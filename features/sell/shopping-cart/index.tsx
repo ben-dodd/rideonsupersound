@@ -8,7 +8,7 @@ import PayIcon from '@mui/icons-material/ShoppingCart'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useSaleProperties } from 'lib/hooks/sale'
-import { createSale } from 'lib/api/sale'
+import { saveCart } from 'lib/api/sale'
 import { useClerk } from 'lib/api/clerk'
 import { useRouter } from 'next/router'
 import { SaleStateTypes } from 'lib/types/sale'
@@ -16,7 +16,7 @@ import { ArrowCircleLeftRounded } from '@mui/icons-material'
 import { priceDollarsString } from 'lib/utils'
 
 export default function ShoppingCart() {
-  const { cart, view, setCartSale, openView, closeView } = useAppStore()
+  const { cart, view, setCart, openView, closeView } = useAppStore()
   const { sale = {}, items = [], transactions = [] } = cart || {}
   const { clerk } = useClerk()
   const router = useRouter()
@@ -106,8 +106,12 @@ export default function ShoppingCart() {
                 if (sale?.id) router.push('sell/pay')
                 else {
                   setLoadingSale(true)
-                  createSale({ ...sale, state: SaleStateTypes.InProgress }, clerk).then((id) => {
-                    setCartSale({ id })
+                  console.log('saving cart')
+                  saveCart(
+                    { ...cart, sale: { ...sale, state: SaleStateTypes.InProgress, saleOpenedBy: clerk?.id } },
+                    SaleStateTypes.InProgress,
+                  ).then((newCart) => {
+                    setCart(newCart)
                     setLoadingSale(false)
                     router.push('sell/pay')
                   })

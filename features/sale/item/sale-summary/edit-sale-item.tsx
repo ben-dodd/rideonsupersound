@@ -47,16 +47,9 @@ export default function EditSaleItem({ cartItem }: { cartItem: SaleItemObject })
     if (cartItem?.id)
       // Cart has been saved to the database, delete sale_item
       await deleteSaleItem(cartItem?.id)
-    // if (updatedCartItems.length < 1 && transactions?.length < 1) {
-    //   // No items left and no transactions, delete cart
-    //   closeView(ViewProps.cart)
-    //   resetCart()
-    //   if (sale?.id) deleteSale(sale?.id)
-    // } else {
     setCart({
       items: updatedCartItems,
     })
-    // }
     setAlert({
       open: true,
       type: 'success',
