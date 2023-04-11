@@ -19,7 +19,7 @@ export default function SaleItemPage() {
     <Loading />
   ) : (
     <>
-      <SaleItemScreen cart={sale} />
+      <SaleItemScreen saleItem={sale} />
       {view?.returnItemDialog && <ReturnItemDialog sale={sale} />}
     </>
   )

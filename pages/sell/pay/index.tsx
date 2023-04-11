@@ -10,7 +10,7 @@ import Gift from 'features/sale/item/edit/payment/gift'
 
 export default function PayPage() {
   const { view, cart } = useAppStore()
-  const { totalRemaining, isLoading } = useSaleProperties(cart)
+  const { totalRemaining, isLoading } = useSaleProperties(cart, true)
 
   return (
     <>

@@ -6,7 +6,7 @@ import { BasicStockObject } from 'lib/types/stock'
 import { dollarsToCents } from 'lib/utils'
 import { useState, useEffect } from 'react'
 
-export function useSaleProperties(cart): any {
+export function useSaleProperties(cart, updateCart = false): any {
   const [properties, setProperties]: [any, Function] = useState({ isLoading: true })
   const { setCartSale } = useAppStore()
   const [stockTable, setStockTable]: [BasicStockObject[], Function] = useState(null)
@@ -53,12 +53,14 @@ export function useSaleProperties(cart): any {
         numberOfItems,
         itemList,
       })
-      setCartSale({
-        storeCut: dollarsToCents(totalStoreCut),
-        totalPrice: dollarsToCents(totalPrice),
-        numberOfItems,
-        itemList,
-      })
+      if (updateCart) {
+        setCartSale({
+          storeCut: dollarsToCents(totalStoreCut),
+          totalPrice: dollarsToCents(totalPrice),
+          numberOfItems,
+          itemList,
+        })
+      }
     }
   }, [items, sale, transactions, stockTable])
   return properties

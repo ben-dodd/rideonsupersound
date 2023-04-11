@@ -8,10 +8,10 @@ import { useRouter } from 'next/router'
 import React from 'react'
 import SaleDetailsSidebar from '../static/sale-details-sidebar'
 
-const SaleItemScreen = ({ cart }) => {
+const SaleItemScreen = ({ saleItem }) => {
   const router = useRouter()
   const { openView, loadSaleToCart } = useAppStore()
-  const { sale = {} } = cart || {}
+  const { sale = {} } = saleItem || {}
 
   // TODO make sale info screen for LAYBY and SALES screen that needs to be activated to go to the SELL screen. So only one active sale will be present at a time.
   // BUG fix bug where close register screen appears (pressing TAB) - have fixed by just hiding sidebars and screens
@@ -21,14 +21,8 @@ const SaleItemScreen = ({ cart }) => {
 
   // Functions
   async function loadSale() {
-    loadSaleToCart(cart)
+    loadSaleToCart(saleItem)
     router.push('/sell/pay')
-
-    // setLoadToCartLoading(true)
-    // await loadSaleToCart(cart, setCart, sale, clerk, registerId, customers)
-    // setLoadToCartLoading(false)
-    // router.push('sell/')
-    // setView({ ...view, saleScreen: true })
   }
 
   async function nukeSale() {
@@ -93,10 +87,10 @@ const SaleItemScreen = ({ cart }) => {
     >
       <div className="flex">
         <div className="w-2/3">
-          <SaleSummary cart={cart} />
+          <SaleSummary cart={saleItem} />
         </div>
         <div className="w-1/3">
-          <SaleDetailsSidebar cart={cart} />
+          <SaleDetailsSidebar cart={saleItem} />
         </div>
       </div>
     </MidScreenContainer>

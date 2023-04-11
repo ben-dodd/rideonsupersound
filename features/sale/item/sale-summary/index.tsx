@@ -4,7 +4,7 @@ import { useRouter } from 'next-router-mock'
 import TransactionItems from './transaction-items'
 
 export default function SaleSummary({ cart }) {
-  const { items = [], transactions = [], sale = {} } = cart || {}
+  const { items = [], transactions = [] } = cart || {}
   const router = useRouter()
   const isEditable = router.pathname.includes('/sell')
   return (

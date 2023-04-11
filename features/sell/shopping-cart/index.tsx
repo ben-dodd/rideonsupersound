@@ -22,7 +22,7 @@ export default function ShoppingCart() {
   const router = useRouter()
   const [loadingSale, setLoadingSale] = useState(false)
 
-  const { totalPrice, totalStoreCut, totalRemaining, totalPaid } = useSaleProperties(cart)
+  const { totalPrice, totalStoreCut, totalRemaining, totalPaid } = useSaleProperties(cart, true)
   const handleBackClick = () => closeView(ViewProps.cart)
 
   return (
