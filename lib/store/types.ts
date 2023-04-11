@@ -72,6 +72,8 @@ export interface StoreState {
   registersPage?: any
   salesPage?: {
     tab?: number
+  }
+  salesListPage?: {
     searchBar?: string
   }
   salesCalendarPage?: {
@@ -173,6 +175,7 @@ export enum Pages {
   // paymentsPage = 'paymentsPage',
   registersPage = 'registersPage',
   salesPage = 'salesPage',
+  salesListPage = 'salesListPage',
   salesCalendarPage = 'salesCalendarPage',
   parkedSalesPage = 'parkedSalesPage',
   laybysPage = 'laybysPage',

@@ -4,7 +4,7 @@ import SaleSummary from '../sale-summary'
 import CreateHoldSidebar from 'features/sell/create-hold/sidebar'
 import CreateLaybySidebar from './create-layby/sidebar'
 import CreateCustomerSidebar from 'features/sell/create-customer/sidebar'
-import { saveCart } from 'lib/api/sale'
+import { deleteSale, saveCart } from 'lib/api/sale'
 import MidScreenContainer from 'components/container/mid-screen'
 import { CheckCircleOutline, Delete, DirectionsCar, DryCleaning, Mail, PostAdd } from '@mui/icons-material'
 import { SaleStateTypes } from 'lib/types/sale'
@@ -62,7 +62,7 @@ const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
     router.push('/sell')
   }
 
-  async function clickAbortSale() {
+  async function clickDeleteSale() {
     transactions?.filter((transaction) => !transaction?.isDeleted)?.length > 0
       ? openConfirm({
           open: true,
@@ -74,20 +74,23 @@ const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
       : openConfirm({
           open: true,
           title: 'Are you sure?',
-          message: 'Are you sure you want to clear the cart of all items?',
-          yesText: 'DISCARD SALE',
+          message: 'Are you sure you want to delete this sale?',
+          yesText: 'DELETE SALE',
           action: () => {
-            // saveLog(`Cart cleared.`, clerk?.id)
-            setAlert({
-              open: true,
-              type: 'warning',
-              message: 'SALE DISCARDED',
-              undo: () => {
-                // saveLog(`Cart uncleared.`, clerk?.id)
-                setCart(cart)
-              },
+            deleteSale(sale?.id).then(() => {
+              setAlert({
+                open: true,
+                type: 'warning',
+                message: `SALE DELETED`,
+                undo: () => {
+                  console.log('TODO - save sale again')
+                },
+              })
+              if (sale?.state === SaleStateTypes.Parked) mutate(`sale/parked`)
+              if (sale?.state === SaleStateTypes.Layby) mutate(`sale/layby`)
+              clearCart()
+              router.push('/sell')
             })
-            clearCart()
           },
           noText: 'CANCEL',
         })
@@ -118,7 +121,7 @@ const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
     { text: 'Park Sale', icon: <DirectionsCar />, onClick: clickParkSale },
     { text: 'Start Layby', icon: <DryCleaning />, onClick: clickLayby },
     { text: 'Create Mail Order', icon: <Mail />, onClick: clickMailOrder },
-    { text: 'Delete Sale', icon: <Delete />, onClick: clickAbortSale },
+    { text: 'Delete Sale', icon: <Delete />, onClick: clickDeleteSale },
   ]
 
   const parkedMenuItems = [
@@ -126,14 +129,14 @@ const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
     { text: 'Park Sale Again', icon: <DirectionsCar />, onClick: clickParkSale },
     { text: 'Start Layby', icon: <DryCleaning />, onClick: clickLayby },
     { text: 'Create Mail Order', icon: <Mail />, onClick: clickMailOrder },
-    { text: 'Delete Sale', icon: <Delete />, onClick: clickAbortSale },
+    { text: 'Delete Sale', icon: <Delete />, onClick: clickDeleteSale },
   ]
 
   const laybyMenuItems = [
     { text: 'Add More Items', icon: <PostAdd />, onClick: clickAddItems },
     { text: 'Continue Layby', icon: <DryCleaning />, onClick: clickLayby },
     { text: 'Create Mail Order', icon: <Mail />, onClick: clickMailOrder },
-    { text: 'Delete Layby', icon: <Delete />, onClick: clickAbortSale },
+    { text: 'Delete Layby', icon: <Delete />, onClick: clickDeleteSale },
   ]
 
   const menuItems =

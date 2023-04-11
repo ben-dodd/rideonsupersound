@@ -79,21 +79,19 @@ export default function ShoppingCartActions() {
             : 'Are you sure you want to clear the cart of all items?',
           yesText: `${hasID ? 'DELETE' : 'DISCARD'} SALE`,
           action: () => {
-            // saveLog(`Cart cleared.`, clerk?.id)
-            setAlert({
-              open: true,
-              type: 'warning',
-              message: `SALE ${hasID ? 'DELETED' : 'DISCARDED'}`,
-              undo: () => {
-                // saveLog(`Cart uncleared.`, clerk?.id)
-                hasID && console.log('TODO - save sale again')
-                setCart(cart)
-              },
-            })
             deleteSale(sale?.id).then(() => {
+              setAlert({
+                open: true,
+                type: 'warning',
+                message: `SALE ${hasID ? 'DELETED' : 'DISCARDED'}`,
+                undo: () => {
+                  hasID && console.log('TODO - save sale again')
+                  setCart(cart)
+                },
+              })
               mutate(`sale/parked`)
+              clearCart()
             })
-            clearCart()
           },
           noText: 'CANCEL',
         })

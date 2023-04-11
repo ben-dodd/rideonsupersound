@@ -287,11 +287,12 @@ export async function dbSaveCart(cart, prevState, db = connection) {
 export async function dbDeleteSale(id, db = connection) {
   return db
     .transaction(async (trx) => {
+      console.log('deleting sale', id)
       const sale = await dbGetSale(id, trx)
       await sale?.items?.forEach((saleItem) => {
         dbUpdateSaleItem(saleItem?.id, { isDeleted: true }, trx)
       })
-      await dbDeleteStockMovementForSale(sale?.id, trx)
+      await dbDeleteStockMovementForSale(id, trx)
       await sale?.transactions?.forEach((saleTransaction) => {
         dbDeleteSaleTransaction(saleTransaction, trx)
       })

@@ -7,11 +7,14 @@ import { SaleStateTypes } from 'lib/types/sale'
 import { useRouter } from 'next/router'
 import React from 'react'
 import SaleDetailsSidebar from '../static/sale-details-sidebar'
+import { deleteSale } from 'lib/api/sale'
+import { useSWRConfig } from 'swr'
 
 const SaleItemScreen = ({ saleItem }) => {
   const router = useRouter()
-  const { openView, loadSaleToCart } = useAppStore()
+  const { openView, loadSaleToCart, openConfirm, setAlert, closeView, resetCart } = useAppStore()
   const { sale = {} } = saleItem || {}
+  const { mutate } = useSWRConfig()
 
   // TODO make sale info screen for LAYBY and SALES screen that needs to be activated to go to the SELL screen. So only one active sale will be present at a time.
   // BUG fix bug where close register screen appears (pressing TAB) - have fixed by just hiding sidebars and screens
@@ -19,52 +22,51 @@ const SaleItemScreen = ({ saleItem }) => {
   // BUG dates are wrong on vercel
   // BUG why are some sales showing items as separate line items, not 2x quantity
 
-  // Functions
   async function loadSale() {
     loadSaleToCart(saleItem)
     router.push('/sell/pay')
   }
 
-  async function nukeSale() {
-    // await nukeSaleInDatabase(sale, clerk, registerID)
-    // setSale(null)
-    // router.back()
+  async function clickDeleteSale() {
+    openConfirm({
+      open: true,
+      title: 'Are you absolutely positively sure?',
+      message:
+        'Are you sure you want to delete this sale? This will delete all transactions associated with the sale. Only do this action if transactions were not actually processed. Otherwise, you might want to edit the sale instead and process refunds.',
+      yesText: 'DELETE SALE',
+      action: () => {
+        deleteSale(sale?.id).then(() => {
+          setAlert({
+            open: true,
+            type: 'warning',
+            message: `SALE DELETED`,
+            undo: () => {
+              console.log('TODO - save sale again')
+            },
+          })
+          if (sale?.state === SaleStateTypes.Parked) mutate(`sale/parked`)
+          if (sale?.state === SaleStateTypes.Layby) mutate(`sale/layby`)
+          router.push('/sell')
+        })
+      },
+      noText: 'CANCEL',
+    })
   }
-
-  //   <div className="flex justify-start py-2">
-  //   <button
-  //     className="p-1 border border-black hover:bg-tertiary rounded-xl mt-2"
-  //     onClick={() => {
-  //       openConfirm({
-  //         open: true,
-  //         title: 'Are you sure you want to delete this sale?',
-  //         styledMessage: (
-  //           <span>This will delete the sale and all associated transactions. There is no coming back.</span>
-  //         ),
-  //         yesText: "YES, I'M SURE",
-  //         action: nukeSale,
-  //       })
-  //     }}
-  //   >
-  //     <Delete />
-  //     Nuke Sale
-  //   </button>
-  // </div>
 
   const completedMenuItems = [
     { text: 'Refund Items', icon: <EventBusy />, onClick: () => openView(ViewProps.returnItemDialog) },
     { text: 'Edit Sale', icon: <Edit />, onClick: loadSale, adminOnly: true },
-    { text: 'Delete Sale', icon: <Delete />, onClick: null, adminOnly: true },
+    { text: 'Delete Sale', icon: <Delete />, onClick: clickDeleteSale, adminOnly: true },
   ]
 
   const parkedMenuItems = [
     { text: 'Resume Sale', icon: <PointOfSale />, onClick: loadSale },
-    { text: 'Delete Sale', icon: <Delete />, onClick: null, adminOnly: true },
+    { text: 'Delete Sale', icon: <Delete />, onClick: clickDeleteSale, adminOnly: true },
   ]
 
   const laybyMenuItems = [
     { text: 'Load Layby to Cart', icon: <PointOfSale />, onClick: loadSale },
-    { text: 'Delete Layby', icon: <Delete />, onClick: null, adminOnly: true },
+    { text: 'Delete Layby', icon: <Delete />, onClick: clickDeleteSale, adminOnly: true },
   ]
 
   const menuItems =
