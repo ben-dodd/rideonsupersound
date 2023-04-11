@@ -14,9 +14,11 @@ export default function SaleItemPage() {
   const { view } = useAppStore()
   const { sale, isSaleLoading, isSaleError } = useSale(id)
   return isSaleError ? (
-    <ErrorScreen message="Sale Not Found" />
+    <ErrorScreen message="Sale Not Found" redirectUrl={'/sales'} />
   ) : isSaleLoading ? (
     <Loading />
+  ) : sale?.sale?.isDeleted ? (
+    <ErrorScreen message="This Sale Has Been Deleted" redirectUrl={'/sales'} />
   ) : (
     <>
       <SaleItemScreen saleItem={sale} />

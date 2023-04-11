@@ -80,7 +80,7 @@ const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
             deleteSale(sale?.id).then(() => {
               setAlert({
                 open: true,
-                type: 'warning',
+                type: 'error',
                 message: `SALE DELETED`,
                 undo: () => {
                   console.log('TODO - save sale again')
