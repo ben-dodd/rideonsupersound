@@ -14,7 +14,7 @@ import {
   dbUpdateStockItem,
   dbGetGiftCard,
 } from './stock'
-import { js2mysql } from './utils/helpers'
+import { js2mysql, mysql2js } from './utils/helpers'
 
 export function dbGetAllSales(db = connection) {
   return db('sale')
@@ -287,23 +287,35 @@ export async function dbSaveCart(cart, prevState, db = connection) {
 export async function dbDeleteSale(id, db = connection) {
   return db
     .transaction(async (trx) => {
-      console.log('deleting sale', id)
-      const sale = await dbGetSale(id, trx)
-      await sale?.items?.forEach((saleItem) => {
-        dbUpdateSaleItem(saleItem?.id, { isDeleted: true }, trx)
+      await dbGetSale(id, trx).then(async (sqlSale) => {
+        const sale = mysql2js(sqlSale)
+        if (!sale) {
+          throw new Error(`Sale with id ${id} not found.`)
+        }
+        for (const saleItem of sale.items) {
+          if (saleItem?.isMiscItem) {
+            await dbUpdateStockItem({ isDeleted: true }, saleItem?.itemId, trx)
+          }
+          if (saleItem?.isGiftCard) {
+            await dbUpdateStockItem({ isDeleted: true, giftCardIsValid: false }, saleItem?.itemId, trx)
+          }
+          await dbUpdateSaleItem(saleItem?.id, { isDeleted: true }, trx)
+        }
+
+        await dbDeleteStockMovementForSale(id, trx)
+
+        for (const saleTransaction of sale.transactions) {
+          await dbDeleteSaleTransaction(saleTransaction, trx)
+        }
+
+        await dbUpdateSale(id, { isDeleted: true }, trx)
       })
-      await dbDeleteStockMovementForSale(id, trx)
-      await sale?.transactions?.forEach((saleTransaction) => {
-        dbDeleteSaleTransaction(saleTransaction, trx)
-      })
-      await dbUpdateSale(id, { isDeleted: true }, trx)
     })
     .then((res) => res)
     .catch((e) => Error(e.message))
 }
 
 export async function dbDeleteSaleTransaction(trans: SaleTransactionObject, db = connection) {
-  console.log('DELEEEETING TRANS', trans)
   // If transaction is from a vendor account, remove the vendor account payment from db
   if (trans?.vendorPaymentId)
     await dbUpdateVendorPayment(

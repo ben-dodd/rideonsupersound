@@ -105,6 +105,7 @@ const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
     }
     await saveCart({ ...cart, sale: completedSale }, sale?.state)
     router.push('/sell')
+    clearCart()
     setAlert({
       open: true,
       type: 'success',
