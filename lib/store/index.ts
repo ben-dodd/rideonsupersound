@@ -135,12 +135,15 @@ export const useAppStore = createSelectors(
           draft.createableCustomerName = name
         }),
       ),
-    setCart: (update) =>
+    setCart: (update) => {
+      const prevState = get().cart?.sale?.state
       set(
         produce((draft) => {
           Object.entries(update).forEach(([key, value]) => (draft.cart[key] = value))
         }),
-      ),
+      )
+      get().mutateCart(prevState)
+    },
     loadSaleToCartById: (saleId) => {
       console.log('Loading sale to cart', saleId)
       return axiosAuth.get(`api/sale/${saleId}`).then((newCart) => {
@@ -176,8 +179,8 @@ export const useAppStore = createSelectors(
         }),
       )
     },
-    mutateCart: async (mutates = []) => {
-      const newCart = await saveCart(get().cart, get().cart?.sale?.state)
+    mutateCart: async (prevState, mutates = []) => {
+      const newCart = await saveCart(get().cart, prevState)
       mutate(`sales/${get().cart?.sale?.id}`)
       mutates.forEach((key) => mutate(key))
       console.log('new cart is', newCart)
@@ -188,6 +191,7 @@ export const useAppStore = createSelectors(
       )
     },
     addCartTransaction: (transaction) => {
+      const prevState = get().cart?.sale?.state
       set(
         produce((draft) => {
           draft.cart.transactions.push(transaction)
@@ -199,9 +203,10 @@ export const useAppStore = createSelectors(
           : transaction?.paymentMethod === PaymentMethodTypes.Account
           ? [`vendor/accounts`]
           : []
-      get().mutateCart(mutates)
+      get().mutateCart(prevState, mutates)
     },
     deleteCartTransaction: (transaction) => {
+      const prevState = get().cart?.sale?.state
       set(
         produce((draft) => {
           const newTrans = get().cart.transactions.map((trans) =>
@@ -211,7 +216,7 @@ export const useAppStore = createSelectors(
         }),
       )
       const mutates = transaction?.paymentMethod === PaymentMethodTypes.GiftCard ? [`stock/giftcard`] : []
-      get().mutateCart(mutates)
+      get().mutateCart(prevState, mutates)
     },
     addCartItem: (newItem, clerkId) =>
       set(
@@ -228,19 +233,25 @@ export const useAppStore = createSelectors(
           else draft.cart.items[index].quantity = `${parseInt(get().cart.items[index].quantity) + 1}`
         }),
       ),
-    setCartItem: (id, update) =>
+    setCartItem: (id, update) => {
+      const prevState = get().cart?.sale?.state
       set(
         produce((draft) => {
           const index = get().cart.items.findIndex((cartItem) => cartItem?.itemId === id)
           draft.cart.items[index] = { ...get().cart.items[index], ...update }
         }),
-      ),
-    setCartSale: (update) =>
+      )
+      get().mutateCart(prevState)
+    },
+    setCartSale: (update) => {
+      const prevState = get().cart?.sale?.state
       set(
         produce((draft) => {
           Object.entries(update).forEach(([key, value]) => (draft.cart.sale[key] = value))
         }),
-      ),
+      )
+      get().mutateCart(prevState)
+    },
     setCustomer: (update) => {
       set(
         produce((draft) => {
@@ -248,7 +259,6 @@ export const useAppStore = createSelectors(
           if (update?.id) draft.cart.sale.customerId = update?.id
         }),
       )
-      get().mutateCart()
     },
     setReceiveBasket: (update) =>
       set(

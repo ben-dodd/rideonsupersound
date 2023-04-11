@@ -1,7 +1,7 @@
-import SellListItem from 'features/sell/shopping-cart/list-item'
 import { SaleItemObject } from 'lib/types/sale'
 import { useRouter } from 'next/router'
-import ItemListItem from './item-list-item'
+import EditSaleItem from './edit-sale-item'
+import StaticSaleItem from './static-sale-item'
 
 const SaleItems = ({ items, isEditable }) => {
   const router = useRouter()
@@ -10,9 +10,9 @@ const SaleItems = ({ items, isEditable }) => {
       {items?.length > 0 ? (
         items?.map((saleItem: SaleItemObject) =>
           isEditable ? (
-            <SellListItem key={saleItem?.itemId} cartItem={saleItem} />
+            <EditSaleItem key={saleItem?.itemId} cartItem={saleItem} />
           ) : (
-            <ItemListItem
+            <StaticSaleItem
               key={saleItem?.itemId}
               saleItem={saleItem}
               onClick={() => router.push(`/stock/${saleItem?.itemId}`)}
@@ -20,7 +20,7 @@ const SaleItems = ({ items, isEditable }) => {
           ),
         )
       ) : (
-        <div>No items in cart...</div>
+        <div className="font-bold p-2 border-b bg-yellow-200">NO ITEMS IN CART...</div>
       )}
     </>
   )

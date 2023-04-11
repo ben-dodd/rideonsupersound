@@ -6,17 +6,11 @@ import Acct from 'features/sale/item/edit/payment/acct'
 import Card from 'features/sale/item/edit/payment/card'
 import Cash from 'features/sale/item/edit/payment/cash'
 import Gift from 'features/sale/item/edit/payment/gift'
-import { useRouter } from 'next/router'
 import SaleEditItemScreen from 'features/sale/item/edit'
 
 export default function PayPage() {
   const { view, cart } = useAppStore()
   const { totalRemaining, isLoading } = useSaleProperties(cart, true)
-  const router = useRouter()
-
-  if (cart?.items?.length === 0) {
-    router.push('/sell')
-  }
 
   return (
     <>

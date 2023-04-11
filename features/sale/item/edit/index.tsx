@@ -16,7 +16,7 @@ import dayjs from 'dayjs'
 import { useClerk } from 'lib/api/clerk'
 
 const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
-  const { cart, resetCart, setCart, openView, closeView, setAlert, openConfirm } = useAppStore()
+  const { cart, resetCart, openView, closeView, setAlert, openConfirm } = useAppStore()
   const { clerk } = useClerk()
   const { sale = {}, transactions = [] } = cart || {}
   const router = useRouter()

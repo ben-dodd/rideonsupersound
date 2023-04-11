@@ -12,7 +12,7 @@ type SellListItemProps = {
   onClick?: MouseEventHandler
 }
 
-export default function ItemListItem({ saleItem, selected, onClick }: SellListItemProps) {
+export default function StaticSaleItem({ saleItem, selected, onClick }: SellListItemProps) {
   const { stockItem } = useStockItem(`${saleItem?.itemId}`)
   const { item = {} } = stockItem || {}
 

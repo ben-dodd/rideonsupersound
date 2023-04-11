@@ -118,7 +118,7 @@ export async function dbGetSale(id, db = connection) {
 }
 
 export function dbGetSaleItemsBySaleId(saleId, db = connection) {
-  return db('sale_item').where({ sale_id: saleId })
+  return db('sale_item').where({ sale_id: saleId }).where({ is_deleted: 0 })
 }
 
 export function dbGetSaleTransactionsBySaleId(saleId, db = connection) {
@@ -225,63 +225,67 @@ export function dbUpdateSaleTransaction(id, update, db = connection) {
 
 export async function dbSaveCart(cart, prevState, db = connection) {
   console.log('dbSaveCart called', cart)
-  return db
-    .transaction(async (trx) => {
-      const { sale = {}, items = [], transactions = [], registerId = null } = cart || {}
-      const newSale = {
-        ...sale,
-        state: sale?.state || SaleStateTypes.InProgress,
-      }
-      const newItems = []
-      const newTransactions = []
-
-      // console.log(newSale)
-
-      if (newSale?.id) {
-        dbUpdateSale(newSale?.id, newSale, trx)
-      } else {
-        newSale.id = await dbCreateSale(newSale, trx)
-      }
-      if (sale?.isMailOrder && sale?.state === SaleStateTypes.Completed) {
-        const customer = await dbGetCustomer(sale?.customerId, trx)
-        const mailOrderJob = {
-          description: `Post Sale ${sale?.id} (${sale?.itemList}) to ${`${customer?.name}\n` || ''}${
-            sale?.postalAddress
-          }`,
-          createdByClerkId: sale?.saleOpenedBy,
-          assignedTo: RoleTypes?.MC,
-          dateCreated: dayjs.utc().format(),
-          isPostMailOrder: true,
+  return (
+    db
+      .transaction(async (trx) => {
+        const { sale = {}, items = [], transactions = [], registerId = null } = cart || {}
+        const newSale = {
+          ...sale,
+          state: sale?.state || SaleStateTypes.InProgress,
         }
-        // console.log('Creating job', mailOrderJob)
-        dbCreateJob(mailOrderJob, trx)
-      }
+        const newItems = []
+        const newTransactions = []
 
-      const promises = []
+        // console.log(newSale)
 
-      for (const item of items) {
-        promises.push(
-          handleSaveSaleItem(item, newSale, prevState, registerId, trx).then((newItem) => newItems.push(newItem)),
-        )
-      }
+        if (newSale?.id) {
+          dbUpdateSale(newSale?.id, newSale, trx)
+        } else {
+          newSale.id = await dbCreateSale(newSale, trx)
+        }
+        if (sale?.isMailOrder && sale?.state === SaleStateTypes.Completed) {
+          const customer = await dbGetCustomer(sale?.customerId, trx)
+          const mailOrderJob = {
+            description: `Post Sale ${sale?.id} (${sale?.itemList}) to ${`${customer?.name}\n` || ''}${
+              sale?.postalAddress
+            }`,
+            createdByClerkId: sale?.saleOpenedBy,
+            assignedTo: RoleTypes?.MC,
+            dateCreated: dayjs.utc().format(),
+            isPostMailOrder: true,
+          }
+          // console.log('Creating job', mailOrderJob)
+          dbCreateJob(mailOrderJob, trx)
+        }
 
-      for (const trans of transactions) {
-        promises.push(handleSaveSaleTransaction(trans, newSale, trx).then((newTrans) => newTransactions.push(newTrans)))
-      }
+        const promises = []
 
-      return Promise.all(promises)
-        .then(() => {
-          const newCart = { ...cart, sale: newSale, items: newItems, transactions: newTransactions }
-          console.log('new Cart issss', newCart)
-          return newCart
-        })
-        .catch((e) => console.error(e.message))
-    })
-    .then((cart) => {
-      // console.log(cart)
-      return cart
-    })
-    .catch((e) => Error(e.message))
+        for (const item of items) {
+          promises.push(
+            handleSaveSaleItem(item, newSale, prevState, registerId, trx).then((newItem) => newItems.push(newItem)),
+          )
+        }
+
+        for (const trans of transactions) {
+          promises.push(
+            handleSaveSaleTransaction(trans, newSale, trx).then((newTrans) => newTransactions.push(newTrans)),
+          )
+        }
+
+        return Promise.all(promises)
+          .then(() => dbGetSale(sale?.id, trx))
+          .then((newCart) => {
+            console.log('new Cart issss', newCart)
+            return newCart
+          })
+          .catch((e) => console.error(e.message))
+      })
+      // .then((cart) => {
+      //   // console.log(cart)
+      //   return cart
+      // })
+      .catch((e) => Error(e.message))
+  )
 }
 
 export async function dbDeleteSale(id, db = connection) {
