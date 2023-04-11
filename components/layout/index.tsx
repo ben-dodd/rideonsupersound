@@ -7,10 +7,32 @@ import { useClerk } from 'lib/api/clerk'
 import Loading from 'components/placeholders/loading'
 import { useAppStore } from 'lib/store'
 import HelpDialog from 'features/help'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
 
 export default function Layout({ children }) {
   const { alert, view, confirmModal } = useAppStore()
   const { isClerkLoading } = useClerk()
+  const [routeLoading, setRouteLoading] = useState(false)
+  const router = useRouter()
+  useEffect(() => {
+    router.events.on('routeChangeStart', () => {
+      setRouteLoading(true)
+    })
+    router.events.on('routeChangeComplete', () => {
+      setRouteLoading(false)
+    })
+    return () => {
+      return () => {
+        router.events.off('routeChangeStart', () => {
+          setRouteLoading(true)
+        })
+        router.events.off('routeChangeComplete', () => {
+          setRouteLoading(false)
+        })
+      }
+    }
+  }, [router.events])
   return isClerkLoading ? (
     <Loading type="pyramid" size="full" />
   ) : (
@@ -24,7 +46,7 @@ export default function Layout({ children }) {
         {confirmModal?.open && <ConfirmModal />}
         {alert?.open && <SnackAlert />}
         <Menu />
-        <div className="h-full w-full absolute sm:static">{children}</div>
+        <div className="h-full w-full absolute sm:static">{routeLoading ? <Loading /> : children}</div>
       </div>
     </>
   )

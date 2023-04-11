@@ -12,15 +12,26 @@ import { ViewProps } from 'lib/store/types'
 import { useSWRConfig } from 'swr'
 import CreateMailOrder from './create-mail-order/sidebar'
 import Pay from './pay'
+import { useEffect } from 'react'
 
 const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
   const { cart, resetCart, setCart, openView, closeView, setAlert, openConfirm } = useAppStore()
-  const { sale = {}, items = [], transactions = [] } = cart || {}
+  const { sale = {}, transactions = [] } = cart || {}
   const router = useRouter()
   const { mutate } = useSWRConfig()
-  // useEffect(() => {
-  //   if (!sale?.id && items?.length === 0) router.replace('/sell')
-  // }, [sale, items])
+
+  useEffect(() => {
+    const handleRouteChange = () => {
+      console.log('resetting cart')
+      resetCart()
+    }
+
+    router.events.on('routeChangeComplete', handleRouteChange)
+
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange)
+    }
+  }, [router.events])
 
   function clearCart() {
     resetCart()
@@ -31,19 +42,29 @@ const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
     const newCart = await saveCart(
       {
         ...cart,
-        sale: { ...cart?.sale, state: SaleStateTypes.Parked },
+        sale: { ...sale, state: SaleStateTypes.Parked },
       },
       sale?.state,
     )
     mutate(`/sale/${sale?.id}`, newCart)
-    // saveCart({ ...cart, sale: { ...sale, state: SaleStateTypes.Parked } }, sale?.state)
-    resetCart()
     setAlert({
       open: true,
       type: 'success',
       message: 'SALE PARKED',
     })
     router.push('/sell')
+  }
+
+  async function clickContinueLayby() {
+    if (sale?.customerId) {
+      if (sale?.state !== SaleStateTypes.Layby) {
+        saveCart({ ...cart, sale: { ...sale, state: SaleStateTypes.Layby } })
+      }
+      setAlert({ open: true, type: 'success', message: 'LAYBY CONTINUED' })
+      router.push('/sell')
+    } else {
+      openView(ViewProps.createLayby)
+    }
   }
 
   async function clickAbortSale() {
@@ -90,7 +111,7 @@ const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
   ]
 
   const laybyMenuItems = [
-    { text: 'Continue Layby', icon: <DryCleaning />, onClick: () => openView(ViewProps.createLayby) },
+    { text: 'Continue Layby', icon: <DryCleaning />, onClick: clickContinueLayby },
     { text: 'Delete Layby', icon: <Delete />, onClick: clickAbortSale },
   ]
 
