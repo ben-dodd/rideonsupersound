@@ -246,30 +246,32 @@ export function dbCreateBatchVendorPayments(batchPayment, db = connection) {
   return db.transaction(async (trx) => {
     const { vendorList = [], clerkId, registerId, emailed = false } = batchPayment || {}
     const successfulPayments = []
-    for (const vendor of vendorList?.filter((vendor) => vendor?.isChecked) || []) {
-      const vendorId = vendor?.id
-      if (emailed) {
-        await dbUpdateVendor({ lastUpdated: dayjs.utc().format() }, vendorId, trx)
-      }
-      if (modulusCheck(vendor?.bankAccountNumber) && parseFloat(vendor?.payAmount)) {
-        const amount = dollarsToCents(vendor?.payAmount) || 0
-        const paymentId = await dbCreateVendorPayment(
-          {
-            amount,
-            date: dayjs.utc().format(),
-            bankAccountNumber: vendor?.bankAccountNumber,
-            batchNumber: `${registerId}`,
-            sequenceNumber: 'Batch',
-            clerkId,
-            vendorId,
-            registerId,
-            type: 'batch',
-          },
-          trx,
-        )
-        successfulPayments.push({ paymentId, vendorId, name: vendor?.name, amount })
-      }
-    }
+    vendorList
+      ?.filter((vendor) => vendor?.isChecked)
+      .forEach(async (vendor) => {
+        const vendorId = vendor?.id
+        if (emailed) {
+          await dbUpdateVendor({ lastUpdated: dayjs.utc().format() }, vendorId, trx)
+        }
+        if (modulusCheck(vendor?.bankAccountNumber) && parseFloat(vendor?.payAmount)) {
+          const amount = dollarsToCents(vendor?.payment)
+          const paymentId = await dbCreateVendorPayment(
+            {
+              amount,
+              date: dayjs.utc().format(),
+              bankAccountNumber: vendor?.bankAccountNumber,
+              batchNumber: `${registerId}`,
+              sequenceNumber: 'Batch',
+              clerkId,
+              vendorId,
+              registerId,
+              type: 'batch',
+            },
+            trx,
+          )
+          successfulPayments.push({ paymentId, vendorId, name: vendor?.name, amount })
+        }
+      })
     return successfulPayments
   })
 }

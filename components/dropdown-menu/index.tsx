@@ -43,7 +43,7 @@ const DropdownMenu = ({
               key={i}
               className={`block text-gray-700 ${
                 item?.disabled || (item?.adminOnly && !isAdmin)
-                  ? 'cursor-default text-gray-100'
+                  ? 'cursor-default text-gray-200'
                   : 'hover:bg-blue-500 hover:text-white'
               }`}
             >
