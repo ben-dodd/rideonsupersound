@@ -178,6 +178,7 @@ export const useAppStore = createSelectors(
     },
     mutateCart: async (mutates = []) => {
       const newCart = await saveCart(get().cart, get().cart?.sale?.state)
+      mutate(`sales/${get().cart?.sale?.id}`)
       mutates.forEach((key) => mutate(key))
       console.log('new cart is', newCart)
       set(
@@ -203,12 +204,9 @@ export const useAppStore = createSelectors(
     deleteCartTransaction: (transaction) => {
       set(
         produce((draft) => {
-          console.log(get().cart.transactions)
-          console.log(transaction?.id)
           const newTrans = get().cart.transactions.map((trans) =>
             trans?.id === transaction?.id ? { ...trans, isDeleted: true } : trans,
           )
-          console.log(newTrans)
           draft.cart.transactions = newTrans
         }),
       )

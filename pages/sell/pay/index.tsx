@@ -1,13 +1,13 @@
 import Layout from 'components/layout'
 import { useAppStore } from 'lib/store'
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
-import PayScreen from 'features/sale/item/edit'
 import { useSaleProperties } from 'lib/hooks/sale'
 import Acct from 'features/sale/item/edit/payment/acct'
 import Card from 'features/sale/item/edit/payment/card'
 import Cash from 'features/sale/item/edit/payment/cash'
 import Gift from 'features/sale/item/edit/payment/gift'
 import { useRouter } from 'next/router'
+import SaleEditItemScreen from 'features/sale/item/edit'
 
 export default function PayPage() {
   const { view, cart } = useAppStore()
@@ -20,7 +20,7 @@ export default function PayPage() {
 
   return (
     <>
-      <PayScreen totalRemaining={totalRemaining} isLoading={isLoading} />
+      <SaleEditItemScreen totalRemaining={totalRemaining} isLoading={isLoading} />
       {view?.acctPaymentDialog && <Acct totalRemaining={totalRemaining} />}
       {view?.cardPaymentDialog && <Card totalRemaining={totalRemaining} />}
       {view?.cashPaymentDialog && <Cash totalRemaining={totalRemaining} />}

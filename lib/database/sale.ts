@@ -1,13 +1,19 @@
 import connection from './conn'
 import dayjs from 'dayjs'
 import { RoleTypes } from 'lib/types'
-import { PaymentMethodTypes, SaleStateTypes } from 'lib/types/sale'
+import { PaymentMethodTypes, SaleStateTypes, SaleTransactionObject } from 'lib/types/sale'
 import { StockMovementTypes } from 'lib/types/stock'
 import { VendorPaymentTypes } from 'lib/types/vendor'
 import { dbGetCustomer } from './customer'
 import { dbCreateJob } from './jobs'
 import { dbCreateVendorPayment, dbUpdateVendorPayment } from './payment'
-import { dbCheckIfRestockNeeded, dbCreateStockItem, dbCreateStockMovement, dbUpdateStockItem } from './stock'
+import {
+  dbCheckIfRestockNeeded,
+  dbCreateStockItem,
+  dbCreateStockMovement,
+  dbUpdateStockItem,
+  dbGetGiftCard,
+} from './stock'
 import { js2mysql } from './utils/helpers'
 
 export function dbGetAllSales(db = connection) {
@@ -229,7 +235,7 @@ export async function dbSaveCart(cart, prevState, db = connection) {
       const newItems = []
       const newTransactions = []
 
-      console.log(newSale)
+      // console.log(newSale)
 
       if (newSale?.id) {
         dbUpdateSale(newSale?.id, newSale, trx)
@@ -247,7 +253,7 @@ export async function dbSaveCart(cart, prevState, db = connection) {
           dateCreated: dayjs.utc().format(),
           isPostMailOrder: true,
         }
-        console.log('Creating job', mailOrderJob)
+        // console.log('Creating job', mailOrderJob)
         dbCreateJob(mailOrderJob, trx)
       }
 
@@ -272,7 +278,7 @@ export async function dbSaveCart(cart, prevState, db = connection) {
         .catch((e) => console.error(e.message))
     })
     .then((cart) => {
-      console.log(cart)
+      // console.log(cart)
       return cart
     })
     .catch((e) => Error(e.message))
@@ -287,21 +293,51 @@ export async function dbDeleteSale(id, db = connection) {
       })
       await dbDeleteStockMovementForSale(sale?.id, trx)
       await sale?.transactions?.forEach((saleTransaction) => {
-        if (saleTransaction?.vendorPaymentId)
-          dbUpdateVendorPayment(
-            saleTransaction?.vendorPaymentId,
-            {
-              isDeleted: true,
-            },
-            trx,
-          )
-        dbUpdateSaleTransaction(saleTransaction?.id, { isDeleted: true }, trx)
+        dbDeleteSaleTransaction(saleTransaction, trx)
       })
-      // deleteStockMovementsFromDatabase(sale?.id);
       await dbUpdateSale(id, { isDeleted: true }, trx)
     })
     .then((res) => res)
     .catch((e) => Error(e.message))
+}
+
+export async function dbDeleteSaleTransaction(trans: SaleTransactionObject, db = connection) {
+  console.log('DELEEEETING TRANS', trans)
+  // If transaction is from a vendor account, remove the vendor account payment from db
+  if (trans?.vendorPaymentId)
+    await dbUpdateVendorPayment(
+      trans?.vendorPaymentId,
+      {
+        isDeleted: true,
+      },
+      db,
+    )
+  // If transaction is a gift card, undo all gift card actions
+  if (trans?.giftCardId) {
+    await dbReverseGiftCardTransaction(trans, db)
+  }
+  await dbUpdateSaleTransaction(trans?.id, { isDeleted: true }, db)
+  return true
+}
+
+export async function dbReverseGiftCardTransaction(trans: SaleTransactionObject, db = connection) {
+  if (trans.isRefund) {
+    // If refund, simply invalidate the gift card that was created as the refund
+    await dbUpdateStockItem({ giftCardIsValid: false }, trans?.giftCardId, db)
+  } else {
+    dbGetGiftCard(trans?.giftCardId, db).then(async (giftCardItem) => {
+      const { giftCard = {} } = giftCardItem || {}
+      if (giftCard?.giftCardIsValid) {
+        // If giftcard is still valid, just need to load on the refunded amount
+        const newAmount = giftCard?.giftCardAmount + trans?.amount
+        await dbUpdateStockItem({ giftCardAmount: newAmount }, trans?.giftCardId, db)
+      } else {
+        // If giftcard is invalid, need to see if you can validate it again
+        const newAmount = giftCard?.giftCardRemaining + trans?.giftCardChange + trans?.giftCardTaken
+        await dbUpdateStockItem({ giftCardAmount: newAmount, giftCardIsValid: true }, trans?.giftCardId, db)
+      }
+    })
+  }
 }
 
 async function handleSaveSaleItem(item, sale, prevState, registerId, trx) {
@@ -382,10 +418,8 @@ export function getStockMovementQuantityByAct(quantity, act) {
     : -parseInt(quantity)
 }
 
-async function handleSaveSaleTransaction(trans, sale, trx) {
+async function handleSaveSaleTransaction(trans, sale, db = connection) {
   if (!trans?.id) {
-    // return db
-    //   .transaction(async (trx) => {
     // Transaction is new to sale
     let newSaleTransaction = { ...trans, saleId: sale?.id }
     if (trans?.paymentMethod === PaymentMethodTypes.Account) {
@@ -399,26 +433,39 @@ async function handleSaveSaleTransaction(trans, sale, trx) {
         date: dayjs.utc().format(),
         registerId: trans?.registerId,
       }
-      vendorPaymentId = await dbCreateVendorPayment(vendorPayment, trx)
+      vendorPaymentId = await dbCreateVendorPayment(vendorPayment, db)
       delete trans?.vendor
       newSaleTransaction = { ...trans, vendorPaymentId }
     }
     if (trans?.paymentMethod === PaymentMethodTypes.GiftCard) {
       if (trans?.isRefund) {
         // Gift card is new, create new one
-        let giftCardId = await dbCreateStockItem(trans?.giftCardUpdate, trx)
+        let giftCardId = await dbCreateStockItem(trans?.giftCardUpdate, db)
         newSaleTransaction = { ...newSaleTransaction, giftCardId }
       } else {
         // Update gift card
-        await dbUpdateStockItem(trans?.giftCardUpdate, trans?.giftCardUpdate?.id, trx)
+        await dbUpdateStockItem(trans?.giftCardUpdate, trans?.giftCardUpdate?.id, db)
       }
       delete newSaleTransaction?.giftCardUpdate
     }
-    const id = await dbCreateSaleTransaction(newSaleTransaction, trx)
+    const id = await dbCreateSaleTransaction(newSaleTransaction, db)
     return { ...newSaleTransaction, id }
     // })
     // .then((trans) => trans)
     // .catch((e) => Error(e.message))
+  } else if (trans?.isDeleted) {
+    // Transaction is deleted
+    // Check if it is a newly deleted transaction
+    db('sale_transaction')
+      .select('is_deleted')
+      .where({ id: trans?.id })
+      .first()
+      .then((currTrans) => {
+        if (!currTrans?.is_deleted) {
+          // Transaction is newly deleted
+          dbDeleteSaleTransaction(trans, db)
+        }
+      })
   }
   return trans
 }

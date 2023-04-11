@@ -6,15 +6,18 @@ import CreateLaybySidebar from './create-layby/sidebar'
 import CreateCustomerSidebar from 'features/sell/create-customer/sidebar'
 import { saveCart } from 'lib/api/sale'
 import MidScreenContainer from 'components/container/mid-screen'
-import { Delete, DirectionsCar, DryCleaning } from '@mui/icons-material'
+import { CheckCircleOutline, Delete, DirectionsCar, DryCleaning, Mail, PostAdd } from '@mui/icons-material'
 import { SaleStateTypes } from 'lib/types/sale'
 import { ViewProps } from 'lib/store/types'
 import { useSWRConfig } from 'swr'
 import CreateMailOrder from './create-mail-order/sidebar'
 import Pay from './pay'
+import dayjs from 'dayjs'
+import { useClerk } from 'lib/api/clerk'
 
 const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
   const { cart, resetCart, setCart, openView, closeView, setAlert, openConfirm } = useAppStore()
+  const { clerk } = useClerk()
   const { sale = {}, transactions = [] } = cart || {}
   const router = useRouter()
   const { mutate } = useSWRConfig()
@@ -42,7 +45,7 @@ const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
     clearCart()
   }
 
-  async function clickContinueLayby() {
+  async function clickLayby() {
     if (sale?.customerId) {
       if (sale?.state !== SaleStateTypes.Layby) {
         saveCart({ ...cart, sale: { ...sale, state: SaleStateTypes.Layby } })
@@ -53,6 +56,10 @@ const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
     } else {
       openView(ViewProps.createLayby)
     }
+  }
+
+  function clickAddItems() {
+    router.push('/sell')
   }
 
   async function clickAbortSale() {
@@ -86,20 +93,46 @@ const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
         })
   }
 
+  async function clickCompleteSale() {
+    let completedSale = {
+      ...sale,
+      state: SaleStateTypes.Completed,
+      saleClosedBy: sale?.saleClosedBy || clerk?.id,
+      dateSaleClosed: sale?.dateSaleClosed || dayjs.utc().format(),
+    }
+    await saveCart({ ...cart, sale: completedSale }, sale?.state)
+    router.push('/sell')
+    setAlert({
+      open: true,
+      type: 'success',
+      message: sale?.state === SaleStateTypes.Completed ? 'SALE SAVED' : 'SALE COMPLETED.',
+    })
+  }
+
+  function clickMailOrder() {
+    openView(ViewProps.createMailOrder)
+  }
+
   const inProgressMenuItems = [
+    { text: 'Add More Items', icon: <PostAdd />, onClick: clickAddItems },
     { text: 'Park Sale', icon: <DirectionsCar />, onClick: clickParkSale },
-    { text: 'Start Layby', icon: <DryCleaning />, onClick: () => openView(ViewProps.createLayby) },
+    { text: 'Start Layby', icon: <DryCleaning />, onClick: clickLayby },
+    { text: 'Create Mail Order', icon: <Mail />, onClick: clickMailOrder },
     { text: 'Delete Sale', icon: <Delete />, onClick: clickAbortSale },
   ]
 
   const parkedMenuItems = [
+    { text: 'Add More Items', icon: <PostAdd />, onClick: clickAddItems },
     { text: 'Park Sale Again', icon: <DirectionsCar />, onClick: clickParkSale },
-    { text: 'Start Layby', icon: <DryCleaning />, onClick: () => openView(ViewProps.createLayby) },
+    { text: 'Start Layby', icon: <DryCleaning />, onClick: clickLayby },
+    { text: 'Create Mail Order', icon: <Mail />, onClick: clickMailOrder },
     { text: 'Delete Sale', icon: <Delete />, onClick: clickAbortSale },
   ]
 
   const laybyMenuItems = [
-    { text: 'Continue Layby', icon: <DryCleaning />, onClick: clickContinueLayby },
+    { text: 'Add More Items', icon: <PostAdd />, onClick: clickAddItems },
+    { text: 'Continue Layby', icon: <DryCleaning />, onClick: clickLayby },
+    { text: 'Create Mail Order', icon: <Mail />, onClick: clickMailOrder },
     { text: 'Delete Layby', icon: <Delete />, onClick: clickAbortSale },
   ]
 
@@ -110,6 +143,19 @@ const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
       ? laybyMenuItems
       : inProgressMenuItems
 
+  const defaultAction =
+    totalRemaining === 0
+      ? {
+          label: sale?.state === SaleStateTypes.Completed ? 'SAVE SALE' : 'COMPLETE SALE',
+          onClick: clickCompleteSale,
+          icon: <CheckCircleOutline />,
+        }
+      : sale?.state === SaleStateTypes.Parked
+      ? { label: 'PARK SALE AGAIN', onClick: clickParkSale, icon: <DirectionsCar /> }
+      : sale?.state === SaleStateTypes.Layby
+      ? { label: 'CLOSE LAYBY', onClick: clickLayby, icon: <DryCleaning /> }
+      : null
+
   return (
     <MidScreenContainer
       title={`PAY - ${sale?.id ? `SALE #${sale?.id}` : `NEW SALE`} [${
@@ -117,7 +163,7 @@ const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
       }]`}
       titleClass="bg-brown-dark text-white"
       menuItems={menuItems}
-      showBackButton
+      // showBackButton
       full
       dark
       isLoading={isLoading}
@@ -127,7 +173,7 @@ const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
           <SaleSummary cart={cart} isEditable />
         </div>
         <div className="w-1/3 h-content p-2 flex flex-col justify-between shadow-md">
-          <Pay totalRemaining={totalRemaining} />
+          <Pay totalRemaining={totalRemaining} defaultAction={defaultAction} />
         </div>
       </div>
       <CreateHoldSidebar />

@@ -5,6 +5,7 @@ import { useVendorFromVendorPayment } from 'lib/api/vendor'
 import { useAppStore } from 'lib/store'
 import { PaymentMethodTypes, SaleTransactionObject } from 'lib/types/sale'
 import { GiftCardObject } from 'lib/types/stock'
+import { priceCentsString } from 'lib/utils'
 
 export default function TransactionListItem({
   transaction,
@@ -25,24 +26,28 @@ export default function TransactionListItem({
       }`}
     >
       {isEditable ? (
-        <button
-          onClick={() => {
-            openConfirm({
-              open: true,
-              title: 'Delete Transaction?',
-              message: 'Are you sure you want to delete this transaction?',
-              yesText: 'Yes',
-              noText: 'No',
-              action: () => {
-                deleteCartTransaction(transaction)
-                closeConfirm()
-              },
-            })
-          }}
-          className="border-rounded hover:opacity-50 mr-2"
-        >
-          <Delete />
-        </button>
+        transaction?.isDeleted ? (
+          <div className="w-8" />
+        ) : (
+          <button
+            onClick={() => {
+              openConfirm({
+                open: true,
+                title: 'Delete Transaction?',
+                message: 'Are you sure you want to delete this transaction?',
+                yesText: 'Yes',
+                noText: 'No',
+                action: () => {
+                  deleteCartTransaction(transaction)
+                  closeConfirm()
+                },
+              })
+            }}
+            className="border-rounded hover:opacity-50 mr-2"
+          >
+            <Delete />
+          </button>
+        )
       ) : (
         <div />
       )}
@@ -51,22 +56,20 @@ export default function TransactionListItem({
         {(`${transaction?.paymentMethod}${transaction?.isRefund ? ' REFUND' : ''}` || 'OTHER').toUpperCase()}
       </div>
       <div className="w-1/4">
-        <div className="text-right">
-          ${(transaction?.isRefund ? transaction?.amount / -100 : transaction?.amount / 100 || 0)?.toFixed(2)}
-        </div>
+        <div className="text-right">{priceCentsString(Math.abs(transaction?.amount))}</div>
         <div className="text-right text-xs">
           {transaction?.paymentMethod === PaymentMethodTypes.Cash
             ? transaction?.isRefund
               ? ''
               : transaction?.changeGiven
-              ? `($${(transaction.changeGiven / 100)?.toFixed(2)} CHANGE)`
+              ? `(${priceCentsString(transaction.changeGiven)} CHANGE)`
               : '(NO CHANGE)'
             : transaction?.paymentMethod === PaymentMethodTypes.Account
             ? `[${(vendor?.name || transaction?.vendor?.name || '').toUpperCase()}]`
             : transaction?.paymentMethod === PaymentMethodTypes.GiftCard
             ? transaction?.giftCardTaken
               ? transaction?.changeGiven
-                ? `CARD TAKEN, $${(transaction?.giftCardChange / 100)?.toFixed(2)} CHANGE [${(
+                ? `CARD TAKEN, ${priceCentsString(transaction?.giftCardChange)} CHANGE [${(
                     giftCard?.giftCardCode || ''
                   ).toUpperCase()}]`
                 : `CARD TAKEN [${(giftCard?.giftCardCode || '').toUpperCase()}]`
