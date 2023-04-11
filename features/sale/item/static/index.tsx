@@ -1,18 +1,16 @@
-import { Delete, Edit, EventBusy } from '@mui/icons-material'
+import { Delete, Edit, EventBusy, PointOfSale } from '@mui/icons-material'
 import MidScreenContainer from 'components/container/mid-screen'
-import SaleSummary from 'features/sale-summary'
+import SaleSummary from 'features/sale/item/sale-summary'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
+import { SaleStateTypes } from 'lib/types/sale'
+import { useRouter } from 'next/router'
 import React from 'react'
-import SaleDetailsSidebar from './sale-details-sidebar'
+import SaleDetailsSidebar from '../static/sale-details-sidebar'
 
 const SaleItemScreen = ({ cart }) => {
-  // const { clerk } = useClerk()
-  // const { clerks } = useClerks()
-  // const { cart, setCart, openConfirm } = useAppStore()
-  // const [loadToCartLoading, setLoadToCartLoading] = useState(false)
-  // const [nukeSaleLoading, setNukeSaleLoading] = useState(false)
-  const { openView } = useAppStore()
+  const router = useRouter()
+  const { openView, loadSaleToCart } = useAppStore()
   const { sale = {} } = cart || {}
 
   // TODO make sale info screen for LAYBY and SALES screen that needs to be activated to go to the SELL screen. So only one active sale will be present at a time.
@@ -23,6 +21,9 @@ const SaleItemScreen = ({ cart }) => {
 
   // Functions
   async function loadSale() {
+    loadSaleToCart(cart)
+    router.push('/sell/pay')
+
     // setLoadToCartLoading(true)
     // await loadSaleToCart(cart, setCart, sale, clerk, registerId, customers)
     // setLoadToCartLoading(false)
@@ -56,11 +57,28 @@ const SaleItemScreen = ({ cart }) => {
   //   </button>
   // </div>
 
-  const menuItems = [
+  const completedMenuItems = [
     { text: 'Refund Items', icon: <EventBusy />, onClick: () => openView(ViewProps.returnItemDialog) },
-    { text: 'Edit Sale', icon: <Edit />, onClick: null, adminOnly: true },
+    { text: 'Edit Sale', icon: <Edit />, onClick: loadSale, adminOnly: true },
     { text: 'Delete Sale', icon: <Delete />, onClick: null, adminOnly: true },
   ]
+
+  const parkedMenuItems = [
+    { text: 'Resume Sale', icon: <PointOfSale />, onClick: loadSale },
+    { text: 'Delete Sale', icon: <Delete />, onClick: null, adminOnly: true },
+  ]
+
+  const laybyMenuItems = [
+    { text: 'Load Layby to Cart', icon: <PointOfSale />, onClick: loadSale },
+    { text: 'Delete Layby', icon: <Delete />, onClick: null, adminOnly: true },
+  ]
+
+  const menuItems =
+    sale?.state === SaleStateTypes.Completed
+      ? completedMenuItems
+      : sale?.state === SaleStateTypes.Layby
+      ? laybyMenuItems
+      : parkedMenuItems
 
   return (
     <MidScreenContainer

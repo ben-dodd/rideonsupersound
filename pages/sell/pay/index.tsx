@@ -1,12 +1,12 @@
 import Layout from 'components/layout'
 import { useAppStore } from 'lib/store'
-import Acct from 'features/pay/payment/acct'
-import Card from 'features/pay/payment/card'
-import Gift from 'features/pay/payment/gift'
-import Cash from 'features/pay/payment/cash'
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
-import PayScreen from 'features/pay'
+import PayScreen from 'features/sale/item/edit'
 import { useSaleProperties } from 'lib/hooks/sale'
+import Acct from 'features/sale/item/edit/payment/acct'
+import Card from 'features/sale/item/edit/payment/card'
+import Cash from 'features/sale/item/edit/payment/cash'
+import Gift from 'features/sale/item/edit/payment/gift'
 
 export default function PayPage() {
   const { view, cart } = useAppStore()

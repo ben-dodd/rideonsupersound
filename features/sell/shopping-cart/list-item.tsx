@@ -9,8 +9,6 @@ import { useBasicStockItem, useStockList } from 'lib/api/stock'
 import { priceCentsString } from 'lib/utils'
 import { deleteSale, deleteSaleItem } from 'lib/api/sale'
 import { ViewProps } from 'lib/store/types'
-import { useClerk } from 'lib/api/clerk'
-import { useCurrentRegisterId } from 'lib/api/register'
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material'
 
 // TODO make list items share more components
@@ -18,8 +16,6 @@ import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material'
 export default function SellListItem({ cartItem }: { cartItem: SaleItemObject }) {
   const { cart, openConfirm, setCartItem, setCart, resetCart, closeView, setAlert } = useAppStore()
   const { sale = {}, items = [], transactions = [] } = cart || {}
-  const { clerk } = useClerk()
-  const { registerId } = useCurrentRegisterId()
   const { stockItem } = useBasicStockItem(`${cartItem?.itemId}`)
   const { stockList = [] } = useStockList()
   const stockListItem = stockList.find((stock) => stock?.id === cartItem?.itemId) || {}

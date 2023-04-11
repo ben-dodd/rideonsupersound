@@ -1,11 +1,11 @@
 import { useRouter } from 'next/router'
 import Layout from 'components/layout'
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
-import SaleItemScreen from 'features/sale/item'
+import SaleItemScreen from 'features/sale/item/static'
 import { useSale } from 'lib/api/sale'
 import ErrorScreen from 'components/container/error-screen'
 import Loading from 'components/placeholders/loading'
-import ReturnItemDialog from 'features/pay/return-item-dialog'
+import ReturnItemDialog from 'features/sale/item/static/return-item-dialog'
 import { useAppStore } from 'lib/store'
 
 export default function SaleItemPage() {

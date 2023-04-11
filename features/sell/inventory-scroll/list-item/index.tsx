@@ -13,6 +13,7 @@ import {
   StockPriceObject,
 } from 'lib/types/stock'
 import { useBasicStockItem } from 'lib/api/stock'
+import { useEffect, useState } from 'react'
 
 export default function ListItem({ searchItem }: { searchItem: StockItemSearchObject }) {
   const {
@@ -28,6 +29,8 @@ export default function ListItem({ searchItem }: { searchItem: StockItemSearchOb
   const { items = [] } = cart || {}
   const isInCart: boolean = Boolean(items?.find((cartItem) => cartItem?.itemId === item?.id))
   const itemQuantity = getItemQuantity(stockItem, cart?.items)
+  const [, setIsWaiting] = useState(isSearching)
+  useEffect(() => setIsWaiting(isSearching), [isSearching])
 
   return (
     <div className={`list-item bg-white border pr-2 ${quantities?.inStock < 1 && 'opacity-50'}`}>

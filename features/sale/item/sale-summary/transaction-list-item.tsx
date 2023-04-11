@@ -6,13 +6,17 @@ import { useAppStore } from 'lib/store'
 import { PaymentMethodTypes, SaleTransactionObject } from 'lib/types/sale'
 import { GiftCardObject } from 'lib/types/stock'
 
-export default function TransactionListItem({ transaction }: { transaction: SaleTransactionObject }) {
+export default function TransactionListItem({
+  transaction,
+  isEditable,
+}: {
+  transaction: SaleTransactionObject
+  isEditable: boolean
+}) {
   const { deleteCartTransaction, openConfirm, closeConfirm } = useAppStore()
   const { giftCards } = useGiftCards()
   const { vendor = {} } = useVendorFromVendorPayment(transaction?.vendorPaymentId)
   const giftCard = giftCards?.find((g: GiftCardObject) => g?.id === transaction?.giftCardId)
-
-  console.log(transaction)
 
   return (
     <div
@@ -20,24 +24,28 @@ export default function TransactionListItem({ transaction }: { transaction: Sale
         transaction?.isDeleted ? 'line-through text-gray-400' : transaction?.isRefund ? 'text-red-500' : 'text-blue-500'
       }`}
     >
-      <button
-        onClick={() => {
-          openConfirm({
-            open: true,
-            title: 'Delete Transaction?',
-            message: 'Are you sure you want to delete this transaction?',
-            yesText: 'Yes',
-            noText: 'No',
-            action: () => {
-              deleteCartTransaction(transaction)
-              closeConfirm()
-            },
-          })
-        }}
-        className="border-rounded hover:opacity-50 mr-2"
-      >
-        <Delete />
-      </button>
+      {isEditable ? (
+        <button
+          onClick={() => {
+            openConfirm({
+              open: true,
+              title: 'Delete Transaction?',
+              message: 'Are you sure you want to delete this transaction?',
+              yesText: 'Yes',
+              noText: 'No',
+              action: () => {
+                deleteCartTransaction(transaction)
+                closeConfirm()
+              },
+            })
+          }}
+          className="border-rounded hover:opacity-50 mr-2"
+        >
+          <Delete />
+        </button>
+      ) : (
+        <div />
+      )}
       <div className="w-1/2">{dayjs(transaction?.date).format('D MMMM YYYY, h:mm A')}</div>
       <div className="w-1/4">
         {(`${transaction?.paymentMethod}${transaction?.isRefund ? ' REFUND' : ''}` || 'OTHER').toUpperCase()}

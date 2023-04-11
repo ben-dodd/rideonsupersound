@@ -9,13 +9,13 @@ import CheckCircleOutline from '@mui/icons-material/CheckCircleOutline'
 import ActionButton from 'components/button/action-button'
 import { useSWRConfig } from 'swr'
 
-const Actions = ({ saleObject }) => {
-  const { resetCart, setAlert } = useAppStore()
+const Actions = ({ totalRemaining }) => {
+  const { cart, resetCart, setAlert } = useAppStore()
   const router = useRouter()
   const { mutate } = useSWRConfig()
   const { clerk } = useClerk()
   const [completeSaleLoading, setCompleteSaleLoading] = useState(false)
-  const { sale = {}, props: { totalRemaining = 0 } = {} } = saleObject || {}
+  const { sale = {} } = cart || {}
 
   // TODO should it complete automatically
   async function clickCompleteSale() {
@@ -26,7 +26,7 @@ const Actions = ({ saleObject }) => {
       saleClosedBy: sale?.saleClosedBy || clerk?.id,
       dateSaleClosed: sale?.dateSaleClosed || dayjs.utc().format(),
     }
-    await saveCart({ ...saleObject, sale: completedSale }, sale?.state, mutate)
+    await saveCart({ ...cart, sale: completedSale }, sale?.state)
     resetCart()
     router.push('/sell')
     setCompleteSaleLoading(false)

@@ -10,15 +10,9 @@ export function useSale(saleId) {
   return useData(`sale/${saleId}`, 'sale')
 }
 
-export async function saveCart(cart: CartObject, prevState: string = SaleStateTypes.InProgress, mutate?) {
+export async function saveCart(cart: CartObject, prevState: string = SaleStateTypes.InProgress) {
   console.log('saving cart', cart)
-  return axiosAuth.post(`/api/sale/save`, { cart, prevState }).then((updatedSale) => {
-    if (mutate) {
-      mutate(`/sale/${updatedSale?.id}`, updatedSale)
-      mutate('sale')
-    }
-    return updatedSale
-  })
+  return axiosAuth.post(`/api/sale/save`, { cart, prevState })
 }
 
 export function createSale(sale: any, clerk: ClerkObject) {

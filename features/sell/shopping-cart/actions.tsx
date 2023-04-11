@@ -42,7 +42,6 @@ export default function ShoppingCartActions() {
       type: 'success',
       message: 'SALE PARKED',
     })
-
     resetSearchBar(Pages.sellPage)
     clearCart()
     setSaveSaleLoading(false)

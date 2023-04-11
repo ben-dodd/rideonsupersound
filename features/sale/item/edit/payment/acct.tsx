@@ -10,17 +10,14 @@ import { useCurrentRegisterId } from 'lib/api/register'
 import { useVendorAccounts } from 'lib/api/vendor'
 import { PaymentMethodTypes } from 'lib/types/sale'
 import { formSaleTransaction } from 'lib/functions/pay'
-import { saveCart } from 'lib/api/sale'
-import { useSWRConfig } from 'swr'
 
-export default function Acct({ saleObject }) {
+export default function Acct({ totalRemaining }) {
   const { clerk } = useClerk()
-  const { view, closeView, setAlert } = useAppStore()
-  const { mutate } = useSWRConfig()
+  const { cart, view, closeView, setAlert, addCartTransaction } = useAppStore()
+  const { sale = {} } = cart || {}
   const { registerId } = useCurrentRegisterId()
   const { vendorAccounts, isVendorAccountsLoading } = useVendorAccounts()
   const [vendor, setVendor] = useState(null)
-  const { props: { totalRemaining = 0 } = {}, transactions = [], sale = {} } = saleObject || {}
   const isRefund = totalRemaining < 0
   const [acctPayment, setAcctPayment] = useState(`${Math.abs(totalRemaining)?.toFixed(2)}`)
   useEffect(() => {
@@ -48,10 +45,7 @@ export default function Acct({ saleObject }) {
           clerkId: clerk?.id,
           vendor: vendor?.value,
         })
-        const newTransactions = [...transactions, newTransaction]
-        await saveCart({ ...saleObject, transactions: newTransactions }, saleObject?.sale?.state, mutate)
-        mutate(`vendor/accounts`)
-        // addCartTransaction(transaction)
+        addCartTransaction(newTransaction)
         closeView(ViewProps.acctPaymentDialog)
         setAlert({
           open: true,

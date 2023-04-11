@@ -1,19 +1,19 @@
 import { useAppStore } from 'lib/store'
 import { useRouter } from 'next/router'
 import SaleSummary from '../sale-summary'
-import Pay from './sidebar'
 import CreateHoldSidebar from 'features/sell/create-hold/sidebar'
 import CreateLaybySidebar from './create-layby/sidebar'
 import CreateCustomerSidebar from 'features/sell/create-customer/sidebar'
 import { saveCart } from 'lib/api/sale'
-import CreateMailOrder from './create-mail-order/sidebar'
 import MidScreenContainer from 'components/container/mid-screen'
-import { Clear, DirectionsCar, DryCleaning } from '@mui/icons-material'
+import { Delete, DirectionsCar, DryCleaning } from '@mui/icons-material'
 import { SaleStateTypes } from 'lib/types/sale'
 import { ViewProps } from 'lib/store/types'
 import { useSWRConfig } from 'swr'
+import CreateMailOrder from './create-mail-order/sidebar'
+import Pay from './pay'
 
-const PayScreen = ({ totalRemaining, isLoading }) => {
+const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
   const { cart, resetCart, setCart, openView, closeView, setAlert, openConfirm } = useAppStore()
   const { sale = {}, items = [], transactions = [] } = cart || {}
   const router = useRouter()
@@ -46,7 +46,7 @@ const PayScreen = ({ totalRemaining, isLoading }) => {
     router.push('/sell')
   }
 
-  async function onClickDiscardSale() {
+  async function clickAbortSale() {
     transactions?.filter((transaction) => !transaction?.isDeleted)?.length > 0
       ? openConfirm({
           open: true,
@@ -77,15 +77,35 @@ const PayScreen = ({ totalRemaining, isLoading }) => {
         })
   }
 
-  const menuItems = [
-    { text: 'Park Sale', icon: <DirectionsCar />, onClick: () => clickParkSale() },
+  const inProgressMenuItems = [
+    { text: 'Park Sale', icon: <DirectionsCar />, onClick: clickParkSale },
     { text: 'Start Layby', icon: <DryCleaning />, onClick: () => openView(ViewProps.createLayby) },
-    { text: 'Abort Sale', icon: <Clear />, onClick: null },
+    { text: 'Delete Sale', icon: <Delete />, onClick: clickAbortSale },
   ]
+
+  const parkedMenuItems = [
+    { text: 'Park Sale Again', icon: <DirectionsCar />, onClick: clickParkSale },
+    { text: 'Start Layby', icon: <DryCleaning />, onClick: () => openView(ViewProps.createLayby) },
+    { text: 'Delete Sale', icon: <Delete />, onClick: clickAbortSale },
+  ]
+
+  const laybyMenuItems = [
+    { text: 'Continue Layby', icon: <DryCleaning />, onClick: () => openView(ViewProps.createLayby) },
+    { text: 'Delete Layby', icon: <Delete />, onClick: clickAbortSale },
+  ]
+
+  const menuItems =
+    sale?.state === SaleStateTypes.Parked
+      ? parkedMenuItems
+      : sale?.state === SaleStateTypes.Layby
+      ? laybyMenuItems
+      : inProgressMenuItems
 
   return (
     <MidScreenContainer
-      title={`PAY`}
+      title={`PAY - ${sale?.id ? `SALE #${sale?.id}` : `NEW SALE`} [${
+        sale?.state ? sale?.state.toUpperCase() : 'IN PROGRESS'
+      }]`}
       titleClass="bg-brown-dark text-white"
       menuItems={menuItems}
       showBackButton
@@ -98,18 +118,18 @@ const PayScreen = ({ totalRemaining, isLoading }) => {
           <SaleSummary cart={cart} />
         </div>
         <div className="w-1/3 h-content p-2 flex flex-col justify-between shadow-md">
-          <Pay saleObject={saleObject} />
+          <Pay totalRemaining={totalRemaining} />
         </div>
       </div>
       <CreateHoldSidebar />
-      <CreateLaybySidebar saleObject={saleObject} />
+      <CreateLaybySidebar />
       <CreateMailOrder />
       <CreateCustomerSidebar />
     </MidScreenContainer>
   )
 }
 
-export default PayScreen
+export default SaleEditItemScreen
 
 // TODO add returns to sale items
 // TODO refund dialog like PAY, refund with store credit, cash or card

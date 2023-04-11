@@ -12,13 +12,13 @@ import dayjs from 'dayjs'
 import { useRouter } from 'next/router'
 import { useSWRConfig } from 'swr'
 
-export default function CreateLaybySidebar({ saleObject }) {
+export default function CreateLaybySidebar() {
   const { cart, view, setAlert, resetCart, openView, closeView, setCreateableCustomerName } = useAppStore()
   const { sale = {} } = cart || {}
   const { clerk } = useClerk()
   const { customers } = useCustomers()
   const [submitting, setSubmitting] = useState(false)
-  const [customerId, setCustomerId] = useState(saleObject?.sale?.customerId || null)
+  const [customerId, setCustomerId] = useState(sale?.customerId || null)
   const router = useRouter()
   const { mutate } = useSWRConfig()
 
@@ -42,7 +42,7 @@ export default function CreateLaybySidebar({ saleObject }) {
         message: 'LAYBY STARTED.',
       })
     }
-    await saveCart({ ...cart, sale: laybySale }, sale?.state, mutate)
+    await saveCart({ ...cart, sale: laybySale }, sale?.state)
     resetCart()
     router.push('/sell')
   }

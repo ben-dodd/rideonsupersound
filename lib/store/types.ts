@@ -103,6 +103,7 @@ export interface StoreState {
   closeAlert: () => void
   setCreateableCustomerName: (name: string) => void
   setCart: (update: any) => void
+  loadSaleToCartById: (saleId: number) => void
   loadSaleToCart: (sale: SaleObject) => void
   mutateCart: (mutates?: string[]) => void
   addCartTransaction: (transaction: SaleTransactionObject) => void

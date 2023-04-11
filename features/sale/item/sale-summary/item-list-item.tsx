@@ -2,7 +2,7 @@ import { useStockItem } from 'lib/api/stock'
 import { getImageSrc, getItemDisplayName, getItemSku } from 'lib/functions/displayInventory'
 import { SaleItemObject } from 'lib/types/sale'
 import { MouseEventHandler } from 'react'
-import { writeCartItemPriceBreakdown } from '../../lib/functions/sell'
+import { writeCartItemPriceBreakdown } from '../../../../lib/functions/sell'
 
 // Components
 

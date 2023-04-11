@@ -6,12 +6,12 @@ import { useSalesForRange } from 'lib/hooks/sales'
 import { useAppStore } from 'lib/store'
 import { Pages } from 'lib/store/types'
 import { useState } from 'react'
-import SalesCalendarView from './calendar-view'
-import SalesListView from './calendar-view'
+import SalesCalendarView from './views/calendar-view'
+import SalesListView from './views/calendar-view'
 import HoldsList from './holds-list'
-import LaybysList from './laybys'
-import ParkedSalesList from './parked-sales'
-import SalesList from './sales-list'
+import LaybysList from './views/laybys'
+import ParkedSalesList from './views/parked-sales'
+import SalesList from './views/sales-list'
 
 const SalesScreen = () => {
   const { salesPage, holdsPage, setPage } = useAppStore()

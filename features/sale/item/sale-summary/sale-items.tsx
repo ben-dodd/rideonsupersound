@@ -3,14 +3,13 @@ import { SaleItemObject } from 'lib/types/sale'
 import { useRouter } from 'next/router'
 import ItemListItem from './item-list-item'
 
-const SaleItems = ({ items }) => {
+const SaleItems = ({ items, isEditable }) => {
   const router = useRouter()
-  const isSell = router.pathname.includes('/sell')
   return (
     <>
       {items?.length > 0 ? (
         items?.map((saleItem: SaleItemObject) =>
-          isSell ? (
+          isEditable ? (
             <SellListItem key={saleItem?.itemId} cartItem={saleItem} />
           ) : (
             <ItemListItem

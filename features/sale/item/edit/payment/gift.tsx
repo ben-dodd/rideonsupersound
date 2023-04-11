@@ -12,14 +12,11 @@ import { useGiftCards } from 'lib/api/stock'
 import { GiftCardObject } from 'lib/types/stock'
 import { PaymentMethodTypes } from 'lib/types/sale'
 import { formSaleTransaction } from 'lib/functions/pay'
-import { useSWRConfig } from 'swr'
-import { saveCart } from 'lib/api/sale'
 
-export default function Gift({ saleObject }) {
+export default function Gift({ totalRemaining }) {
   const { clerk } = useClerk()
-  const { view, closeView, setAlert } = useAppStore()
-  const { mutate } = useSWRConfig()
-  const { props: { totalRemaining = 0 } = {}, transactions = [], sale = {} } = saleObject || {}
+  const { cart, view, closeView, setAlert, addCartTransaction } = useAppStore()
+  const { sale = {} } = cart || {}
   const { giftCards } = useGiftCards()
   const { registerId } = useCurrentRegisterId()
 
@@ -62,9 +59,7 @@ export default function Gift({ saleObject }) {
           giftCard,
           newGiftCardCode,
         })
-        const newTransactions = [...transactions, newTransaction]
-        await saveCart({ ...saleObject, transactions: newTransactions }, saleObject?.sale?.state, mutate)
-        mutate(`stock/giftcard`)
+        addCartTransaction(newTransaction)
         closeView(ViewProps.giftPaymentDialog)
         setAlert({
           open: true,

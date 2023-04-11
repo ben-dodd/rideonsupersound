@@ -6,7 +6,7 @@ import { v4 as uuid } from 'uuid'
 import { useSetWeatherToCart } from 'lib/api/external'
 import { saveCart } from 'lib/api/sale'
 import { mutate } from 'swr'
-import { PaymentMethodTypes } from 'lib/types/sale'
+import { PaymentMethodTypes, SaleStateTypes } from 'lib/types/sale'
 import { useSetRegisterId } from 'lib/api/register'
 import { axiosAuth } from 'lib/api'
 import { mysql2js } from 'lib/database/utils/helpers'
@@ -141,8 +141,8 @@ export const useAppStore = createSelectors(
           Object.entries(update).forEach(([key, value]) => (draft.cart[key] = value))
         }),
       ),
-    loadSaleToCart: (saleId) => {
-      console.log('LOading sale to cart', saleId)
+    loadSaleToCartById: (saleId) => {
+      console.log('Loading sale to cart', saleId)
       return axiosAuth.get(`api/sale/${saleId}`).then((newCart) => {
         console.log('got sale', mysql2js(newCart))
         return set(
@@ -151,6 +151,23 @@ export const useAppStore = createSelectors(
           }),
         )
       })
+    },
+    loadSaleToCart: (newCart) => {
+      const alert = { open: true, type: 'success', message: 'SALE LOADED' }
+      const oldCart = get().cart
+      console.log(oldCart)
+      console.log(newCart)
+      if (oldCart?.items?.length > 0) {
+        saveCart({ ...oldCart, sale: { ...oldCart?.sale, state: SaleStateTypes.Parked } }, oldCart?.sale?.state)
+        alert.type = 'warning'
+        alert.message = 'SALE LOADED. PREVIOUS CART HAS BEEN PARKED.'
+      }
+      return set(
+        produce((draft) => {
+          draft.cart = newCart
+          draft.alert = alert
+        }),
+      )
     },
     mutateCart: async (mutates = []) => {
       const newCart = await saveCart(get().cart, get().cart?.sale?.state)
@@ -168,7 +185,12 @@ export const useAppStore = createSelectors(
           draft.cart.transactions.push(transaction)
         }),
       )
-      const mutates = transaction?.paymentMethod === PaymentMethodTypes.GiftCard ? [`stock/giftcard`] : []
+      const mutates =
+        transaction?.paymentMethod === PaymentMethodTypes.GiftCard
+          ? [`stock/giftcard`]
+          : transaction?.paymentMethod === PaymentMethodTypes.Account
+          ? [`vendor/accounts`]
+          : []
       get().mutateCart(mutates)
     },
     deleteCartTransaction: (transaction) => {
