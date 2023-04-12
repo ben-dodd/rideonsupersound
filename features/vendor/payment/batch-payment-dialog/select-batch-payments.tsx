@@ -8,30 +8,30 @@ import { useState } from 'react'
 import { checkDefaultChecked, modulusCheck } from 'lib/functions/payment'
 import { priceCentsString } from 'lib/utils'
 import { useRouter } from 'next/router'
+import SearchInput from 'components/inputs/search-input'
 
 export default function SelectBatchPayments({ vendorList, setVendorList }) {
   const [checked, setChecked] = useState(true)
   const totalPay = vendorList?.reduce((prev, v) => (v?.isChecked ? parseFloat(v?.payAmount) : 0) + prev, 0)
   const vendorNum = vendorList?.filter((v) => v?.isChecked)?.length
   const router = useRouter()
+  const [search, setSearch] = useState('')
 
   return (
     <div>
       <div className="flex justify-between">
         <div className="flex">
-          <img width="80" src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/KiwiBank.png`} alt={'KiwiBank'} />
-          {/* <TextField
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        /> */}
+          <img width="60" src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/KiwiBank.png`} alt={'KiwiBank'} />
+          <div className="mx-2 my-auto h-12 w-full">
+            <SearchInput searchValue={search} handleSearch={(e) => setSearch(e?.target?.value)} />
+          </div>
           {/* <button
-          className={`py-1 px-2 border border-black rounded-xl mt-2${
-            selectOwed ? " bg-tertiary-light" : ""
-          }`}
+          className={`py-1 px-2 border border-black rounded-xl mt-2 bg-tertiary-light
+          `}
           onClick={() =>
             setVendorList(
               vendorList?.map((v) =>
-                v?.totalOwing > 2000 ? { ...v, is_checked: true } : v
+                v?.totalOwing > 2000 ? { ...v, isChecked: true } : v
               )
             )
           }
@@ -39,7 +39,7 @@ export default function SelectBatchPayments({ vendorList, setVendorList }) {
           Select all owed more than $20
         </button> */}
         </div>
-        <div className="text-red-400 text-2xl font-bold text-right">
+        <div className="my-auto text-red-400 text-2xl font-bold text-right">
           {vendorList?.filter((v) => isNaN(parseFloat(v?.payAmount)))?.length > 0
             ? `CHECK PAY ENTRIES`
             : `PAY $${totalPay.toFixed(2)}\nto ${vendorNum} VENDORS`}
@@ -81,88 +81,90 @@ export default function SelectBatchPayments({ vendorList, setVendorList }) {
           <div className="w-2/12">AMOUNT TO PAY</div>
         </div>
         <div className="h-dialog overflow-y-scroll">
-          {vendorList?.map((v) => (
-            <div
-              key={v?.id}
-              className={`flex py-4 px-2 w-full items-center border-b border-t ${
-                v?.isChecked ? 'bg-yellow-100' : v?.totalOwing <= 0 ? 'bg-gray-100' : ''
-              }`}
-            >
-              <div className="w-2/12 flex">
-                <input
-                  type="checkbox"
-                  // disabled={v?.totalOwing <= 0}
-                  className="cursor-pointer"
-                  checked={v?.isChecked}
-                  onChange={(e) =>
-                    setVendorList(
-                      vendorList?.map((vendor) =>
-                        vendor?.id === v?.id ? { ...vendor, isChecked: e.target.checked } : vendor,
-                      ),
-                    )
-                  }
-                />
-                <div
-                  className="pl-4 link-blue"
-                  onClick={() => router.push(`/vendors/${v?.id}`)}
-                >{`[${v?.id}] ${v?.name}`}</div>
-              </div>
-              <div className="w-1/12">{priceCentsString(v?.totalSell)}</div>
-              <div className={`w-1/12${v?.totalOwing < 0 ? ' text-red-500' : ''}`}>{`${
-                v?.totalOwing < 0 ? '(' : ''
-              }${priceCentsString(Math.abs(v?.totalOwing || 0))}${v?.totalOwing < 0 ? ')' : ''}`}</div>
-              <div className="w-2/12">{v?.lastSold ? dayjs(v?.lastSold).format('D MMMM YYYY') : 'NO SALES'}</div>
-              <div className="w-2/12">{v?.lastPaid ? dayjs(v?.lastPaid).format('D MMMM YYYY') : 'NEVER PAID'}</div>
-              <div className="w-2/12">
-                {v?.lastContacted ? dayjs(v?.lastContacted).format('D MMMM YYYY') : 'NEVER CONTACTED'}
-              </div>
-              <div className="w-1/12 flex">
-                <TextField
-                  // disabled={v?.totalOwing <= 0 || !v?.is_checked}
-                  // disabled={!v?.is_checked}
-                  error={isNaN(parseFloat(v?.payAmount))}
-                  startAdornment={'$'}
-                  value={v?.payAmount || ''}
-                  onChange={(e) =>
-                    setVendorList(
-                      vendorList?.map((vendor) =>
-                        vendor?.id === v?.id ? { ...vendor, payAmount: e.target.value } : vendor,
-                      ),
-                    )
-                  }
-                />
-              </div>
-              <div className="w-1/12 flex">
-                {v?.storeCreditOnly ? (
-                  <div className="text-blue-500 pl-2">
-                    <Tooltip title="Store Credit Only">
-                      <StoreCreditOnlyIcon />
-                    </Tooltip>
-                  </div>
-                ) : !modulusCheck(v?.bankAccountNumber) ? (
-                  <Tooltip title={`${v?.bankAccountNumber ? 'Invalid' : 'Missing'} Bank Account Number`}>
-                    <div className={`${v?.bankAccountNumber ? 'text-orange-500' : 'text-red-500'} pl-2 flex`}>
-                      {/* {v?.bank_account_number
+          {vendorList
+            ?.filter((v) => search === '' || v?.name?.toLowerCase()?.includes(search?.toLowerCase()))
+            ?.map((v) => (
+              <div
+                key={v?.id}
+                className={`flex py-4 px-2 w-full items-center border-b border-t ${
+                  v?.isChecked ? 'bg-yellow-100' : v?.totalOwing <= 0 ? 'bg-gray-100' : ''
+                }`}
+              >
+                <div className="w-2/12 flex">
+                  <input
+                    type="checkbox"
+                    // disabled={v?.totalOwing <= 0}
+                    className="cursor-pointer"
+                    checked={v?.isChecked}
+                    onChange={(e) =>
+                      setVendorList(
+                        vendorList?.map((vendor) =>
+                          vendor?.id === v?.id ? { ...vendor, isChecked: e.target.checked } : vendor,
+                        ),
+                      )
+                    }
+                  />
+                  <div
+                    className="pl-4 link-blue"
+                    onClick={() => router.push(`/vendors/${v?.id}`)}
+                  >{`[${v?.id}] ${v?.name}`}</div>
+                </div>
+                <div className="w-1/12">{priceCentsString(v?.totalSell)}</div>
+                <div className={`w-1/12${v?.totalOwing < 0 ? ' text-red-500' : ''}`}>{`${
+                  v?.totalOwing < 0 ? '(' : ''
+                }${priceCentsString(Math.abs(v?.totalOwing || 0))}${v?.totalOwing < 0 ? ')' : ''}`}</div>
+                <div className="w-2/12">{v?.lastSold ? dayjs(v?.lastSold).format('D MMMM YYYY') : 'NO SALES'}</div>
+                <div className="w-2/12">{v?.lastPaid ? dayjs(v?.lastPaid).format('D MMMM YYYY') : 'NEVER PAID'}</div>
+                <div className="w-2/12">
+                  {v?.lastContacted ? dayjs(v?.lastContacted).format('D MMMM YYYY') : 'NEVER CONTACTED'}
+                </div>
+                <div className="w-1/12 flex">
+                  <TextField
+                    // disabled={v?.totalOwing <= 0 || !v?.is_checked}
+                    // disabled={!v?.is_checked}
+                    error={isNaN(parseFloat(v?.payAmount))}
+                    startAdornment={'$'}
+                    value={v?.payAmount || ''}
+                    onChange={(e) =>
+                      setVendorList(
+                        vendorList?.map((vendor) =>
+                          vendor?.id === v?.id ? { ...vendor, payAmount: e.target.value } : vendor,
+                        ),
+                      )
+                    }
+                  />
+                </div>
+                <div className="w-1/12 flex">
+                  {v?.storeCreditOnly ? (
+                    <div className="text-blue-500 pl-2">
+                      <Tooltip title="Store Credit Only">
+                        <StoreCreditOnlyIcon />
+                      </Tooltip>
+                    </div>
+                  ) : !modulusCheck(v?.bankAccountNumber) ? (
+                    <Tooltip title={`${v?.bankAccountNumber ? 'Invalid' : 'Missing'} Bank Account Number`}>
+                      <div className={`${v?.bankAccountNumber ? 'text-orange-500' : 'text-red-500'} pl-2 flex`}>
+                        {/* {v?.bank_account_number
                       ? v?.bank_account_number
                       : "NO BANK ACCOUNT NUMBER"} */}
-                      <NoBankDetailsIcon />
-                    </div>
-                  </Tooltip>
-                ) : (
-                  <div />
-                )}
-                {v?.hasNegativeQuantityItems ? (
-                  <Tooltip title="Vendor has negative quantity items. Please check!">
-                    <div className="text-purple-500 pl-2">
-                      <QuantityCheckIcon />
-                    </div>
-                  </Tooltip>
-                ) : (
-                  <div />
-                )}
+                        <NoBankDetailsIcon />
+                      </div>
+                    </Tooltip>
+                  ) : (
+                    <div />
+                  )}
+                  {v?.hasNegativeQuantityItems ? (
+                    <Tooltip title="Vendor has negative quantity items. Please check!">
+                      <div className="text-purple-500 pl-2">
+                        <QuantityCheckIcon />
+                      </div>
+                    </Tooltip>
+                  ) : (
+                    <div />
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
     </div>
