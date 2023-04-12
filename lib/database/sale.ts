@@ -226,10 +226,10 @@ export function dbUpdateSaleTransaction(id, update, db = connection) {
 }
 
 export async function dbSaveCart(cart, prevState, db = connection) {
-  console.log('DB SAVE CART CALLLLLLLED!')
+  // console.log('DB SAVE CART CALLLLLLLED!')
   return db
     .transaction(async (trx) => {
-      console.log('Beginning transaction')
+      // console.log('Beginning transaction')
       const { sale = {}, items = [], transactions = [], registerId = null } = cart || {}
       const newSale = {
         ...sale,
@@ -237,14 +237,14 @@ export async function dbSaveCart(cart, prevState, db = connection) {
       }
 
       if (newSale?.id) {
-        console.log('Updating sale:', newSale.id)
+        // console.log('Updating sale:', newSale.id)
         await dbUpdateSale(newSale?.id, newSale, trx)
       } else {
-        console.log('Creating new sale')
+        // console.log('Creating new sale')
         newSale.id = await dbCreateSale(newSale, trx)
       }
       if (sale?.isMailOrder && sale?.state === SaleStateTypes.Completed) {
-        console.log('Creating mail order job')
+        // console.log('Creating mail order job')
         const customer = await dbGetCustomer(sale?.customerId, trx)
         const mailOrderJob = {
           description: `Post Sale ${sale?.id} (${sale?.itemList}) to ${`${customer?.name}\n` || ''}${
@@ -261,27 +261,27 @@ export async function dbSaveCart(cart, prevState, db = connection) {
       const promises = []
 
       for (const item of items) {
-        console.log('Handling sale item:', item.id)
+        // console.log('Handling sale item:', item.id)
         promises.push(handleSaveSaleItem(item, newSale, prevState, registerId, trx))
       }
 
-      console.log('Handling transactions:', transactions)
+      // console.log('Handling transactions:', transactions)
 
       for (const trans of transactions) {
-        console.log('Handling new trans:', trans)
+        // console.log('Handling new trans:', trans)
         promises.push(handleSaveSaleTransaction(trans, newSale, trx))
       }
 
-      console.log('Getting new sale:', newSale?.id)
+      // console.log('Getting new sale:', newSale?.id)
 
       await Promise.all(promises).catch((e) => console.error(e.message)) // catch any unhandled promise rejections
 
-      console.log('All promises waited for')
+      // console.log('All promises waited for')
 
       return dbGetSale(newSale?.id, trx)
     })
     .then((cart) => {
-      console.log('Transaction succeeded')
+      // console.log('Transaction succeeded')
       return cart
     })
     .catch((e) => {
@@ -345,7 +345,8 @@ export async function dbReverseGiftCardTransaction(trans: SaleTransactionObject,
     await dbUpdateStockItem({ giftCardIsValid: false }, trans?.giftCardId, db)
   } else {
     dbGetGiftCard(trans?.giftCardId, db).then(async (giftCardItem) => {
-      const { giftCard = {} } = giftCardItem || {}
+      const { giftCard = {} } = mysql2js(giftCardItem) || {}
+      console.log('Gift card item is', giftCardItem)
       if (giftCard?.giftCardIsValid) {
         // If giftcard is still valid, just need to load on the refunded amount
         const newAmount = giftCard?.giftCardAmount + trans?.amount

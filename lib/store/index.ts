@@ -10,6 +10,7 @@ import { PaymentMethodTypes, SaleStateTypes } from 'lib/types/sale'
 import { useSetRegisterId } from 'lib/api/register'
 import { axiosAuth } from 'lib/api'
 import { mysql2js } from 'lib/database/utils/helpers'
+import { debounce } from 'lodash'
 
 type WithSelectors<S> = S extends { getState: () => infer T } ? S & { use: { [K in keyof T]: () => T[K] } } : never
 
@@ -179,16 +180,20 @@ export const useAppStore = createSelectors(
         }),
       )
     },
-    mutateCart: async (prevState, mutates = []) => {
-      const newCart = await saveCart(get().cart, prevState)
-      mutate(`sales/${get().cart?.sale?.id}`)
-      mutates.forEach((key) => mutate(key))
-      console.log('new cart is', newCart)
-      set(
-        produce((draft) => {
-          draft.cart = newCart
-        }),
-      )
+    mutateCart: (prevState, mutates = []) => {
+      const performMutation = async () => {
+        const newCart = await saveCart(get().cart, prevState)
+        // mutate(`sales/${get().cart?.sale?.id}`)
+        mutates.forEach((key) => mutate(key))
+        set(
+          produce((draft) => {
+            draft.cart = newCart
+          }),
+        )
+      }
+      debounce(() => {
+        performMutation()
+      }, 5000)
     },
     addCartTransaction: (transaction) => {
       const prevState = get().cart?.sale?.state

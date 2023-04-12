@@ -21,7 +21,6 @@ const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
   const { sale = {}, transactions = [] } = cart || {}
   const router = useRouter()
   const { mutate } = useSWRConfig()
-  console.log('cart for sale is', cart)
 
   function clearCart() {
     resetCart()
