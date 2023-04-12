@@ -54,7 +54,12 @@ const GiftCardSidebar = () => {
               ) : (
                 <div>
                   {saleTransactions?.map((trans) => (
-                    <div key={trans?.id} className="flex justify-between items-center border-b">
+                    <div
+                      key={trans?.id}
+                      className={`flex justify-between items-center border-b ${
+                        trans?.isDeleted ? 'line-through text-gray-400' : trans?.isRefund ? 'text-red-500' : ''
+                      }`}
+                    >
                       <div className="flex">
                         <div>{`${dayjs(trans?.date).format('DD/MM/YYYY')}`}</div>
                         <Link

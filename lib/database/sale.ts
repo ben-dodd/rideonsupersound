@@ -226,10 +226,10 @@ export function dbUpdateSaleTransaction(id, update, db = connection) {
 }
 
 export async function dbSaveCart(cart, prevState, db = connection) {
-  // console.log('DB SAVE CART CALLLLLLLED!')
+  console.log('DB SAVE CART CALLED!')
   return db
     .transaction(async (trx) => {
-      // console.log('Beginning transaction')
+      console.log('Beginning transaction')
       const { sale = {}, items = [], transactions = [], registerId = null } = cart || {}
       const newSale = {
         ...sale,
@@ -237,14 +237,14 @@ export async function dbSaveCart(cart, prevState, db = connection) {
       }
 
       if (newSale?.id) {
-        // console.log('Updating sale:', newSale.id)
+        console.log('Updating sale:', newSale.id)
         await dbUpdateSale(newSale?.id, newSale, trx)
       } else {
-        // console.log('Creating new sale')
+        console.log('Creating new sale')
         newSale.id = await dbCreateSale(newSale, trx)
       }
       if (sale?.isMailOrder && sale?.state === SaleStateTypes.Completed) {
-        // console.log('Creating mail order job')
+        console.log('Creating mail order job')
         const customer = await dbGetCustomer(sale?.customerId, trx)
         const mailOrderJob = {
           description: `Post Sale ${sale?.id} (${sale?.itemList}) to ${`${customer?.name}\n` || ''}${
@@ -261,33 +261,74 @@ export async function dbSaveCart(cart, prevState, db = connection) {
       const promises = []
 
       for (const item of items) {
-        // console.log('Handling sale item:', item.id)
+        console.log('Handling sale item:', item.id)
         promises.push(handleSaveSaleItem(item, newSale, prevState, registerId, trx))
       }
 
-      // console.log('Handling transactions:', transactions)
+      console.log('Handling transactions')
 
       for (const trans of transactions) {
-        // console.log('Handling new trans:', trans)
+        console.log('Handling new trans')
         promises.push(handleSaveSaleTransaction(trans, newSale, trx))
       }
 
-      // console.log('Getting new sale:', newSale?.id)
+      console.log('Getting new sale:', newSale?.id)
 
       await Promise.all(promises).catch((e) => console.error(e.message)) // catch any unhandled promise rejections
 
-      // console.log('All promises waited for')
+      console.log('All promises waited for')
 
       return dbGetSale(newSale?.id, trx)
     })
     .then((cart) => {
-      // console.log('Transaction succeeded')
+      console.log('Transaction succeeded')
       return cart
     })
     .catch((e) => {
       console.error('Transaction failed:', e.message)
       return Error(e.message)
     })
+}
+
+export async function dbDeleteSaleTransaction(trans: SaleTransactionObject, db = connection) {
+  // If transaction is from a vendor account, remove the vendor account payment from db
+  if (trans?.vendorPaymentId) {
+    console.log('deleting vendor payment')
+    await dbUpdateVendorPayment(
+      trans?.vendorPaymentId,
+      {
+        isDeleted: true,
+      },
+      db,
+    )
+  }
+  // If transaction is a gift card, undo all gift card actions
+  if (trans?.giftCardId) {
+    console.log('reversing gift card transaction')
+    await dbReverseGiftCardTransaction(trans, db)
+  }
+  console.log('updating sale transaction')
+  await dbUpdateSaleTransaction(trans?.id, { isDeleted: true }, db)
+  return true
+}
+
+export async function dbReverseGiftCardTransaction(trans: SaleTransactionObject, db = connection) {
+  if (trans.isRefund) {
+    console.log('reverse gift card that was a refund')
+    // If refund, simply invalidate the gift card that was created as the refund
+    await dbUpdateStockItem({ giftCardIsValid: false }, trans?.giftCardId, db)
+  } else {
+    console.log('reverse normalgift card transaction')
+    await dbGetGiftCard(trans?.giftCardId, db).then(async (giftCardItem) => {
+      console.log('got giftcard')
+      const { giftCard = {} } = mysql2js(giftCardItem) || {}
+      console.log('Gift card item is', giftCard)
+      console.log('Trans is', trans)
+      const newAmount = (giftCard?.giftCardRemaining || 0) + (trans?.giftCardChange || 0) + (trans?.amount || 0)
+      console.log(newAmount)
+      await dbUpdateStockItem({ giftCardRemaining: newAmount, giftCardIsValid: true }, trans?.giftCardId, db)
+    })
+  }
 }
 
 export async function dbDeleteSale(id, db = connection) {
@@ -319,54 +360,6 @@ export async function dbDeleteSale(id, db = connection) {
     })
     .then((res) => res)
     .catch((e) => Error(e.message))
-}
-
-export async function dbDeleteSaleTransaction(trans: SaleTransactionObject, db = connection) {
-  // If transaction is from a vendor account, remove the vendor account payment from db
-  if (trans?.vendorPaymentId)
-    await dbUpdateVendorPayment(
-      trans?.vendorPaymentId,
-      {
-        isDeleted: true,
-      },
-      db,
-    )
-  // If transaction is a gift card, undo all gift card actions
-  if (trans?.giftCardId) {
-    await dbReverseGiftCardTransaction(trans, db)
-  }
-  await dbUpdateSaleTransaction(trans?.id, { isDeleted: true }, db)
-  return true
-}
-
-export async function dbReverseGiftCardTransaction(trans: SaleTransactionObject, db = connection) {
-  if (trans.isRefund) {
-    // If refund, simply invalidate the gift card that was created as the refund
-    await dbUpdateStockItem({ giftCardIsValid: false }, trans?.giftCardId, db)
-  } else {
-    dbGetGiftCard(trans?.giftCardId, db).then(async (giftCardItem) => {
-      const { giftCard = {} } = mysql2js(giftCardItem) || {}
-      console.log('Gift card item is', giftCardItem)
-      if (giftCard?.giftCardIsValid) {
-        // If giftcard is still valid, just need to load on the refunded amount
-        const newAmount = giftCard?.giftCardAmount + trans?.amount
-        await dbUpdateStockItem({ giftCardAmount: newAmount }, trans?.giftCardId, db)
-      } else {
-        // If giftcard is invalid, need to see if you can validate it again
-        console.log(
-          'new gift card amount =',
-          giftCard.giftCardRemaining,
-          ' + ',
-          trans?.giftCardChange,
-          ' + ',
-          trans?.amount,
-        )
-        const newAmount = giftCard?.giftCardRemaining + trans?.giftCardChange + trans?.amount
-        console.log(newAmount)
-        await dbUpdateStockItem({ giftCardAmount: newAmount, giftCardIsValid: true }, trans?.giftCardId, db)
-      }
-    })
-  }
 }
 
 async function handleSaveSaleItem(item, sale, prevState, registerId, trx) {
@@ -452,6 +445,7 @@ async function handleSaveSaleTransaction(trans, sale, db = connection) {
     // Transaction is new to sale
     let newSaleTransaction = { ...trans, saleId: sale?.id }
     if (trans?.paymentMethod === PaymentMethodTypes.Account) {
+      console.log('Add account payment as a store payment')
       // Add account payment as a store payment to the vendor
       let vendorPaymentId = null
       const vendorPayment = {
@@ -468,15 +462,18 @@ async function handleSaveSaleTransaction(trans, sale, db = connection) {
     }
     if (trans?.paymentMethod === PaymentMethodTypes.GiftCard) {
       if (trans?.isRefund) {
+        console.log('Gift card is new, create new one')
         // Gift card is new, create new one
         let giftCardId = await dbCreateStockItem(trans?.giftCardUpdate, db)
         newSaleTransaction = { ...newSaleTransaction, giftCardId }
       } else {
         // Update gift card
+        console.log('update gift card')
         await dbUpdateStockItem(trans?.giftCardUpdate, trans?.giftCardUpdate?.id, db)
       }
       delete newSaleTransaction?.giftCardUpdate
     }
+    console.log('creating sale transaction')
     const id = await dbCreateSaleTransaction(newSaleTransaction, db)
     return { ...newSaleTransaction, id }
     // })
@@ -485,14 +482,18 @@ async function handleSaveSaleTransaction(trans, sale, db = connection) {
   } else if (trans?.isDeleted) {
     // Transaction is deleted
     // Check if it is a newly deleted transaction
-    db('sale_transaction')
+    console.log('check if trans is newly deleted')
+    await db('sale_transaction')
       .select('is_deleted')
       .where({ id: trans?.id })
       .first()
-      .then((currTrans) => {
+      .then(async (currTrans) => {
         if (!currTrans?.is_deleted) {
           // Transaction is newly deleted
-          dbDeleteSaleTransaction(trans, db)
+          console.log('transaction is newly deleted')
+          await dbDeleteSaleTransaction(trans, db)
+        } else {
+          console.log('transaction is not newly deleted')
         }
       })
   }
@@ -516,6 +517,7 @@ export function dbGetSaleTransactions(db = connection) {
       `sale_transaction.gift_card_change`,
       `sale_transaction.register_id`,
       `sale_transaction.is_refund`,
+      `sale_transaction.is_deleted`,
       `sale.item_list`,
       `sale.total_price`,
       `sale.store_cut`,
