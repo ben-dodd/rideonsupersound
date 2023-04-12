@@ -9,6 +9,7 @@ import { useBasicStockItem, useStockList } from 'lib/api/stock'
 import { priceCentsString } from 'lib/utils'
 import { deleteSaleItem } from 'lib/api/sale'
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material'
+import { debounce } from 'lodash'
 
 export default function EditSaleItem({ cartItem }: { cartItem: SaleItemObject }) {
   const { cart, openConfirm, setCartItem, setCart, setAlert } = useAppStore()
@@ -21,7 +22,9 @@ export default function EditSaleItem({ cartItem }: { cartItem: SaleItemObject })
   const [expanded, setExpanded] = useState(false)
 
   function onChangeCart(e: any, property: string) {
-    setCartItem(cartItem?.itemId, { [property]: e.target.value })
+    debounce(() => {
+      setCartItem(cartItem?.itemId, { [property]: e.target.value })
+    }, 2000)
   }
 
   function onChangeQuantity(e: any) {
