@@ -136,13 +136,13 @@ export const useAppStore = createSelectors(
         }),
       ),
     setCart: (update) => {
-      const prevState = get().cart?.sale?.state
+      // const prevState = get().cart?.sale?.state
       set(
         produce((draft) => {
           Object.entries(update).forEach(([key, value]) => (draft.cart[key] = value))
         }),
       )
-      get().cart?.sale?.id && get().mutateCart(prevState)
+      // get().cart?.sale?.id && get().mutateCart(prevState)
     },
     loadSaleToCartById: (saleId) => {
       console.log('Loading sale to cart', saleId)
@@ -243,14 +243,14 @@ export const useAppStore = createSelectors(
       )
       get().cart?.sale?.id && get().mutateCart(prevState)
     },
-    setCartSale: (update) => {
-      // const prevState = get().cart?.sale?.state
+    setCartSale: (update, doMutate = true) => {
+      const prevState = get().cart?.sale?.state
       set(
         produce((draft) => {
           Object.entries(update).forEach(([key, value]) => (draft.cart.sale[key] = value))
         }),
       )
-      // get().cart?.sale?.id && get().mutateCart(prevState)
+      doMutate && get().cart?.sale?.id && get().mutateCart(prevState)
     },
     setCustomer: (update) => {
       set(

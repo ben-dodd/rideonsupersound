@@ -226,6 +226,7 @@ export function dbUpdateSaleTransaction(id, update, db = connection) {
 }
 
 export async function dbSaveCart(cart, prevState, db = connection) {
+  console.log('DB SAVE CART CALLLLLLLED!')
   return db
     .transaction(async (trx) => {
       console.log('Beginning transaction')
@@ -278,11 +279,6 @@ export async function dbSaveCart(cart, prevState, db = connection) {
       console.log('All promises waited for')
 
       return dbGetSale(newSale?.id, trx)
-        .then((newCart) => {
-          console.log('New cart is:', mysql2js(newCart))
-          return mysql2js(newCart)
-        })
-        .catch((e) => console.error(e.message))
     })
     .then((cart) => {
       console.log('Transaction succeeded')

@@ -1,6 +1,7 @@
 import { ClerkObject } from 'lib/types'
 import { CartObject, HoldObject, SaleItemObject, SaleStateTypes } from 'lib/types/sale'
 import { axiosAuth, useData } from './'
+import { mysql2js } from 'lib/database/utils/helpers'
 
 export function useSaleItemsForSale(saleId) {
   return useData(`sale/items/${saleId}`, 'saleItems')
@@ -12,7 +13,12 @@ export function useSale(saleId) {
 
 export async function saveCart(cart: CartObject, prevState: string = SaleStateTypes.InProgress) {
   // console.log('saving cart', cart)
-  return axiosAuth.post(`/api/sale/save`, { cart, prevState })
+  return axiosAuth
+    .post(`/api/sale/save`, { cart, prevState })
+    .then((data) => mysql2js(data))
+    .catch((error) => {
+      throw error
+    })
 }
 
 export function createSale(sale: any, clerk: ClerkObject) {

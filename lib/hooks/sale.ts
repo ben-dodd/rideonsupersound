@@ -54,12 +54,15 @@ export function useSaleProperties(cart, updateCart = false): any {
         itemList,
       })
       if (updateCart) {
-        setCartSale({
-          storeCut: dollarsToCents(totalStoreCut),
-          totalPrice: dollarsToCents(totalPrice),
-          numberOfItems,
-          itemList,
-        })
+        setCartSale(
+          {
+            storeCut: dollarsToCents(totalStoreCut),
+            totalPrice: dollarsToCents(totalPrice),
+            numberOfItems,
+            itemList,
+          },
+          false,
+        )
       }
     }
   }, [items, sale, transactions, stockTable])
