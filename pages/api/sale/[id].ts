@@ -16,7 +16,7 @@ const apiRoute = async (req: NextAuthenticatedApiRequest, res: NextApiResponse) 
     }
   } else if (req.method === 'PATCH') {
     const { id } = req.query
-    const { update } = req.body
+    const update = req.body
     try {
       return dbUpdateSale(id, update).then((data) => res.status(200).json(data))
     } catch (error) {

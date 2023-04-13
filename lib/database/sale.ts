@@ -175,6 +175,8 @@ export function dbUpdateSale(id, update, db = connection) {
 }
 
 export function dbUpdateHold(id, update, db = connection) {
+  console.log('Updating hold', id)
+  console.log(js2mysql(update))
   return db('hold')
     .where({ id })
     .update(js2mysql(update))

@@ -16,7 +16,7 @@ const HoldsList = () => {
           <HoldsListItem key={hold?.id} hold={hold} />
         ))}
       </div>
-      {holdsPage?.loadedHold && <HoldsSidebar />}
+      {holdsPage?.loadedHold ? <HoldsSidebar /> : <div />}
     </div>
   )
 }

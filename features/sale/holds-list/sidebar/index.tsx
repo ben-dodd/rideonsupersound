@@ -4,21 +4,27 @@ import TextField from 'components/inputs/text-field'
 import Loading from 'components/placeholders/loading'
 import dayjs from 'dayjs'
 import HoldListItem from 'features/sell/create-hold/list-item'
-import { updateHold, useHolds } from 'lib/api/sale'
+import { cancelHold, updateHold, useHolds } from 'lib/api/sale'
 import { useAppStore } from 'lib/store'
 import { Pages } from 'lib/store/types'
 import { ModalButton } from 'lib/types'
 import { HoldObject } from 'lib/types/sale'
-import { getObjectDifference } from 'lib/utils'
 import React, { useEffect, useState } from 'react'
+import Warning from '../warning'
+import { useRouter } from 'next/router'
+import { useClerk } from 'lib/api/clerk'
+import { useSWRConfig } from 'swr'
 
 const HoldsSidebar = () => {
-  const { holdsPage, setPage, setAlert } = useAppStore()
+  const { holdsPage, setPage, setAlert, openConfirm } = useAppStore()
   const { holds, isHoldsLoading } = useHolds()
+  const { clerk } = useClerk()
   const [originalHold, setOriginalHold]: [HoldObject, Function] = useState({})
   const [hold, setHold]: [HoldObject, Function] = useState({})
   const [submitting, setSubmitting] = useState(false)
   const closeSidebar = () => setPage(Pages.holdsPage, { loadedHold: 0 })
+  const router = useRouter()
+  const { mutate } = useSWRConfig()
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -31,9 +37,30 @@ const HoldsSidebar = () => {
     setOriginalHold(originalHold || {})
   }, [holds, holdsPage?.loadedHold])
 
+  function onClickCancelHold() {
+    // Delete hold, unhold stock movement
+    // Add return to stock to jobs
+    openConfirm({
+      open: true,
+      title: 'Cancel hold and return item to stock?',
+      action: () =>
+        cancelHold(hold, clerk).then(() => {
+          setAlert({ open: true, type: 'success', message: `Hold for ${hold?.customerName} cancelled.` })
+          closeSidebar()
+          setHold({})
+        }),
+    })
+  }
+
+  function onClickLoadToCart() {
+    // Check if override current cart (if applicable)
+    // Load to cart
+  }
+
   async function onClickUpdateHold() {
     setSubmitting(true)
-    await updateHold(getObjectDifference(hold, originalHold), originalHold?.id)
+    await updateHold({ holdPeriod: parseInt(`${hold?.holdPeriod}`), note: hold?.note }, originalHold?.id)
+    mutate(`sale/hold`)
     setSubmitting(false)
     closeSidebar()
     setHold({})
@@ -47,11 +74,16 @@ const HoldsSidebar = () => {
   const buttons: ModalButton[] = [
     {
       type: 'cancel',
+      onClick: onClickCancelHold,
+      text: 'CANCEL HOLD',
+    },
+    {
+      type: 'alt1',
       onClick: () => {
         closeSidebar()
         setHold({})
       },
-      text: 'CANCEL',
+      text: 'LOAD TO CART',
     },
     {
       type: 'ok',
@@ -68,18 +100,21 @@ const HoldsSidebar = () => {
       {isHoldsLoading ? (
         <Loading />
       ) : (
-        <div>
+        <div className="h-content">
           <div className="flex justify-between items-start h-header">
             <div />
             <div className="text-4xl font-mono py-2">HOLD</div>
-            <button className="mt-2" onClick={closeSidebar}>
+            <button className="mt-2 ml-2" onClick={closeSidebar}>
               <CloseRounded />
             </button>
           </div>
-          <div className="p-4">
-            <HoldListItem cartItem={hold} />
+          <div className="p-4 h-full">
+            <div className="cursor-pointer hover:opacity-80" onClick={() => router.push(`/stock/${hold?.itemId}`)}>
+              <HoldListItem cartItem={hold} />
+            </div>
             <div>{`Item held for ${hold?.customerName} (hold set up by ${hold?.openClerkName})`}</div>
             <div>{`Item held for ${dayjs().diff(hold?.dateFrom, 'day')} of ${hold?.holdPeriod || 30} days.`}</div>
+            <Warning hold={hold} />
             <TextField
               inputLabel="Hold Period"
               inputType="number"
