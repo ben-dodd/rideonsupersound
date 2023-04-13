@@ -62,8 +62,11 @@ const initState = {
   },
   paymentsPage: {},
   registersPage: {},
-  salesListPage: {
+  salesPage: {
     tab: 0,
+    returnToCartDialog: {},
+  },
+  salesListPage: {
     searchBar: '',
   },
   salesCalendarPage: {
@@ -222,21 +225,51 @@ export const useAppStore = createSelectors(
       const mutates = transaction?.paymentMethod === PaymentMethodTypes.GiftCard ? [`stock/giftcard`] : []
       get().mutateCart(prevState, mutates)
     },
-    addCartItem: (newItem, clerkId) =>
+    addCartItem: (newItem, clerkId, replacePrevious = false) => {
+      const alert = { open: true, type: 'success', message: 'ITEM ADDED' }
+      if (replacePrevious) {
+        const oldCart = get().cart
+        if (oldCart?.items?.length > 0) {
+          console.log('Saving cart', oldCart)
+          saveCart(
+            {
+              ...oldCart,
+              sale: {
+                ...oldCart?.sale,
+                state:
+                  oldCart?.sale?.state === SaleStateTypes.InProgress ? SaleStateTypes.Parked : oldCart?.sale?.state,
+              },
+            },
+            oldCart?.sale?.state,
+          )
+          alert.type = 'warning'
+          alert.message = 'ITEM ADDED TO CART. PREVIOUS CART HAS BEEN PARKED.'
+        }
+      }
       set(
         produce((draft) => {
+          if (replacePrevious)
+            draft.cart = {
+              sale: { id: null, customerId: null },
+              customer: {},
+              items: [],
+              transactions: [],
+            }
           if (get().cart.items.length === 0) {
             useSetWeatherToCart(get().setCartSale)
             useSetRegisterId(get().setCart)
             draft.cart.sale.dateSaleOpened = dayjs.utc().format()
             draft.cart.sale.saleOpenedBy = clerkId
+            draft.cart.sale.state = SaleStateTypes.InProgress
           }
           draft.view.cart = true
           const index = get().cart.items.findIndex((cartItem) => cartItem?.itemId === newItem?.itemId)
           if (index < 0) draft.cart.items.push(newItem)
           else draft.cart.items[index].quantity = `${parseInt(get().cart.items[index].quantity) + 1}`
+          draft.alert = alert
         }),
-      ),
+      )
+    },
     setCartItem: (id, update) => {
       const prevState = get().cart?.sale?.state
       set(
@@ -282,7 +315,8 @@ export const useAppStore = createSelectors(
           draft.receiveBasket.items.map((item) => (item?.key === key ? { ...item, ...update } : item))
         }),
       ),
-    resetCart: () =>
+    resetCart: () => {
+      console.log('Resetting cart...')
       set(
         produce((draft) => {
           draft.cart = {
@@ -292,7 +326,8 @@ export const useAppStore = createSelectors(
             transactions: [],
           }
         }),
-      ),
+      )
+    },
     resetReceiveBasket: () =>
       set(
         produce((draft) => {

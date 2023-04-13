@@ -56,6 +56,7 @@ export interface SaleItemObject {
   id?: number
   saleId?: number
   itemId?: number
+  holdId?: number
   quantity?: string
   vendorDiscount?: string
   storeDiscount?: string

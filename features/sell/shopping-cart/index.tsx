@@ -24,7 +24,7 @@ export default function ShoppingCart() {
 
   const { totalPrice, totalStoreCut, totalRemaining, totalPaid } = useSaleProperties(cart, true)
   const handleBackClick = () => closeView(ViewProps.cart)
-
+  console.log(cart)
   return (
     <div
       className={`absolute top-0 transition-offset duration-300 ${

@@ -72,6 +72,7 @@ export interface StoreState {
   registersPage?: any
   salesPage?: {
     tab?: number
+    returnToCartDialog?: any
   }
   salesListPage?: {
     searchBar?: string
@@ -110,7 +111,7 @@ export interface StoreState {
   mutateCart: (prevState: string, mutates?: string[]) => void
   addCartTransaction: (transaction: SaleTransactionObject) => void
   deleteCartTransaction: (transaction: SaleTransactionObject) => void
-  addCartItem: (newItem: SaleItemObject, clerkId: number) => void
+  addCartItem: (newItem: SaleItemObject, clerkId: number, replacePrevious?: boolean) => void
   setCartItem: (id: number, update: any) => void
   setCartSale: (update: any, doMutate?: boolean) => void
   setReceiveBasket: (update: any) => void

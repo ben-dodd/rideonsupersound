@@ -9,7 +9,8 @@ import { useBasicStockItem, useStockList } from 'lib/api/stock'
 import { priceCentsString } from 'lib/utils'
 import { deleteSale, deleteSaleItem } from 'lib/api/sale'
 import { ViewProps } from 'lib/store/types'
-import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material'
+import { ArrowDropDown, ArrowDropUp, PanTool } from '@mui/icons-material'
+import { Tooltip } from '@mui/material'
 
 // TODO make list items share more components
 
@@ -103,7 +104,16 @@ export default function SellListItem({ cartItem }: { cartItem: SaleItemObject })
           </div>
         </div>
         <div className="flex flex-col w-full pt-2 px-2 justify-between">
-          <div className="text-sm pl-1">{getItemDisplayName(item)}</div>
+          <div className="flex justify-between">
+            <div className="text-sm pl-1">{getItemDisplayName(item)}</div>
+            {cartItem?.holdId ? (
+              <Tooltip title={'Item was previously on hold.'}>
+                <PanTool style={{ fontSize: 12 }} className="text-blue-200" />
+              </Tooltip>
+            ) : (
+              <div />
+            )}
+          </div>
           <div className="text-red-500 self-end">{writeCartItemPriceBreakdown(cartItem, stockItem)}</div>
           <div className="self-end text-xs">
             {expanded ? (

@@ -16,7 +16,7 @@ import { useClerk } from 'lib/api/clerk'
 import { useSWRConfig } from 'swr'
 
 const HoldsSidebar = () => {
-  const { holdsPage, setPage, setAlert, openConfirm } = useAppStore()
+  const { cart, holdsPage, setAlert, openConfirm, setPage, addCartItem } = useAppStore()
   const { holds, isHoldsLoading } = useHolds()
   const { clerk } = useClerk()
   const [originalHold, setOriginalHold]: [HoldObject, Function] = useState({})
@@ -29,6 +29,11 @@ const HoldsSidebar = () => {
   const handleSubmit = (e) => {
     e.preventDefault()
     onClickUpdateHold()
+  }
+
+  const closeHold = () => {
+    closeSidebar()
+    setHold({})
   }
 
   useEffect(() => {
@@ -46,8 +51,7 @@ const HoldsSidebar = () => {
       action: () =>
         cancelHold(hold, clerk).then(() => {
           setAlert({ open: true, type: 'success', message: `Hold for ${hold?.customerName} cancelled.` })
-          closeSidebar()
-          setHold({})
+          closeHold()
         }),
     })
   }
@@ -55,6 +59,26 @@ const HoldsSidebar = () => {
   function onClickLoadToCart() {
     // Check if override current cart (if applicable)
     // Load to cart
+    if (!cart?.sale?.id && cart?.items?.length === 0) {
+      // Cart is empty
+      loadHoldItemToCart()
+    } else {
+      // Check whether to add to current cart or park current cart
+      setPage(Pages.salesPage, {
+        returnToCartDialog: {
+          open: true,
+          hold,
+          onClick: loadHoldItemToCart,
+        },
+      })
+    }
+  }
+
+  const loadHoldItemToCart = (replaceCart = false) => {
+    addCartItem({ itemId: hold?.itemId, quantity: `${hold?.quantity}`, holdId: hold?.id }, clerk?.id, replaceCart)
+    router.push('/sell')
+    closeHold()
+    cancelHold(hold, clerk).then(() => mutate(`sale/hold`))
   }
 
   async function onClickUpdateHold() {
@@ -62,8 +86,7 @@ const HoldsSidebar = () => {
     await updateHold({ holdPeriod: parseInt(`${hold?.holdPeriod}`), note: hold?.note }, originalHold?.id)
     mutate(`sale/hold`)
     setSubmitting(false)
-    closeSidebar()
-    setHold({})
+    closeHold()
     setAlert({
       open: true,
       type: 'success',
@@ -79,10 +102,7 @@ const HoldsSidebar = () => {
     },
     {
       type: 'alt1',
-      onClick: () => {
-        closeSidebar()
-        setHold({})
-      },
+      onClick: onClickLoadToCart,
       text: 'LOAD TO CART',
     },
     {
