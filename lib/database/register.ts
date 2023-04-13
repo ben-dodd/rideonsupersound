@@ -13,17 +13,6 @@ export function dbUpdateRegister(register, id, db = connection) {
   return db('register').where({ id }).update(insertData)
 }
 
-export function dbGetCurrentRegisterId(db = connection) {
-  return db('global')
-    .where(`id`, `current_register`)
-    .first()
-    .then((id) => id?.num)
-}
-
-export function dbGetCurrentRegister(db = connection) {
-  return dbGetCurrentRegisterId(db).then((id) => dbGetRegister(id, db))
-}
-
 export function dbGetRegister(id = 0, db = connection) {
   return db('register')
     .where({ id })
@@ -68,9 +57,9 @@ export function dbSetRegister(id, db = connection) {
 export async function dbCloseRegister(id: number, register: RegisterObject, till: TillObject, db = connection) {
   return db
     .transaction((trx) =>
-      dbCreateTill(till, trx)
-        .then((closeTillId) => dbUpdateRegister({ ...register, closeTillId, closeDate: dayjs.utc().format() }, id, trx))
-        .then(() => dbSetRegister(null, trx)),
+      dbCreateTill(till, trx).then((closeTillId) =>
+        dbUpdateRegister({ ...register, closeTillId, closeDate: dayjs.utc().format() }, id, trx),
+      ),
     )
     .catch((e) => Error(e.message))
 }
@@ -78,9 +67,9 @@ export async function dbCloseRegister(id: number, register: RegisterObject, till
 export async function dbOpenRegister(register: RegisterObject, till: TillObject, db = connection) {
   return db
     .transaction((trx) =>
-      dbCreateTill(till, trx)
-        .then((openTillId) => dbCreateRegister({ ...register, openTillId, openDate: dayjs.utc().format() }, trx))
-        .then((registerId) => dbSetRegister(registerId, trx)),
+      dbCreateTill(till, trx).then((openTillId) =>
+        dbCreateRegister({ ...register, openTillId, openDate: dayjs.utc().format() }, trx),
+      ),
     )
     .catch((e) => Error(e.message))
 }

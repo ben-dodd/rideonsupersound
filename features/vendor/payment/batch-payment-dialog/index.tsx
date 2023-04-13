@@ -4,7 +4,6 @@ import { checkDefaultChecked } from 'lib/functions/payment'
 import CheckBatchPayments from './check-batch-payments'
 import SelectBatchPayments from './select-batch-payments'
 import { useAppStore } from 'lib/store'
-import { useCurrentRegisterId } from 'lib/api/register'
 import { useClerk } from 'lib/api/clerk'
 import { createVendorBatchPayment, useVendorAccounts } from 'lib/api/vendor'
 import { ViewProps } from 'lib/store/types'
@@ -14,8 +13,7 @@ import { centsToDollars } from 'lib/utils'
 // Icons
 
 export default function BatchPaymentDialog() {
-  const { view, closeView, openConfirm } = useAppStore()
-  const { registerId } = useCurrentRegisterId()
+  const { view, registerId, closeView, openConfirm } = useAppStore()
   const { clerk } = useClerk()
 
   const { vendorAccounts, isVendorAccountsLoading } = useVendorAccounts()

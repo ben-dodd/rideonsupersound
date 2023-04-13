@@ -7,7 +7,6 @@ import { makeGiftCardCode } from 'lib/functions/sell'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
-import { useCurrentRegisterId } from 'lib/api/register'
 import { useGiftCards } from 'lib/api/stock'
 import { GiftCardObject } from 'lib/types/stock'
 import { PaymentMethodTypes } from 'lib/types/sale'
@@ -15,10 +14,9 @@ import { formSaleTransaction } from 'lib/functions/pay'
 
 export default function Gift({ totalRemaining }) {
   const { clerk } = useClerk()
-  const { cart, view, closeView, setAlert, addCartTransaction } = useAppStore()
+  const { cart, view, registerId, closeView, setAlert, addCartTransaction } = useAppStore()
   const { sale = {} } = cart || {}
   const { giftCards } = useGiftCards()
-  const { registerId } = useCurrentRegisterId()
 
   const isRefund = totalRemaining < 0
   const [giftCardPayment, setGiftCardPayment] = useState(`${Math.abs(totalRemaining).toFixed(2)}`)

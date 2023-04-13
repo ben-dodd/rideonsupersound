@@ -8,13 +8,11 @@ import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { createVendorPayment, useVendor, useVendors } from 'lib/api/vendor'
 import { ViewProps } from 'lib/store/types'
-import { useCurrentRegisterId } from 'lib/api/register'
 import { VendorObject, VendorPaymentTypes } from 'lib/types/vendor'
 
 export default function TransferVendorPaymentDialog() {
   const { clerk } = useClerk()
-  const { view, closeView } = useAppStore()
-  const { registerId } = useCurrentRegisterId()
+  const { view, registerId, closeView } = useAppStore()
   const { vendors } = useVendors()
   const [submitting, setSubmitting] = useState(false)
   const [vendorPayId, setVendorPay]: [any, Function] = useState(0)

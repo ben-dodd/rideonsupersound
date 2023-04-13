@@ -5,14 +5,13 @@ import Modal from 'components/modal'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
-import { savePettyCash, useCurrentRegisterId } from 'lib/api/register'
+import { savePettyCash } from 'lib/api/register'
 import { dollarsToCents } from 'lib/utils'
 import dayjs from 'dayjs'
 
 export default function ReturnCashDialog() {
-  const { registerId } = useCurrentRegisterId()
   const { clerk } = useClerk()
-  const { view, closeView, setAlert } = useAppStore()
+  const { view, registerId, closeView, setAlert } = useAppStore()
 
   // State
   const [amount, setAmount] = useState(0)

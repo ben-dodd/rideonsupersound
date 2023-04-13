@@ -35,6 +35,7 @@ const initState = {
   confirmModal: { open: false },
   alert: { open: false },
   createableCustomerName: '',
+  registerId: null,
   cart: {
     sale: { id: null, customerId: null },
     customer: {},
@@ -130,6 +131,12 @@ export const useAppStore = createSelectors(
       set(
         produce((draft) => {
           draft.alert = null
+        }),
+      ),
+    setRegisterId: (id) =>
+      set(
+        produce((draft) => {
+          draft.registerId = id
         }),
       ),
     setCreateableCustomerName: (name) =>

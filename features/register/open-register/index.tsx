@@ -13,7 +13,7 @@ import ActionButton from 'components/button/action-button'
 
 export default function OpenRegisterScreen() {
   const { clerk } = useClerk()
-  const { setAlert } = useAppStore()
+  const { setAlert, setRegisterId } = useAppStore()
   const [till, setTill] = useState({})
   const [notes, setNotes] = useState('')
   const [openAmount, setOpenAmount]: [string, Function] = useState(`${getAmountFromCashMap(till)}`)
@@ -27,7 +27,7 @@ export default function OpenRegisterScreen() {
 
   async function clickOpenRegister() {
     setLoading(true)
-    await openRegister(
+    const id = await openRegister(
       {
         openedById: clerk?.id,
         openAmount: openAmount ? parseFloat(openAmount) * 100 : 0,
@@ -35,12 +35,14 @@ export default function OpenRegisterScreen() {
       },
       till,
     )
+    setRegisterId(id)
+
     setLoading(false)
     router.push('/sell')
     setAlert({
       open: true,
       type: 'success',
-      message: 'REGISTER OPENED',
+      message: `REGISTER #${id} OPENED`,
     })
   }
 
@@ -82,7 +84,7 @@ export default function OpenRegisterScreen() {
       loading,
       onClick: clickOpenRegister,
       disabled: invalidOpenAmount,
-      text: 'OPEN REGISTER',
+      text: 'OPEN NEW REGISTER',
     },
   ]
 
