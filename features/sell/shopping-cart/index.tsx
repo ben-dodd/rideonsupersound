@@ -51,7 +51,7 @@ export default function ShoppingCart() {
         <div className="flex-grow overflow-x-hidden overflow-y-scroll">
           {items?.length > 0 ? (
             items
-              // .filter((cartItem: SaleItemObject) => !cartItem?.isDeleted)
+              .filter((cartItem) => !cartItem?.isDeleted)
               .map((cartItem) => <ListItem key={cartItem?.itemId} cartItem={cartItem} />)
           ) : (
             <Tooltip title="To add items to the cart. Use the search bar and then add items with the (+) icon.">

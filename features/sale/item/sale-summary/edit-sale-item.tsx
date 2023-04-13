@@ -46,7 +46,9 @@ export default function EditSaleItem({ cartItem }: { cartItem: SaleItemObject })
   }
 
   async function deleteCartItem(cartItem) {
-    let updatedCartItems = items?.filter((item) => item?.itemId !== cartItem?.itemId)
+    let updatedCartItems = items?.map((item) =>
+      item?.itemId === cartItem?.itemId ? { ...item, isDeleted: true } : item,
+    )
     if (cartItem?.id)
       // Cart has been saved to the database, delete sale_item
       await deleteSaleItem(cartItem?.id)
