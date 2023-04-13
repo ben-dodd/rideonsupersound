@@ -11,10 +11,10 @@ export default function SellSearchBar() {
     openView,
     sellPage: { searchBar },
     setSearchBar,
-    togglePageOption,
+    setPage,
   } = useAppStore()
   const debounceSearch = debounce(() => {
-    togglePageOption(Pages.sellPage, 'isSearching')
+    setPage(Pages.sellPage, { isSearching: false })
   }, 1000) // delay of 1 seconds
 
   function handleSearch(e) {
