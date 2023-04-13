@@ -101,7 +101,7 @@ export default function ShoppingCart() {
           <div>
             <button
               className={`w-full my-4 modal__button--${totalRemaining < 0 ? 'alt1' : 'ok'}`}
-              disabled={loadingSale || !totalRemaining}
+              disabled={loadingSale || (!totalRemaining && sale?.state !== SaleStateTypes.Completed)}
               onClick={() => {
                 if (sale?.id) router.push('sell/pay')
                 else {
@@ -127,7 +127,11 @@ export default function ShoppingCart() {
               )}
               {totalRemaining < 0
                 ? `REFUND $${Math.abs(totalRemaining)?.toFixed(2)}`
-                : `PAY${totalRemaining ? ` $${totalRemaining?.toFixed(2)}` : ''}`}
+                : totalRemaining > 0
+                ? `PAY${totalRemaining ? ` $${totalRemaining?.toFixed(2)}` : ''}`
+                : sale?.state === SaleStateTypes.Completed
+                ? 'RETURN TO SALE'
+                : ''}
             </button>
           </div>
         </div>
