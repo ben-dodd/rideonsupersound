@@ -7,17 +7,19 @@ import PrintLabel from './print-label'
 import SelectVendor from './select-vendor'
 import SetPriceAndQuantities from './set-price-and-quantities'
 import { useAppStore } from 'lib/store'
+import { useCurrentRegisterId } from 'lib/api/register'
 import { ViewProps } from 'lib/store/types'
 import { useClerk } from 'lib/api/clerk'
 import { receiveStock } from 'lib/api/stock'
 import Modal from 'components/modal'
 
 export default function ReceiveStockDialog() {
-  const { receiveBasket, registerId, resetReceiveBasket, view, openConfirm, closeView } = useAppStore()
+  const { receiveBasket, resetReceiveBasket, view, openConfirm, closeView } = useAppStore()
   const { clerk } = useClerk()
   const [step, setStep] = useState(0)
   const [receivedStock, setReceivedStock] = useState(null)
   const [receiveLoading, setReceiveLoading] = useState(false)
+  const { registerId } = useCurrentRegisterId()
 
   const buttons: ModalButton[][] = [
     [

@@ -8,6 +8,20 @@ export function useRegisters() {
   return useData(`register`, 'registers')
 }
 
+export function useCurrentRegisterId() {
+  return useData(`register/id`, 'registerId')
+}
+
+export function useSetRegisterId(setCart) {
+  return axiosAuth.get('/api/register/id').then((registerId) => {
+    setCart({ registerId })
+  })
+}
+
+export function useCurrentRegister() {
+  return useData(`register/current`, 'currentRegister')
+}
+
 export function savePettyCash(pettyCash) {
   return axiosAuth
     .post(`/api/register/pettycash`, pettyCash)

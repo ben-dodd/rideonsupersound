@@ -5,6 +5,7 @@ import { ModalButton } from 'lib/types'
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
 import dayjs from 'dayjs'
+import { useCurrentRegisterId } from 'lib/api/register'
 import { createVendorPayment, useVendor, useVendors } from 'lib/api/vendor'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
@@ -12,9 +13,10 @@ import { ViewProps } from 'lib/store/types'
 import { VendorObject, VendorPaymentTypes } from 'lib/types/vendor'
 
 export default function CashPaymentDialog() {
+  const { registerId } = useCurrentRegisterId()
   const { vendors } = useVendors()
   const { clerk } = useClerk()
-  const { view, registerId, closeView } = useAppStore()
+  const { view, closeView } = useAppStore()
   const [submitting, setSubmitting] = useState(false)
   const [vendorId, setVendor]: [number, Function] = useState(0)
   const [payment, setPayment] = useState('0')

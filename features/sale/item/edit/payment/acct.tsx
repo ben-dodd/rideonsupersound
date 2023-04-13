@@ -6,14 +6,16 @@ import Select from 'react-select'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
+import { useCurrentRegisterId } from 'lib/api/register'
 import { useVendorAccounts } from 'lib/api/vendor'
 import { PaymentMethodTypes } from 'lib/types/sale'
 import { formSaleTransaction } from 'lib/functions/pay'
 
 export default function Acct({ totalRemaining }) {
   const { clerk } = useClerk()
-  const { cart, view, registerId, closeView, setAlert, addCartTransaction } = useAppStore()
+  const { cart, view, closeView, setAlert, addCartTransaction } = useAppStore()
   const { sale = {} } = cart || {}
+  const { registerId } = useCurrentRegisterId()
   const { vendorAccounts, isVendorAccountsLoading } = useVendorAccounts()
   const [vendor, setVendor] = useState(null)
   const isRefund = totalRemaining < 0

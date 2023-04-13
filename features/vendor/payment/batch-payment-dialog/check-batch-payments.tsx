@@ -4,13 +4,13 @@ import StoreCreditOnlyIcon from '@mui/icons-material/ShoppingBag'
 import QuantityCheckIcon from '@mui/icons-material/Warning'
 import { Tooltip } from '@mui/material'
 import dayjs from 'dayjs'
+import { useCurrentRegisterId } from 'lib/api/register'
 import { useState } from 'react'
 import { modulusCheck, writeKiwiBankBatchFile, writePaymentNotificationEmail } from 'lib/functions/payment'
 import { dollarsToCents } from 'lib/utils'
-import { useAppStore } from 'lib/store'
 
 export default function CheckBatchPayments({ vendorList, setKbbLoaded, setEmailed }) {
-  const { registerId } = useAppStore()
+  const { registerId } = useCurrentRegisterId()
   const totalPay = vendorList?.reduce((prev, v) => (v?.isChecked ? parseFloat(v?.payAmount) : 0) + prev, 0)
   const vendorNum = vendorList?.reduce((prev, v) => (v?.isChecked ? 1 : 0) + prev, 0)
   const [includeUnchecked, setIncludeUnchecked] = useState(false)

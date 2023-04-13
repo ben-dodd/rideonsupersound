@@ -1,6 +1,7 @@
 import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
 import { useClerk } from 'lib/api/clerk'
+import { useCurrentRegisterId } from 'lib/api/register'
 import { changeStockQuantity, useStockItem } from 'lib/api/stock'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
@@ -13,12 +14,13 @@ import { useSWRConfig } from 'swr'
 
 export default function ChangeStockQuantityDialog() {
   const { clerk } = useClerk()
-  const { view, registerId, closeView, setAlert } = useAppStore()
+  const { view, closeView, setAlert } = useAppStore()
   const router = useRouter()
   const id = router.query.id
   const { mutate } = useSWRConfig()
 
   const { stockItem, isStockItemLoading } = useStockItem(`${id}`)
+  const { registerId } = useCurrentRegisterId()
   const [movement, setMovement] = useState(StockMovementTypes?.Received)
   const [quantity, setQuantity] = useState('')
   const [note, setNote] = useState('')

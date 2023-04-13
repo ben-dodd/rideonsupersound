@@ -6,6 +6,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import { getImageSrc, getItemDisplayName, getItemSku, getItemSkuDisplayName } from 'lib/functions/displayInventory'
 import { returnStock, useStockList } from 'lib/api/stock'
 import { useVendors } from 'lib/api/vendor'
+import { useCurrentRegisterId } from 'lib/api/register'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
@@ -17,7 +18,8 @@ export default function ReturnStockScreen() {
   const { stockList } = useStockList()
   const { vendors } = useVendors()
   const { clerk } = useClerk()
-  const { view, registerId, closeView, setAlert } = useAppStore()
+  const { view, closeView, setAlert } = useAppStore()
+  const { registerId } = useCurrentRegisterId()
   const [vendorWrapper, setVendorWrapper] = useState(null)
   const [returnItems, setReturnItems] = useState([])
   const [note, setNote] = useState('')
