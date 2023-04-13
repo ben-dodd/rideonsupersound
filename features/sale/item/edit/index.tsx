@@ -6,7 +6,7 @@ import CreateLaybySidebar from './create-layby/sidebar'
 import CreateCustomerSidebar from 'features/sell/create-customer/sidebar'
 import { deleteSale, saveCart } from 'lib/api/sale'
 import MidScreenContainer from 'components/container/mid-screen'
-import { CheckCircleOutline, Delete, DirectionsCar, DryCleaning, Mail, PostAdd } from '@mui/icons-material'
+import { CheckCircleOutline, Delete, DirectionsCar, DryCleaning, EventBusy, Mail, PostAdd } from '@mui/icons-material'
 import { SaleStateTypes } from 'lib/types/sale'
 import { ViewProps } from 'lib/store/types'
 import { useSWRConfig } from 'swr'
@@ -140,11 +140,22 @@ const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
     { text: 'Delete Layby', icon: <Delete />, onClick: clickDeleteSale },
   ]
 
+  const completedMenuItems = [
+    { text: 'Refund Items', icon: <EventBusy />, onClick: () => openView(ViewProps.returnItemDialog) },
+    { text: 'Add More Items', icon: <PostAdd />, onClick: clickAddItems },
+    { text: 'Park Sale', icon: <DirectionsCar />, onClick: clickParkSale },
+    // { text: 'Start Layby', icon: <DryCleaning />, onClick: clickLayby },
+    { text: 'Create Mail Order', icon: <Mail />, onClick: clickMailOrder },
+    { text: 'Delete Sale', icon: <Delete />, onClick: clickDeleteSale },
+  ]
+
   const menuItems =
     sale?.state === SaleStateTypes.Parked
       ? parkedMenuItems
       : sale?.state === SaleStateTypes.Layby
       ? laybyMenuItems
+      : sale?.state === SaleStateTypes.Completed
+      ? completedMenuItems
       : inProgressMenuItems
 
   const defaultAction =

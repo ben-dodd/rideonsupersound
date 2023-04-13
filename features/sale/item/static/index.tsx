@@ -1,8 +1,7 @@
-import { Delete, Edit, EventBusy, PointOfSale } from '@mui/icons-material'
+import { Delete, Edit, PointOfSale } from '@mui/icons-material'
 import MidScreenContainer from 'components/container/mid-screen'
 import SaleSummary from 'features/sale/item/sale-summary'
 import { useAppStore } from 'lib/store'
-import { ViewProps } from 'lib/store/types'
 import { SaleStateTypes } from 'lib/types/sale'
 import { useRouter } from 'next/router'
 import React from 'react'
@@ -54,7 +53,6 @@ const SaleItemScreen = ({ saleItem }) => {
   }
 
   const completedMenuItems = [
-    { text: 'Refund Items', icon: <EventBusy />, onClick: () => openView(ViewProps.returnItemDialog) },
     { text: 'Edit Sale', icon: <Edit />, onClick: loadSale, adminOnly: true },
     { text: 'Delete Sale', icon: <Delete />, onClick: clickDeleteSale, adminOnly: true },
   ]

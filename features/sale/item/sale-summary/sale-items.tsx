@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import EditSaleItem from './edit-sale-item'
 import StaticSaleItem from './static-sale-item'
 import DeletedSaleItem from './deleted-sale-item'
+import RefundedSaleItem from './refunded-sale-item'
 
 const SaleItems = ({ items, isEditable }) => {
   const router = useRouter()
@@ -12,6 +13,8 @@ const SaleItems = ({ items, isEditable }) => {
         items?.map((saleItem: SaleItemObject) =>
           saleItem?.isDeleted ? (
             <DeletedSaleItem key={saleItem?.itemId} saleItem={saleItem} />
+          ) : saleItem?.isRefunded ? (
+            <RefundedSaleItem key={saleItem?.itemId} saleItem={saleItem} />
           ) : isEditable ? (
             <EditSaleItem key={saleItem?.itemId} cartItem={saleItem} />
           ) : (

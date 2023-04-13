@@ -5,7 +5,7 @@ import SaleItemScreen from 'features/sale/item/static'
 import { useSale } from 'lib/api/sale'
 import ErrorScreen from 'components/container/error-screen'
 import Loading from 'components/placeholders/loading'
-import ReturnItemDialog from 'features/sale/item/static/return-item-dialog'
+// import ReturnItemDialog from 'features/sale/return-item-dialog'
 import { useAppStore } from 'lib/store'
 
 export default function SaleItemPage() {
@@ -22,7 +22,7 @@ export default function SaleItemPage() {
   ) : (
     <>
       <SaleItemScreen saleItem={sale} />
-      {view?.returnItemDialog && <ReturnItemDialog sale={sale} />}
+      {/* {view?.returnItemDialog && <ReturnItemDialog sale={sale} />} */}
     </>
   )
 }

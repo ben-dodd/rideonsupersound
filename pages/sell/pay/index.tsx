@@ -7,6 +7,7 @@ import Card from 'features/sale/item/edit/payment/card'
 import Cash from 'features/sale/item/edit/payment/cash'
 import Gift from 'features/sale/item/edit/payment/gift'
 import SaleEditItemScreen from 'features/sale/item/edit'
+import ReturnItemDialog from 'features/sale/return-item-dialog'
 
 export default function PayPage() {
   const { view, cart } = useAppStore()
@@ -19,6 +20,7 @@ export default function PayPage() {
       {view?.cardPaymentDialog && <Card totalRemaining={totalRemaining} />}
       {view?.cashPaymentDialog && <Cash totalRemaining={totalRemaining} />}
       {view?.giftPaymentDialog && <Gift totalRemaining={totalRemaining} />}
+      {view?.returnItemDialog && <ReturnItemDialog sale={cart} />}
     </>
   )
 }

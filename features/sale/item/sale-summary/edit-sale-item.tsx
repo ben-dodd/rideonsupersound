@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { SaleItemObject } from 'lib/types/sale'
+import { SaleItemObject, SaleStateTypes } from 'lib/types/sale'
 import TextField from 'components/inputs/text-field'
 import { getImageSrc, getItemDisplayName, getItemSku } from 'lib/functions/displayInventory'
 import DeleteIcon from '@mui/icons-material/Delete'
@@ -8,12 +8,13 @@ import { useAppStore } from 'lib/store'
 import { useBasicStockItem, useStockList } from 'lib/api/stock'
 import { priceCentsString } from 'lib/utils'
 import { deleteSaleItem } from 'lib/api/sale'
-import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material'
+import { ArrowDropDown, ArrowDropUp, EventBusy } from '@mui/icons-material'
 import { debounce } from 'lodash'
+import { Tooltip } from '@mui/material'
 
 export default function EditSaleItem({ cartItem }: { cartItem: SaleItemObject }) {
-  const { cart, openConfirm, setCartItem, setCart, setAlert } = useAppStore()
-  const { items = [] } = cart || {}
+  const { cart, openConfirm, setCartItem, setAlert } = useAppStore()
+  const { sale = {} } = cart || {}
   const { stockItem } = useBasicStockItem(`${cartItem?.itemId}`)
   const { stockList = [] } = useStockList()
   const stockListItem = stockList.find((stock) => stock?.id === cartItem?.itemId) || {}
@@ -45,16 +46,20 @@ export default function EditSaleItem({ cartItem }: { cartItem: SaleItemObject })
     } else onChangeCart(e, 'quantity')
   }
 
-  async function deleteCartItem(cartItem) {
-    let updatedCartItems = items?.map((item) =>
-      item?.itemId === cartItem?.itemId ? { ...item, isDeleted: true } : item,
-    )
+  function handleClickRefundItem() {
+    setCartItem(cartItem?.itemId, { isRefunded: true })
+    setAlert({
+      open: true,
+      type: 'success',
+      message: `ITEM REFUNDED`,
+    })
+  }
+
+  async function handleClickDeleteItem() {
     if (cartItem?.id)
       // Cart has been saved to the database, delete sale_item
       await deleteSaleItem(cartItem?.id)
-    setCart({
-      items: updatedCartItems,
-    })
+    setCartItem(cartItem?.itemId, { isDeleted: true })
     setAlert({
       open: true,
       type: 'success',
@@ -169,12 +174,23 @@ export default function EditSaleItem({ cartItem }: { cartItem: SaleItemObject })
             <div>
               <div className="font-bold self-center">{priceCentsString(getCartItemTotal(cartItem, item, price))}</div>
               <div className="w-50 text-right">
-                <button
-                  className="py-2 text-tertiary hover:text-tertiary-dark"
-                  onClick={() => deleteCartItem(cartItem)}
-                >
-                  <DeleteIcon />
-                </button>
+                {sale?.state === SaleStateTypes.Completed ? (
+                  <Tooltip title="Refund Item">
+                    <span>
+                      <button className="py-2 text-tertiary hover:text-tertiary-dark" onClick={handleClickRefundItem}>
+                        <EventBusy />
+                      </button>
+                    </span>
+                  </Tooltip>
+                ) : (
+                  <Tooltip title="Delete Item">
+                    <span>
+                      <button className="py-2 text-tertiary hover:text-tertiary-dark" onClick={handleClickDeleteItem}>
+                        <DeleteIcon />
+                      </button>
+                    </span>
+                  </Tooltip>
+                )}
               </div>
             </div>
           </div>
