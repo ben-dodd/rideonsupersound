@@ -104,34 +104,40 @@ export default function ShoppingCartActions() {
           <DropdownMenu items={parkedSaleItems} icon={<Folder />} buttonClass="icon-button-small-white" />
         </span>
       </Tooltip>
-      <Tooltip title={sale?.state === SaleStateTypes.Layby ? 'Continue Layby' : 'Park sale'}>
-        <span className="flex items-center">
-          <button
-            className="icon-button-small-white"
-            onClick={sale?.state === SaleStateTypes.Layby ? onClickContinueLayby : onClickSaveSale}
-            disabled={Boolean(saveSaleLoading || cart?.items?.length < 1)}
-          >
-            {saveSaleLoading ? (
-              <CircularProgress color="inherit" size={16} />
-            ) : sale?.state === SaleStateTypes.Layby ? (
-              <DryCleaning />
-            ) : (
-              <DirectionsCar />
-            )}
-          </button>
-        </span>
-      </Tooltip>
-      <Tooltip title="Discard sale">
-        <span className="flex items-center">
-          <button
-            className="icon-button-small-white"
-            onClick={onClickDiscardSale}
-            disabled={Boolean(items?.length < 1)}
-          >
-            <Delete />
-          </button>
-        </span>
-      </Tooltip>
+      {sale?.state !== SaleStateTypes.Completed && (
+        <>
+          <Tooltip title={sale?.state === SaleStateTypes.Layby ? 'Continue Layby' : 'Park sale'}>
+            <span className="flex items-center">
+              <button
+                className="icon-button-small-white"
+                onClick={sale?.state === SaleStateTypes.Layby ? onClickContinueLayby : onClickSaveSale}
+                disabled={Boolean(saveSaleLoading || cart?.items?.length < 1)}
+              >
+                {saveSaleLoading ? (
+                  <CircularProgress color="inherit" size={16} />
+                ) : sale?.state === SaleStateTypes.Layby ? (
+                  <DryCleaning />
+                ) : (
+                  <DirectionsCar />
+                )}
+              </button>
+            </span>
+          </Tooltip>
+          {sale?.state !== SaleStateTypes.Layby && (
+            <Tooltip title="Discard sale">
+              <span className="flex items-center">
+                <button
+                  className="icon-button-small-white"
+                  onClick={onClickDiscardSale}
+                  disabled={Boolean(items?.length < 1)}
+                >
+                  <Delete />
+                </button>
+              </span>
+            </Tooltip>
+          )}
+        </>
+      )}
     </div>
   )
 }
