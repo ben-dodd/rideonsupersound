@@ -120,7 +120,8 @@ export async function dbGetSale(id, db = connection) {
 }
 
 export function dbGetSaleItemsBySaleId(saleId, db = connection) {
-  return db('sale_item').where({ sale_id: saleId }).where({ is_deleted: 0 })
+  return db('sale_item').where({ sale_id: saleId })
+  // .where({ is_deleted: 0 })
 }
 
 export function dbGetSaleTransactionsBySaleId(saleId, db = connection) {

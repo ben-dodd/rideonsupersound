@@ -18,12 +18,19 @@ export function useSaleProperties(cart, updateCart = false): any {
     // Fetch the stock table from the database here
     // and set it using setStockTable()
     setProperties({ isLoading: true })
-    console.log('getting cart items...')
+    // console.log('getting cart items...')
     if (items?.length === 0) setStockTable([])
     else
-      axiosAuth.get(`/api/stock/items?items=${items?.map((item) => item?.itemId)?.join('+')}`).then((data) => {
-        setStockTable(mysql2js(data))
-      })
+      axiosAuth
+        .get(
+          `/api/stock/items?items=${items
+            ?.filter((item) => !item?.isDeleted)
+            ?.map((item) => item?.itemId)
+            ?.join('+')}`,
+        )
+        .then((data) => {
+          setStockTable(mysql2js(data))
+        })
   }, [items])
 
   useEffect(() => {
