@@ -31,23 +31,12 @@ export function getSaleWithItemsQuery(sale_id?) {
         on: 'sale_item.item_id = stock.id',
       },
       {
-        columns: [
-          'date_sale_opened',
-          'date_sale_closed',
-          'store_cut',
-          'total_price',
-          'number_of_items',
-          'item_list',
-        ],
+        columns: ['date_sale_opened', 'date_sale_closed', 'store_cut', 'total_price', 'number_of_items', 'item_list'],
         table: 'sale',
         on: 'sale.id = sale_item.sale_id',
       },
       {
-        columns: [
-          'vendor_cut',
-          'total_sell',
-          { key: 'date_valid_from', as: 'date_price_valid_from' },
-        ],
+        columns: ['vendor_cut', 'total_sell', { key: 'date_valid_from', as: 'date_price_valid_from' }],
         table: 'stock_price',
         on: 'stock_price.stock_id = sale_item.item_id',
       },
@@ -71,7 +60,6 @@ export function getSaleTransactionsForRangeQuery(start_date, end_date) {
       'vendor_payment_id',
       'gift_card_id',
       'gift_card_taken',
-      'gift_card_change',
       'register_id',
       'is_refund',
     ],
@@ -102,14 +90,7 @@ export function getSaleTransactionsForSaleQuery(sale_id) {
 export function getSalesByVendorUid(vendor_uid: string) {
   return {
     table: 'sale_item',
-    columns: [
-      'sale_id',
-      'item_id',
-      'quantity',
-      'is_refunded',
-      'store_discount',
-      'vendor_discount',
-    ],
+    columns: ['sale_id', 'item_id', 'quantity', 'is_refunded', 'store_discount', 'vendor_discount'],
     joins: [
       {
         table: 'sale',
@@ -246,20 +227,13 @@ export function getStockQuery(stock_id?, vendor_id?, vendor_uid?) {
   } else {
     joins = [
       quantity,
-      ...getStockMovementJoins([
-        StockMovementTypes.Hold,
-        StockMovementTypes.Layby,
-        StockMovementTypes.Sold,
-      ]),
+      ...getStockMovementJoins([StockMovementTypes.Hold, StockMovementTypes.Layby, StockMovementTypes.Sold]),
       price,
     ]
   }
 
   if (vendor_id) where.unshift(`stock.vendor_id = ${vendor_id}`)
-  if (vendor_uid)
-    where.unshift(
-      `vendor_id = (SELECT id FROM vendor WHERE uid = '${vendor_uid}')`
-    )
+  if (vendor_uid) where.unshift(`vendor_id = (SELECT id FROM vendor WHERE uid = '${vendor_uid}')`)
   return {
     columns,
     table: 'stock',
@@ -374,14 +348,7 @@ export function getStockMovementByVendorUid(vendorUid: string) {
 
 export function getCashGivenQuery(register_id: number) {
   return {
-    columns: [
-      'sale_id',
-      'clerk_id',
-      'date',
-      'payment_method',
-      'amount',
-      'change_given',
-    ],
+    columns: ['sale_id', 'clerk_id', 'date', 'payment_method', 'amount', 'change_given'],
     table: 'sale_transaction',
     where: `register_id = ${register_id} AND change_given AND NOT is_deleted`,
   }
@@ -389,14 +356,7 @@ export function getCashGivenQuery(register_id: number) {
 
 export function getCashReceivedQuery(register_id: number) {
   return {
-    columns: [
-      'sale_id',
-      'clerk_id',
-      'date',
-      'payment_method',
-      'amount',
-      'cash_received',
-    ],
+    columns: ['sale_id', 'clerk_id', 'date', 'payment_method', 'amount', 'cash_received'],
     table: 'sale_transaction',
     where: `register_id = ${register_id} AND cash_received AND NOT is_deleted`,
   }
@@ -466,10 +426,7 @@ export function getStocktakeItemsByStocktakeQuery(stocktake_id: number) {
 export function getStocktakesByTemplateQuery(stocktake_template_id: number) {
   return {
     table: 'stocktake',
-    where: [
-      `NOT is_deleted`,
-      `stocktake_template_id = ${stocktake_template_id}`,
-    ],
+    where: [`NOT is_deleted`, `stocktake_template_id = ${stocktake_template_id}`],
     orderBy: 'date_started',
     isDesc: 'true',
   }

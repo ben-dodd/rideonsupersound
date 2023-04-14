@@ -327,7 +327,7 @@ export async function dbReverseGiftCardTransaction(trans: SaleTransactionObject,
       const { giftCard = {} } = mysql2js(giftCardItem) || {}
       console.log('Gift card item is', giftCard)
       console.log('Trans is', trans)
-      const newAmount = (giftCard?.giftCardRemaining || 0) + (trans?.giftCardChange || 0) + (trans?.amount || 0)
+      const newAmount = (giftCard?.giftCardRemaining || 0) + (trans?.changeGiven || 0) + (trans?.amount || 0)
       console.log(newAmount)
       await dbUpdateStockItem({ giftCardRemaining: newAmount, giftCardIsValid: true }, trans?.giftCardId, db)
     })
@@ -517,7 +517,6 @@ export function dbGetSaleTransactions(db = connection) {
       `sale_transaction.vendor_payment_id`,
       `sale_transaction.gift_card_id`,
       `sale_transaction.gift_card_taken`,
-      `sale_transaction.gift_card_change`,
       `sale_transaction.register_id`,
       `sale_transaction.is_refund`,
       `sale_transaction.is_deleted`,

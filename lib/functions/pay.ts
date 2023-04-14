@@ -124,7 +124,7 @@ export function formSaleTransaction({
         giftCardId: giftCardUpdate?.id,
         giftCardTaken: !giftCardUpdate?.giftCardIsValid,
         giftCardRemaining: giftCardUpdate?.giftCardRemaining,
-        giftCardChange: leftOver < 1000 ? leftOver : 0,
+        changeGiven: leftOver < 1000 ? leftOver : 0,
       }
     }
   } else if (paymentMethod === PaymentMethodTypes.Account) {

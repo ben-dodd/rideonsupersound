@@ -68,8 +68,8 @@ export default function TransactionListItem({
             ? `[${(vendor?.name || transaction?.vendor?.name || '').toUpperCase()}]`
             : transaction?.paymentMethod === PaymentMethodTypes.GiftCard
             ? transaction?.giftCardTaken
-              ? transaction?.giftCardChange
-                ? `CARD TAKEN, ${priceCentsString(transaction?.giftCardChange)} CHANGE [${(
+              ? transaction?.changeGiven
+                ? `CARD TAKEN, ${priceCentsString(transaction?.changeGiven)} CHANGE [${(
                     giftCard?.giftCardCode || ''
                   ).toUpperCase()}]`
                 : `CARD TAKEN [${(giftCard?.giftCardCode || '').toUpperCase()}]`

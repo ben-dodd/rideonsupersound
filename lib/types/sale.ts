@@ -85,7 +85,6 @@ export interface SaleTransactionObject {
   giftCardId?: number
   giftCardRemaining?: number
   giftCardTaken?: boolean
-  giftCardChange?: number
   registerId?: number
   isRefund?: boolean
   isDeleted?: boolean
