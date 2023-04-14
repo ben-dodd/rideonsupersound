@@ -1,5 +1,5 @@
 import React from 'react'
-import { CheckCircle, Cancel, LinkOutlined } from '@mui/icons-material'
+import { CheckCircle, Cancel } from '@mui/icons-material'
 import { useRouter } from 'next/router'
 
 interface infoOption {
@@ -22,12 +22,12 @@ const InfoBox = ({ title, image, data }: { title?: string; image?: string; data:
           </div>
         </div>
       )}
-      {data?.map((row) =>
+      {data?.map((row, i) =>
         row?.isHorizontalRule ? (
-          <div className="border-b py-1" />
+          <div key={i} className="border-b py-1" />
         ) : typeof row?.value === 'boolean' ? (
           row?.value || row?.alwaysDisplay ? (
-            <div className={`flex py-1 text-sm items-center`} key={row?.label}>
+            <div className={`flex py-1 text-sm items-center`} key={i}>
               <div className="mr-2 text-brown-dark">{row?.label}</div>
               {row?.value ? (
                 <CheckCircle style={{ fontSize: '20px' }} className="text-green-500" />
@@ -39,16 +39,14 @@ const InfoBox = ({ title, image, data }: { title?: string; image?: string; data:
             <div key={row?.label} />
           )
         ) : row?.value || row?.alwaysDisplay ? (
-          <div className={`flex py-1`} key={row?.label}>
-            <div className="font-bold mr-2 text-brown-dark">{row?.label}</div>
-            <div>{row?.value || 'N/A'}</div>
-            {row?.link ? (
-              <button className="ml-2 link-blue" onClick={() => router.push(row?.link)}>
-                <LinkOutlined />
-              </button>
-            ) : (
-              <div />
-            )}
+          <div className={`flex py-1 flex-wrap`} key={row?.label}>
+            <div className={`font-bold mr-2 text-brown-dark`}>{row?.label}</div>
+            <div
+              className={`${row?.link ? ' link-blue' : ''}`}
+              onClick={row?.link ? () => router.push(row?.link) : null}
+            >
+              {row?.value || 'N/A'}
+            </div>
           </div>
         ) : (
           <div key={row?.label} />
