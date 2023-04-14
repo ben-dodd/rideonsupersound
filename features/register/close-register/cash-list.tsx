@@ -3,10 +3,11 @@ import React from 'react'
 import CashItem from '../cash-item'
 
 const CashList = ({ register }) => {
-  const closeCashGiven = 0
-  const closeCashReceived = 0
-  const closePettyBalance = 0
-  const closeManualPayments = 0
+  const tallyCash = (list, field) => list?.reduce?.((acc, trans) => acc + trans?.[field] || 0, 0) / 100
+  const closeCashGiven = tallyCash(register?.cashGiven, 'changeGiven')
+  const closeCashReceived = tallyCash(register?.cashReceived, 'cashReceived')
+  const closePettyBalance = tallyCash(register?.pettyCash, 'amount')
+  const closeManualPayments = tallyCash(register?.manualPayments, 'amount')
   return (
     <div>
       {register?.cashReceived?.length > 0 && (
@@ -24,7 +25,7 @@ const CashList = ({ register }) => {
         <>
           <div className="text-xl font-bold mt-4">Cash Given</div>
           {register?.cashGiven?.map((transaction: SaleTransactionObject, i: number) => (
-            <CashItem transaction={transaction} field={'change_given'} negative key={i} />
+            <CashItem transaction={transaction} field={'changeGiven'} negative key={i} />
           ))}
           <div className={`border-t text-sm font-bold text-tertiary`}>{`- $${Math.abs(closeCashGiven)?.toFixed(
             2,

@@ -8,8 +8,8 @@ export default function CloseRegisterSidebar() {
   const openedOn = dayjs(currentRegister?.openDate).format('H:mm A, D MMMM YYYY')
   const hasCashList = true
   return (
-    <SidebarContainer title={`Close Register #${currentRegister?.id}`} show>
-      <div className="flex p-2 h-content">
+    <SidebarContainer title="CASH RECEIPTS" show>
+      <div className="flex p-2 h-content overflow-y-scroll">
         <div className="p-2 flex flex-col justify-between">
           {hasCashList ? <CashList register={currentRegister} /> : <div>No cash changed.</div>}
         </div>
