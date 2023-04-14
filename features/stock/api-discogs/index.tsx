@@ -37,7 +37,6 @@ export default function DiscogsPanel() {
         />
         <button
           className="icon-text-button"
-          disabled={false}
           onClick={() => {
             updateStockItem({ discogsItem: null }, id)
             mutate(`stock/${id}`)

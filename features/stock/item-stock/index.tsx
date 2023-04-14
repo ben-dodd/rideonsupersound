@@ -12,6 +12,7 @@ import DiscogsPanel from '../api-discogs'
 import PriceDetails from './price-details'
 import StockDetails from './stock-details'
 import StockItemDisplay from './stock-display'
+import GoogleBooksPanel from '../api-google-books'
 
 const StockItemScreen = ({ item, sales }) => {
   const { openConfirm, openView } = useAppStore()
@@ -86,7 +87,7 @@ const StockItemScreen = ({ item, sales }) => {
             <DiscogsPanel />
           </div>
           <div hidden={!(tab === 1 && item?.media === 'Literature') && !(tab === 2 && item?.media === 'Mixed')}>
-            {/* <GoogleBooksPanel /> */}
+            <GoogleBooksPanel />
           </div>
         </div>
       </>

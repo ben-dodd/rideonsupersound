@@ -23,7 +23,6 @@ export default function DiscogsOption({
   const { mutate } = useSWRConfig()
   const { clerk } = useClerk()
   const handleDiscogsOptionClick = async () => {
-    console.log('handle discogs clicked')
     setDiscogsItemToStockItem(discogsOption, overrideItemDetails)
       .then(async (update) => {
         console.log(update)

@@ -4,38 +4,31 @@ import { getGoogleBooksOptionsByItem } from 'lib/functions/googleBooks'
 import GoogleBooksItem from './google-books-item'
 import GoogleBooksOption from './google-books-option'
 import { useRouter } from 'next/router'
-import { useStockItem } from 'lib/api/stock'
+import { updateStockItem, useStockItem } from 'lib/api/stock'
 import { useSWRConfig } from 'swr'
+import { parseJSON } from 'lib/utils'
 
 export default function GoogleBooksPanel() {
   const router = useRouter()
   const { id } = router.query
   const { stockItem } = useStockItem(`${id}`)
   const { item = {} } = stockItem || {}
-  const [googleBooksOptions, setGoogleBooksOptions] = useState(null)
-  const googleBooksItem = item?.googleBooksItem || null
+  const [googleBooksOptions, setGoogleBooksOptions] = useState([])
+  const googleBooksItem = parseJSON(item?.googleBooksItem, null)
   const { mutate } = useSWRConfig()
-
-  useEffect(() => {
-    if (
-      item?.media === 'Literature' &&
-      !Boolean(item?.googleBooksItem) &&
-      (Boolean(item?.artist) || Boolean(item?.title))
-    )
-      handleGetGoogleBooksOptions()
-  }, [])
 
   const handleGetGoogleBooksOptions = async () => {
     const options = await getGoogleBooksOptionsByItem(item)
     setGoogleBooksOptions(options)
   }
 
-  const handleGoogleBooksOptionClick = (googleBooksItem) =>
-    setItem({
-      ...item,
-      image_url: googleBooksItem?.volumeInfo?.imageLinks?.thumbnail || null,
-      googleBooksItem,
-    })
+  useEffect(() => {
+    if (!Boolean(item?.googleBooksItem) && (Boolean(item?.artist) || Boolean(item?.title)))
+      handleGetGoogleBooksOptions()
+  }, [])
+
+  console.log(googleBooksOptions)
+  console.log(googleBooksItem)
 
   return (
     <div className="flex flex-col h-inventory">
@@ -47,10 +40,10 @@ export default function GoogleBooksPanel() {
           height="50px"
         />
         <button
-          className="icon-text-button hover:bg-blue-100"
-          disabled={disabled}
+          className="icon-text-button"
           onClick={() => {
-            setItem({ ...item, googleBooksItem: null })
+            updateStockItem({ googleBooksItem: null }, id)
+            mutate(`stock/${id}`)
             handleGetGoogleBooksOptions()
           }}
         >
@@ -63,11 +56,7 @@ export default function GoogleBooksPanel() {
         ) : googleBooksOptions ? (
           <div>
             {googleBooksOptions.map((googleBooksOption: any, i: number) => (
-              <GoogleBooksOption
-                key={i}
-                googleBooksOption={googleBooksOption}
-                handleGoogleBooksOptionClick={handleGoogleBooksOptionClick}
-              />
+              <GoogleBooksOption key={i} googleBooksOption={googleBooksOption} />
             ))}
           </div>
         ) : (
