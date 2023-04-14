@@ -95,7 +95,7 @@ export default function Menu({ badges }) {
     },
     {
       type: 'link',
-      page: '/registers',
+      page: '/register',
       text: 'REGISTERS',
       icon: <RegistersIcon />,
     },
