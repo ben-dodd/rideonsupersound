@@ -1,6 +1,6 @@
 import CreateCustomerSidebar from 'features/sell/create-customer/sidebar'
 import CreateHoldSidebar from 'features/sell/create-hold/sidebar'
-import CloseRegisterScreen from 'features/register/close-register'
+import CloseRegisterScreen from 'features/register/close-register/sidebar'
 import ReturnCashDialog from 'features/register/return-cash'
 import TakeCashDialog from 'features/register/take-cash'
 import InventoryScroll from 'features/sell/inventory-scroll'

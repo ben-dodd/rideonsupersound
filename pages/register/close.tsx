@@ -1,11 +1,11 @@
 import Layout from 'components/layout'
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import Loading from 'components/placeholders/loading'
-import CloseRegisterScreen from 'features/register/close-register'
 import { useCurrentRegister, useCurrentRegisterId } from 'lib/api/register'
-import CloseRegisterSidebar from 'features/register/close-register/side-bar'
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
+import CloseRegisterSidebar from 'features/register/close-register/sidebar'
+import CloseRegisterScreen from 'features/register/close-register'
 
 export default function CloseRegisterPage() {
   const router = useRouter()
