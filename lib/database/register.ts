@@ -24,7 +24,8 @@ export function dbGetCurrentRegister(db = connection) {
   return dbGetCurrentRegisterId(db).then((id) => dbGetRegister(id, db))
 }
 
-export function dbGetRegister(id = 0, db = connection) {
+export function dbGetRegister(id = null, db = connection) {
+  if (!id) return null
   return db('register')
     .where({ id })
     .first()

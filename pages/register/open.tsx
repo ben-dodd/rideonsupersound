@@ -7,16 +7,15 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 
 export default function OpenRegisterPage() {
-  const isLoading = false
-  const { currentRegisterId, isCurrentRegisterIdLoading } = useCurrentRegisterId()
+  const { registerId, isRegisterIdLoading } = useCurrentRegisterId()
   const router = useRouter()
 
   useEffect(() => {
-    if (!isCurrentRegisterIdLoading && !currentRegisterId) router.push('/sell')
-  }, [currentRegisterId, isCurrentRegisterIdLoading, router])
+    if (!isRegisterIdLoading && registerId) router.push('/sell')
+  }, [registerId, isRegisterIdLoading])
   return (
     <div className="flex justify-center items-center w-full h-main">
-      {isLoading ? <Loading /> : <OpenRegisterScreen />}
+      {isRegisterIdLoading ? <Loading /> : <OpenRegisterScreen />}
     </div>
   )
 }

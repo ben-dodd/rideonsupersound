@@ -2,7 +2,8 @@ import { snakeCase, transform, camelCase, isObject, isArray, isBoolean } from 'l
 
 export const js2mysql = (obj: any) => (typeof obj === 'object' ? convertKeyCaseSingleLayer(obj, 'snakeCase') : obj)
 
-export const mysql2js = (obj: any) => (typeof obj === 'object' ? convertKeyCase(obj, 'camelCase') : obj)
+export const mysql2js = (obj: any) =>
+  obj == null ? obj : typeof obj === 'object' ? convertKeyCase(obj, 'camelCase') : obj
 
 export const convertKeyCase = (obj: any, keyCase: 'camelCase' | 'snakeCase') =>
   transform(obj, (acc, value, key, target) => {
