@@ -25,9 +25,9 @@ export default function CashItem({
     <>
       <div className="flex justify-between text-sm w-full">
         <div
-          className={
+          className={`text-right w-24 ${
             value < 0 ? (negative ? 'text-secondary' : 'text-tertiary') : negative ? 'text-tertiary' : 'text-secondary'
-          }
+          }`}
         >{`${value < 0 ? (negative ? '+' : '-') : negative ? '-' : '+'} $${Math.abs(value / 100)?.toFixed(2)}`}</div>
         <div
           className={`ml-2 ${transaction?.saleId ? 'link-yellow' : ''}`}

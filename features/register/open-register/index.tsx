@@ -7,18 +7,23 @@ import { useClerk } from 'lib/api/clerk'
 import { getAmountFromCashMap } from 'lib/functions/register'
 import { TillObject } from 'lib/types/register'
 import { useRouter } from 'next/router'
-import { openRegister } from 'lib/api/register'
+import { openRegister, usePreviousRegister } from 'lib/api/register'
 import { Cancel, Check } from '@mui/icons-material'
 import ActionButton from 'components/button/action-button'
+import dayjs from 'dayjs'
+import { priceCentsString } from 'lib/utils'
 
 export default function OpenRegisterScreen() {
   const { clerk } = useClerk()
+  const { previousRegister, isPreviousRegisterLoading } = usePreviousRegister()
   const { setAlert } = useAppStore()
   const [till, setTill] = useState({})
   const [notes, setNotes] = useState('')
   const [openAmount, setOpenAmount]: [string, Function] = useState(`${getAmountFromCashMap(till)}`)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+
+  console.log(previousRegister)
 
   useEffect(() => {
     const amount = getAmountFromCashMap(till)
@@ -93,6 +98,22 @@ export default function OpenRegisterScreen() {
         Open register by entering the total float in the till. Either enter the notes and coins or enter the total
         directly.
       </div>
+      {previousRegister ? (
+        <div className="bg-yellow-200 p-4">
+          <div>{`Previous register closed at ${dayjs(previousRegister?.closeDate).format('H:mm A, D MMMM YYYY')} by ${
+            previousRegister?.closedByName
+          }`}</div>
+          <div className="font-bold text-lg">{`Till closed with ${priceCentsString(previousRegister?.closeAmount)}${
+            previousRegister?.closeDiscrepancy === 0
+              ? ''
+              : previousRegister?.closeDiscrepancy > 0
+              ? ` (${priceCentsString(previousRegister?.closeDiscrepancy)} more than expected)`
+              : ` (${priceCentsString(Math.abs(previousRegister?.closeDiscrepancy))} less than expected)`
+          }`}</div>
+        </div>
+      ) : (
+        <div />
+      )}
       <TextField
         startAdornment="$"
         inputLabel="Total Float"

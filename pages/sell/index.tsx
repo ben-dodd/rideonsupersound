@@ -19,7 +19,7 @@ import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 
 export default function SellPage() {
   const { currentRegister, isCurrentRegisterLoading } = useCurrentRegister()
-  const { view, openView, closeView } = useAppStore()
+  const { view, openView, closeView, options } = useAppStore()
   const router = useRouter()
 
   const handlers = useSwipeable({
@@ -37,7 +37,7 @@ export default function SellPage() {
     preventDefaultTouchmoveEvent: true,
   })
 
-  if (!currentRegister && !isCurrentRegisterLoading) router.push('/register/open')
+  if (!currentRegister && !isCurrentRegisterLoading && !options?.doBypassRegister) router.push('/register/open')
 
   return (
     <div className={`flex relative overflow-x-hidden`} {...handlers}>

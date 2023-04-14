@@ -24,9 +24,24 @@ export function dbGetCurrentRegister(db = connection) {
   return dbGetCurrentRegisterId(db).then((id) => dbGetRegister(id, db))
 }
 
+export function dbGetPreviousRegister(db = connection) {
+  return dbGetCurrentRegisterId(db).then((id) => {
+    // If id, Current register will be max, get the second highest
+    // If no id, No current register, get the register with the highest id number
+    return db('register')
+      .select('id')
+      .where('id', id ? '<' : '=', db('register').max('id'))
+      .first()
+      .then((row) => dbGetRegister(row?.id, db))
+  })
+}
+
 export function dbGetRegister(id = null, db = connection) {
   if (!id) return null
   return db('register')
+    .join('customer as closed_customer', 'register.closed_by_id', '=', 'closed_customer.id')
+    .join('customer as opened_customer', 'register.opened_by_id', '=', 'opened_customer.id')
+    .select('register.*', 'closed_customer.name as closed_by_name', 'opened_customer.name as opened_by_name')
     .where({ id })
     .first()
     .then(async (register) => {

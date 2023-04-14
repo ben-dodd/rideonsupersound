@@ -98,6 +98,9 @@ export interface StoreState {
   logsPage?: any
   jobsPage?: any
   stocktakesPage?: any
+  options?: {
+    doBypassRegister?: boolean
+  }
   openView: (view: ViewProps) => void
   closeView: (view: ViewProps) => void
   openConfirm: (confirm: any) => void
@@ -125,6 +128,7 @@ export interface StoreState {
   togglePageOption: (page: Pages, option: string) => void
   resetSearchBar: (page: Pages) => void
   resetPage: (page: Pages) => void
+  setOption: (option: string, value: any) => void
 }
 
 export enum ViewProps {

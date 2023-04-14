@@ -91,6 +91,9 @@ const initState = {
     tab: 0,
   },
   stocktakesPage: {},
+  options: {
+    doBypassRegister: false,
+  },
 }
 
 export const useAppStore = createSelectors(
@@ -376,6 +379,13 @@ export const useAppStore = createSelectors(
       set(
         produce((draft) => {
           draft[page] = initState[page]
+        }),
+      )
+    },
+    setOption: (option, value) => {
+      set(
+        produce((draft) => {
+          draft.options[option] = value
         }),
       )
     },

@@ -22,6 +22,10 @@ export function useCurrentRegister() {
   return useData(`register/current`, 'currentRegister')
 }
 
+export function usePreviousRegister() {
+  return useData(`register/previous`, 'previousRegister')
+}
+
 export function savePettyCash(pettyCash) {
   return axiosAuth
     .post(`/api/register/pettycash`, pettyCash)
