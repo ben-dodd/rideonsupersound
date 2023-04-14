@@ -13,7 +13,7 @@ const GiftCardScreen = () => {
     <MidScreenContainer
       title="Gift Vouchers"
       isLoading={isGiftCardsLoading}
-      titleClass="bg-col8"
+      titleClass="bg-col7"
       full={!giftCardsPage?.loadedGiftCard}
     >
       <div className="h-content overflow-y-scroll">

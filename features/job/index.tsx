@@ -17,7 +17,7 @@ const JobsScreen = () => {
   const setTab = (tab) => setPage(Pages.jobsPage, { tab })
   const menuItems = [{ text: 'New Job', icon: <NewReleases />, onClick: () => openView(ViewProps.taskDialog) }]
   return (
-    <MidScreenContainer title="Jobs" isLoading={isJobsLoading} titleClass="bg-col10" full={true} menuItems={menuItems}>
+    <MidScreenContainer title="Jobs" isLoading={isJobsLoading} titleClass="bg-col8" full={true} menuItems={menuItems}>
       <Tabs tabs={['Restocking', 'Mail Orders', 'Other Jobs']} value={tab} onChange={setTab} />
       {tab === 0 && <RestockTaskView />}
       {tab === 1 && <JobView filter={(job) => job?.isPostMailOrder} />}

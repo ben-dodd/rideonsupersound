@@ -405,6 +405,8 @@ async function handleStockMovements(item, sale, prevState, registerId = null, db
     (sale?.state === SaleStateTypes.Completed ||
       (sale?.state === SaleStateTypes.Layby && prevState !== SaleStateTypes.Layby))
   ) {
+    let existingStockMovement = await dbGetStockMovementByItemIdAndSaleId(item.itemId, sale.id, db)
+    console.log('Existing', existingStockMovement)
     let stockMovement = {
       stockId: item?.itemId,
       clerkId: sale?.saleClosedBy,
@@ -430,6 +432,10 @@ async function handleStockMovements(item, sale, prevState, registerId = null, db
     stockMovement.quantity = getStockMovementQuantityByAct(item?.quantity, stockMovement?.act)
     await dbCreateStockMovement(stockMovement, db)
   }
+}
+
+export function dbGetStockMovementByItemIdAndSaleId(itemId, saleId, db = connection) {
+  return db('stock_movement').where({ item_id: itemId }).where({ sale_id: saleId })
 }
 
 export function getStockMovementQuantityByAct(quantity, act) {

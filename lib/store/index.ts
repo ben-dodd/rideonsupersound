@@ -61,7 +61,9 @@ const initState = {
     tab: 0,
   },
   paymentsPage: {},
-  registersPage: {},
+  registersPage: {
+    tab: 0,
+  },
   salesPage: {
     tab: 0,
     returnToCartDialog: {},
