@@ -10,6 +10,7 @@ import { useState } from 'react'
 import Modal from 'components/modal'
 import { ViewProps } from 'lib/store/types'
 import { useSWRConfig } from 'swr'
+import { modulusCheck } from 'lib/functions/payment'
 
 export default function VendorEditDialog({ vendor }) {
   const { clerks } = useClerks()
@@ -55,6 +56,8 @@ export default function VendorEditDialog({ vendor }) {
 
   const { mutate } = useSWRConfig()
   const [submitting, setSubmitting] = useState(false)
+
+  const isBankAccountValid = modulusCheck(editVendor?.bankAccountNumber)
 
   const buttons: ModalButton[] = [
     {
@@ -133,6 +136,7 @@ export default function VendorEditDialog({ vendor }) {
             }
           />
         </div>
+        {!isBankAccountValid && <div className="text-red-500 text-sm">Bank Account Invalid</div>}
         <div className="flex mt-2">
           <input
             type="checkbox"
