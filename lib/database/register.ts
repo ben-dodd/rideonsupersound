@@ -39,10 +39,10 @@ export function dbGetPreviousRegister(db = connection) {
 export function dbGetRegister(id = null, db = connection) {
   if (!id) return null
   return db('register')
-    .join('customer as closed_customer', 'register.closed_by_id', '=', 'closed_customer.id')
-    .join('customer as opened_customer', 'register.opened_by_id', '=', 'opened_customer.id')
-    .select('register.*', 'closed_customer.name as closed_by_name', 'opened_customer.name as opened_by_name')
-    .where({ id })
+    .leftJoin('clerk as closed_clerk', 'closed_clerk.id', 'register.closed_by_id')
+    .leftJoin('clerk as opened_clerk', 'opened_clerk.id', 'register.opened_by_id')
+    .select('register.*', 'closed_clerk.name as closed_by_name', 'opened_clerk.name as opened_by_name')
+    .where('register.id', id)
     .first()
     .then(async (register) => {
       const register_id = register?.id
