@@ -37,11 +37,6 @@ export default function SellPage() {
     preventDefaultTouchmoveEvent: true,
   })
 
-  console.log(currentRegister)
-  console.log(isCurrentRegisterLoading)
-  console.log(options?.doBypassRegister)
-  console.log(options)
-
   if (!currentRegister && !isCurrentRegisterLoading && !options?.doBypassRegister) router.push('/register/open')
 
   return (

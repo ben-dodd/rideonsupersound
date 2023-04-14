@@ -30,7 +30,7 @@ export default function BatchPaymentDialog() {
         ?.map((vendorAccount) => ({
           ...vendorAccount,
           isChecked: checkDefaultChecked(vendorAccount),
-          payAmount: centsToDollars(vendorAccount?.totalOwing),
+          payAmount: centsToDollars(vendorAccount?.totalOwing).toFixed(2),
         }))
         ?.sort((a, b) => {
           if (!a?.isChecked && b?.isChecked) return 1

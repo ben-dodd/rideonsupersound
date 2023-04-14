@@ -6,7 +6,7 @@ import { Tooltip } from '@mui/material'
 import dayjs from 'dayjs'
 import { useState } from 'react'
 import { checkDefaultChecked, modulusCheck } from 'lib/functions/payment'
-import { priceCentsString } from 'lib/utils'
+import { priceCentsString, priceDollarsString } from 'lib/utils'
 import { useRouter } from 'next/router'
 import SearchInput from 'components/inputs/search-input'
 
@@ -25,24 +25,11 @@ export default function SelectBatchPayments({ vendorList, setVendorList }) {
           <div className="mx-2 my-auto h-12 w-full">
             <SearchInput searchValue={search} handleSearch={(e) => setSearch(e?.target?.value)} />
           </div>
-          {/* <button
-          className={`py-1 px-2 border border-black rounded-xl mt-2 bg-tertiary-light
-          `}
-          onClick={() =>
-            setVendorList(
-              vendorList?.map((v) =>
-                v?.totalOwing > 2000 ? { ...v, isChecked: true } : v
-              )
-            )
-          }
-        >
-          Select all owed more than $20
-        </button> */}
         </div>
         <div className="my-auto text-red-400 text-2xl font-bold text-right">
           {vendorList?.filter((v) => isNaN(parseFloat(v?.payAmount)))?.length > 0
             ? `CHECK PAY ENTRIES`
-            : `PAY $${totalPay.toFixed(2)}\nto ${vendorNum} VENDORS`}
+            : `PAY ${priceDollarsString(totalPay)}\nto ${vendorNum} VENDORS`}
         </div>
       </div>
       <div className="w-full">
