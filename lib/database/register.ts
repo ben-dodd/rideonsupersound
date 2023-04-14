@@ -36,6 +36,7 @@ export function dbGetRegister(id = null, db = connection) {
         .where({ register_id })
         .where(`is_deleted`, 0)
         .whereNotNull(`change_given`)
+        .andWhere(`change_given`, '>', 0)
       const cashReceived = await db('sale_transaction')
         .select('sale_id', 'clerk_id', 'date', 'payment_method', 'amount', 'cash_received')
         .where({ register_id })
