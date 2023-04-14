@@ -2,9 +2,18 @@ import Layout from 'components/layout'
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import Loading from 'components/placeholders/loading'
 import OpenRegisterScreen from 'features/register/open-register'
+import { useCurrentRegisterId } from 'lib/api/register'
+import { useEffect } from 'react'
+import { useRouter } from 'next/router'
 
 export default function OpenRegisterPage() {
   const isLoading = false
+  const { currentRegisterId, isCurrentRegisterIdLoading } = useCurrentRegisterId()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!isCurrentRegisterIdLoading && !currentRegisterId) router.push('/sell')
+  }, [currentRegisterId, isCurrentRegisterIdLoading, router])
   return (
     <div className="flex justify-center items-center w-full h-main">
       {isLoading ? <Loading /> : <OpenRegisterScreen />}

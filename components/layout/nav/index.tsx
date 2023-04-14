@@ -4,7 +4,7 @@ import { useClerk } from 'lib/api/clerk'
 import { ViewProps } from 'lib/store/types'
 import { useAppStore } from 'lib/store'
 import { useRouter } from 'next/router'
-import { ExitToApp } from '@mui/icons-material'
+import { ExitToApp, PointOfSaleTwoTone } from '@mui/icons-material'
 import { Tooltip } from '@mui/material'
 
 // REVIEW fix all actions and clean up files
@@ -43,16 +43,16 @@ export default function Nav() {
               <HelpIcon />
             </button>
           </Tooltip>
+          <Tooltip title="Close Register">
+            <button onClick={() => router.push('/register/close')} className="ml-2 text-brown-dark hover:text-brown">
+              <PointOfSaleTwoTone />
+            </button>
+          </Tooltip>
           <Tooltip title="Sign Out">
             <button onClick={() => router.push('/api/auth/logout')} className="ml-2 text-brown-dark hover:text-brown">
               <ExitToApp />
             </button>
           </Tooltip>
-          {/* <Tooltip title="Close Register and Sign Out">
-            <button onClick={() => router.push('/register/close')} className="ml-2 text-brown-dark hover:text-brown">
-              <ExitToApp />
-            </button>
-          </Tooltip> */}
         </div>
         {/*<button
           className="px-4 sm:hidden"
