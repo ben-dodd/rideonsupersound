@@ -48,7 +48,7 @@ const CloseRegisterScreen = () => {
       till,
     )
     setLoading(false)
-    router.push('/sell')
+    router.push('/register/open')
     setAlert({
       open: true,
       type: 'success',

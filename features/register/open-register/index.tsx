@@ -12,18 +12,18 @@ import { Cancel, Check } from '@mui/icons-material'
 import ActionButton from 'components/button/action-button'
 import dayjs from 'dayjs'
 import { priceCentsString } from 'lib/utils'
+import { useSWRConfig } from 'swr'
 
 export default function OpenRegisterScreen() {
   const { clerk } = useClerk()
   const { previousRegister, isPreviousRegisterLoading } = usePreviousRegister()
-  const { setAlert } = useAppStore()
+  const { setAlert, setOption } = useAppStore()
   const [till, setTill] = useState({})
   const [notes, setNotes] = useState('')
   const [openAmount, setOpenAmount]: [string, Function] = useState(`${getAmountFromCashMap(till)}`)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
-
-  console.log(previousRegister)
+  const { mutate } = useSWRConfig()
 
   useEffect(() => {
     const amount = getAmountFromCashMap(till)
@@ -40,6 +40,9 @@ export default function OpenRegisterScreen() {
       },
       till,
     )
+    mutate('register')
+    mutate('register/id')
+    mutate('register/current')
     setLoading(false)
     router.push('/sell')
     setAlert({
@@ -75,7 +78,7 @@ export default function OpenRegisterScreen() {
       icon: <Cancel />,
       type: 'cancel',
       onClick: () => {
-        setLoading(true)
+        setOption('doBypassRegister', true)
         router.push('/sell')
       },
       disabled: loading,
@@ -107,9 +110,10 @@ export default function OpenRegisterScreen() {
             previousRegister?.closeDiscrepancy === 0
               ? ''
               : previousRegister?.closeDiscrepancy > 0
-              ? ` (${priceCentsString(previousRegister?.closeDiscrepancy)} more than expected)`
-              : ` (${priceCentsString(Math.abs(previousRegister?.closeDiscrepancy))} less than expected)`
+              ? ` (${priceCentsString(previousRegister?.closeDiscrepancy)} less than expected)`
+              : ` (${priceCentsString(Math.abs(previousRegister?.closeDiscrepancy))} more than expected)`
           }`}</div>
+          {previousRegister?.closeNote ? <div className="italic text-sm">{previousRegister?.closeNote}</div> : <div />}
         </div>
       ) : (
         <div />
