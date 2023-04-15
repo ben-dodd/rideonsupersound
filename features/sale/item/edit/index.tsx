@@ -28,13 +28,10 @@ const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
   }
 
   async function clickParkSale() {
-    const newCart = await saveCart(
-      {
-        ...cart,
-        sale: { ...sale, state: SaleStateTypes.Parked },
-      },
-      sale?.state,
-    )
+    const newCart = await saveCart({
+      ...cart,
+      sale: { ...sale, state: SaleStateTypes.Parked },
+    })
     router.push('/sell')
     mutate(`/sale/${sale?.id}`, newCart)
     setAlert({
@@ -95,7 +92,7 @@ const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
       saleClosedBy: sale?.saleClosedBy || clerk?.id,
       dateSaleClosed: sale?.dateSaleClosed || dayjs.utc().format(),
     }
-    await saveCart({ ...cart, sale: completedSale }, sale?.state)
+    await saveCart({ ...cart, sale: completedSale })
     router.push('/sell')
     clearCart()
     setAlert({

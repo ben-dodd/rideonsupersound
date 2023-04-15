@@ -119,6 +119,14 @@ export async function dbGetSale(id, db = connection) {
   return cart
 }
 
+export async function dbGetSaleState(id, db = connection) {
+  const cart: any = {}
+  cart.sale = await db('sale').select('state').where({ id }).first()
+  if (!cart?.sale) cart.sale = {}
+  cart.items = await dbGetSaleItemsBySaleId(id, db)
+  return cart
+}
+
 export function dbGetSaleItemsBySaleId(saleId, db = connection) {
   return db('sale_item').where({ sale_id: saleId })
   // .where({ is_deleted: 0 })
@@ -228,10 +236,12 @@ export function dbUpdateSaleTransaction(id, update, db = connection) {
     .catch((e) => Error(e.message))
 }
 
-export async function dbSaveCart(cart, prevState, db = connection) {
+export async function dbSaveCart(cart, db = connection) {
   console.log('DB SAVE CART CALLED!')
   return db
     .transaction(async (trx) => {
+      const prevSale = cart?.sale?.id ? await dbGetSaleState(cart?.sale?.id, db) : null
+      console.log('Previous sale is', prevSale)
       console.log('Beginning transaction')
       const { sale = {}, items = [], transactions = [], registerId = null } = cart || {}
       const newSale = {

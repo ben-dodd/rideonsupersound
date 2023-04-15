@@ -42,7 +42,7 @@ export default function CreateLaybySidebar() {
         message: 'LAYBY STARTED.',
       })
     }
-    await saveCart({ ...cart, sale: laybySale }, sale?.state)
+    await saveCart({ ...cart, sale: laybySale })
     resetCart()
     router.push('/sell')
   }
