@@ -49,6 +49,13 @@ export function deleteStockItem(id) {
     .catch((e) => Error(e.message))
 }
 
+export function deleteStockPrice(id) {
+  return axiosAuth
+    .patch(`/api/stock/price/delete/${id}`)
+    .then((res) => res.data)
+    .catch((e) => Error(e.message))
+}
+
 export function createStockItem(stockItem: StockItemObject, clerk: ClerkObject) {
   return axiosAuth
     .post(`/api/stock`, {

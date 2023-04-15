@@ -4,8 +4,8 @@ import TextField from 'components/inputs/text-field'
 import Modal from 'components/modal'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
-import ItemListItem from '../item/sale-summary/static-sale-item'
 import { SaleItemObject, SaleStateTypes } from 'lib/types/sale'
+import StaticSaleItem from '../item/sale-summary/static-sale-item'
 
 export default function ReturnItemsDialog({ sale }) {
   const { cart, view, setCart, setCartSale, closeView, setAlert } = useAppStore()
@@ -62,7 +62,7 @@ export default function ReturnItemsDialog({ sale }) {
           ?.filter((item: SaleItemObject) => !item?.isDeleted && !item?.isRefunded)
           ?.map((item: SaleItemObject) => (
             <div className="flex" key={item?.id}>
-              <ItemListItem
+              <StaticSaleItem
                 saleItem={item}
                 selected={refundItems.includes(item?.id)}
                 onClick={() => {

@@ -10,6 +10,7 @@ import { createStockPrice, useStockItem } from 'lib/api/stock'
 import { useSWRConfig } from 'swr'
 import { centsToDollars, dollarsToCents } from 'lib/utils'
 import { getProfitMargin, getStoreCut } from 'lib/functions/pay'
+import dayjs from 'dayjs'
 
 export default function ChangePriceDialog() {
   const { clerk } = useClerk()
@@ -23,6 +24,7 @@ export default function ChangePriceDialog() {
 
   const [price, setPrice] = useState({ totalSell: '', vendorCut: '', storeCut: '', margin: '' })
   const [notes, setNotes] = useState('')
+  const [date, setDate] = useState(dayjs().format('YYYY-MM-DDTHH:mm'))
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
@@ -91,6 +93,7 @@ export default function ChangePriceDialog() {
         await createStockPrice({
           stockId: item?.id,
           clerkId: clerk?.id,
+          dateValidFrom: date || dayjs.utc().format(),
           totalSell: dollarsToCents(price?.totalSell),
           vendorCut: dollarsToCents(price?.vendorCut),
           note: 'New stock priced.',
@@ -108,7 +111,6 @@ export default function ChangePriceDialog() {
       text: 'CHANGE PRICE',
     },
   ]
-  // TODO add ability to change by margin
 
   return (
     <Modal
@@ -161,6 +163,13 @@ export default function ChangePriceDialog() {
             onChange={handleSetPrice}
           />
         </div>
+        <TextField
+          inputLabel="Date Valid From"
+          value={date}
+          onChange={(e: any) => setDate(e.target.value)}
+          inputType="datetime-local"
+          max={dayjs().format('YYYY-MM-DDTHH:mm')}
+        />
         <TextField
           inputLabel="Notes"
           value={notes}

@@ -16,8 +16,8 @@ interface TextFieldProps {
   error?: boolean
   fieldRequired?: boolean
   errorText?: string
-  max?: number
-  min?: number
+  max?: number | string
+  min?: number | string
   className?: string
   divClass?: string
   labelClass?: string
@@ -53,7 +53,7 @@ export default function TextField({
   endAdornmentClass,
   inputClass,
 }: TextFieldProps) {
-  let isError = error || (valueNum && (valueNum > max || valueNum < min))
+  let isError = error || (valueNum && (valueNum > parseFloat(`${max}`) || valueNum < parseFloat(`${min}`)))
   return (
     <div className={className || ''} key={`${id || inputLabel || ''}--div-main`}>
       {inputLabel && <div className={`transition-all px-1 text-xs mt-2 mb-2 ${labelClass || ''}`}>{inputLabel}</div>}

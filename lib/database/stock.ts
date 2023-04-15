@@ -288,6 +288,10 @@ export function dbCreateStockPrice(stockPrice, db = connection) {
   return db('stock_price').insert(js2mysql(stockPrice))
 }
 
+export function dbDeleteStockPrice(id, db = connection) {
+  return db('stock_price').where({ id }).update({ is_deleted: 1 })
+}
+
 export function dbGetStocktakeTemplates(db = connection) {
   return db('stocktake_template').where(`is_deleted`, 0)
 }

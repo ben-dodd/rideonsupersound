@@ -1,12 +1,16 @@
 import dayjs from 'dayjs'
 import { useRouter } from 'next/router'
-import { useStockItem } from 'lib/api/stock'
+import { deleteStockPrice, useStockItem } from 'lib/api/stock'
 import { isPreApp, priceCentsString } from 'lib/utils'
-import { MonetizationOnRounded, ShoppingCartCheckoutRounded, StackedBarChartRounded } from '@mui/icons-material'
+import { Delete, MonetizationOnRounded, ShoppingCartCheckoutRounded, StackedBarChartRounded } from '@mui/icons-material'
 import SectionPanel from 'components/container/section-panel'
+import { useAppStore } from 'lib/store'
+import { useSWRConfig } from 'swr'
 
 export default function StockDetails() {
   const router = useRouter()
+  const { openConfirm, closeConfirm } = useAppStore()
+  const { mutate } = useSWRConfig()
   const { id } = router.query
   const { stockItem } = useStockItem(`${id}`)
   const { quantities = {}, stockMovements = [], stockPrices = [], sales = [] } = stockItem || {}
@@ -95,10 +99,40 @@ export default function StockDetails() {
             <div>No stock prices found.</div>
           ) : (
             <div>
-              {stockPrices?.map((s) => (
+              {stockPrices?.map((s, i) => (
                 <div key={s?.id} className={`flex p-2 justify-between`}>
-                  <div className="mr-2">
-                    {isPreApp(s?.dateValidFrom) ? 'Pre-App' : dayjs(s?.dateValidFrom).format('D MMMM YYYY, h:mm A')}
+                  <div className="flex">
+                    <div className="w-12">
+                      {i !== stockPrices?.length - 1 ? (
+                        <button
+                          onClick={() => {
+                            openConfirm({
+                              open: true,
+                              title: 'Delete Price?',
+                              message:
+                                'Are you sure you want to delete this price change? This might have devastating consequences...',
+                              yesText: 'Yes',
+                              noText: 'No',
+                              action: () => {
+                                deleteStockPrice(s?.id).then(() => {
+                                  mutate(`stock/${id}`)
+                                  closeConfirm()
+                                })
+                                closeConfirm()
+                              },
+                            })
+                          }}
+                          className="border-rounded hover:opacity-50 mr-2"
+                        >
+                          <Delete />
+                        </button>
+                      ) : (
+                        <div />
+                      )}
+                    </div>
+                    <div className="mr-2">
+                      {isPreApp(s?.dateValidFrom) ? 'Pre-App' : dayjs(s?.dateValidFrom).format('D MMMM YYYY, h:mm A')}
+                    </div>
                   </div>
                   <div className={`mr-2 font-bold`}>{`(Vendor ${priceCentsString(
                     s?.vendorCut,
