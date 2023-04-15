@@ -91,5 +91,10 @@ exports.seed = (knex) =>
           format: 'CD',
           is_deleted: 0,
         },
+        {
+          id: 12,
+          title: 'SaveCart Item',
+          is_deleted: 0,
+        },
       ]),
     )

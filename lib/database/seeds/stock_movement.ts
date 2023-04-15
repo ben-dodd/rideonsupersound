@@ -105,5 +105,12 @@ exports.seed = (knex) =>
           act: StockMovementTypes.Unlayby,
           is_deleted: 0,
         },
+        {
+          id: 12,
+          stock_id: 12,
+          quantity: 10,
+          act: StockMovementTypes.Received,
+          is_deleted: 0,
+        },
       ]),
     )

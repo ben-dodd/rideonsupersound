@@ -13,6 +13,7 @@ import {
   dbCreateStockMovement,
   dbUpdateStockItem,
   dbGetGiftCard,
+  dbGetStockMovements,
 } from './stock'
 import { js2mysql, mysql2js } from './utils/helpers'
 
@@ -124,6 +125,7 @@ export async function dbGetSaleState(id, db = connection) {
   cart.sale = await db('sale').select('state').where({ id }).first()
   if (!cart?.sale) cart.sale = {}
   cart.items = await dbGetSaleItemsBySaleId(id, db)
+  cart.stockMovements = await dbGetStockMovements()
   return cart
 }
 
@@ -275,7 +277,7 @@ export async function dbSaveCart(cart, db = connection) {
 
       for (const item of items) {
         console.log('Handling sale item:', item.id)
-        promises.push(handleSaveSaleItem(item, newSale, prevState, registerId, trx))
+        promises.push(handleSaveSaleItem(item, newSale, prevSale, registerId, trx))
       }
 
       console.log('Handling transactions')
@@ -301,6 +303,10 @@ export async function dbSaveCart(cart, db = connection) {
       console.error('Transaction failed:', e.message)
       return Error(e.message)
     })
+}
+
+export async function dbGetStockMovementsForSaleAndItem(stockId, saleId, db = connection) {
+  return db('stock_movement').where({ stock_id: stockId }).where({ sale_id: saleId })
 }
 
 export async function dbDeleteSaleTransaction(trans: SaleTransactionObject, db = connection) {
@@ -375,10 +381,12 @@ export async function dbDeleteSale(id, db = connection) {
     .catch((e) => Error(e.message))
 }
 
-async function handleSaveSaleItem(item, sale, prevState, registerId, trx) {
+async function handleSaveSaleItem(item, sale, prevSale, registerId, trx) {
   // return db
   //   .transaction(async (trx) => {
   const newItem = { ...item }
+  const { sale: { state: prevState = SaleStateTypes.InProgress } = {}, items = [] } = prevSale || {}
+  const prevItem = items?.find((prev) => prev?.id === item?.id)
 
   // handle gift cards
   if (item?.isGiftCard) {
@@ -391,7 +399,7 @@ async function handleSaveSaleItem(item, sale, prevState, registerId, trx) {
     }
   }
 
-  await handleStockMovements(item, sale, prevState, registerId, trx)
+  await handleStockMovements(item, sale, prevState, prevItem, registerId, trx)
   await dbCheckIfRestockNeeded(item?.itemId, sale?.state, trx)
 
   // Add or update Sale Item
@@ -407,45 +415,37 @@ async function handleSaveSaleItem(item, sale, prevState, registerId, trx) {
   return newItem
 }
 
-async function handleStockMovements(item, sale, prevState, registerId = null, db) {
+async function handleStockMovements(item, sale, prevState, prevItem, registerId = null, db) {
   // Add stock movement if it's a regular stock item
-  if (
-    !item?.isGiftCard &&
-    !item?.isMiscItem &&
-    (sale?.state === SaleStateTypes.Completed ||
-      (sale?.state === SaleStateTypes.Layby && prevState !== SaleStateTypes.Layby))
-  ) {
-    let existingStockMovement = await dbGetStockMovementByItemIdAndSaleId(item.itemId, sale.id, db)
-    console.log('Existing', existingStockMovement)
+  if (!item?.isGiftCard && !item?.isMiscItem) {
+    console.log('Handling stock movement for ', item?.itemId)
+    const prevStockMovements = await dbGetStockMovementsForSaleAndItem(item?.itemId, sale?.id, db)
+    console.log(prevStockMovements)
     let stockMovement = {
       stockId: item?.itemId,
       clerkId: sale?.saleClosedBy,
       saleId: sale?.id,
       registerId,
-      act: StockMovementTypes.Sold,
+      act: null,
       quantity: 0,
     }
     if (sale?.state === SaleStateTypes.Completed) {
       // If it was a layby, unlayby it before marking as sold
-      if (prevState === SaleStateTypes.Layby && !item?.isGiftCard) {
+      if (prevState === SaleStateTypes.Layby) {
         stockMovement.act = StockMovementTypes.Unlayby
-      }
-      if (item?.isRefunded) {
+      } else if (item?.isRefunded) {
         // Refund item if refunded
         stockMovement.act = StockMovementTypes.Unsold
-      }
+      } else stockMovement.act = StockMovementTypes.Sold
       // Add layby stock movement if it's a new layby
     } else if (sale?.state === SaleStateTypes.Layby && prevState !== SaleStateTypes.Layby) {
       stockMovement.clerkId = sale?.laybyStartedBy
       stockMovement.act = StockMovementTypes.Layby
     }
     stockMovement.quantity = getStockMovementQuantityByAct(item?.quantity, stockMovement?.act)
-    await dbCreateStockMovement(stockMovement, db)
+    console.log('Creating stock movement', stockMovement)
+    if (stockMovement?.act) await dbCreateStockMovement(stockMovement, db)
   }
-}
-
-export function dbGetStockMovementByItemIdAndSaleId(itemId, saleId, db = connection) {
-  return db('stock_movement').where({ stock_id: itemId }).where({ sale_id: saleId })
 }
 
 export function getStockMovementQuantityByAct(quantity, act) {
