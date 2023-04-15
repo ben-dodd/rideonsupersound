@@ -13,7 +13,6 @@ import {
   dbCreateStockMovement,
   dbUpdateStockItem,
   dbGetGiftCard,
-  dbGetStockMovements,
 } from './stock'
 import { js2mysql, mysql2js } from './utils/helpers'
 
@@ -125,7 +124,6 @@ export async function dbGetSaleState(id, db = connection) {
   cart.sale = await db('sale').select('state').where({ id }).first()
   if (!cart?.sale) cart.sale = {}
   cart.items = await dbGetSaleItemsBySaleId(id, db)
-  cart.stockMovements = await dbGetStockMovements()
   return cart
 }
 
@@ -239,10 +237,11 @@ export function dbUpdateSaleTransaction(id, update, db = connection) {
 }
 
 export async function dbSaveCart(cart, db = connection) {
-  console.log('DB SAVE CART CALLED!')
+  console.log('DB SAVE CART CALLED!', cart)
   return db
     .transaction(async (trx) => {
-      const prevSale = cart?.sale?.id ? await dbGetSaleState(cart?.sale?.id, db) : null
+      console.log('getting rpevious sale')
+      const prevSale = cart?.sale?.id ? await dbGetSaleState(cart?.sale?.id, trx) : null
       console.log('Previous sale is', prevSale)
       console.log('Beginning transaction')
       const { sale = {}, items = [], transactions = [], registerId = null } = cart || {}
@@ -306,7 +305,8 @@ export async function dbSaveCart(cart, db = connection) {
 }
 
 export async function dbGetStockMovementsForSaleAndItem(stockId, saleId, db = connection) {
-  return db('stock_movement').where({ stock_id: stockId }).where({ sale_id: saleId })
+  console.log('new function', stockId, saleId)
+  return db('stock_movement').where('stock_id', '=', stockId).andWhere('sale_id', '=', saleId)
 }
 
 export async function dbDeleteSaleTransaction(trans: SaleTransactionObject, db = connection) {
@@ -384,6 +384,7 @@ export async function dbDeleteSale(id, db = connection) {
 async function handleSaveSaleItem(item, sale, prevSale, registerId, trx) {
   // return db
   //   .transaction(async (trx) => {
+  console.log('saving item', item)
   const newItem = { ...item }
   const { sale: { state: prevState = SaleStateTypes.InProgress } = {}, items = [] } = prevSale || {}
   const prevItem = items?.find((prev) => prev?.id === item?.id)
@@ -438,9 +439,11 @@ async function handleStockMovements(item, sale, prevState, prevItem, registerId 
           { ...stockMovement, act: StockMovementTypes.Unlayby, quantity: unlaybyQuantity },
           db,
         )
-      } else if (item?.isRefunded) {
+      }
+      if (item?.isRefunded && !prevItem?.isRefunded) {
         // Refund item if refunded
-        stockMovement.act = StockMovementTypes.Unsold
+        const refundQuantity = getStockMovementQuantityByAct(item?.quantity, StockMovementTypes.Unsold)
+        await dbCreateStockMovement({ ...stockMovement, act: StockMovementTypes.Unsold, quantity: refundQuantity }, db)
       } else stockMovement.act = StockMovementTypes.Sold
       // Add layby stock movement if it's a new layby
     } else if (sale?.state === SaleStateTypes.Layby && prevState !== SaleStateTypes.Layby) {
