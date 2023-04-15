@@ -6,7 +6,7 @@ import { useAppStore } from 'lib/store'
 import { Pages, ViewProps } from 'lib/store/types'
 import { useSWRConfig } from 'swr'
 import { deleteSale, saveCart, useParkedSales } from 'lib/api/sale'
-import { Delete, DirectionsCar, DryCleaning, Folder } from '@mui/icons-material'
+import { Clear, Delete, DirectionsCar, DryCleaning, Folder } from '@mui/icons-material'
 import DropdownMenu from 'components/dropdown-menu'
 import dayjs from 'dayjs'
 
@@ -97,6 +97,10 @@ export default function ShoppingCartActions() {
         })
   }
 
+  function onClickClearCart() {
+    clearCart()
+  }
+
   return (
     <div className="flex">
       <Tooltip title={`Open Parked Sales`}>
@@ -104,7 +108,7 @@ export default function ShoppingCartActions() {
           <DropdownMenu items={parkedSaleItems} icon={<Folder />} buttonClass="icon-button-small-white" />
         </span>
       </Tooltip>
-      {sale?.state !== SaleStateTypes.Completed && (
+      {sale?.state !== SaleStateTypes.Completed ? (
         <>
           <Tooltip title={sale?.state === SaleStateTypes.Layby ? 'Continue Layby' : 'Park sale'}>
             <span className="flex items-center">
@@ -137,6 +141,14 @@ export default function ShoppingCartActions() {
             </Tooltip>
           )}
         </>
+      ) : (
+        <Tooltip title="Clear cart">
+          <span className="flex items-center">
+            <button className="icon-button-small-white" onClick={onClickClearCart}>
+              <Clear />
+            </button>
+          </span>
+        </Tooltip>
       )}
     </div>
   )

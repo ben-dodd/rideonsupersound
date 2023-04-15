@@ -435,7 +435,7 @@ async function handleStockMovements(item, sale, prevState, registerId = null, db
 }
 
 export function dbGetStockMovementByItemIdAndSaleId(itemId, saleId, db = connection) {
-  return db('stock_movement').where({ item_id: itemId }).where({ sale_id: saleId })
+  return db('stock_movement').where({ stock_id: itemId }).where({ sale_id: saleId })
 }
 
 export function getStockMovementQuantityByAct(quantity, act) {
