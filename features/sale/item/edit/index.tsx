@@ -63,37 +63,29 @@ const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
   }
 
   async function clickDeleteSale() {
-    transactions?.filter((transaction) => !transaction?.isDeleted)?.length > 0
-      ? openConfirm({
-          open: true,
-          title: 'Hold up',
-          message:
-            'To cancel this sale you need to delete the transactions already entered. Click on the rubbish bin icon on the left of each transaction to cancel it.',
-          yesButtonOnly: true,
+    openConfirm({
+      open: true,
+      title: 'Are you absolutely positively sure?',
+      message:
+        'Are you sure you want to delete this sale? This will delete all transactions associated with the sale. Only do this action if transactions were not actually processed. Otherwise, you might want to edit the sale instead and process refunds.',
+      yesText: 'DELETE SALE',
+      action: () => {
+        deleteSale(sale?.id).then(() => {
+          setAlert({
+            open: true,
+            type: 'error',
+            message: `SALE DELETED`,
+            undo: () => {
+              console.log('TODO - save sale again')
+            },
+          })
+          if (sale?.state === SaleStateTypes.Parked) mutate(`sale/parked`)
+          if (sale?.state === SaleStateTypes.Layby) mutate(`sale/layby`)
+          router.push('/sell')
         })
-      : openConfirm({
-          open: true,
-          title: 'Are you sure?',
-          message: 'Are you sure you want to delete this sale?',
-          yesText: 'DELETE SALE',
-          action: () => {
-            deleteSale(sale?.id).then(() => {
-              setAlert({
-                open: true,
-                type: 'error',
-                message: `SALE DELETED`,
-                undo: () => {
-                  console.log('TODO - save sale again')
-                },
-              })
-              if (sale?.state === SaleStateTypes.Parked) mutate(`sale/parked`)
-              if (sale?.state === SaleStateTypes.Layby) mutate(`sale/layby`)
-              clearCart()
-              router.push('/sell')
-            })
-          },
-          noText: 'CANCEL',
-        })
+      },
+      noText: 'CANCEL',
+    })
   }
 
   async function clickCompleteSale() {
