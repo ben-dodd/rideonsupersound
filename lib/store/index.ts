@@ -167,16 +167,13 @@ export const useAppStore = createSelectors(
       const alert = { open: true, type: 'success', message: 'SALE LOADED' }
       const oldCart = get().cart
       if (oldCart?.items?.length > 0 && oldCart?.sale?.id !== newCart?.sale?.id) {
-        saveCart(
-          {
-            ...oldCart,
-            sale: {
-              ...oldCart?.sale,
-              state: oldCart?.sale?.state === SaleStateTypes.InProgress ? SaleStateTypes.Parked : oldCart?.sale?.state,
-            },
+        saveCart({
+          ...oldCart,
+          sale: {
+            ...oldCart?.sale,
+            state: oldCart?.sale?.state === SaleStateTypes.InProgress ? SaleStateTypes.Parked : oldCart?.sale?.state,
           },
-          oldCart?.sale?.state,
-        )
+        })
         alert.type = 'warning'
         alert.message = 'SALE LOADED. PREVIOUS CART HAS BEEN PARKED.'
       }
@@ -236,17 +233,13 @@ export const useAppStore = createSelectors(
         const oldCart = get().cart
         if (oldCart?.items?.length > 0) {
           console.log('Saving cart', oldCart)
-          saveCart(
-            {
-              ...oldCart,
-              sale: {
-                ...oldCart?.sale,
-                state:
-                  oldCart?.sale?.state === SaleStateTypes.InProgress ? SaleStateTypes.Parked : oldCart?.sale?.state,
-              },
+          saveCart({
+            ...oldCart,
+            sale: {
+              ...oldCart?.sale,
+              state: oldCart?.sale?.state === SaleStateTypes.InProgress ? SaleStateTypes.Parked : oldCart?.sale?.state,
             },
-            oldCart?.sale?.state,
-          )
+          })
           alert.type = 'warning'
           alert.message = 'ITEM ADDED TO CART. PREVIOUS CART HAS BEEN PARKED.'
         }

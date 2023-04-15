@@ -34,7 +34,7 @@ export default function ShoppingCartActions() {
 
   async function onClickSaveSale() {
     setSaveSaleLoading(true)
-    await saveCart({ ...cart, sale: { ...sale, state: SaleStateTypes.Parked } }, sale?.state)
+    await saveCart({ ...cart, sale: { ...sale, state: SaleStateTypes.Parked } })
     mutate('stock')
     mutate(`sale/parked`)
     setAlert({
