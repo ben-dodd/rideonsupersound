@@ -2,8 +2,10 @@ import { snakeCase, transform, camelCase, isObject, isArray, isBoolean } from 'l
 
 export const js2mysql = (obj: any) => (typeof obj === 'object' ? convertKeyCaseSingleLayer(obj, 'snakeCase') : obj)
 
+export const checkValue = (value) => (value === -0 ? 0 : value)
+
 export const mysql2js = (obj: any) =>
-  obj == null ? obj : typeof obj === 'object' ? convertKeyCase(obj, 'camelCase') : obj
+  obj == null ? obj : typeof obj === 'object' ? convertKeyCase(obj, 'camelCase') : checkValue(obj)
 
 export const convertKeyCase = (obj: any, keyCase: 'camelCase' | 'snakeCase') =>
   transform(obj, (acc, value, key, target) => {
@@ -14,7 +16,7 @@ export const convertKeyCase = (obj: any, keyCase: 'camelCase' | 'snakeCase') =>
       : keyCase === 'snakeCase'
       ? snakeCase(String(key))
       : key
-    acc[convertedKey] = isObject(value) ? convertKeyCase(value, keyCase) : value
+    acc[convertedKey] = isObject(value) ? convertKeyCase(value, keyCase) : checkValue(value)
   })
 
 export const convertKeyCaseSingleLayer = (obj: any, keyCase: 'camelCase' | 'snakeCase') =>
@@ -26,5 +28,5 @@ export const convertKeyCaseSingleLayer = (obj: any, keyCase: 'camelCase' | 'snak
       : keyCase === 'snakeCase'
       ? snakeCase(String(key))
       : key
-    acc[convertedKey] = isObject(value) ? JSON.stringify(value) : isBoolean(value) ? (value ? 1 : 0) : value
+    acc[convertedKey] = isObject(value) ? JSON.stringify(value) : isBoolean(value) ? (value ? 1 : 0) : checkValue(value)
   })

@@ -429,10 +429,15 @@ async function handleStockMovements(item, sale, prevState, prevItem, registerId 
       act: null,
       quantity: 0,
     }
+    console.log(stockMovement)
     if (sale?.state === SaleStateTypes.Completed) {
       // If it was a layby, unlayby it before marking as sold
       if (prevState === SaleStateTypes.Layby) {
-        stockMovement.act = StockMovementTypes.Unlayby
+        const unlaybyQuantity = getStockMovementQuantityByAct(item?.quantity, StockMovementTypes.Unlayby)
+        await dbCreateStockMovement(
+          { ...stockMovement, act: StockMovementTypes.Unlayby, quantity: unlaybyQuantity },
+          db,
+        )
       } else if (item?.isRefunded) {
         // Refund item if refunded
         stockMovement.act = StockMovementTypes.Unsold
