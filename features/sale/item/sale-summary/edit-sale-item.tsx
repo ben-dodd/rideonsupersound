@@ -13,7 +13,7 @@ import { debounce } from 'lodash'
 import { Tooltip } from '@mui/material'
 
 export default function EditSaleItem({ cartItem }: { cartItem: SaleItemObject }) {
-  const { cart, openConfirm, setCartItem, setAlert } = useAppStore()
+  const { cart, openConfirm, closeConfirm, setCartItem, setAlert } = useAppStore()
   const { sale = {} } = cart || {}
   const { stockItem } = useBasicStockItem(`${cartItem?.itemId}`)
   const { stockList = [] } = useStockList()
@@ -47,23 +47,44 @@ export default function EditSaleItem({ cartItem }: { cartItem: SaleItemObject })
   }
 
   function handleClickRefundItem() {
-    setCartItem(cartItem?.itemId, { isRefunded: true })
-    setAlert({
+    openConfirm({
       open: true,
-      type: 'success',
-      message: `ITEM REFUNDED`,
+      title: 'Refund Item?',
+      message: 'Refund Item? (If this item was added in error, deleting may be more appropriate.)',
+      yesText: 'Yes',
+      noText: 'No',
+      action: () => {
+        setCartItem(cartItem?.itemId, { isRefunded: true })
+        setAlert({
+          open: true,
+          type: 'success',
+          message: `ITEM REFUNDED`,
+        })
+        closeConfirm()
+      },
     })
   }
 
   async function handleClickDeleteItem() {
-    if (cartItem?.id)
-      // Cart has been saved to the database, delete sale_item
-      await deleteSaleItem(cartItem?.id)
-    setCartItem(cartItem?.itemId, { isDeleted: true })
-    setAlert({
+    openConfirm({
       open: true,
-      type: 'success',
-      message: `ITEM REMOVED FROM SALE`,
+      title: 'Delete Item?',
+      message:
+        'Delete Item? (If this item was sold to the customer and is being returned, use the refund item button instead.)',
+      yesText: 'Yes',
+      noText: 'No',
+      action: async () => {
+        if (cartItem?.id)
+          // Cart has been saved to the database, delete sale_item
+          await deleteSaleItem(cartItem?.id)
+        setCartItem(cartItem?.itemId, { isDeleted: true })
+        setAlert({
+          open: true,
+          type: 'success',
+          message: `ITEM REMOVED FROM SALE`,
+        })
+        closeConfirm()
+      },
     })
   }
 
@@ -183,14 +204,15 @@ export default function EditSaleItem({ cartItem }: { cartItem: SaleItemObject })
                     </span>
                   </Tooltip>
                 ) : (
-                  <Tooltip title="Delete Item">
-                    <span>
-                      <button className="py-2 text-tertiary hover:text-tertiary-dark" onClick={handleClickDeleteItem}>
-                        <DeleteIcon />
-                      </button>
-                    </span>
-                  </Tooltip>
+                  <div />
                 )}
+                <Tooltip title="Delete Item">
+                  <span>
+                    <button className="py-2 text-tertiary hover:text-tertiary-dark" onClick={handleClickDeleteItem}>
+                      <DeleteIcon />
+                    </button>
+                  </span>
+                </Tooltip>
               </div>
             </div>
           </div>

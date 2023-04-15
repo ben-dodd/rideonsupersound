@@ -52,12 +52,12 @@ export default function ReturnItemsDialog({ sale }) {
     <Modal
       open={view?.returnItemDialog}
       closeFunction={closeDialog}
-      title={'RETURN ITEMS'}
+      title={'REFUND ITEMS'}
       buttons={buttons}
       width="max-w-xl"
     >
       <>
-        <div className="help-text">Select items to return.</div>
+        <div className="help-text">Select items to refund.</div>
         {items
           ?.filter((item: SaleItemObject) => !item?.isDeleted && !item?.isRefunded)
           ?.map((item: SaleItemObject) => (

@@ -20,9 +20,9 @@ export default function StaticSaleItem({ saleItem, selected, onClick }: SellList
 
   return (
     <div
-      className={`flex w-full relative pt border-b mb-2${saleItem?.isRefunded ? ' opacity-50' : ''}${
+      className={`flex w-full pr-2 relative pt border-b mb-2${saleItem?.isRefunded ? ' opacity-50' : ''}${
         onClick ? ' cursor-pointer hover:bg-blue-100' : ''
-      }${selected ? ' bg-red-100' : ''}`}
+      }${selected ? ' bg-yellow-100' : ''}`}
       onClick={onClick || null}
     >
       <div className="w-20">

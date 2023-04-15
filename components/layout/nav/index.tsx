@@ -1,4 +1,3 @@
-import { bg } from 'lib/types'
 import HelpIcon from '@mui/icons-material/Help'
 import { useClerk } from 'lib/api/clerk'
 import { ViewProps } from 'lib/store/types'
@@ -17,7 +16,7 @@ export default function Nav() {
   const router = useRouter()
 
   return (
-    <nav className={`py-2 ${bg[clerk?.colour]} text-white h-navbar select-none`}>
+    <nav className={`py-2 bg-col10 text-white h-navbar select-none`}>
       <div className="flex justify-between items-center">
         <div className="flex items-center">
           <div className="hidden sm:inline ml-4 text-black text-2xl font-black">{clerk?.name?.toUpperCase()} @</div>

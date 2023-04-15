@@ -1,4 +1,4 @@
-import { Delete, Edit, PointOfSale } from '@mui/icons-material'
+import { Delete, Edit, EventBusy, PointOfSale } from '@mui/icons-material'
 import MidScreenContainer from 'components/container/mid-screen'
 import SaleSummary from 'features/sale/item/sale-summary'
 import { useAppStore } from 'lib/store'
@@ -8,6 +8,7 @@ import React from 'react'
 import SaleDetailsSidebar from '../static/sale-details-sidebar'
 import { deleteSale } from 'lib/api/sale'
 import { useSWRConfig } from 'swr'
+import { ViewProps } from 'lib/store/types'
 
 const SaleItemScreen = ({ saleItem }) => {
   const router = useRouter()
@@ -20,8 +21,12 @@ const SaleItemScreen = ({ saleItem }) => {
   // BUG fix bug where bottom of dialog is visible
   // BUG dates are wrong on vercel
   // BUG why are some sales showing items as separate line items, not 2x quantity
+  function loadRefund() {
+    openView(ViewProps.returnItemDialog)
+    loadSale()
+  }
 
-  async function loadSale() {
+  function loadSale() {
     loadSaleToCart(saleItem)
     router.push('/sell/pay')
   }
@@ -53,7 +58,8 @@ const SaleItemScreen = ({ saleItem }) => {
   }
 
   const completedMenuItems = [
-    { text: 'Edit Sale', icon: <Edit />, onClick: loadSale, adminOnly: true },
+    { text: 'Refund Items', icon: <EventBusy />, onClick: loadRefund },
+    { text: 'Edit Sale', icon: <Edit />, onClick: loadSale },
     { text: 'Delete Sale', icon: <Delete />, onClick: clickDeleteSale, adminOnly: true },
   ]
 
