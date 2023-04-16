@@ -23,9 +23,9 @@ export default function Acct({ totalRemaining }) {
   useEffect(() => {
     setAcctPayment(`${Math.abs(totalRemaining).toFixed(2)}`)
   }, [totalRemaining])
-  // TODO NEXT TO DO , pay/components/payment
-  console.log(vendorAccounts)
+
   console.log(vendor)
+
   const buttons: ModalButton[] = [
     {
       type: 'ok',
@@ -79,6 +79,7 @@ export default function Acct({ totalRemaining }) {
           <Select
             className="w-full self-stretch"
             value={vendor}
+            isLoading={isVendorAccountsLoading}
             options={vendorAccounts
               ?.sort((vendorA, vendorB) => {
                 const a = vendorA?.name

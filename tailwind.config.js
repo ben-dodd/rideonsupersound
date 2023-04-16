@@ -75,8 +75,8 @@ module.exports = {
           light: '#ffdeff',
         },
         brown: {
-          dark: '#423e3e',
-          DEFAULT: '#7c7474',
+          dark: '#312f2f',
+          DEFAULT: '#423e3e',
           light: '#908989',
         },
         selected: '#d0d050',

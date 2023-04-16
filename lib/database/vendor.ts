@@ -174,17 +174,22 @@ export function dbGetVendor(id, db = connection) {
       const totalStoreCut = sales
         ?.filter((s) => !s?.is_refunded)
         ?.reduce((acc, saleItem) => {
-          console.log(saleItem)
-          const price = { totalSell: saleItem?.item_total_sell, vendorCut: saleItem?.item_vendor_cut }
-          const storePrice = getCartItemStoreCut(saleItem, price)
+          const price = { storeCut: saleItem?.sale_store_cut }
+          const cartItem = { storeDiscount: saleItem?.store_discount, quantity: saleItem?.quantity }
+          const storePrice = getCartItemStoreCut(cartItem, price)
           return acc + storePrice
         }, 0)
       const totalSell = sales
         ?.filter((s) => !s?.is_refunded)
         ?.reduce((acc, saleItem) => {
           const stockItem = {} // actual stock item not required as it will never be a gift card or misc item for a vendor
+          const cartItem = {
+            vendorDiscount: saleItem?.vendor_discount,
+            storeDiscount: saleItem?.store_discount,
+            quantity: saleItem?.quantity,
+          }
           const price = { totalSell: saleItem?.item_total_sell, vendorCut: saleItem?.item_vendor_cut }
-          const totalPrice = getCartItemTotal(saleItem, stockItem, price)
+          const totalPrice = getCartItemTotal(cartItem, stockItem, price)
           return acc + totalPrice
         }, 0)
       // console.log(payments)
