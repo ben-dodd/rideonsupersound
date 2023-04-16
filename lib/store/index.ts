@@ -222,7 +222,6 @@ export const useAppStore = createSelectors(
       if (replacePrevious) {
         const oldCart = get().cart
         if (oldCart?.items?.length > 0) {
-          console.log('Saving cart', oldCart)
           saveCart({
             ...oldCart,
             sale: {
@@ -253,7 +252,16 @@ export const useAppStore = createSelectors(
           draft.view.cart = true
           const index = get().cart.items.findIndex((cartItem) => cartItem?.itemId === newItem?.itemId)
           if (index < 0) draft.cart.items.push(newItem)
-          else draft.cart.items[index].quantity = `${parseInt(get().cart.items[index].quantity) + 1}`
+          else {
+            const currItem = get().cart.items.find((cartItem) => cartItem?.itemId === newItem?.itemId)
+            if (currItem?.isDeleted || currItem?.isRefunded) {
+              // Item has been deleted or refunded, start fresh (refund will be disappeared)
+              draft.cart.items[index] = newItem
+            } else {
+              // Add +1 quantity to item
+              draft.cart.items[index].quantity = `${parseInt(get().cart.items[index].quantity) + 1}`
+            }
+          }
           draft.alert = alert
         }),
       )
