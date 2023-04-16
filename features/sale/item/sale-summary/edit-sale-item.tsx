@@ -10,6 +10,7 @@ import { priceCentsString } from 'lib/utils'
 import { deleteSaleItem } from 'lib/api/sale'
 import { ArrowDropDown, ArrowDropUp, EventBusy } from '@mui/icons-material'
 import { Tooltip } from '@mui/material'
+import { useRouter } from 'next/router'
 
 export default function EditSaleItem({ cartItem }: { cartItem: SaleItemObject }) {
   const { cart, openConfirm, closeConfirm, setCartItem, setAlert } = useAppStore()
@@ -17,6 +18,7 @@ export default function EditSaleItem({ cartItem }: { cartItem: SaleItemObject })
   const { stockItem } = useBasicStockItem(`${cartItem?.itemId}`)
   const { stockList = [] } = useStockList()
   const stockListItem = stockList.find((stock) => stock?.id === cartItem?.itemId) || {}
+  const router = useRouter()
 
   const { item = stockListItem || {}, quantities = { inStock: stockListItem?.quantity }, price = {} } = stockItem || {}
   const [expanded, setExpanded] = useState(false)
@@ -113,7 +115,7 @@ export default function EditSaleItem({ cartItem }: { cartItem: SaleItemObject })
               src={getImageSrc(item)}
               alt={item?.title || 'Stock image'}
             />
-            {!item?.isGiftCard && !item?.isMiscItem && (
+            {!miscOrGiftItem && (
               <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white text-sm flex justify-center items-center">
                 {getItemSku(item)}
               </div>
@@ -121,7 +123,12 @@ export default function EditSaleItem({ cartItem }: { cartItem: SaleItemObject })
           </div>
         </div>
         <div className="flex flex-col w-full pt-2 px-2 justify-between">
-          <div className="text-sm pl-1">{getItemDisplayName(item)}</div>
+          <div
+            className={`text-sm pl-1${!miscOrGiftItem ? ' link-blue' : ''}`}
+            onClick={miscOrGiftItem ? null : () => router.push(`/stock/${item?.id}`)}
+          >
+            {getItemDisplayName(item)}
+          </div>
           <div className="text-red-500 self-end">{writeCartItemPriceBreakdown(cartItem, stockItem)}</div>
           <div className="self-end text-xs">
             {expanded ? (
