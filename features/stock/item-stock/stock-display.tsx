@@ -40,6 +40,7 @@ export default function StockItemDisplay() {
           { label: 'Country', value: item?.country },
           { label: 'Genre/Tags', value: item?.genre?.join?.(', ') },
           { label: 'Description/Notes', value: item?.description },
+          { label: 'Reorder item from vendor', value: Boolean(item?.doReorder), alwaysDisplay: true },
           { label: 'Listed on website', value: Boolean(item?.doListOnWebsite), alwaysDisplay: true },
           { label: 'Item has no quantity', value: Boolean(item?.hasNoQuantity) },
         ]}

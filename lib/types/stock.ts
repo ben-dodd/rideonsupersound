@@ -87,6 +87,7 @@ export interface StockItemObject extends BasicStockItemObject {
   thumbUrl?: string
   googleBooksItemId?: number // delete?
   discogsItemId?: number // delete?
+  doReorder?: boolean // Reorder from vendor when stock runs out
   doListOnWebsite?: boolean
   hasNoQuantity?: boolean
   dateCreated?: string

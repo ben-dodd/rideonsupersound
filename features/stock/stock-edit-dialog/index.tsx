@@ -202,8 +202,17 @@ export default function StockEditDialog({ stockItem: { item: currItem } }) {
           multiline
           disabled={disabled}
         />
-        <div className="grid grid-cols-3 mt-4 gap-2">
+        <div className="mt-4">
           <div className="flex items-center">
+            <input
+              type="checkbox"
+              className="cursor-pointer"
+              checked={item?.doReorder}
+              onChange={(e) => setItem({ ...item, doReorder: e.target.checked ? 1 : 0 })}
+            />
+            <div className="ml-2">Reorder item from vendor when stocks are low</div>
+          </div>
+          <div className="flex items-center my-2">
             <input
               type="checkbox"
               className="cursor-pointer"
@@ -212,7 +221,7 @@ export default function StockEditDialog({ stockItem: { item: currItem } }) {
             />
             <div className="ml-2">List on website</div>
           </div>
-          <div className="flex col-span-2 items-center">
+          <div className="flex items-center">
             <input
               type="checkbox"
               className="cursor-pointer"

@@ -5,7 +5,6 @@ import React from 'react'
 
 const VendorListItem = ({ vendor }: { vendor: VendorObject }) => {
   const router = useRouter()
-  console.log(vendor)
   let categoryIcon = <Person />
   switch (vendor?.vendorCategory) {
     case 'BAND':
