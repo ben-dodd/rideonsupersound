@@ -7,7 +7,7 @@ import { VendorObject } from 'lib/types/vendor'
 import MidScreenContainer from 'components/container/mid-screen'
 import GeneralDetails from './general-details'
 import { useAppStore } from 'lib/store'
-import { Delete, Edit, JoinFull } from '@mui/icons-material'
+import { Delete, Edit, JoinFull, Summarize } from '@mui/icons-material'
 import { ViewProps } from 'lib/store/types'
 
 export default function VendorScreen({ vendor }: { vendor: VendorObject }) {
@@ -17,7 +17,7 @@ export default function VendorScreen({ vendor }: { vendor: VendorObject }) {
 
   const menuItems = [
     { text: 'Edit', icon: <Edit />, onClick: () => openView(ViewProps.vendorEditDialog) },
-    { text: 'Export Report', icon: <Edit />, onClick: () => openView(ViewProps.exportVendorReportDialog) },
+    { text: 'Export Report', icon: <Summarize />, onClick: () => openView(ViewProps.exportVendorReportDialog) },
     { text: 'Merge Vendors', icon: <JoinFull />, onClick: null },
     { text: 'Delete Vendor', icon: <Delete />, onClick: null },
   ]

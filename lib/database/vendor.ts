@@ -249,35 +249,49 @@ export function dbCreateVendorPayment(payment: VendorPaymentObject, db = connect
 
 export function dbCreateBatchVendorPayments(batchPayment, db = connection) {
   return db.transaction(async (trx) => {
-    const { vendorList = [], clerkId, registerId, emailed = false } = batchPayment || {}
-    const successfulPayments = []
-    vendorList
-      ?.filter((vendor) => vendor?.isChecked)
-      .forEach(async (vendor) => {
-        const vendorId = vendor?.id
-        if (emailed) {
-          await dbUpdateVendor({ lastUpdated: dayjs.utc().format() }, vendorId, trx)
-        }
-        if (modulusCheck(vendor?.bankAccountNumber) && parseFloat(vendor?.payAmount)) {
-          const amount = dollarsToCents(vendor?.payment)
-          const paymentId = await dbCreateVendorPayment(
-            {
-              amount,
-              date: dayjs.utc().format(),
-              bankAccountNumber: vendor?.bankAccountNumber,
-              batchNumber: `${registerId}`,
-              sequenceNumber: 'Batch',
-              clerkId,
-              vendorId,
-              registerId,
-              type: 'batch',
-            },
-            trx,
-          )
-          successfulPayments.push({ paymentId, vendorId, name: vendor?.name, amount })
-        }
+    const { vendorList = [], clerkId, registerId, emailed = false, note = '' } = batchPayment || {}
+    return db('batch_payment')
+      .insert({
+        sequenceNumber: `0000${registerId}`.slice(-4),
+        dateStarted: dayjs.utc().format(),
+        startedByClerkId: clerkId,
+        note,
       })
-    return successfulPayments
+      .then((rows) => {
+        const batchId = rows[0]
+        return db('batch_payment')
+          .where('id', batchId)
+          .update({ batchNumber: `00${batchId}`.slice(-2) })
+          .then(() => {
+            const successfulPayments = []
+            vendorList
+              ?.filter((vendor) => vendor?.isChecked)
+              .forEach(async (vendor) => {
+                const vendorId = vendor?.id
+                if (emailed) {
+                  await dbUpdateVendor({ lastUpdated: dayjs.utc().format() }, vendorId, trx)
+                }
+                if (modulusCheck(vendor?.bankAccountNumber) && parseFloat(vendor?.payAmount)) {
+                  const amount = dollarsToCents(vendor?.payment)
+                  const paymentId = await dbCreateVendorPayment(
+                    {
+                      amount,
+                      date: dayjs.utc().format(),
+                      bankAccountNumber: vendor?.bankAccountNumber,
+                      batchId,
+                      clerkId,
+                      vendorId,
+                      registerId,
+                      type: 'batch',
+                    },
+                    trx,
+                  )
+                  successfulPayments.push({ paymentId, vendorId, name: vendor?.name, amount })
+                }
+              })
+            return successfulPayments
+          })
+      })
   })
 }
 

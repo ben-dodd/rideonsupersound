@@ -159,7 +159,7 @@ export default function EditSaleItem({ cartItem }: { cartItem: SaleItemObject })
                 selectOnFocus
                 min={1}
                 inputType="number"
-                valueNum={isNaN(parseInt(cartItem?.quantity)) ? 0 : parseInt(cartItem?.quantity)}
+                valueNum={parseInt(cartItem?.quantity)}
                 onChange={(e: any) => onChangeQuantity(e)}
               />
               <TextField
@@ -170,7 +170,7 @@ export default function EditSaleItem({ cartItem }: { cartItem: SaleItemObject })
                 inputType="number"
                 endAdornment="%"
                 error={parseInt(cartItem?.vendorDiscount) > 100}
-                valueNum={isNaN(parseInt(cartItem?.vendorDiscount)) ? 0 : parseInt(cartItem?.vendorDiscount)}
+                valueNum={parseInt(cartItem?.vendorDiscount)}
                 onChange={(e: any) => onChangeCart(e, 'vendorDiscount')}
               />
               <TextField
@@ -181,7 +181,7 @@ export default function EditSaleItem({ cartItem }: { cartItem: SaleItemObject })
                 inputType="number"
                 endAdornment="%"
                 error={parseInt(cartItem?.storeDiscount) > 100}
-                valueNum={isNaN(parseInt(cartItem?.storeDiscount)) ? 0 : parseInt(cartItem?.storeDiscount)}
+                valueNum={parseInt(cartItem?.storeDiscount)}
                 onChange={(e: any) => onChangeCart(e, 'storeDiscount')}
               />
             </div>

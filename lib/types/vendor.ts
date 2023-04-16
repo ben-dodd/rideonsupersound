@@ -12,6 +12,23 @@ export enum VendorPaymentTypes {
   TransferFrom = 'transfer from', // vendor has transferred their store credit to another
 }
 
+export interface BatchPaymentObject {
+  id?: number
+  batchNumber?: string
+  sequenceNumber?: string
+  note?: string
+  dateStarted?: string
+  startedByClerkId?: number
+  startedByName?: string
+  dateCompleted?: string
+  completedByClerkId?: number
+  completedByName?: string
+  isDeleted?: boolean
+  lastUpdated?: string
+  kbbFile?: string
+  emailCsvFile?: string
+}
+
 export interface VendorSaleItemObject {
   id?: number
   artist?: string
@@ -37,19 +54,20 @@ export interface VendorSaleItemObject {
 export interface VendorPaymentObject {
   id?: number
   amount?: number
-  bankAccountNumber?: string
-  bankReference?: string
-  batchNumber?: string
   date?: string
-  sequenceNumber?: string
   clerkId?: number
   vendorId?: number
   registerId?: number
+  saleId?: number
+  batchId?: number
+  bankAccountNumber?: string
+  bankReference?: string
   type?: string
-  note?: string
+  note?: String
+  isValidated?: boolean
+  isDeleted?: boolean
   vendorPayId?: number
   vendorReceiveId?: number
-  isDeleted?: boolean
 }
 
 export interface VendorObject {
