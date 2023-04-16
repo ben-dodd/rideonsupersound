@@ -152,6 +152,13 @@ export default function SelectBatchPayments({ vendorList, setVendorList }) {
               </div>
             ))}
         </div>
+        {/* <div className="bg-white flex justify-between items-end border-t h-headerlg">
+          <div />
+          <div className="w-1/4 flex">
+            <ActionButton button={{ type: 'alt1', text: 'SAVE AND CLOSE' }} />
+            <ActionButton button={{ type: 'ok', text: 'COMPLETE' }} />
+          </div>
+        </div> */}
       </div>
     </div>
   )
