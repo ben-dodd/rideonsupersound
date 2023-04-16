@@ -470,3 +470,22 @@ export function dbCheckIfRestockNeeded(itemId, state, db = connection) {
         : false,
     )
 }
+
+export function dbGetReceiveBatch(id, db = connection) {
+  return db('batch_receive')
+    .where({ id })
+    .first()
+    .then((batch) =>
+      dbGetStockMovementsForReceiveBatch(id, db).then((stockMovements) => {
+        return dbGetStockItems(stockMovements?.map((sm) => sm?.itemId)).then((stockItems) => ({
+          batch,
+          stockMovements,
+          stockItems,
+        }))
+      }),
+    )
+}
+
+export function dbGetStockMovementsForReceiveBatch(id, db) {
+  return db('stock_movement').where('batch_receive_id', id)
+}

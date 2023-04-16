@@ -11,15 +11,16 @@ import { useCurrentRegisterId } from 'lib/api/register'
 import { ViewProps } from 'lib/store/types'
 import { useClerk } from 'lib/api/clerk'
 import { receiveStock } from 'lib/api/stock'
-import Modal from 'components/modal'
+import MidScreenContainer from 'components/container/mid-screen'
 
-export default function ReceiveStockDialog() {
-  const { receiveBasket, resetReceiveBasket, view, openConfirm, closeView } = useAppStore()
+export default function ReceiveStockScreen({ receiveBatch }) {
+  const { receiveBasket, resetReceiveBasket, openConfirm, closeView } = useAppStore()
   const { clerk } = useClerk()
   const [step, setStep] = useState(0)
   const [receivedStock, setReceivedStock] = useState(null)
   const [receiveLoading, setReceiveLoading] = useState(false)
   const { registerId } = useCurrentRegisterId()
+  const { batch = {}, stockMovements = [], stockItems = [] } = receiveBatch || {}
 
   const buttons: ModalButton[][] = [
     [
@@ -132,13 +133,7 @@ export default function ReceiveStockDialog() {
   // Step 6 - print labels
 
   return (
-    <Modal
-      open={view?.receiveStockScreen}
-      closeFunction={() => closeView(ViewProps.receiveStockScreen)}
-      title={'RECEIVE STOCK'}
-      buttons={buttons[step]}
-      width="max-w-dialog"
-    >
+    <MidScreenContainer title={'RECEIVE STOCK'} titleClass={'bg-brown-dark text-white'} dark full>
       <div className="flex flex-col w-full h-dialog">
         <Stepper
           steps={['Select vendor', 'Add items', 'Check details', 'Set price and quantities', 'Print labels']}
@@ -178,7 +173,7 @@ export default function ReceiveStockDialog() {
           </div>
         )}
       </div>
-    </Modal>
+    </MidScreenContainer>
   )
 
   function isDisabled() {

@@ -6,6 +6,7 @@ import ComingSoon from 'components/placeholders/coming-soon'
 import StockList from './stock-list'
 import { Pages, ViewProps } from 'lib/store/types'
 import { AutoFixHigh, CollectionsBookmark, DisplaySettings, EventBusy, Print } from '@mui/icons-material'
+import { useRouter } from 'next/router'
 
 const StockScreen = () => {
   const { stockList, isStockListLoading } = useStockList()
@@ -15,10 +16,11 @@ const StockScreen = () => {
     setPage,
     openView,
   } = useAppStore()
+  const router = useRouter()
   const setTab = (tab) => setPage(Pages.stockPage, { tab })
   // const isFull = !(tab === 4 && holdsPage?.loadedHold)
   const menuItems = [
-    { text: 'Receive Stock', icon: <CollectionsBookmark />, onClick: () => openView(ViewProps.receiveStockScreen) },
+    { text: 'Receive Stock', icon: <CollectionsBookmark />, onClick: () => router.push(`/stock/receive/new`) },
     { text: 'Return Stock to Vendor', icon: <EventBusy />, onClick: () => openView(ViewProps.returnStockScreen) },
     { text: 'Print Labels', icon: <Print />, onClick: () => openView(ViewProps.labelPrintDialog) },
     { text: 'Bulk Edit Items', icon: <AutoFixHigh />, onClick: null, disabled: true },

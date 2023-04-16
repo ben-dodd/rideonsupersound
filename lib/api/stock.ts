@@ -107,3 +107,7 @@ export function createStocktakeTemplate(stocktakeTemplate: StocktakeTemplateObje
 export function useStocktakeTemplates() {
   return useData(`stocktake/template`, 'stocktakeTemplates')
 }
+
+export function useReceiveBatch(id) {
+  return useData(id ? `stock/receive/${id}` : null, 'receiveBatch')
+}
