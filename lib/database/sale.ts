@@ -448,8 +448,11 @@ async function handleStockMovements(item, sale, prevState, prevItem, registerId 
         const smQuantity = getStockMovementQuantityByAct(item?.quantity, act)
         const prevStockMovement = prevStockMovements?.find((sm) => sm?.act === act)
         if (prevStockMovement) {
-          // Stock movement exists, check quantities and adjust if needed
-          if (prevStockMovement?.quantity !== smQuantity) {
+          if (prevItem?.is_deleted || prevItem?.is_refunded) {
+            // Previous stock item was deleted or refunded, treat as a new item being added
+            await dbCreateStockMovement({ ...stockMovement, act, quantity: smQuantity }, db)
+          } else if (prevStockMovement?.quantity !== smQuantity) {
+            // Stock movement exists, check quantities and adjust if needed
             // Quantity has changed
             dbUpdateStockMovement(prevStockMovement?.id, { quantity: smQuantity }, db)
           }

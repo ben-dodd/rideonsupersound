@@ -5,7 +5,6 @@ import { CartObject, SaleStateTypes } from 'lib/types/sale'
 import { dbGetJobsLike } from '../jobs'
 import { dbGetStockItem } from '../stock'
 import { checkValue, mysql2js } from '../utils/helpers'
-// import { checkValue, mysql2js } from '../utils/helpers'
 
 beforeAll(() => testCon.migrate.latest())
 
@@ -358,5 +357,65 @@ describe('saveCart', () => {
         expect(stockItem.quantities.refunded).toBe(2)
         expect(stockItem.quantities.inStock).toBe(5)
       })
+  })
+})
+
+describe('saveCart', () => {
+  it('saves a cart and handles refunded items being readded', () => {
+    const cart = { ...baseCart }
+    cart.sale.state = SaleStateTypes.Completed
+    cart.sale.saleClosedBy = 1
+    cart.items[0].quantity = '2'
+    return dbSaveCart(cart, testCon)
+      .then((savedCart) => {
+        const newCart = { ...mysql2js(savedCart) }
+        newCart.items[0].isRefunded = true
+        return dbSaveCart(newCart, testCon)
+      })
+      .then((savedCart) => {
+        const newCart = { ...mysql2js(savedCart) }
+        newCart.items[0].isRefunded = false
+        newCart.items[0].quantity = '1'
+        return dbSaveCart(newCart, testCon)
+      })
+      .then(() =>
+        dbGetStockItem(12, false, testCon).then((stockItem) => {
+          expect(stockItem?.quantities?.inStock).toBe(9)
+          expect(stockItem?.quantities?.sold).toBe(3)
+          expect(stockItem?.quantities?.refunded).toBe(2)
+          expect(checkValue(stockItem?.quantities?.layby)).toBe(0)
+          expect(stockItem?.stockMovements).toHaveLength(4)
+        }),
+      )
+  })
+})
+
+describe('saveCart', () => {
+  it('saves a cart and handles deleted items being readded', () => {
+    const cart = { ...baseCart }
+    cart.sale.state = SaleStateTypes.Completed
+    cart.sale.saleClosedBy = 1
+    cart.items[0].quantity = '2'
+    return dbSaveCart(cart, testCon)
+      .then((savedCart) => {
+        const newCart = { ...mysql2js(savedCart) }
+        newCart.items[0].isDeleted = true
+        return dbSaveCart(newCart, testCon)
+      })
+      .then((savedCart) => {
+        const newCart = { ...mysql2js(savedCart) }
+        newCart.items[0].isDeleted = false
+        newCart.items[0].quantity = '1'
+        return dbSaveCart(newCart, testCon)
+      })
+      .then(() =>
+        dbGetStockItem(12, false, testCon).then((stockItem) => {
+          expect(stockItem?.quantities?.inStock).toBe(9)
+          expect(stockItem?.quantities?.sold).toBe(1)
+          expect(checkValue(stockItem?.quantities?.refunded)).toBe(0)
+          expect(checkValue(stockItem?.quantities?.layby)).toBe(0)
+          expect(stockItem?.stockMovements).toHaveLength(2)
+        }),
+      )
   })
 })
