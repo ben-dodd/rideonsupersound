@@ -144,13 +144,11 @@ export const useAppStore = createSelectors(
         }),
       ),
     setCart: (update) => {
-      // const prevState = get().cart?.sale?.state
       set(
         produce((draft) => {
           Object.entries(update).forEach(([key, value]) => (draft.cart[key] = value))
         }),
       )
-      // get().cart?.sale?.id && get().mutateCart(prevState)
     },
     loadSaleToCartById: (saleId) => {
       console.log('Loading sale to cart', saleId)
@@ -184,23 +182,16 @@ export const useAppStore = createSelectors(
         }),
       )
     },
-    mutateCart: async (prevState, mutates = []) => {
-      // const performMutation = async () => {
-      const newCart = await saveCart(get().cart, prevState)
-      // mutate(`sales/${get().cart?.sale?.id}`)
+    mutateCart: async (mutates = []) => {
+      await saveCart(get().cart)
       mutates.forEach((key) => mutate(key))
-      set(
-        produce((draft) => {
-          draft.cart = newCart
-        }),
-      )
-      // }
-      // debounce(() => {
-      //   performMutation()
-      // }, 5000)
+      // set(
+      //   produce((draft) => {
+      //     draft.cart = newCart
+      //   }),
+      // )
     },
     addCartTransaction: (transaction) => {
-      const prevState = get().cart?.sale?.state
       set(
         produce((draft) => {
           draft.cart.transactions.push(transaction)
@@ -212,10 +203,9 @@ export const useAppStore = createSelectors(
           : transaction?.paymentMethod === PaymentMethodTypes.Account
           ? [`vendor/accounts`]
           : []
-      get().mutateCart(prevState, mutates)
+      get().mutateCart(mutates)
     },
     deleteCartTransaction: (transaction) => {
-      const prevState = get().cart?.sale?.state
       set(
         produce((draft) => {
           const newTrans = get().cart.transactions.map((trans) =>
@@ -225,7 +215,7 @@ export const useAppStore = createSelectors(
         }),
       )
       const mutates = transaction?.paymentMethod === PaymentMethodTypes.GiftCard ? [`stock/giftcard`] : []
-      get().mutateCart(prevState, mutates)
+      get().mutateCart(mutates)
     },
     addCartItem: (newItem, clerkId, replacePrevious = false) => {
       const alert = { open: true, type: 'success', message: 'ITEM ADDED' }
@@ -269,23 +259,21 @@ export const useAppStore = createSelectors(
       )
     },
     setCartItem: (id, update) => {
-      const prevState = get().cart?.sale?.state
       set(
         produce((draft) => {
           const index = get().cart.items.findIndex((cartItem) => cartItem?.itemId === id)
           draft.cart.items[index] = { ...get().cart.items[index], ...update }
         }),
       )
-      get().cart?.sale?.id && get().mutateCart(prevState)
+      get().cart?.sale?.id && get().mutateCart()
     },
     setCartSale: (update, doMutate = true) => {
-      const prevState = get().cart?.sale?.state
       set(
         produce((draft) => {
           Object.entries(update).forEach(([key, value]) => (draft.cart.sale[key] = value))
         }),
       )
-      doMutate && get().cart?.sale?.id && get().mutateCart(prevState)
+      doMutate && get().cart?.sale?.id && get().mutateCart()
     },
     setCustomer: (update) => {
       set(

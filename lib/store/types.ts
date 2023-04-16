@@ -111,7 +111,7 @@ export interface StoreState {
   setCart: (update: any) => void
   loadSaleToCartById: (saleId: number) => void
   loadSaleToCart: (sale: CartObject) => void
-  mutateCart: (prevState: string, mutates?: string[]) => void
+  mutateCart: (mutates?: string[]) => void
   addCartTransaction: (transaction: SaleTransactionObject) => void
   deleteCartTransaction: (transaction: SaleTransactionObject) => void
   addCartItem: (newItem: SaleItemObject, clerkId: number, replacePrevious?: boolean) => void

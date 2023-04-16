@@ -9,7 +9,6 @@ import { useBasicStockItem, useStockList } from 'lib/api/stock'
 import { priceCentsString } from 'lib/utils'
 import { deleteSaleItem } from 'lib/api/sale'
 import { ArrowDropDown, ArrowDropUp, EventBusy } from '@mui/icons-material'
-import { debounce } from 'lodash'
 import { Tooltip } from '@mui/material'
 
 export default function EditSaleItem({ cartItem }: { cartItem: SaleItemObject }) {
@@ -23,9 +22,7 @@ export default function EditSaleItem({ cartItem }: { cartItem: SaleItemObject })
   const [expanded, setExpanded] = useState(false)
 
   function onChangeCart(e: any, property: string) {
-    debounce(() => {
-      setCartItem(cartItem?.itemId, { [property]: e.target.value })
-    }, 2000)
+    setCartItem(cartItem?.itemId, { [property]: e.target.value })
   }
 
   function onChangeQuantity(e: any) {
