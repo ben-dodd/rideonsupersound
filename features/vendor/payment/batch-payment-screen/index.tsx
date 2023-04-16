@@ -1,18 +1,17 @@
 import { useEffect, useState } from 'react'
 import { ModalButton } from 'lib/types'
 import { checkDefaultChecked, writeKiwiBankBatchFile, writePaymentNotificationEmail } from 'lib/functions/payment'
-import CheckBatchPayments from './check-batch-payments'
-import SelectBatchPayments from './select-batch-payments'
 import { useAppStore } from 'lib/store'
 import { useCurrentRegisterId } from 'lib/api/register'
 import { useClerk } from 'lib/api/clerk'
 import { createVendorBatchPayment, useVendorAccounts } from 'lib/api/vendor'
 import { ViewProps } from 'lib/store/types'
-import Modal from 'components/modal'
 import { centsToDollars, dollarsToCents } from 'lib/utils'
 import dayjs from 'dayjs'
+import MidScreenContainer from 'components/container/mid-screen'
+import SelectBatchPayments from './select-batch-payments'
 
-export default function BatchPaymentDialog() {
+export default function BatchPaymentScreen({ batchPayment }) {
   const { view, closeView, openConfirm } = useAppStore()
   const { registerId } = useCurrentRegisterId()
   const { clerk } = useClerk()
@@ -125,22 +124,20 @@ export default function BatchPaymentDialog() {
       ]
 
   return (
-    <Modal
-      open={view?.batchVendorPaymentDialog}
-      closeFunction={() => closeView(ViewProps.batchVendorPaymentDialog)}
-      title={'BATCH PAYMENTS'}
-      buttons={buttons}
-      loading={isVendorAccountsLoading}
-      width={'max-w-full'}
+    <MidScreenContainer
+      title={batchPayment?.id ? `BATCH PAYMENT #${batchPayment?.id}` : 'NEW BATCH PAYMENT'}
+      titleClass="bg-brown-dark text-white"
+      isLoading={isVendorAccountsLoading}
+      full
+      dark
     >
-      <>
-        <div className="w-full" hidden={stage === 1}>
-          <SelectBatchPayments vendorList={vendorList} setVendorList={setVendorList} />
-        </div>
-        <div className="w-full" hidden={stage === 0}>
+      <div>
+        <SelectBatchPayments vendorList={vendorList} setVendorList={setVendorList} />
+      </div>
+      {/* <div className="w-1/4 bg-white"></div> */}
+      {/* <div className="w-full" hidden={stage === 0}>
           <CheckBatchPayments vendorList={vendorList} setKbbLoaded={setKbbLoaded} setEmailed={setEmailed} />
-        </div>
-      </>
-    </Modal>
+        </div> */}
+    </MidScreenContainer>
   )
 }

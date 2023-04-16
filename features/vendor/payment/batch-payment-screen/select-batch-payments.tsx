@@ -16,17 +16,18 @@ export default function SelectBatchPayments({ vendorList, setVendorList }) {
   const vendorNum = vendorList?.filter((v) => v?.isChecked)?.length
   const router = useRouter()
   const [search, setSearch] = useState('')
+  console.log(vendorList)
 
   return (
     <div>
-      <div className="flex justify-between">
-        <div className="flex">
+      <div className="flex justify-between items-end p-2">
+        <div className="flex items-end">
           <img width="60" src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/KiwiBank.png`} alt={'KiwiBank'} />
-          <div className="mx-2 my-auto h-12 w-full">
+          <div className="mx-2 h-12 w-full">
             <SearchInput searchValue={search} handleSearch={(e) => setSearch(e?.target?.value)} />
           </div>
         </div>
-        <div className="my-auto text-red-400 text-2xl font-bold text-right">
+        <div className="text-red-400 text-2xl font-bold text-right">
           {vendorList?.filter((v) => isNaN(parseFloat(v?.payAmount)))?.length > 0
             ? `CHECK PAY ENTRIES`
             : `PAY ${priceDollarsString(totalPay)}\nto ${vendorNum} VENDORS`}
@@ -73,7 +74,7 @@ export default function SelectBatchPayments({ vendorList, setVendorList }) {
             ?.map((v) => (
               <div
                 key={v?.id}
-                className={`flex py-4 px-2 w-full items-center border-b border-t ${
+                className={`flex py-2 px-2 w-full items-center border-b border-t text-sm ${
                   v?.isChecked ? 'bg-yellow-100' : v?.totalOwing <= 0 ? 'bg-gray-100' : ''
                 }`}
               >
@@ -96,8 +97,8 @@ export default function SelectBatchPayments({ vendorList, setVendorList }) {
                     onClick={() => router.push(`/vendors/${v?.id}`)}
                   >{`[${v?.id}] ${v?.name}`}</div>
                 </div>
-                <div className="w-1/12">{priceCentsString(v?.totalSell)}</div>
-                <div className={`w-1/12${v?.totalOwing < 0 ? ' text-red-500' : ''}`}>{`${
+                <div className="w-1/12">{priceCentsString(v?.totalVendorCut)}</div>
+                <div className={`w-1/12 font-bold${v?.totalOwing < 0 ? ' text-red-500' : ''}`}>{`${
                   v?.totalOwing < 0 ? '(' : ''
                 }${priceCentsString(Math.abs(v?.totalOwing || 0))}${v?.totalOwing < 0 ? ')' : ''}`}</div>
                 <div className="w-2/12">{v?.lastSold ? dayjs(v?.lastSold).format('D MMMM YYYY') : 'NO SALES'}</div>
@@ -107,8 +108,6 @@ export default function SelectBatchPayments({ vendorList, setVendorList }) {
                 </div>
                 <div className="w-1/12 flex">
                   <TextField
-                    // disabled={v?.totalOwing <= 0 || !v?.is_checked}
-                    // disabled={!v?.is_checked}
                     error={isNaN(parseFloat(v?.payAmount))}
                     startAdornment={'$'}
                     value={v?.payAmount || ''}

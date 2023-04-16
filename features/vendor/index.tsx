@@ -6,6 +6,7 @@ import { useAppStore } from 'lib/store'
 import { Pages, ViewProps } from 'lib/store/types'
 import React from 'react'
 import VendorList from './vendor-list'
+import { useRouter } from 'next/router'
 
 const VendorsScreen = () => {
   const {
@@ -13,6 +14,7 @@ const VendorsScreen = () => {
     setPage,
     openView,
   } = useAppStore()
+  const router = useRouter()
   const setTab = (tab) => setPage(Pages.vendorsPage, { tab })
   const menuItems = [
     { text: 'New Vendor', icon: <AddCircle />, onClick: () => openView(ViewProps.vendorEditDialog) },
@@ -25,7 +27,8 @@ const VendorsScreen = () => {
     {
       text: 'Start New Batch Payment',
       icon: <AccountBalance />,
-      onClick: () => openView(ViewProps.batchVendorPaymentDialog),
+      onClick: () => router.push(`/batch-payment/new`),
+      // onClick: () => openView(ViewProps.batchVendorPaymentDialog),
     },
     { text: 'Manage Settings', icon: <DisplaySettings />, onClick: null, disabled: true },
   ]

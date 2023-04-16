@@ -252,16 +252,18 @@ export function dbCreateBatchVendorPayments(batchPayment, db = connection) {
     const { vendorList = [], clerkId, registerId, emailed = false, note = '' } = batchPayment || {}
     return db('batch_payment')
       .insert({
-        sequenceNumber: `0000${registerId}`.slice(-4),
-        dateStarted: dayjs.utc().format(),
-        startedByClerkId: clerkId,
+        sequence_number: `0000${registerId}`.slice(-4),
+        date_started: dayjs.utc().format(),
+        started_by_clerk_id: clerkId,
+        date_completed: dayjs.utc().format(),
+        completed_by_clerk_id: clerkId,
         note,
       })
       .then((rows) => {
         const batchId = rows[0]
         return db('batch_payment')
           .where('id', batchId)
-          .update({ batchNumber: `00${batchId}`.slice(-2) })
+          .update({ batch_number: `00${batchId}`.slice(-2) })
           .then(() => {
             const successfulPayments = []
             vendorList
@@ -272,7 +274,7 @@ export function dbCreateBatchVendorPayments(batchPayment, db = connection) {
                   await dbUpdateVendor({ lastUpdated: dayjs.utc().format() }, vendorId, trx)
                 }
                 if (modulusCheck(vendor?.bankAccountNumber) && parseFloat(vendor?.payAmount)) {
-                  const amount = dollarsToCents(vendor?.payment)
+                  const amount = dollarsToCents(vendor?.payAmount)
                   const paymentId = await dbCreateVendorPayment(
                     {
                       amount,
@@ -299,4 +301,17 @@ export function dbGetVendorHasNegativeQuantityItems(vendor_id, db = connection) 
   return dbGetSimpleStockCount(db)
     .where({ vendor_id })
     .then((dataRows) => dataRows?.filter((stock) => stock?.quantity < 0)?.length > 0)
+}
+
+export function dbGetBatchVendorPayment(id, db = connection) {
+  return db('batch_payment')
+    .where({ id })
+    .first()
+    .then((batchPayment) => {
+      return dbGetVendorPaymentsByBatchId(id, (db = connection)).then((payments) => ({ ...batchPayment, payments }))
+    })
+}
+
+export function dbGetVendorPaymentsByBatchId(batchId, db = connection) {
+  return db('vendor_payment').where('batch_id', batchId)
 }
