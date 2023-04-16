@@ -14,13 +14,19 @@ import CreateMailOrder from './create-mail-order/sidebar'
 import Pay from './pay'
 import dayjs from 'dayjs'
 import { useClerk } from 'lib/api/clerk'
+import { useEffect } from 'react'
 
 const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
-  const { cart, resetCart, openView, closeView, setAlert, openConfirm } = useAppStore()
+  const { cart, setCartSale, resetCart, openView, closeView, setAlert, openConfirm } = useAppStore()
   const { clerk } = useClerk()
   const { sale = {} } = cart || {}
   const router = useRouter()
   const { mutate } = useSWRConfig()
+
+  useEffect(() => {
+    if (sale?.state === SaleStateTypes.Completed && totalRemaining !== 0)
+      setCartSale({ state: SaleStateTypes.InProgress }, true)
+  }, [totalRemaining, sale?.state, setCartSale])
 
   function clearCart() {
     resetCart()
