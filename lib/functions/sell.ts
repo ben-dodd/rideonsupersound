@@ -24,7 +24,11 @@ export function writeCartItemPriceBreakdown(cartItem: SaleItemObject, stockItem:
   if (price?.totalSell === null || price?.totalSell === undefined) return '...'
   return `${cartItem?.quantity}${parseInt(cartItem?.vendorDiscount) > 0 ? ` × V${cartItem?.vendorDiscount}%` : ''}${
     parseInt(cartItem?.storeDiscount) > 0 ? ` × S${cartItem?.storeDiscount}%` : ''
-  } × ${priceCentsString(cartItem?.totalSell ?? price?.totalSell)}`
+  } × ${priceCentsString(cartItem?.totalSell ?? price?.totalSell)}${
+    cartItem?.storeDiscount || cartItem?.vendorDiscount || parseInt(cartItem?.quantity) !== 1
+      ? ` (${priceCentsString(getCartItemTotal(cartItem, {}, price))})`
+      : ''
+  }`
 }
 
 export function getDiscountedPrice(cost: number | string, discount: number | string, quantity: number | string) {

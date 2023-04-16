@@ -1,6 +1,6 @@
 import connection from './conn'
 import dayjs from 'dayjs'
-import { getCartItemStoreCut, getCartItemTotal } from 'lib/functions/sell'
+import { getCartItemStoreCut, getCartItemTotal, getDiscountedPrice } from 'lib/functions/sell'
 import { VendorObject, VendorPaymentObject } from 'lib/types/vendor'
 import { dbGetAllVendorPayments } from './payment'
 import { dbGetAllSalesAndItems } from './sale'
@@ -147,7 +147,7 @@ export function dbGetTotalVendorCutFromVendorStockIds(stockIds, db = connection)
     )
     .then((sales) => {
       return sales?.reduce(
-        (acc, sale) => acc + (sale?.quantity * sale?.vendor_cut * (100 - (sale?.vendor_discount || 0))) / 100,
+        (acc, sale) => acc + getDiscountedPrice(sale?.vendor_cut, sale?.vendor_discount, sale?.quantity),
         0,
       )
     })

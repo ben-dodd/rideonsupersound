@@ -4,6 +4,7 @@ import dayjs from 'dayjs'
 import { VendorSaleItemObject } from 'lib/types/vendor'
 import { priceCentsString } from 'lib/utils'
 import { useRouter } from 'next/router'
+import { getDiscountedPrice } from 'lib/functions/sell'
 
 export default function VendorSales({ sales }) {
   const router = useRouter()
@@ -40,7 +41,11 @@ export default function VendorSales({ sales }) {
               </div>
               <div className={`w-1/12${sale?.isRefunded ? ' line-through' : ''}`}>
                 {`${priceCentsString(sale?.itemVendorCut)}${
-                  sale?.vendorDiscount ? ` (${sale?.vendorDiscount}% DISCOUNT)` : ''
+                  sale?.vendorDiscount
+                    ? ` (${priceCentsString(
+                        getDiscountedPrice(sale?.itemVendorCut, sale?.vendorDiscount, sale?.quantity),
+                      )} w/${sale?.vendorDiscount}% OFF)`
+                    : ''
                 }`}
               </div>
             </div>
