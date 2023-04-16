@@ -222,6 +222,15 @@ export function dbDeleteStockMovementForSale(id, db = connection) {
     .catch((e) => Error(e.message))
 }
 
+export function dbDeleteStockMovementForSaleItem(stockId, saleId, db = connection) {
+  console.log('deleting stock movement for sale item', stockId, saleId)
+  return db('stock_movement')
+    .where({ sale_id: saleId })
+    .andWhere({ stock_id: stockId })
+    .update({ is_deleted: 1 })
+    .catch((e) => Error(e.message))
+}
+
 export function dbCreateSaleTransaction(saleTransaction, db = connection) {
   return db('sale_transaction')
     .insert(js2mysql(saleTransaction))
@@ -231,6 +240,13 @@ export function dbCreateSaleTransaction(saleTransaction, db = connection) {
 
 export function dbUpdateSaleTransaction(id, update, db = connection) {
   return db('sale_transaction')
+    .where({ id })
+    .update(js2mysql(update))
+    .catch((e) => Error(e.message))
+}
+
+export function dbUpdateStockMovement(id, update, db = connection) {
+  return db('stock_movement')
     .where({ id })
     .update(js2mysql(update))
     .catch((e) => Error(e.message))
@@ -260,6 +276,7 @@ export async function dbSaveCart(cart, db = connection) {
       if (sale?.isMailOrder && sale?.state === SaleStateTypes.Completed) {
         console.log('Creating mail order job')
         const customer = await dbGetCustomer(sale?.customerId, trx)
+
         const mailOrderJob = {
           description: `Post Sale ${sale?.id} (${sale?.itemList}) to ${`${customer?.name}\n` || ''}${
             sale?.postalAddress
@@ -312,7 +329,6 @@ export async function dbGetStockMovementsForSaleAndItem(stockId, saleId, db = co
 export async function dbDeleteSaleTransaction(trans: SaleTransactionObject, db = connection) {
   // If transaction is from a vendor account, remove the vendor account payment from db
   if (trans?.vendorPaymentId) {
-    console.log('deleting vendor payment')
     await dbUpdateVendorPayment(
       trans?.vendorPaymentId,
       {
@@ -323,26 +339,19 @@ export async function dbDeleteSaleTransaction(trans: SaleTransactionObject, db =
   }
   // If transaction is a gift card, undo all gift card actions
   if (trans?.giftCardId) {
-    console.log('reversing gift card transaction')
     await dbReverseGiftCardTransaction(trans, db)
   }
-  console.log('updating sale transaction')
   await dbUpdateSaleTransaction(trans?.id, { isDeleted: true }, db)
   return true
 }
 
 export async function dbReverseGiftCardTransaction(trans: SaleTransactionObject, db = connection) {
   if (trans.isRefund) {
-    console.log('reverse gift card that was a refund')
     // If refund, simply invalidate the gift card that was created as the refund
     await dbUpdateStockItem({ giftCardIsValid: false }, trans?.giftCardId, db)
   } else {
-    console.log('reverse normalgift card transaction')
     await dbGetGiftCard(trans?.giftCardId, db).then(async (giftCardItem) => {
-      console.log('got giftcard')
       const { giftCard = {} } = mysql2js(giftCardItem) || {}
-      console.log('Gift card item is', giftCard)
-      console.log('Trans is', trans)
       const newAmount = (giftCard?.giftCardRemaining || 0) + (trans?.changeGiven || 0) + (trans?.amount || 0)
       console.log(newAmount)
       await dbUpdateStockItem({ giftCardRemaining: newAmount, giftCardIsValid: true }, trans?.giftCardId, db)
@@ -384,7 +393,6 @@ export async function dbDeleteSale(id, db = connection) {
 async function handleSaveSaleItem(item, sale, prevSale, registerId, trx) {
   // return db
   //   .transaction(async (trx) => {
-  console.log('saving item', item)
   const newItem = { ...item }
   const { sale: { state: prevState = SaleStateTypes.InProgress } = {}, items = [] } = prevSale || {}
   const prevItem = items?.find((prev) => prev?.id === item?.id)
@@ -419,40 +427,56 @@ async function handleSaveSaleItem(item, sale, prevSale, registerId, trx) {
 async function handleStockMovements(item, sale, prevState, prevItem, registerId = null, db) {
   // Add stock movement if it's a regular stock item
   if (!item?.isGiftCard && !item?.isMiscItem) {
-    console.log('Handling stock movement for ', item?.itemId)
     const prevStockMovements = await dbGetStockMovementsForSaleAndItem(item?.itemId, sale?.id, db)
-    console.log(prevStockMovements)
-    let stockMovement = {
-      stockId: item?.itemId,
-      clerkId: sale?.saleClosedBy,
-      saleId: sale?.id,
-      registerId,
-      act: null,
-      quantity: 0,
-    }
-    console.log(stockMovement)
-    if (sale?.state === SaleStateTypes.Completed) {
-      // If it was a layby, unlayby it before marking as sold
-      if (prevState === SaleStateTypes.Layby) {
+    // If item has recently been deleted, delete stock movements for that sale and item
+    if (item?.isDeleted) {
+      if (!prevItem?.is_deleted) await dbDeleteStockMovementForSaleItem(item?.itemId, sale?.id, db)
+    } else {
+      let stockMovement = {
+        stockId: item?.itemId,
+        clerkId: sale?.saleClosedBy,
+        saleId: sale?.id,
+        registerId,
+        act: null,
+        quantity: 0,
+      }
+      if (sale?.state === SaleStateTypes.Completed && prevState === SaleStateTypes.Layby) {
+        // Sale has gone from not completed to completed
+        // If it was a layby, unlayby it before marking as sold
         const unlaybyQuantity = getStockMovementQuantityByAct(item?.quantity, StockMovementTypes.Unlayby)
         await dbCreateStockMovement(
           { ...stockMovement, act: StockMovementTypes.Unlayby, quantity: unlaybyQuantity },
           db,
         )
       }
-      if (item?.isRefunded && !prevItem?.isRefunded) {
-        // Refund item if refunded
-        const refundQuantity = getStockMovementQuantityByAct(item?.quantity, StockMovementTypes.Unsold)
-        await dbCreateStockMovement({ ...stockMovement, act: StockMovementTypes.Unsold, quantity: refundQuantity }, db)
-      } else stockMovement.act = StockMovementTypes.Sold
-      // Add layby stock movement if it's a new layby
-    } else if (sale?.state === SaleStateTypes.Layby && prevState !== SaleStateTypes.Layby) {
-      stockMovement.clerkId = sale?.laybyStartedBy
-      stockMovement.act = StockMovementTypes.Layby
+
+      if (item?.isRefunded) {
+        if (!prevItem?.is_refunded) {
+          // Refund item if refunded
+          const refundQuantity = getStockMovementQuantityByAct(item?.quantity, StockMovementTypes.Unsold)
+          await dbCreateStockMovement(
+            { ...stockMovement, act: StockMovementTypes.Unsold, quantity: refundQuantity },
+            db,
+          )
+        }
+      }
+
+      if (sale?.state === SaleStateTypes.Completed || sale?.state === SaleStateTypes.Layby) {
+        const act = sale?.state === SaleStateTypes.Completed ? StockMovementTypes.Sold : StockMovementTypes.Layby
+        // Add sold or layby record
+        const smQuantity = getStockMovementQuantityByAct(item?.quantity, act)
+        const prevStockMovement = prevStockMovements?.find((sm) => sm?.act === act)
+        if (prevStockMovement) {
+          // Stock movement exists, check quantities and adjust if needed
+          if (prevStockMovement?.quantity !== smQuantity) {
+            // Quantity has changed
+            dbUpdateStockMovement(prevStockMovement?.id, { quantity: smQuantity }, db)
+          }
+        } else {
+          await dbCreateStockMovement({ ...stockMovement, act, quantity: smQuantity }, db)
+        }
+      }
     }
-    stockMovement.quantity = getStockMovementQuantityByAct(item?.quantity, stockMovement?.act)
-    console.log('Creating stock movement', stockMovement)
-    if (stockMovement?.act) await dbCreateStockMovement(stockMovement, db)
   }
 }
 
