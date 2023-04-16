@@ -7,6 +7,7 @@ import { useRouter } from 'next/router'
 import { updateStockItem, useStockItem } from 'lib/api/stock'
 import { useSWRConfig } from 'swr'
 import { parseJSON } from 'lib/utils'
+import Loading from 'components/placeholders/loading'
 
 export default function DiscogsPanel() {
   const router = useRouter()
@@ -15,10 +16,15 @@ export default function DiscogsPanel() {
   const { item = {} } = stockItem || {}
   const [discogsOptions, setDiscogsOptions] = useState(null)
   const discogsItem = parseJSON(item?.discogsItem, null)
+  const [isLoading, setIsLoading] = useState(false)
   const { mutate } = useSWRConfig()
 
   const handleGetDiscogsOptions = () => {
-    getDiscogsOptions(item).then((options) => setDiscogsOptions(options))
+    setIsLoading(true)
+    getDiscogsOptions(item).then((options) => {
+      setIsLoading(false)
+      setDiscogsOptions(options)
+    })
   }
 
   useEffect(() => {
@@ -55,6 +61,10 @@ export default function DiscogsPanel() {
               {discogsOptions.map((discogsOption: any, i: number) => (
                 <DiscogsOption key={i} discogsOption={discogsOption} />
               ))}
+            </div>
+          ) : isLoading ? (
+            <div className="w-12">
+              <Loading size="sm" />
             </div>
           ) : (
             <div className="text-xl p-6">

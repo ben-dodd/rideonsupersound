@@ -3,7 +3,7 @@ import DiscogsOption from 'features/stock/api-discogs/discogs-option'
 import { getDiscogsOptions } from 'lib/functions/discogs'
 import { useAppStore } from 'lib/store'
 import debounce from 'lodash/debounce'
-import { useCallback, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { v4 as uuid } from 'uuid'
 
 export default function Discogs() {
@@ -30,8 +30,8 @@ export default function Discogs() {
     const results = await getDiscogsOptions({ query: k })
     if (results && results?.length > 0) setDiscogsOptions(results)
   }
-  const debouncedSearch = useCallback(debounce(searchDiscogs, 2000), [])
-  const debouncedBarcode = useCallback(debounce(handleChange, 2000), [])
+  const debouncedSearch = useMemo(() => debounce(searchDiscogs, 2000), [])
+  const debouncedBarcode = useMemo(() => debounce(handleChange, 2000), [])
 
   return (
     <div>

@@ -7,6 +7,7 @@ import { useRouter } from 'next/router'
 import { updateStockItem, useStockItem } from 'lib/api/stock'
 import { useSWRConfig } from 'swr'
 import { parseJSON } from 'lib/utils'
+import Loading from 'components/placeholders/loading'
 
 export default function GoogleBooksPanel() {
   const router = useRouter()
@@ -15,20 +16,21 @@ export default function GoogleBooksPanel() {
   const { item = {} } = stockItem || {}
   const [googleBooksOptions, setGoogleBooksOptions] = useState([])
   const googleBooksItem = parseJSON(item?.googleBooksItem, null)
+  const [isLoading, setIsLoading] = useState(false)
   const { mutate } = useSWRConfig()
 
-  const handleGetGoogleBooksOptions = async () => {
-    const options = await getGoogleBooksOptionsByItem(item)
-    setGoogleBooksOptions(options)
+  const handleGetGoogleBooksOptions = () => {
+    setIsLoading(true)
+    getGoogleBooksOptionsByItem(item).then((options) => {
+      setIsLoading(false)
+      setGoogleBooksOptions(options)
+    })
   }
 
   useEffect(() => {
     if (!Boolean(item?.googleBooksItem) && (Boolean(item?.artist) || Boolean(item?.title)))
       handleGetGoogleBooksOptions()
   }, [])
-
-  console.log(googleBooksOptions)
-  console.log(googleBooksItem)
 
   return (
     <div className="flex flex-col h-inventory">
@@ -53,14 +55,18 @@ export default function GoogleBooksPanel() {
       <div className="flex-1 overflow-y-auto pt-4 mx-4">
         {googleBooksItem ? (
           <GoogleBooksItem googleBooksItem={googleBooksItem} />
-        ) : googleBooksOptions ? (
+        ) : googleBooksOptions?.length > 0 ? (
           <div>
             {googleBooksOptions.map((googleBooksOption: any, i: number) => (
               <GoogleBooksOption key={i} googleBooksOption={googleBooksOption} />
             ))}
           </div>
+        ) : isLoading ? (
+          <div className="w-12">
+            <Loading size="sm" />
+          </div>
         ) : (
-          <div />
+          <div>Item could not be found on GoogleBooks...</div>
         )}
       </div>
       <div />

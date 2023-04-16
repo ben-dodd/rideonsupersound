@@ -6,11 +6,12 @@ import MaskedInput from 'react-text-mask'
 import { useClerks } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { createVendor, updateVendor } from 'lib/api/vendor'
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Modal from 'components/modal'
 import { ViewProps } from 'lib/store/types'
 import { useSWRConfig } from 'swr'
 import { modulusCheck } from 'lib/functions/payment'
+import { debounce } from 'lodash'
 
 export default function VendorEditDialog({ vendor }) {
   const { clerks } = useClerks()
@@ -28,6 +29,21 @@ export default function VendorEditDialog({ vendor }) {
     postalAddress: vendor?.postalAddress || '',
     note: vendor?.note || '',
   })
+  const [isBankAccountValid, setIsBankAccountValid] = useState(true)
+
+  const debouncedModulusCheck = useMemo(
+    () =>
+      debounce(() => {
+        setIsBankAccountValid(modulusCheck(editVendor?.bankAccountNumber))
+      }, 1000),
+    [editVendor?.bankAccountNumber],
+  )
+
+  useEffect(() => {
+    if (editVendor?.bankAccountNumber !== '') debouncedModulusCheck()
+    else setIsBankAccountValid(true)
+  }, [editVendor?.bankAccountNumber, debouncedModulusCheck])
+
   const handleChange = (e) => {
     setEditVendor({ ...editVendor, [e.target.name]: e.target.value })
   }
@@ -56,8 +72,6 @@ export default function VendorEditDialog({ vendor }) {
 
   const { mutate } = useSWRConfig()
   const [submitting, setSubmitting] = useState(false)
-
-  const isBankAccountValid = modulusCheck(editVendor?.bankAccountNumber)
 
   const buttons: ModalButton[] = [
     {
