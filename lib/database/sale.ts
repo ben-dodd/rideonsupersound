@@ -16,6 +16,7 @@ import {
 } from './stock'
 import { js2mysql, mysql2js } from './utils/helpers'
 import { SignalCellularNullTwoTone } from '@mui/icons-material'
+import { getItemSkuDisplayName } from 'lib/functions/displayInventory'
 
 export function dbGetAllSales(db = connection) {
   return db('sale')
@@ -109,6 +110,11 @@ export function dbGetAllCurrentHolds(db = connection) {
   return dbGetAllHolds(db).where(`hold.date_removed_from_hold`, null)
 }
 
+export function dbGetHoldsForItem(itemId, db = connection) {
+  console.log('Getting holds for item', itemId)
+  return dbGetAllHolds(db).where(`hold.item_id`, itemId)
+}
+
 export async function dbGetSale(id, db = connection) {
   const cart: any = {}
   cart.sale = await db('sale').where({ id }).first()
@@ -152,17 +158,19 @@ export function dbCreateSale(sale, db = connection) {
 export function dbCreateHold(hold, db = connection) {
   return db('hold')
     .insert(js2mysql(hold))
-    .then(() =>
+    .then((rows) => {
+      const holdId = rows[0]
       dbCreateStockMovement(
         {
           stockId: hold?.itemId,
           clerkId: hold?.startedBy,
           quantity: hold?.quantity * -1,
+          holdId: holdId,
           act: StockMovementTypes.Hold,
         },
         db,
-      ),
-    )
+      )
+    })
     .then(() => dbCheckIfRestockNeeded(hold?.itemId, db))
 }
 
@@ -189,6 +197,49 @@ export function dbUpdateHold(id, update, db = connection) {
     })
     .catch((e) => {
       Error(e.message)
+    })
+}
+
+export function dbCancelHold(id, clerk, isAddedToCart = false, db = connection) {
+  return dbUpdateHold(
+    id,
+    {
+      removedFromHoldBy: clerk?.id,
+      dateRemovedFromHold: dayjs.utc().format(),
+      isSold: isAddedToCart,
+    },
+    db,
+  )
+    .then(() => dbGetAllHolds(db).where('hold.id', id).first())
+    .then((hold) => {
+      console.log('Creating unhold stock movement', {
+        stockId: hold?.item_id,
+        clerkId: clerk?.id,
+        quantity: hold?.quantity,
+        holdId: hold?.id,
+        act: StockMovementTypes.Unhold,
+      })
+      return dbCreateStockMovement(
+        {
+          stockId: hold?.item_id,
+          clerkId: clerk?.id,
+          quantity: hold?.quantity,
+          holdId: hold?.id,
+          act: StockMovementTypes.Unhold,
+        },
+        db,
+      ).then(
+        () =>
+          !isAddedToCart &&
+          dbCreateJob(
+            {
+              description: `Return ${getItemSkuDisplayName(hold)} to stock from holds.`,
+              createdByClerkId: clerk?.id,
+              dateCreated: dayjs.utc().format(),
+            },
+            db,
+          ),
+      )
     })
 }
 

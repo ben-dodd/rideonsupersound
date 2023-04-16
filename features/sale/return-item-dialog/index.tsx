@@ -20,7 +20,6 @@ export default function ReturnItemsDialog({ sale }) {
     setNotes('')
   }
 
-  // Constants
   const buttons: ModalButton[] = [
     {
       type: 'ok',

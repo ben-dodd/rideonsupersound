@@ -6,6 +6,8 @@ import { Delete, MonetizationOnRounded, ShoppingCartCheckoutRounded, StackedBarC
 import SectionPanel from 'components/container/section-panel'
 import { useAppStore } from 'lib/store'
 import { useSWRConfig } from 'swr'
+import { useHoldsForItem } from 'lib/api/sale'
+import { StockMovementTypes } from 'lib/types/stock'
 
 export default function StockDetails() {
   const router = useRouter()
@@ -13,10 +15,12 @@ export default function StockDetails() {
   const { mutate } = useSWRConfig()
   const { id } = router.query
   const { stockItem } = useStockItem(`${id}`)
+  const { itemHolds } = useHoldsForItem(id)
   const { quantities = {}, stockMovements = [], stockPrices = [], sales = [] } = stockItem || {}
   let runningQuantity = quantities?.inStock || 0
   let prevQuantity = 0
   let saleIndex = 0
+  console.log(stockMovements)
 
   return (
     <>
@@ -65,6 +69,7 @@ export default function StockDetails() {
                 prevQuantity = s?.quantity
                 const saleId = s?.saleId ? s?.saleId : s?.act === 'sold' ? sales[saleIndex]?.saleId : null
                 if (s?.act === 'sold') saleIndex++
+                const hold = s?.holdId ? itemHolds?.find((hold) => hold?.id === s?.holdId) : null
                 return (
                   <div key={s?.id} className={`flex p-2 justify-between`}>
                     <div className="mr-2 flex">
@@ -77,11 +82,18 @@ export default function StockDetails() {
                       ) : (
                         <div />
                       )}
+                      {s?.holdId ? <div className="ml-2">{`[${hold?.customerName?.toUpperCase()}]`}</div> : <div />}
                     </div>
                     <div className="flex">
-                      <div className={`mr-2 font-bold ${s?.quantity < 1 ? 'text-red-500' : 'text-blue-500'}`}>{`${
-                        s?.act === 'adjustment' ? (s?.quantity < 1 ? '-' : '+') : ''
-                      }${Math.abs(s?.quantity)} ${s?.act}`}</div>
+                      <div
+                        className={`mr-2 font-bold ${s?.quantity < 1 ? 'text-red-500' : 'text-blue-500'}${
+                          s?.act === StockMovementTypes.Hold && s?.holdId && hold?.dateRemovedFromHold
+                            ? ' line-through'
+                            : ''
+                        }`}
+                      >{`${s?.act === 'adjustment' ? (s?.quantity < 1 ? '-' : '+') : ''}${Math.abs(s?.quantity)} ${
+                        s?.act
+                      }`}</div>
                       <div
                         className={`ml-2 ${runningQuantity < 0 ? 'text-red-500' : 'text-black'}`}
                       >{`(${runningQuantity} in stock)`}</div>

@@ -2,9 +2,6 @@ import { ClerkObject } from 'lib/types'
 import { CartObject, HoldObject, SaleItemObject } from 'lib/types/sale'
 import { axiosAuth, useData } from './'
 import { mysql2js } from 'lib/database/utils/helpers'
-import dayjs from 'dayjs'
-import { createTask } from './jobs'
-import { getItemSkuDisplayName } from 'lib/functions/displayInventory'
 
 export function useSaleItemsForSale(saleId) {
   return useData(`sale/items/${saleId}`, 'saleItems')
@@ -42,16 +39,8 @@ export function updateHold(update, id) {
   return axiosAuth.patch(`/api/sale/hold/${id}`, update)
 }
 
-export function cancelHold(hold, clerk) {
-  return axiosAuth
-    .patch(`/api/sale/hold/${hold?.id}`, { removedFromHoldBy: clerk?.id, dateRemovedFromHold: dayjs.utc().format() })
-    .then(() =>
-      createTask({
-        description: `Return ${getItemSkuDisplayName(hold)} to stock from holds.`,
-        createdByClerkId: clerk?.id,
-        dateCreated: dayjs.utc().format(),
-      }),
-    )
+export function cancelHold(hold, clerk, isAddedToCart = false) {
+  return axiosAuth.patch(`/api/sale/hold/cancel/${hold?.id}`, { clerk, isAddedToCart })
 }
 
 export function createSaleItem(saleItem: SaleItemObject) {
@@ -59,7 +48,7 @@ export function createSaleItem(saleItem: SaleItemObject) {
 }
 
 export function updateSaleItem(id, update) {
-  return axiosAuth.patch(`/api/sale/item/${id}`, { update })
+  return axiosAuth.patch(`/api/sale/item/${id}`, update)
 }
 
 export function deleteSale(id) {
@@ -88,4 +77,8 @@ export function useHolds() {
 
 export function useCurrentHolds() {
   return useData(`sale/hold/current`, 'currentHolds')
+}
+
+export function useHoldsForItem(itemId) {
+  return useData(`sale/hold/item/${itemId}`, 'itemHolds')
 }

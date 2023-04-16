@@ -57,8 +57,7 @@ export interface StoreState {
   sellPage?: {
     searchBar?: string
     isSearching?: boolean
-    bypassRegister?: boolean
-    createableCustomerName?: string
+    activeItemId?: number
   }
   ordersPage?: {
     tab?: number
@@ -114,7 +113,7 @@ export interface StoreState {
   mutateCart: (mutates?: string[]) => void
   addCartTransaction: (transaction: SaleTransactionObject) => void
   deleteCartTransaction: (transaction: SaleTransactionObject) => void
-  addCartItem: (newItem: SaleItemObject, clerkId: number, replacePrevious?: boolean) => void
+  addCartItem: (newItem: SaleItemObject, clerkId: number, replacePrevious?: boolean, alertMessage?: string) => void
   setCartItem: (id: number, update: any) => void
   setCartSale: (update: any, doMutate?: boolean) => void
   setReceiveBasket: (update: any) => void

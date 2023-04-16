@@ -15,6 +15,7 @@ import { useCurrentRegister } from 'lib/api/register'
 import { useRouter } from 'next/router'
 import Layout from 'components/layout'
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+import CheckHoldsDialog from 'features/sell/inventory-scroll/check-holds-dialog'
 // import withRoleAuthorization from 'components/auth/roleAuthorization'
 
 export default function SellPage() {
@@ -53,6 +54,7 @@ export default function SellPage() {
       {view?.closeRegisterScreen && <CloseRegisterScreen />}
       {view?.returnCashDialog && <ReturnCashDialog />}
       {view?.takeCashDialog && <TakeCashDialog />}
+      {view?.checkHoldsDialog && <CheckHoldsDialog />}
     </div>
   )
 }

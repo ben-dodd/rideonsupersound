@@ -5,7 +5,7 @@ import { skuScan } from 'lib/functions/sell'
 import { useAppStore } from 'lib/store'
 import { getItemSkuDisplayName } from 'lib/functions/displayInventory'
 import { useClerk } from 'lib/api/clerk'
-import { Pages } from 'lib/store/types'
+import { Pages, ViewProps } from 'lib/store/types'
 
 const Actions = ({ item, itemQuantity, holdsQuantity, isItemLoading }) => {
   const router = useRouter()
@@ -15,7 +15,8 @@ const Actions = ({ item, itemQuantity, holdsQuantity, isItemLoading }) => {
     resetSearchBar,
     addCartItem,
     openConfirm,
-    closeConfirm,
+    setPage,
+    openView,
   } = useAppStore()
   const { clerk } = useClerk()
   function clickAddToCart() {
@@ -34,34 +35,16 @@ const Actions = ({ item, itemQuantity, holdsQuantity, isItemLoading }) => {
     } else handleAddItemToCart()
   }
 
-  const addItemToCart = () => addCartItem({ itemId: item?.id, quantity: '1' }, clerk?.id)
+  const handleCheckHolds = () => {
+    setPage(Pages.sellPage, { activeItemId: item?.id })
+    openView(ViewProps.checkHoldsDialog)
+  }
 
-  const checkHolds = (
-    <>
-      <div>Item is on hold for X people.</div>
-      <div className="flex flex-col">
-        <button className="bg-red-500" onClick={closeConfirm}>
-          Cancel
-        </button>
-        <button
-          className="bg-green-500"
-          onClick={() => {
-            closeConfirm()
-            addItemToCart()
-          }}
-        >
-          Add It Anyway
-        </button>
-      </div>
-    </>
-  )
+  const addItemToCart = () => addCartItem({ itemId: item?.id, quantity: '1' }, clerk?.id)
 
   const itemIsNotInCart = cart?.items?.findIndex((cartItem) => cartItem?.itemId === item?.id) < 0
 
-  const handleAddItemToCart = () =>
-    holdsQuantity > 0 && itemIsNotInCart
-      ? openConfirm({ open: true, title: 'Check Holds', styledMessage: checkHolds, buttons: [] })
-      : addItemToCart()
+  const handleAddItemToCart = () => (holdsQuantity > 0 && itemIsNotInCart ? handleCheckHolds() : addItemToCart())
 
   function handleInputSku() {
     resetSearchBar(Pages.sellPage)

@@ -46,8 +46,7 @@ const initState = {
   sellPage: {
     searchBar: '',
     isSearching: false,
-    bypassRegister: false,
-    createableCustomerName: '',
+    activeItemId: null,
   },
   ordersPage: {
     tab: 0,
@@ -217,8 +216,8 @@ export const useAppStore = createSelectors(
       const mutates = transaction?.paymentMethod === PaymentMethodTypes.GiftCard ? [`stock/giftcard`] : []
       get().mutateCart(mutates)
     },
-    addCartItem: (newItem, clerkId, replacePrevious = false) => {
-      const alert = { open: true, type: 'success', message: 'ITEM ADDED' }
+    addCartItem: (newItem, clerkId, replacePrevious = false, alertMessage = 'ITEM ADDED') => {
+      const alert = { open: true, type: 'success', message: alertMessage }
       if (replacePrevious) {
         const oldCart = get().cart
         if (oldCart?.items?.length > 0) {

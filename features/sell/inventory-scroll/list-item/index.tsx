@@ -33,7 +33,11 @@ export default function ListItem({ searchItem }: { searchItem: StockItemSearchOb
   useEffect(() => setIsWaiting(isSearching), [isSearching])
 
   return (
-    <div className={`list-item bg-white border pr-2 ${quantities?.inStock < 1 && 'opacity-50'}`}>
+    <div
+      className={`list-item bg-white border pr-2 ${
+        quantities?.inStock < 1 && !(quantities?.layby > 0 || quantities?.hold > 0) && 'opacity-50'
+      }`}
+    >
       <ItemImage item={item} />
       <div className="flex flex-col w-full px-2">
         <div className="flex justify-between border-b items-center border-gray-400">

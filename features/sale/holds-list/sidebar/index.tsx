@@ -78,7 +78,7 @@ const HoldsSidebar = () => {
     addCartItem({ itemId: hold?.itemId, quantity: `${hold?.quantity}`, holdId: hold?.id }, clerk?.id, replaceCart)
     router.push('/sell')
     closeHold()
-    cancelHold(hold, clerk).then(() => mutate(`sale/hold`))
+    cancelHold(hold, clerk, true).then(() => mutate(`sale/hold`))
   }
 
   async function onClickUpdateHold() {

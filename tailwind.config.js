@@ -79,6 +79,7 @@ module.exports = {
           DEFAULT: '#7c7474',
           light: '#908989',
         },
+        selected: '#d0d050',
       },
       fontFamily: { sans: ['Nunito', 'sans-serif'], creep: ['Creepster', 'cursive'] },
       height: {
