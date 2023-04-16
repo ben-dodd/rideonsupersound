@@ -22,3 +22,7 @@ export function dbCreateJob(job, db = connection) {
 export function dbUpdateJob(update, id, db = connection) {
   return db('task').where({ id }).update(js2mysql(update))
 }
+
+export function dbGetJobsLike(desc, db = connection) {
+  return db('task').where('description', 'like', `${desc}%`)
+}

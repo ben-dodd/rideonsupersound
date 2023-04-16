@@ -5,7 +5,7 @@ import { PaymentMethodTypes, SaleStateTypes, SaleTransactionObject } from 'lib/t
 import { StockMovementTypes } from 'lib/types/stock'
 import { VendorPaymentTypes } from 'lib/types/vendor'
 import { dbGetCustomer } from './customer'
-import { dbCreateJob } from './jobs'
+import { dbCreateJob, dbGetJobsLike } from './jobs'
 import { dbCreateVendorPayment, dbUpdateVendorPayment } from './payment'
 import {
   dbCheckIfRestockNeeded,
@@ -15,6 +15,7 @@ import {
   dbGetGiftCard,
 } from './stock'
 import { js2mysql, mysql2js } from './utils/helpers'
+import { SignalCellularNullTwoTone } from '@mui/icons-material'
 
 export function dbGetAllSales(db = connection) {
   return db('sale')
@@ -109,7 +110,6 @@ export function dbGetAllCurrentHolds(db = connection) {
 }
 
 export async function dbGetSale(id, db = connection) {
-  console.log('getting carrrt', id)
   const cart: any = {}
   cart.sale = await db('sale').where({ id }).first()
   if (!cart?.sale) cart.sale = {}
@@ -141,12 +141,10 @@ export function dbGetAllSaleItems(db = connection) {
 }
 
 export function dbCreateSale(sale, db = connection) {
-  console.log('creating new sale!...', sale)
   return db('sale')
     .insert(js2mysql(sale))
     .then((rows) => rows[0])
     .catch((e) => {
-      console.log(e)
       Error(e.message)
     })
 }
@@ -178,14 +176,11 @@ export function dbUpdateSale(id, update, db = connection) {
       return id
     })
     .catch((e) => {
-      // console.log(e)
       Error(e.message)
     })
 }
 
 export function dbUpdateHold(id, update, db = connection) {
-  console.log('Updating hold', id)
-  console.log(js2mysql(update))
   return db('hold')
     .where({ id })
     .update(js2mysql(update))
@@ -223,7 +218,6 @@ export function dbDeleteStockMovementForSale(id, db = connection) {
 }
 
 export function dbDeleteStockMovementForSaleItem(stockId, saleId, db = connection) {
-  console.log('deleting stock movement for sale item', stockId, saleId)
   return db('stock_movement')
     .where({ sale_id: saleId })
     .andWhere({ stock_id: stockId })
@@ -253,13 +247,9 @@ export function dbUpdateStockMovement(id, update, db = connection) {
 }
 
 export async function dbSaveCart(cart, db = connection) {
-  console.log('DB SAVE CART CALLED!', cart)
   return db
     .transaction(async (trx) => {
-      console.log('getting rpevious sale')
-      const prevSale = cart?.sale?.id ? await dbGetSaleState(cart?.sale?.id, trx) : null
-      console.log('Previous sale is', prevSale)
-      console.log('Beginning transaction')
+      const prevSale = cart?.sale?.id ? await dbGetSaleState(cart?.sale?.id, trx) : SignalCellularNullTwoTone
       const { sale = {}, items = [], transactions = [], registerId = null } = cart || {}
       const newSale = {
         ...sale,
@@ -267,47 +257,39 @@ export async function dbSaveCart(cart, db = connection) {
       }
 
       if (newSale?.id) {
-        console.log('Updating sale:', newSale.id)
         await dbUpdateSale(newSale?.id, newSale, trx)
       } else {
-        console.log('Creating new sale')
         newSale.id = await dbCreateSale(newSale, trx)
       }
-      if (sale?.isMailOrder && sale?.state === SaleStateTypes.Completed) {
-        console.log('Creating mail order job')
-        const customer = await dbGetCustomer(sale?.customerId, trx)
-
-        const mailOrderJob = {
-          description: `Post Sale ${sale?.id} (${sale?.itemList}) to ${`${customer?.name}\n` || ''}${
-            sale?.postalAddress
-          }`,
-          createdByClerkId: sale?.saleOpenedBy,
-          assignedTo: RoleTypes?.MC,
-          dateCreated: dayjs.utc().format(),
-          isPostMailOrder: true,
+      if (newSale?.isMailOrder && newSale?.state === SaleStateTypes.Completed) {
+        // Check if mail order already exists
+        const prevMailOrderJob = await dbGetJobsLike(`Post Sale ${newSale?.id}`).first()
+        if (!prevMailOrderJob) {
+          const customer = await dbGetCustomer(newSale?.customerId, trx)
+          const mailOrderJob = {
+            description: `Post Sale ${newSale?.id} (${newSale?.itemList}) to ${`${customer?.name}\n` || ''}${
+              newSale?.postalAddress
+            }`,
+            createdByClerkId: newSale?.saleOpenedBy,
+            assignedTo: RoleTypes?.MC,
+            dateCreated: dayjs.utc().format(),
+            isPostMailOrder: true,
+          }
+          dbCreateJob(mailOrderJob, trx)
         }
-        dbCreateJob(mailOrderJob, trx)
       }
 
       const promises = []
 
       for (const item of items) {
-        console.log('Handling sale item:', item.id)
         promises.push(handleSaveSaleItem(item, newSale, prevSale, registerId, trx))
       }
 
-      console.log('Handling transactions')
-
       for (const trans of transactions) {
-        console.log('Handling new trans')
         promises.push(handleSaveSaleTransaction(trans, newSale, trx))
       }
 
-      console.log('Getting new sale:', newSale?.id)
-
       await Promise.all(promises).catch((e) => console.error(e.message)) // catch any unhandled promise rejections
-
-      console.log('All promises waited for')
 
       return dbGetSale(newSale?.id, trx)
     })
@@ -322,7 +304,6 @@ export async function dbSaveCart(cart, db = connection) {
 }
 
 export async function dbGetStockMovementsForSaleAndItem(stockId, saleId, db = connection) {
-  console.log('new function', stockId, saleId)
   return db('stock_movement').where('stock_id', '=', stockId).andWhere('sale_id', '=', saleId)
 }
 
@@ -353,7 +334,6 @@ export async function dbReverseGiftCardTransaction(trans: SaleTransactionObject,
     await dbGetGiftCard(trans?.giftCardId, db).then(async (giftCardItem) => {
       const { giftCard = {} } = mysql2js(giftCardItem) || {}
       const newAmount = (giftCard?.giftCardRemaining || 0) + (trans?.changeGiven || 0) + (trans?.amount || 0)
-      console.log(newAmount)
       await dbUpdateStockItem({ giftCardRemaining: newAmount, giftCardIsValid: true }, trans?.giftCardId, db)
     })
   }
@@ -427,7 +407,8 @@ async function handleSaveSaleItem(item, sale, prevSale, registerId, trx) {
 async function handleStockMovements(item, sale, prevState, prevItem, registerId = null, db) {
   // Add stock movement if it's a regular stock item
   if (!item?.isGiftCard && !item?.isMiscItem) {
-    const prevStockMovements = await dbGetStockMovementsForSaleAndItem(item?.itemId, sale?.id, db)
+    const prevStockMovements =
+      item?.itemId && sale?.id ? await dbGetStockMovementsForSaleAndItem(item?.itemId, sale?.id, db) : null
     // If item has recently been deleted, delete stock movements for that sale and item
     if (item?.isDeleted) {
       if (!prevItem?.is_deleted) await dbDeleteStockMovementForSaleItem(item?.itemId, sale?.id, db)
@@ -496,7 +477,6 @@ async function handleSaveSaleTransaction(trans, sale, db = connection) {
     // Transaction is new to sale
     let newSaleTransaction = { ...trans, saleId: sale?.id }
     if (trans?.paymentMethod === PaymentMethodTypes.Account) {
-      console.log('Add account payment as a store payment')
       // Add account payment as a store payment to the vendor
       let vendorPaymentId = null
       const vendorPayment = {
@@ -513,18 +493,15 @@ async function handleSaveSaleTransaction(trans, sale, db = connection) {
     }
     if (trans?.paymentMethod === PaymentMethodTypes.GiftCard) {
       if (trans?.isRefund) {
-        console.log('Gift card is new, create new one')
         // Gift card is new, create new one
         let giftCardId = await dbCreateStockItem(trans?.giftCardUpdate, db)
         newSaleTransaction = { ...newSaleTransaction, giftCardId }
       } else {
         // Update gift card
-        console.log('update gift card')
         await dbUpdateStockItem(trans?.giftCardUpdate, trans?.giftCardUpdate?.id, db)
       }
       delete newSaleTransaction?.giftCardUpdate
     }
-    console.log('creating sale transaction')
     const id = await dbCreateSaleTransaction(newSaleTransaction, db)
     return { ...newSaleTransaction, id }
     // })
@@ -533,7 +510,6 @@ async function handleSaveSaleTransaction(trans, sale, db = connection) {
   } else if (trans?.isDeleted) {
     // Transaction is deleted
     // Check if it is a newly deleted transaction
-    console.log('check if trans is newly deleted')
     await db('sale_transaction')
       .select('is_deleted')
       .where({ id: trans?.id })
@@ -541,10 +517,7 @@ async function handleSaveSaleTransaction(trans, sale, db = connection) {
       .then(async (currTrans) => {
         if (!currTrans?.is_deleted) {
           // Transaction is newly deleted
-          console.log('transaction is newly deleted')
           await dbDeleteSaleTransaction(trans, db)
-        } else {
-          console.log('transaction is not newly deleted')
         }
       })
   }
@@ -578,13 +551,6 @@ export function dbGetSaleTransactions(db = connection) {
 }
 
 export async function dbGetSalesList(startDate, endDate, clerks, laybysOnly = false, db = connection) {
-  console.log(
-    'Get sale list',
-    startDate,
-    endDate,
-    clerks?.split(',')?.map((clerk) => Number(clerk)),
-    laybysOnly,
-  )
   let baseQuery = dbGetSaleTransactions(db)
     .where('sale_transaction.date', '>=', `${dayjs(startDate, 'YYYY-MM-DD').format('YYYY-MM-DD hh:mm:ss')}`)
     .where('sale_transaction.date', '<=', `${dayjs(endDate, 'YYYY-MM-DD').format('YYYY-MM-DD hh:mm:ss')}`)
@@ -593,11 +559,8 @@ export async function dbGetSalesList(startDate, endDate, clerks, laybysOnly = fa
     baseQuery = baseQuery.whereIn(
       'sale_transaction.clerk_id',
       clerks?.split(',')?.map((clerk) => {
-        console.log(clerk)
-        console.log(Number(clerk))
         return Number(clerk)
       }),
     )
-  // console.log(baseQuery)
   return baseQuery.orderBy('sale_transaction.date')
 }

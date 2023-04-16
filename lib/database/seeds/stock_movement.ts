@@ -112,5 +112,12 @@ exports.seed = (knex) =>
           act: StockMovementTypes.Received,
           is_deleted: 0,
         },
+        {
+          id: 13,
+          stock_id: 13,
+          quantity: 5,
+          act: StockMovementTypes.Received,
+          is_deleted: 0,
+        },
       ]),
     )

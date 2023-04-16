@@ -1,9 +1,11 @@
 // const testCon = require('../testConn')
 import testCon from '../testConn'
-import { dbGetStockItem } from '../stock'
 import { dbSaveCart } from '../sale'
 import { CartObject, SaleStateTypes } from 'lib/types/sale'
+import { dbGetJobsLike } from '../jobs'
+import { dbGetStockItem } from '../stock'
 import { checkValue, mysql2js } from '../utils/helpers'
+// import { checkValue, mysql2js } from '../utils/helpers'
 
 beforeAll(() => testCon.migrate.latest())
 
@@ -224,7 +226,6 @@ describe('saveCart', () => {
       })
       .then(() =>
         dbGetStockItem(12, false, testCon).then((stockItem) => {
-          console.log(stockItem?.quantities)
           expect(stockItem?.quantities?.inStock).toBe(10)
           expect(stockItem?.quantities?.sold).toBe(1)
           expect(stockItem?.quantities?.refunded).toBe(1)
@@ -263,5 +264,99 @@ describe('saveCart', () => {
         expect(checkValue(stockItem?.quantities?.layby)).toBe(0)
       }),
     )
+  })
+})
+
+describe('saveCart', () => {
+  it('saves a completed cart with mail order and posts job', () => {
+    const cart = { ...baseCart }
+    cart.sale.state = SaleStateTypes.Completed
+    cart.sale.saleClosedBy = 1
+    cart.items[0].quantity = '1'
+    cart.sale.isMailOrder = true
+    cart.sale.customerId = 1
+    cart.sale.itemList = 'Test Items'
+    cart.sale.postalAddress = '30 Hornbrook St'
+    return dbSaveCart(cart, testCon).then((savedCart) => {
+      return dbGetJobsLike(`Post Sale ${savedCart?.sale?.id}`, testCon).then((tasks) => {
+        expect(tasks).toHaveLength(1)
+        expect(tasks?.[0]?.description).toContain(`Post Sale ${savedCart?.sale?.id}`)
+      })
+    })
+  })
+})
+
+describe('saveCart', () => {
+  it('saves a completed cart with mail order and doesnt repeat job if it exists', () => {
+    const cart = { ...baseCart }
+    cart.sale.state = SaleStateTypes.Completed
+    cart.sale.saleClosedBy = 1
+    cart.items[0].quantity = '1'
+    cart.sale.isMailOrder = true
+    cart.sale.customerId = 1
+    cart.sale.itemList = 'Test Items'
+    cart.sale.postalAddress = '30 Hornbrook St'
+    return dbSaveCart(cart, testCon)
+      .then((savedCart) => dbSaveCart(savedCart, testCon))
+      .then((savedCart) => {
+        return dbGetJobsLike(`Post Sale ${savedCart?.sale?.id}`, testCon).then((tasks) => {
+          expect(tasks).toHaveLength(1)
+          expect(tasks?.[0]?.description).toContain(`Post Sale ${savedCart?.sale?.id}`)
+        })
+      })
+  })
+})
+
+describe('saveCart', () => {
+  it('should handle combination of laybys, quantity changes and refunds', () => {
+    const cart = { ...baseCart }
+    cart.sale.state = SaleStateTypes.Completed
+    cart.sale.saleClosedBy = 1
+    cart.items[0].quantity = '1'
+    cart.items[0].isDeleted = false
+    cart.items[0].isRefunded = false
+    return dbSaveCart(cart, testCon)
+      .then((savedCart) => {
+        const newCart = { ...mysql2js(savedCart) }
+        newCart?.items?.push({ itemId: 13, quantity: '2' })
+        return dbSaveCart(newCart, testCon)
+      })
+      .then((savedCart) => {
+        const newCart = { ...mysql2js(savedCart) }
+        expect(newCart.items).toHaveLength(2)
+        newCart.items[0].quantity = '3'
+        newCart.sale.state = SaleStateTypes.InProgress
+        return dbSaveCart(newCart, testCon)
+      })
+      .then((savedCart) => {
+        const newCart = { ...mysql2js(savedCart) }
+        newCart.items[1].isRefunded = true
+        newCart.sale.state = SaleStateTypes.Completed
+        newCart.sale.isMailOrder = true
+        newCart.sale.customerId = 1
+        newCart.sale.itemList = 'Test Items'
+        newCart.sale.postalAddress = '30 Hornbrook St'
+        return dbSaveCart(newCart, testCon)
+      })
+      .then((savedCart) => {
+        return dbGetJobsLike(`Post Sale ${savedCart?.sale?.id}`, testCon).then((tasks) => {
+          expect(tasks).toHaveLength(1)
+          expect(tasks?.[0]?.description).toContain(`Post Sale ${savedCart?.sale?.id}`)
+        })
+      })
+      .then(() => dbGetStockItem(12, false, testCon))
+      .then((stockItem) => {
+        expect(stockItem.quantities.sold).toBe(3)
+        expect(stockItem.quantities.refunded).toBe(0)
+        expect(stockItem.quantities.inStock).toBe(7)
+        expect(checkValue(stockItem.quantities.layby)).toBe(0)
+      })
+      .then(() => dbGetStockItem(13, false, testCon))
+      .then((stockItem) => {
+        expect(stockItem.quantities.received).toBe(5)
+        expect(stockItem.quantities.sold).toBe(2)
+        expect(stockItem.quantities.refunded).toBe(2)
+        expect(stockItem.quantities.inStock).toBe(5)
+      })
   })
 })

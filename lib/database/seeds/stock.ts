@@ -96,5 +96,15 @@ exports.seed = (knex) =>
           title: 'SaveCart Item',
           is_deleted: 0,
         },
+        {
+          id: 13,
+          title: 'SaveCart Item 2',
+          is_deleted: 0,
+        },
+        {
+          id: 14,
+          title: 'SaveCart Item 3',
+          is_deleted: 0,
+        },
       ]),
     )
