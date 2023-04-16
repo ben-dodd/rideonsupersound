@@ -193,6 +193,18 @@ export function dbGetStockItems(itemIds, db = connection) {
   return Promise.all(itemIds?.map((itemId) => dbGetStockItem(itemId, true, db)))
 }
 
+export function dbGetStockItemsForVendor(vendorId, db = connection) {
+  return db('stock')
+    .select('id')
+    .where('vendor_id', vendorId)
+    .then((ids) =>
+      dbGetStockItems(
+        ids?.map((item) => item?.id),
+        db,
+      ),
+    )
+}
+
 export function dbGetStockMovements(limit, db = connection) {
   return db('stock_movement')
     .leftJoin('clerk', 'clerk.id', 'stock_movement.clerk_id')

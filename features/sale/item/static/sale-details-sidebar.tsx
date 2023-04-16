@@ -15,7 +15,6 @@ export default function SaleDetailsSidebar({ cart }: { cart: CartObject }) {
   const totalRemaining = 0
   const { sale = {} } = cart || {}
   const weather: OpenWeatherObject = parseJSON(sale?.weather)
-  console.log(cart)
 
   const saleInfo = [
     { label: 'Status', value: startCase(camelCase(sale?.state)) },

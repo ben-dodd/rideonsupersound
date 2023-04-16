@@ -11,7 +11,7 @@ export default function VendorSales({ sales }) {
   return (
     <div>
       <div className="flex bg-brown text-white text-xs items-center">
-        <div className="w-1/12">ID</div>
+        <div className="w-1/12 pl-2">ID</div>
         <div className="w-1/6">DATE</div>
         <div className="w-1/3">ITEMS</div>
         <div className="w-1/6">FORMAT</div>
@@ -27,7 +27,7 @@ export default function VendorSales({ sales }) {
         ?.map((sale: VendorSaleItemObject) => {
           return (
             <div className="border-b py-1 flex hover:bg-gray-100 text-sm" key={`${sale?.id}${sale?.itemId}`}>
-              <div className="w-1/12 link-blue" onClick={() => router.push(`/sales/${sale?.saleId}`)}>
+              <div className="w-1/12 link-blue pl-2" onClick={() => router.push(`/sales/${sale?.saleId}`)}>
                 #{sale?.saleId}
               </div>
               <div className="font-bold w-1/6">{dayjs(sale?.dateSaleClosed).format('D MMMM YYYY')}</div>

@@ -20,7 +20,6 @@ export default function StockDetails() {
   let runningQuantity = quantities?.inStock || 0
   let prevQuantity = 0
   let saleIndex = 0
-  console.log(stockMovements)
 
   return (
     <>

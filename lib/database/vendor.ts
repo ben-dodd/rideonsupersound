@@ -4,7 +4,7 @@ import { getCartItemStoreCut, getCartItemTotal } from 'lib/functions/sell'
 import { VendorObject, VendorPaymentObject } from 'lib/types/vendor'
 import { dbGetAllVendorPayments } from './payment'
 import { dbGetAllSalesAndItems } from './sale'
-import { dbGetSimpleStockCount, dbGetStockList } from './stock'
+import { dbGetSimpleStockCount, dbGetStockItemsForVendor } from './stock'
 import { js2mysql } from './utils/helpers'
 import { modulusCheck } from 'lib/functions/payment'
 import { dollarsToCents } from 'lib/utils'
@@ -165,7 +165,7 @@ export function dbGetVendor(id, db = connection) {
     .first()
     .then(async (vendor) => {
       // Get lists
-      const items = await dbGetStockList(db).where({ vendor_id: id })
+      const items = await dbGetStockItemsForVendor(id, db)
       const sales = await dbGetAllSalesAndItems(db).where(`stock.vendor_id`, id)
       const payments = await dbGetAllVendorPayments(db).where(`vendor_id`, id)
 

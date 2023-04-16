@@ -1,4 +1,5 @@
 // import Tooltip from '@mui/material/Tooltip'
+import { priceCentsString } from 'lib/utils'
 import React from 'react'
 
 const Quantities = ({ quantities, price, itemQuantity, isInCart }) => {
@@ -15,7 +16,7 @@ const Quantities = ({ quantities, price, itemQuantity, isInCart }) => {
       </div>
       {/* </Tooltip> */}
       {/* <Tooltip title="You can change the price in the item details screen."> */}
-      <div className="text-xl">{notLoaded ? 'N/A' : `$${(price?.totalSell / 100)?.toFixed(2)}`}</div>
+      <div className="text-xl">{notLoaded ? 'N/A' : priceCentsString(price?.totalSell)}</div>
       {/* </Tooltip> */}
     </div>
   )
