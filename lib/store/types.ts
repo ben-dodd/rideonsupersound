@@ -1,6 +1,7 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import { ConfirmModal, AlertProps } from 'lib/types'
 import { CartObject, SaleItemObject, SaleTransactionObject } from 'lib/types/sale'
+import { BatchPaymentObject } from 'lib/types/vendor'
 
 export interface StoreState {
   view: {
@@ -54,6 +55,7 @@ export interface StoreState {
     registerId?: number
     vendorId?: number
   }
+  batchPaymentSession?: BatchPaymentObject
   sellPage?: {
     searchBar?: string
     isSearching?: boolean
@@ -119,6 +121,9 @@ export interface StoreState {
   setReceiveBasket: (update: any) => void
   addReceiveBasketItem: (newItem: any) => void
   updateReceiveBasketItem: (key: any, update: any) => void
+  setBatchPaymentSession: (update: any) => void
+  setVendorAccount: (vendorId: number, update: any) => void
+  resetBatchPaymentSession: () => void
   resetCart: () => void
   resetReceiveBasket: () => void
   resetCustomer: () => void

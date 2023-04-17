@@ -12,6 +12,7 @@ import { ViewProps } from 'lib/store/types'
 import { useClerk } from 'lib/api/clerk'
 import { receiveStock } from 'lib/api/stock'
 import MidScreenContainer from 'components/container/mid-screen'
+import { Delete, Edit, ImportContacts, Print } from '@mui/icons-material'
 
 export default function ReceiveStockScreen({ receiveBatch }) {
   const { receiveBasket, resetReceiveBasket, openConfirm, closeView } = useAppStore()
@@ -132,8 +133,15 @@ export default function ReceiveStockScreen({ receiveBatch }) {
   // Step 5 - enter quantity
   // Step 6 - print labels
 
+  const menuItems = [
+    { text: 'Edit', icon: <Edit />, onClick: null },
+    { text: 'Import Items from CSV', icon: <ImportContacts />, onClick: null },
+    { text: 'Print Labels', icon: <Print />, onClick: null },
+    { text: 'Delete Batch', icon: <Delete />, onClick: null },
+  ]
+
   return (
-    <MidScreenContainer title={'RECEIVE STOCK'} titleClass={'bg-brown-dark text-white'} dark full>
+    <MidScreenContainer title={'RECEIVE STOCK'} titleClass={'bg-brown-dark text-white'} menuItems={menuItems} dark full>
       <div className="flex flex-col w-full h-dialog">
         <Stepper
           steps={['Select vendor', 'Add items', 'Check details', 'Set price and quantities', 'Print labels']}

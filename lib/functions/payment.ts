@@ -1,6 +1,7 @@
 import dayjs, { extend } from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { KiwiBankTransactionObject } from '../types/payment'
+import { dollarsToCents } from 'lib/utils'
 
 extend(utc)
 
@@ -96,10 +97,10 @@ function writeOutKBBFile(kbb) {
   return encodeURI(`data:text/csv;charset=utf-8,${kbb.map((rowArray) => `${rowArray.join(',')}`).join('\r\n')}`)
 }
 
-export function writePaymentNotificationEmail({ vendorList, includeUnchecked, includeNoBank }: any) {
+export function writePaymentNotificationEmail({ vendorAccounts, includeUnchecked, includeNoBank }: any) {
   let csvContent = 'data:text/csv;charset=utf-8,'
   csvContent += 'CODE,NAME,RECIPIENT,ACCOUNT,OWING,LINK,DATE,CHECKED,VALID BANK NUM,STORE CREDIT ONLY\r\n'
-  let vendorArrays = vendorList
+  let vendorArrays = vendorAccounts
     ?.filter((v) => (includeUnchecked || v?.isChecked) && (includeNoBank || modulusCheck(v?.bankAccountNumber)))
     ?.map((v) => [
       v?.id,
@@ -275,10 +276,46 @@ function modulus10ACheck(accountNumberObj) {
 }
 
 export const checkDefaultChecked = (vendor) =>
+  vendor?.id !== 666 &&
   modulusCheck(vendor?.bankAccountNumber) &&
   !vendor?.storeCreditOnly &&
   (vendor?.totalOwing >= 2000 ||
     (dayjs().diff(vendor?.lastPaid, 'month') >= 3 && vendor?.totalOwing > 0) ||
-    (dayjs().diff(vendor?.lastSold, 'month') >= 3 && !vendor?.lastPaid))
+    (dayjs().diff(vendor?.lastSold, 'month') >= 3 && !vendor?.lastPaid && vendor?.totalOwing > 0))
     ? true
     : false
+
+export const downloadKbbFile = (batchPayment) => {
+  const { vendorList = [] } = batchPayment || {}
+  let csvContent = writeKiwiBankBatchFile({
+    transactions: vendorList
+      ?.filter((v) => v?.isChecked)
+      ?.map((vendor: any) => ({
+        name: vendor?.name || '',
+        vendorId: `${vendor?.id || ''}`,
+        accountNumber: vendor?.bankAccountNumber || '',
+        amount: dollarsToCents(vendor?.payAmount),
+      })),
+    batchNumber: `${registerId}`,
+    sequenceNumber: 'Batch',
+  })
+  var link = document.createElement('a')
+  link.setAttribute('href', csvContent)
+  link.setAttribute('download', `batch-payment-${dayjs().format('YYYY-MM-DD')}.kbb`)
+  document.body.appendChild(link)
+  link.click()
+}
+
+export const downloadEmailList = (batchPayment) => {
+  const { vendorAccounts = [], includeUnchecked = false, includeNoBank = false } = batchPayment || {}
+  let csvContent = writePaymentNotificationEmail({
+    vendorAccounts,
+    includeUnchecked,
+    includeNoBank,
+  })
+  var link = document.createElement('a')
+  link.setAttribute('href', csvContent)
+  link.setAttribute('download', `batch-payment-email-list-${dayjs().format('YYYY-MM-DD')}.csv`)
+  document.body.appendChild(link)
+  link.click()
+}

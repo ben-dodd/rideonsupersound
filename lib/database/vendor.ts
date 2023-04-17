@@ -1,13 +1,13 @@
 import connection from './conn'
 import dayjs from 'dayjs'
 import { getCartItemStoreCut, getCartItemTotal, getDiscountedPrice } from 'lib/functions/sell'
-import { VendorObject, VendorPaymentObject } from 'lib/types/vendor'
+import { BatchPaymentObject, VendorObject, VendorPaymentObject } from 'lib/types/vendor'
 import { dbGetAllVendorPayments } from './payment'
 import { dbGetAllSalesAndItems } from './sale'
 import { dbGetSimpleStockCount, dbGetStockItemsForVendor } from './stock'
-import { js2mysql } from './utils/helpers'
+import { js2mysql, mysql2js } from './utils/helpers'
 import { modulusCheck } from 'lib/functions/payment'
-import { dollarsToCents } from 'lib/utils'
+import { centsToDollars, dollarsToCents } from 'lib/utils'
 
 const fullVendorQuery = (db) =>
   db('vendor').select(
@@ -247,53 +247,121 @@ export function dbCreateVendorPayment(payment: VendorPaymentObject, db = connect
   return db('vendor_payment').insert(js2mysql(payment))
 }
 
-export function dbCreateBatchVendorPayments(batchPayment, db = connection) {
-  return db.transaction(async (trx) => {
-    const { vendorList = [], clerkId, registerId, emailed = false, note = '' } = batchPayment || {}
-    return db('batch_payment')
-      .insert({
-        sequence_number: `0000${registerId}`.slice(-4),
-        date_started: dayjs.utc().format(),
-        started_by_clerk_id: clerkId,
-        date_completed: dayjs.utc().format(),
-        completed_by_clerk_id: clerkId,
+export function dbUpdateVendorPayment(update, id, db = connection) {
+  return db('vendor_payment').where({ id }).update(js2mysql(update))
+}
+
+export function dbCreateBatchPayment(batchPayment: BatchPaymentObject, db = connection) {
+  const {
+    batchNumber = '',
+    sequenceNumber = '',
+    note = '',
+    dateStarted = null,
+    startedByClerkId = null,
+    dateCompleted = null,
+    completedByClerkId = null,
+    isDeleted = 0,
+  } = batchPayment || {}
+  return db('batch_payment')
+    .insert(
+      js2mysql({
+        batchNumber,
+        sequenceNumber,
         note,
+        dateStarted,
+        startedByClerkId,
+        dateCompleted,
+        completedByClerkId,
+        isDeleted,
+      }),
+    )
+    .then((rows) => rows[0])
+    .catch((e) => Error(e.message))
+}
+
+export function dbUpdateBatchPayment(batchPayment: BatchPaymentObject, db = connection) {
+  const {
+    id = null,
+    batchNumber = '',
+    sequenceNumber = '',
+    note = '',
+    dateStarted = null,
+    startedByClerkId = null,
+    dateCompleted = null,
+    completedByClerkId = null,
+    isDeleted = 0,
+  } = batchPayment || {}
+  return db('batch_payment')
+    .where({ id })
+    .update(
+      js2mysql({
+        batchNumber,
+        sequenceNumber,
+        note,
+        dateStarted,
+        startedByClerkId,
+        dateCompleted,
+        completedByClerkId,
+        isDeleted,
+      }),
+    )
+    .then(() => id)
+    .catch((e) => Error(e.message))
+}
+
+export function dbCheckBatchPaymentInProgress(db = connection) {
+  return db('batch_payment').select('id').whereIsNull('date_completed').first()
+}
+
+export function dbSaveBatchVendorPayments(batchPayment, db = connection) {
+  return db.transaction(async (trx) => {
+    const { accountPayments = [] } = batchPayment || {}
+    let batchId = batchPayment?.id
+    if (batchId) await dbUpdateBatchPayment(batchPayment)
+    else {
+      batchId = await dbCreateBatchPayment(batchPayment)
+    }
+    const paymentCompleted = batchPayment?.dateCompleted
+    accountPayments
+      ?.filter((account) => account?.isChecked)
+      .forEach(async (account) => {
+        // if (emailed) {
+        //   await dbUpdateVendor({ lastUpdated: dayjs.utc().format() }, vendorId, trx)
+        // }
+        if (modulusCheck(account?.bankAccountNumber) && parseFloat(account?.payAmount)) {
+          const amount = dollarsToCents(account?.payAmount)
+          let accountId = account?.id
+          if (accountId) {
+            await dbUpdateVendorPayment(
+              {
+                amount,
+                date: paymentCompleted ? dayjs.utc().format() : null,
+                bankAccountNumber: account?.bankAccountNumber,
+                clerkId: batchPayment?.clerkId,
+                registerId: batchPayment?.registerId,
+                isDeleted: paymentCompleted ? false : true,
+              },
+              trx,
+            )
+          } else {
+            accountId = await dbCreateVendorPayment(
+              {
+                amount,
+                date: paymentCompleted ? dayjs.utc().format() : null,
+                bankAccountNumber: account?.bankAccountNumber,
+                batchId,
+                clerkId: batchPayment?.clerkId,
+                vendorId: account?.vendorId,
+                registerId: batchPayment?.registerId,
+                type: 'batch',
+                isDeleted: paymentCompleted ? false : true,
+              },
+              trx,
+            )
+          }
+        }
       })
-      .then((rows) => {
-        const batchId = rows[0]
-        return db('batch_payment')
-          .where('id', batchId)
-          .update({ batch_number: `00${batchId}`.slice(-2) })
-          .then(() => {
-            const successfulPayments = []
-            vendorList
-              ?.filter((vendor) => vendor?.isChecked)
-              .forEach(async (vendor) => {
-                const vendorId = vendor?.id
-                if (emailed) {
-                  await dbUpdateVendor({ lastUpdated: dayjs.utc().format() }, vendorId, trx)
-                }
-                if (modulusCheck(vendor?.bankAccountNumber) && parseFloat(vendor?.payAmount)) {
-                  const amount = dollarsToCents(vendor?.payAmount)
-                  const paymentId = await dbCreateVendorPayment(
-                    {
-                      amount,
-                      date: dayjs.utc().format(),
-                      bankAccountNumber: vendor?.bankAccountNumber,
-                      batchId,
-                      clerkId,
-                      vendorId,
-                      registerId,
-                      type: 'batch',
-                    },
-                    trx,
-                  )
-                  successfulPayments.push({ paymentId, vendorId, name: vendor?.name, amount })
-                }
-              })
-            return successfulPayments
-          })
-      })
+    return true
   })
 }
 
@@ -308,7 +376,23 @@ export function dbGetBatchVendorPayment(id, db = connection) {
     .where({ id })
     .first()
     .then((batchPayment) => {
-      return dbGetVendorPaymentsByBatchId(id, (db = connection)).then((payments) => ({ ...batchPayment, payments }))
+      return dbGetVendorPaymentsByBatchId(id, (db = connection)).then((payments) => ({
+        ...batchPayment,
+        accountPayments: mysql2js(payments)?.map((payment) => ({
+          id: payment?.id,
+          isChecked: true,
+          payAmount: centsToDollars(payment?.amount)?.toFixed(2),
+          vendorId: payment?.vendorId,
+          bankAccountNumber: payment?.bankAccountNumber,
+          bankReference: payment?.bankReference,
+          batchId: payment?.batchId,
+          clerkId: payment?.clerkId,
+          date: payment?.date,
+          amount: payment?.amount,
+          isValidated: payment?.isValidated,
+          isDeleted: payment?.isDeleted,
+        })),
+      }))
     })
 }
 

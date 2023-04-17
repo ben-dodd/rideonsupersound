@@ -43,6 +43,7 @@ const initState = {
     registerId: null,
   },
   receiveBasket: { vendorId: null, items: [] },
+  batchPaymentSession: { vendorAccounts: [], vendorPayments: [] },
   sellPage: {
     searchBar: '',
     isSearching: false,
@@ -281,6 +282,31 @@ export const useAppStore = createSelectors(
         }),
       )
       doMutate && get().cart?.sale?.id && get().mutateCart()
+    },
+    setBatchPaymentSession: (update) => {
+      set(
+        produce((draft) => {
+          draft.batchPaymentSession = { ...get().batchPaymentSession, ...update }
+        }),
+      )
+    },
+    setVendorAccount: (vendorId, update) => {
+      set(
+        produce((draft) => {
+          const index = get().batchPaymentSession.vendorAccounts.findIndex((account) => account?.vendorId === vendorId)
+          draft.batchPaymentSession.vendorAccounts[index] = {
+            ...get().batchPaymentSession.vendorAccounts[index],
+            ...update,
+          }
+        }),
+      )
+    },
+    resetBatchPaymentSession: () => {
+      set(
+        produce((draft) => {
+          draft.batchPaymentSession = { vendorAccounts: [], vendorPayments: [] }
+        }),
+      )
     },
     setCustomer: (update) => {
       set(

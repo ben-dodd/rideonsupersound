@@ -25,8 +25,11 @@ export interface BatchPaymentObject {
   completedByName?: string
   isDeleted?: boolean
   lastUpdated?: string
+  clerkId?: number
+  registerId?: number
   kbbFile?: string
   emailCsvFile?: string
+  accountPayments?: AccountPayment[]
 }
 
 export interface VendorSaleItemObject {
@@ -97,4 +100,20 @@ export interface VendorObject {
   items?: StockItemObject[]
   sales?: VendorSaleItemObject[]
   payments?: VendorPaymentObject[]
+}
+export interface AccountPayment {
+  id?: number
+  isChecked?: boolean
+  payAmount?: string
+  totalOwing?: number
+  name?: string
+  vendorId?: number
+  bankAccountNumber?: string
+  bankReference?: string
+  batchId?: number
+  clerkId?: number
+  date?: string
+  amount?: number
+  isValidated?: boolean
+  isDeleted?: boolean
 }
