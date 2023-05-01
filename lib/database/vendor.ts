@@ -399,3 +399,11 @@ export function dbGetBatchVendorPayment(id, db = connection) {
 export function dbGetVendorPaymentsByBatchId(batchId, db = connection) {
   return db('vendor_payment').where('batch_id', batchId)
 }
+
+export function dbGetVendorPayments(db = connection) {
+  return db('vendor_payment')
+    .leftJoin('vendor', 'vendor.id', 'vendor_payment.vendor_id')
+    .leftJoin('clerk', 'clerk.id', 'vendor_payment.clerk_id')
+    .select('vendor_payment.*', 'clerk.name as clerkName', 'vendor.name as vendorName')
+    .orderBy('id', 'desc')
+}

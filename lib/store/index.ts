@@ -290,12 +290,12 @@ export const useAppStore = createSelectors(
         }),
       )
     },
-    setVendorAccount: (vendorId, update) => {
+    setBatchAccountPayment: (vendorId, update) => {
       set(
         produce((draft) => {
-          const index = get().batchPaymentSession.vendorAccounts.findIndex((account) => account?.vendorId === vendorId)
+          const index = get().batchPaymentSession.accountPayments.findIndex((account) => account?.vendorId === vendorId)
           draft.batchPaymentSession.vendorAccounts[index] = {
-            ...get().batchPaymentSession.vendorAccounts[index],
+            ...get().batchPaymentSession.accountPayments[index],
             ...update,
           }
         }),

@@ -7,6 +7,7 @@ import { Pages, ViewProps } from 'lib/store/types'
 import React from 'react'
 import VendorList from './vendor-list'
 import { useRouter } from 'next/router'
+import PaymentList from './payment/payment-list'
 
 const VendorsScreen = () => {
   const {
@@ -34,11 +35,10 @@ const VendorsScreen = () => {
   ]
   return (
     <MidScreenContainer title="Vendors" isLoading={false} titleClass="bg-col3" full={true} menuItems={menuItems}>
-      <Tabs tabs={['Vendor List', 'My Vendors', 'Payments', 'Balance Sheet']} value={tab} onChange={setTab} />
+      <Tabs tabs={['Vendor List', 'My Vendors', 'Payments']} value={tab} onChange={setTab} />
       {tab === 0 && <VendorList />}
       {tab === 1 && <ComingSoon />}
-      {tab === 1 && <ComingSoon />}
-      {tab === 1 && <ComingSoon />}
+      {tab === 2 && <PaymentList />}
     </MidScreenContainer>
   )
 }

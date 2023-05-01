@@ -15,12 +15,12 @@ export default function BatchPaymentPage() {
   useEffect(() => {
     if (
       batchPaymentSession?.id !== parseInt(`${id}`) ||
-      (!batchPaymentSession?.id && batchPaymentSession?.vendorAccounts?.length === 0)
+      (!batchPaymentSession?.id && batchPaymentSession?.accountPayments?.length === 0)
     ) {
       // Other payment session in progress, save and close
-      createBat
+      // createBat
     }
-  }, [isBatchPaymentLoading, batchPaymentSession?.id, batchPaymentSession?.vendorAccounts?.length, id])
+  }, [isBatchPaymentLoading, batchPaymentSession?.id, batchPaymentSession?.accountPayments?.length, id])
   return isBatchPaymentLoading && id !== 'new' ? (
     <Loading />
   ) : (

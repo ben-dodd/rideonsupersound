@@ -122,7 +122,7 @@ export interface StoreState {
   addReceiveBasketItem: (newItem: any) => void
   updateReceiveBasketItem: (key: any, update: any) => void
   setBatchPaymentSession: (update: any) => void
-  setVendorAccount: (vendorId: number, update: any) => void
+  setBatchAccountPayment: (vendorId: number, update: any) => void
   resetBatchPaymentSession: () => void
   resetCart: () => void
   resetReceiveBasket: () => void
