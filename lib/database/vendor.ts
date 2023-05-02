@@ -315,14 +315,14 @@ export function dbCheckBatchPaymentInProgress(db = connection) {
 
 export function dbSaveBatchVendorPayments(batchPayment, db = connection) {
   return db.transaction(async (trx) => {
-    const { accountPayments = [] } = batchPayment || {}
+    const { paymentList = [] } = batchPayment || {}
     let batchId = batchPayment?.id
     if (batchId) await dbUpdateBatchPayment(batchPayment)
     else {
       batchId = await dbCreateBatchPayment(batchPayment)
     }
     const paymentCompleted = batchPayment?.dateCompleted
-    accountPayments
+    paymentList
       ?.filter((account) => account?.isChecked)
       .forEach(async (account) => {
         // if (emailed) {
@@ -361,7 +361,7 @@ export function dbSaveBatchVendorPayments(batchPayment, db = connection) {
           }
         }
       })
-    return true
+    return batchId
   })
 }
 
@@ -372,27 +372,31 @@ export function dbGetVendorHasNegativeQuantityItems(vendor_id, db = connection) 
 }
 
 export function dbGetBatchVendorPayment(id, db = connection) {
+  console.log('Getting batch payment id ', id)
   return db('batch_payment')
     .where({ id })
     .first()
     .then((batchPayment) => {
-      return dbGetVendorPaymentsByBatchId(id, (db = connection)).then((payments) => ({
-        ...batchPayment,
-        accountPayments: mysql2js(payments)?.map((payment) => ({
-          id: payment?.id,
-          isChecked: true,
-          payAmount: centsToDollars(payment?.amount)?.toFixed(2),
-          vendorId: payment?.vendorId,
-          bankAccountNumber: payment?.bankAccountNumber,
-          bankReference: payment?.bankReference,
-          batchId: payment?.batchId,
-          clerkId: payment?.clerkId,
-          date: payment?.date,
-          amount: payment?.amount,
-          isValidated: payment?.isValidated,
-          isDeleted: payment?.isDeleted,
-        })),
-      }))
+      return batchPayment
+        ? dbGetVendorPaymentsByBatchId(id, (db = connection)).then((payments) => ({
+            ...batchPayment,
+            accountPayments: mysql2js(payments)?.map((payment) => ({
+              id: payment?.id,
+              isChecked: true,
+              payAmount: centsToDollars(payment?.amount)?.toFixed(2),
+              vendorId: payment?.vendorId,
+              bankAccountNumber: payment?.bankAccountNumber,
+              bankReference: payment?.bankReference,
+              batchId: payment?.batchId,
+              clerkId: payment?.clerkId,
+              date: payment?.date,
+              amount: payment?.amount,
+              isCompleted: payment?.isCompleted,
+              isValidated: payment?.isValidated,
+              isDeleted: payment?.isDeleted,
+            })),
+          }))
+        : null
     })
 }
 

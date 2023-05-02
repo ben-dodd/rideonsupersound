@@ -97,10 +97,10 @@ function writeOutKBBFile(kbb) {
   return encodeURI(`data:text/csv;charset=utf-8,${kbb.map((rowArray) => `${rowArray.join(',')}`).join('\r\n')}`)
 }
 
-export function writePaymentNotificationEmail({ vendorAccounts, includeUnchecked, includeNoBank }: any) {
+export function writePaymentNotificationEmail({ paymentList, includeUnchecked, includeNoBank }: any) {
   let csvContent = 'data:text/csv;charset=utf-8,'
   csvContent += 'CODE,NAME,RECIPIENT,ACCOUNT,OWING,LINK,DATE,CHECKED,VALID BANK NUM,STORE CREDIT ONLY\r\n'
-  let vendorArrays = vendorAccounts
+  let vendorArrays = paymentList
     ?.filter((v) => (includeUnchecked || v?.isChecked) && (includeNoBank || modulusCheck(v?.bankAccountNumber)))
     ?.map((v) => [
       v?.id,
@@ -285,8 +285,8 @@ export const checkDefaultChecked = (vendor) =>
     ? true
     : false
 
-export const downloadKbbFile = (batchPayment) => {
-  const { vendorList = [] } = batchPayment || {}
+export const downloadKbbFile = (id, paymentList) => {
+  const { vendorList = [] } = paymentList || {}
   let csvContent = writeKiwiBankBatchFile({
     transactions: vendorList
       ?.filter((v) => v?.isChecked)
@@ -296,26 +296,29 @@ export const downloadKbbFile = (batchPayment) => {
         accountNumber: vendor?.bankAccountNumber || '',
         amount: dollarsToCents(vendor?.payAmount),
       })),
-    batchNumber: `${registerId}`,
+    batchNumber: `${id}`,
     sequenceNumber: 'Batch',
   })
   var link = document.createElement('a')
   link.setAttribute('href', csvContent)
-  link.setAttribute('download', `batch-payment-${dayjs().format('YYYY-MM-DD')}.kbb`)
+  link.setAttribute('download', `batch-payment-${`00000${id}`.slice(-5)}-${dayjs().format('YYYY-MM-DD')}.kbb`)
   document.body.appendChild(link)
   link.click()
 }
 
-export const downloadEmailList = (batchPayment) => {
+export const downloadEmailList = (id, paymentList) => {
   const { vendorAccounts = [], includeUnchecked = false, includeNoBank = false } = batchPayment || {}
   let csvContent = writePaymentNotificationEmail({
-    vendorAccounts,
+    paymentList,
     includeUnchecked,
     includeNoBank,
   })
   var link = document.createElement('a')
   link.setAttribute('href', csvContent)
-  link.setAttribute('download', `batch-payment-email-list-${dayjs().format('YYYY-MM-DD')}.csv`)
+  link.setAttribute(
+    'download',
+    `batch-payment-email-list-${`00000${id}`.slice(-5)}-${dayjs().format('YYYY-MM-DD')}.csv`,
+  )
   document.body.appendChild(link)
   link.click()
 }

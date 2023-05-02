@@ -1,6 +1,7 @@
 import { NextApiResponse } from 'next'
 import { requireScope } from 'lib/api/utils'
 import { NextAuthenticatedApiRequest } from '@serverless-jwt/next/dist/types'
+import { dbSaveBatchVendorPayments } from 'lib/database/vendor'
 
 const apiRoute = async (req: NextAuthenticatedApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {

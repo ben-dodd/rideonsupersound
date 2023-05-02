@@ -14,19 +14,6 @@ const apiRoute = async (req: NextAuthenticatedApiRequest, res: NextApiResponse) 
         error: error.message,
       })
     }
-    // } else if (req.method === 'PATCH') {
-    //   const { id } = req.query
-    //   const vendor = req.body
-    //   try {
-    //     return dbUpdateVendor(vendor, id).then((data) =>
-    //       res.status(200).json(data)
-    //     )
-    //   } catch (error) {
-    //     res.status(error.status || 500).json({
-    //       code: error.code,
-    //       error: error.message,
-    //     })
-    //   }
   }
 }
 
