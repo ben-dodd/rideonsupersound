@@ -10,13 +10,13 @@ import { priceCentsString, priceDollarsString } from 'lib/utils'
 import { useRouter } from 'next/router'
 import SearchInput from 'components/inputs/search-input'
 
-export default function SelectBatchPayments({ vendorList, setVendorList }) {
+export default function SelectBatchPayments({ paymentList, setPaymentList }) {
   const [checked, setChecked] = useState(true)
-  const totalPay = vendorList?.reduce((prev, v) => (v?.isChecked ? parseFloat(v?.payAmount) : 0) + prev, 0)
-  const vendorNum = vendorList?.filter((v) => v?.isChecked)?.length
+  const totalPay = paymentList?.reduce((prev, v) => (v?.isChecked ? parseFloat(v?.payAmount) : 0) + prev, 0)
+  const vendorNum = paymentList?.filter((v) => v?.isChecked)?.length
   const router = useRouter()
   const [search, setSearch] = useState('')
-  console.log(vendorList)
+  console.log(paymentList)
 
   return (
     <div>
@@ -28,7 +28,7 @@ export default function SelectBatchPayments({ vendorList, setVendorList }) {
           </div>
         </div>
         <div className="text-red-400 text-2xl font-bold text-right">
-          {vendorList?.filter((v) => isNaN(parseFloat(v?.payAmount)))?.length > 0
+          {paymentList?.filter((v) => isNaN(parseFloat(v?.payAmount)))?.length > 0
             ? `CHECK PAY ENTRIES`
             : `PAY ${priceDollarsString(totalPay)}\nto ${vendorNum} VENDORS`}
         </div>
@@ -42,16 +42,16 @@ export default function SelectBatchPayments({ vendorList, setVendorList }) {
               checked={checked}
               onChange={(e) => {
                 if (checked) {
-                  setVendorList(
-                    vendorList?.map((vendor) => ({
+                  setPaymentList(
+                    paymentList?.map((vendor) => ({
                       ...vendor,
                       isChecked: false,
                     })),
                   )
                   setChecked(false)
                 } else {
-                  setVendorList(
-                    vendorList?.map((vendor) =>
+                  setPaymentList(
+                    paymentList?.map((vendor) =>
                       checkDefaultChecked(vendor) ? { ...vendor, isChecked: true } : vendor,
                     ),
                   )
@@ -69,7 +69,7 @@ export default function SelectBatchPayments({ vendorList, setVendorList }) {
           <div className="w-2/12">AMOUNT TO PAY</div>
         </div>
         <div className="h-dialog overflow-y-scroll">
-          {vendorList
+          {paymentList
             ?.filter((v) => search === '' || v?.name?.toLowerCase()?.includes(search?.toLowerCase()))
             ?.map((v) => (
               <div
@@ -85,8 +85,8 @@ export default function SelectBatchPayments({ vendorList, setVendorList }) {
                     className="cursor-pointer"
                     checked={v?.isChecked}
                     onChange={(e) =>
-                      setVendorList(
-                        vendorList?.map((vendor) =>
+                      setPaymentList(
+                        paymentList?.map((vendor) =>
                           vendor?.id === v?.id ? { ...vendor, isChecked: e.target.checked } : vendor,
                         ),
                       )
@@ -112,8 +112,8 @@ export default function SelectBatchPayments({ vendorList, setVendorList }) {
                     startAdornment={'$'}
                     value={v?.payAmount || ''}
                     onChange={(e) =>
-                      setVendorList(
-                        vendorList?.map((vendor) =>
+                      setPaymentList(
+                        paymentList?.map((vendor) =>
                           vendor?.id === v?.id ? { ...vendor, payAmount: e.target.value } : vendor,
                         ),
                       )

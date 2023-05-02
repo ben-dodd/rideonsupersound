@@ -5,7 +5,7 @@ import { BatchPaymentObject, VendorObject, VendorPaymentObject } from 'lib/types
 import { dbGetAllVendorPayments } from './payment'
 import { dbGetAllSalesAndItems } from './sale'
 import { dbGetSimpleStockCount, dbGetStockItemsForVendor } from './stock'
-import { js2mysql, mysql2js } from './utils/helpers'
+import { js2mysql } from './utils/helpers'
 import { modulusCheck } from 'lib/functions/payment'
 import { centsToDollars, dollarsToCents } from 'lib/utils'
 
@@ -380,20 +380,10 @@ export function dbGetBatchVendorPayment(id, db = connection) {
       return batchPayment
         ? dbGetVendorPaymentsByBatchId(id, (db = connection)).then((payments) => ({
             ...batchPayment,
-            accountPayments: mysql2js(payments)?.map((payment) => ({
-              id: payment?.id,
+            paymentList: payments?.map((payment) => ({
+              ...payment,
               isChecked: true,
               payAmount: centsToDollars(payment?.amount)?.toFixed(2),
-              vendorId: payment?.vendorId,
-              bankAccountNumber: payment?.bankAccountNumber,
-              bankReference: payment?.bankReference,
-              batchId: payment?.batchId,
-              clerkId: payment?.clerkId,
-              date: payment?.date,
-              amount: payment?.amount,
-              isCompleted: payment?.isCompleted,
-              isValidated: payment?.isValidated,
-              isDeleted: payment?.isDeleted,
             })),
           }))
         : null

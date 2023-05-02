@@ -22,15 +22,21 @@ export default function BatchPaymentScreen() {
   const [paymentList, setPaymentList] = useState([])
   const [stage, setStage] = useState(0)
   console.log(batchPayment)
+  console.log(vendorAccounts)
 
   useEffect(() => {
     setPaymentList(
       vendorAccounts
-        ?.map((vendorAccount) => ({
-          ...vendorAccount,
-          isChecked: checkDefaultChecked(vendorAccount),
-          payAmount: centsToDollars(vendorAccount?.totalOwing).toFixed(2),
-        }))
+        ?.map((vendorAccount) => {
+          const payment = batchPayment?.paymentList?.find((payment) => payment?.vendorId === vendorAccount?.id) || {}
+          Object.keys(payment).length > 0 && console.log(payment)
+          return {
+            ...vendorAccount,
+            ...payment,
+            isChecked: id === 'new' ? checkDefaultChecked(vendorAccount) : payment?.isChecked,
+            payAmount: centsToDollars(payment?.amount || vendorAccount?.totalOwing).toFixed(2),
+          }
+        })
         ?.sort((a, b) => {
           if (!a?.isChecked && b?.isChecked) return 1
           if (!b?.isChecked && a?.isChecked) return -1
@@ -38,6 +44,8 @@ export default function BatchPaymentScreen() {
         }),
     )
   }, [vendorAccounts])
+
+  // console.log(paymentList)
 
   const buttons: ModalButton[] = false
     ? [
@@ -76,7 +84,7 @@ export default function BatchPaymentScreen() {
       dark
     >
       <div>
-        <SelectBatchPayments />
+        <SelectBatchPayments paymentList={paymentList} />
       </div>
       {/* <div className="w-1/4 bg-white"></div> */}
       {/* <div className="w-full" hidden={stage === 0}>
