@@ -267,11 +267,15 @@
 }
 
 .list-item {
-  @apply flex w-full mb-2 text-black shadow-sm border mr-4 rounded-md;
+  @apply flex w-full mb-2 text-black;
+}
+
+.list-item-bordered {
+  @apply list-item shadow-sm border mr-4 rounded-md;
 }
 
 .list-item-compact {
-  @apply flex w-full p-2 hover:text-green-200 hover:bg-black cursor-pointer items-center justify-between;
+  @apply flex w-full p-2 hover:text-green-200 hover:bg-black items-center justify-between;
 }
 
 .link-blue {

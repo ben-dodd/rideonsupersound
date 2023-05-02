@@ -319,7 +319,3 @@ export const downloadEmailList = (batchPayment) => {
   document.body.appendChild(link)
   link.click()
 }
-
-export const writeVendorPaymentDescription = (payment) => {
-  return payment?.vendorName
-}
