@@ -9,8 +9,9 @@ import { checkDefaultChecked, modulusCheck } from 'lib/functions/payment'
 import { priceCentsString, priceDollarsString } from 'lib/utils'
 import { useRouter } from 'next/router'
 import SearchInput from 'components/inputs/search-input'
+import { ArrowRight } from '@mui/icons-material'
 
-export default function SelectBatchPayments({ paymentList, setPaymentList }) {
+export default function SelectBatchPayments({ paymentList, setPaymentList, setStage }) {
   const [checked, setChecked] = useState(true)
   const totalPay = paymentList?.reduce((prev, v) => (v?.isChecked ? parseFloat(v?.payAmount) : 0) + prev, 0)
   const vendorNum = paymentList?.filter((v) => v?.isChecked)?.length
@@ -27,10 +28,15 @@ export default function SelectBatchPayments({ paymentList, setPaymentList }) {
             <SearchInput searchValue={search} handleSearch={(e) => setSearch(e?.target?.value)} />
           </div>
         </div>
-        <div className="text-red-400 text-2xl font-bold text-right">
-          {paymentList?.filter((v) => isNaN(parseFloat(v?.payAmount)))?.length > 0
-            ? `CHECK PAY ENTRIES`
-            : `PAY ${priceDollarsString(totalPay)}\nto ${vendorNum} VENDORS`}
+        <div>
+          <div className="text-red-400 text-2xl font-bold text-right">
+            {paymentList?.filter((v) => isNaN(parseFloat(v?.payAmount)))?.length > 0
+              ? `CHECK PAY ENTRIES`
+              : `PAY ${priceDollarsString(totalPay)}\nto ${vendorNum} VENDORS`}
+          </div>
+          <div className="icon-text-button" onClick={() => setStage('review')}>
+            Review Payments <ArrowRight />
+          </div>
         </div>
       </div>
       <div className="w-full">

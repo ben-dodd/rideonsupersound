@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { ModalButton } from 'lib/types'
 import { checkDefaultChecked, downloadEmailList, downloadKbbFile } from 'lib/functions/payment'
 import { useCurrentRegisterId } from 'lib/api/register'
 import { useClerk } from 'lib/api/clerk'
@@ -8,21 +7,17 @@ import { centsToDollars } from 'lib/utils'
 import MidScreenContainer from 'components/container/mid-screen'
 import SelectBatchPayments from './select-batch-payments'
 import { useRouter } from 'next/router'
+import CheckBatchPayments from './check-batch-payments'
 
 export default function BatchPaymentScreen() {
-  // const { batchPaymentSession, closeView, setVendorAccount, setBatchPaymentSession, resetBatchPaymentSession } =
-  // useAppStore()
   const router = useRouter()
   const id = router.query.id
   const { registerId } = useCurrentRegisterId()
   const { clerk } = useClerk()
-  // const { accountPayments = [], id } = batchPaymentSession || {}
   const { vendorAccounts, isVendorAccountsLoading } = useVendorAccounts()
-  const { batchPayment, isBatchPaymentLoading } = useVendorBatchPayment(id)
+  const { batchPayment } = useVendorBatchPayment(`${id}`)
   const [paymentList, setPaymentList] = useState([])
-  const [stage, setStage] = useState(0)
-  console.log(batchPayment)
-  console.log(vendorAccounts)
+  const [stage, setStage] = useState('select')
 
   useEffect(() => {
     setPaymentList(
@@ -47,49 +42,49 @@ export default function BatchPaymentScreen() {
 
   // console.log(paymentList)
 
-  const buttons: ModalButton[] = false
-    ? [
-        {
-          type: 'ok',
-          text: 'NEXT',
-          onClick: () => setStage(1),
-          disabled: paymentList?.reduce((prev, v) => (isNaN(parseFloat(v?.payAmount)) ? prev + 1 : prev), 0) > 0,
-        },
-      ]
-    : [
-        {
-          type: 'cancel',
-          onClick: () => setStage(0),
-          text: 'BACK',
-        },
-        {
-          type: 'ok',
-          text: 'DOWNLOAD AND COMPLETE',
-          onClick: () => {
-            createVendorBatchPayment({ paymentList, clerkId: clerk?.id, registerId, emailed }).then((id) => {
-              downloadKbbFile(id, paymentList)
-              downloadEmailList(id, paymentList)
-            })
+  const button =
+    stage === 'select'
+      ? [
+          {
+            type: 'ok',
+            text: 'NEXT',
+            onClick: () => setStage('review'),
+            disabled: paymentList?.reduce((prev, v) => (isNaN(parseFloat(v?.payAmount)) ? prev + 1 : prev), 0) > 0,
           },
-        },
-      ]
+        ]
+      : [
+          {
+            type: 'cancel',
+            onClick: () => setStage('select'),
+            text: 'BACK',
+          },
+          {
+            type: 'ok',
+            text: 'DOWNLOAD AND COMPLETE',
+            onClick: () => {
+              createVendorBatchPayment({ paymentList, clerkId: clerk?.id, registerId, emailed }).then((id) => {
+                downloadKbbFile(id, paymentList)
+                downloadEmailList(id, paymentList)
+              })
+            },
+          },
+        ]
 
   return (
     <MidScreenContainer
       title={id ? `BATCH PAYMENT #${`00000${id}`.slice(-5)}` : 'NEW BATCH PAYMENT'}
       titleClass="bg-brown-dark text-white"
       isLoading={isVendorAccountsLoading}
-      // actionButtons={buttons}
       full
       dark
     >
-      <div>
-        <SelectBatchPayments paymentList={paymentList} />
-      </div>
-      {/* <div className="w-1/4 bg-white"></div> */}
-      {/* <div className="w-full" hidden={stage === 0}>
-          <CheckBatchPayments vendorList={vendorList} setKbbLoaded={setKbbLoaded} setEmailed={setEmailed} />
-        </div> */}
+      {stage === 'select' ? (
+        <SelectBatchPayments paymentList={paymentList} setPaymentList={setPaymentList} setStage={setStage} />
+      ) : stage === 'review' ? (
+        <CheckBatchPayments paymentList={paymentList} setKbbLoaded={true} setEmailed={true} setStage={setStage} />
+      ) : (
+        <div />
+      )}
     </MidScreenContainer>
   )
 }

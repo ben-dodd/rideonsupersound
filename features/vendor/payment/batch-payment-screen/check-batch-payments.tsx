@@ -9,13 +9,13 @@ import { useState } from 'react'
 import { modulusCheck, writeKiwiBankBatchFile, writePaymentNotificationEmail } from 'lib/functions/payment'
 import { dollarsToCents } from 'lib/utils'
 
-export default function CheckBatchPayments({ vendorList, setKbbLoaded, setEmailed }) {
+export default function CheckBatchPayments({ paymentList, setKbbLoaded, setEmailed, setStage }) {
   const { registerId } = useCurrentRegisterId()
-  const totalPay = vendorList?.reduce((prev, v) => (v?.isChecked ? parseFloat(v?.payAmount) : 0) + prev, 0)
-  const vendorNum = vendorList?.reduce((prev, v) => (v?.isChecked ? 1 : 0) + prev, 0)
+  const totalPay = paymentList?.reduce((prev, v) => (v?.isChecked ? parseFloat(v?.payAmount) : 0) + prev, 0)
+  const vendorNum = paymentList?.reduce((prev, v) => (v?.isChecked ? 1 : 0) + prev, 0)
   const [includeUnchecked, setIncludeUnchecked] = useState(false)
   const [includeNoBank, setIncludeNoBank] = useState(false)
-  console.log(vendorList)
+  console.log(paymentList)
 
   return (
     <div>
@@ -25,7 +25,7 @@ export default function CheckBatchPayments({ vendorList, setKbbLoaded, setEmaile
             className="border p-2 rounded bg-gray-100 hover:bg-gray-200"
             onClick={() => {
               let csvContent = writeKiwiBankBatchFile({
-                transactions: vendorList
+                transactions: paymentList
                   ?.filter((v) => v?.isChecked)
                   ?.map((vendor: any) => ({
                     name: vendor?.name || '',
@@ -50,7 +50,7 @@ export default function CheckBatchPayments({ vendorList, setKbbLoaded, setEmaile
             className="ml-2 border p-2 rounded bg-gray-100 hover:bg-gray-200"
             onClick={() => {
               let csvContent = writePaymentNotificationEmail({
-                vendorList,
+                paymentList,
                 includeUnchecked,
                 includeNoBank,
               })
@@ -86,7 +86,7 @@ export default function CheckBatchPayments({ vendorList, setKbbLoaded, setEmaile
           </div>
         </div>
         <div className="text-red-400 text-2xl font-bold text-right">
-          {vendorList?.filter((v) => isNaN(parseFloat(v?.payAmount)))?.length > 0
+          {paymentList?.filter((v) => isNaN(parseFloat(v?.payAmount)))?.length > 0
             ? `CHECK PAY ENTRIES`
             : `PAY $${parseFloat(totalPay).toFixed(2)}\nto ${vendorNum} VENDORS`}
         </div>
@@ -103,7 +103,7 @@ export default function CheckBatchPayments({ vendorList, setKbbLoaded, setEmaile
           <div className="w-1/4" />
         </div>
         <div className="h-dialog overflow-y-scroll">
-          {vendorList
+          {paymentList
             ?.filter((v) => v?.isChecked)
             ?.map((v) => {
               let invalidBankAccountNumber = !modulusCheck(v?.bankAccountNumber)
