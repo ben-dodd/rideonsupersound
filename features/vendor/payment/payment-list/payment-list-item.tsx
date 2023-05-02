@@ -15,7 +15,7 @@ const PaymentListItem = ({ payment }) => {
       description = (
         <span
           className={`${payment?.batchId ? 'link-blue' : ''}`}
-          onClick={() => (payment?.batchId ? router.push(`/payment/${payment?.batchId}`) : null)}
+          onClick={() => (payment?.batchId ? router.push(`/batch-payment/${payment?.batchId}`) : null)}
         >
           {payment?.batchId ? `Batch payment ID #${payment?.batchId}` : 'Batch payment (No ID found)'}
         </span>

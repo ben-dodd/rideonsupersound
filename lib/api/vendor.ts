@@ -24,6 +24,10 @@ export function useVendorBatchPayment(id) {
   return useData(id ? `vendor/payment/batch/${id}` : null, 'batchPayment')
 }
 
+export function useCurrentVendorBatchPaymentId() {
+  return useData(`vendor/payment/batch/current`, 'currentVendorBatchPaymentId')
+}
+
 export function useVendorPayments() {
   return useData(`vendor/payment`, 'vendorPayments')
 }

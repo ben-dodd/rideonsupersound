@@ -396,6 +396,15 @@ export function dbGetBatchVendorPayment(id, db = connection) {
     })
 }
 
+export function dbGetCurrentVendorBatchPaymentId(db = connection) {
+  return db('batch_payment')
+    .select('id')
+    .where({ is_deleted: 0 })
+    .where({ date_completed: null })
+    .first()
+    .then((payment) => payment?.id)
+}
+
 export function dbGetVendorPaymentsByBatchId(batchId, db = connection) {
   return db('vendor_payment').where('batch_id', batchId)
 }

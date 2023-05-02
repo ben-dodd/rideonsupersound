@@ -8,6 +8,7 @@ import React from 'react'
 import VendorList from './vendor-list'
 import { useRouter } from 'next/router'
 import PaymentList from './payment/payment-list'
+import { useCurrentVendorBatchPaymentId } from 'lib/api/vendor'
 
 const VendorsScreen = () => {
   const {
@@ -16,6 +17,7 @@ const VendorsScreen = () => {
     openView,
   } = useAppStore()
   const router = useRouter()
+  const { currentVendorBatchPaymentId } = useCurrentVendorBatchPaymentId()
   const setTab = (tab) => setPage(Pages.vendorsPage, { tab })
   const menuItems = [
     { text: 'New Vendor', icon: <AddCircle />, onClick: () => openView(ViewProps.vendorEditDialog) },
@@ -26,9 +28,9 @@ const VendorsScreen = () => {
       onClick: () => openView(ViewProps.transferVendorPaymentDialog),
     },
     {
-      text: 'Start New Batch Payment',
+      text: currentVendorBatchPaymentId ? 'Continue Batch Payment' : 'Start New Batch Payment',
       icon: <AccountBalance />,
-      onClick: () => router.push(`/batch-payment/new`),
+      onClick: () => router.push(`/batch-payment/${currentVendorBatchPaymentId || 'new'}`),
       // onClick: () => openView(ViewProps.batchVendorPaymentDialog),
     },
     { text: 'Manage Settings', icon: <DisplaySettings />, onClick: null, disabled: true },
