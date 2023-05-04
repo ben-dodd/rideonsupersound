@@ -3,12 +3,12 @@ import NoBankDetailsIcon from '@mui/icons-material/CreditCardOff'
 import StoreCreditOnlyIcon from '@mui/icons-material/ShoppingBag'
 import QuantityCheckIcon from '@mui/icons-material/Warning'
 import { Tooltip } from '@mui/material'
-import dayjs from 'dayjs'
 import { useCurrentRegisterId } from 'lib/api/register'
 import { useState } from 'react'
-import { modulusCheck, writeKiwiBankBatchFile, writePaymentNotificationEmail } from 'lib/functions/payment'
-import { dollarsToCents } from 'lib/utils'
+import { downloadEmailList, downloadKbbFile, modulusCheck } from 'lib/functions/payment'
 import { useClerk } from 'lib/api/clerk'
+import { ArrowLeft, Download } from '@mui/icons-material'
+import { createVendorBatchPayment } from 'lib/api/vendor'
 
 export default function CheckBatchPayments({ paymentList, setKbbLoaded, setEmailed, setStage }) {
   const { registerId } = useCurrentRegisterId()
@@ -39,50 +39,10 @@ export default function CheckBatchPayments({ paymentList, setKbbLoaded, setEmail
   return (
     <div>
       <div className="flex justify-between">
-        <div className="flex mb-2">
-          <button
-            className="border p-2 rounded bg-gray-100 hover:bg-gray-200"
-            onClick={() => {
-              let csvContent = writeKiwiBankBatchFile({
-                transactions: paymentList
-                  ?.filter((v) => v?.isChecked)
-                  ?.map((vendor: any) => ({
-                    name: vendor?.name || '',
-                    vendorId: `${vendor?.id || ''}`,
-                    accountNumber: vendor?.bankAccountNumber || '',
-                    amount: dollarsToCents(vendor?.payAmount),
-                  })),
-                batchNumber: `${registerId}`,
-                sequenceNumber: 'Batch',
-              })
-              var link = document.createElement('a')
-              link.setAttribute('href', csvContent)
-              link.setAttribute('download', `batch-payment-${dayjs().format('YYYY-MM-DD')}.kbb`)
-              document.body.appendChild(link)
-              link.click()
-              setKbbLoaded(true)
-            }}
-          >
-            Download KiwiBank Batch KBB
-          </button>
-          <button
-            className="ml-2 border p-2 rounded bg-gray-100 hover:bg-gray-200"
-            onClick={() => {
-              let csvContent = writePaymentNotificationEmail({
-                paymentList,
-                includeUnchecked,
-                includeNoBank,
-              })
-              var link = document.createElement('a')
-              link.setAttribute('href', csvContent)
-              link.setAttribute('download', `batch-payment-email-list-${dayjs().format('YYYY-MM-DD')}.csv`)
-              document.body.appendChild(link)
-              link.click()
-              setEmailed(true)
-            }}
-          >
-            Download Email List CSV
-          </button>
+        <div className="text-red-400 text-2xl font-bold text-right">
+          {paymentList?.filter((v) => isNaN(parseFloat(v?.payAmount)))?.length > 0
+            ? `CHECK PAY ENTRIES`
+            : `PAY $${parseFloat(totalPay).toFixed(2)}\nto ${vendorNum} VENDORS`}
         </div>
         <div>
           <div className="flex items-center">
@@ -104,10 +64,22 @@ export default function CheckBatchPayments({ paymentList, setKbbLoaded, setEmail
             <div className="ml-2">Include vendors with no bank account number</div>
           </div>
         </div>
-        <div className="text-red-400 text-2xl font-bold text-right">
-          {paymentList?.filter((v) => isNaN(parseFloat(v?.payAmount)))?.length > 0
-            ? `CHECK PAY ENTRIES`
-            : `PAY $${parseFloat(totalPay).toFixed(2)}\nto ${vendorNum} VENDORS`}
+
+        <div className="px-4">
+          <div className="icon-text-button" onClick={() => setStage('select')}>
+            GO BACK <ArrowLeft />
+          </div>
+          <div
+            className="icon-text-button"
+            onClick={() => {
+              createVendorBatchPayment({ paymentList, clerkId: clerk?.id, registerId, emailed: true }).then((id) => {
+                downloadKbbFile(id, paymentList)
+                downloadEmailList(id, paymentList)
+              })
+            }}
+          >
+            COMPLETE AND DOWNLOAD <Download />
+          </div>
         </div>
       </div>
       <div className="text-sm">
@@ -176,4 +148,52 @@ export default function CheckBatchPayments({ paymentList, setKbbLoaded, setEmail
       </div>
     </div>
   )
+}
+
+{
+  /* <div className="flex mb-2">
+<button
+  className="border p-2 rounded bg-gray-100 hover:bg-gray-200"
+  onClick={() => {
+    let csvContent = writeKiwiBankBatchFile({
+      transactions: paymentList
+        ?.filter((v) => v?.isChecked)
+        ?.map((vendor: any) => ({
+          name: vendor?.name || '',
+          vendorId: `${vendor?.id || ''}`,
+          accountNumber: vendor?.bankAccountNumber || '',
+          amount: dollarsToCents(vendor?.payAmount),
+        })),
+      batchNumber: `${registerId}`,
+      sequenceNumber: 'Batch',
+    })
+    var link = document.createElement('a')
+    link.setAttribute('href', csvContent)
+    link.setAttribute('download', `batch-payment-${dayjs().format('YYYY-MM-DD')}.kbb`)
+    document.body.appendChild(link)
+    link.click()
+    setKbbLoaded(true)
+  }}
+>
+  Download KiwiBank Batch KBB
+</button>
+<button
+  className="ml-2 border p-2 rounded bg-gray-100 hover:bg-gray-200"
+  onClick={() => {
+    let csvContent = writePaymentNotificationEmail({
+      paymentList,
+      includeUnchecked,
+      includeNoBank,
+    })
+    var link = document.createElement('a')
+    link.setAttribute('href', csvContent)
+    link.setAttribute('download', `batch-payment-email-list-${dayjs().format('YYYY-MM-DD')}.csv`)
+    document.body.appendChild(link)
+    link.click()
+    setEmailed(true)
+  }}
+>
+  Download Email List CSV
+</button>
+</div> */
 }
