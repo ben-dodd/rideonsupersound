@@ -21,21 +21,23 @@ export default function SelectBatchPayments({ paymentList, setPaymentList, setSt
 
   return (
     <div>
-      <div className="flex justify-between items-end p-2">
+      <div className="flex justify-between items-start p-2">
         <div className="flex items-end">
-          <img width="60" src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/KiwiBank.png`} alt={'KiwiBank'} />
-          <div className="mx-2 h-12 w-full">
+          <img width="80" src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/KiwiBank.png`} alt={'KiwiBank'} />
+          <div className="mx-2 w-full">
+            <div className="text-red-400 text-2xl font-bold text-right">
+              {paymentList?.filter((v) => isNaN(parseFloat(v?.payAmount)))?.length > 0
+                ? `CHECK PAY ENTRIES`
+                : `PAY ${priceDollarsString(totalPay)}\nto ${vendorNum} VENDORS`}
+            </div>
             <SearchInput searchValue={search} handleSearch={(e) => setSearch(e?.target?.value)} />
           </div>
         </div>
         <div>
-          <div className="text-red-400 text-2xl font-bold text-right">
-            {paymentList?.filter((v) => isNaN(parseFloat(v?.payAmount)))?.length > 0
-              ? `CHECK PAY ENTRIES`
-              : `PAY ${priceDollarsString(totalPay)}\nto ${vendorNum} VENDORS`}
-          </div>
-          <div className="icon-text-button" onClick={() => setStage('review')}>
-            Review Payments <ArrowRight />
+          <div className="px-4">
+            <div className="icon-text-button" onClick={() => setStage('review')}>
+              REVIEW PAYMENTS <ArrowRight />
+            </div>
           </div>
         </div>
       </div>

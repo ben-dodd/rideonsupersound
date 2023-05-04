@@ -8,14 +8,33 @@ import { useCurrentRegisterId } from 'lib/api/register'
 import { useState } from 'react'
 import { modulusCheck, writeKiwiBankBatchFile, writePaymentNotificationEmail } from 'lib/functions/payment'
 import { dollarsToCents } from 'lib/utils'
+import { useClerk } from 'lib/api/clerk'
 
 export default function CheckBatchPayments({ paymentList, setKbbLoaded, setEmailed, setStage }) {
   const { registerId } = useCurrentRegisterId()
+  const { clerk } = useClerk()
   const totalPay = paymentList?.reduce((prev, v) => (v?.isChecked ? parseFloat(v?.payAmount) : 0) + prev, 0)
   const vendorNum = paymentList?.reduce((prev, v) => (v?.isChecked ? 1 : 0) + prev, 0)
   const [includeUnchecked, setIncludeUnchecked] = useState(false)
   const [includeNoBank, setIncludeNoBank] = useState(false)
   console.log(paymentList)
+  // : [
+  //   {
+  //     type: 'cancel',
+  //     onClick: () => setStage('select'),
+  //     text: 'BACK',
+  //   },
+  //   {
+  //     type: 'ok',
+  //     text: 'DOWNLOAD AND COMPLETE',
+  //     onClick: () => {
+  //       createVendorBatchPayment({ paymentList, clerkId: clerk?.id, registerId, emailed }).then((id) => {
+  //         downloadKbbFile(id, paymentList)
+  //         downloadEmailList(id, paymentList)
+  //       })
+  //     },
+  //   },
+  // ]
 
   return (
     <div>
