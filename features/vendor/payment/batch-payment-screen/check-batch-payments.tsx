@@ -38,12 +38,34 @@ export default function CheckBatchPayments({ paymentList, setKbbLoaded, setEmail
 
   return (
     <div>
-      <div className="flex justify-between">
+      <div className="flex justify-between p-2">
         <div className="text-red-400 text-2xl font-bold text-right">
           {paymentList?.filter((v) => isNaN(parseFloat(v?.payAmount)))?.length > 0
             ? `CHECK PAY ENTRIES`
             : `PAY $${parseFloat(totalPay).toFixed(2)}\nto ${vendorNum} VENDORS`}
         </div>
+
+        <div className="px-4">
+          <div className="icon-text-button" onClick={() => setStage('select')}>
+            GO BACK <ArrowLeft />
+          </div>
+          <div
+            className="icon-text-button"
+            onClick={() => {
+              createVendorBatchPayment({ paymentList, clerkId: clerk?.id, registerId, emailed: true }).then((id) => {
+                downloadKbbFile(id, paymentList)
+                downloadEmailList(id, paymentList)
+              })
+            }}
+          >
+            COMPLETE AND DOWNLOAD <Download />
+          </div>
+        </div>
+      </div>
+      <div className="text-sm p-2">
+        <div className="font-bold">NOTE</div>
+        Vendors with $0 payments or vendors with invalid bank account numbers will not be added to the KBB file, only
+        the email CSV.
         <div>
           <div className="flex items-center">
             <input
@@ -64,28 +86,6 @@ export default function CheckBatchPayments({ paymentList, setKbbLoaded, setEmail
             <div className="ml-2">Include vendors with no bank account number</div>
           </div>
         </div>
-
-        <div className="px-4">
-          <div className="icon-text-button" onClick={() => setStage('select')}>
-            GO BACK <ArrowLeft />
-          </div>
-          <div
-            className="icon-text-button"
-            onClick={() => {
-              createVendorBatchPayment({ paymentList, clerkId: clerk?.id, registerId, emailed: true }).then((id) => {
-                downloadKbbFile(id, paymentList)
-                downloadEmailList(id, paymentList)
-              })
-            }}
-          >
-            COMPLETE AND DOWNLOAD <Download />
-          </div>
-        </div>
-      </div>
-      <div className="text-sm">
-        <div className="font-bold">NOTE</div>
-        Vendors with $0 payments or vendors with invalid bank account numbers will not be added to the KBB file, only
-        the email CSV.
       </div>
       <div className="w-full">
         <div className="flex font-bold py-2 px-2 border-b border-black">
@@ -100,7 +100,10 @@ export default function CheckBatchPayments({ paymentList, setKbbLoaded, setEmail
               let invalidBankAccountNumber = !modulusCheck(v?.bankAccountNumber)
               let negativeQuantity = v?.totalItems?.filter((i) => i?.quantity < 0)?.length > 0
               return (
-                <div key={v?.id} className={`border-b flex${parseFloat(v?.payAmount) <= 0 ? ' opacity-50' : ''}`}>
+                <div
+                  key={v?.id}
+                  className={`py-2 px-2 text-sm border-b flex${parseFloat(v?.payAmount) <= 0 ? ' opacity-50' : ''}`}
+                >
                   <div className="w-1/2">{`[${v?.id}] ${v?.name}`}</div>
                   <div className="w-1/4">{`$${parseFloat(v?.payAmount)?.toFixed(2)}`}</div>
                   <div className="flex w-1/4">
