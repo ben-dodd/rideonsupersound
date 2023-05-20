@@ -14,15 +14,7 @@ import {
   useLogs,
 } from '@/lib/swr-hooks'
 import { viewAtom, clerkAtom } from '@/lib/atoms'
-import {
-  VendorSaleItemObject,
-  VendorPaymentObject,
-  StockObject,
-  VendorObject,
-  ModalButton,
-  PaymentMethodTypes,
-  VendorPaymentTypes,
-} from '@/lib/types'
+import { VendorObject, ModalButton, VendorPaymentTypes } from '@/lib/types'
 
 // Functions
 import { saveLog, saveVendorPaymentToDatabase } from '@/lib/db-functions'
@@ -31,7 +23,6 @@ import { getVendorDetails } from '@/lib/data-functions'
 // Components
 import TextField from '@/components/_components/inputs/text-field'
 import Modal from '@/components/_components/container/modal'
-import CreateableSelect from '@/components/_components/inputs/createable-select'
 import dayjs from 'dayjs'
 
 export default function TransferVendorPaymentDialog() {
@@ -147,6 +138,8 @@ export default function TransferVendorPaymentDialog() {
       disabled:
         !vendor_pay_id ||
         !vendor_receive_id ||
+        (vendor_pay_id !== 'store' &&
+          payVendorVars?.totalOwing / 100 < Number(payment)) ||
         !payment ||
         parseFloat(payment) <= 0,
     },
@@ -215,7 +208,7 @@ export default function TransferVendorPaymentDialog() {
           divClass="text-8xl"
           inputClass="text-center"
           startAdornment="$"
-          error={isNaN(parseFloat(payment))}
+          error={isNaN(parseFloat(payment)) && payment !== ''}
           autoFocus
           selectOnFocus
           value={payment}
@@ -245,8 +238,13 @@ export default function TransferVendorPaymentDialog() {
         <div className="my-4 text-center text-xl font-bold">
           {vendor_pay_id === 0 || vendor_receive_id === 0
             ? 'SELECT VENDORS'
+            : Number(payment) === 0
+            ? ''
             : isNaN(parseFloat(payment))
             ? 'NUMBERS ONLY PLEASE'
+            : vendor_pay_id !== 'store' &&
+              payVendorVars?.totalOwing / 100 < Number(payment)
+            ? "PAYING VENDOR DOESN'T HAVE ENOUGH"
             : 'PAYMENT OK'}
         </div>
       </>
