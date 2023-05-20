@@ -94,9 +94,7 @@ export default function CashPaymentDialog() {
           resetAndCloseDialog()
         })
       },
-      disabled:
-        // totalOwing < parseFloat(payment) ||
-        !payment,
+      disabled: vendorVars?.totalOwing / 100 < parseFloat(payment) || !payment,
       // !payment || parseFloat(payment) <= 0,
     },
   ]
@@ -150,7 +148,7 @@ export default function CashPaymentDialog() {
           divClass="text-8xl"
           inputClass="text-center"
           startAdornment="$"
-          error={isNaN(parseFloat(payment))}
+          error={payment !== '' && isNaN(parseFloat(payment))}
           autoFocus
           selectOnFocus
           value={payment}
@@ -169,9 +167,11 @@ export default function CashPaymentDialog() {
         </div>
         <div className="my-4 text-center text-xl font-bold">
           {vendor_id > 0
-            ? isNaN(parseFloat(payment))
-            : 'NUMBERS ONLY PLEASE'
-            ? vendorVars?.totalOwing / 100 < parseFloat(payment)
+            ? payment === ''
+              ? ''
+              : isNaN(parseFloat(payment))
+              ? 'NUMBERS ONLY PLEASE'
+              : vendorVars?.totalOwing / 100 < parseFloat(payment)
               ? `YOU ARE PAYING VENDOR MORE THAN THEY ARE OWED`
               : 'PAYMENT OK'
             : 'SELECT VENDOR'}
