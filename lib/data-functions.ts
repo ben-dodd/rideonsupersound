@@ -346,25 +346,6 @@ export function getTotalPaid(saleTransactions: SaleTransactionObject[]) {
     ?.reduce((acc, transaction) => acc + transaction?.amount, 0)
 }
 
-// export function getTotalOwing(
-//   totalPayments: VendorPaymentObject[],
-//   totalSales: VendorSaleItemObject[]
-// ) {
-//   const totalPaid = totalPayments?.reduce(
-//     (acc: number, payment: VendorPaymentObject) => acc + payment?.amount,
-//     0
-//   )
-
-//   const totalSell: any = totalSales?.reduce(
-//     (acc: number, sale: VendorSaleItemObject) =>
-//       acc +
-//       (sale?.quantity * sale?.vendor_cut * (100 - sale?.vendor_discount || 0)) /
-//         100,
-//     0
-//   )
-//   return totalSell - totalPaid
-// }
-
 export function getGrossProfit(item: StockObject) {
   let sellNum = item?.total_sell / 100 || 0,
     costNum = item?.vendor_cut / 100 || 0

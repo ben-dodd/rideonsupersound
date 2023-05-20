@@ -26,7 +26,7 @@ import {
 
 // Functions
 import { saveLog, saveVendorPaymentToDatabase } from '@/lib/db-functions'
-import { getTotalOwing, getVendorDetails } from '@/lib/data-functions'
+import { getVendorDetails } from '@/lib/data-functions'
 
 // Components
 import TextField from '@/components/_components/inputs/text-field'
@@ -89,7 +89,7 @@ export default function TransferVendorPaymentDialog() {
     },
     {
       type: 'ok',
-      text: 'TRANSFER STORE CREDIT',
+      text: 'TRANSFER CREDIT',
       loading: submitting,
       onClick: async () => {
         setSubmitting(true)
@@ -166,7 +166,7 @@ export default function TransferVendorPaymentDialog() {
       closeFunction={() =>
         setView({ ...view, transferVendorPaymentDialog: false })
       }
-      title={`TRANSFER STORE CREDIT`}
+      title={`TRANSFER CREDIT`}
       buttons={buttons}
     >
       <>
