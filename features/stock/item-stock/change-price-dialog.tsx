@@ -27,6 +27,8 @@ export default function ChangePriceDialog() {
   const [date, setDate] = useState(dayjs().format('YYYY-MM-DDTHH:mm'))
   const [submitting, setSubmitting] = useState(false)
 
+  const expiryMinutes = 5
+
   useEffect(() => {
     setPrice({
       totalSell: centsToDollars(currPrice?.totalSell).toFixed(2),
@@ -87,7 +89,8 @@ export default function ChangePriceDialog() {
         (price?.vendorCut !== '' && isNaN(parseFloat(price?.vendorCut))) ||
         (price?.margin !== '' && isNaN(parseFloat(price?.margin))) ||
         (price?.totalSell !== '' && isNaN(parseFloat(price?.totalSell))) ||
-        (dayjs(date).add(10, 'minute').isBefore(dayjs()) && Number(price?.totalSell) !== currPrice?.totalSell / 100),
+        (dayjs(date).add(expiryMinutes, 'minute').isBefore(dayjs()) &&
+          Number(price?.totalSell) !== centsToDollars(currPrice?.totalSell)),
       loading: submitting,
       onClick: async () => {
         setSubmitting(true)
@@ -178,11 +181,12 @@ export default function ChangePriceDialog() {
           multiline
           rows={3}
         />
-        {dayjs(date).add(10, 'minute').isBefore(dayjs()) && Number(price?.totalSell) !== currPrice?.totalSell / 100 && (
-          <div className="text-red-500 text-xs">
-            TOTAL PRICE MUST EQUAL PREVIOUS TOTAL PRICE FOR RETROACTIVE PRICE CHANGES
-          </div>
-        )}
+        {dayjs(date).add(expiryMinutes, 'minute').isBefore(dayjs()) &&
+          Number(price?.totalSell) !== centsToDollars(currPrice?.totalSell) && (
+            <div className="text-red-500 text-xs">
+              TOTAL PRICE MUST EQUAL PREVIOUS TOTAL PRICE FOR RETROACTIVE PRICE CHANGES
+            </div>
+          )}
       </>
     </Modal>
   )
