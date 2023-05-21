@@ -11,6 +11,7 @@ import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { VendorObject, VendorPaymentTypes } from 'lib/types/vendor'
+import { centsToDollars, priceCentsString } from 'lib/utils'
 
 export default function CashPaymentDialog() {
   const { registerId } = useCurrentRegisterId()
@@ -22,7 +23,7 @@ export default function CashPaymentDialog() {
   const [payment, setPayment] = useState('0')
   const [notes, setNotes] = useState('')
   const [paymentType, setPaymentType] = useState(VendorPaymentTypes.Cash)
-  const { vendor } = useVendor(vendorId)
+  const { vendor, isVendorLoading } = useVendor(vendorId)
 
   const buttons: ModalButton[] = [
     {
@@ -53,9 +54,10 @@ export default function CashPaymentDialog() {
         resetAndCloseDialog()
       },
       disabled:
-        // totalOwing < parseFloat(payment) ||
-        !payment,
-      // !payment || parseFloat(payment) <= 0,
+        vendorId === 0 ||
+        payment === '' ||
+        centsToDollars(vendor?.totalOwing) < Number(payment) ||
+        isNaN(Number(payment)),
     },
   ]
 
@@ -102,7 +104,7 @@ export default function CashPaymentDialog() {
           divClass="text-8xl"
           inputClass="text-center"
           startAdornment="$"
-          error={payment !== '' && isNaN(parseFloat(payment))}
+          error={payment !== '' && isNaN(Number(payment))}
           autoFocus
           selectOnFocus
           value={payment}
@@ -116,16 +118,20 @@ export default function CashPaymentDialog() {
           onChange={(e: any) => setNotes(e.target.value)}
         />
         <div className="mt-4 text-center">
-          {vendorId > 0 && `VENDOR OWED $${(vendor?.totalOwing / 100)?.toFixed(2)}`}
+          {vendorId > 0 && !isVendorLoading && `VENDOR OWED ${priceCentsString(vendor?.totalOwing)}`}
         </div>
         <div className="my-4 text-center text-xl font-bold">
-          {vendorId > 0
-            ? isNaN(parseFloat(payment))
-            : 'NUMBERS ONLY PLEASE'
-            ? vendor?.totalOwing / 100 < parseFloat(payment)
-              ? `YOU ARE PAYING VENDOR MORE THAN THEY ARE OWED`
-              : 'PAYMENT OK'
-            : 'SELECT VENDOR'}
+          {vendorId === 0
+            ? 'SELECT VENDOR'
+            : isVendorLoading
+            ? ''
+            : isNaN(parseFloat(payment))
+            ? 'NUMBERS ONLY PLEASE'
+            : Number(payment) <= 0
+            ? 'ENTER AMOUNT TO PAY'
+            : vendor?.totalOwing / 100 < parseFloat(payment)
+            ? `YOU CANNOT PAY VENDOR MORE THAN THEY ARE OWED`
+            : 'PAYMENT OK'}
         </div>
       </>
     </Modal>
