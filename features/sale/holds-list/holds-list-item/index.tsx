@@ -12,7 +12,7 @@ export default function HoldsListItem({ hold }: { hold: HoldObject }) {
   const nearOverdue = !overdue && daysSinceHold >= hold?.holdPeriod - 7
   const singleDay = Math.abs(daysSinceHold - hold?.holdPeriod) === 1
   return (
-    <div className={`list-item-compact text-sm`} onClick={openHoldDialog}>
+    <div className={`list-item-click text-sm`} onClick={openHoldDialog}>
       <div className={`w-1/2`}>{`${getItemSkuDisplayName({ ...hold, id: hold?.itemId })}`}</div>
       <div className="w-1/4">{`Held for ${hold?.customerName}`}</div>
       <div className={`w-1/4 ${nearOverdue ? 'text-yellow-700' : overdue ? 'text-red-700' : ''}`}>

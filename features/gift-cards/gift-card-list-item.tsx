@@ -8,7 +8,7 @@ const GiftCardListItem = ({ giftCard }: { giftCard: GiftCardObject }) => {
   const { setPage } = useAppStore()
   return (
     <div
-      className={`list-item-compact${!giftCard?.giftCardIsValid ? ' text-red-500' : ''}`}
+      className={`list-item-click${!giftCard?.giftCardIsValid ? ' text-red-500' : ''}`}
       onClick={() => setPage(Pages.giftCardsPage, { loadedGiftCard: giftCard?.id })}
     >
       <div className="ml-2 font-mono">{giftCard?.giftCardCode}</div>

@@ -34,7 +34,7 @@ const VendorListItem = ({ vendor }: { vendor: VendorObject }) => {
       break
   }
   return (
-    <div className={`list-item-compact`} onClick={() => router.push(`/vendors/${vendor?.id}`)}>
+    <div className={`list-item-click`} onClick={() => router.push(`/vendors/${vendor?.id}`)}>
       <div className="flex">
         <div className="w-12">{categoryIcon}</div>
         {`[${`000${vendor?.id}`.slice(-3)}] ${vendor?.name}`}
