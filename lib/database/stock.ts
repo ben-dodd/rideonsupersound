@@ -141,8 +141,8 @@ export function dbGetStockItem(id, basic = false, db = connection) {
     .first()
     .then(async (item) => {
       if (!item) throw new Error('Item not found.')
-      if (item?.discogsItem) item.discogsItem = JSON.parse(item.discogsItem)
-      if (item?.googleBooksItem) item.googleBooksItem = JSON.parse(item.googleBooksItem)
+      // if (item?.discogsItem) item.discogsItem = JSON.parse(item.discogsItem)
+      // if (item?.googleBooksItem) item.googleBooksItem = JSON.parse(item.googleBooksItem)
       const stockMovements = await db('stock_movement')
         .where(`stock_id`, item?.id)
         .where('is_deleted', 0)

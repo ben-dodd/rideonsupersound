@@ -1,5 +1,6 @@
 import { useStockItem } from 'lib/api/stock'
 import { getGrossProfit, getProfitMarginString } from 'lib/functions/pay'
+import { priceDollarsString, priceCentsString } from 'lib/utils'
 import { useRouter } from 'next/router'
 
 export default function PriceDetails() {
@@ -7,6 +8,7 @@ export default function PriceDetails() {
   const { id } = router.query
   const { stockItem } = useStockItem(`${id}`)
   const { item = {}, price = {} } = stockItem || {}
+  console.log(item?.discogsItem)
 
   return (
     <>
@@ -22,18 +24,16 @@ export default function PriceDetails() {
             <>
               <div className="text-xs mt-2 mb-2">DISCOGS</div>
               <div className="font-bold text-xl">
-                {`$${parseFloat(
+                {priceDollarsString(
                   item?.discogsItem?.priceSuggestions[item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)']?.value,
-                )?.toFixed(2)}`}
+                )}
               </div>
             </>
           )}
         </div>
         <div>
           <div className="text-xs mt-2 mb-2">COST PRICE</div>
-          <div className="font-bold text-xl">
-            {price?.vendorCut ? `$${(price?.vendorCut / 100)?.toFixed(2)}` : 'N/A'}
-          </div>
+          <div className="font-bold text-xl">{priceCentsString(price?.vendorCut)}</div>
         </div>
         <div>
           <div className="text-xs mt-2 mb-2">STORE CUT</div>
@@ -45,9 +45,7 @@ export default function PriceDetails() {
         </div>
         <div className="col-start-5 col-end-7">
           <div className="flex justify-center items-center p-4 bg-tertiary-dark">
-            <div className="font-bold text-4xl text-white">
-              {price?.totalSell ? `$${(price?.totalSell / 100)?.toFixed(2)}` : 'N/A'}
-            </div>
+            <div className="font-bold text-4xl text-white">{priceCentsString(price?.totalSell)}</div>
           </div>
           {/* <button
             onClick={() => openView(ViewProps.changePriceDialog)}

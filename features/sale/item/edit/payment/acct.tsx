@@ -10,6 +10,7 @@ import { useCurrentRegisterId } from 'lib/api/register'
 import { useVendorAccounts } from 'lib/api/vendor'
 import { PaymentMethodTypes } from 'lib/types/sale'
 import { formSaleTransaction } from 'lib/functions/pay'
+import { priceCentsString, priceDollarsString } from 'lib/utils'
 
 export default function Acct({ totalRemaining }) {
   const { clerk } = useClerk()
@@ -50,7 +51,7 @@ export default function Acct({ totalRemaining }) {
         setAlert({
           open: true,
           type: 'success',
-          message: `$${parseFloat(acctPayment)?.toFixed(2)} ACCOUNT ${isRefund ? `REFUND` : `PAYMENT`}`,
+          message: `${priceDollarsString(acctPayment)} ACCOUNT ${isRefund ? `REFUND` : `PAYMENT`}`,
         })
       },
       text: 'COMPLETE',
@@ -93,14 +94,14 @@ export default function Acct({ totalRemaining }) {
             onChange={(v: any) => setVendor(v)}
           />
         </div>
-        <div className="text-center">{`Remaining to ${isRefund ? 'refund' : 'pay'}: $${Math.abs(
-          totalRemaining,
-        )?.toFixed(2)}`}</div>
+        <div className="text-center">{`Remaining to ${isRefund ? 'refund' : 'pay'}: ${priceDollarsString(
+          Math.abs(totalRemaining),
+        )}`}</div>
         {vendor ? (
           <>
             <div className="text-center font-bold">
               {`${isRefund ? `Currently` : `Remaining`} in account: ${
-                false ? `Loading...` : `$${(vendor?.value?.totalOwing / 100)?.toFixed(2)}`
+                false ? `Loading...` : `${priceCentsString(vendor?.value?.totalOwing)}`
               }`}
             </div>
             <div className="text-center text-xl font-bold my-4">
@@ -117,7 +118,7 @@ export default function Acct({ totalRemaining }) {
                 : vendor?.value?.totalOwing / 100 < parseFloat(acctPayment)
                 ? `NOT ENOUGH IN ACCOUNT, VENDOR WILL OWE THE SHOP`
                 : parseFloat(acctPayment) < totalRemaining
-                ? `AMOUNT SHORT BY $${(totalRemaining - parseFloat(acctPayment))?.toFixed(2)}`
+                ? `AMOUNT SHORT BY ${priceDollarsString(totalRemaining - parseFloat(acctPayment))}`
                 : 'ALL GOOD!'}
             </div>
           </>

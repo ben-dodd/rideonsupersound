@@ -12,6 +12,7 @@ import { useGiftCards } from 'lib/api/stock'
 import { GiftCardObject } from 'lib/types/stock'
 import { PaymentMethodTypes } from 'lib/types/sale'
 import { formSaleTransaction } from 'lib/functions/pay'
+import { priceDollarsString } from 'lib/utils'
 
 export default function Gift({ totalRemaining }) {
   const { clerk } = useClerk()
@@ -64,7 +65,7 @@ export default function Gift({ totalRemaining }) {
         setAlert({
           open: true,
           type: 'success',
-          message: `$${parseFloat(giftCardPayment)?.toFixed(2)} GIFT VOUCHER  ${isRefund ? 'REFUND' : 'PAYMENT'}`,
+          message: `${priceDollarsString(giftCardPayment)} GIFT VOUCHER  ${isRefund ? 'REFUND' : 'PAYMENT'}`,
         })
       },
       text: 'COMPLETE',
@@ -104,16 +105,16 @@ export default function Gift({ totalRemaining }) {
           selectOnFocus
           onChange={(e: any) => setGiftCardPayment(e.target.value)}
         />
-        <div className="text-center">{`Remaining to ${isRefund ? 'refund' : 'pay'}: $${Math.abs(
-          totalRemaining,
-        )?.toFixed(2)}`}</div>
+        <div className="text-center">{`Remaining to ${isRefund ? 'refund' : 'pay'}: ${priceDollarsString(
+          Math.abs(totalRemaining),
+        )}`}</div>
         {!isRefund && (
           <div className="text-center font-bold">
             {!giftCardCode || giftCardCode === ''
               ? 'ENTER GIFT VOUCHER CODE'
               : !giftCard
               ? 'INVALID GIFT VOUCHER CODE'
-              : `$${remainingOnGiftCard?.toFixed(2)} LEFT ON CARD`}
+              : `${priceDollarsString(remainingOnGiftCard)} LEFT ON CARD`}
           </div>
         )}
         <div className="text-center text-xl font-bold my-4">
@@ -133,11 +134,11 @@ export default function Gift({ totalRemaining }) {
           ) : remainingOnGiftCard < parseFloat(giftCardPayment) ? (
             `NOT ENOUGH ON CARD`
           ) : leftOver >= 10 ? (
-            `$${leftOver.toFixed(2)} REMAINING ON CARD`
+            `${priceDollarsString(leftOver)} REMAINING ON CARD`
           ) : leftOver === 0 ? (
             `CARD USED UP, TAKE CARD`
           ) : leftOver < 10 ? (
-            `TAKE CARD AND GIVE $${leftOver.toFixed(2)} IN CHANGE`
+            `TAKE CARD AND GIVE ${priceDollarsString(leftOver)} IN CHANGE`
           ) : (
             <div />
           )}

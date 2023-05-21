@@ -1,4 +1,4 @@
-import { andList } from 'lib/utils'
+import { andList, priceDollarsString } from 'lib/utils'
 import dayjs from 'dayjs'
 import { GoogleBooksItem } from 'lib/types/googleBooks'
 
@@ -36,11 +36,11 @@ export default function GoogleBooksItemDisplay({ googleBooksItem }: googleProps)
         {googleBooksItem?.saleInfo?.saleability !== 'NOT_FOR_SALE' && (
           <>
             <div>
-              {`List Price: $${googleBooksItem?.saleInfo?.listPrice?.amount || ''}
+              {`List Price: ${priceDollarsString(googleBooksItem?.saleInfo?.listPrice?.amount)}
     ${googleBooksItem?.saleInfo?.listPrice?.currencyCode}`}
             </div>
             <div>
-              {`Retail Price: $${googleBooksItem?.saleInfo?.retailPrice?.amount || ''}
+              {`Retail Price: ${priceDollarsString(googleBooksItem?.saleInfo?.retailPrice?.amount)}
               ${googleBooksItem?.saleInfo?.retailPrice?.currencyCode}
               `}
             </div>

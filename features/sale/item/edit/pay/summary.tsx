@@ -1,5 +1,6 @@
 import { useAppStore } from 'lib/store'
 import { SaleStateTypes } from 'lib/types/sale'
+import { priceDollarsString } from 'lib/utils'
 
 const Summary = ({ totalRemaining }) => {
   const { cart } = useAppStore()
@@ -23,9 +24,7 @@ const Summary = ({ totalRemaining }) => {
         </div>
         {totalRemaining !== 0 && (
           <div className="text-2xl text-green-200 font-bold p-2 rounded-md bg-black shadow-inner">
-            {totalRemaining < 0
-              ? `$${Math.abs(totalRemaining || 0)?.toFixed(2)}`
-              : `$${(totalRemaining || 0)?.toFixed(2)}`}
+            {priceDollarsString(Math.abs(totalRemaining))}
           </div>
         )}
       </div>

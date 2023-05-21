@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { DiscogsItem } from 'lib/types/discogs'
 import { StockItemObject } from 'lib/types/stock'
+import { priceDollarsString } from 'lib/utils'
 
 export async function getDiscogsOptions({ query, artist, title, barcode }: any) {
   return axios(`https://api.discogs.com/database/search`, {
@@ -110,9 +111,9 @@ export function getPriceSuggestion(item: StockItemObject) {
   if (item?.discogsItem?.priceSuggestions) {
     const priceSuggestions = item?.discogsItem?.priceSuggestions
     return priceSuggestions[item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)']?.value
-      ? `$${parseFloat(priceSuggestions[item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)']?.value)?.toFixed(
-          2,
-        )} NZD (${item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)'} condition)`
+      ? `${priceDollarsString(priceSuggestions[item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)']?.value)} NZD (${
+          item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)'
+        } condition)`
       : null
   }
   return null

@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
 import { VendorPaymentObject } from 'lib/types/vendor'
+import { priceCentsString } from 'lib/utils'
 
 export default function VendorPayments({ payments }) {
   return (
@@ -26,7 +27,7 @@ export default function VendorPayments({ payments }) {
                     ? `$${(sale?.total_sell / 100)?.toFixed(2)}`
                     : "N/A"}
                 </div> */}
-              <div className="w-1/6 text-right">{debit?.amount ? `$${(debit?.amount / 100)?.toFixed(2)}` : 'N/A'}</div>
+              <div className="w-1/6 text-right">{priceCentsString(debit?.amount)}</div>
             </div>
           )
         })}

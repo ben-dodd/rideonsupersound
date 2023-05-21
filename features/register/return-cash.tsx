@@ -6,7 +6,7 @@ import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { savePettyCash, useCurrentRegisterId } from 'lib/api/register'
-import { dollarsToCents } from 'lib/utils'
+import { dollarsToCents, priceDollarsString } from 'lib/utils'
 import dayjs from 'dayjs'
 
 export default function ReturnCashDialog() {
@@ -38,7 +38,7 @@ export default function ReturnCashDialog() {
         setAlert({
           open: true,
           type: 'success',
-          message: `$${Number(amount)?.toFixed?.(2)} put in the till.`,
+          message: `${priceDollarsString(amount)} put in the till.`,
         })
         setSubmitting(false)
         closeView(ViewProps.returnCashDialog)

@@ -2,6 +2,7 @@ import { Add, Delete, Edit } from '@mui/icons-material'
 import { useCustomers } from 'lib/api/customer'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
+import { priceDollarsString } from 'lib/utils'
 
 const MailOrder = () => {
   const { cart, setCartSale, openView } = useAppStore()
@@ -32,7 +33,7 @@ const MailOrder = () => {
           <div>
             <div>{customers?.find((customer) => sale?.customerId === customer?.id)?.name}</div>
             <div className="whitespace-pre-wrap italic">{sale?.postalAddress}</div>
-            <div className="font-bold text-primary">{`$${Number(sale?.postage)?.toFixed(2)} POSTAGE FEE`}</div>
+            <div className="font-bold text-primary">{`${priceDollarsString(sale?.postage)} POSTAGE FEE`}</div>
           </div>
         </>
       ) : (

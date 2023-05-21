@@ -7,7 +7,6 @@ import ClerksIcon from '@mui/icons-material/PeopleAlt'
 import SellIcon from '@mui/icons-material/LocalAtm'
 import SalesIcon from '@mui/icons-material/MonetizationOn'
 import StocktakeIcon from '@mui/icons-material/Numbers'
-import BankIcon from '@mui/icons-material/AccountBalance'
 // import HoldsIcon from '@mui/icons-material/PanTool'
 import RegistersIcon from '@mui/icons-material/Storefront'
 // import PaymentsIcon from '@mui/icons-material/Receipt'
@@ -120,12 +119,12 @@ export default function Menu({ badges }) {
     //   text: 'MyROSS',
     //   icon: <MyIcon />,
     // },
-    {
-      type: 'link',
-      page: '/bank',
-      text: 'BANK',
-      icon: <BankIcon />,
-    },
+    // {
+    //   type: 'link',
+    //   page: '/bank',
+    //   text: 'BANK',
+    //   icon: <BankIcon />,
+    // },
     // {
     //   type: 'link',
     //   page: '/payments',

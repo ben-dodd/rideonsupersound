@@ -5,7 +5,7 @@ import dayjs from 'dayjs'
 import { useGiftCard } from 'lib/api/stock'
 import { useAppStore } from 'lib/store'
 import { Pages } from 'lib/store/types'
-import { centsToDollars } from 'lib/utils'
+import { priceCentsString } from 'lib/utils'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React from 'react'
@@ -45,8 +45,8 @@ const GiftCardSidebar = () => {
                 >{`[Sale #${card?.saleId}]`}</a>
               )}
             </div>
-            <div>{`Initial amount: $${centsToDollars(card?.giftCardAmount)}`}</div>
-            <div>{`Total remaining: $${centsToDollars(card?.giftCardRemaining)}`}</div>
+            <div>{`Initial amount: ${priceCentsString(card?.giftCardAmount)}`}</div>
+            <div>{`Total remaining: ${priceCentsString(card?.giftCardRemaining)}`}</div>
             <div className="mt-2">{card?.note}</div>
             <div className="border-t pt-2">
               {saleTransactions?.length === 0 ? (
@@ -67,7 +67,7 @@ const GiftCardSidebar = () => {
                           className="link-blue pl-2"
                         >{`[Sale #${trans?.saleId}]`}</Link>
                       </div>
-                      <div>{`$${centsToDollars(trans?.amount)}`}</div>
+                      <div>{priceCentsString(trans?.amount)}</div>
                     </div>
                   ))}
                 </div>

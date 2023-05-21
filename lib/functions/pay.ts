@@ -5,7 +5,7 @@ import { getCartItemPrices } from 'lib/functions/sell'
 import { PaymentMethodTypes, SaleItemObject, SaleTransactionObject } from 'lib/types/sale'
 import { BasicStockObject, StockItemObject } from 'lib/types/stock'
 import { VendorPaymentObject, VendorSaleItemObject } from 'lib/types/vendor'
-import { dollarsToCents } from 'lib/utils'
+import { dollarsToCents, priceDollarsString } from 'lib/utils'
 
 export function sumPrices(saleItems: any[], items: any[], field: string) {
   if (saleItems?.length === 0 || items?.length === 0) return 0
@@ -38,8 +38,7 @@ export function getTotalOwing(totalPayments: VendorPaymentObject[], totalSales: 
 export function getGrossProfit(price: any) {
   let sellNum = price?.totalSell / 100 || 0,
     costNum = price?.vendorCut / 100 || 0
-  if (sellNum > 0) return `$${(sellNum - costNum)?.toFixed(2)}`
-  else return ''
+  if (sellNum > 0) return priceDollarsString(sellNum - costNum)
 }
 
 export function getProfitMargin(price: any) {

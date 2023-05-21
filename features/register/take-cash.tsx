@@ -7,7 +7,7 @@ import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { savePettyCash, useCurrentRegisterId } from 'lib/api/register'
 import dayjs from 'dayjs'
-import { dollarsToCents } from 'lib/utils'
+import { dollarsToCents, priceDollarsString } from 'lib/utils'
 
 export default function TakeCashDialog() {
   const { registerId } = useCurrentRegisterId()
@@ -36,7 +36,7 @@ export default function TakeCashDialog() {
         setAlert({
           open: true,
           type: 'success',
-          message: `$${Number(amount)?.toFixed?.(2)} taken from the till.`,
+          message: `${priceDollarsString(amount)} taken from the till.`,
         })
         setSubmitting(false)
         closeView(ViewProps.takeCashDialog)

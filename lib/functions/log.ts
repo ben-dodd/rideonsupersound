@@ -20,7 +20,7 @@ export function saveLog(log: string, clerkId: number, tableId?: string, rowId?: 
 }
 
 export function logOpenRegister(clerk, openAmount, registerId) {
-  const log = `Register opened with $${openAmount ? parseFloat(openAmount) : 0} in the till.`
+  const log = `Register opened with ${priceDollarsString(openAmount || 0)} in the till.`
   saveLog(log, clerk?.id, 'register', registerId)
   return log
 }
@@ -30,12 +30,17 @@ export function logCloseRegister(register) {
 }
 
 export function logCloseRegisterWithAmount(closeAmount, clerk, registerId) {
-  saveLog(`Register closed with ${priceDollarsString(closeAmount)} in the till.`, clerk?.id, 'register', registerId)
+  saveLog(
+    `Register closed with ${priceDollarsString(closeAmount || 0)} in the till.`,
+    clerk?.id,
+    'register',
+    registerId,
+  )
 }
 
 export function logPettyCash(clerk, amount, isTake, pettyCashId) {
   saveLog(
-    `$${parseFloat(amount)?.toFixed(2)} ${isTake ? 'taken from till.' : 'put in till.'}`,
+    `${priceDollarsString(amount)} ${isTake ? 'taken from till.' : 'put in till.'}`,
     clerk?.id,
     'register_petty_cash',
     pettyCashId,

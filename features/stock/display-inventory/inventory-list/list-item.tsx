@@ -7,6 +7,7 @@ import { useVendors } from 'lib/api/vendor'
 import { useAppStore } from 'lib/store'
 import { VendorObject } from 'lib/types/vendor'
 import { StockObject } from 'lib/types/stock'
+import { priceCentsString } from 'lib/utils'
 
 type ListItemProps = {
   item: StockObject
@@ -61,7 +62,7 @@ export default function ListItem({ item }: ListItemProps) {
             }${getLaybyQuantity(item) > 0 ? `, ${getLaybyQuantity(item)} on layby` : ''}`}</div>
           </Tooltip>
           <Tooltip title="You can change the price in the item details screen.">
-            <div className="text-xl">{`$${((item?.totalSell || 0) / 100)?.toFixed(2)}`}</div>
+            <div className="text-xl">{priceCentsString(item?.totalSell)}</div>
           </Tooltip>
         </div>
       </div>

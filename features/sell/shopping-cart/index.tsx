@@ -125,9 +125,9 @@ export default function ShoppingCart() {
                 <PayIcon className="mr-2" />
               )}
               {totalRemaining < 0
-                ? `REFUND $${Math.abs(totalRemaining)?.toFixed(2)}`
+                ? `REFUND ${priceDollarsString(Math.abs(totalRemaining))}`
                 : totalRemaining > 0
-                ? `PAY${totalRemaining ? ` $${totalRemaining?.toFixed(2)}` : ''}`
+                ? `PAY${totalRemaining ? ` ${priceDollarsString(totalRemaining)}` : ''}`
                 : sale?.state === SaleStateTypes.Completed
                 ? 'RETURN TO SALE'
                 : ''}

@@ -1,5 +1,6 @@
 import { getImageSrc, getItemDisplayName, getItemSku } from 'lib/functions/displayInventory'
 import { useVendors } from 'lib/api/vendor'
+import { priceCentsString } from 'lib/utils'
 
 export default function ItemCard({ item }) {
   const { vendors } = useVendors()
@@ -19,7 +20,7 @@ export default function ItemCard({ item }) {
           <div className="text-sm">{`${vendor ? `Selling for ${vendor?.name}` : ''}`}</div>
         </div>
         <div className="flex flex-col justify-between">
-          <div className="text-xl">{`$${((item?.total_sell || 0) / 100)?.toFixed(2)}`}</div>
+          <div className="text-xl">{priceCentsString(item?.total_sell)}</div>
           {/* <button
             className="bg-gray-200 hover:bg-gray-300 p-1 w-10 h-10 rounded-full"
             onClick={() =>

@@ -7,6 +7,7 @@ import dayjs from 'dayjs'
 import { mapPayment } from 'lib/functions/displayPayments'
 import { useVendors } from 'lib/api/vendor'
 import { useClerks } from 'lib/api/clerk'
+import { priceCentsString } from 'lib/utils'
 
 export default function PaymentTable() {
   // SWR
@@ -16,9 +17,8 @@ export default function PaymentTable() {
 
   // Constants
   const data = useMemo(
-    () =>
-      vendorPayments?.map((v: VendorPaymentObject) => mapPayment(v, clerks)),
-    [vendorPayments, clerks]
+    () => vendorPayments?.map((v: VendorPaymentObject) => mapPayment(v, clerks)),
+    [vendorPayments, clerks],
   )
 
   const columns = useMemo(
@@ -27,12 +27,7 @@ export default function PaymentTable() {
         Header: 'Date',
         accessor: 'date',
         width: 270,
-        Cell: (item: any) =>
-          item ? (
-            <div>{dayjs(item?.value).format('D MMMM YYYY, h:mm A')}</div>
-          ) : (
-            <div />
-          ),
+        Cell: (item: any) => (item ? <div>{dayjs(item?.value).format('D MMMM YYYY, h:mm A')}</div> : <div />),
         sortType: (rowA: VendorPaymentObject, rowB: VendorPaymentObject) => {
           const a = dayjs(rowA?.date)
           const b = dayjs(rowB?.date)
@@ -43,8 +38,7 @@ export default function PaymentTable() {
         Header: 'Vendor',
         accessor: 'vendorId',
         width: 250,
-        Cell: ({ value }) =>
-          vendors?.find((v: VendorObject) => v?.id === value)?.name || '',
+        Cell: ({ value }) => vendors?.find((v: VendorObject) => v?.id === value)?.name || '',
       },
       {
         Header: 'Amount',
@@ -54,8 +48,8 @@ export default function PaymentTable() {
           <div className={value < 0 ? 'text-red-500' : 'text-black'}>
             {value && !isNaN(value)
               ? value < 0
-                ? `($${(Math.abs(value) / 100)?.toFixed(2)})`
-                : `$${(value / 100)?.toFixed(2)}`
+                ? `(${priceCentsString(Math.abs(value))})`
+                : priceCentsString(value)
               : 'N/A'}
           </div>
         ),
@@ -64,13 +58,11 @@ export default function PaymentTable() {
       { Header: 'Type', accessor: 'type' },
       { Header: 'Notes', accessor: 'note', width: 300 },
     ],
-    [vendors]
+    [vendors],
   )
 
   return (
-    <TableContainer
-      loading={isVendorsLoading || isVendorPaymentsLoading || isClerksLoading}
-    >
+    <TableContainer loading={isVendorsLoading || isVendorPaymentsLoading || isClerksLoading}>
       <Table
         color="bg-col4"
         colorLight="bg-col4-light"

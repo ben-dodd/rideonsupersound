@@ -8,6 +8,7 @@ import { ViewProps } from 'lib/store/types'
 import { useCurrentRegisterId } from 'lib/api/register'
 import { PaymentMethodTypes } from 'lib/types/sale'
 import { formSaleTransaction } from 'lib/functions/pay'
+import { priceDollarsString } from 'lib/utils'
 
 export default function Cash({ totalRemaining }) {
   const { clerk } = useClerk()
@@ -44,7 +45,7 @@ export default function Cash({ totalRemaining }) {
         setAlert({
           open: true,
           type: 'success',
-          message: `$${parseFloat(cardPayment)?.toFixed(2)} CARD ${isRefund ? 'REFUND' : 'PAYMENT'}`,
+          message: `${priceDollarsString(cardPayment)} CARD ${isRefund ? 'REFUND' : 'PAYMENT'}`,
         })
       },
       text: 'COMPLETE',
@@ -68,9 +69,9 @@ export default function Cash({ totalRemaining }) {
           selectOnFocus
           onChange={(e: any) => setCardPayment(e.target.value)}
         />
-        <div className="text-center">{`Remaining to ${isRefund ? 'refund' : 'pay'}: $${Math.abs(
-          totalRemaining,
-        )?.toFixed(2)}`}</div>
+        <div className="text-center">{`Remaining to ${isRefund ? 'refund' : 'pay'}: ${priceDollarsString(
+          Math.abs(totalRemaining),
+        )}`}</div>
         <div className="text-center text-xl font-bold my-4">
           {cardPayment === '' || parseFloat(cardPayment) === 0
             ? '...'
@@ -81,7 +82,7 @@ export default function Cash({ totalRemaining }) {
             : parseFloat(cardPayment) > Math.abs(totalRemaining)
             ? `${isRefund ? 'REFUND AMOUNT' : 'PAYMENT'} TOO HIGH`
             : parseFloat(cardPayment) < Math.abs(totalRemaining)
-            ? `AMOUNT SHORT BY $${(totalRemaining - parseFloat(cardPayment))?.toFixed(2)}`
+            ? `AMOUNT SHORT BY ${priceDollarsString(totalRemaining - parseFloat(cardPayment))}`
             : 'ALL GOOD!'}
         </div>
       </>

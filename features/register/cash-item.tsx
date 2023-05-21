@@ -3,6 +3,7 @@ import dayjs from 'dayjs'
 import { useClerks } from 'lib/api/clerk'
 import { SaleTransactionObject } from 'lib/types/sale'
 import { useRouter } from 'next/router'
+import { priceCentsString } from 'lib/utils'
 
 export default function CashItem({
   transaction,
@@ -28,7 +29,7 @@ export default function CashItem({
           className={`text-right w-24 ${
             value < 0 ? (negative ? 'text-secondary' : 'text-tertiary') : negative ? 'text-tertiary' : 'text-secondary'
           }`}
-        >{`${value < 0 ? (negative ? '+' : '-') : negative ? '-' : '+'} $${Math.abs(value / 100)?.toFixed(2)}`}</div>
+        >{`${value < 0 ? (negative ? '+' : '-') : negative ? '-' : '+'} ${priceCentsString(Math.abs(value))}`}</div>
         <div
           className={`ml-2 ${transaction?.saleId ? 'link-yellow' : ''}`}
           onClick={transaction?.saleId ? () => router.push(`/sales/${transaction?.saleId}`) : null}

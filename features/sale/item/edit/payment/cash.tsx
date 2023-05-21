@@ -8,6 +8,7 @@ import { ViewProps } from 'lib/store/types'
 import { useCurrentRegisterId } from 'lib/api/register'
 import { PaymentMethodTypes } from 'lib/types/sale'
 import { formSaleTransaction } from 'lib/functions/pay'
+import { priceDollarsString } from 'lib/utils'
 
 export default function Cash({ totalRemaining }) {
   const { clerk } = useClerk()
@@ -45,10 +46,10 @@ export default function Cash({ totalRemaining }) {
         setAlert({
           open: true,
           type: 'success',
-          message: `$${parseFloat(cashReceived)?.toFixed(2)} ${
+          message: `${priceDollarsString(cashReceived)} ${
             isRefund
               ? `CASH REFUNDED.`
-              : `CASH TAKEN.${parseFloat(changeToGive) > 0 ? ` $${changeToGive} CHANGE GIVEN.` : ''}`
+              : `CASH TAKEN.${parseFloat(changeToGive) > 0 ? ` ${priceDollarsString(changeToGive)} CHANGE GIVEN.` : ''}`
           }`,
         })
       },
@@ -73,9 +74,9 @@ export default function Cash({ totalRemaining }) {
           selectOnFocus
           onChange={(e: any) => setCashReceived(e.target.value)}
         />
-        <div className="text-center">{`Remaining to ${isRefund ? 'refund' : 'pay'}: $${Math.abs(
-          totalRemaining,
-        )?.toFixed(2)}`}</div>
+        <div className="text-center">{`Remaining to ${isRefund ? 'refund' : 'pay'}: ${priceDollarsString(
+          Math.abs(totalRemaining),
+        )}`}</div>
         <div className="text-center text-xl font-bold my-4">
           {cashReceived === '' || parseFloat(cashReceived) === 0
             ? '...'
@@ -88,9 +89,9 @@ export default function Cash({ totalRemaining }) {
             : isRefund
             ? 'ALL GOOD!'
             : parseFloat(cashReceived) > totalRemaining
-            ? `GIVE $${changeToGive} IN CHANGE`
+            ? `GIVE ${priceDollarsString(changeToGive)} IN CHANGE`
             : parseFloat(cashReceived) < Math.abs(totalRemaining)
-            ? `AMOUNT SHORT BY $${(totalRemaining - parseFloat(cashReceived))?.toFixed(2)}`
+            ? `AMOUNT SHORT BY ${priceDollarsString(totalRemaining - parseFloat(cashReceived))}`
             : 'ALL GOOD!'}
         </div>
       </>

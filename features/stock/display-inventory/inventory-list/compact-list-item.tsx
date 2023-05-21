@@ -7,6 +7,7 @@ import { getHoldQuantity, getItemSku, getLaybyQuantity } from 'lib/functions/dis
 import { useVendors } from 'lib/api/vendor'
 import { useAppStore } from 'lib/store'
 import { useRouter } from 'next/router'
+import { priceCentsString } from 'lib/utils'
 
 // REVIEW add tooltips everywhere. Have ability to turn them off.
 
@@ -34,7 +35,7 @@ export default function ListItem({ item }: ListItemProps) {
     <div className={`flex w-full mb-2 p-4 text-black ${item?.quantity < 1 ? 'bg-pink-200' : 'bg-gray-200'}`}>
       <div className="w-1/6">
         <Tooltip title="You can change the price in the item details screen.">
-          <div className="font-bold text-lg">{`$${((item?.totalSell || 0) / 100)?.toFixed(2)}`}</div>
+          <div className="font-bold text-lg">{priceCentsString(item?.totalSell)}</div>
         </Tooltip>
         <Tooltip title="Go to the STOCK screen to receive or return items.">
           <div className={`${itemQuantity < 1 && 'text-red-500'}`}>{`${itemQuantity} in stock${

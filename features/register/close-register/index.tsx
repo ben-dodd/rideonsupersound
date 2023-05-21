@@ -5,7 +5,7 @@ import { closeRegister, useCurrentRegister } from 'lib/api/register'
 import { getAmountFromCashMap, getRegisterValues } from 'lib/functions/register'
 import { useAppStore } from 'lib/store'
 import { TillObject } from 'lib/types/register'
-import { dollarsToCents } from 'lib/utils'
+import { dollarsToCents, priceDollarsString } from 'lib/utils'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import CashMap from '../cash-map'
@@ -81,7 +81,7 @@ const CloseRegisterScreen = () => {
         <div className="flex mb-4">
           <div className="w-1/2">
             <div className="text-3xl">Start Float</div>
-            <div className="text-3xl text-red-400 py-2">{`$${openAmount?.toFixed(2)}`}</div>
+            <div className="text-3xl text-red-400 py-2">{`${priceDollarsString(openAmount)}`}</div>
           </div>
           <div className="w-1/2">
             <div className="text-3xl">Close Float</div>
@@ -103,7 +103,7 @@ const CloseRegisterScreen = () => {
               ? 'text-secondary'
               : 'text-primary'
           }`}
-        >{`$${closeExpectedAmount?.toFixed(2)} Expected`}</div>
+        >{`${priceDollarsString(closeExpectedAmount)} Expected`}</div>
         <div
           className={`text-xl text-center ${
             invalidCloseAmount || closeDiscrepancy > 0
@@ -116,9 +116,9 @@ const CloseRegisterScreen = () => {
           {invalidCloseAmount
             ? 'Close amount must be a number'
             : closeDiscrepancy > 0
-            ? `Close amount short by $${closeDiscrepancy?.toFixed(2)}`
+            ? `Close amount short by ${priceDollarsString(closeDiscrepancy)}`
             : closeDiscrepancy < 0
-            ? `Close amount over by $${Math.abs(closeDiscrepancy)?.toFixed(2)}`
+            ? `Close amount over by ${priceDollarsString(Math.abs(closeDiscrepancy))}`
             : 'All square!'}
         </div>
         <CashMap till={till} setTill={setTill} />

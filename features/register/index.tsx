@@ -1,18 +1,21 @@
-import { DisplaySettings, Summarize } from '@mui/icons-material'
+import { CloudDownload, CloudUpload, DisplaySettings, Summarize } from '@mui/icons-material'
 import MidScreenContainer from 'components/container/mid-screen'
 import Tabs from 'components/navigation/tabs'
 import ComingSoon from 'components/placeholders/coming-soon'
 import { useAppStore } from 'lib/store'
-import { Pages } from 'lib/store/types'
+import { ViewProps, Pages } from 'lib/store/types'
 
 const RegistersScreen = () => {
   const isLoading = false
   const {
     registersPage: { tab },
     setPage,
+    openView,
   } = useAppStore()
   const setTab = (tab) => setPage(Pages.ordersPage, { tab })
   const menuItems = [
+    { text: 'Take Cash from Till', icon: <CloudUpload />, onClick: () => openView(ViewProps.takeCashDialog) },
+    { text: 'Return Cash to Till', icon: <CloudDownload />, onClick: () => openView(ViewProps.returnCashDialog) },
     { text: 'Create Report', icon: <Summarize />, onClick: null },
     { text: 'Manage Settings', icon: <DisplaySettings />, onClick: null },
   ]

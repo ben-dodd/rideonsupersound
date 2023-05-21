@@ -9,6 +9,7 @@ import { downloadEmailList, downloadKbbFile, modulusCheck } from 'lib/functions/
 import { useClerk } from 'lib/api/clerk'
 import { ArrowLeft, Download } from '@mui/icons-material'
 import { createVendorBatchPayment } from 'lib/api/vendor'
+import { priceDollarsString } from 'lib/utils'
 
 export default function CheckBatchPayments({ paymentList, setKbbLoaded, setEmailed, setStage }) {
   const { registerId } = useCurrentRegisterId()
@@ -42,7 +43,7 @@ export default function CheckBatchPayments({ paymentList, setKbbLoaded, setEmail
         <div className="text-red-400 text-2xl font-bold text-right">
           {paymentList?.filter((v) => isNaN(parseFloat(v?.payAmount)))?.length > 0
             ? `CHECK PAY ENTRIES`
-            : `PAY $${parseFloat(totalPay).toFixed(2)}\nto ${vendorNum} VENDORS`}
+            : `PAY ${priceDollarsString(totalPay)}\nto ${vendorNum} VENDORS`}
         </div>
 
         <div className="px-4">
@@ -105,7 +106,7 @@ export default function CheckBatchPayments({ paymentList, setKbbLoaded, setEmail
                   className={`py-2 px-2 text-sm border-b flex${parseFloat(v?.payAmount) <= 0 ? ' opacity-50' : ''}`}
                 >
                   <div className="w-1/2">{`[${v?.id}] ${v?.name}`}</div>
-                  <div className="w-1/4">{`$${parseFloat(v?.payAmount)?.toFixed(2)}`}</div>
+                  <div className="w-1/4">{priceDollarsString(v?.payAmount)}</div>
                   <div className="flex w-1/4">
                     {v?.storeCreditOnly ? (
                       <div className="text-blue-500 pl-2">

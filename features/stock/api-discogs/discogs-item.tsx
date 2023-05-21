@@ -1,6 +1,6 @@
 import { getUSDExchangeRate } from 'lib/api/external'
 import { StockItemObject } from 'lib/types/stock'
-import { andList } from 'lib/utils'
+import { andList, priceDollarsString } from 'lib/utils'
 import { useEffect, useState } from 'react'
 import ReactPlayer from 'react-player'
 import { DiscogsItem } from 'lib/types/discogs'
@@ -64,16 +64,18 @@ export default function DiscogsItemScreen({ discogsItem, item }: { discogsItem: 
               ? 'Set condition of item to get suggested price.'
               : discogsItem?.priceSuggestions &&
                 discogsItem?.priceSuggestions[item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)']?.value
-              ? `$${parseFloat(
+              ? `${priceDollarsString(
                   discogsItem?.priceSuggestions[item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)']?.value,
-                )?.toFixed(2)} NZD (${item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)'} condition)`
+                )} NZD (${item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)'} condition)`
               : 'No data'}
           </div>
         </div>
         <div className="p-2 bg-secondary-light rounded mt-2">
           <div className="font-bold">Lowest Price on Marketplace</div>
           <div>
-            {discogsItem?.lowest_price ? `$${(discogsItem?.lowest_price * exchangeRate)?.toFixed(2)} NZD` : 'No Data'}
+            {discogsItem?.lowest_price
+              ? `${priceDollarsString(discogsItem?.lowest_price * exchangeRate)} NZD`
+              : 'No Data'}
           </div>
         </div>
         <div className="p-2">

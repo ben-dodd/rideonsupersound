@@ -10,6 +10,7 @@ import { createVendorPayment, useVendor, useVendors } from 'lib/api/vendor'
 import { ViewProps } from 'lib/store/types'
 import { useCurrentRegisterId } from 'lib/api/register'
 import { VendorObject, VendorPaymentTypes } from 'lib/types/vendor'
+import { priceCentsString } from 'lib/utils'
 
 export default function TransferVendorPaymentDialog() {
   const { clerk } = useClerk()
@@ -134,10 +135,10 @@ export default function TransferVendorPaymentDialog() {
         <div className="mt-4 text-center">
           {vendorPayId === 'store'
             ? 'R.O.S.S. PAYS'
-            : vendorPayId > 0 && `PAYING VENDOR HAS $${((payVendor?.totalOwing || 0) / 100)?.toFixed(2)}`}
+            : vendorPayId > 0 && `PAYING VENDOR HAS ${priceCentsString(payVendor?.totalOwing)}`}
         </div>
         <div className="text-center">
-          {vendorReceiveId > 0 && `RECEIVING VENDOR HAS $${((receiveVendor?.totalOwing || 0) / 100)?.toFixed(2)}`}
+          {vendorReceiveId > 0 && `RECEIVING VENDOR HAS ${priceCentsString(receiveVendor?.totalOwing)}`}
         </div>
         <div className="my-4 text-center text-xl font-bold">
           {vendorPayId === 0 || vendorReceiveId === 0
