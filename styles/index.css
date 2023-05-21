@@ -173,11 +173,11 @@
 }
 
 .modal__close-button {
-  @apply p-2 text-brown hover:text-brown-light outline-none border-none mb-0 pb-0;
+  @apply p-2 text-white hover:text-gray-200 outline-none border-none mb-0 pb-0;
 }
 
 .modal__title-div {
-  @apply top-0 sticky flex justify-between items-start border-b border-gray-200 bg-gray-100 text-brown-dark shadow-sm px-2;
+  @apply top-0 sticky flex justify-between items-start border-b border-gray-200 bg-col10 text-brown-dark shadow-sm px-2;
 }
 
 .modal__title {
