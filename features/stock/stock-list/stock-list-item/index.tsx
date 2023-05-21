@@ -9,12 +9,10 @@ import { useRouter } from 'next/router'
 import Title from './title'
 import ItemDetails from './item-details'
 import { useBasicStockItem } from 'lib/api/stock'
-import { useAppStore } from 'lib/store'
 import Prices from './prices'
 
 export default function StockListItem({ stockListItem }: { stockListItem: StockItemSearchObject }) {
   const router = useRouter()
-  const { cart } = useAppStore()
   const { stockItem, isStockItemLoading } = useBasicStockItem(stockListItem?.id)
   const {
     item = stockListItem,

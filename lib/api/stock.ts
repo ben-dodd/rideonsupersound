@@ -108,6 +108,10 @@ export function useStocktakeTemplates() {
   return useData(`stocktake/template`, 'stocktakeTemplates')
 }
 
+export function useReceiveBatches() {
+  return useData(`stock/receive`, 'receiveBatches')
+}
+
 export function useReceiveBatch(id) {
   return useData(id ? `stock/receive/${id}` : null, 'receiveBatch')
 }

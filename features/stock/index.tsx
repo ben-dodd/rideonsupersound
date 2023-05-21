@@ -7,6 +7,7 @@ import StockList from './stock-list'
 import { Pages, ViewProps } from 'lib/store/types'
 import { AutoFixHigh, CollectionsBookmark, DisplaySettings, EventBusy, Print } from '@mui/icons-material'
 import { useRouter } from 'next/router'
+import ReceiveStockList from './receive-stock-list'
 
 const StockScreen = () => {
   const { stockList, isStockListLoading } = useStockList()
@@ -36,12 +37,12 @@ const StockScreen = () => {
       menuItems={menuItems}
     >
       <Tabs
-        tabs={['Stock List', 'Recent Arrivals', 'Recently Sold', 'Best Sellers', 'Stock Movement']}
+        tabs={['Stock List', 'Stock Arrivals', 'Recently Sold', 'Best Sellers', 'Stock Movement']}
         value={tab}
         onChange={setTab}
       />
       {tab === 0 && <StockList />}
-      {tab === 1 && <ComingSoon />}
+      {tab === 1 && <ReceiveStockList />}
       {tab === 2 && <ComingSoon />}
       {tab === 3 && <ComingSoon />}
       {tab === 4 && <ComingSoon />}
