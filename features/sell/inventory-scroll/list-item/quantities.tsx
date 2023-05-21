@@ -1,6 +1,5 @@
 // import Tooltip from '@mui/material/Tooltip'
 import { priceCentsString } from 'lib/utils'
-import React from 'react'
 
 const Quantities = ({ quantities, price, itemQuantity, isInCart }) => {
   const notLoaded: boolean = price?.totalSell === undefined || price?.totalSell === null

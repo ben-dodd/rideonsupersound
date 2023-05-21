@@ -1,5 +1,3 @@
-import React from 'react'
-
 // TODO add warning if item is on hold
 const Warning = ({ item, itemQuantity, isInCart }) => {
   return (

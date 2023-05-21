@@ -1,5 +1,4 @@
 import dayjs from 'dayjs'
-import React from 'react'
 
 const Warning = ({ hold }) => {
   const overdue = dayjs().diff(hold?.dateFrom, 'day') >= hold?.holdPeriod

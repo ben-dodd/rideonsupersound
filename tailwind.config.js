@@ -99,7 +99,7 @@ module.exports = {
         dialog: `calc(100vh - 16rem)`,
       },
       maxWidth: {
-        dialog: `calc(100vw - 24rem)`,
+        dialog: `calc(100vw - 28rem)`,
       },
       width: {
         menuSmall: '3rem',

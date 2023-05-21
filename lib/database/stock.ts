@@ -17,6 +17,7 @@ export function dbGetStockList(db = connection) {
       'stock.artist',
       'stock.title',
       'stock.display_as',
+      // 'stock.image_url',
       'stock.media',
       'stock.format',
       'stock.section',

@@ -1,7 +1,6 @@
 import { Album, Interests, LocalShipping, Lyrics, MenuBook, Mood, Person, Voicemail } from '@mui/icons-material'
 import { VendorObject } from 'lib/types/vendor'
 import { useRouter } from 'next/router'
-import React from 'react'
 
 const VendorListItem = ({ vendor }: { vendor: VendorObject }) => {
   const router = useRouter()

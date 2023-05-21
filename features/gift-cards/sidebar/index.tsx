@@ -8,7 +8,6 @@ import { Pages } from 'lib/store/types'
 import { priceCentsString } from 'lib/utils'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import React from 'react'
 
 const GiftCardSidebar = () => {
   const { giftCardsPage, setPage } = useAppStore()

@@ -1,22 +1,9 @@
-import React from 'react'
 import Image from 'next/image'
 
-const Loading = ({
-  size = 'md',
-  type = 'spin',
-}: {
-  size?: 'full' | 'md' | 'sm'
-  type?: 'spin' | 'pyramid'
-}) => {
+const Loading = ({ size = 'md', type = 'spin' }: { size?: 'full' | 'md' | 'sm'; type?: 'spin' | 'pyramid' }) => {
   return (
     <div
-      className={`flex ${
-        size === 'full'
-          ? 'h-screen w-screen'
-          : size === 'md'
-          ? 'h-full w-full'
-          : 'h-full w-full'
-      }`}
+      className={`flex ${size === 'full' ? 'h-screen w-screen' : size === 'md' ? 'h-full w-full' : 'h-full w-full'}`}
     >
       {type === 'spin' ? (
         <div className="loading-icon" />

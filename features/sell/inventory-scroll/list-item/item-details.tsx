@@ -1,5 +1,4 @@
 import { useVendorNames } from 'lib/api/vendor'
-import React from 'react'
 
 const ItemDetails = ({ item }) => {
   const { vendorNames = [] } = useVendorNames()

@@ -2,7 +2,6 @@ import { useAppStore } from 'lib/store'
 import { Pages } from 'lib/store/types'
 import { GiftCardObject } from 'lib/types/stock'
 import { centsToDollars } from 'lib/utils'
-import React from 'react'
 
 const GiftCardListItem = ({ giftCard }: { giftCard: GiftCardObject }) => {
   const { setPage } = useAppStore()

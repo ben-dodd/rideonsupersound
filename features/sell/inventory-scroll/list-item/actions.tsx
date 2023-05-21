@@ -1,6 +1,5 @@
 import { useRouter } from 'next/router'
 import { Info, AddCircleOutline } from '@mui/icons-material'
-import React from 'react'
 import { skuScan } from 'lib/functions/sell'
 import { useAppStore } from 'lib/store'
 import { getItemSkuDisplayName } from 'lib/functions/displayInventory'

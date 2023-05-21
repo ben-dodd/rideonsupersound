@@ -3,7 +3,6 @@ import dayjs from 'dayjs'
 import { VendorPaymentTypes } from 'lib/types/vendor'
 import { priceCentsString } from 'lib/utils'
 import { useRouter } from 'next/router'
-import React from 'react'
 
 const PaymentListItem = ({ payment }) => {
   const router = useRouter()

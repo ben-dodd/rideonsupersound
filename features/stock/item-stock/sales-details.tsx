@@ -1,5 +1,3 @@
-import React from 'react'
-
 const SalesDetails = ({ sales }) => {
   console.log(sales)
   return (

@@ -1,6 +1,5 @@
 import { ErrorOutlineOutlined } from '@mui/icons-material'
 import { useRouter } from 'next/router'
-import React from 'react'
 
 const ErrorScreen = ({ message, redirectUrl = null }) => {
   const router = useRouter()

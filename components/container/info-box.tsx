@@ -1,4 +1,3 @@
-import React from 'react'
 import { CheckCircle, Cancel } from '@mui/icons-material'
 import { useRouter } from 'next/router'
 

@@ -1,5 +1,4 @@
 import { SaleTransactionObject } from 'lib/types/sale'
-import React from 'react'
 import CashItem from '../cash-item'
 import { priceDollarsString } from 'lib/utils'
 

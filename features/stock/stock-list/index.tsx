@@ -12,7 +12,7 @@ const StockList = () => {
     stockPage: { searchBar },
     setSearchBar,
   } = useAppStore()
-  const [limit, setLimit] = useState(50)
+  const [limit, setLimit] = useState(30)
 
   const handleSearch = (e) => setSearchBar(Pages.stockPage, e.target.value)
   const filteredList = stockList?.filter?.((stockItem) =>
@@ -26,9 +26,9 @@ const StockList = () => {
       </div>
       <div className="px-2">
         {filteredList?.slice(0, limit)?.map((stockItem) => (
-          <StockListItem key={stockItem?.id} item={stockItem} />
+          <StockListItem key={stockItem?.id} stockListItem={stockItem} />
         ))}
-        {limit < stockList?.length && <LoadMoreButton onClick={() => setLimit((limit) => limit + 50)} />}
+        {limit < filteredList?.length && <LoadMoreButton onClick={() => setLimit((limit) => limit + 30)} />}
       </div>
     </div>
   )
