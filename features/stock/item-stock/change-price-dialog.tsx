@@ -86,7 +86,8 @@ export default function ChangePriceDialog() {
         (price?.totalSell !== '' && isNaN(parseFloat(price?.totalSell))) ||
         (price?.vendorCut !== '' && isNaN(parseFloat(price?.vendorCut))) ||
         (price?.margin !== '' && isNaN(parseFloat(price?.margin))) ||
-        (price?.totalSell !== '' && isNaN(parseFloat(price?.totalSell))),
+        (price?.totalSell !== '' && isNaN(parseFloat(price?.totalSell))) ||
+        (dayjs(date).add(10, 'minute').isBefore(dayjs()) && Number(price?.totalSell) !== currPrice?.totalSell / 100),
       loading: submitting,
       onClick: async () => {
         setSubmitting(true)
@@ -177,6 +178,11 @@ export default function ChangePriceDialog() {
           multiline
           rows={3}
         />
+        {dayjs(date).add(10, 'minute').isBefore(dayjs()) && Number(price?.totalSell) !== currPrice?.totalSell / 100 && (
+          <div className="text-red-500 text-xs">
+            TOTAL PRICE MUST EQUAL PREVIOUS TOTAL PRICE FOR RETROACTIVE PRICE CHANGES
+          </div>
+        )}
       </>
     </Modal>
   )
