@@ -115,6 +115,9 @@ module.exports = {
         imageXSmall: '40px',
         dropdown: `18rem`,
       },
+      zIndex: {
+        100: '100',
+      },
       transitionProperty: { width: 'width', height: 'height' },
       gridTemplateColumns: {
         right: 'auto 200px 200px',

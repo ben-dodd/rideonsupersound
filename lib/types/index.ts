@@ -104,6 +104,22 @@ export interface AlertProps {
   undo?: Function
 }
 
+export interface ClippyProps {
+  visible: boolean
+  showMessage: boolean
+  image: string
+  message: string
+  options?: any[]
+  position: {
+    x: number
+    y: number
+  }
+  size: {
+    height: number
+    width: number
+  }
+}
+
 export const bgDark = [
   'bg-col1-dark',
   'bg-col2-dark',

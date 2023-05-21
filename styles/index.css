@@ -289,3 +289,17 @@
 .link-red {
   @apply text-red-400 hover:text-red-600 cursor-pointer;
 }
+
+.speech-bubble {
+  @apply relative inline-block bg-white rounded-lg p-4 shadow-md w-64 z-10;
+}
+
+/* .speech-bubble:before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  margin-top: -10px;
+  border: 10px solid transparent;
+  border-right-color: #ffffff;
+} */

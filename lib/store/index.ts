@@ -34,6 +34,15 @@ const initState = {
   view: {},
   confirmModal: { open: false },
   alert: { open: false },
+  clippy: {
+    visible: true,
+    showMessage: false,
+    image: 'default.png',
+    message:
+      'It looks like a customer is trying to buy an Adam Hattaway CD. Have you tried to sell them the Joe Sampson zine instead?',
+    position: { x: 100, y: 100 },
+    size: { height: 100, width: 100 },
+  },
   createableCustomerName: '',
   cart: {
     sale: { id: null, customerId: null },
@@ -282,6 +291,14 @@ export const useAppStore = createSelectors(
         }),
       )
       doMutate && get().cart?.sale?.id && get().mutateCart()
+    },
+    setClippy: (update) => {
+      console.log('Updating clippy', update)
+      set(
+        produce((draft) => {
+          Object.entries(update).forEach(([key, value]) => (draft.clippy[key] = value))
+        }),
+      )
     },
     setBatchPaymentSession: (update) => {
       set(

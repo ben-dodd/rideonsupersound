@@ -1,5 +1,5 @@
 /* eslint-disable unused-imports/no-unused-vars */
-import { ConfirmModal, AlertProps } from 'lib/types'
+import { ConfirmModal, AlertProps, ClippyProps } from 'lib/types'
 import { CartObject, SaleItemObject, SaleTransactionObject } from 'lib/types/sale'
 import { BatchPaymentObject } from 'lib/types/vendor'
 
@@ -47,6 +47,7 @@ export interface StoreState {
   }
   confirmModal?: ConfirmModal
   alert?: AlertProps
+  clippy?: ClippyProps
   createableCustomerName?: string
   cart: CartObject
   receiveBasket?: {
@@ -118,6 +119,7 @@ export interface StoreState {
   addCartItem: (newItem: SaleItemObject, clerkId: number, replacePrevious?: boolean, alertMessage?: string) => void
   setCartItem: (id: number, update: any) => void
   setCartSale: (update: any, doMutate?: boolean) => void
+  setClippy: (update: any) => void
   setReceiveBasket: (update: any) => void
   addReceiveBasketItem: (newItem: any) => void
   updateReceiveBasketItem: (key: any, update: any) => void

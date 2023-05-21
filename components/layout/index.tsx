@@ -9,6 +9,7 @@ import { useAppStore } from 'lib/store'
 import HelpDialog from 'features/help'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
+// import Clippy from 'components/clippy'
 
 export default function Layout({ children }) {
   const { alert, view, confirmModal } = useAppStore()
@@ -48,6 +49,7 @@ export default function Layout({ children }) {
         <Menu />
         <div className="h-full w-full absolute sm:static">{routeLoading ? <Loading /> : children}</div>
       </div>
+      {/* <Clippy /> */}
     </>
   )
 }
