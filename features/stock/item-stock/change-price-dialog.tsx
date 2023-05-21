@@ -129,7 +129,7 @@ export default function ChangePriceDialog() {
             startAdornment="$"
             inputClass="text-center"
             value={price?.totalSell}
-            error={isNaN(parseFloat(price?.totalSell))}
+            error={price?.totalSell !== '' && isNaN(parseFloat(price?.totalSell))}
             onChange={handleSetPrice}
           />
           <TextField
@@ -139,7 +139,7 @@ export default function ChangePriceDialog() {
             startAdornment="$"
             inputClass="text-center"
             value={price?.vendorCut}
-            error={isNaN(parseFloat(price?.vendorCut))}
+            error={price?.vendorCut !== '' && isNaN(parseFloat(price?.vendorCut))}
             onChange={handleSetPrice}
           />
           <TextField
@@ -149,7 +149,7 @@ export default function ChangePriceDialog() {
             endAdornment="%"
             inputClass="text-center"
             value={price?.margin}
-            error={isNaN(parseFloat(price?.margin)) || parseFloat(price?.margin) >= 100}
+            error={(price?.margin !== '' && isNaN(parseFloat(price?.margin))) || parseFloat(price?.margin) >= 100}
             onChange={handleSetPrice}
           />
           <TextField
@@ -159,7 +159,7 @@ export default function ChangePriceDialog() {
             startAdornment="$"
             inputClass="text-center"
             value={price?.storeCut}
-            error={isNaN(parseFloat(price?.storeCut))}
+            error={price?.storeCut !== '' && isNaN(parseFloat(price?.storeCut))}
             onChange={handleSetPrice}
           />
         </div>

@@ -118,7 +118,7 @@ export default function TransferVendorPaymentDialog() {
           divClass="text-8xl"
           inputClass="text-center"
           startAdornment="$"
-          error={isNaN(parseFloat(payment))}
+          error={payment !== '' && isNaN(parseFloat(payment))}
           autoFocus
           selectOnFocus
           value={payment}

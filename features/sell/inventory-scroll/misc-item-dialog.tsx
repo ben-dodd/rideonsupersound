@@ -78,7 +78,7 @@ export default function MiscItemDialog() {
           inputClass="text-center"
           inputLabel="Total Cost"
           value={amount}
-          error={isNaN(parseFloat(amount))}
+          error={amount !== '' && isNaN(parseFloat(amount))}
           onChange={(e: any) => setAmount(e.target.value)}
         />
         <TextField inputLabel="Description" value={description} onChange={(e: any) => setDescription(e.target.value)} />

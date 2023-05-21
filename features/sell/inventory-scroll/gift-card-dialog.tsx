@@ -84,7 +84,7 @@ export default function GiftCardDialog() {
           startAdornment="$"
           inputClass="text-center"
           value={amount}
-          error={isNaN(parseFloat(amount))}
+          error={amount !== '' && isNaN(parseFloat(amount))}
           onChange={(e: any) => setAmount(e.target.value)}
         />
         <TextField inputLabel="Note" value={note} onChange={(e) => setNote(e.target.value)} multiline rows={3} />

@@ -116,7 +116,7 @@ export default function SelectBatchPayments({ paymentList, setPaymentList, setSt
                 </div>
                 <div className="w-1/12 flex">
                   <TextField
-                    error={isNaN(parseFloat(v?.payAmount))}
+                    error={v?.payAmount !== '' && isNaN(parseFloat(v?.payAmount))}
                     startAdornment={'$'}
                     value={v?.payAmount || ''}
                     onChange={(e) =>
