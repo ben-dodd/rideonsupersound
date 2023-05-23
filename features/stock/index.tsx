@@ -8,6 +8,7 @@ import { Pages, ViewProps } from 'lib/store/types'
 import { AutoFixHigh, CollectionsBookmark, DisplaySettings, EventBusy, Print } from '@mui/icons-material'
 import { useRouter } from 'next/router'
 import ReceiveStockList from './receive-stock-list'
+import StockMovementList from './stock-movement-list'
 
 const StockScreen = () => {
   const { stockList, isStockListLoading } = useStockList()
@@ -45,7 +46,7 @@ const StockScreen = () => {
       {tab === 1 && <ReceiveStockList />}
       {tab === 2 && <ComingSoon />}
       {tab === 3 && <ComingSoon />}
-      {tab === 4 && <ComingSoon />}
+      {tab === 4 && <StockMovementList />}
     </MidScreenContainer>
   )
 }

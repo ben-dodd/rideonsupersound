@@ -1,4 +1,4 @@
-import { getItemSkuDisplayName } from 'lib/functions/displayInventory'
+import { getImageSrc, getItemSkuDisplayName } from 'lib/functions/displayInventory'
 import { StockMovementTypes } from 'lib/types/stock'
 import { dbGetAllSalesAndItems, dbGetSaleTransactions, getStockMovementQuantityByAct } from './sale'
 import { js2mysql } from './utils/helpers'
@@ -210,6 +210,7 @@ export function dbGetStockMovements(limit, db = connection) {
   return db('stock_movement')
     .leftJoin('clerk', 'clerk.id', 'stock_movement.clerk_id')
     .leftJoin('stock', 'stock.id', 'stock_movement.stock_id')
+    .leftJoin('vendor', 'vendor.id', 'stock.vendor_id')
     .select(
       'stock_movement.id',
       'stock_movement.date_moved',
@@ -225,6 +226,8 @@ export function dbGetStockMovements(limit, db = connection) {
       'stock.display_as as stock_display_as',
       'stock.artist as stock_artist',
       'stock.title as stock_title',
+      'stock.format as stock_format',
+      'stock.image_url as stock_image_url',
     )
     .orderBy('id', 'desc')
     .limit(limit)
@@ -235,6 +238,13 @@ export function dbGetStockMovements(limit, db = connection) {
         act: row?.act,
         quantity: row?.quantity,
         clerk_name: row?.clerk_name,
+        stock_id: row?.stock_id,
+        vendor_id: row?.vendor_id,
+        image_src: getImageSrc({
+          imageUrl: row?.stock_image_url,
+          isGiftCard: row?.stock_is_gift_card,
+          format: row?.stock_format,
+        }),
         item_display_name: getItemSkuDisplayName({
           id: row?.stock_id,
           vendorId: row?.stock_vendor_id,
@@ -478,7 +488,9 @@ export function dbGetReceiveBatches(db = connection) {
 
 export function dbGetReceiveBatch(id, db = connection) {
   return db('batch_receive')
-    .where({ id })
+    .leftJoin('clerk', 'clerk.id', 'batch_receive.started_by_clerk_id')
+    .select('batch_receive.*', 'clerk.name as clerk_name')
+    .where('batch_receive.id', id)
     .first()
     .then((batch) =>
       dbGetStockMovementsForReceiveBatch(id, db).then((stockMovements) => {

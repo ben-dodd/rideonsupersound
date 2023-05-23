@@ -14,12 +14,16 @@ const ReceiveBatchItem = ({ receiveBatchItem }) => {
 
   const { batch = {}, stockMovements = [] } = receiveBatch || {}
   return (
-    <div className="list-item-compact border-b">
+    <div className="flex border-b py-4">
       <div className="w-full">
         <div className="flex justify-between">
-          <div className="text-lg font-bold">Batch ID {batch?.id}</div>
+          <div className="text-lg font-bold">
+            Batch ID {batch?.id}
+            {batch?.clerkName ? ` - ${batch?.clerkName}` : ''}
+          </div>
           <div>{dayjs(batch?.dateCompleted).format('D MMMM YYYY, h:mma')}</div>
         </div>
+        <div className="italic">{batch?.note}</div>
         {stockMovements?.map((stockMovement) => (
           <div key={stockMovement?.id} className="flex items-center">
             <div className="text-xl text-red-500 whitespace-nowrap">{stockMovement?.quantity} x</div>
