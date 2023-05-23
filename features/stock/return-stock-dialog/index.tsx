@@ -80,6 +80,8 @@ export default function ReturnStockScreen() {
       label: getItemSkuDisplayName(item),
     }))
 
+  const numItems = returnItems?.reduce((prev, returnItem) => (prev += parseInt(returnItem?.quantity)), 0)
+
   return (
     <Modal
       open={view?.returnStockScreen}
@@ -156,10 +158,7 @@ export default function ReturnStockScreen() {
           <div className="w-2/3 pl-8">
             {returnItems?.length > 0 ? (
               <div className="h-dialog">
-                <div className="font-bold text-xl">{`RETURNING ${returnItems?.reduce(
-                  (prev, returnItem) => (prev += parseInt(returnItem?.quantity)),
-                  0,
-                )} ITEMS`}</div>
+                <div className="font-bold text-xl">{`RETURNING ${numItems} ITEM${numItems === 1 ? '' : 'S'}`}</div>
                 <div className="h-full overflow-y-scroll">
                   {returnItems?.map((returnItem: any, i: number) => {
                     const item: StockItemSearchObject = stockList?.find(
