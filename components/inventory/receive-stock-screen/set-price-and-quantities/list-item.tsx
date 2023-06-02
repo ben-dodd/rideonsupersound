@@ -171,7 +171,7 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
             inputLabel="VENDOR CUT"
             className="w-24 mr-6"
             startAdornment={'$'}
-            disabled={Boolean(item?.id)}
+            // disabled={Boolean(item?.id)}
             value={`${
               receiveItem?.vendor_cut ||
               (item?.vendor_cut ? item?.vendor_cut / 100 : '')

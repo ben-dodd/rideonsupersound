@@ -1618,6 +1618,7 @@ export async function receiveStock(
   const receivedStock = []
   await Promise.all(
     basket?.items?.map(async (receiveItem: any) => {
+      console.log(receiveItem)
       if (receiveItem?.item?.id) {
         saveStockMovementToDatabase(
           {
@@ -1629,10 +1630,42 @@ export async function receiveStock(
           StockMovementTypes?.Received,
           'Existing stock received.'
         )
-        receivedStock.push({
-          item: receiveItem?.item,
-          quantity: receiveItem?.quantity || 1,
-        })
+        if (
+          (receiveItem?.total_sell &&
+            parseFloat(receiveItem?.total_sell) * 100 !==
+              receiveItem?.item?.total_sell) ||
+          (receiveItem?.vendor_cut &&
+            parseFloat(receiveItem?.vendor_cut) * 100 !==
+              receiveItem?.item?.vendor_cut)
+        ) {
+          // Add receive item price
+          console.log('saving new item price')
+          saveStockPriceToDatabase(
+            receiveItem?.item?.id,
+            clerk,
+            receiveItem?.total_sell
+              ? parseFloat(receiveItem?.total_sell) * 100
+              : receiveItem?.item?.total_sell,
+            receiveItem?.vendor_cut
+              ? parseFloat(receiveItem?.vendor_cut) * 100
+              : receiveItem?.item?.vendor_cut,
+            'Stock price updated when received.'
+          )
+          receivedStock.push({
+            item: {
+              ...receiveItem?.item,
+              total_sell: receiveItem?.total_sell
+                ? parseFloat(receiveItem?.total_sell) * 100
+                : receiveItem?.item?.total_sell,
+            },
+            quantity: receiveItem?.quantity || 1,
+          })
+        } else {
+          receivedStock.push({
+            item: receiveItem?.item,
+            quantity: receiveItem?.quantity || 1,
+          })
+        }
       } else {
         const newStockID = await saveStockToDatabase(
           {

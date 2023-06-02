@@ -801,7 +801,7 @@ export function getCSVData(items) {
     item?.title,
     item?.is_new ? 'NEW' : 'USED',
     `$${Math.round(item?.total_sell / 100)}`,
-    `${item?.section}${
+    `${item?.section ? item?.section : ''}${
       (item?.section && item?.country === 'New Zealand') ||
       item?.country === 'NZ'
         ? '/'
