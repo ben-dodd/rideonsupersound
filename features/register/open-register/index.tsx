@@ -13,6 +13,7 @@ import ActionButton from 'components/button/action-button'
 import dayjs from 'dayjs'
 import { priceCentsString } from 'lib/utils'
 import { useSWRConfig } from 'swr'
+import { dateTime } from 'lib/types/date'
 
 export default function OpenRegisterScreen() {
   const { clerk } = useClerk()
@@ -103,7 +104,7 @@ export default function OpenRegisterScreen() {
       </div>
       {previousRegister ? (
         <div className="bg-yellow-200 p-4">
-          <div>{`Previous register closed at ${dayjs(previousRegister?.closeDate).format('H:mm A, D MMMM YYYY')} by ${
+          <div>{`Previous register closed at ${dayjs(previousRegister?.closeDate).format(dateTime)} by ${
             previousRegister?.closedByName
           }`}</div>
           <div className="font-bold text-lg">{`Till closed with ${priceCentsString(previousRegister?.closeAmount)}${

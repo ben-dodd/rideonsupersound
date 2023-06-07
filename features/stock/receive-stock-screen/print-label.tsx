@@ -4,6 +4,7 @@ import { CSVLink } from 'react-csv'
 import { getImageSrc, getItemDisplayName, getItemSku } from 'lib/functions/displayInventory'
 import { getLabelPrinterCSV } from 'lib/functions/printLabels'
 import { useClerk } from 'lib/api/clerk'
+import { dateYMD } from 'lib/types/date'
 
 export default function PrintLabel({ receivedStock }) {
   // const { logs, mutateLogs } = useLogs()
@@ -53,7 +54,7 @@ export default function PrintLabel({ receivedStock }) {
         className={`bg-col2-dark hover:bg-col2 disabled:bg-gray-200 p-2 rounded`}
         data={getLabelPrinterCSV(getStock())}
         headers={['SKU', 'ARTIST', 'TITLE', 'NEW/USED', 'SELL PRICE', 'GENRE']}
-        filename={`label-print-${dayjs().format('YYYY-MM-DD')}.csv`}
+        filename={`label-print-${dayjs().format(dateYMD)}.csv`}
         onClick={() => logPrintLabels(clerk, 'receive stock dialog')}
       >
         PRINT LABELS

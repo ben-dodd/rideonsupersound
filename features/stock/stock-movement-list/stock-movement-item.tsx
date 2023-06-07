@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import { dateTime } from 'lib/types/date'
 import { useRouter } from 'next/router'
 
 const StockMovementItem = ({ sm }) => {
@@ -10,7 +11,7 @@ const StockMovementItem = ({ sm }) => {
           <img className="object-cover w-full aspect-ratio-square" src={sm?.imageSrc} alt={'Stock item image'} />
         </div>
       </div>
-      <div className="font-bold pr-4 text-pink-600 w-2/12">{dayjs(sm?.dateMoved).format('YYYY-MM-DD h:mma')}</div>
+      <div className="font-bold pr-4 text-pink-600 w-2/12">{dayjs(sm?.dateMoved).format(dateTime)}</div>
       <div className="font-bold w-16 text-blue-800 w-1/12">{sm?.clerkName}</div>
       <div className="uppercase pr-4 w-1/12">{sm?.act}</div>
       <div className="font-bold pr-4 w-1/12">{sm?.quantity} x</div>

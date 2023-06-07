@@ -10,6 +10,7 @@ import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { usePrintLabelStockList } from 'lib/api/stock'
 import LabelPrintListItem from './list-item'
+import { dateYMD } from 'lib/types/date'
 
 export default function LabelPrintDialog() {
   const { view, closeView } = useAppStore()
@@ -43,7 +44,7 @@ export default function LabelPrintDialog() {
       type: 'ok',
       data: getLabelPrinterCSV(explodeItems()),
       headers: ['SKU', 'ARTIST', 'TITLE', 'NEW/USED', 'SELL PRICE', 'SECTION', 'BARCODE'],
-      fileName: `label-print-${dayjs().format('YYYY-MM-DD')}.csv`,
+      fileName: `label-print-${dayjs().format(dateYMD)}.csv`,
       text: 'PRINT LABELS',
       onClick: () => {
         closeDialog()

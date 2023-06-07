@@ -5,6 +5,7 @@ import { VendorSaleItemObject } from 'lib/types/vendor'
 import { priceCentsString } from 'lib/utils'
 import { useRouter } from 'next/router'
 import { getDiscountedPrice } from 'lib/functions/sell'
+import { dateSimple } from 'lib/types/date'
 
 export default function VendorSales({ sales }) {
   const router = useRouter()
@@ -31,7 +32,7 @@ export default function VendorSales({ sales }) {
               <div className="w-1/12 link-blue pl-2" onClick={() => router.push(`/sales/${sale?.saleId}`)}>
                 #{sale?.saleId}
               </div>
-              <div className="font-bold w-1/6">{dayjs(sale?.dateSaleClosed).format('D MMMM YYYY')}</div>
+              <div className="font-bold w-1/6">{dayjs(sale?.dateSaleClosed).format(dateSimple)}</div>
               <div className="w-1/3 link-blue" onClick={() => router.push(`/stock/${sale?.itemId}`)}>{`${
                 sale?.quantity
               } x ${getItemDisplayName(sale)}${sale?.isRefunded ? ' [REFUNDED]' : ''}`}</div>

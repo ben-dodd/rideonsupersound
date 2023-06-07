@@ -1,0 +1,8 @@
+export const dateTime = 'ddd, D MMM YYYY, H:mm A'
+export const timeDate = 'H:mm A, D MMMM YYYY'
+export const dateDay = 'dddd, MMMM D, YYYY'
+export const dateYMD = 'YYYY-MM-DD'
+export const dateSlash = 'DD/MM/YYYY'
+export const dateSimple = 'D MMMM YYYY'
+export const time = 'h:mm A'
+export const dateTimeISO = 'YYYY-MM-DDTHH:mm'

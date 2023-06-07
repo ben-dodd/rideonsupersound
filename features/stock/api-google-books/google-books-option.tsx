@@ -6,6 +6,7 @@ import { useSWRConfig } from 'swr'
 import { useClerk } from 'lib/api/clerk'
 import { createStockItem, updateStockItem } from 'lib/api/stock'
 import { setGoogleBooksItemToStockItem } from 'lib/functions/googleBooks'
+import { dateSimple } from 'lib/types/date'
 
 export default function GoogleBooksOption({
   googleBooksOption,
@@ -61,7 +62,7 @@ export default function GoogleBooksOption({
           {volumeInfo?.printType || ''}
           <i>{volumeInfo?.pageCount ? ` ${volumeInfo?.pageCount}pp.` : ''}</i>
         </div>
-        {volumeInfo?.publishedDate && <div>{dayjs(volumeInfo?.publishedDate).format('D MMMM YYYY')}</div>}
+        {volumeInfo?.publishedDate && <div>{dayjs(volumeInfo?.publishedDate).format(dateSimple)}</div>}
       </div>
     </div>
   )

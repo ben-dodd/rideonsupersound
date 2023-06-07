@@ -1,6 +1,7 @@
 import { StocktakeObject } from 'lib/types/stock'
 import { LinearProgress } from '@mui/material'
 import dayjs from 'dayjs'
+import { dateSimple } from 'lib/types/date'
 
 type ListItemProps = {
   stocktake: StocktakeObject
@@ -20,13 +21,13 @@ export default function StocktakeListItem({ stocktake }: ListItemProps) {
         setLoadedStocktakeId(stocktake?.id)
       }}
     >
-      <div className="font-bold w-1/4">{dayjs(stocktake?.date_started).format('D MMMM YYYY')}</div>
+      <div className="font-bold w-1/4">{dayjs(stocktake?.date_started).format(dateSimple)}</div>
       <div className="mx-2 w-full w-3/4">
         <div className="font-bold">
           {stocktake?.date_cancelled ? (
             <div>Cancelled</div>
           ) : stocktake?.date_closed ? (
-            <div>{`Completed on ${dayjs(stocktake?.date_closed).format('D MMMM YYYY')}`}</div>
+            <div>{`Completed on ${dayjs(stocktake?.date_closed).format(dateSimple)}`}</div>
           ) : (
             <>
               <div>{`In Progress`}</div>

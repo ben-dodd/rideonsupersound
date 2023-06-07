@@ -11,6 +11,7 @@ import { useSWRConfig } from 'swr'
 import { centsToDollars, dollarsToCents } from 'lib/utils'
 import { getProfitMargin, getStoreCut } from 'lib/functions/pay'
 import dayjs from 'dayjs'
+import { dateTimeISO } from 'lib/types/date'
 
 export default function ChangePriceDialog() {
   const { clerk } = useClerk()
@@ -24,7 +25,7 @@ export default function ChangePriceDialog() {
 
   const [price, setPrice] = useState({ totalSell: '', vendorCut: '', storeCut: '', margin: '' })
   const [notes, setNotes] = useState('')
-  const [date, setDate] = useState(dayjs().format('YYYY-MM-DDTHH:mm'))
+  const [date, setDate] = useState(dayjs().format(dateTimeISO))
   const [submitting, setSubmitting] = useState(false)
 
   const expiryMinutes = 5
@@ -172,7 +173,7 @@ export default function ChangePriceDialog() {
           value={date}
           onChange={(e: any) => setDate(e.target.value)}
           inputType="datetime-local"
-          max={dayjs().format('YYYY-MM-DDTHH:mm')}
+          max={dayjs().format(dateTimeISO)}
         />
         <TextField
           inputLabel="Notes"

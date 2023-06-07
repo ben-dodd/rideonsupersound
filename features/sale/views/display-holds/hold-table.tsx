@@ -6,6 +6,7 @@ import dayjs from 'dayjs'
 import { useMemo } from 'react'
 import { useCustomers } from 'lib/api/customer'
 import { HoldObject } from 'lib/types/sale'
+import { dateSimple } from 'lib/types/date'
 
 export default function HoldTable() {
   const { customers, isCustomersLoading } = useCustomers()
@@ -61,7 +62,7 @@ export default function HoldTable() {
         Header: 'Expiry Date',
         accessor: 'expiryDate',
         Cell: ({ value }) => (
-          <div className={dayjs().isAfter(value) ? 'text-red-500' : 'text-black'}>{value?.format('D MMMM YYYY')}</div>
+          <div className={dayjs().isAfter(value) ? 'text-red-500' : 'text-black'}>{value?.format(dateSimple)}</div>
         ),
         sortType: (rowA: any, rowB: any, columnId: any) => {
           const a = rowA?.original[columnId]

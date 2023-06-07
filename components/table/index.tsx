@@ -23,6 +23,7 @@ import MdNavigateNext from '@mui/icons-material/NavigateNext'
 import SearchIcon from '@mui/icons-material/Search'
 import dayjs from 'dayjs'
 import { CSVLink } from 'react-csv'
+import { dateYMD } from 'lib/types/date'
 
 // const skipPageResetRef:any = useRef();
 // skipPageResetRef.current = false;
@@ -148,7 +149,7 @@ function Table({
           {downloadCSV ? (
             <CSVLink
               className={`text-gray-600 bg-gray-100 hover:bg-gray-200 p-2 py-1 my-1 rounded border border-gray-600`}
-              filename={`${heading?.toLowerCase?.()}-${dayjs().format('YYYY-MM-DD')}.csv`}
+              filename={`${heading?.toLowerCase?.()}-${dayjs().format(dateYMD)}.csv`}
               data={data}
             >
               DOWNLOAD DATA

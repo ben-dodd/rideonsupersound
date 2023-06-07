@@ -3,6 +3,7 @@ import dayjs from 'dayjs'
 import { useGiftCards } from 'lib/api/stock'
 import { useVendorFromVendorPayment } from 'lib/api/vendor'
 import { useAppStore } from 'lib/store'
+import { dateTime } from 'lib/types/date'
 import { PaymentMethodTypes, SaleTransactionObject } from 'lib/types/sale'
 import { GiftCardObject } from 'lib/types/stock'
 import { priceCentsString } from 'lib/utils'
@@ -51,7 +52,7 @@ export default function TransactionListItem({
       ) : (
         <div />
       )}
-      <div className="w-1/2">{dayjs(transaction?.date).format('D MMMM YYYY, h:mm A')}</div>
+      <div className="w-1/2">{dayjs(transaction?.date).format(dateTime)}</div>
       <div className="w-1/4">
         {(`${transaction?.paymentMethod}${transaction?.isRefund ? ' REFUND' : ''}` || 'OTHER').toUpperCase()}
       </div>

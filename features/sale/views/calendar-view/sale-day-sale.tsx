@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
 import { useClerks } from 'lib/api/clerk'
+import { time } from 'lib/types/date'
 import { priceCentsString } from 'lib/utils'
 import { useRouter } from 'next/router'
 
@@ -18,7 +19,7 @@ const SaleDaySale = ({ sale }) => {
       <div className="w-7/12 text-right">
         {sale?.transactions?.map((transaction) => (
           <div className="flex" key={transaction?.id}>
-            <div className="w-1/4">{dayjs(transaction?.date).format('h:mm A')}</div>
+            <div className="w-1/4">{dayjs(transaction?.date).format(time)}</div>
             <div className="w-1/4">{clerks?.filter((clerk) => clerk?.id === transaction.clerkId)?.[0]?.name}</div>
             <div className="w-1/4">{transaction?.paymentMethod?.toUpperCase?.()}</div>
             <div className="w-1/4 text-right">{priceCentsString(transaction?.amount)}</div>

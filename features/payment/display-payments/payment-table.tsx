@@ -8,6 +8,7 @@ import { mapPayment } from 'lib/functions/displayPayments'
 import { useVendors } from 'lib/api/vendor'
 import { useClerks } from 'lib/api/clerk'
 import { priceCentsString } from 'lib/utils'
+import { dateTime } from 'lib/types/date'
 
 export default function PaymentTable() {
   // SWR
@@ -27,7 +28,7 @@ export default function PaymentTable() {
         Header: 'Date',
         accessor: 'date',
         width: 270,
-        Cell: (item: any) => (item ? <div>{dayjs(item?.value).format('D MMMM YYYY, h:mm A')}</div> : <div />),
+        Cell: (item: any) => (item ? <div>{dayjs(item?.value).format(dateTime)}</div> : <div />),
         sortType: (rowA: VendorPaymentObject, rowB: VendorPaymentObject) => {
           const a = dayjs(rowA?.date)
           const b = dayjs(rowB?.date)

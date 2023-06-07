@@ -1,6 +1,7 @@
 import { pdf, Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer'
 import dayjs from 'dayjs'
 import { getItemDisplayName } from 'lib/functions/displayInventory'
+import { dateSimple } from 'lib/types/date'
 import { priceCentsString } from 'lib/utils'
 
 // Create styles
@@ -45,7 +46,7 @@ const VendorReport = ({ vendor }) => (
       {vendor?.sales?.map((sale) => (
         <View key={sale?.id} style={styles.tableRow}>
           <Text>#{sale?.saleId}</Text>
-          <Text>{dayjs(sale?.dateSaleClosed).format('D MMMM YYYY')}</Text>
+          <Text>{dayjs(sale?.dateSaleClosed).format(dateSimple)}</Text>
           <Text>{`${sale?.quantity} x ${getItemDisplayName(sale)}${sale?.isRefunded ? ' [REFUNDED]' : ''}`}</Text>
           <Text>{sale?.format}</Text>
           <Text>{priceCentsString(sale?.itemTotalSell)}</Text>

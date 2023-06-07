@@ -1,5 +1,6 @@
 import { StocktakeStatuses, StocktakeTemplateObject } from 'lib/types/stock'
 import dayjs from 'dayjs'
+import { dateSimple } from 'lib/types/date'
 
 type ListItemProps = {
   stocktakeTemplate: StocktakeTemplateObject
@@ -37,7 +38,7 @@ export default function StocktakeTemplateListItem({ stocktakeTemplate }: ListIte
               {stocktakeTemplate?.status === StocktakeStatuses?.inProgress ? (
                 <div>In Progress</div>
               ) : stocktakeTemplate?.status === StocktakeStatuses?.completed ? (
-                <div>{`Last completed on ${dayjs(stocktakeTemplate?.last_completed).format('D MMMM YYYY')}`}</div>
+                <div>{`Last completed on ${dayjs(stocktakeTemplate?.last_completed).format(dateSimple)}`}</div>
               ) : (
                 <div>{`No stocktake done. ${stocktakeTemplate?.total_estimated} items estimated.`}</div>
               )}

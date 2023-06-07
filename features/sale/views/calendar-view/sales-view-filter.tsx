@@ -4,6 +4,7 @@ import dayjs from 'dayjs'
 import { useClerks } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { Pages } from 'lib/store/types'
+import { dateYMD } from 'lib/types/date'
 
 export default function SalesViewFilter() {
   const { salesCalendarPage, setPage, togglePageOption } = useAppStore()
@@ -19,8 +20,8 @@ export default function SalesViewFilter() {
               onClick={() => {
                 setPage(Pages.salesCalendarPage, {
                   viewPeriod: 'day',
-                  rangeStartDate: dayjs().format('YYYY-MM-DD'),
-                  rangeEndDate: dayjs().format('YYYY-MM-DD'),
+                  rangeStartDate: dayjs().format(dateYMD),
+                  rangeEndDate: dayjs().format(dateYMD),
                 })
               }}
             >
@@ -32,8 +33,8 @@ export default function SalesViewFilter() {
               onClick={() => {
                 setPage(Pages.salesCalendarPage, {
                   viewPeriod: 'week',
-                  rangeStartDate: dayjs().startOf('week').format('YYYY-MM-DD'),
-                  rangeEndDate: dayjs().format('YYYY-MM-DD'),
+                  rangeStartDate: dayjs().startOf('week').format(dateYMD),
+                  rangeEndDate: dayjs().format(dateYMD),
                 })
               }}
             >
@@ -45,8 +46,8 @@ export default function SalesViewFilter() {
               onClick={() => {
                 setPage(Pages.salesCalendarPage, {
                   viewPeriod: 'month',
-                  rangeStartDate: dayjs().startOf('month').format('YYYY-MM-DD'),
-                  rangeEndDate: dayjs().format('YYYY-MM-DD'),
+                  rangeStartDate: dayjs().startOf('month').format(dateYMD),
+                  rangeEndDate: dayjs().format(dateYMD),
                 })
               }}
             >

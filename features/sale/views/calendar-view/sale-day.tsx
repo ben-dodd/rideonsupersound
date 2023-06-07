@@ -4,6 +4,7 @@ import { useClerks } from 'lib/api/clerk'
 import { priceCentsString } from 'lib/utils'
 import { useState } from 'react'
 import SaleDaySale from './sale-day-sale'
+import { dateDay } from 'lib/types/date'
 
 const SaleDay = ({ saleDay }) => {
   const [expanded, setExpanded] = useState(false)
@@ -33,7 +34,7 @@ const SaleDay = ({ saleDay }) => {
         onClick={() => setExpanded((expanded) => !expanded)}
       >
         <div className="flex">
-          <div>{dayjs(saleDay?.day).format('dddd, MMMM D, YYYY')}</div>
+          <div>{dayjs(saleDay?.day).format(dateDay)}</div>
           <div className="font-light ml-2">{getSaleDaySummary()}</div>
         </div>
         <div className="flex">

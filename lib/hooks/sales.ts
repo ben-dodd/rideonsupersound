@@ -20,7 +20,6 @@ export function useSalesForRange({
   useEffect(() => {
     // Fetch the sales and registers for range
     setProperties({ isLoading: true })
-    console.log('getting cart items...')
     axiosAuth
       .get(
         `/api/sale/range?startDate=${rangeStartDate}&endDate=${rangeEndDate}${

@@ -10,6 +10,7 @@ import { priceCentsString } from 'lib/utils'
 import { useRouter } from 'next/router'
 import { ArrowRight } from '@mui/icons-material'
 import BatchPaymentSummary from './summary'
+import { dateSimple } from 'lib/types/date'
 
 export default function SelectBatchPayments({ paymentList, setPaymentList, setStage }) {
   const [checked, setChecked] = useState(true)
@@ -104,10 +105,10 @@ export default function SelectBatchPayments({ paymentList, setPaymentList, setSt
                 <div className={`w-1/12 font-bold${v?.totalOwing < 0 ? ' text-red-500' : ''}`}>{`${
                   v?.totalOwing < 0 ? '(' : ''
                 }${priceCentsString(Math.abs(v?.totalOwing || 0))}${v?.totalOwing < 0 ? ')' : ''}`}</div>
-                <div className="w-2/12">{v?.lastSold ? dayjs(v?.lastSold).format('D MMMM YYYY') : 'NO SALES'}</div>
-                <div className="w-2/12">{v?.lastPaid ? dayjs(v?.lastPaid).format('D MMMM YYYY') : 'NEVER PAID'}</div>
+                <div className="w-2/12">{v?.lastSold ? dayjs(v?.lastSold).format() : 'NO SALES'}</div>
+                <div className="w-2/12">{v?.lastPaid ? dayjs(v?.lastPaid).format(dateSimple) : 'NEVER PAID'}</div>
                 <div className="w-2/12">
-                  {v?.lastContacted ? dayjs(v?.lastContacted).format('D MMMM YYYY') : 'NEVER CONTACTED'}
+                  {v?.lastContacted ? dayjs(v?.lastContacted).format(dateSimple) : 'NEVER CONTACTED'}
                 </div>
                 <div className="w-1/12 flex">
                   <TextField

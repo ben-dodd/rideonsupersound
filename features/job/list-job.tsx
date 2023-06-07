@@ -4,6 +4,7 @@ import dayjs from 'dayjs'
 import { completeTask } from 'lib/functions/job'
 import { useClerk, useClerks } from 'lib/api/clerk'
 import { useJobs } from 'lib/api/jobs'
+import { dateTime } from 'lib/types/date'
 
 type ListItemProps = {
   task: TaskObject
@@ -47,7 +48,7 @@ export default function ListJob({ task }: ListItemProps) {
               }}
             />
           </div>
-          <div className="font-bold pr-4 text-pink-600">{dayjs(task?.dateCreated).format('D MMMM YYYY, h:mm A')}</div>
+          <div className="font-bold pr-4 text-pink-600">{dayjs(task?.dateCreated).format(dateTime)}</div>
         </div>
         <div className={`w-4/12 ${checked ? 'line-through' : ''}`}>{task?.description}</div>
         {/*<div className="grid grid-cols-3 w-2/5">
@@ -61,7 +62,7 @@ export default function ListJob({ task }: ListItemProps) {
           {task?.completedByClerkId
             ? `Completed by ${clerks?.find((c: ClerkObject) => c?.id === task?.completedByClerkId)?.name} (${dayjs(
                 task?.dateCompleted,
-              ).format('D MMMM YYYY, h:mm A')})`
+              ).format(dateTime)})`
             : ''}
         </div>
       </div>

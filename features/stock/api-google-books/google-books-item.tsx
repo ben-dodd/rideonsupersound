@@ -1,6 +1,7 @@
 import { andList, priceDollarsString } from 'lib/utils'
 import dayjs from 'dayjs'
 import { GoogleBooksItem } from 'lib/types/googleBooks'
+import { dateSimple } from 'lib/types/date'
 
 interface googleProps {
   googleBooksItem: GoogleBooksItem
@@ -27,7 +28,7 @@ export default function GoogleBooksItemDisplay({ googleBooksItem }: googleProps)
           {volumeInfo?.publisher && volumeInfo?.pageCount ? ', ' : ''}
           {volumeInfo?.pageCount ? `${volumeInfo?.pageCount}pp.` : ''}
         </div>
-        {volumeInfo?.publishedDate && <div>{dayjs(volumeInfo?.publishedDate).format('D MMMM YYYY')}</div>}
+        {volumeInfo?.publishedDate && <div>{dayjs(volumeInfo?.publishedDate).format(dateSimple)}</div>}
         <div style={{ marginBottom: 16, fontStyle: 'italic' }}>{volumeInfo?.description}</div>
         <div>{volumeInfo?.categories?.join(', ')}</div>
         <div>{`Print Type: ${volumeInfo?.printType || ''}`}</div>

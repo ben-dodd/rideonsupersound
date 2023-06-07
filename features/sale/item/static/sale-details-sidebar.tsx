@@ -3,6 +3,7 @@ import dayjs from 'dayjs'
 import { useClerks } from 'lib/api/clerk'
 import { useCustomers } from 'lib/api/customer'
 import { CustomerObject } from 'lib/types'
+import { dateTime } from 'lib/types/date'
 import { CartObject } from 'lib/types/sale'
 import { OpenWeatherObject } from 'lib/types/weather'
 import { convertDegToCardinal, convertMPStoKPH, parseJSON, priceDollarsString } from 'lib/utils'
@@ -22,11 +23,11 @@ export default function SaleDetailsSidebar({ cart }: { cart: CartObject }) {
     { label: 'Customer', value: customers?.find((c: CustomerObject) => c?.id === sale?.customerId)?.name },
     {
       label: 'Opened',
-      value: sale?.dateSaleOpened ? `${dayjs(sale?.dateSaleOpened).format('D MMMM YYYY, h:mm A')}` : 'N/A',
+      value: sale?.dateSaleOpened ? `${dayjs(sale?.dateSaleOpened).format(dateTime)}` : 'N/A',
     },
     {
       label: 'Closed',
-      value: sale?.dateSaleClosed ? `${dayjs(sale?.dateSaleClosed).format('D MMMM YYYY, h:mm A')}` : 'Sale not closed',
+      value: sale?.dateSaleClosed ? `${dayjs(sale?.dateSaleClosed).format(dateTime)}` : 'Sale not closed',
     },
     { label: 'Opened By', value: clerks?.find((clerk: any) => clerk?.id === sale?.saleOpenedBy)?.name },
     { label: 'Closed By', value: clerks?.find((clerk: any) => clerk?.id === sale?.saleClosedBy)?.name },

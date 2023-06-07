@@ -8,6 +8,7 @@ import { useAppStore } from 'lib/store'
 import { useSWRConfig } from 'swr'
 import { useHoldsForItem } from 'lib/api/sale'
 import { StockMovementTypes } from 'lib/types/stock'
+import { dateTime } from 'lib/types/date'
 
 export default function StockDetails() {
   const router = useRouter()
@@ -72,7 +73,7 @@ export default function StockDetails() {
                 return (
                   <div key={s?.id} className={`flex p-2 justify-between`}>
                     <div className="mr-2 flex">
-                      {isPreApp(s?.dateMoved) ? 'Pre-App' : dayjs(s?.dateMoved).format('D MMMM YYYY, h:mm A')}
+                      {isPreApp(s?.dateMoved) ? 'Pre-App' : dayjs(s?.dateMoved).format(dateTime)}
                       {saleId ? (
                         <div
                           className="link-blue ml-2"
@@ -142,7 +143,7 @@ export default function StockDetails() {
                       )}
                     </div>
                     <div className="mr-2">
-                      {isPreApp(s?.dateValidFrom) ? 'Pre-App' : dayjs(s?.dateValidFrom).format('D MMMM YYYY, h:mm A')}
+                      {isPreApp(s?.dateValidFrom) ? 'Pre-App' : dayjs(s?.dateValidFrom).format(dateTime)}
                     </div>
                   </div>
                   <div className={`mr-2 font-bold`}>{`(Vendor ${priceCentsString(

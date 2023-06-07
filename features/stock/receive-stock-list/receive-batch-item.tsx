@@ -2,6 +2,7 @@ import { useReceiveBatch } from 'lib/api/stock'
 import { useState } from 'react'
 import StockListItem from '../stock-list/stock-list-item'
 import dayjs from 'dayjs'
+import { dateTime } from 'lib/types/date'
 
 const ReceiveBatchItem = ({ receiveBatchItem }) => {
   const { receiveBatch } = useReceiveBatch(receiveBatchItem?.id)
@@ -21,7 +22,7 @@ const ReceiveBatchItem = ({ receiveBatchItem }) => {
             Batch ID {batch?.id}
             {batch?.clerkName ? ` - ${batch?.clerkName}` : ''}
           </div>
-          <div>{dayjs(batch?.dateCompleted).format('D MMMM YYYY, h:mma')}</div>
+          <div>{dayjs(batch?.dateCompleted).format(dateTime)}</div>
         </div>
         <div className="italic">{batch?.note}</div>
         {stockMovements?.map((stockMovement) => (

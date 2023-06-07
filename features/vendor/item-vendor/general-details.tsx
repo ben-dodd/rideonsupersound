@@ -1,6 +1,7 @@
 import InfoBox from 'components/container/info-box'
 import dayjs from 'dayjs'
 import { useClerks } from 'lib/api/clerk'
+import { dateSimple } from 'lib/types/date'
 import { priceCentsString } from 'lib/utils'
 
 export default function GeneralDetails({ vendor }) {
@@ -41,8 +42,8 @@ export default function GeneralDetails({ vendor }) {
   ]
 
   const lastSummary = [
-    { label: 'LAST PAID', value: vendor?.lastPaid ? dayjs(vendor?.lastPaid).format('D MMMM YYYY') : 'N/A' },
-    { label: 'LAST SALE', value: vendor?.lastSold ? dayjs(vendor?.lastSold).format('D MMMM YYYY') : 'N/A' },
+    { label: 'LAST PAID', value: vendor?.lastPaid ? dayjs(vendor?.lastPaid).format(dateSimple) : 'N/A' },
+    { label: 'LAST SALE', value: vendor?.lastSold ? dayjs(vendor?.lastSold).format(dateSimple) : 'N/A' },
   ]
 
   return (

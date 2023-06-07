@@ -9,6 +9,7 @@ import { deleteSale, saveCart, useParkedSales } from 'lib/api/sale'
 import { Clear, Delete, DirectionsCar, DryCleaning, Folder } from '@mui/icons-material'
 import DropdownMenu from 'components/dropdown-menu'
 import dayjs from 'dayjs'
+import { dateTime } from 'lib/types/date'
 
 export default function ShoppingCartActions() {
   const { cart, setCart, loadSaleToCart, setAlert, openConfirm, closeView, resetCart, resetSearchBar } = useAppStore()
@@ -26,7 +27,7 @@ export default function ShoppingCartActions() {
   useEffect(() => {
     setParkedSaleItems(
       parkedSales?.map((sale) => ({
-        text: `[${dayjs(sale?.dateSaleOpened).format('DD/MM/YYYY h:mma')}] ${sale?.itemList}`,
+        text: `[${dayjs(sale?.dateSaleOpened).format(dateTime)}] ${sale?.itemList}`,
         onClick: () => loadSaleToCart(sale?.id),
       })),
     )

@@ -1,5 +1,6 @@
 import { AccountBalance, AddCard, EventBusy, Input, Money, Output } from '@mui/icons-material'
 import dayjs from 'dayjs'
+import { dateTime } from 'lib/types/date'
 import { VendorPaymentTypes } from 'lib/types/vendor'
 import { priceCentsString } from 'lib/utils'
 import { useRouter } from 'next/router'
@@ -62,11 +63,11 @@ const PaymentListItem = ({ payment }) => {
       break
   }
   return (
-    <div className={`list-item-compact`}>
+    <div className={`list-item-compact text-sm`}>
       <div className="flex w-full">
         <div className="w-1/12">{categoryIcon}</div>
         {/* <div className="w-3/12">{`[${`000000${payment?.id}`.slice(-6)}] ${payment?.type?.toUpperCase()}`}</div> */}
-        <div className="w-3/12">{dayjs(payment?.date).format('YYYY-MM-DD h:mma')}</div>
+        <div className="w-3/12">{dayjs(payment?.date).format(dateTime)}</div>
         <div className="w-2/12">
           <span className="link-blue" onClick={() => router.push(`/vendors/${payment?.vendorId}`)}>
             {payment?.vendorName}

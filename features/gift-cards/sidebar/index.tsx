@@ -5,6 +5,7 @@ import dayjs from 'dayjs'
 import { useGiftCard } from 'lib/api/stock'
 import { useAppStore } from 'lib/store'
 import { Pages } from 'lib/store/types'
+import { dateSlash } from 'lib/types/date'
 import { priceCentsString } from 'lib/utils'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -36,7 +37,7 @@ const GiftCardSidebar = () => {
               <div className="text-xl mb-2 text-red-200">NOT VALID</div>
             )}
             <div>
-              <span>{`Purchased on ${dayjs(card?.dateCreated).format('DD/MM/YYYY')}`}</span>{' '}
+              <span>{`Purchased on ${dayjs(card?.dateCreated).format()}`}</span>{' '}
               {card?.saleId && (
                 <a
                   className="link-blue"
@@ -60,7 +61,7 @@ const GiftCardSidebar = () => {
                       }`}
                     >
                       <div className="flex">
-                        <div>{`${dayjs(trans?.date).format('DD/MM/YYYY')}`}</div>
+                        <div>{`${dayjs(trans?.date).format(dateSlash)}`}</div>
                         <Link
                           href={`/sales/${trans?.saleId}`}
                           className="link-blue pl-2"
