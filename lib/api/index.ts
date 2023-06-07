@@ -23,8 +23,12 @@ export function useData(url: string, label: string) {
 
 export const getAuth = () =>
   axios(`/api/auth/jwt`)
-    .then((response) => response.data)
+    .then((response) => {
+      console.log(response)
+      return response.data
+    })
     .catch((error) => {
+      console.log(error)
       throw error
     })
 

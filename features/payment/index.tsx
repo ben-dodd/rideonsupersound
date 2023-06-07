@@ -20,7 +20,7 @@ const PaymentsScreen = () => {
     {
       text: currentVendorBatchPaymentId ? 'Continue Batch Payment' : 'Start New Batch Payment',
       icon: <AccountBalance />,
-      onClick: () => router.push(`/batch-payment/${currentVendorBatchPaymentId || 'new'}`),
+      onClick: () => router.push(`/batch/${currentVendorBatchPaymentId || 'new'}`),
     },
   ]
   const isLoading = false

@@ -23,6 +23,7 @@
     "framer-motion": "^10.12.12",
     "immer": "^9.0.16",
     "jotai": "^1.7.4",
+    "jsonwebtoken": "^9.0.0",
     "knex": "^2.3.0",
     "lodash": "^4.17.21",
     "next": "^13.0.2",
