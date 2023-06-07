@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Head from 'next/head'
-import { useUser } from '@auth0/nextjs-auth0'
+import { useUser } from '@auth0/nextjs-auth0/client'
 import Link from 'next/link'
 
 export default function SignIn() {
@@ -19,10 +19,7 @@ export default function SignIn() {
             width={200}
           />
         </div>
-        <Link
-          className="mx-auto"
-          href={`/api/auth/${user ? 'logout' : 'login'}`}
-        >
+        <Link className="mx-auto" href={`/api/auth/${user ? 'logout' : 'login'}`}>
           <button className="bg-black hover:bg-gray-900 text-white mx-auto rounded px-8 py-2 mt-4 mb-8 transform">
             {user?.email ? 'Try Again' : 'Sign In'}
           </button>

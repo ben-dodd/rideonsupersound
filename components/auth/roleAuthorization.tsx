@@ -1,4 +1,4 @@
-import { useUser, withPageAuthRequired } from '@auth0/nextjs-auth0'
+import { useUser, withPageAuthRequired } from '@auth0/nextjs-auth0/client'
 import Layout from 'components/layout'
 import Image from 'next/image'
 import { useRouter } from 'next/router'

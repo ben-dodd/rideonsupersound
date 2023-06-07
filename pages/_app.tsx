@@ -11,7 +11,7 @@ import tz from 'dayjs/plugin/timezone'
 import relative from 'dayjs/plugin/relativeTime'
 import isBetween from 'dayjs/plugin/isBetween'
 // import "dayjs/locale/en-nz";
-import { UserProvider } from '@auth0/nextjs-auth0'
+import { UserProvider } from '@auth0/nextjs-auth0/client'
 // import { SessionProvider } from "next-auth/react";
 
 const MyApp = ({ Component, pageProps }) => {
