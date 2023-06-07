@@ -6,8 +6,7 @@ import { dbGetAllVendorPayments } from './payment'
 import { dbGetAllSalesAndItems } from './sale'
 import { dbGetSimpleStockCount, dbGetStockItemsForVendor } from './stock'
 import { js2mysql } from './utils/helpers'
-import { modulusCheck } from 'lib/functions/payment'
-import { centsToDollars, dollarsToCents } from 'lib/utils'
+import { centsToDollars } from 'lib/utils'
 
 const fullVendorQuery = (db) =>
   db('vendor').select(
@@ -252,6 +251,7 @@ export function dbUpdateVendorPayment(update, id, db = connection) {
 }
 
 export function dbCreateBatchPayment(batchPayment: BatchPaymentObject, db = connection) {
+  console.log('DB', batchPayment)
   const {
     batchNumber = '',
     sequenceNumber = '',
@@ -317,50 +317,51 @@ export function dbSaveBatchVendorPayments(batchPayment, db = connection) {
   return db.transaction(async (trx) => {
     const { paymentList = [] } = batchPayment || {}
     let batchId = batchPayment?.id
+    console.log('Batch ID is', batchId)
     if (batchId) await dbUpdateBatchPayment(batchPayment)
     else {
       batchId = await dbCreateBatchPayment(batchPayment)
     }
     const paymentCompleted = batchPayment?.dateCompleted
-    paymentList
-      ?.filter((account) => account?.isChecked)
-      .forEach(async (account) => {
-        // if (emailed) {
-        //   await dbUpdateVendor({ lastUpdated: dayjs.utc().format() }, vendorId, trx)
-        // }
-        if (modulusCheck(account?.bankAccountNumber) && parseFloat(account?.payAmount)) {
-          const amount = dollarsToCents(account?.payAmount)
-          let accountId = account?.id
-          if (accountId) {
-            await dbUpdateVendorPayment(
-              {
-                amount,
-                date: paymentCompleted ? dayjs.utc().format() : null,
-                bankAccountNumber: account?.bankAccountNumber,
-                clerkId: batchPayment?.clerkId,
-                registerId: batchPayment?.registerId,
-                isDeleted: paymentCompleted ? false : true,
-              },
-              trx,
-            )
-          } else {
-            accountId = await dbCreateVendorPayment(
-              {
-                amount,
-                date: paymentCompleted ? dayjs.utc().format() : null,
-                bankAccountNumber: account?.bankAccountNumber,
-                batchId,
-                clerkId: batchPayment?.clerkId,
-                vendorId: account?.vendorId,
-                registerId: batchPayment?.registerId,
-                type: 'batch',
-                isDeleted: paymentCompleted ? false : true,
-              },
-              trx,
-            )
-          }
-        }
-      })
+    // paymentList
+    //   ?.filter((account) => account?.isChecked)
+    //   .forEach(async (account) => {
+    //     // if (emailed) {
+    //     //   await dbUpdateVendor({ lastUpdated: dayjs.utc().format() }, vendorId, trx)
+    //     // }
+    //     if (modulusCheck(account?.bankAccountNumber) && parseFloat(account?.payAmount)) {
+    //       const amount = dollarsToCents(account?.payAmount)
+    //       let accountId = account?.id
+    //       if (accountId) {
+    //         await dbUpdateVendorPayment(
+    //           {
+    //             amount,
+    //             date: paymentCompleted ? dayjs.utc().format() : null,
+    //             bankAccountNumber: account?.bankAccountNumber,
+    //             clerkId: batchPayment?.clerkId,
+    //             registerId: batchPayment?.registerId,
+    //             isDeleted: paymentCompleted ? false : true,
+    //           },
+    //           trx,
+    //         )
+    //       } else {
+    //         accountId = await dbCreateVendorPayment(
+    //           {
+    //             amount,
+    //             date: paymentCompleted ? dayjs.utc().format() : null,
+    //             bankAccountNumber: account?.bankAccountNumber,
+    //             batchId,
+    //             clerkId: batchPayment?.clerkId,
+    //             vendorId: account?.vendorId,
+    //             registerId: batchPayment?.registerId,
+    //             type: 'batch',
+    //             isDeleted: paymentCompleted ? false : true,
+    //           },
+    //           trx,
+    //         )
+    //       }
+    //     }
+    //   })
     return batchId
   })
 }

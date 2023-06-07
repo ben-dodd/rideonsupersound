@@ -5,57 +5,50 @@ import QuantityCheckIcon from '@mui/icons-material/Warning'
 import { Tooltip } from '@mui/material'
 import { useCurrentRegisterId } from 'lib/api/register'
 import { useState } from 'react'
-import { downloadEmailList, downloadKbbFile, modulusCheck } from 'lib/functions/payment'
+import { modulusCheck } from 'lib/functions/payment'
 import { useClerk } from 'lib/api/clerk'
-import { ArrowLeft, Download } from '@mui/icons-material'
+import { ArrowLeft, Download, Save } from '@mui/icons-material'
 import { createVendorBatchPayment } from 'lib/api/vendor'
-import { priceDollarsString } from 'lib/utils'
+import { dollarsToCents, priceCentsString, priceDollarsString } from 'lib/utils'
+import BatchPaymentSummary from './summary'
 
-export default function CheckBatchPayments({ paymentList, setKbbLoaded, setEmailed, setStage }) {
+export default function CheckBatchPayments({ paymentList, setStage }) {
   const { registerId } = useCurrentRegisterId()
   const { clerk } = useClerk()
   const totalPay = paymentList?.reduce((prev, v) => (v?.isChecked ? parseFloat(v?.payAmount) : 0) + prev, 0)
   const vendorNum = paymentList?.reduce((prev, v) => (v?.isChecked ? 1 : 0) + prev, 0)
-  const [includeUnchecked, setIncludeUnchecked] = useState(false)
-  const [includeNoBank, setIncludeNoBank] = useState(false)
-  console.log(paymentList)
-  // : [
-  //   {
-  //     type: 'cancel',
-  //     onClick: () => setStage('select'),
-  //     text: 'BACK',
-  //   },
-  //   {
-  //     type: 'ok',
-  //     text: 'DOWNLOAD AND COMPLETE',
-  //     onClick: () => {
-  //       createVendorBatchPayment({ paymentList, clerkId: clerk?.id, registerId, emailed }).then((id) => {
-  //         downloadKbbFile(id, paymentList)
-  //         downloadEmailList(id, paymentList)
-  //       })
-  //     },
-  //   },
-  // ]
+  const [search, setSearch] = useState('')
 
   return (
     <div>
       <div className="flex justify-between p-2">
-        <div className="text-red-400 text-2xl font-bold text-right">
-          {paymentList?.filter((v) => isNaN(parseFloat(v?.payAmount)))?.length > 0
-            ? `CHECK PAY ENTRIES`
-            : `PAY ${priceDollarsString(totalPay)}\nto ${vendorNum} VENDORS`}
-        </div>
-
+        <BatchPaymentSummary
+          search={search}
+          setSearch={setSearch}
+          paymentList={paymentList}
+          totalPay={totalPay}
+          vendorNum={vendorNum}
+        />
         <div className="px-4">
           <div className="icon-text-button" onClick={() => setStage('select')}>
             GO BACK <ArrowLeft />
           </div>
+          <div className="icon-text-button" onClick={null}>
+            SAVE AND CLOSE <Save />
+          </div>
           <div
             className="icon-text-button"
             onClick={() => {
-              createVendorBatchPayment({ paymentList, clerkId: clerk?.id, registerId, emailed: true }).then((id) => {
-                downloadKbbFile(id, paymentList)
-                downloadEmailList(id, paymentList)
+              createVendorBatchPayment({
+                paymentList: paymentList?.filter((payment) => payment?.isChecked),
+                clerkId: clerk?.id,
+                registerId,
+                emailed: true,
+              }).then((id) => {
+                console.log(id)
+                // console.log(paymentList)
+                // downloadKbbFile(id, paymentList)
+                // downloadEmailList(id, paymentList)
               })
             }}
           >
@@ -63,36 +56,19 @@ export default function CheckBatchPayments({ paymentList, setKbbLoaded, setEmail
           </div>
         </div>
       </div>
-      <div className="text-sm p-2">
-        <div className="font-bold">NOTE</div>
-        Vendors with $0 payments or vendors with invalid bank account numbers will not be added to the KBB file, only
-        the email CSV.
-        <div>
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              className="cursor-pointer"
-              checked={includeUnchecked}
-              onChange={(e) => setIncludeUnchecked(e.target.checked)}
-            />
-            <div className="ml-2">Include unchecked vendors</div>
-          </div>
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              className="cursor-pointer"
-              checked={includeNoBank}
-              onChange={(e) => setIncludeNoBank(e.target.checked)}
-            />
-            <div className="ml-2">Include vendors with no bank account number</div>
-          </div>
-        </div>
+      <div className="text-sm px-2">
+        Check all payments are correct. If they are not, click <span className="font-bold">GO BACK</span> to edit. Click{' '}
+        <span className="font-bold">COMPLETE AND DOWNLOAD</span> to save the batch payment. This will also download a
+        KBB file for the bank transfer and a CSV file to import into the RIDE ON emailing GoogleSheet. Vendors with $0
+        payments or vendors with invalid bank account numbers will not be added to the KBB file, only the email CSV.
       </div>
       <div className="w-full">
         <div className="flex font-bold py-2 px-2 border-b border-black">
-          <div className="w-1/2">NAME</div>
-          <div className="w-1/4">AMOUNT</div>
-          <div className="w-1/4" />
+          <div className="w-1/3">NAME</div>
+          <div className="w-1/6">TOTAL OWED</div>
+          <div className="w-1/6">AMOUNT TO PAY</div>
+          <div className="w-1/6">BALANCE</div>
+          <div className="w-1/6" />
         </div>
         <div className="h-dialog overflow-y-scroll">
           {paymentList
@@ -100,14 +76,17 @@ export default function CheckBatchPayments({ paymentList, setKbbLoaded, setEmail
             ?.map((v) => {
               let invalidBankAccountNumber = !modulusCheck(v?.bankAccountNumber)
               let negativeQuantity = v?.totalItems?.filter((i) => i?.quantity < 0)?.length > 0
+              const balance = v?.totalOwing - dollarsToCents(v?.payAmount)
               return (
                 <div
                   key={v?.id}
                   className={`py-2 px-2 text-sm border-b flex${parseFloat(v?.payAmount) <= 0 ? ' opacity-50' : ''}`}
                 >
-                  <div className="w-1/2">{`[${v?.id}] ${v?.name}`}</div>
-                  <div className="w-1/4">{priceDollarsString(v?.payAmount)}</div>
-                  <div className="flex w-1/4">
+                  <div className="w-1/3">{`[${v?.id}] ${v?.name}`}</div>
+                  <div className="w-1/6">{priceCentsString(v?.totalOwing)}</div>
+                  <div className="w-1/6">{priceDollarsString(v?.payAmount)}</div>
+                  <div className="w-1/6">{priceCentsString(balance)}</div>
+                  <div className="flex w-1/6">
                     {v?.storeCreditOnly ? (
                       <div className="text-blue-500 pl-2">
                         <Tooltip title="Vendor wants Store Credit Only">

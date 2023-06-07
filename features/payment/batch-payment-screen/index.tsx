@@ -18,6 +18,7 @@ export default function BatchPaymentScreen() {
   useEffect(() => {
     setPaymentList(
       vendorAccounts
+        ?.filter((vendorAccount) => vendorAccount?.id !== 666)
         ?.map((vendorAccount) => {
           const payment = batchPayment?.paymentList?.find((payment) => payment?.vendorId === vendorAccount?.id) || {}
           Object.keys(payment).length > 0 && console.log(payment)
@@ -38,7 +39,7 @@ export default function BatchPaymentScreen() {
 
   return (
     <MidScreenContainer
-      title={id ? `BATCH PAYMENT #${`00000${id}`.slice(-5)}` : 'NEW BATCH PAYMENT'}
+      title={`${id}`?.toLowerCase() === 'new' ? 'NEW BATCH PAYMENT' : `BATCH PAYMENT #${`00000${id}`.slice(-5)}`}
       titleClass="bg-brown-dark text-white"
       isLoading={isVendorAccountsLoading}
       full
@@ -47,7 +48,7 @@ export default function BatchPaymentScreen() {
       {stage === 'select' ? (
         <SelectBatchPayments paymentList={paymentList} setPaymentList={setPaymentList} setStage={setStage} />
       ) : stage === 'review' ? (
-        <CheckBatchPayments paymentList={paymentList} setKbbLoaded={true} setEmailed={true} setStage={setStage} />
+        <CheckBatchPayments paymentList={paymentList} setStage={setStage} />
       ) : (
         <div />
       )}

@@ -2,7 +2,7 @@ import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import ErrorScreen from 'components/container/error-screen'
 import Layout from 'components/layout'
 import Loading from 'components/placeholders/loading'
-import BatchPaymentScreen from 'features/vendor/payment/batch-payment-screen'
+import BatchPaymentScreen from 'features/payment/batch-payment-screen'
 import { useVendorBatchPayment } from 'lib/api/vendor'
 import { useRouter } from 'next/router'
 

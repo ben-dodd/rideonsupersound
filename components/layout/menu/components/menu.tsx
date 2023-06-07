@@ -9,7 +9,7 @@ import SalesIcon from '@mui/icons-material/MonetizationOn'
 import StocktakeIcon from '@mui/icons-material/Numbers'
 // import HoldsIcon from '@mui/icons-material/PanTool'
 import RegistersIcon from '@mui/icons-material/Storefront'
-// import PaymentsIcon from '@mui/icons-material/Receipt'
+import PaymentsIcon from '@mui/icons-material/Receipt'
 import GiftCardsIcon from '@mui/icons-material/Redeem'
 import VendorsIcon from '@mui/icons-material/Store'
 import JobsIcon from '@mui/icons-material/Task'
@@ -73,6 +73,12 @@ export default function Menu({ badges }) {
       page: '/sales',
       text: 'SALES',
       icon: <SalesIcon />,
+    },
+    {
+      type: 'link',
+      page: '/payments',
+      text: 'PAYMENTS',
+      icon: <PaymentsIcon />,
     },
     // {
     //   type: 'link',

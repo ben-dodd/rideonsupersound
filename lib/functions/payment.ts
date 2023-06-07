@@ -307,7 +307,8 @@ export const downloadKbbFile = (id, paymentList) => {
 }
 
 export const downloadEmailList = (id, paymentList) => {
-  const { vendorAccounts = [], includeUnchecked = false, includeNoBank = false } = batchPayment || {}
+  console.log(paymentList)
+  const { vendorAccounts = [], includeUnchecked = false, includeNoBank = false } = paymentList || {}
   let csvContent = writePaymentNotificationEmail({
     paymentList,
     includeUnchecked,

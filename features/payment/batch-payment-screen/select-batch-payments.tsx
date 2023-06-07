@@ -6,10 +6,10 @@ import { Tooltip } from '@mui/material'
 import dayjs from 'dayjs'
 import { useState } from 'react'
 import { checkDefaultChecked, modulusCheck } from 'lib/functions/payment'
-import { priceCentsString, priceDollarsString } from 'lib/utils'
+import { priceCentsString } from 'lib/utils'
 import { useRouter } from 'next/router'
-import SearchInput from 'components/inputs/search-input'
 import { ArrowRight } from '@mui/icons-material'
+import BatchPaymentSummary from './summary'
 
 export default function SelectBatchPayments({ paymentList, setPaymentList, setStage }) {
   const [checked, setChecked] = useState(true)
@@ -17,22 +17,17 @@ export default function SelectBatchPayments({ paymentList, setPaymentList, setSt
   const vendorNum = paymentList?.filter((v) => v?.isChecked)?.length
   const router = useRouter()
   const [search, setSearch] = useState('')
-  console.log(paymentList)
 
   return (
     <div>
       <div className="flex justify-between items-start p-2">
-        <div className="flex items-end">
-          <img width="80" src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/KiwiBank.png`} alt={'KiwiBank'} />
-          <div className="mx-2 w-full">
-            <div className="text-red-400 text-2xl font-bold text-right">
-              {paymentList?.filter((v) => isNaN(parseFloat(v?.payAmount)))?.length > 0
-                ? `CHECK PAY ENTRIES`
-                : `PAY ${priceDollarsString(totalPay)}\nto ${vendorNum} VENDORS`}
-            </div>
-            <SearchInput searchValue={search} handleSearch={(e) => setSearch(e?.target?.value)} />
-          </div>
-        </div>
+        <BatchPaymentSummary
+          search={search}
+          setSearch={setSearch}
+          paymentList={paymentList}
+          totalPay={totalPay}
+          vendorNum={vendorNum}
+        />
         <div>
           <div className="px-4">
             <div className="icon-text-button" onClick={() => setStage('review')}>
