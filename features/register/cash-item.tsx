@@ -4,6 +4,7 @@ import { useClerks } from 'lib/api/clerk'
 import { SaleTransactionObject } from 'lib/types/sale'
 import { useRouter } from 'next/router'
 import { priceCentsString } from 'lib/utils'
+import { timeDate } from 'lib/types/date'
 
 export default function CashItem({
   transaction,
@@ -16,7 +17,7 @@ export default function CashItem({
 }) {
   const { clerks } = useClerks()
   const transactionBy = clerks?.find((c: ClerkObject) => c?.id === transaction?.clerkId)?.name
-  const date = dayjs(transaction?.date).format()
+  const date = dayjs(transaction?.date).format(timeDate)
   const router = useRouter()
 
   // REVIEW Add more info to cash items, possibly add receipt pop up info dialog

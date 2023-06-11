@@ -105,7 +105,7 @@ export default function SelectBatchPayments({ paymentList, setPaymentList, setSt
                 <div className={`w-1/12 font-bold${v?.totalOwing < 0 ? ' text-red-500' : ''}`}>{`${
                   v?.totalOwing < 0 ? '(' : ''
                 }${priceCentsString(Math.abs(v?.totalOwing || 0))}${v?.totalOwing < 0 ? ')' : ''}`}</div>
-                <div className="w-2/12">{v?.lastSold ? dayjs(v?.lastSold).format() : 'NO SALES'}</div>
+                <div className="w-2/12">{v?.lastSold ? dayjs(v?.lastSold).format(dateSimple) : 'NO SALES'}</div>
                 <div className="w-2/12">{v?.lastPaid ? dayjs(v?.lastPaid).format(dateSimple) : 'NEVER PAID'}</div>
                 <div className="w-2/12">
                   {v?.lastContacted ? dayjs(v?.lastContacted).format(dateSimple) : 'NEVER CONTACTED'}

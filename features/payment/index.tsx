@@ -4,7 +4,7 @@ import { AccountBalance, Money, TransferWithinAStation } from '@mui/icons-materi
 import { useCurrentVendorBatchPaymentId } from 'lib/api/vendor'
 import { ViewProps } from 'lib/store/types'
 import { useAppStore } from 'lib/store'
-import { useRouter } from 'next-router-mock'
+import { useRouter } from 'next/router'
 
 const PaymentsScreen = () => {
   const { openView } = useAppStore()
@@ -20,7 +20,7 @@ const PaymentsScreen = () => {
     {
       text: currentVendorBatchPaymentId ? 'Continue Batch Payment' : 'Start New Batch Payment',
       icon: <AccountBalance />,
-      onClick: () => router.push(`/batch/${currentVendorBatchPaymentId || 'new'}`),
+      onClick: () => router.push(`/payments/batch/${currentVendorBatchPaymentId || 'new'}`),
     },
   ]
   const isLoading = false

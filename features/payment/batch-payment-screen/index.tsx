@@ -6,9 +6,11 @@ import MidScreenContainer from 'components/container/mid-screen'
 import SelectBatchPayments from './select-batch-payments'
 import { useRouter } from 'next/router'
 import CheckBatchPayments from './check-batch-payments'
+import { useAppStore } from 'lib/store'
 
 export default function BatchPaymentScreen() {
   const router = useRouter()
+  const { batchPaymentSession, setBatchAccountPayment, setBatchPaymentSession } = useAppStore()
   const id = router.query.id
   const { vendorAccounts, isVendorAccountsLoading } = useVendorAccounts()
   const { batchPayment } = useVendorBatchPayment(`${id}`)
