@@ -11,13 +11,18 @@ import { useRouter } from 'next/router'
 import { ArrowRight } from '@mui/icons-material'
 import BatchPaymentSummary from './summary'
 import { dateSimple } from 'lib/types/date'
+import { useAppStore } from 'lib/store'
 
-export default function SelectBatchPayments({ paymentList, setPaymentList, setStage }) {
+export default function SelectBatchPayments({ setStage }) {
   const [checked, setChecked] = useState(true)
+  const { batchPaymentSession, setBatchAccountPayment, setBatchPaymentList } = useAppStore()
+  const { paymentList = [] } = batchPaymentSession || {}
   const totalPay = paymentList?.reduce((prev, v) => (v?.isChecked ? parseFloat(v?.payAmount) : 0) + prev, 0)
   const vendorNum = paymentList?.filter((v) => v?.isChecked)?.length
   const router = useRouter()
   const [search, setSearch] = useState('')
+
+  console.log(paymentList)
 
   return (
     <div>
@@ -46,7 +51,7 @@ export default function SelectBatchPayments({ paymentList, setPaymentList, setSt
               checked={checked}
               onChange={(e) => {
                 if (checked) {
-                  setPaymentList(
+                  setBatchPaymentList(
                     paymentList?.map((vendor) => ({
                       ...vendor,
                       isChecked: false,
@@ -54,7 +59,7 @@ export default function SelectBatchPayments({ paymentList, setPaymentList, setSt
                   )
                   setChecked(false)
                 } else {
-                  setPaymentList(
+                  setBatchPaymentList(
                     paymentList?.map((vendor) =>
                       checkDefaultChecked(vendor) ? { ...vendor, isChecked: true } : vendor,
                     ),
@@ -88,13 +93,7 @@ export default function SelectBatchPayments({ paymentList, setPaymentList, setSt
                     // disabled={v?.totalOwing <= 0}
                     className="cursor-pointer"
                     checked={v?.isChecked}
-                    onChange={(e) =>
-                      setPaymentList(
-                        paymentList?.map((vendor) =>
-                          vendor?.id === v?.id ? { ...vendor, isChecked: e.target.checked } : vendor,
-                        ),
-                      )
-                    }
+                    onChange={(e) => setBatchAccountPayment(v?.vendorId, { isChecked: e.target.checked })}
                   />
                   <div
                     className="pl-4 link-blue"
@@ -115,13 +114,7 @@ export default function SelectBatchPayments({ paymentList, setPaymentList, setSt
                     error={v?.payAmount !== '' && isNaN(parseFloat(v?.payAmount))}
                     startAdornment={'$'}
                     value={v?.payAmount || ''}
-                    onChange={(e) =>
-                      setPaymentList(
-                        paymentList?.map((vendor) =>
-                          vendor?.id === v?.id ? { ...vendor, payAmount: e.target.value } : vendor,
-                        ),
-                      )
-                    }
+                    onChange={(e) => setBatchAccountPayment(v?.vendorId, { payAmount: e.target.value })}
                   />
                 </div>
                 <div className="w-1/12 flex">
@@ -156,13 +149,6 @@ export default function SelectBatchPayments({ paymentList, setPaymentList, setSt
               </div>
             ))}
         </div>
-        {/* <div className="bg-white flex justify-between items-end border-t h-headerlg">
-          <div />
-          <div className="w-1/4 flex">
-            <ActionButton button={{ type: 'alt1', text: 'SAVE AND CLOSE' }} />
-            <ActionButton button={{ type: 'ok', text: 'COMPLETE' }} />
-          </div>
-        </div> */}
       </div>
     </div>
   )

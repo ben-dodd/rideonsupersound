@@ -1,7 +1,7 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import { ConfirmModal, AlertProps, ClippyProps } from 'lib/types'
 import { CartObject, SaleItemObject, SaleTransactionObject } from 'lib/types/sale'
-import { BatchPaymentObject } from 'lib/types/vendor'
+import { AccountPayment, BatchPaymentObject } from 'lib/types/vendor'
 
 export interface StoreState {
   view: {
@@ -123,7 +123,9 @@ export interface StoreState {
   setReceiveBasket: (update: any) => void
   addReceiveBasketItem: (newItem: any) => void
   updateReceiveBasketItem: (key: any, update: any) => void
+  loadBatchPaymentSession: (id: number) => void
   setBatchPaymentSession: (update: any) => void
+  setBatchPaymentList: (list: AccountPayment[]) => void
   setBatchAccountPayment: (vendorId: number, update: any) => void
   resetBatchPaymentSession: () => void
   resetCart: () => void
@@ -183,7 +185,7 @@ export enum Pages {
   sellPage = 'sellPage',
   stockPage = 'stockPage',
   vendorsPage = 'vendorsPage',
-  // paymentsPage = 'paymentsPage',
+  paymentsPage = 'paymentsPage',
   registersPage = 'registersPage',
   salesPage = 'salesPage',
   salesListPage = 'salesListPage',

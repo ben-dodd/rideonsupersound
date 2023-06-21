@@ -52,7 +52,7 @@ const initState = {
     registerId: null,
   },
   receiveBasket: { vendorId: null, items: [] },
-  batchPaymentSession: { vendorAccounts: [], vendorPayments: [] },
+  batchPaymentSession: { paymentList: [] },
   sellPage: {
     searchBar: '',
     isSearching: false,
@@ -69,7 +69,7 @@ const initState = {
     searchBar: '',
     tab: 0,
   },
-  paymentsPage: {},
+  paymentsPage: { tab: 0 },
   registersPage: {
     tab: 0,
   },
@@ -300,6 +300,7 @@ export const useAppStore = createSelectors(
         }),
       )
     },
+    loadBatchPaymentSession: (id) => {},
     setBatchPaymentSession: (update) => {
       set(
         produce((draft) => {
@@ -307,12 +308,19 @@ export const useAppStore = createSelectors(
         }),
       )
     },
+    setBatchPaymentList: (list) => {
+      set(
+        produce((draft) => {
+          draft.batchPaymentSession.paymentList = list
+        }),
+      )
+    },
     setBatchAccountPayment: (vendorId, update) => {
       set(
         produce((draft) => {
-          const index = get().batchPaymentSession.accountPayments.findIndex((account) => account?.vendorId === vendorId)
-          draft.batchPaymentSession.vendorAccounts[index] = {
-            ...get().batchPaymentSession.accountPayments[index],
+          const index = get().batchPaymentSession.paymentList.findIndex((account) => account?.vendorId === vendorId)
+          draft.batchPaymentSession.paymentList[index] = {
+            ...get().batchPaymentSession.paymentList[index],
             ...update,
           }
         }),

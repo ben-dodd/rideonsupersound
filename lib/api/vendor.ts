@@ -20,6 +20,10 @@ export function useVendor(id) {
   return useData(id ? `vendor/${id}` : null, 'vendor')
 }
 
+export function useVendorBatchPayments() {
+  return useData(`vendor/payment/batch`, 'batchPayments')
+}
+
 export function useVendorBatchPayment(id) {
   return useData(id ? `vendor/payment/batch/${id}` : null, 'batchPayment')
 }
@@ -52,7 +56,7 @@ export function createVendorPayment(payment) {
     .catch((e) => Error(e.message))
 }
 
-export function createVendorBatchPayment(batchPayment) {
+export function saveVendorBatchPayment(batchPayment) {
   return axiosAuth
     .post(`/api/vendor/payment/batch`, batchPayment)
     .then((res) => {

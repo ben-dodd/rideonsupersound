@@ -9,7 +9,6 @@ const OrdersScreen = () => {
   const isLoading = false
   const {
     ordersPage: { tab },
-    setSearchBar,
     setPage,
   } = useAppStore()
   const setTab = (tab) => setPage(Pages.ordersPage, { tab })

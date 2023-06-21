@@ -19,17 +19,19 @@ export interface BatchPaymentObject {
   note?: string
   dateStarted?: string
   startedByClerkId?: number
-  startedByName?: string
+  startedByClerkName?: string
   dateCompleted?: string
   completedByClerkId?: number
-  completedByName?: string
+  completedByClerkName?: string
   isDeleted?: boolean
   lastUpdated?: string
+  totalAmount?: number
+  totalNumVendors?: number
   clerkId?: number
   registerId?: number
   kbbFile?: string
   emailCsvFile?: string
-  accountPayments?: AccountPayment[]
+  paymentList?: AccountPayment[]
 }
 
 export interface VendorSaleItemObject {
@@ -105,7 +107,14 @@ export interface AccountPayment {
   id?: number
   isChecked?: boolean
   payAmount?: string
+  totalVendorCut?: number
   totalOwing?: number
+  lastSold?: string
+  lastPaid?: string
+  lastContacted?: string
+  storeCreditOnly?: boolean
+  invalidBankAccountNumber?: boolean
+  hasNegativeQuantityItems?: boolean
   name?: string
   vendorId?: number
   bankAccountNumber?: string

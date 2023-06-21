@@ -6,7 +6,8 @@ import { dbGetAllVendorPayments } from './payment'
 import { dbGetAllSalesAndItems } from './sale'
 import { dbGetSimpleStockCount, dbGetStockItemsForVendor } from './stock'
 import { js2mysql } from './utils/helpers'
-import { centsToDollars } from 'lib/utils'
+import { dollarsToCents } from 'lib/utils'
+import { modulusCheck } from 'lib/functions/payment'
 
 const fullVendorQuery = (db) =>
   db('vendor').select(
@@ -243,7 +244,9 @@ export function dbGetVendorIdFromUid(vendorUid, db = connection) {
 }
 
 export function dbCreateVendorPayment(payment: VendorPaymentObject, db = connection) {
-  return db('vendor_payment').insert(js2mysql(payment))
+  return db('vendor_payment')
+    .insert(js2mysql(payment))
+    .then((rows) => rows[0])
 }
 
 export function dbUpdateVendorPayment(update, id, db = connection) {
@@ -251,61 +254,39 @@ export function dbUpdateVendorPayment(update, id, db = connection) {
 }
 
 export function dbCreateBatchPayment(batchPayment: BatchPaymentObject, db = connection) {
-  console.log('DB', batchPayment)
-  const {
-    batchNumber = '',
-    sequenceNumber = '',
-    note = '',
-    dateStarted = null,
-    startedByClerkId = null,
-    dateCompleted = null,
-    completedByClerkId = null,
-    isDeleted = 0,
-  } = batchPayment || {}
+  // console.log('DB', batchPayment)
+  // const {
+  //   batchNumber = '',
+  //   sequenceNumber = '',
+  //   note = '',
+  //   dateStarted = null,
+  //   startedByClerkId = null,
+  //   dateCompleted = null,
+  //   completedByClerkId = null,
+  //   isDeleted = 0,
+  // } = batchPayment || {}
   return db('batch_payment')
-    .insert(
-      js2mysql({
-        batchNumber,
-        sequenceNumber,
-        note,
-        dateStarted,
-        startedByClerkId,
-        dateCompleted,
-        completedByClerkId,
-        isDeleted,
-      }),
-    )
+    .insert(js2mysql(batchPayment))
     .then((rows) => rows[0])
     .catch((e) => Error(e.message))
 }
 
 export function dbUpdateBatchPayment(batchPayment: BatchPaymentObject, db = connection) {
-  const {
-    id = null,
-    batchNumber = '',
-    sequenceNumber = '',
-    note = '',
-    dateStarted = null,
-    startedByClerkId = null,
-    dateCompleted = null,
-    completedByClerkId = null,
-    isDeleted = 0,
-  } = batchPayment || {}
+  // const {
+  //   id = null,
+  //   batchNumber = '',
+  //   sequenceNumber = '',
+  //   note = '',
+  //   dateStarted = null,
+  //   startedByClerkId = null,
+  //   dateCompleted = null,
+  //   completedByClerkId = null,
+  //   isDeleted = 0,
+  // } = batchPayment || {}
   return db('batch_payment')
-    .where({ id })
-    .update(
-      js2mysql({
-        batchNumber,
-        sequenceNumber,
-        note,
-        dateStarted,
-        startedByClerkId,
-        dateCompleted,
-        completedByClerkId,
-        isDeleted,
-      }),
-    )
-    .then(() => id)
+    .where({ id: batchPayment?.id })
+    .update(js2mysql(batchPayment))
+    .then((id) => id)
     .catch((e) => Error(e.message))
 }
 
@@ -313,58 +294,64 @@ export function dbCheckBatchPaymentInProgress(db = connection) {
   return db('batch_payment').select('id').whereIsNull('date_completed').first()
 }
 
-export function dbSaveBatchVendorPayments(batchPayment, db = connection) {
+export function dbSaveBatchVendorPayment(batchPayment, db = connection) {
+  console.log('saving batch payment', batchPayment)
   return db.transaction(async (trx) => {
-    const { paymentList = [] } = batchPayment || {}
     let batchId = batchPayment?.id
     console.log('Batch ID is', batchId)
-    if (batchId) await dbUpdateBatchPayment(batchPayment)
+    const { paymentList = [] } = batchPayment || {}
+    if (batchId) await dbUpdateBatchPayment({ ...batchPayment, paymentList: JSON.stringify(paymentList) })
     else {
-      batchId = await dbCreateBatchPayment(batchPayment)
+      batchId = await dbCreateBatchPayment({ ...batchPayment, paymentList: JSON.stringify(paymentList) })
     }
+    console.log('Batch ID is', batchId)
     const paymentCompleted = batchPayment?.dateCompleted
-    // paymentList
-    //   ?.filter((account) => account?.isChecked)
-    //   .forEach(async (account) => {
-    //     // if (emailed) {
-    //     //   await dbUpdateVendor({ lastUpdated: dayjs.utc().format() }, vendorId, trx)
-    //     // }
-    //     if (modulusCheck(account?.bankAccountNumber) && parseFloat(account?.payAmount)) {
-    //       const amount = dollarsToCents(account?.payAmount)
-    //       let accountId = account?.id
-    //       if (accountId) {
-    //         await dbUpdateVendorPayment(
-    //           {
-    //             amount,
-    //             date: paymentCompleted ? dayjs.utc().format() : null,
-    //             bankAccountNumber: account?.bankAccountNumber,
-    //             clerkId: batchPayment?.clerkId,
-    //             registerId: batchPayment?.registerId,
-    //             isDeleted: paymentCompleted ? false : true,
-    //           },
-    //           trx,
-    //         )
-    //       } else {
-    //         accountId = await dbCreateVendorPayment(
-    //           {
-    //             amount,
-    //             date: paymentCompleted ? dayjs.utc().format() : null,
-    //             bankAccountNumber: account?.bankAccountNumber,
-    //             batchId,
-    //             clerkId: batchPayment?.clerkId,
-    //             vendorId: account?.vendorId,
-    //             registerId: batchPayment?.registerId,
-    //             type: 'batch',
-    //             isDeleted: paymentCompleted ? false : true,
-    //           },
-    //           trx,
-    //         )
-    //       }
-    //     }
-    //   })
-    return batchId
+    if (paymentCompleted) {
+      let newPaymentList = []
+      paymentList
+        ?.filter((account) => account?.isChecked)
+        .forEach(async (account) => {
+          // if (emailed) {
+          //   await dbUpdateVendor({ lastUpdated: dayjs.utc().format() }, vendorId, trx)
+          // }
+          if (modulusCheck(account?.bankAccountNumber) && parseFloat(account?.payAmount)) {
+            const amount = dollarsToCents(account?.payAmount)
+            // let accountId = account?.id
+            // if (accountId) {
+            //   await dbUpdateVendorPayment(
+            //     {
+            //       amount,
+            //       date: dayjs.utc().format(),
+            //       bankAccountNumber: account?.bankAccountNumber,
+            //       clerkId: batchPayment?.clerkId,
+            //       registerId: batchPayment?.registerId,
+            //       isDeleted: false,
+            //     },
+            //     trx,
+            //   )
+            // } else {
+            const vendorPayment = {
+              amount,
+              date: dayjs.utc().format(),
+              bankAccountNumber: account?.bankAccountNumber,
+              batchId,
+              clerkId: batchPayment?.clerkId,
+              vendorId: account?.vendorId,
+              registerId: batchPayment?.registerId,
+              type: 'batch',
+            }
+            const paymentId = await dbCreateVendorPayment(vendorPayment, trx)
+            const newPayment = await dbGetVendorPayment(paymentId, trx)
+            newPaymentList.push(newPayment)
+          }
+        })
+      await dbUpdateBatchPayment({ paymentList: JSON.stringify(newPaymentList) })
+    }
+    return dbGetBatchVendorPayment(batchId, trx)
   })
 }
+
+export function dbDeleteBatchPayment(batchId, db = connection) {}
 
 export function dbGetVendorHasNegativeQuantityItems(vendor_id, db = connection) {
   return dbGetSimpleStockCount(db)
@@ -372,24 +359,46 @@ export function dbGetVendorHasNegativeQuantityItems(vendor_id, db = connection) 
     .then((dataRows) => dataRows?.filter((stock) => stock?.quantity < 0)?.length > 0)
 }
 
+export function dbGetBatchVendorPayments(db = connection) {
+  return db('batch_payment')
+    .leftJoin('clerk as startedByClerk', 'startedByClerk.id', 'batch_payment.started_by_clerk_id')
+    .leftJoin('clerk as completedByClerk', 'completedByClerk.id', 'batch_payment.completed_by_clerk_id')
+    .select(
+      'batch_payment.*',
+      'startedByClerk.name as startedByClerkName',
+      'completedByClerk.name as completedByClerkName',
+    )
+    .orderBy('date_completed', 'desc')
+    .orderBy('id', 'desc')
+}
+
 export function dbGetBatchVendorPayment(id, db = connection) {
-  console.log('Getting batch payment id ', id)
   return db('batch_payment')
     .where({ id })
     .first()
     .then((batchPayment) => {
-      return batchPayment
-        ? dbGetVendorPaymentsByBatchId(id, (db = connection)).then((payments) => ({
-            ...batchPayment,
-            paymentList: payments?.map((payment) => ({
-              ...payment,
-              isChecked: true,
-              payAmount: centsToDollars(payment?.amount)?.toFixed(2),
-            })),
-          }))
-        : null
+      return { ...batchPayment, paymentList: JSON.parse(batchPayment?.paymentList || '[]') }
     })
 }
+
+// export function dbGetBatchVendorPayment(id, db = connection) {
+//   console.log('Getting batch payment id ', id)
+//   return db('batch_payment')
+//     .where({ id })
+//     .first()
+//     .then((batchPayment) => {
+//       return batchPayment
+//         ? dbGetVendorPaymentsByBatchId(id, (db = connection)).then((payments) => ({
+//             ...batchPayment,
+//             paymentList: payments?.map((payment) => ({
+//               ...payment,
+//               isChecked: true,
+//               payAmount: centsToDollars(payment?.amount)?.toFixed(2),
+//             })),
+//           }))
+//         : null
+//     })
+// }
 
 export function dbGetCurrentVendorBatchPaymentId(db = connection) {
   return db('batch_payment')
@@ -402,6 +411,10 @@ export function dbGetCurrentVendorBatchPaymentId(db = connection) {
 
 export function dbGetVendorPaymentsByBatchId(batchId, db = connection) {
   return db('vendor_payment').where('batch_id', batchId)
+}
+
+export function dbGetVendorPayment(paymentId, db = connection) {
+  return db('vendor_payment').where('id', paymentId)
 }
 
 export function dbGetVendorPayments(db = connection) {
