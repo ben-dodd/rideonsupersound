@@ -5,9 +5,9 @@ import { centsToDollars } from 'lib/utils'
 import MidScreenContainer from 'components/container/mid-screen'
 import SelectBatchPayments from './select-batch-payments'
 import { useRouter } from 'next/router'
-import CheckBatchPayments from './review-batch-payments'
+import ReviewBatchPayments from './review-batch-payments'
 import { useAppStore } from 'lib/store'
-import ReviewBatchPayments from './view-batch-payment'
+import ViewBatchPayments from './view-batch-payments'
 
 export default function BatchPaymentScreen() {
   const router = useRouter()
@@ -56,11 +56,11 @@ export default function BatchPaymentScreen() {
       dark
     >
       {batchPaymentSession?.dateCompleted ? (
-        <ReviewBatchPayments />
+        <ViewBatchPayments />
       ) : stage === 'select' ? (
         <SelectBatchPayments setStage={setStage} />
       ) : stage === 'review' ? (
-        <CheckBatchPayments setStage={setStage} />
+        <ReviewBatchPayments setStage={setStage} />
       ) : (
         <div />
       )}
