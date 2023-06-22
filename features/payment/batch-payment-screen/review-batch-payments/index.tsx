@@ -7,6 +7,7 @@ import { saveVendorBatchPayment } from 'lib/api/vendor'
 import dayjs from 'dayjs'
 import { useRouter } from 'next/router'
 import ReviewBatchPaymentListItem from './review-batch-payment-list-item'
+import { downloadEmailList, downloadKbbFile } from 'lib/functions/payment'
 
 export default function ReviewBatchPayments({ setStage }) {
   const router = useRouter()
@@ -36,15 +37,7 @@ export default function ReviewBatchPayments({ setStage }) {
           </div>
           <div
             className="icon-text-button"
-            onClick={() =>
-              saveVendorBatchPayment(batchPaymentSession).then((id) => {
-                console.log(id)
-                router.push('/payments')
-                // console.log(paymentList)
-                // downloadKbbFile(id, paymentList)
-                // downloadEmailList(id, paymentList)
-              })
-            }
+            onClick={() => saveVendorBatchPayment(batchPaymentSession).then((id) => router.push('/payments'))}
           >
             SAVE AND CLOSE <Save />
           </div>
@@ -54,12 +47,13 @@ export default function ReviewBatchPayments({ setStage }) {
               saveVendorBatchPayment({
                 ...batchPaymentSession,
                 completedByClerkId: clerk?.id,
+                totalPay,
+                totalNumVendors: vendorNum,
                 dateCompleted: dayjs.utc().format(),
-              }).then((id) => {
-                console.log(id)
-                // console.log(paymentList)
-                // downloadKbbFile(id, paymentList)
-                // downloadEmailList(id, paymentList)
+              }).then((batchPayment) => {
+                console.log(batchPayment)
+                downloadKbbFile(batchPayment?.id, batchPayment?.kbbFile)
+                downloadEmailList(batchPayment?.id, batchPayment?.emailCsvFile)
               })
             }}
           >

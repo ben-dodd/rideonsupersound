@@ -16,7 +16,7 @@ const BatchPaymentListItem = ({ payment }) => {
         <div className="w-6/12">
           {payment?.dateCompleted ? dayjs(payment?.dateCompleted).format(dateTime) : 'In Progress'}
         </div>
-        <div className="w-1/12 text-right">{priceCentsString(payment?.totalAmount)}</div>
+        <div className="w-1/12 text-right">{priceCentsString(payment?.totalPay)}</div>
       </div>
       <div />
     </div>

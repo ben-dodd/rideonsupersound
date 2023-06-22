@@ -61,7 +61,6 @@ export function saveVendorBatchPayment(batchPayment) {
     .post(`/api/vendor/payment/batch`, batchPayment)
     .then((res) => {
       // Returns list of successful payments (vendor id, name and pay amount)
-      console.log(res.data)
       return res.data
     })
     .catch((e) => Error(e.message))

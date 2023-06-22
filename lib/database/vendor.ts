@@ -7,7 +7,7 @@ import { dbGetAllSalesAndItems } from './sale'
 import { dbGetSimpleStockCount, dbGetStockItemsForVendor } from './stock'
 import { js2mysql } from './utils/helpers'
 import { dollarsToCents } from 'lib/utils'
-import { modulusCheck } from 'lib/functions/payment'
+import { modulusCheck, prepareKiwiBankBatchFile, preparePaymentNotificationEmailList } from 'lib/functions/payment'
 
 const fullVendorQuery = (db) =>
   db('vendor').select(
@@ -345,7 +345,13 @@ export function dbSaveBatchVendorPayment(batchPayment, db = connection) {
             newPaymentList.push(newPayment)
           }
         })
-      await dbUpdateBatchPayment({ paymentList: JSON.stringify(newPaymentList) })
+      const kbbFile = prepareKiwiBankBatchFile(batchId, newPaymentList)
+      const emailList = preparePaymentNotificationEmailList(newPaymentList)
+      await dbUpdateBatchPayment({
+        paymentList: JSON.stringify(newPaymentList),
+        kbbFile: JSON.stringify(kbbFile),
+        emailCsvFile: JSON.stringify(emailList),
+      })
     }
     return dbGetBatchVendorPayment(batchId, trx)
   })

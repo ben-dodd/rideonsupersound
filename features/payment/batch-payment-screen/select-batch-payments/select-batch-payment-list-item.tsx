@@ -33,8 +33,8 @@ export default function SelectBatchPaymentListItem({ payment }) {
           onClick={() => router.push(`/vendors/${payment?.id}`)}
         >{`[${payment?.id}] ${payment?.name}`}</div>
       </div>
-      <div className="w-1/12">{priceCentsString(payment?.totalVendorCut)}</div>
-      <div className={`w-1/12 font-bold${payment?.totalOwing < 0 ? ' text-red-500' : ''}`}>{`${
+      <div className="w-1/12 text-right">{priceCentsString(payment?.totalVendorCut)}</div>
+      <div className={`w-1/12 text-right font-bold${payment?.totalOwing < 0 ? ' text-red-500' : ''}`}>{`${
         payment?.totalOwing < 0 ? '(' : ''
       }${priceCentsString(Math.abs(payment?.totalOwing || 0))}${payment?.totalOwing < 0 ? ')' : ''}`}</div>
       <div className="w-2/12">{payment?.lastSold ? dayjs(payment?.lastSold).format(dateSimple) : 'NO SALES'}</div>

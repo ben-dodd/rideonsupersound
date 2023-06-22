@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { checkDefaultChecked } from 'lib/functions/payment'
-import { ArrowRight } from '@mui/icons-material'
+import { ArrowRight, Save } from '@mui/icons-material'
 import BatchPaymentSummary from '../summary'
 import { useAppStore } from 'lib/store'
 import SelectBatchPaymentListItem from './select-batch-payment-list-item'
+import { saveVendorBatchPayment } from 'lib/api/vendor'
+import { useRouter } from 'next/router'
 
 export default function SelectBatchPayments({ setStage }) {
   const [checked, setChecked] = useState(true)
@@ -12,6 +14,7 @@ export default function SelectBatchPayments({ setStage }) {
   const totalPay = paymentList?.reduce((prev, v) => (v?.isChecked ? parseFloat(v?.payAmount) : 0) + prev, 0)
   const vendorNum = paymentList?.filter((v) => v?.isChecked)?.length
   const [search, setSearch] = useState('')
+  const router = useRouter()
 
   return (
     <div>
@@ -28,6 +31,12 @@ export default function SelectBatchPayments({ setStage }) {
             <div className="icon-text-button" onClick={() => setStage('review')}>
               REVIEW PAYMENTS <ArrowRight />
             </div>
+          </div>
+          <div
+            className="icon-text-button"
+            onClick={() => saveVendorBatchPayment(batchPaymentSession).then((id) => router.push('/payments'))}
+          >
+            SAVE AND CLOSE <Save />
           </div>
         </div>
       </div>
@@ -59,8 +68,8 @@ export default function SelectBatchPayments({ setStage }) {
             />
             <div className="pl-4">NAME</div>
           </div>
-          <div className="w-1/12">TAKE</div>
-          <div className="w-1/12">OWED</div>
+          <div className="w-1/12 text-right">TAKE</div>
+          <div className="w-1/12 text-right">OWED</div>
           <div className="w-2/12">LAST SALE</div>
           <div className="w-2/12">LAST PAID</div>
           <div className="w-2/12">LAST CONTACTED</div>

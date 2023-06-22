@@ -286,8 +286,8 @@ export const checkDefaultChecked = (vendor) =>
     ? true
     : false
 
-export const downloadKbbFile = (id, paymentList) => {
-  let csvContent = writeKiwiBankBatchFile({
+export const prepareKiwiBankBatchFile = (id, paymentList) => {
+  return writeKiwiBankBatchFile({
     transactions: paymentList
       ?.filter((p) => p?.isChecked)
       ?.map((payment: AccountPayment) => ({
@@ -299,18 +299,23 @@ export const downloadKbbFile = (id, paymentList) => {
     batchNumber: `${id}`,
     sequenceNumber: 'Batch',
   })
-  downloadFile(csvContent, `batch-payment-${`00000${id}`.slice(-5)}-${dayjs().format('YYYY-MM-DD')}.kbb`)
 }
 
-export const downloadEmailList = (id, paymentList) => {
-  console.log(paymentList)
+export const downloadKbbFile = (id, kbbFile) => {
+  downloadFile(kbbFile, `batch-payment-${`00000${id}`.slice(-5)}-${dayjs().format('YYYY-MM-DD')}.kbb`)
+}
+
+export const preparePaymentNotificationEmailList = (paymentList) => {
   const { includeUnchecked = false, includeNoBank = false } = paymentList || {}
-  let csvContent = writePaymentNotificationEmail({
+  return writePaymentNotificationEmail({
     paymentList,
     includeUnchecked,
     includeNoBank,
   })
-  downloadFile(csvContent, `batch-payment-email-list-${`00000${id}`.slice(-5)}-${dayjs().format('YYYY-MM-DD')}.csv`)
+}
+
+export const downloadEmailList = (id, emailList) => {
+  downloadFile(emailList, `batch-payment-email-list-${`00000${id}`.slice(-5)}-${dayjs().format('YYYY-MM-DD')}.csv`)
 }
 
 export const downloadFile = (fileContents, fileName) => {

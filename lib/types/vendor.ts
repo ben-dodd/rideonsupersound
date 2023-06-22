@@ -25,7 +25,7 @@ export interface BatchPaymentObject {
   completedByClerkName?: string
   isDeleted?: boolean
   lastUpdated?: string
-  totalAmount?: number
+  totalPay?: number
   totalNumVendors?: number
   clerkId?: number
   registerId?: number
