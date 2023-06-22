@@ -212,7 +212,7 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
             error={storeCut < 0}
             className={`w-24 mr-6`}
             startAdornment={'$'}
-            value={`${storeCut}`}
+            value={`${storeCut?.toFixed(2)}`}
           />
           <TextField
             displayOnly={true}

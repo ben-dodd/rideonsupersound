@@ -1,34 +1,34 @@
-import { receiveStockAtom } from "@/lib/atoms";
-import { getItemDisplayName } from "@/lib/data-functions";
-import { ChevronRight } from "@mui/icons-material";
-import { useAtom } from "jotai";
-import { useState } from "react";
-import { useCSVReader } from "react-papaparse";
-import { v4 as uuid } from "uuid";
+import { receiveStockAtom } from '@/lib/atoms'
+import { getItemDisplayName } from '@/lib/data-functions'
+import { ChevronRight } from '@mui/icons-material'
+import { useAtom } from 'jotai'
+import { useState } from 'react'
+import { useCSVReader } from 'react-papaparse'
+import { v4 as uuid } from 'uuid'
 
 export default function Csv() {
-  const { CSVReader } = useCSVReader();
-  const [basket, setBasket] = useAtom(receiveStockAtom);
-  const [csvItems, setCSVItems] = useState([]);
+  const { CSVReader } = useCSVReader()
+  const [basket, setBasket] = useAtom(receiveStockAtom)
+  const [csvItems, setCSVItems] = useState([])
   const addItems = () => {
     setBasket({
       ...basket,
       items: basket?.items ? [...basket?.items, ...csvItems] : csvItems,
-    });
-  };
+    })
+  }
   const parseCSVItems = (results: any) => {
-    let parsedItems = [];
+    let parsedItems = []
     for (let i = 0; i < results?.data?.length; i++) {
-      let d = results?.data[i];
-      if (!d?.Artist && !d?.Title) break;
+      let d = results?.data[i]
+      if (!d?.Artist && !d?.Title) break
       parsedItems.push({
         key: uuid(),
         quantity: d?.Quantity ? parseInt(d?.Quantity) : 1,
-        total_sell: d["Sale Price"]
-          ? parseInt(`${parseFloat(d["Sale Price"]?.replace(/\$|["],/g, ""))}`)
+        total_sell: d['Sale Price']
+          ? `${parseFloat(d['Sale Price']?.replace(/\$|["],/g, ''))}`
           : null,
-        vendor_cut: d["Vendor Cut"]
-          ? parseInt(`${parseFloat(d["Vendor Cut"]?.replace(/\$|["],/g, ""))}`)
+        vendor_cut: d['Vendor Cut']
+          ? `${parseFloat(d['Vendor Cut']?.replace(/\$|["],/g, ''))}`
           : null,
         item: {
           artist: d?.Artist,
@@ -38,16 +38,17 @@ export default function Csv() {
           country: d?.Country,
           format: d?.Format,
           genre: d?.Genre,
-          is_new: d["Is New?"] === "TRUE" ? true : false,
+          is_new: d['Is New?'] === 'TRUE' ? true : false,
           note: d?.Notes,
+          section: d?.Section,
           size: d?.Size,
           title: d?.Title,
           media: d?.Type,
         },
-      });
+      })
     }
-    setCSVItems(parsedItems);
-  };
+    setCSVItems(parsedItems)
+  }
   return (
     <div>
       <div className="mb-2">
@@ -60,11 +61,11 @@ export default function Csv() {
               rel="noopener noreferrer"
             >
               Click here
-            </a>{" "}
+            </a>{' '}
             and add your items to the Google Sheet.
           </li>
           <li>
-            Once you're done. Click{" "}
+            Once you're done. Click{' '}
             <i>File | Download | Comma-separated values (*.csv)</i>
           </li>
           <li>Upload the CSV file using the button below.</li>
@@ -72,7 +73,7 @@ export default function Csv() {
       </div>
       <CSVReader
         onUploadAccepted={(results: any) => {
-          parseCSVItems(results);
+          parseCSVItems(results)
         }}
         config={{ header: true }}
       >
@@ -110,5 +111,5 @@ export default function Csv() {
         </div>
       )}
     </div>
-  );
+  )
 }
