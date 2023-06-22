@@ -1035,3 +1035,23 @@ export const parseJSON = (inputString, fallback) => {
     }
   } else return null
 }
+
+export const expandRanges = (inputStr) => {
+  const ranges = inputStr.split(',')
+  const output = []
+
+  for (let i = 0; i < ranges.length; i++) {
+    const item = ranges[i]
+
+    if (item.includes('-')) {
+      const [start, end] = item.split('-')
+      for (let j = parseInt(start); j <= parseInt(end); j++) {
+        output.push(j)
+      }
+    } else {
+      output.push(parseInt(item))
+    }
+  }
+
+  return output
+}
