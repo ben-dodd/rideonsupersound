@@ -324,7 +324,6 @@ export async function dbSaveBatchVendorPayment(batchPayment, db = connection) {
               type: 'batch',
             }
             const promise = dbCreateVendorPayment(vendorPayment, trx).then((paymentId) => {
-              console.log('saving new payment', { ...payment, id: paymentId })
               newPaymentList.push({ ...payment, id: paymentId })
             })
             promises.push(promise)
@@ -335,7 +334,6 @@ export async function dbSaveBatchVendorPayment(batchPayment, db = connection) {
 
       const kbbFile = prepareKiwiBankBatchFile(batchId, newPaymentList)
       const emailCsvFile = preparePaymentNotificationEmailList(newPaymentList)
-      console.log(newPaymentList)
 
       await dbUpdateBatchPayment(
         {

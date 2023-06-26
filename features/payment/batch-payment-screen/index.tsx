@@ -17,6 +17,8 @@ export default function BatchPaymentScreen() {
   const { batchPayment, isBatchPaymentLoading } = useVendorBatchPayment(id)
   const [stage, setStage] = useState('select')
 
+  console.log(batchPaymentSession)
+
   const totalPay = dollarsToCents(
     batchPaymentSession?.paymentList?.reduce((prev, v) => (v?.isChecked ? parseFloat(v?.payAmount) : 0) + prev, 0),
   )

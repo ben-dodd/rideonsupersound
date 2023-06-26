@@ -1,3 +1,4 @@
+import { mysql2js } from 'lib/database/utils/helpers'
 import { axiosAuth, useData } from './'
 
 export function useVendors() {
@@ -61,7 +62,7 @@ export function saveVendorBatchPayment(batchPayment) {
     .post(`/api/vendor/payment/batch`, batchPayment)
     .then((res) => {
       // Returns saved batch payment session
-      return res
+      return mysql2js(res)
     })
     .catch((e) => Error(e.message))
 }

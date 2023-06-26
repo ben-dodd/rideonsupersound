@@ -53,6 +53,7 @@ export default function ReviewBatchPayments({ setStage }) {
                 completedByClerkId: clerk?.id,
                 dateCompleted: dayjs.utc().format(),
               }).then((savedBatchPayment) => {
+                console.log('Downloading the saved batch payment', savedBatchPayment)
                 downloadKbbFile(savedBatchPayment?.id, savedBatchPayment?.kbbFile)
                 downloadEmailList(savedBatchPayment?.id, savedBatchPayment?.emailCsvFile)
                 mutate(`vendor/payment/batch/${savedBatchPayment?.id}`, savedBatchPayment)

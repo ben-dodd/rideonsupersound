@@ -98,11 +98,12 @@ function writeOutKBBFile(kbb) {
   return encodeURI(`data:text/csv;charset=utf-8,${kbb.map((rowArray) => `${rowArray.join(',')}`).join('\r\n')}`)
 }
 
-export function writePaymentNotificationEmail({ paymentList, includeUnchecked, includeNoBank }: any) {
+export function writePaymentNotificationEmail({ paymentList, includeUnchecked = false, includeNoBank = false }: any) {
   let csvContent = 'data:text/csv;charset=utf-8,'
   csvContent += 'CODE,NAME,RECIPIENT,ACCOUNT,OWING,LINK,DATE,CHECKED,VALID BANK NUM,STORE CREDIT ONLY\r\n'
+  console.log(paymentList)
   let vendorArrays = paymentList
-    ?.filter((v) => (includeUnchecked || v?.isChecked) && (includeNoBank || v?.invalidBankAccountNumber))
+    ?.filter((v) => (includeUnchecked || v?.isChecked) && (includeNoBank || !v?.invalidBankAccountNumber))
     ?.map((v) => [
       v?.vendorId,
       v?.name,
@@ -115,6 +116,7 @@ export function writePaymentNotificationEmail({ paymentList, includeUnchecked, i
       v?.invalidBankAccountNumber,
       Boolean(v?.storeCreditOnly),
     ])
+  console.log(vendorArrays)
   vendorArrays?.forEach((vendorArray) => {
     let row = vendorArray?.join(',')
     csvContent += row + '\r\n'
@@ -306,11 +308,9 @@ export const downloadKbbFile = (id, kbbFile) => {
 }
 
 export const preparePaymentNotificationEmailList = (paymentList) => {
-  const { includeUnchecked = false, includeNoBank = false } = paymentList || {}
+  // const { includeUnchecked = false, includeNoBank = false } = paymentList || {}
   return writePaymentNotificationEmail({
     paymentList,
-    includeUnchecked,
-    includeNoBank,
   })
 }
 
