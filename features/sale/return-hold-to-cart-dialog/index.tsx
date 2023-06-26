@@ -11,7 +11,6 @@ const ReturnHoldToCartDialog = () => {
   }
 
   const addItemToCart = (replaceCurrentCart = false) => {
-    console.log('replace cart is', replaceCurrentCart)
     onClick && onClick(replaceCurrentCart)
     closeDialog()
   }

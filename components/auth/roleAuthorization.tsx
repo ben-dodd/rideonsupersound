@@ -24,7 +24,6 @@ const withRoleAuthorization = (Success, allowedRoles) => {
 const Error = () => {
   const { user } = useUser()
   const router = useRouter()
-  console.log(user)
   return (
     <div className="flex flex-col justify-center items-center h-screen w-screen">
       <Image

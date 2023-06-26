@@ -286,6 +286,7 @@ export const checkDefaultChecked = (vendor) =>
     : false
 
 export const prepareKiwiBankBatchFile = (id, paymentList) => {
+  console.log('writing kiwibank', paymentList)
   return writeKiwiBankBatchFile({
     transactions: paymentList
       ?.filter((p) => p?.isChecked)

@@ -4,7 +4,6 @@ import { getImageSrc, getItemDisplayName, getItemSku } from 'lib/functions/displ
 
 const LabelPrintListItem = ({ printItem, changePrintQuantity, deletePrintItem }) => {
   const { item = {} } = printItem || {}
-  console.log(printItem)
   return (
     <div className="flex justify-between my-2 border-b w-full">
       <div className="flex">

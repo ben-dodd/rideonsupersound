@@ -27,7 +27,6 @@ export default function SelectBatchPayments({ setStage }) {
           <div
             className="icon-text-button"
             onClick={() => {
-              console.log('Saving batch payment', batchPaymentSession)
               saveVendorBatchPayment(batchPaymentSession).then((savedBatchPayment) => {
                 mutate(`vendor/payment/batch/${savedBatchPayment?.id}`, savedBatchPayment)
                 router.push('/payments')

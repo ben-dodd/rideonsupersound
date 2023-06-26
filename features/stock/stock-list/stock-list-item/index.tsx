@@ -19,7 +19,6 @@ export default function StockListItem({ stockListItem }: { stockListItem: StockI
     quantities = { inStock: stockListItem?.quantity || 0 },
     price = {},
   }: { item: BasicStockItemObject; quantities: BasicStockQuantitiesObject; price: StockPriceObject } = stockItem || {}
-  console.log(stockItem)
   return (
     <div className={`list-item-click`} onClick={() => router.push(`/stock/${item?.id}`)}>
       <ItemImage item={item} width={'w-imageXSmall'} faded={false} showSku={false} />

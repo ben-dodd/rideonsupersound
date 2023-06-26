@@ -8,7 +8,6 @@ export default function PriceDetails() {
   const { id } = router.query
   const { stockItem } = useStockItem(`${id}`)
   const { item = {}, price = {} } = stockItem || {}
-  console.log(item?.discogsItem)
 
   return (
     <>

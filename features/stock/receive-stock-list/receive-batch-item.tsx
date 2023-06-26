@@ -6,7 +6,6 @@ import { dateTime } from 'lib/types/date'
 
 const ReceiveBatchItem = ({ receiveBatchItem }) => {
   const { receiveBatch } = useReceiveBatch(receiveBatchItem?.id)
-  console.log(receiveBatch)
   const [expanded, setExpanded] = useState(false)
 
   const toggleExpand = () => {

@@ -28,7 +28,6 @@ export default function GoogleBooksOption({
   const handleGoogleBooksOptionClick = async () => {
     setGoogleBooksItemToStockItem(googleBooksOption, overrideItemDetails)
       .then(async (update) => {
-        console.log(update)
         let newId = id
         if (isNew) {
           const newItem = await createStockItem({ ...update, vendorId }, clerk?.id)
@@ -37,7 +36,6 @@ export default function GoogleBooksOption({
         } else {
           await updateStockItem(update, id)
         }
-        console.log('New ID', newId)
         return newId
       })
       .then(() => mutate(`stock/${id}`))

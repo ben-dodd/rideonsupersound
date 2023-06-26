@@ -13,8 +13,6 @@ const ReceiveStockList = () => {
     setSearchBar,
   } = useAppStore()
   const [limit, setLimit] = useState(10)
-  console.log(receiveBatches)
-
   const handleSearch = (e) => setSearchBar(Pages.stockPage, e.target.value)
   const filteredList = receiveBatches?.filter?.((receiveBatch) =>
     `${receiveBatch?.id}`?.includes(searchBar?.toUpperCase()),

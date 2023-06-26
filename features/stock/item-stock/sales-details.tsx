@@ -1,5 +1,4 @@
 const SalesDetails = ({ sales }) => {
-  console.log(sales)
   return (
     <div>
       {sales?.length === 0 ? (

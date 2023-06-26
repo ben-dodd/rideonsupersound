@@ -11,13 +11,11 @@ import ViewBatchPayments from './view-batch-payments'
 
 export default function BatchPaymentScreen() {
   const router = useRouter()
-  const { batchPaymentSession, setBatchPaymentSession } = useAppStore()
+  const { batchPaymentSession, resetBatchPaymentSession, setBatchPaymentSession } = useAppStore()
   const id = router.query.id
   const { vendorAccounts, isVendorAccountsLoading } = useVendorAccounts()
   const { batchPayment, isBatchPaymentLoading } = useVendorBatchPayment(id)
   const [stage, setStage] = useState('select')
-  // console.log(batchPaymentSession)
-  // console.log(batchPayment)
 
   const totalPay = dollarsToCents(
     batchPaymentSession?.paymentList?.reduce((prev, v) => (v?.isChecked ? parseFloat(v?.payAmount) : 0) + prev, 0),

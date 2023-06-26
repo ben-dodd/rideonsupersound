@@ -25,7 +25,6 @@ export default function DiscogsOption({
   const handleDiscogsOptionClick = async () => {
     setDiscogsItemToStockItem(discogsOption, overrideItemDetails)
       .then(async (update) => {
-        console.log(update)
         let newId = id
         if (isNew) {
           const newItem = await createStockItem({ ...update, vendorId }, clerk?.id)
@@ -34,7 +33,6 @@ export default function DiscogsOption({
         } else {
           await updateStockItem(update, id)
         }
-        console.log('New ID', newId)
         return newId
       })
       .then(() => mutate(`stock/${id}`))

@@ -14,7 +14,6 @@ const GiftCardSidebar = () => {
   const { giftCardsPage, setPage } = useAppStore()
   const router = useRouter()
   const { giftCard, isGiftCardLoading } = useGiftCard(giftCardsPage?.loadedGiftCard)
-  console.log(giftCard)
   const { giftCard: card = {}, saleTransactions } = giftCard || {}
   const closeSidebar = () => setPage(Pages.giftCardsPage, { loadedGiftCard: 0 })
   return (

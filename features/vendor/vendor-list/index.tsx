@@ -8,7 +8,6 @@ const VendorList = () => {
   const { vendors, isVendorsLoading } = useVendors()
   const [searchValue, setSearchValue] = useState('')
   const handleSearch = (e) => setSearchValue(e.target.value)
-  console.log(vendors)
   return isVendorsLoading ? (
     <Loading />
   ) : (

@@ -54,7 +54,6 @@ export default function JobDialog() {
           dateCreated: dayjs.utc().format(),
         }
         const jobId = await createTask(newTask)
-        console.log(jobId)
         mutate(`job`)
         // mutateJobs([...jobs, { ...newTask, jobId }], false)
         setSubmitting(false)

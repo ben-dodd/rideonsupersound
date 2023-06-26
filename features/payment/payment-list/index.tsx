@@ -10,7 +10,6 @@ const PaymentList = () => {
   const [searchValue, setSearchValue] = useState('')
   const handleSearch = (e) => setSearchValue(e.target.value)
   const [limit, setLimit] = useState(50)
-  console.log(vendorPayments)
   return isVendorPaymentsLoading ? (
     <Loading />
   ) : (

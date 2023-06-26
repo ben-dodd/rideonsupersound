@@ -160,9 +160,7 @@ export const useAppStore = createSelectors(
       )
     },
     loadSaleToCartById: (saleId) => {
-      console.log('Loading sale to cart', saleId)
       return axiosAuth.get(`api/sale/${saleId}`).then((newCart) => {
-        console.log('got sale', mysql2js(newCart))
         set(
           produce((draft) => {
             draft.cart = mysql2js(newCart)
@@ -300,7 +298,6 @@ export const useAppStore = createSelectors(
         }),
       )
     },
-    loadBatchPaymentSession: (id) => {},
     setBatchPaymentSession: (update) => {
       set(
         produce((draft) => {
@@ -316,7 +313,6 @@ export const useAppStore = createSelectors(
       )
     },
     setBatchAccountPayment: (vendorId, update) => {
-      console.log('setting batch account payment', update)
       set(
         produce((draft) => {
           const index = get().batchPaymentSession.paymentList.findIndex((account) => account?.vendorId === vendorId)
@@ -330,7 +326,7 @@ export const useAppStore = createSelectors(
     resetBatchPaymentSession: () => {
       set(
         produce((draft) => {
-          draft.batchPaymentSession = { vendorAccounts: [], vendorPayments: [] }
+          draft.batchPaymentSession = { paymentList: [] }
         }),
       )
     },
@@ -361,7 +357,6 @@ export const useAppStore = createSelectors(
         }),
       ),
     resetCart: () => {
-      console.log('Resetting cart...')
       set(
         produce((draft) => {
           draft.cart = {

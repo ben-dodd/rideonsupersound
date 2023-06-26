@@ -25,8 +25,6 @@ export default function Acct({ totalRemaining }) {
     setAcctPayment(`${Math.abs(totalRemaining).toFixed(2)}`)
   }, [totalRemaining])
 
-  console.log(vendor)
-
   const buttons: ModalButton[] = [
     {
       type: 'ok',

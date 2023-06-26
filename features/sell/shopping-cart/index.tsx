@@ -105,7 +105,6 @@ export default function ShoppingCart() {
                 if (sale?.id) router.push('sell/pay')
                 else {
                   setLoadingSale(true)
-                  console.log('saving cart')
                   saveCart({
                     ...cart,
                     sale: { ...sale, state: SaleStateTypes.InProgress, saleOpenedBy: clerk?.id },

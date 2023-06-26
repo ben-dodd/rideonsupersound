@@ -271,20 +271,10 @@ export function dbCreateBatchPayment(batchPayment: BatchPaymentObject, db = conn
     .catch((e) => Error(e.message))
 }
 
-export function dbUpdateBatchPayment(batchPayment: BatchPaymentObject, db = connection) {
-  // const {
-  //   id = null,
-  //   batchNumber = '',
-  //   sequenceNumber = '',
-  //   note = '',
-  //   dateStarted = null,
-  //   startedByClerkId = null,
-  //   dateCompleted = null,
-  //   completedByClerkId = null,
-  //   isDeleted = 0,
-  // } = batchPayment || {}
+export function dbUpdateBatchPayment(batchPayment: BatchPaymentObject, id: number, db = connection) {
+  console.log('updating batch payment', batchPayment)
   return db('batch_payment')
-    .where({ id: batchPayment?.id })
+    .where({ id })
     .update(js2mysql(batchPayment))
     .then((id) => id)
     .catch((e) => Error(e.message))
@@ -294,69 +284,70 @@ export function dbCheckBatchPaymentInProgress(db = connection) {
   return db('batch_payment').select('id').whereIsNull('date_completed').first()
 }
 
-export function dbSaveBatchVendorPayment(batchPayment, db = connection) {
+export async function dbSaveBatchVendorPayment(batchPayment, db = connection) {
   const savedBatchPayment = {
     ...batchPayment,
     paymentList: batchPayment?.paymentList?.filter((payment) => payment?.isChecked),
   }
-  // console.log('saving batch payment', savedBatchPayment)
+
   return db.transaction(async (trx) => {
     let batchId = savedBatchPayment?.id
     console.log('Batch ID is', batchId)
-    const { paymentList = [] } = savedBatchPayment || {}
-    if (batchId) await dbUpdateBatchPayment({ ...savedBatchPayment, paymentList: JSON.stringify(paymentList) })
-    else {
-      batchId = await dbCreateBatchPayment({ ...savedBatchPayment, paymentList: JSON.stringify(paymentList) })
+    const { paymentList = [] } = savedBatchPayment || []
+
+    if (batchId) {
+      await dbUpdateBatchPayment({ ...savedBatchPayment, paymentList: JSON.stringify(paymentList) }, batchId, trx)
+    } else {
+      batchId = await dbCreateBatchPayment({ ...savedBatchPayment, paymentList: JSON.stringify(paymentList) }, trx)
     }
+
     console.log('Batch ID is', batchId)
     const paymentCompleted = savedBatchPayment?.dateCompleted
+
     if (paymentCompleted) {
       let newPaymentList = []
+      const promises = []
+
       paymentList
-        ?.filter((account) => account?.isChecked)
-        .forEach(async (account) => {
-          // if (emailed) {
-          //   await dbUpdateVendor({ lastUpdated: dayjs.utc().format() }, vendorId, trx)
-          // }
-          if (modulusCheck(account?.bankAccountNumber) && parseFloat(account?.payAmount)) {
-            const amount = dollarsToCents(account?.payAmount)
-            // let accountId = account?.id
-            // if (accountId) {
-            //   await dbUpdateVendorPayment(
-            //     {
-            //       amount,
-            //       date: dayjs.utc().format(),
-            //       bankAccountNumber: account?.bankAccountNumber,
-            //       clerkId: batchPayment?.clerkId,
-            //       registerId: batchPayment?.registerId,
-            //       isDeleted: false,
-            //     },
-            //     trx,
-            //   )
-            // } else {
+        ?.filter((payment) => payment?.isChecked)
+        .forEach((payment) => {
+          if (modulusCheck(payment?.bankAccountNumber) && parseFloat(payment?.payAmount)) {
+            const amount = dollarsToCents(payment?.payAmount)
             const vendorPayment = {
               amount,
               date: dayjs.utc().format(),
-              bankAccountNumber: account?.bankAccountNumber,
+              bankAccountNumber: payment?.bankAccountNumber,
               batchId,
               clerkId: batchPayment?.clerkId,
-              vendorId: account?.vendorId,
+              vendorId: payment?.vendorId,
               registerId: batchPayment?.registerId,
               type: 'batch',
             }
-            const paymentId = await dbCreateVendorPayment(vendorPayment, trx)
-            const newPayment = await dbGetVendorPayment(paymentId, trx)
-            newPaymentList.push(newPayment)
+            const promise = dbCreateVendorPayment(vendorPayment, trx).then((paymentId) => {
+              console.log('saving new payment', { ...payment, id: paymentId })
+              newPaymentList.push({ ...payment, id: paymentId })
+            })
+            promises.push(promise)
           }
         })
+
+      await Promise.all(promises)
+
       const kbbFile = prepareKiwiBankBatchFile(batchId, newPaymentList)
-      const emailList = preparePaymentNotificationEmailList(newPaymentList)
-      await dbUpdateBatchPayment({
-        paymentList: JSON.stringify(newPaymentList),
-        kbbFile: JSON.stringify(kbbFile),
-        emailCsvFile: JSON.stringify(emailList),
-      })
+      const emailCsvFile = preparePaymentNotificationEmailList(newPaymentList)
+      console.log(newPaymentList)
+
+      await dbUpdateBatchPayment(
+        {
+          paymentList: JSON.stringify(newPaymentList),
+          kbbFile,
+          emailCsvFile,
+        },
+        batchId,
+        trx,
+      )
     }
+
     return dbGetBatchVendorPayment(batchId, trx)
   })
 }

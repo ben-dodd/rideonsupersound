@@ -15,7 +15,7 @@ const PaymentsScreen = () => {
     paymentsPage: { tab },
     openView,
     openConfirm,
-    closeConfirm,
+    resetBatchPaymentSession,
     setBatchPaymentSession,
     setPage,
   } = useAppStore()
@@ -24,7 +24,8 @@ const PaymentsScreen = () => {
   const { currentVendorBatchPaymentId } = useCurrentVendorBatchPaymentId()
   const setTab = (tab) => setPage(Pages.paymentsPage, { tab })
   const handleCreateNewBatchPayment = () => {
-    setBatchPaymentSession({ startedByClerkId: clerk?.id, dateStarted: dayjs.utc().format() })
+    resetBatchPaymentSession(),
+      setBatchPaymentSession({ startedByClerkId: clerk?.id, dateStarted: dayjs.utc().format() })
     router.push(`/payments/batch/new`)
   }
   const menuItems = [
