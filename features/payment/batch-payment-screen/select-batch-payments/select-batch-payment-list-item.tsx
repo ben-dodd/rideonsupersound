@@ -16,6 +16,10 @@ export default function SelectBatchPaymentListItem({ payment }) {
   // const dateFormat = dateSimple
   const dateFormat = dateSlash
 
+  const handleChangePayAmount = (e) => {
+    setBatchAccountPayment(payment?.vendorId, { payAmount: e.target.value })
+  }
+
   return (
     <div
       className={`flex py-2 px-2 w-full items-center border-b border-t text-sm ${
@@ -48,11 +52,8 @@ export default function SelectBatchPaymentListItem({ payment }) {
         <TextField
           error={payment?.payAmount !== '' && isNaN(parseFloat(payment?.payAmount))}
           startAdornment={'$'}
-          value={payment?.payAmount || ''}
-          onChange={(e) => {
-            console.log('Changing to ', e.target.value)
-            setBatchAccountPayment(payment?.vendorId, { payAmount: e.target.value })
-          }}
+          value={payment?.payAmount}
+          onChange={handleChangePayAmount}
         />
       </div>
       <div className="w-1/12 flex">

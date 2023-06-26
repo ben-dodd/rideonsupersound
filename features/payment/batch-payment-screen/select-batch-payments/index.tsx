@@ -6,6 +6,7 @@ import { useAppStore } from 'lib/store'
 import SelectBatchPaymentListItem from './select-batch-payment-list-item'
 import { saveVendorBatchPayment } from 'lib/api/vendor'
 import { useRouter } from 'next/router'
+import { useSWRConfig } from 'swr'
 
 export default function SelectBatchPayments({ setStage }) {
   const [checked, setChecked] = useState(true)
@@ -13,6 +14,7 @@ export default function SelectBatchPayments({ setStage }) {
   const { paymentList = [] } = batchPaymentSession || {}
   const [search, setSearch] = useState('')
   const router = useRouter()
+  const { mutate } = useSWRConfig()
 
   return (
     <div>
@@ -24,7 +26,13 @@ export default function SelectBatchPayments({ setStage }) {
           </div>
           <div
             className="icon-text-button"
-            onClick={() => saveVendorBatchPayment(batchPaymentSession).then(() => router.push('/payments'))}
+            onClick={() => {
+              console.log('Saving batch payment', batchPaymentSession)
+              saveVendorBatchPayment(batchPaymentSession).then((savedBatchPayment) => {
+                mutate(`vendor/payment/batch/${savedBatchPayment?.id}`, savedBatchPayment)
+                router.push('/payments')
+              })
+            }}
           >
             SAVE AND CLOSE <Save />
           </div>

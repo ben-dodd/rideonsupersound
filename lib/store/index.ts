@@ -316,6 +316,7 @@ export const useAppStore = createSelectors(
       )
     },
     setBatchAccountPayment: (vendorId, update) => {
+      console.log('setting batch account payment', update)
       set(
         produce((draft) => {
           const index = get().batchPaymentSession.paymentList.findIndex((account) => account?.vendorId === vendorId)

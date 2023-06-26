@@ -60,8 +60,8 @@ export function saveVendorBatchPayment(batchPayment) {
   return axiosAuth
     .post(`/api/vendor/payment/batch`, batchPayment)
     .then((res) => {
-      // Returns list of successful payments (vendor id, name and pay amount)
-      return res.data
+      // Returns saved batch payment session
+      return res
     })
     .catch((e) => Error(e.message))
 }

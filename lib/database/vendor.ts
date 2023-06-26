@@ -299,7 +299,7 @@ export function dbSaveBatchVendorPayment(batchPayment, db = connection) {
     ...batchPayment,
     paymentList: batchPayment?.paymentList?.filter((payment) => payment?.isChecked),
   }
-  console.log('saving batch payment', savedBatchPayment)
+  // console.log('saving batch payment', savedBatchPayment)
   return db.transaction(async (trx) => {
     let batchId = savedBatchPayment?.id
     console.log('Batch ID is', batchId)
@@ -383,6 +383,7 @@ export function dbGetBatchVendorPayments(db = connection) {
 }
 
 export function dbGetBatchVendorPayment(id, db = connection) {
+  console.log('Getting batch payment', id)
   return db('batch_payment')
     .where({ id })
     .first()
