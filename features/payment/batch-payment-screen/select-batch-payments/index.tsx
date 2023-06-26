@@ -9,32 +9,22 @@ import { useRouter } from 'next/router'
 
 export default function SelectBatchPayments({ setStage }) {
   const [checked, setChecked] = useState(true)
-  const { batchPaymentSession, setBatchAccountPayment, setBatchPaymentList } = useAppStore()
+  const { batchPaymentSession, setBatchPaymentList } = useAppStore()
   const { paymentList = [] } = batchPaymentSession || {}
-  const totalPay = paymentList?.reduce((prev, v) => (v?.isChecked ? parseFloat(v?.payAmount) : 0) + prev, 0)
-  const vendorNum = paymentList?.filter((v) => v?.isChecked)?.length
   const [search, setSearch] = useState('')
   const router = useRouter()
 
   return (
     <div>
-      <div className="flex justify-between items-start p-2">
-        <BatchPaymentSummary
-          search={search}
-          setSearch={setSearch}
-          paymentList={paymentList}
-          totalPay={totalPay}
-          vendorNum={vendorNum}
-        />
-        <div>
-          <div className="px-4">
-            <div className="icon-text-button" onClick={() => setStage('review')}>
-              REVIEW PAYMENTS <ArrowRight />
-            </div>
+      <div className="flex justify-between p-2">
+        <BatchPaymentSummary search={search} setSearch={setSearch} paymentList={paymentList} />
+        <div className="px-4">
+          <div className="icon-text-button" onClick={() => setStage('review')}>
+            REVIEW PAYMENTS <ArrowRight />
           </div>
           <div
             className="icon-text-button"
-            onClick={() => saveVendorBatchPayment(batchPaymentSession).then((id) => router.push('/payments'))}
+            onClick={() => saveVendorBatchPayment(batchPaymentSession).then(() => router.push('/payments'))}
           >
             SAVE AND CLOSE <Save />
           </div>
@@ -68,8 +58,8 @@ export default function SelectBatchPayments({ setStage }) {
             />
             <div className="pl-4">NAME</div>
           </div>
-          <div className="w-1/12 text-right">TAKE</div>
-          <div className="w-1/12 text-right">OWED</div>
+          <div className="w-1/12 text-right mr-2">TAKE</div>
+          <div className="w-1/12 text-right mr-2">OWED</div>
           <div className="w-2/12">LAST SALE</div>
           <div className="w-2/12">LAST PAID</div>
           <div className="w-2/12">LAST CONTACTED</div>

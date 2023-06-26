@@ -7,6 +7,7 @@ import LoadMoreButton from 'components/button/load-more-button'
 const BatchPaymentList = () => {
   const { batchPayments, isBatchPaymentsLoading } = useVendorBatchPayments()
   const [limit, setLimit] = useState(50)
+  console.log(batchPayments)
   return isBatchPaymentsLoading ? (
     <Loading />
   ) : (

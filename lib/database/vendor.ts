@@ -295,17 +295,21 @@ export function dbCheckBatchPaymentInProgress(db = connection) {
 }
 
 export function dbSaveBatchVendorPayment(batchPayment, db = connection) {
-  console.log('saving batch payment', batchPayment)
+  const savedBatchPayment = {
+    ...batchPayment,
+    paymentList: batchPayment?.paymentList?.filter((payment) => payment?.isChecked),
+  }
+  console.log('saving batch payment', savedBatchPayment)
   return db.transaction(async (trx) => {
-    let batchId = batchPayment?.id
+    let batchId = savedBatchPayment?.id
     console.log('Batch ID is', batchId)
-    const { paymentList = [] } = batchPayment || {}
-    if (batchId) await dbUpdateBatchPayment({ ...batchPayment, paymentList: JSON.stringify(paymentList) })
+    const { paymentList = [] } = savedBatchPayment || {}
+    if (batchId) await dbUpdateBatchPayment({ ...savedBatchPayment, paymentList: JSON.stringify(paymentList) })
     else {
-      batchId = await dbCreateBatchPayment({ ...batchPayment, paymentList: JSON.stringify(paymentList) })
+      batchId = await dbCreateBatchPayment({ ...savedBatchPayment, paymentList: JSON.stringify(paymentList) })
     }
     console.log('Batch ID is', batchId)
-    const paymentCompleted = batchPayment?.dateCompleted
+    const paymentCompleted = savedBatchPayment?.dateCompleted
     if (paymentCompleted) {
       let newPaymentList = []
       paymentList
@@ -383,7 +387,7 @@ export function dbGetBatchVendorPayment(id, db = connection) {
     .where({ id })
     .first()
     .then((batchPayment) => {
-      return { ...batchPayment, paymentList: JSON.parse(batchPayment?.paymentList || '[]') }
+      return { ...batchPayment, payment_list: JSON.parse(batchPayment?.payment_list || '[]') }
     })
 }
 

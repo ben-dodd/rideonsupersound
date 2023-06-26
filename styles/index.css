@@ -47,6 +47,7 @@
 } */
 
 /* Your own custom utilities */
+
 .loading-screen {
   @apply flex h-main w-board;
 }

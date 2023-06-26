@@ -24,20 +24,14 @@ export default function ReviewBatchPayments({ setStage }) {
   return (
     <div>
       <div className="flex justify-between p-2">
-        <BatchPaymentSummary
-          search={search}
-          setSearch={setSearch}
-          paymentList={paymentList}
-          totalPay={totalPay}
-          vendorNum={vendorNum}
-        />
+        <BatchPaymentSummary search={search} setSearch={setSearch} paymentList={paymentList} />
         <div className="px-4">
           <div className="icon-text-button" onClick={() => setStage('select')}>
             GO BACK <ArrowLeft />
           </div>
           <div
             className="icon-text-button"
-            onClick={() => saveVendorBatchPayment(batchPaymentSession).then((id) => router.push('/payments'))}
+            onClick={() => saveVendorBatchPayment(batchPaymentSession).then(() => router.push('/payments'))}
           >
             SAVE AND CLOSE <Save />
           </div>
@@ -62,10 +56,20 @@ export default function ReviewBatchPayments({ setStage }) {
         </div>
       </div>
       <div className="text-sm px-2">
-        Check all payments are correct. If they are not, click <span className="font-bold">GO BACK</span> to edit. Click{' '}
-        <span className="font-bold">COMPLETE AND DOWNLOAD</span> to save the batch payment. This will also download a
-        KBB file for the bank transfer and a CSV file to import into the RIDE ON emailing GoogleSheet. Vendors with $0
-        payments or vendors with invalid bank account numbers will not be added to the KBB file, only the email CSV.
+        <ul className="list-disc">
+          <li>Check all payments are correct.</li>
+          <li>
+            If they are not, click <span className="font-bold">GO BACK</span> to edit.
+          </li>
+          <li>
+            Click<span className="font-bold"> COMPLETE AND DOWNLOAD</span> to save the batch payment. This will also
+            download a KBB file for the bank transfer and a CSV file to import into the RIDE ON emailing GoogleSheet.
+          </li>
+          <li>
+            Vendors with $0 payments or vendors with invalid bank account numbers will not be added to the KBB file,
+            only the email CSV.
+          </li>
+        </ul>
       </div>
       <div className="w-full">
         <div className="flex font-bold py-2 px-2 border-b border-black">

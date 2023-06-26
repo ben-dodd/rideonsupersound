@@ -1,7 +1,7 @@
 import MidScreenContainer from 'components/container/mid-screen'
 import PaymentList from './payment-list'
 import { AccountBalance, Money, TransferWithinAStation } from '@mui/icons-material'
-// import { useCurrentVendorBatchPaymentId } from 'lib/api/vendor'
+import { useCurrentVendorBatchPaymentId } from 'lib/api/vendor'
 import { Pages, ViewProps } from 'lib/store/types'
 import { useAppStore } from 'lib/store'
 import { useRouter } from 'next/router'
@@ -14,13 +14,19 @@ const PaymentsScreen = () => {
   const {
     paymentsPage: { tab },
     openView,
+    openConfirm,
+    closeConfirm,
     setBatchPaymentSession,
     setPage,
   } = useAppStore()
   const { clerk } = useClerk()
   const router = useRouter()
-  // const { currentVendorBatchPaymentId } = useCurrentVendorBatchPaymentId()
+  const { currentVendorBatchPaymentId } = useCurrentVendorBatchPaymentId()
   const setTab = (tab) => setPage(Pages.paymentsPage, { tab })
+  const handleCreateNewBatchPayment = () => {
+    setBatchPaymentSession({ startedByClerkId: clerk?.id, dateStarted: dayjs.utc().format() })
+    router.push(`/payments/batch/new`)
+  }
   const menuItems = [
     { text: 'Manually Pay Vendor', icon: <Money />, onClick: () => openView(ViewProps.cashVendorPaymentDialog) },
     {
@@ -33,10 +39,20 @@ const PaymentsScreen = () => {
       text: 'Start New Batch Payment',
       icon: <AccountBalance />,
       onClick: () => {
-        // if (!currentVendorBatchPaymentId)
-        setBatchPaymentSession({ startedByClerkId: clerk?.id, dateStarted: dayjs.utc().format() })
-        router.push(`/payments/batch/new`)
-        // router.push(`/payments/batch/${currentVendorBatchPaymentId || 'new'}`)
+        if (currentVendorBatchPaymentId) {
+          openConfirm({
+            open: true,
+            title: 'Create New Batch Payment?',
+            message:
+              'You already have an unfinished batch payment. Do you want to create a new one or continue the current one?',
+            yesText: 'Create New Batch Payment',
+            altText: 'Continue Current Batch Payment',
+            action: handleCreateNewBatchPayment,
+            altAction: () => router.push(`/payments/batch/${currentVendorBatchPaymentId}`),
+          })
+        } else {
+          handleCreateNewBatchPayment()
+        }
       },
     },
   ]

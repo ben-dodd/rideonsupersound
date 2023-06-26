@@ -25,7 +25,20 @@ export default function ConfirmModal() {
     },
     type: 'ok',
   }
-  const buttons: ModalButton[] = confirmModal?.yesButtonOnly ? [yesButton] : [noButton, yesButton]
+  const altButton = {
+    text: confirmModal?.altText || 'ALT ACTION',
+    onClick: () => {
+      confirmModal?.altAction && confirmModal.altAction()
+      closeConfirm()
+    },
+    type: 'alt1',
+    hidden: Boolean(confirmModal?.altAction),
+  }
+  const buttons: ModalButton[] = confirmModal?.yesButtonOnly
+    ? [yesButton]
+    : confirmModal?.altAction
+    ? [altButton, yesButton]
+    : [noButton, yesButton]
   return (
     <Modal
       open={confirmModal?.open}
@@ -37,10 +50,3 @@ export default function ConfirmModal() {
     </Modal>
   )
 }
-
-// {
-//   text: confirmModal?.altText || "ALT ACTION",
-//   onClick: confirmModal?.altAction,
-//   type: "alt",
-//   hidden: Boolean(confirmModal?.altAction),
-// },

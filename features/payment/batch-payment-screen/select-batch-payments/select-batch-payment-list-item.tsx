@@ -7,12 +7,14 @@ import dayjs from 'dayjs'
 import { modulusCheck } from 'lib/functions/payment'
 import { priceCentsString } from 'lib/utils'
 import { useRouter } from 'next/router'
-import { dateSimple } from 'lib/types/date'
+import { dateSlash } from 'lib/types/date'
 import { useAppStore } from 'lib/store'
 
 export default function SelectBatchPaymentListItem({ payment }) {
   const { setBatchAccountPayment } = useAppStore()
   const router = useRouter()
+  // const dateFormat = dateSimple
+  const dateFormat = dateSlash
 
   return (
     <div
@@ -33,21 +35,24 @@ export default function SelectBatchPaymentListItem({ payment }) {
           onClick={() => router.push(`/vendors/${payment?.id}`)}
         >{`[${payment?.id}] ${payment?.name}`}</div>
       </div>
-      <div className="w-1/12 text-right">{priceCentsString(payment?.totalVendorCut)}</div>
-      <div className={`w-1/12 text-right font-bold${payment?.totalOwing < 0 ? ' text-red-500' : ''}`}>{`${
+      <div className="w-1/12 text-right mr-2">{priceCentsString(payment?.totalVendorCut)}</div>
+      <div className={`w-1/12 text-right mr-2 font-bold${payment?.totalOwing < 0 ? ' text-red-500' : ''}`}>{`${
         payment?.totalOwing < 0 ? '(' : ''
       }${priceCentsString(Math.abs(payment?.totalOwing || 0))}${payment?.totalOwing < 0 ? ')' : ''}`}</div>
-      <div className="w-2/12">{payment?.lastSold ? dayjs(payment?.lastSold).format(dateSimple) : 'NO SALES'}</div>
-      <div className="w-2/12">{payment?.lastPaid ? dayjs(payment?.lastPaid).format(dateSimple) : 'NEVER PAID'}</div>
+      <div className="w-2/12">{payment?.lastSold ? dayjs(payment?.lastSold).format(dateFormat) : 'NO SALES'}</div>
+      <div className="w-2/12">{payment?.lastPaid ? dayjs(payment?.lastPaid).format(dateFormat) : 'NEVER PAID'}</div>
       <div className="w-2/12">
-        {payment?.lastContacted ? dayjs(payment?.lastContacted).format(dateSimple) : 'NEVER CONTACTED'}
+        {payment?.lastContacted ? dayjs(payment?.lastContacted).format(dateFormat) : 'NEVER CONTACTED'}
       </div>
       <div className="w-1/12 flex">
         <TextField
           error={payment?.payAmount !== '' && isNaN(parseFloat(payment?.payAmount))}
           startAdornment={'$'}
           value={payment?.payAmount || ''}
-          onChange={(e) => setBatchAccountPayment(payment?.vendorId, { payAmount: e.target.value })}
+          onChange={(e) => {
+            console.log('Changing to ', e.target.value)
+            setBatchAccountPayment(payment?.vendorId, { payAmount: e.target.value })
+          }}
         />
       </div>
       <div className="w-1/12 flex">
