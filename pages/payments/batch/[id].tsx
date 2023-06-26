@@ -10,7 +10,6 @@ export default function BatchPaymentPage() {
   const router = useRouter()
   const { id } = router.query
   const { batchPayment, isBatchPaymentLoading, isBatchPaymentError } = useVendorBatchPayment(`${id}`)
-  console.log('Batch pay', batchPayment)
   return (isBatchPaymentError || (!isBatchPaymentLoading && !batchPayment)) && id !== 'new' ? (
     <ErrorScreen message="Batch Payment Not Found" redirectUrl={'/vendors'} />
   ) : isBatchPaymentLoading && id !== 'new' ? (

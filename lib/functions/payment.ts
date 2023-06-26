@@ -115,7 +115,6 @@ export function writePaymentNotificationEmail({ paymentList, includeUnchecked, i
       v?.invalidBankAccountNumber,
       Boolean(v?.storeCreditOnly),
     ])
-  // console.log(vendorArrays);
   vendorArrays?.forEach((vendorArray) => {
     let row = vendorArray?.join(',')
     csvContent += row + '\r\n'

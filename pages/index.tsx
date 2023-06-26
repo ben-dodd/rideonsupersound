@@ -9,7 +9,6 @@ export default function IndexPage() {
   const { registerId, isRegisterIdLoading } = useCurrentRegisterId()
   useEffect(() => {
     if (!isRegisterIdLoading) {
-      console.log('current id', registerId)
       if (registerId) router?.push('/sell')
       else router?.push('/register/open')
     }

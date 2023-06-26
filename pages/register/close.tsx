@@ -14,7 +14,6 @@ export default function CloseRegisterPage() {
 
   useEffect(() => {
     if (!isRegisterIdLoading && !registerId) {
-      console.log('Go to sell')
       router.push('/sell')
     }
   }, [registerId, isRegisterIdLoading, router])

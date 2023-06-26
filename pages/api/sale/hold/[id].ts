@@ -7,7 +7,6 @@ const apiRoute = async (req: NextAuthenticatedApiRequest, res: NextApiResponse) 
   if (req.method === 'PATCH') {
     const { id } = req.query
     const update = req.body
-    console.log('db update hold', update)
     try {
       return dbUpdateHold(id, update).then((data) => res.status(200).json(data))
     } catch (error) {

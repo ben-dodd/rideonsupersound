@@ -391,7 +391,6 @@ export async function dbReceiveStock(receiveStock: any, db = connection) {
 }
 
 export async function dbReturnStock(returnStock: any, db = connection) {
-  console.log('Return stock', returnStock)
   return db
     .transaction(async (trx) => {
       const { clerkId, registerId, vendorId, items, note } = returnStock
@@ -399,7 +398,6 @@ export async function dbReturnStock(returnStock: any, db = connection) {
         items
           .filter((returnItem: any) => parseInt(`${returnItem?.quantity}`) > 0)
           .forEach(async (returnItem: any) => {
-            console.log('Creating stock movement for', returnItem?.id)
             await dbCreateStockMovement(
               {
                 stockId: parseInt(returnItem?.id),
@@ -419,7 +417,6 @@ export async function dbReturnStock(returnStock: any, db = connection) {
 }
 
 export async function dbChangeStockQuantity(change: any, id: any, db = connection) {
-  console.log(change)
   const { stockItem, quantity, movement, clerkId, registerId, note } = change
   const { quantities = {} } = stockItem || {}
   const stockId = Number(id)
@@ -447,7 +444,6 @@ export async function dbChangeStockQuantity(change: any, id: any, db = connectio
     db,
   )
     .then((res) => {
-      console.log(res)
       res.data
     })
     .catch((e) => Error(e.message))

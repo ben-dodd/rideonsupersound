@@ -111,7 +111,6 @@ export function dbGetAllCurrentHolds(db = connection) {
 }
 
 export function dbGetHoldsForItem(itemId, db = connection) {
-  console.log('Getting holds for item', itemId)
   return dbGetAllHolds(db).where(`hold.item_id`, itemId)
 }
 
@@ -212,23 +211,14 @@ export function dbCancelHold(id, clerk, isAddedToCart = false, db = connection) 
   )
     .then(() => dbGetAllHolds(db).where('hold.id', id).first())
     .then((hold) => {
-      console.log('Creating unhold stock movement', {
+      const unholdStockMovement = {
         stockId: hold?.item_id,
         clerkId: clerk?.id,
         quantity: hold?.quantity,
         holdId: hold?.id,
         act: StockMovementTypes.Unhold,
-      })
-      return dbCreateStockMovement(
-        {
-          stockId: hold?.item_id,
-          clerkId: clerk?.id,
-          quantity: hold?.quantity,
-          holdId: hold?.id,
-          act: StockMovementTypes.Unhold,
-        },
-        db,
-      ).then(
+      }
+      return dbCreateStockMovement(unholdStockMovement, db).then(
         () =>
           !isAddedToCart &&
           dbCreateJob(
