@@ -1,10 +1,11 @@
+import { Warning } from '@mui/icons-material'
 import CheckIcon from '@mui/icons-material/CheckCircleOutline'
 import NoBankDetailsIcon from '@mui/icons-material/CreditCardOff'
 import StoreCreditOnlyIcon from '@mui/icons-material/ShoppingBag'
 import QuantityCheckIcon from '@mui/icons-material/Warning'
 import { Tooltip } from '@mui/material'
 import { modulusCheck } from 'lib/functions/payment'
-import { dollarsToCents, priceCentsString, priceDollarsString } from 'lib/utils'
+import { centsToDollars, dollarsToCents, priceCentsString, priceDollarsString } from 'lib/utils'
 
 export default function ReviewBatchPaymentListItem({ payment }) {
   let invalidBankAccountNumber = !modulusCheck(payment?.bankAccountNumber)
@@ -39,6 +40,24 @@ export default function ReviewBatchPaymentListItem({ payment }) {
           <Tooltip title="Vendor has negative quantity items. Please check!">
             <div className="text-purple-500 pl-2">
               <QuantityCheckIcon />
+            </div>
+          </Tooltip>
+        ) : (
+          <div />
+        )}
+        {Number(payment?.payAmount) <= 0 ? (
+          <Tooltip title="Pay amount is less than or equal to zero. Please check!">
+            <div className="text-orange-500 pl-2">
+              <Warning />
+            </div>
+          </Tooltip>
+        ) : (
+          <div />
+        )}
+        {Number(payment?.payAmount) > centsToDollars(payment?.totalOwing) ? (
+          <Tooltip title="You are paying the vendor more than they are owed. Please check!">
+            <div className="text-orange-500 pl-2">
+              <Warning />
             </div>
           </Tooltip>
         ) : (
