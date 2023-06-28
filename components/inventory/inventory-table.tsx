@@ -1,30 +1,30 @@
 // Packages
-import { useMemo } from "react";
-import { useAtom } from "jotai";
+import { useMemo } from 'react'
+import { useAtom } from 'jotai'
 
 // DB
-import { useInventory, useVendors } from "@/lib/swr-hooks";
-import { loadedItemIdAtom } from "@/lib/atoms";
-import { StockObject, VendorObject } from "@/lib/types";
+import { useInventory, useVendors } from '@/lib/swr-hooks'
+import { loadedItemIdAtom } from '@/lib/atoms'
+import { StockObject, VendorObject } from '@/lib/types'
 
 // Functions
-import { getItemSku } from "@/lib/data-functions";
+import { getItemSku } from '@/lib/data-functions'
 
 // Components
-import Table from "@/components/_components/table";
-import TableContainer from "@/components/_components/container/table";
+import Table from '@/components/_components/table'
+import TableContainer from '@/components/_components/container/table'
 
 interface NumberProps {
-  value: number;
+  value: number
 }
 
 export default function InventoryTable() {
   // SWR
-  const { inventory, isInventoryLoading } = useInventory();
-  const { vendors, isVendorsLoading } = useVendors();
+  const { inventory, isInventoryLoading } = useInventory()
+  const { vendors, isVendorsLoading } = useVendors()
 
   // Atoms
-  const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom);
+  const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom)
 
   // Constants
   const data = useMemo(
@@ -34,19 +34,19 @@ export default function InventoryTable() {
           (t: StockObject) =>
             !t?.is_deleted && !t?.is_gift_card && !t?.is_misc_item
         )
-        .map((t: StockObject) => ({
+        ?.map((t: StockObject) => ({
           id: t?.id,
-          title: t?.title || "-",
-          artist: t?.artist || "-",
-          vendor: `[${("000" + t?.vendor_id || "").slice(-3)}] ${
+          title: t?.title || '-',
+          artist: t?.artist || '-',
+          vendor: `[${('000' + t?.vendor_id || '').slice(-3)}] ${
             vendors?.filter((v: VendorObject) => v?.id === t?.vendor_id)?.[0]
               ?.name
           }`,
-          section: `${t?.section || ""}${
-            t?.section && t?.country === "New Zealand" ? "/" : ""
-          }${t?.country === "New Zealand" ? "NZ" : ""}`,
-          media: t?.media || "-",
-          format: t?.format || "-",
+          section: `${t?.section || ''}${
+            t?.section && t?.country === 'New Zealand' ? '/' : ''
+          }${t?.country === 'New Zealand' ? 'NZ' : ''}`,
+          media: t?.media || '-',
+          format: t?.format || '-',
           cost: t?.vendor_cut ? t?.vendor_cut / 100 : 0,
           store:
             t?.vendor_cut && t?.total_sell
@@ -67,15 +67,15 @@ export default function InventoryTable() {
               -1 || 0,
           quantityReturned: Math.abs(t?.quantity_returned || 0),
           quantitySold: Math.abs(t?.quantity_sold || 0),
-        })),
+        })) || [],
     [inventory, vendors]
-  );
+  )
   const columns = useMemo(() => {
     // const openInventoryDialog = (item:any) => openInventoryModal(item?.row?.original?.id);
     return [
       {
-        accessor: "id",
-        Header: "ID",
+        accessor: 'id',
+        Header: 'ID',
         width: 70,
         Cell: (params: any) => (
           <span
@@ -92,23 +92,23 @@ export default function InventoryTable() {
         ),
       },
       {
-        accessor: "title",
-        Header: "Title",
+        accessor: 'title',
+        Header: 'Title',
         width: 250,
       },
       {
-        accessor: "artist",
-        Header: "Artist",
+        accessor: 'artist',
+        Header: 'Artist',
         width: 230,
       },
       {
-        accessor: "vendor",
-        Header: "Vendor",
+        accessor: 'vendor',
+        Header: 'Vendor',
         width: 210,
       },
       {
-        accessor: "section",
-        Header: "Section",
+        accessor: 'section',
+        Header: 'Section',
         width: 80,
       },
       // {
@@ -117,16 +117,16 @@ export default function InventoryTable() {
       //   width: 70,
       // },
       {
-        accessor: "format",
-        Header: "Format",
+        accessor: 'format',
+        Header: 'Format',
         width: 100,
       },
       {
-        accessor: "sell",
-        Header: "Sell",
+        accessor: 'sell',
+        Header: 'Sell',
         width: 90,
         Cell: ({ value }: NumberProps) =>
-          value && !isNaN(value) ? `$${value?.toFixed(2)}` : "-",
+          value && !isNaN(value) ? `$${value?.toFixed(2)}` : '-',
       },
       // {
       //   accessor: "profitMargin",
@@ -136,8 +136,8 @@ export default function InventoryTable() {
       //     value && !isNaN(value) ? `${value?.toFixed(1)}%` : "-",
       // },
       {
-        accessor: "quantity",
-        Header: "QTY",
+        accessor: 'quantity',
+        Header: 'QTY',
         width: 53,
       },
       // {
@@ -146,8 +146,8 @@ export default function InventoryTable() {
       //   width: 53,
       // },
       {
-        accessor: "quantityHoldLayby",
-        Header: "H/L",
+        accessor: 'quantityHoldLayby',
+        Header: 'H/L',
         width: 53,
       },
       // {
@@ -156,12 +156,12 @@ export default function InventoryTable() {
       //   width: 53,
       // },
       {
-        accessor: "quantitySold",
-        Header: "SOLD",
+        accessor: 'quantitySold',
+        Header: 'SOLD',
         width: 64,
       },
-    ];
-  }, [inventory]);
+    ]
+  }, [inventory])
 
   return (
     <TableContainer loading={isVendorsLoading || isInventoryLoading}>
@@ -171,11 +171,11 @@ export default function InventoryTable() {
         colorDark="bg-col2-dark"
         data={data}
         columns={columns}
-        heading={"Inventory"}
+        heading={'Inventory'}
         pageSize={20}
-        sortOptions={[{ id: "title", desc: false }]}
+        sortOptions={[{ id: 'title', desc: false }]}
         downloadCSV={true}
       />
     </TableContainer>
-  );
+  )
 }
