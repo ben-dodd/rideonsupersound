@@ -7,6 +7,9 @@ const handler: NextApiHandler = async (req, res) => {
   try {
     if (!k || k !== process.env.NEXT_PUBLIC_SWR_API_KEY)
       return res.status(401).json({ message: 'Resource Denied.' })
+
+    // s.misc_item_description,
+    // s.misc_item_amount,
     const results = await query(
       `
       SELECT
@@ -24,8 +27,6 @@ const handler: NextApiHandler = async (req, res) => {
         s.gift_card_remaining,
         s.gift_card_is_valid,
         s.is_misc_item,
-        s.misc_item_description,
-        s.misc_item_amount,
         s.needs_restock,
         p.vendor_cut,
         p.total_sell,
