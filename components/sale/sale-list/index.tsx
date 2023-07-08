@@ -37,7 +37,7 @@ export default function SaleList() {
             store: s?.store_cut,
             sell: s?.total_price,
           }
-        }),
+        }) || [],
     [sales, clerks]
   )
   // const columns = useMemo(() => {
