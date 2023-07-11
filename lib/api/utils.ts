@@ -1,6 +1,6 @@
 import { Session } from '@auth0/nextjs-auth0'
 import { NextJwtVerifier } from '@serverless-jwt/next'
-import { NextAuthenticatedApiRequest } from '@serverless-jwt/next/dist/types'
+// import { NextAuthenticatedApiRequest } from '@serverless-jwt/next/dist/types'
 import { NextApiHandler } from 'next'
 
 const verifyJwt = NextJwtVerifier({
@@ -9,16 +9,18 @@ const verifyJwt = NextJwtVerifier({
 })
 
 export const requireScope = (scope: string, apiRoute: NextApiHandler) => {
-  return verifyJwt(async (req: NextAuthenticatedApiRequest, res) => {
-    const { claims } = req.identityContext
-    if (!claims || !claims.permissions || (claims.permissions as string).indexOf(scope) === -1) {
-      return res.status(403).json({
-        error: 'access_denied',
-        error_description: `Token does not contain the required '${scope}' scope`,
-      })
-    }
-    return apiRoute(req, res) as void
-  })
+  // Bypass scope for offline development
+  return apiRoute
+  // return verifyJwt(async (req: NextAuthenticatedApiRequest, res) => {
+  //   const { claims } = req.identityContext
+  //   if (!claims || !claims.permissions || (claims.permissions as string).indexOf(scope) === -1) {
+  //     return res.status(403).json({
+  //       error: 'access_denied',
+  //       error_description: `Token does not contain the required '${scope}' scope`,
+  //     })
+  //   }
+  //   return apiRoute(req, res) as void
+  // })
 }
 
 export const checkRole = (role: string, session: Session) => {

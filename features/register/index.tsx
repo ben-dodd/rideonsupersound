@@ -12,7 +12,7 @@ const RegistersScreen = () => {
     setPage,
     openView,
   } = useAppStore()
-  const setTab = (tab) => setPage(Pages.ordersPage, { tab })
+  const setTab = (tab) => setPage(Pages.registersPage, { tab })
   const menuItems = [
     { text: 'Take Cash from Till', icon: <CloudUpload />, onClick: () => openView(ViewProps.takeCashDialog) },
     { text: 'Return Cash to Till', icon: <CloudDownload />, onClick: () => openView(ViewProps.returnCashDialog) },

@@ -23,7 +23,7 @@ export default function GoogleBooksPanel() {
     setIsLoading(true)
     getGoogleBooksOptionsByItem(item).then((options) => {
       setIsLoading(false)
-      setGoogleBooksOptions(options)
+      setGoogleBooksOptions(options || [])
     })
   }
 
@@ -57,7 +57,7 @@ export default function GoogleBooksPanel() {
           <GoogleBooksItem googleBooksItem={googleBooksItem} />
         ) : googleBooksOptions?.length > 0 ? (
           <div>
-            {googleBooksOptions.map((googleBooksOption: any, i: number) => (
+            {googleBooksOptions?.map?.((googleBooksOption: any, i: number) => (
               <GoogleBooksOption key={i} googleBooksOption={googleBooksOption} />
             ))}
           </div>
