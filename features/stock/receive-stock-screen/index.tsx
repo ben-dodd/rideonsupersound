@@ -140,14 +140,24 @@ export default function ReceiveStockScreen({ receiveBatch }) {
     { text: 'Delete Batch', icon: <Delete />, onClick: null },
   ]
 
+  const noVendor = !receiveBasket?.vendorId
+  const noItems = receiveBasket?.items?.length === 0
+
   return (
-    <MidScreenContainer title={'RECEIVE STOCK'} titleClass={'bg-brown-dark text-white'} menuItems={menuItems} dark full>
+    <MidScreenContainer
+      showBackButton
+      title={'RECEIVE STOCK'}
+      titleClass={'bg-brown-dark text-white'}
+      menuItems={menuItems}
+      dark
+      full
+    >
       <div className="flex flex-col w-full h-dialog">
         <Stepper
-          steps={['Select vendor', 'Add items', 'Check details', 'Set price and quantities', 'Print labels']}
+          steps={['Setup', 'Add items', 'Check details', 'Set price and quantities', 'Print labels']}
+          disabled={[false, noVendor, noItems, noItems, noItems]}
           value={step}
           onChange={setStep}
-          // disabled
           selectedBg="bg-col2"
           notSelectedBg="bg-gray-200"
           selectedText="text-col2-dark"
@@ -155,31 +165,13 @@ export default function ReceiveStockScreen({ receiveBatch }) {
           selectedTextHover="text-col2-dark"
           notSelectedTextHover="text-gray-800"
         />
-        {step === 0 && (
-          <div>
-            <SelectVendor />
-          </div>
-        )}
-        {step === 1 && (
-          <div>
-            <SelectItems />
-          </div>
-        )}
-        {step == 2 && (
-          <div>
-            <CheckDetails />
-          </div>
-        )}
-        {step == 3 && (
-          <div>
-            <SetPriceAndQuantities />
-          </div>
-        )}
-        {step == 4 && (
-          <div>
-            <PrintLabel receivedStock={receivedStock} />
-          </div>
-        )}
+        <div className="p-4">
+          {step === 0 && <SelectVendor />}
+          {step === 1 && <SelectItems />}
+          {step == 2 && <CheckDetails />}
+          {step == 3 && <SetPriceAndQuantities />}
+          {step == 4 && <PrintLabel receivedStock={receivedStock} />}
+        </div>
       </div>
     </MidScreenContainer>
   )

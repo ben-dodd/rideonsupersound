@@ -55,6 +55,18 @@ export interface StoreState {
     clerkId?: number
     registerId?: number
     vendorId?: number
+    dateCompleted?: string
+    media: string
+    format: string
+    isNew: boolean
+    cond: string
+    section: string
+    country: string
+    genre: string[]
+    totalSell: string
+    vendorCut: string
+    storeCut: string
+    margin: string
   }
   batchPaymentSession?: BatchPaymentObject
   sellPage?: {

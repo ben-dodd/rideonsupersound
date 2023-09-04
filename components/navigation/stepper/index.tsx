@@ -2,7 +2,7 @@ interface StepperProps {
   steps: string[]
   value: number
   onChange?: Function
-  disabled?: Boolean
+  disabled?: Boolean[]
   selectedBg?: string
   notSelectedBg?: string
   selectedText?: string
@@ -24,21 +24,17 @@ export default function Stepper({
   notSelectedTextHover,
 }: StepperProps) {
   return (
-    <div className="flex">
+    <div className="flex py-2">
       <div className="flex justify-between pb-2">
         {steps?.map((val, index) => (
           <div
             key={index}
-            className={`flex items-center px-2 py-1${
-              !disabled && ' cursor-pointer'
-            }`}
-            onClick={() => (disabled ? null : onChange(index))}
+            className={`flex items-center px-2 py-1${!disabled?.[index] && ' cursor-pointer'}`}
+            onClick={() => (disabled?.[index] ? null : onChange(index))}
           >
             <div
               className={`stock-indicator__number ${
-                value === index
-                  ? selectedBg || 'bg-primary-light'
-                  : notSelectedBg || 'bg-secondary-light'
+                value === index ? selectedBg || 'bg-primary-light' : notSelectedBg || 'bg-secondary-light'
               }`}
             >
               {index + 1}
@@ -46,12 +42,8 @@ export default function Stepper({
             <div
               className={`pl-2 ${
                 value === index
-                  ? `${selectedText || 'text-primary'} hover:${
-                      selectedTextHover || 'text-primary-dark'
-                    }`
-                  : `${notSelectedText || 'text-secondary'} hover:${
-                      notSelectedTextHover || 'text-secondary-dark'
-                    }`
+                  ? `${selectedText || 'text-primary'} hover:text-primary-dark`
+                  : `${notSelectedText || 'text-secondary'} hover:text-secondary-dark`
               }`}
             >
               {val}

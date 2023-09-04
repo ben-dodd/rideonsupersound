@@ -8,7 +8,7 @@ import ErrorScreen from 'components/container/error-screen'
 import ReceiveStockScreen from 'features/stock/receive-stock-screen'
 import { useReceiveBatch } from 'lib/api/stock'
 
-export default function StockItemPage() {
+export default function ReceiveStockPage() {
   const router = useRouter()
   const { id } = router.query
   const { view } = useAppStore()
@@ -22,6 +22,6 @@ export default function StockItemPage() {
   )
 }
 
-StockItemPage.getLayout = (page) => <Layout>{page}</Layout>
+ReceiveStockPage.getLayout = (page) => <Layout>{page}</Layout>
 
 export const getServerSideProps = withPageAuthRequired()

@@ -85,7 +85,7 @@ const SaleItemScreen = ({ saleItem }) => {
         sale?.state ? sale?.state.toUpperCase() : 'IN PROGRESS'
       }]`}
       titleClass={'bg-brown-dark text-white'}
-      // showBackButton
+      showBackButton
       full
       dark
       menuItems={menuItems}
