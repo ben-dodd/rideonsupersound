@@ -1,16 +1,19 @@
 import { VendorObject } from 'lib/types/vendor'
 import CreateableSelect from 'components/inputs/createable-select'
 import { useAppStore } from 'lib/store'
-import { useVendors, createVendor } from 'lib/api/vendor'
+import { useVendors, createVendor, useVendor } from 'lib/api/vendor'
 import SettingsSelect from 'components/inputs/settings-select'
 import SectionPanel from 'components/container/section-panel'
 import { Info, Money, Storefront } from '@mui/icons-material'
 import RadioButton from 'components/inputs/radio-button'
 import ChangePriceForm from '../change-price-form'
+import GeneralDetails from 'features/vendor/item-vendor/general-details'
+import Loading from 'components/placeholders/loading'
 
 export default function SelectVendor() {
   const { receiveBasket, setReceiveBasket } = useAppStore()
   const { vendors, mutateVendors } = useVendors()
+  const { vendor, isVendorLoading } = useVendor(`${receiveBasket?.vendorId}`)
   console.log(receiveBasket)
 
   return (
@@ -36,6 +39,7 @@ export default function SelectVendor() {
               label: val?.name || '',
             }))}
           />
+          {isVendorLoading ? <Loading /> : <GeneralDetails vendor={vendor} />}
         </SectionPanel>
       </div>
       <div>
