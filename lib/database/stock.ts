@@ -479,7 +479,7 @@ export function dbCheckIfRestockNeeded(itemId, state, db = connection) {
 }
 
 export function dbGetReceiveBatches(db = connection) {
-  return db('batch_receive').orderBy('id', 'desc')
+  return db('batch_receive').where({ is_deleted: false }).orderBy('id', 'desc')
 }
 
 export function dbGetReceiveBatch(id, db = connection) {
@@ -489,24 +489,66 @@ export function dbGetReceiveBatch(id, db = connection) {
     .where('batch_receive.id', id)
     .first()
     .then((batch) =>
-      dbGetStockMovementsForReceiveBatch(id, db).then((stockMovements) => {
-        // console.log(stockMovements)
-        return {
-          batch,
-          stockMovements,
-        }
-        // return dbGetStockItems(
-        //   stockMovements?.map((sm) => sm?.stock_id),
-        //   db,
-        // ).then((stockItems) => ({
-        //   batch,
-        //   stockMovements,
-        //   stockItems,
-        // }))
-      }),
+      dbGetStockMovementsForReceiveBatch(id, db)
+        .then((stockMovements) => {
+          // console.log(stockMovements)
+          return {
+            batch,
+            stockMovements,
+          }
+        })
+        .then(({ batch, stockMovements }) =>
+          dbGetStockItems(
+            stockMovements?.map((sm) => sm?.stock_id),
+            db,
+          ).then((stockItems) => ({
+            batch,
+            stockMovements,
+            stockItems,
+          })),
+        ),
     )
 }
 
 export function dbGetStockMovementsForReceiveBatch(id, db) {
   return db('stock_movement').where('batch_receive_id', id)
+}
+
+export function dbUpdateReceiveBatch(update, id, db = connection) {
+  return db('batch_receive').where({ id }).update(js2mysql(update))
+}
+
+export function dbCreateReceiveBatch(receiveBatch, db = connection) {
+  return db('batch_receive')
+    .insert(js2mysql(receiveBatch))
+    .then((rows) => rows[0])
+    .catch((e) => Error(e.message))
+}
+
+export async function dbSaveReceiveBatch(receiveBatch, db = connection) {
+  return db.transaction(async (trx) => {
+    let batchId = receiveBatch?.id
+    const { batchList = [] } = receiveBatch || []
+
+    if (batchId) {
+      await dbUpdateReceiveBatch({ ...receiveBatch, batchList: JSON.stringify(batchList) }, batchId, trx)
+    } else {
+      batchId = await dbCreateReceiveBatch({ ...receiveBatch, batchList: JSON.stringify(batchList) }, trx)
+    }
+    const receiveCompleted = receiveBatch?.dateCompleted
+
+    if (receiveCompleted) {
+      await dbReceiveStock(receiveBatch?.batchList, trx)
+    }
+
+    return dbGetReceiveBatch(batchId, trx)
+  })
+}
+
+export async function dbDeleteReceiveBatch(batchId, db = connection) {
+  console.log('Deleting', batchId)
+  return db.transaction(async (trx) => {
+    await dbUpdateReceiveBatch({ isDeleted: true }, batchId, trx)
+    await trx('stock_movement').update({ is_deleted: true }).where({ receive_batch_id: batchId })
+  })
 }

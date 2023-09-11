@@ -254,17 +254,6 @@ export function dbUpdateVendorPayment(update, id, db = connection) {
 }
 
 export function dbCreateBatchPayment(batchPayment: BatchPaymentObject, db = connection) {
-  // console.log('DB', batchPayment)
-  // const {
-  //   batchNumber = '',
-  //   sequenceNumber = '',
-  //   note = '',
-  //   dateStarted = null,
-  //   startedByClerkId = null,
-  //   dateCompleted = null,
-  //   completedByClerkId = null,
-  //   isDeleted = 0,
-  // } = batchPayment || {}
   return db('batch_payment')
     .insert(js2mysql(batchPayment))
     .then((rows) => rows[0])

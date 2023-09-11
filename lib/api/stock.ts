@@ -2,6 +2,7 @@ import { ClerkObject } from 'lib/types'
 import { SaleItemObject } from 'lib/types/sale'
 import { StockItemObject, StockPriceObject, StocktakeTemplateObject } from 'lib/types/stock'
 import { axiosAuth, useData } from './'
+import { mysql2js } from 'lib/database/utils/helpers'
 
 export function useStockList() {
   return useData(`stock`, 'stockList')
@@ -114,4 +115,21 @@ export function useReceiveBatches() {
 
 export function useReceiveBatch(id) {
   return useData(id ? `stock/receive/${id}` : null, 'receiveBatch')
+}
+
+export function saveReceiveBatch(receiveBatch) {
+  return axiosAuth
+    .post(`/api/stock/receive/batch`, receiveBatch)
+    .then((res) => {
+      // Returns saved batch payment session
+      return mysql2js(res)
+    })
+    .catch((e) => Error(e.message))
+}
+
+export function deleteReceiveBatch(batchId) {
+  return axiosAuth
+    .delete(`/api/stock/receive/batch/${batchId}`)
+    .then((res) => res.data)
+    .catch((e) => Error(e.message))
 }

@@ -1,6 +1,6 @@
 import Stepper from 'components/navigation/stepper'
 import { ModalButton } from 'lib/types'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import SelectItems from './add-items'
 import CheckDetails from './check-details'
 import PrintLabel from './print-label'
@@ -13,6 +13,8 @@ import { useClerk } from 'lib/api/clerk'
 import { receiveStock } from 'lib/api/stock'
 import MidScreenContainer from 'components/container/mid-screen'
 import { Delete, Edit, ImportContacts, Print } from '@mui/icons-material'
+import { useSWRConfig } from 'swr'
+import { useRouter } from 'next/router'
 
 export default function ReceiveStockScreen({ receiveBatch }) {
   const { receiveBasket, resetReceiveBasket, openConfirm, closeView } = useAppStore()
@@ -22,6 +24,39 @@ export default function ReceiveStockScreen({ receiveBatch }) {
   const [receiveLoading, setReceiveLoading] = useState(false)
   const { registerId } = useCurrentRegisterId()
   const { batch = {}, stockMovements = [], stockItems = [] } = receiveBatch || {}
+  const [bypassConfirmDialog, setBypassConfirmDialog] = useState(false)
+  const { mutate } = useSWRConfig()
+  const router = useRouter()
+  useEffect(() => {
+    const saveBatchAndRedirect = (url) => {
+      console.log('saving batch and redirect')
+      saveRecev(batchPaymentSession).then((savedBatchPayment) => {
+        mutate(`vendor/payment/batch/${savedBatchPayment?.id}`, savedBatchPayment)
+        mutate(`vendor/payment/batch`)
+        mutate(`vendor/payment`)
+        router.push(url)
+      })
+    }
+    const changePage = (url) => {
+      bypassConfirmDialog
+        ? null
+        : receiveBasket?.id
+        ? saveBatchAndRedirect(url)
+        : openConfirm({
+            open: true,
+            title: 'Do you want to save the current payment session?',
+            yesText: 'Yes, Please Save',
+            noText: 'No, Discard Changes',
+            action: () => saveBatchAndRedirect(url),
+          })
+    }
+    router.events.on('routeChangeStart', changePage)
+
+    // unsubscribe on component destroy in useEffect return function
+    return () => {
+      router.events.off('routeChangeStart', changePage)
+    }
+  }, [batchPaymentSession, bypassConfirmDialog])
 
   const buttons: ModalButton[][] = [
     [
