@@ -1,4 +1,4 @@
-export const dateTime = 'ddd, D MMM YYYY, H:mm A'
+export const dateTime = 'ddd, D MMM YYYY, h:mm A'
 export const timeDate = 'H:mm A, D MMMM YYYY'
 export const dateDay = 'dddd, MMMM D, YYYY'
 export const dateYMD = 'YYYY-MM-DD'

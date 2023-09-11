@@ -8,7 +8,7 @@ import { saveVendorBatchPayment } from 'lib/api/vendor'
 import { useRouter } from 'next/router'
 import { useSWRConfig } from 'swr'
 
-export default function SelectBatchPayments({ setStage }) {
+export default function SelectBatchPayments({ setStage, setBypassConfirmDialog }) {
   const [checked, setChecked] = useState(true)
   const { batchPaymentSession, setBatchPaymentList } = useAppStore()
   const { paymentList = [] } = batchPaymentSession || {}
@@ -29,6 +29,7 @@ export default function SelectBatchPayments({ setStage }) {
             onClick={() => {
               saveVendorBatchPayment(batchPaymentSession).then((savedBatchPayment) => {
                 mutate(`vendor/payment/batch/${savedBatchPayment?.id}`, savedBatchPayment)
+                setBypassConfirmDialog(true)
                 router.push('/payments')
               })
             }}

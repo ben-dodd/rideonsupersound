@@ -12,7 +12,9 @@ const BatchPaymentSummary = ({ search, setSearch, paymentList }) => {
         <div className="text-red-400 text-2xl font-bold text-right">
           {paymentList?.filter((v) => isNaN(parseFloat(v?.payAmount)))?.length > 0
             ? `CHECK PAY ENTRIES`
-            : `PAY ${priceCentsString(totalPay)}\nto ${totalNumVendors} VENDOR${totalNumVendors === 1 ? '' : 'S'}`}
+            : `${batchPaymentSession?.dateCompleted ? 'PAID' : 'PAY'} ${priceCentsString(
+                totalPay,
+              )}\nto ${totalNumVendors} VENDOR${totalNumVendors === 1 ? '' : 'S'}`}
         </div>
         <SearchInput searchValue={search} handleSearch={(e) => setSearch(e?.target?.value)} />
       </div>

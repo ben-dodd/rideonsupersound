@@ -10,7 +10,7 @@ import ReviewBatchPaymentListItem from './review-batch-payment-list-item'
 import { downloadEmailList, downloadKbbFile } from 'lib/functions/payment'
 import { useSWRConfig } from 'swr'
 
-export default function ReviewBatchPayments({ setStage }) {
+export default function ReviewBatchPayments({ setStage, setBypassConfirmDialog }) {
   const router = useRouter()
   const { batchPaymentSession, setBatchPaymentSession } = useAppStore()
   const { paymentList = [] } = batchPaymentSession || {}
@@ -33,6 +33,7 @@ export default function ReviewBatchPayments({ setStage }) {
             onClick={() => {
               saveVendorBatchPayment(batchPaymentSession).then((savedBatchPayment) => {
                 mutate(`vendor/payment/batch/${savedBatchPayment?.id}`, savedBatchPayment)
+                setBypassConfirmDialog(true)
                 router.push('/payments')
               })
             }}
@@ -48,6 +49,7 @@ export default function ReviewBatchPayments({ setStage }) {
                 console.log('Downloading the saved batch payment', savedBatchPayment)
                 downloadKbbFile(savedBatchPayment?.id, savedBatchPayment?.kbbFile)
                 downloadEmailList(savedBatchPayment?.id, savedBatchPayment?.emailCsvFile)
+                setBypassConfirmDialog(true)
                 mutate(`vendor/payment/batch/${savedBatchPayment?.id}`, savedBatchPayment)
                 mutate(`vendor/payment/batch`)
                 mutate(`vendor/payment`)

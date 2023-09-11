@@ -354,8 +354,12 @@ export async function dbDeleteBatchPayment(batchId, db = connection) {
   console.log('Deleting', batchId)
   return db.transaction(async (trx) => {
     await dbUpdateBatchPayment({ isDeleted: true }, batchId, trx)
-    trx('vendor_payment').where({ batch_id: batchId }).update({ is_deleted: true })
+    await trx('vendor_payment').update({ is_deleted: true }).where({ batch_id: batchId })
   })
+}
+
+export async function dbDeleteVendorPayment(id, db = connection) {
+  return db('vendor_payment').update({ is_deleted: true }).where({ id })
 }
 
 export function dbGetVendorHasNegativeQuantityItems(vendor_id, db = connection) {
@@ -417,15 +421,16 @@ export function dbGetCurrentVendorBatchPaymentId(db = connection) {
 }
 
 export function dbGetVendorPaymentsByBatchId(batchId, db = connection) {
-  return db('vendor_payment').where('batch_id', batchId)
+  return db('vendor_payment').where({ batch_id: batchId, is_deleted: 0 })
 }
 
 export function dbGetVendorPayment(paymentId, db = connection) {
-  return db('vendor_payment').where('id', paymentId)
+  return db('vendor_payment').where({ id: paymentId, is_deleted: 0 })
 }
 
 export function dbGetVendorPayments(db = connection) {
   return db('vendor_payment')
+    .where('vendor_payment.is_deleted', 0)
     .leftJoin('vendor', 'vendor.id', 'vendor_payment.vendor_id')
     .leftJoin('clerk', 'clerk.id', 'vendor_payment.clerk_id')
     .select('vendor_payment.*', 'clerk.name as clerkName', 'vendor.name as vendorName')

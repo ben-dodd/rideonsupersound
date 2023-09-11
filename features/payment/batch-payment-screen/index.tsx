@@ -25,25 +25,29 @@ export default function BatchPaymentScreen() {
   const { batchPayment, isBatchPaymentLoading } = useVendorBatchPayment(id)
   const { mutate } = useSWRConfig()
   const [stage, setStage] = useState('select')
+  const [bypassConfirmDialog, setBypassConfirmDialog] = useState(false)
   useEffect(() => {
     const saveBatchAndRedirect = (url) => {
-      saveVendorBatchPayment(batchPaymentSession).then((savedBatchPayment) => {
-        mutate(`vendor/payment/batch/${savedBatchPayment?.id}`, savedBatchPayment)
-        mutate(`vendor/payment/batch`)
-        mutate(`vendor/payment`)
-        router.push(url)
-      })
+      !batchPaymentSession?.isDeleted &&
+        saveVendorBatchPayment(batchPaymentSession).then((savedBatchPayment) => {
+          mutate(`vendor/payment/batch/${savedBatchPayment?.id}`, savedBatchPayment)
+          mutate(`vendor/payment/batch`)
+          mutate(`vendor/payment`)
+          router.push(url)
+        })
     }
     const changePage = (url) => {
       batchPaymentSession?.id
         ? saveBatchAndRedirect(url)
-        : openConfirm({
+        : !bypassConfirmDialog
+        ? openConfirm({
             open: true,
             title: 'Do you want to save the current payment session?',
             yesText: 'Yes, Please Save',
             noText: 'No, Discard Changes',
             action: () => saveBatchAndRedirect(url),
           })
+        : null
     }
     router.events.on('routeChangeStart', changePage)
 
@@ -103,6 +107,7 @@ export default function BatchPaymentScreen() {
           setBatchPaymentSession({ isDeleted: true })
           deleteVendorBatchPayment(batchPayment?.id)
         } else resetBatchPaymentSession()
+        setBypassConfirmDialog(true)
         mutate(`vendor/payment/batch`)
         mutate(`vendor/payment`)
         router.push(`/payments`)
@@ -152,9 +157,9 @@ export default function BatchPaymentScreen() {
       {batchPaymentSession?.dateCompleted ? (
         <ViewBatchPayments />
       ) : stage === 'select' ? (
-        <SelectBatchPayments setStage={setStage} />
+        <SelectBatchPayments setStage={setStage} setBypassConfirmDialog={setBypassConfirmDialog} />
       ) : stage === 'review' ? (
-        <ReviewBatchPayments setStage={setStage} />
+        <ReviewBatchPayments setStage={setStage} setBypassConfirmDialog={setBypassConfirmDialog} />
       ) : (
         <div />
       )}

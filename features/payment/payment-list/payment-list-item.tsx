@@ -1,9 +1,12 @@
-import { AccountBalance, AddCard, EventBusy, Input, Money, Output } from '@mui/icons-material'
+import { AccountBalance, AddCard, Delete, EventBusy, Input, Money, Output } from '@mui/icons-material'
 import dayjs from 'dayjs'
+import { deleteVendorBatchPayment, deleteVendorPayment } from 'lib/api/vendor'
+import { useAppStore } from 'lib/store'
 import { dateTime } from 'lib/types/date'
 import { VendorPaymentTypes } from 'lib/types/vendor'
 import { priceCentsString } from 'lib/utils'
 import { useRouter } from 'next/router'
+import { useSWRConfig } from 'swr'
 
 const PaymentListItem = ({ payment }) => {
   const router = useRouter()
@@ -62,6 +65,26 @@ const PaymentListItem = ({ payment }) => {
       description = <span>Transfer from other vendor</span>
       break
   }
+  const { openConfirm } = useAppStore()
+  const { mutate } = useSWRConfig()
+  const deleteBatchPayment = () => {
+    openConfirm({
+      open: true,
+      title: 'Are you sure?',
+      message: payment?.batchId
+        ? 'Payment is part of a batch payment and cannot be deleted individually. Do you want to delete this batch payment and all associated transactions?'
+        : 'Are you sure you want to delete this vendor payment?',
+      action: () => {
+        if (payment?.batchId) {
+          deleteVendorBatchPayment(payment?.batchId)
+          mutate(`vendor/payment/batch`)
+        } else {
+          deleteVendorPayment(payment?.id)
+        }
+        mutate(`vendor/payment`)
+      },
+    })
+  }
   return (
     <div className={`list-item-compact text-sm`}>
       <div className="flex w-full">
@@ -73,8 +96,19 @@ const PaymentListItem = ({ payment }) => {
             {payment?.vendorName}
           </span>
         </div>
-        <div className="w-5/12">{description}</div>
+        <div className="w-4/12">{description}</div>
         <div className="w-1/12 text-right">{priceCentsString(payment?.amount)}</div>
+        <div className="w-1/12 text-right">
+          {payment?.saleId ||
+          payment?.type === VendorPaymentTypes.TransferFrom ||
+          payment?.type === VendorPaymentTypes.TransferTo ? (
+            <div />
+          ) : (
+            <button onClick={deleteBatchPayment}>
+              <Delete className="hover:text-primary" />
+            </button>
+          )}
+        </div>
       </div>
       <div />
     </div>
