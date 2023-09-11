@@ -66,3 +66,10 @@ export function saveVendorBatchPayment(batchPayment) {
     })
     .catch((e) => Error(e.message))
 }
+
+export function deleteVendorBatchPayment(batchPaymentId) {
+  return axiosAuth
+    .delete(`/api/vendor/payment/batch/${batchPaymentId}`)
+    .then((res) => res.data)
+    .catch((e) => Error(e.message))
+}

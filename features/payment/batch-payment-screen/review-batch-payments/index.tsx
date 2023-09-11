@@ -12,14 +12,9 @@ import { useSWRConfig } from 'swr'
 
 export default function ReviewBatchPayments({ setStage }) {
   const router = useRouter()
-  const { batchPaymentSession } = useAppStore()
+  const { batchPaymentSession, setBatchPaymentSession } = useAppStore()
   const { paymentList = [] } = batchPaymentSession || {}
   const { clerk } = useClerk()
-  const totalPay = paymentList?.reduce(
-    (prev, payment) => (payment?.isChecked ? parseFloat(payment?.payAmount) : 0) + prev,
-    0,
-  )
-  const vendorNum = paymentList?.reduce((prev, payment) => (payment?.isChecked ? 1 : 0) + prev, 0)
   const [search, setSearch] = useState('')
   const { mutate } = useSWRConfig()
   const validPayments =
@@ -48,15 +43,14 @@ export default function ReviewBatchPayments({ setStage }) {
             className="icon-text-button w-full"
             disabled={!validPayments}
             onClick={() => {
-              saveVendorBatchPayment({
-                ...batchPaymentSession,
-                completedByClerkId: clerk?.id,
-                dateCompleted: dayjs.utc().format(),
-              }).then((savedBatchPayment) => {
+              setBatchPaymentSession({ completedByClerkId: clerk?.id, dateCompleted: dayjs.utc().format() })
+              saveVendorBatchPayment(batchPaymentSession).then((savedBatchPayment) => {
                 console.log('Downloading the saved batch payment', savedBatchPayment)
                 downloadKbbFile(savedBatchPayment?.id, savedBatchPayment?.kbbFile)
                 downloadEmailList(savedBatchPayment?.id, savedBatchPayment?.emailCsvFile)
                 mutate(`vendor/payment/batch/${savedBatchPayment?.id}`, savedBatchPayment)
+                mutate(`vendor/payment/batch`)
+                mutate(`vendor/payment`)
                 router.push('/payments')
               })
             }}
@@ -95,6 +89,7 @@ export default function ReviewBatchPayments({ setStage }) {
             <div className="h-dialog overflow-y-scroll">
               {paymentList
                 ?.filter((payment) => payment?.isChecked)
+                ?.filter((payment) => search === '' || payment?.name?.toLowerCase()?.includes(search?.toLowerCase()))
                 ?.map((payment) => (
                   <ReviewBatchPaymentListItem key={payment?.vendorId} payment={payment} />
                 ))}

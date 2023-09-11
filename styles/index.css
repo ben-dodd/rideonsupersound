@@ -139,7 +139,7 @@
 }
 
 .stock-indicator__number {
-  @apply ml-5 my-1 rounded-full h-8 w-8 flex items-center justify-center;
+  @apply ml-5 my-1 rounded-full h-8 w-8 flex items-center justify-center select-none;
 }
 
 .input-label {

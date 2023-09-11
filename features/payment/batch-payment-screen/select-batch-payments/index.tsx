@@ -66,7 +66,7 @@ export default function SelectBatchPayments({ setStage }) {
             <div className="pl-4">NAME</div>
           </div>
           <div className="w-1/12 text-right mr-2">TAKE</div>
-          <div className="w-1/12 text-right mr-2">OWED</div>
+          <div className="w-1/12 text-right mr-8">OWED</div>
           <div className="w-2/12">LAST SALE</div>
           <div className="w-2/12">LAST PAID</div>
           <div className="w-2/12">LAST CONTACTED</div>

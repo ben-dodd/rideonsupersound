@@ -75,4 +75,19 @@ export const axiosAuth = {
       .catch((error) => {
         throw error
       }),
+  delete: (url) =>
+    getAuth()
+      .then((accessToken) =>
+        axios
+          .delete(url, {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          })
+          .then((res) => res.data)
+          .catch((error) => {
+            throw error
+          }),
+      )
+      .catch((error) => {
+        throw error
+      }),
 }

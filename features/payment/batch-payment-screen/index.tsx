@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react'
-import { checkDefaultChecked, modulusCheck } from 'lib/functions/payment'
-import { useVendorAccounts, useVendorBatchPayment } from 'lib/api/vendor'
+import { checkDefaultChecked, downloadEmailList, downloadFile, modulusCheck } from 'lib/functions/payment'
+import {
+  deleteVendorBatchPayment,
+  saveVendorBatchPayment,
+  useVendorAccounts,
+  useVendorBatchPayment,
+} from 'lib/api/vendor'
 import { centsToDollars, dollarsToCents } from 'lib/utils'
 import MidScreenContainer from 'components/container/mid-screen'
 import SelectBatchPayments from './select-batch-payments'
@@ -8,14 +13,45 @@ import { useRouter } from 'next/router'
 import ReviewBatchPayments from './review-batch-payments'
 import { useAppStore } from 'lib/store'
 import ViewBatchPayments from './view-batch-payments'
+import { useSWRConfig } from 'swr'
+import { Delete, Email, NoTransfer } from '@mui/icons-material'
+import dayjs from 'dayjs'
 
 export default function BatchPaymentScreen() {
   const router = useRouter()
-  const { batchPaymentSession, resetBatchPaymentSession, setBatchPaymentSession } = useAppStore()
+  const { batchPaymentSession, resetBatchPaymentSession, setBatchPaymentSession, openConfirm } = useAppStore()
   const id = router.query.id
   const { vendorAccounts, isVendorAccountsLoading } = useVendorAccounts()
   const { batchPayment, isBatchPaymentLoading } = useVendorBatchPayment(id)
+  const { mutate } = useSWRConfig()
   const [stage, setStage] = useState('select')
+  useEffect(() => {
+    const saveBatchAndRedirect = (url) => {
+      saveVendorBatchPayment(batchPaymentSession).then((savedBatchPayment) => {
+        mutate(`vendor/payment/batch/${savedBatchPayment?.id}`, savedBatchPayment)
+        mutate(`vendor/payment/batch`)
+        mutate(`vendor/payment`)
+        router.push(url)
+      })
+    }
+    const changePage = (url) => {
+      batchPaymentSession?.id
+        ? saveBatchAndRedirect(url)
+        : openConfirm({
+            open: true,
+            title: 'Do you want to save the current payment session?',
+            yesText: 'Yes, Please Save',
+            noText: 'No, Discard Changes',
+            action: () => saveBatchAndRedirect(url),
+          })
+    }
+    router.events.on('routeChangeStart', changePage)
+
+    // unsubscribe on component destroy in useEffect return function
+    return () => {
+      router.events.off('routeChangeStart', changePage)
+    }
+  }, [batchPaymentSession])
 
   console.log(batchPaymentSession)
 
@@ -55,11 +91,60 @@ export default function BatchPaymentScreen() {
     setBatchPaymentSession({ ...batchPayment, paymentList })
   }, [vendorAccounts, id])
 
+  const deleteBatchPayment = () => {
+    openConfirm({
+      open: true,
+      title: 'Are you sure?',
+      message: batchPayment?.dateCompleted
+        ? 'Are you sure you want to delete this batch payment?'
+        : 'Are you sure you want to cancel this batch payment?',
+      action: () => {
+        if (batchPayment?.id) {
+          setBatchPaymentSession({ isDeleted: true })
+          deleteVendorBatchPayment(batchPayment?.id)
+        } else resetBatchPaymentSession()
+        mutate(`vendor/payment/batch`)
+        mutate(`vendor/payment`)
+        router.push(`/payments`)
+      },
+    })
+  }
+
+  const viewMenuItems = [
+    // { text: 'Edit', icon: <Edit />, onClick: () => setBatchPaymentSession({ dateCompleted: null }) },
+    {
+      text: 'Download KBB File',
+      icon: <NoTransfer />,
+      onClick: () =>
+        downloadFile(
+          batchPaymentSession?.kbbFile,
+          `batch-payment-${`00000${batchPaymentSession?.id}`.slice(-5)}-${dayjs(
+            batchPaymentSession?.dateCompleted,
+          ).format('YYYY-MM-DD')}.kbb`,
+        ),
+    },
+    {
+      text: 'Download Email List',
+      icon: <Email />,
+      onClick: () =>
+        downloadEmailList(
+          batchPaymentSession?.emailCsvFile,
+          `batch-payment-email-list-${`00000${batchPaymentSession?.id}`.slice(-5)}-${dayjs(
+            batchPaymentSession?.dateCompleted,
+          ).format('YYYY-MM-DD')}.csv`,
+        ),
+    },
+    { text: 'Delete Batch Payment', icon: <Delete />, onClick: deleteBatchPayment },
+  ]
+
+  const menuItems = [{ text: 'Delete Batch Payment', icon: <Delete />, onClick: deleteBatchPayment }]
+
   return (
     <MidScreenContainer
       title={`${id}`?.toLowerCase() === 'new' ? 'NEW BATCH PAYMENT' : `BATCH PAYMENT #${`00000${id}`.slice(-5)}`}
       titleClass="bg-brown-dark text-white"
       isLoading={isVendorAccountsLoading || isBatchPaymentLoading}
+      menuItems={batchPayment?.dateCompleted ? viewMenuItems : menuItems}
       showBackButton
       full
       dark

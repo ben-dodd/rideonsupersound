@@ -63,7 +63,10 @@ export default function ReviewBatchPaymentListItem({ payment }) {
         ) : (
           <div />
         )}
-        {!payment?.hasNegativeQuantityItems && !payment?.invalid && !payment?.storeCreditOnly ? (
+        {!invalidBankAccountNumber &&
+        !payment?.hasNegativeQuantityItems &&
+        !payment?.invalid &&
+        !payment?.storeCreditOnly ? (
           <Tooltip title="Everything looks good!">
             <div className="text-green-500 pl-2">
               <CheckIcon />

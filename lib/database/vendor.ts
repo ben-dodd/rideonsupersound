@@ -350,7 +350,13 @@ export async function dbSaveBatchVendorPayment(batchPayment, db = connection) {
   })
 }
 
-export function dbDeleteBatchPayment(batchId, db = connection) {}
+export async function dbDeleteBatchPayment(batchId, db = connection) {
+  console.log('Deleting', batchId)
+  return db.transaction(async (trx) => {
+    await dbUpdateBatchPayment({ isDeleted: true }, batchId, trx)
+    trx('vendor_payment').where({ batch_id: batchId }).update({ is_deleted: true })
+  })
+}
 
 export function dbGetVendorHasNegativeQuantityItems(vendor_id, db = connection) {
   return dbGetSimpleStockCount(db)
@@ -360,6 +366,7 @@ export function dbGetVendorHasNegativeQuantityItems(vendor_id, db = connection) 
 
 export function dbGetBatchVendorPayments(db = connection) {
   return db('batch_payment')
+    .where('batch_payment.is_deleted', false)
     .leftJoin('clerk as startedByClerk', 'startedByClerk.id', 'batch_payment.started_by_clerk_id')
     .leftJoin('clerk as completedByClerk', 'completedByClerk.id', 'batch_payment.completed_by_clerk_id')
     .select(
@@ -374,7 +381,7 @@ export function dbGetBatchVendorPayments(db = connection) {
 export function dbGetBatchVendorPayment(id, db = connection) {
   console.log('Getting batch payment', id)
   return db('batch_payment')
-    .where({ id })
+    .where({ id, is_deleted: false })
     .first()
     .then((batchPayment) => {
       return { ...batchPayment, payment_list: JSON.parse(batchPayment?.payment_list || '[]') }

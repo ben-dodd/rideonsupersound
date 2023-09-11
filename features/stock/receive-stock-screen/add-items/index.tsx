@@ -12,16 +12,11 @@ export default function SelectItems() {
   return (
     <div className="w-full">
       <Tabs
-        tabs={[
-          'Add Existing Items',
-          'Add New Items',
-          'CSV Import',
-          'Discogs Scanner',
-        ]}
+        tabs={['Receive Existing Items', 'Add New Items', 'Search Discogs', 'Search GoogleBooks', 'CSV Import']}
         value={mode}
         onChange={setMode}
       />
-      <div className="flex w-full">
+      <div className="flex w-full border-t pt-2">
         <div className="w-3/5 mr-4">
           <div hidden={mode !== 0}>
             <Vendor />

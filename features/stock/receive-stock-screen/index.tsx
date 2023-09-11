@@ -158,12 +158,6 @@ export default function ReceiveStockScreen({ receiveBatch }) {
           disabled={[false, noVendor, noItems, noItems, noItems]}
           value={step}
           onChange={setStep}
-          selectedBg="bg-col2"
-          notSelectedBg="bg-gray-200"
-          selectedText="text-col2-dark"
-          notSelectedText="text-black"
-          selectedTextHover="text-col2-dark"
-          notSelectedTextHover="text-gray-800"
         />
         <div className="p-4">
           {step === 0 && <SelectVendor />}

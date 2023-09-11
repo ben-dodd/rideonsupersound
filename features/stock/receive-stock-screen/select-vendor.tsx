@@ -95,6 +95,9 @@ export default function SelectVendor() {
           />
         </SectionPanel>
         <SectionPanel title={'Default Prices'} icon={<Money />}>
+          <div className="help-text pb-4">
+            Select the default prices for the batch. You can still edit prices individually.
+          </div>
           <ChangePriceForm obj={receiveBasket} setObj={setReceiveBasket} />
         </SectionPanel>
       </div>

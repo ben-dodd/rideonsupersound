@@ -40,7 +40,7 @@ export default function SelectBatchPaymentListItem({ payment }) {
         >{`[${payment?.id}] ${payment?.name}`}</div>
       </div>
       <div className="w-1/12 text-right mr-2">{priceCentsString(payment?.totalVendorCut)}</div>
-      <div className={`w-1/12 text-right mr-2 font-bold${payment?.totalOwing < 0 ? ' text-red-500' : ''}`}>{`${
+      <div className={`w-1/12 text-right mr-8 font-bold${payment?.totalOwing < 0 ? ' text-red-500' : ''}`}>{`${
         payment?.totalOwing < 0 ? '(' : ''
       }${priceCentsString(Math.abs(payment?.totalOwing || 0))}${payment?.totalOwing < 0 ? ')' : ''}`}</div>
       <div className="w-2/12">{payment?.lastSold ? dayjs(payment?.lastSold).format(dateFormat) : 'NO SALES'}</div>
