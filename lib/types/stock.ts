@@ -226,3 +226,27 @@ export interface StocktakeTemplateObject {
   totalEstimated?: number
   totalUniqueEstimated?: number
 }
+
+export interface BatchReceiveObject {
+  batchList?: any[]
+  id?: number
+  vendorId?: number
+  itemCount?: number
+  itemList?: string
+  registerId?: number
+  startedByClerkId?: number
+  dateStarted?: string
+  completedByClerkId?: number
+  dateCompleted?: string
+  note?: string
+  media?: string
+  format?: string
+  isNew?: boolean
+  cond?: string
+  section?: string
+  country?: string
+  totalSell?: string
+  vendorCut?: string
+  storeCut?: string
+  margin?: string
+}

@@ -50,24 +50,7 @@ export interface StoreState {
   clippy?: ClippyProps
   createableCustomerName?: string
   cart: CartObject
-  receiveBasket?: {
-    items: any[]
-    clerkId?: number
-    registerId?: number
-    vendorId?: number
-    dateCompleted?: string
-    media: string
-    format: string
-    isNew: boolean
-    cond: string
-    section: string
-    country: string
-    genre: string[]
-    totalSell: string
-    vendorCut: string
-    storeCut: string
-    margin: string
-  }
+  receiveBasket?: BatchReceiveObject
   batchPaymentSession?: BatchPaymentObject
   sellPage?: {
     searchBar?: string

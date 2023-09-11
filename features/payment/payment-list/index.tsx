@@ -10,6 +10,10 @@ const PaymentList = () => {
   const [searchValue, setSearchValue] = useState('')
   const handleSearch = (e) => setSearchValue(e.target.value)
   const [limit, setLimit] = useState(50)
+  const filterPayment = (payment) =>
+    searchValue === '' ||
+    `${payment?.id}`?.includes(searchValue) ||
+    payment?.vendorName?.toLowerCase()?.includes(searchValue?.toLowerCase())
   return isVendorPaymentsLoading ? (
     <Loading />
   ) : (
@@ -18,9 +22,12 @@ const PaymentList = () => {
         <SearchInput searchValue={searchValue} handleSearch={handleSearch} />
       </div>
       <div className="px-2">
-        {vendorPayments?.slice(0, limit)?.map((payment) => (
-          <PaymentListItem key={payment?.id} payment={payment} />
-        ))}
+        {vendorPayments
+          ?.filter((payment) => filterPayment(payment))
+          ?.slice(0, limit)
+          ?.map((payment) => (
+            <PaymentListItem key={payment?.id} payment={payment} />
+          ))}
         {limit < vendorPayments?.length && <LoadMoreButton onClick={() => setLimit((limit) => limit + 50)} />}
       </div>
     </div>
