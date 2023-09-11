@@ -12,7 +12,7 @@ import { useSWRConfig } from 'swr'
 
 export default function ReviewBatchPayments({ setStage, setBypassConfirmDialog }) {
   const router = useRouter()
-  const { batchPaymentSession, setBatchPaymentSession } = useAppStore()
+  const { batchPaymentSession } = useAppStore()
   const { paymentList = [] } = batchPaymentSession || {}
   const { clerk } = useClerk()
   const [search, setSearch] = useState('')
@@ -41,18 +41,23 @@ export default function ReviewBatchPayments({ setStage, setBypassConfirmDialog }
             SAVE AND CLOSE <Save />
           </button>
           <button
-            className="icon-text-button w-full"
+            className="icon-text-button-highlight w-full"
             disabled={!validPayments}
             onClick={() => {
-              setBatchPaymentSession({ completedByClerkId: clerk?.id, dateCompleted: dayjs.utc().format() })
-              saveVendorBatchPayment(batchPaymentSession).then((savedBatchPayment) => {
+              // setBatchPaymentSession({ completedByClerkId: clerk?.id, dateCompleted: dayjs.utc().format() })
+              setBypassConfirmDialog(true)
+              saveVendorBatchPayment({
+                ...batchPaymentSession,
+                completedByClerkId: clerk?.id,
+                dateCompleted: dayjs.utc().format(),
+              }).then((savedBatchPayment) => {
                 console.log('Downloading the saved batch payment', savedBatchPayment)
-                downloadKbbFile(savedBatchPayment?.id, savedBatchPayment?.kbbFile)
-                downloadEmailList(savedBatchPayment?.id, savedBatchPayment?.emailCsvFile)
-                setBypassConfirmDialog(true)
                 mutate(`vendor/payment/batch/${savedBatchPayment?.id}`, savedBatchPayment)
                 mutate(`vendor/payment/batch`)
                 mutate(`vendor/payment`)
+                downloadKbbFile(savedBatchPayment?.id, savedBatchPayment?.kbbFile)
+                downloadEmailList(savedBatchPayment?.id, savedBatchPayment?.emailCsvFile)
+                // setBypassConfirmDialog(true).then(() => router.push(`/payments`))
                 router.push('/payments')
               })
             }}
@@ -63,20 +68,20 @@ export default function ReviewBatchPayments({ setStage, setBypassConfirmDialog }
       </div>
       {validPayments ? (
         <>
-          <div className="text-sm px-2">
+          <div className="info-box">
             <ul className="list-disc">
-              <li>- Check all payments are correct.</li>
+              <li>Check all payments are correct.</li>
               <li>
-                - If they are not, click <span className="font-bold">GO BACK</span> to edit.
+                If they are not, click <span className="font-bold text-brown-dark">GO BACK</span> to edit.
               </li>
               <li>
-                - Click<span className="font-bold"> COMPLETE AND DOWNLOAD</span> to save the batch payment. This will
-                also download a KBB file for the bank transfer and a CSV file to import into the RIDE ON emailing
-                GoogleSheet.
+                Click<span className="font-bold text-primary-dark"> COMPLETE AND DOWNLOAD</span> to save the batch
+                payment. This will also download a KBB file for the bank transfer and a CSV file to import into the RIDE
+                ON emailing GoogleSheet.
               </li>
               <li>
-                - Vendors with $0 payments or vendors with invalid bank account numbers will not be added to the KBB
-                file, only the email CSV.
+                Vendors with $0 payments or vendors with invalid bank account numbers will not be added to the KBB file,
+                only the email CSV.
               </li>
             </ul>
           </div>
@@ -84,9 +89,9 @@ export default function ReviewBatchPayments({ setStage, setBypassConfirmDialog }
             <div className="flex font-bold py-2 px-2 border-b border-black">
               <div className="w-1/3">NAME</div>
               <div className="w-1/6">TOTAL OWED</div>
-              <div className="w-1/6">AMOUNT TO PAY</div>
-              <div className="w-1/6">BALANCE</div>
-              <div className="w-1/6" />
+              <div className="w-1/6">PAY AMOUNT</div>
+              <div className="w-3/12">BALANCE REMAINING</div>
+              <div className="w-1/12" />
             </div>
             <div className="h-dialog overflow-y-scroll">
               {paymentList

@@ -21,7 +21,7 @@ export default function SelectBatchPayments({ setStage, setBypassConfirmDialog }
       <div className="flex justify-between p-2">
         <BatchPaymentSummary search={search} setSearch={setSearch} paymentList={paymentList} />
         <div className="px-4">
-          <div className="icon-text-button" onClick={() => setStage('review')}>
+          <div className="icon-text-button-highlight" onClick={() => setStage('review')}>
             REVIEW PAYMENTS <ArrowRight />
           </div>
           <div

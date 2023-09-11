@@ -28,26 +28,26 @@ export default function BatchPaymentScreen() {
   const [bypassConfirmDialog, setBypassConfirmDialog] = useState(false)
   useEffect(() => {
     const saveBatchAndRedirect = (url) => {
-      !batchPaymentSession?.isDeleted &&
-        saveVendorBatchPayment(batchPaymentSession).then((savedBatchPayment) => {
-          mutate(`vendor/payment/batch/${savedBatchPayment?.id}`, savedBatchPayment)
-          mutate(`vendor/payment/batch`)
-          mutate(`vendor/payment`)
-          router.push(url)
-        })
+      console.log('saving batch and redirect')
+      saveVendorBatchPayment(batchPaymentSession).then((savedBatchPayment) => {
+        mutate(`vendor/payment/batch/${savedBatchPayment?.id}`, savedBatchPayment)
+        mutate(`vendor/payment/batch`)
+        mutate(`vendor/payment`)
+        router.push(url)
+      })
     }
     const changePage = (url) => {
-      batchPaymentSession?.id
+      bypassConfirmDialog
+        ? null
+        : batchPaymentSession?.id
         ? saveBatchAndRedirect(url)
-        : !bypassConfirmDialog
-        ? openConfirm({
+        : openConfirm({
             open: true,
             title: 'Do you want to save the current payment session?',
             yesText: 'Yes, Please Save',
             noText: 'No, Discard Changes',
             action: () => saveBatchAndRedirect(url),
           })
-        : null
     }
     router.events.on('routeChangeStart', changePage)
 
@@ -55,7 +55,7 @@ export default function BatchPaymentScreen() {
     return () => {
       router.events.off('routeChangeStart', changePage)
     }
-  }, [batchPaymentSession])
+  }, [batchPaymentSession, bypassConfirmDialog])
 
   console.log(batchPaymentSession)
 
@@ -99,9 +99,7 @@ export default function BatchPaymentScreen() {
     openConfirm({
       open: true,
       title: 'Are you sure?',
-      message: batchPayment?.dateCompleted
-        ? 'Are you sure you want to delete this batch payment?'
-        : 'Are you sure you want to cancel this batch payment?',
+      message: 'Are you sure you want to delete this batch payment?',
       action: () => {
         if (batchPayment?.id) {
           setBatchPaymentSession({ isDeleted: true })

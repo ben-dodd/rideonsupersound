@@ -70,7 +70,7 @@ const PaymentListItem = ({ payment }) => {
   const deleteBatchPayment = () => {
     openConfirm({
       open: true,
-      title: 'Are you sure?',
+      title: payment?.batchId ? 'Delete batch payment?' : 'Are you sure?',
       message: payment?.batchId
         ? 'Payment is part of a batch payment and cannot be deleted individually. Do you want to delete this batch payment and all associated transactions?'
         : 'Are you sure you want to delete this vendor payment?',

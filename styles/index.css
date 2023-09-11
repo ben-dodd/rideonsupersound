@@ -90,6 +90,10 @@
   @apply flex justify-between items-center text-sm rounded py-1 px-2 m-1 whitespace-nowrap cursor-pointer bg-brown-dark text-white hover:bg-brown disabled:pointer-events-none disabled:bg-gray-300;
 }
 
+.icon-text-button-highlight {
+  @apply flex justify-between items-center text-sm rounded py-1 px-2 m-1 whitespace-nowrap cursor-pointer bg-primary-dark text-white hover:bg-primary disabled:pointer-events-none disabled:bg-gray-300;
+}
+
 .pill-button {
   @apply flex justify-between items-center text-sm rounded-full py-1 pl-2 pr-2 text-lg whitespace-nowrap cursor-pointer bg-white text-brown border hover:text-yellow-500 hover:shadow-sm disabled:pointer-events-none disabled:bg-gray-300;
 }
@@ -297,6 +301,10 @@
 
 .speech-bubble {
   @apply relative inline-block bg-white rounded-lg p-4 shadow-md w-64 z-10;
+}
+
+.info-box {
+  @apply text-sm p-8 rounded-lg bg-gray-200 m-2;
 }
 
 /* .speech-bubble:before {
