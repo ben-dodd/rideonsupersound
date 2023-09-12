@@ -39,23 +39,19 @@ const initCart = {
 }
 
 const initBatchReceiveSession = {
-  batch: {
-    vendorId: null,
-    items: [],
-    media: null,
-    format: null,
-    isNew: false,
-    cond: null,
-    section: null,
-    country: null,
-    genre: null,
-    totalSell: '0',
-    vendorCut: '0',
-    storeCut: '0',
-    margin: '25',
-  },
-  stockItems: [],
-  stockMovements: [],
+  vendorId: null,
+  batchList: [],
+  media: null,
+  format: null,
+  isNew: false,
+  cond: null,
+  section: null,
+  country: null,
+  genre: null,
+  totalSell: '0',
+  vendorCut: '0',
+  storeCut: '0',
+  margin: '25',
 }
 
 const initState = {
@@ -366,24 +362,16 @@ export const useAppStore = createSelectors(
           Object.entries(update).forEach(([key, value]) => (draft.batchReceiveSession[key] = value))
         }),
       ),
-    setBatchReceiveBatch: (update) =>
-      set(
-        produce((draft) => {
-          Object.entries(update).forEach(([key, value]) => (draft.batchReceiveSession.batch[key] = value))
-        }),
-      ),
     addBatchReceiveItem: (newItem) =>
       set(
         produce((draft) => {
-          draft.batchReceiveSession?.batch?.batchList?.push({ key: uuid(), item: newItem })
+          draft.batchReceiveSession?.batchList?.push({ key: uuid(), item: newItem })
         }),
       ),
     updateBatchReceiveItem: (key, update) =>
       set(
         produce((draft) => {
-          draft.batchReceiveSession?.batch?.batchList?.map((item) =>
-            item?.key === key ? { ...item, ...update } : item,
-          )
+          draft.batchReceiveSession?.batchList?.map((item) => (item?.key === key ? { ...item, ...update } : item))
         }),
       ),
     resetCart: () => {

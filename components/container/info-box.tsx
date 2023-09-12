@@ -5,6 +5,7 @@ interface infoOption {
   label?: string
   value?: any
   link?: string
+  icon?: any
   alwaysDisplay?: boolean
   isHorizontalRule?: boolean
 }
@@ -46,6 +47,7 @@ const InfoBox = ({ title, image, data }: { title?: string; image?: string; data:
             >
               {row?.value || 'N/A'}
             </div>
+            {row?.icon && row?.icon}
           </div>
         ) : (
           <div key={row?.label} />

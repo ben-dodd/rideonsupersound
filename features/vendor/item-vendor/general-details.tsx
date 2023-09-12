@@ -1,17 +1,38 @@
+import { CheckCircleOutline, CreditCardOff } from '@mui/icons-material'
+import Tooltip from '@mui/material/Tooltip'
 import InfoBox from 'components/container/info-box'
 import dayjs from 'dayjs'
 import { useClerks } from 'lib/api/clerk'
+import { modulusCheck } from 'lib/functions/payment'
 import { dateSimple } from 'lib/types/date'
 import { priceCentsString } from 'lib/utils'
 
 export default function GeneralDetails({ vendor }) {
   const { clerks } = useClerks()
+  const invalidBankAccountNumber = !modulusCheck(vendor?.bankAccountNumber)
   const vendorData = [
     { label: 'Vendor ID', value: vendor?.id, alwaysDisplay: true },
     { label: 'Name', value: vendor?.name, alwaysDisplay: true },
     { label: 'Vendor Category', value: vendor?.vendorCategory },
     { label: 'Staff Contact', value: clerks?.find((clerk) => clerk?.id === vendor?.clerkId)?.name },
-    { label: 'Bank Account Number', value: vendor?.bankAccountNumber, alwaysDisplay: true },
+    {
+      label: 'Bank Account Number',
+      value: vendor?.bankAccountNumber,
+      alwaysDisplay: true,
+      icon: invalidBankAccountNumber ? (
+        <Tooltip title={`${vendor?.bankAccountNumber ? 'Invalid' : 'Missing'} Bank Account Number`}>
+          <div className={`${vendor?.bankAccountNumber ? 'text-red-500' : 'text-orange-500'} pl-2 flex`}>
+            <CreditCardOff />
+          </div>
+        </Tooltip>
+      ) : (
+        <Tooltip title="Bank account is valid!">
+          <div className="text-green-500 pl-2">
+            <CheckCircleOutline />
+          </div>
+        </Tooltip>
+      ),
+    },
     { label: 'Contact Name', value: vendor?.contactName },
     { label: 'Email', value: vendor?.email, link: `mailto:${vendor?.email}` },
     { label: 'Phone', value: vendor?.phone, link: `tel:${vendor?.phone}` },

@@ -191,8 +191,8 @@ export function getQuantities(types, stockMovements, reverse = false) {
   return reverse ? sum * -1 : sum
 }
 
-export function dbGetStockItems(itemIds, db = connection) {
-  return Promise.all(itemIds?.map((itemId) => dbGetStockItem(itemId, true, db)))
+export function dbGetStockItems(itemIds, basic = true, db = connection) {
+  return Promise.all(itemIds?.map((itemId) => dbGetStockItem(itemId, basic, db)))
 }
 
 export function dbGetStockItemsForVendor(vendorId, db = connection) {
@@ -501,18 +501,18 @@ export function dbGetReceiveBatch(id, db = connection) {
         .then(({ batch, stockMovements }) =>
           dbGetStockItems(
             stockMovements?.map((sm) => sm?.stock_id),
+            false,
             db,
           ).then((stockItems) => ({
-            batch: { ...batch, batchList: batch?.batchList || createBatchList(stockItems, stockMovements) },
-            stockMovements,
-            stockItems,
+            ...batch,
+            batchList: batch?.batchList || createBatchList(stockItems, stockMovements),
           })),
         ),
     )
 }
 
 export function dbGetStockMovementsForReceiveBatch(id, db) {
-  return db('stock_movement').where('batch_receive_id', id)
+  return db('stock_movement').where({ batch_receive_id: id, is_deleted: 0 })
 }
 
 export function dbUpdateReceiveBatch(update, id, db = connection) {

@@ -54,7 +54,7 @@ export default function ChangePriceForm({ obj, setObj }) {
         startAdornment="$"
         inputClass="text-center"
         value={obj?.totalSell}
-        error={obj?.totalSell !== '' && isNaN(parseFloat(obj?.totalSell))}
+        error={obj?.totalSell && isNaN(parseFloat(obj?.totalSell))}
         onChange={handleSetPrice}
       />
       <TextField
@@ -64,7 +64,7 @@ export default function ChangePriceForm({ obj, setObj }) {
         startAdornment="$"
         inputClass="text-center"
         value={obj?.vendorCut}
-        error={obj?.vendorCut !== '' && isNaN(parseFloat(obj?.vendorCut))}
+        error={obj?.vendorCut && isNaN(parseFloat(obj?.vendorCut))}
         onChange={handleSetPrice}
       />
       <TextField
@@ -74,7 +74,7 @@ export default function ChangePriceForm({ obj, setObj }) {
         endAdornment="%"
         inputClass="text-center"
         value={obj?.margin}
-        error={(obj?.margin !== '' && isNaN(parseFloat(obj?.margin))) || parseFloat(obj?.margin) >= 100}
+        error={(obj?.margin && isNaN(parseFloat(obj?.margin))) || parseFloat(obj?.margin) > 100}
         onChange={handleSetPrice}
       />
       <TextField
@@ -84,7 +84,7 @@ export default function ChangePriceForm({ obj, setObj }) {
         startAdornment="$"
         inputClass="text-center"
         value={obj?.storeCut}
-        error={obj?.storeCut !== '' && isNaN(parseFloat(obj?.storeCut))}
+        error={obj?.storeCut && isNaN(parseFloat(obj?.storeCut))}
         onChange={handleSetPrice}
       />
     </div>

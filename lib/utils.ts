@@ -81,6 +81,26 @@ export function isPreApp(date?: Date | string) {
   return !dayjs(date).isValid() || dayjs(date).isBefore(dayjs('2018-01-01'))
 }
 
+export function getLastValidElementByDate(list, dateField, targetDate) {
+  return list
+    ?.filter((el) => dayjs(targetDate)?.isAfter(dayjs(el?.[dateField])))
+    ?.sort(compareDates)
+    ?.reverse()?.[0]
+}
+
+export function compareDates(a, b) {
+  const dateA = dayjs(a.date)
+  const dateB = dayjs(b.date)
+
+  if (dateA.isBefore(dateB)) {
+    return -1
+  }
+  if (dateA.isAfter(dateB)) {
+    return 1
+  }
+  return 0
+}
+
 // export function authoriseUrl(url: string) {
 //   let k = process.env.NEXT_PUBLIC_SWR_API_KEY
 //   if (!url || !k) return null

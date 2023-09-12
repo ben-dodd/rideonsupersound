@@ -1,3 +1,7 @@
+import { StockReceiveObject } from 'lib/types/stock'
+import { getItemSku } from './displayInventory'
+import { getLastValidElementByDate } from 'lib/utils'
+
 export function getLaybyHoldQuantity(item) {
   return (item?.quantityLayby + item?.quantityHold + item?.quantityUnlayby + item?.quantityUnhold) * -1 || 0
 }
@@ -32,7 +36,15 @@ export function getInStockQuantity(item) {
 
 export function createBatchList(stockItems, stockMovements) {
   let batchList = []
-  stockMovements?.forEach((sm) => {
-    let item = {}
+  stockItems?.forEach((item) => {
+    let receiveObject: StockReceiveObject = {}
+    receiveObject.key = getItemSku({ id: item?.item?.id, vendorId: item?.item?.vendor_id })
+    receiveObject.item = item?.item
+    let stockMovement = stockMovements?.find((sm) => sm?.stockId === item?.id)
+    let price = getLastValidElementByDate(item?.stockPrices, 'date_valid_from', stockMovement?.date_moved)
+    receiveObject.price = price
+    receiveObject.quantity = stockMovement?.quantity
+    batchList.push(receiveObject)
   })
+  return batchList
 }

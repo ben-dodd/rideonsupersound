@@ -10,7 +10,9 @@ import SetupReceive from './setup-receive'
 import AddReceiveItems from './add-items'
 
 export default function ReceiveStockScreen() {
-  const { batchReceiveSession, resetBatchReceiveSession, openConfirm, closeView } = useAppStore()
+  const { batchReceiveSession, resetBatchReceiveSession, setBatchReceiveSession, openConfirm, closeView } =
+    useAppStore()
+  const { batch = {} } = batchReceiveSession || {}
   const router = useRouter()
   const id = router.query.id
   const { receiveBatch } = useReceiveBatch(`${id}`)
@@ -21,6 +23,7 @@ export default function ReceiveStockScreen() {
   useEffect(() => {
     console.log('New receive batch')
     console.log(receiveBatch)
+    setBatchReceiveSession(receiveBatch)
   }, [id])
   useEffect(() => {
     const saveBatchAndRedirect = (url) => {
@@ -35,7 +38,7 @@ export default function ReceiveStockScreen() {
     const changePage = (url) => {
       bypassConfirmDialog
         ? null
-        : batchReceiveSession?.id
+        : batch?.id
         ? saveBatchAndRedirect(url)
         : openConfirm({
             open: true,
@@ -52,19 +55,7 @@ export default function ReceiveStockScreen() {
     return () => {
       router.events.off('routeChangeStart', changePage)
     }
-  }, [batchReceiveSession, bypassConfirmDialog])
-
-  // TODO make stepper receive
-  // Step 1 - select vendor or create new
-  // Step 2 - select items, either
-  //    from vendor items
-  //    from csv
-  //    write into table
-  //    barcode -> discogs / googlebooks
-  // Step 3 - select discogs/googlebooks
-  // Step 4 - enter PRICE
-  // Step 5 - enter quantity
-  // Step 6 - print labels
+  }, [id, bypassConfirmDialog])
 
   const menuItems = [
     { text: 'Edit', icon: <Edit />, onClick: null },
@@ -73,8 +64,8 @@ export default function ReceiveStockScreen() {
     { text: 'Delete Batch', icon: <Delete />, onClick: null },
   ]
 
-  const noVendor = !batchReceiveSession?.batch?.vendorId
-  const noItems = batchReceiveSession?.batch?.batchList?.length === 0
+  const noVendor = !batch?.vendorId
+  const noItems = batch?.batchList?.length === 0
 
   return (
     <MidScreenContainer
@@ -105,9 +96,9 @@ export default function ReceiveStockScreen() {
 
   function isDisabled() {
     return (
-      !batchReceiveSession?.vendorId ||
-      batchReceiveSession?.batchList?.length === 0 ||
-      batchReceiveSession?.batchList?.filter(
+      !batch?.vendorId ||
+      batch?.batchList?.length === 0 ||
+      batch?.batchList?.filter(
         (item) =>
           // !item?.item?.section ||
           item?.item?.isNew === null ||

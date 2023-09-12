@@ -50,7 +50,7 @@ export default function SetupReceive({ setStage, setBypassConfirmDialog }) {
       </div>
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <SectionPanel icon={<Storefront />} title="Vendor">
+          <SectionPanel icon={<Storefront />} title="Vendor" collapsible={false}>
             <CreateableSelect
               autoFocus
               inputLabel="SELECT VENDOR"
