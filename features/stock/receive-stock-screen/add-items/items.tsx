@@ -4,15 +4,15 @@ import { useAppStore } from 'lib/store'
 import SectionPanel from 'components/container/section-panel'
 
 export default function Items() {
-  const { receiveBasket, setReceiveBasket } = useAppStore()
+  const { batchReceiveSession, setBatchReceiveSession } = useAppStore()
   const removeItem = (removeItem) => {
-    const items = receiveBasket?.items?.filter((item) => item?.key !== removeItem?.key)
-    setReceiveBasket({ items })
+    const items = batchReceiveSession?.items?.filter((item) => item?.key !== removeItem?.key)
+    setBatchReceiveSession({ items })
   }
   return (
     <SectionPanel title="Receive Basket">
-      {receiveBasket?.items?.length > 0 ? (
-        receiveBasket?.items?.map((item: any) => {
+      {batchReceiveSession?.items?.length > 0 ? (
+        batchReceiveSession?.items?.map((item: any) => {
           return (
             <div key={item?.key} className="flex hover:bg-gray-200 items-center p-2 border-b">
               <button className="p-2" onClick={() => removeItem(item)}>

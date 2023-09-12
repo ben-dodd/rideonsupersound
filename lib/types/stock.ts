@@ -228,7 +228,7 @@ export interface StocktakeTemplateObject {
 }
 
 export interface BatchReceiveObject {
-  batchList?: any[]
+  batchList?: any[] | StockReceiveObject[]
   id?: number
   vendorId?: number
   itemCount?: number
@@ -249,4 +249,11 @@ export interface BatchReceiveObject {
   vendorCut?: string
   storeCut?: string
   margin?: string
+}
+
+export interface StockReceiveObject {
+  key?: string
+  item?: StockItemObject
+  price?: StockPriceObject
+  quantity?: number
 }

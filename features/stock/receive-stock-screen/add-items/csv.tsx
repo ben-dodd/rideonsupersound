@@ -7,13 +7,11 @@ import { useAppStore } from 'lib/store'
 
 export default function Csv() {
   const { CSVReader } = useCSVReader()
-  const { receiveBasket, setReceiveBasket } = useAppStore()
+  const { batchReceiveSession, setBatchReceiveSession } = useAppStore()
   const [csvItems, setCSVItems] = useState([])
   const addItems = () => {
-    setReceiveBasket({
-      items: receiveBasket?.items
-        ? [...receiveBasket?.items, ...csvItems]
-        : csvItems,
+    setBatchReceiveSession({
+      items: batchReceiveSession?.items ? [...batchReceiveSession?.items, ...csvItems] : csvItems,
     })
   }
   return (
@@ -38,10 +36,7 @@ export default function Csv() {
           <li>Upload the CSV file using the button below.</li>
         </ol>
       </div>
-      <CSVReader
-        onUploadAccepted={(results: any) => setCSVItems(parseCSVItems(results))}
-        config={{ header: true }}
-      >
+      <CSVReader onUploadAccepted={(results: any) => setCSVItems(parseCSVItems(results))} config={{ header: true }}>
         {({ getRootProps, acceptedFile, ProgressBar }: any) => (
           <>
             <div className="flex mb-2">

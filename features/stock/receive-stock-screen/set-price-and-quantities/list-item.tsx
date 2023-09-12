@@ -8,7 +8,7 @@ import { useAppStore } from 'lib/store'
 import { StockItemObject, StockPriceObject } from 'lib/types/stock'
 
 export default function ListItem({ receiveItem }) {
-  const { updateReceiveBasketItem } = useAppStore()
+  const { updateBatchReceiveSessionItem } = useAppStore()
   const { item = {}, price = {} }: { item: StockItemObject; price: StockPriceObject } = receiveItem || {}
   const priceSuggestion = getPriceSuggestion(item)
   const totalSell = parseFloat(receiveItem?.totalSell || (price?.totalSell || 0) / 100)
@@ -45,7 +45,10 @@ export default function ListItem({ receiveItem }) {
             group={`${receiveItem?.key}isNew`}
             value={`${Boolean(item?.isNew)}`}
             onChange={(value: string) =>
-              updateReceiveBasketItem(receiveItem?.key, value === 'true' ? { isNew: 1, cond: null } : { isNew: 0 })
+              updateBatchReceiveSessionItem(
+                receiveItem?.key,
+                value === 'true' ? { isNew: 1, cond: null } : { isNew: 0 },
+              )
             }
             options={[
               { id: `new${receiveItem?.key}`, value: 'true', label: 'New' },
@@ -55,7 +58,7 @@ export default function ListItem({ receiveItem }) {
           <SettingsSelect
             className="w-full"
             object={item}
-            customEdit={(e) => updateReceiveBasketItem(receiveItem?.key, { cond: e.value })}
+            customEdit={(e) => updateBatchReceiveSessionItem(receiveItem?.key, { cond: e.value })}
             dbField="cond"
             sorted={false}
             isCreateDisabled={true}
@@ -65,7 +68,7 @@ export default function ListItem({ receiveItem }) {
           <SettingsSelect
             className="w-1/2"
             object={item}
-            customEdit={(e) => updateReceiveBasketItem(receiveItem?.key, { section: e.value })}
+            customEdit={(e) => updateBatchReceiveSessionItem(receiveItem?.key, { section: e.value })}
             inputLabel="SECTION"
             dbField="section"
             isCreateDisabled={true}
@@ -73,7 +76,7 @@ export default function ListItem({ receiveItem }) {
           <SettingsSelect
             className="w-1/2 ml-2"
             object={item}
-            customEdit={(e) => updateReceiveBasketItem(receiveItem?.key, { country: e.value })}
+            customEdit={(e) => updateBatchReceiveSessionItem(receiveItem?.key, { country: e.value })}
             inputLabel="COUNTRY"
             dbField="country"
           />
@@ -86,7 +89,7 @@ export default function ListItem({ receiveItem }) {
             disabled={Boolean(item?.id)}
             value={`${receiveItem?.price?.vendorCut || (item?.vendorCut ? item?.vendorCut / 100 : '')}`}
             onChange={(e: any) =>
-              updateReceiveBasketItem(receiveItem?.key, {
+              updateBatchReceiveSessionItem(receiveItem?.key, {
                 vendorCut: e.target.value,
               })
             }
@@ -97,7 +100,7 @@ export default function ListItem({ receiveItem }) {
             startAdornment={'$'}
             value={`${receiveItem?.totalSell || (item?.totalSell ? item?.totalSell / 100 : '')}`}
             onChange={(e: any) =>
-              updateReceiveBasketItem(receiveItem?.key, {
+              updateBatchReceiveSessionItem(receiveItem?.key, {
                 totalSell: e.target.value,
               })
             }
@@ -126,7 +129,7 @@ export default function ListItem({ receiveItem }) {
             min={0}
             value={`${receiveItem?.quantity || ''}`}
             onChange={(e: any) =>
-              updateReceiveBasketItem(receiveItem?.key, {
+              updateBatchReceiveSessionItem(receiveItem?.key, {
                 quantity: e.target.value,
               })
             }

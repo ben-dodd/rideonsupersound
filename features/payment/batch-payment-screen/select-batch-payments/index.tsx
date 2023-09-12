@@ -21,10 +21,10 @@ export default function SelectBatchPayments({ setStage, setBypassConfirmDialog }
       <div className="flex justify-between p-2">
         <BatchPaymentSummary search={search} setSearch={setSearch} paymentList={paymentList} />
         <div className="px-4">
-          <div className="icon-text-button-highlight" onClick={() => setStage('review')}>
+          <button className="icon-text-button-highlight" onClick={() => setStage('review')}>
             REVIEW PAYMENTS <ArrowRight />
-          </div>
-          <div
+          </button>
+          <button
             className="icon-text-button"
             onClick={() => {
               saveVendorBatchPayment(batchPaymentSession).then((savedBatchPayment) => {
@@ -35,7 +35,7 @@ export default function SelectBatchPayments({ setStage, setBypassConfirmDialog }
             }}
           >
             SAVE AND CLOSE <Save />
-          </div>
+          </button>
         </div>
       </div>
       <div className="w-full">

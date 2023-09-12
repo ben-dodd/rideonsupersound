@@ -4,7 +4,7 @@ import { useAppStore } from 'lib/store'
 import { VendorObject } from 'lib/types/vendor'
 
 const BatchReceiveSummary = () => {
-  const { receiveBasket, setReceiveBasket } = useAppStore()
+  const { batchReceiveSession, setBatchReceiveSession } = useAppStore()
   const { vendors, mutateVendors } = useVendors()
   return (
     <div className="flex items-start">
@@ -12,17 +12,17 @@ const BatchReceiveSummary = () => {
         <div className="font-bold mt-4">Select Vendor</div>
         <CreateableSelect
           className="w-full"
-          value={receiveBasket?.vendorId}
-          label={vendors?.find((v: VendorObject) => v?.id === receiveBasket?.vendorId)?.name || ''}
+          value={batchReceiveSession?.vendorId}
+          label={vendors?.find((v: VendorObject) => v?.id === batchReceiveSession?.vendorId)?.name || ''}
           onChange={(vendorObject: any) => {
-            setReceiveBasket({
+            setBatchReceiveSession({
               vendorId: parseInt(vendorObject?.value),
             })
           }}
           onCreateOption={async (vendorName: string) => {
             const vendorId = await createVendor({ name: vendorName })
             await mutateVendors()
-            setReceiveBasket({ vendorId })
+            setBatchReceiveSession({ vendorId })
           }}
           options={vendors?.map((val: VendorObject) => ({
             value: val?.id,

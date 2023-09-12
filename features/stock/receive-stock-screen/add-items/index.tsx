@@ -5,12 +5,43 @@ import Discogs from './discogs'
 import Form from './form'
 import Items from './items'
 import Vendor from './vendor'
+import { ArrowLeft, ArrowRight, Save } from '@mui/icons-material'
+import { saveReceiveBatch } from 'lib/api/stock'
+import { useAppStore } from 'lib/store'
+import { useSWRConfig } from 'swr'
+import { useRouter } from 'next/router'
 
-export default function SelectItems() {
+export default function AddReceiveItems({ setStage, setBypassConfirmDialog }) {
   const [mode, setMode] = useState(0)
+  const { batchReceiveSession } = useAppStore()
+  const { mutate } = useSWRConfig()
+  const router = useRouter()
 
   return (
     <div className="w-full">
+      <div className="flex justify-between p-2">
+        <div className="text-2xl">ADD ITEMS</div>
+        <div className="px-4">
+          <div className="icon-text-button-highlight" onClick={() => setStage('add')}>
+            REVIEW ITEMS <ArrowRight />
+          </div>
+          <div className="icon-text-button" onClick={() => setStage('setup')}>
+            BACK TO SETUP <ArrowLeft />
+          </div>
+          <div
+            className="icon-text-button"
+            onClick={() => {
+              saveReceiveBatch(batchReceiveSession).then((savedBatchPayment) => {
+                mutate(`vendor/payment/batch/${savedBatchPayment?.id}`, savedBatchPayment)
+                setBypassConfirmDialog(true)
+                router.push('/stock')
+              })
+            }}
+          >
+            SAVE AND CLOSE <Save />
+          </div>
+        </div>
+      </div>
       <Tabs
         tabs={['Receive Existing Items', 'Add New Items', 'Search Discogs', 'Search GoogleBooks', 'CSV Import']}
         value={mode}

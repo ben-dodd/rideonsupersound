@@ -1,50 +1,46 @@
-import Stepper from 'components/navigation/stepper'
-import { ModalButton } from 'lib/types'
 import { useEffect, useState } from 'react'
-import SelectItems from './add-items'
-import CheckDetails from './check-details'
-import PrintLabel from './print-label'
-import SelectVendor from './select-vendor'
-import SetPriceAndQuantities from './set-price-and-quantities'
 import { useAppStore } from 'lib/store'
-import { useCurrentRegisterId } from 'lib/api/register'
-import { ViewProps } from 'lib/store/types'
 import { useClerk } from 'lib/api/clerk'
-import { receiveStock } from 'lib/api/stock'
+import { saveReceiveBatch, useReceiveBatch } from 'lib/api/stock'
 import MidScreenContainer from 'components/container/mid-screen'
 import { Delete, Edit, ImportContacts, Print } from '@mui/icons-material'
 import { useSWRConfig } from 'swr'
 import { useRouter } from 'next/router'
+import SetupReceive from './setup-receive'
+import AddReceiveItems from './add-items'
 
-export default function ReceiveStockScreen({ receiveBatch }) {
-  const { receiveBasket, resetReceiveBasket, openConfirm, closeView } = useAppStore()
+export default function ReceiveStockScreen() {
+  const { batchReceiveSession, resetBatchReceiveSession, openConfirm, closeView } = useAppStore()
+  const router = useRouter()
+  const id = router.query.id
+  const { receiveBatch } = useReceiveBatch(`${id}`)
   const { clerk } = useClerk()
-  const [step, setStep] = useState(0)
-  const [receivedStock, setReceivedStock] = useState(null)
-  const [receiveLoading, setReceiveLoading] = useState(false)
-  const { registerId } = useCurrentRegisterId()
-  const { batch = {}, stockMovements = [], stockItems = [] } = receiveBatch || {}
+  const [stage, setStage] = useState('setup')
   const [bypassConfirmDialog, setBypassConfirmDialog] = useState(false)
   const { mutate } = useSWRConfig()
-  const router = useRouter()
+  useEffect(() => {
+    console.log('New receive batch')
+    console.log(receiveBatch)
+  }, [id])
   useEffect(() => {
     const saveBatchAndRedirect = (url) => {
       console.log('saving batch and redirect')
-      saveRecev(batchPaymentSession).then((savedBatchPayment) => {
-        mutate(`vendor/payment/batch/${savedBatchPayment?.id}`, savedBatchPayment)
-        mutate(`vendor/payment/batch`)
-        mutate(`vendor/payment`)
+      saveReceiveBatch(batchReceiveSession).then((savedReceiveBatch) => {
+        // mutate(`stock/payment/batch/${savedBatchPayment?.id}`, savedBatchPayment)
+        // mutate(`vendor/payment/batch`)
+        // mutate(`vendor/payment`)
         router.push(url)
       })
     }
     const changePage = (url) => {
       bypassConfirmDialog
         ? null
-        : receiveBasket?.id
+        : batchReceiveSession?.id
         ? saveBatchAndRedirect(url)
         : openConfirm({
             open: true,
-            title: 'Do you want to save the current payment session?',
+            title: 'Save session?',
+            message: 'Do you want to save the current stock receive session?',
             yesText: 'Yes, Please Save',
             noText: 'No, Discard Changes',
             action: () => saveBatchAndRedirect(url),
@@ -56,105 +52,7 @@ export default function ReceiveStockScreen({ receiveBatch }) {
     return () => {
       router.events.off('routeChangeStart', changePage)
     }
-  }, [batchPaymentSession, bypassConfirmDialog])
-
-  const buttons: ModalButton[][] = [
-    [
-      {
-        type: 'cancel',
-        onClick: () => closeView(ViewProps.receiveStockScreen),
-        text: 'CANCEL',
-      },
-      {
-        type: 'ok',
-        text: 'NEXT',
-        disabled: !receiveBasket?.vendorId,
-        onClick: () => {
-          setStep(1)
-        },
-      },
-    ],
-    [
-      {
-        type: 'cancel',
-        onClick: () => {
-          openConfirm({
-            open: true,
-            title: 'Reset Basket?',
-            styledMessage: <span>Are you sure you want to wipe all received items?</span>,
-            yesText: "YES, I'M SURE",
-            action: () => {
-              setStep(0)
-              resetReceiveBasket()
-            },
-          })
-        },
-        text: 'RESET',
-      },
-      {
-        type: 'ok',
-        text: 'NEXT',
-        disabled: receiveBasket?.items?.length === 0,
-        onClick: () => {
-          setStep(2)
-        },
-      },
-    ],
-    [
-      {
-        type: 'cancel',
-        onClick: () => {
-          setStep(1)
-        },
-        text: 'BACK',
-      },
-      {
-        type: 'ok',
-        text: 'NEXT',
-        onClick: () => {
-          setStep(3)
-        },
-      },
-    ],
-    [
-      {
-        type: 'cancel',
-        disabled: receiveLoading,
-        onClick: () => {
-          setStep(2)
-        },
-        text: 'BACK',
-      },
-      {
-        type: 'ok',
-        disabled: isDisabled(),
-        loading: receiveLoading,
-        text: 'RECEIVE ITEMS',
-        onClick: async () => {
-          setReceiveLoading(true)
-          const receivedStock = await receiveStock({
-            ...receiveStock,
-            clerkId: clerk?.id,
-            registerId,
-          })
-          setReceivedStock(receivedStock)
-          setReceiveLoading(false)
-          setStep(4)
-        },
-      },
-    ],
-    [
-      {
-        type: 'ok',
-        disabled: isDisabled(),
-        text: 'DONE',
-        onClick: () => {
-          resetReceiveBasket()
-          closeView(ViewProps.receiveStockScreen)
-        },
-      },
-    ],
-  ]
+  }, [batchReceiveSession, bypassConfirmDialog])
 
   // TODO make stepper receive
   // Step 1 - select vendor or create new
@@ -175,8 +73,8 @@ export default function ReceiveStockScreen({ receiveBatch }) {
     { text: 'Delete Batch', icon: <Delete />, onClick: null },
   ]
 
-  const noVendor = !receiveBasket?.vendorId
-  const noItems = receiveBasket?.items?.length === 0
+  const noVendor = !batchReceiveSession?.batch?.vendorId
+  const noItems = batchReceiveSession?.batch?.batchList?.length === 0
 
   return (
     <MidScreenContainer
@@ -188,18 +86,18 @@ export default function ReceiveStockScreen({ receiveBatch }) {
       full
     >
       <div className="flex flex-col w-full h-dialog">
-        <Stepper
+        {/* <Stepper
           steps={['Setup', 'Add items', 'Check details', 'Set price and quantities', 'Print labels']}
           disabled={[false, noVendor, noItems, noItems, noItems]}
           value={step}
           onChange={setStep}
-        />
+        /> */}
         <div className="p-4">
-          {step === 0 && <SelectVendor />}
-          {step === 1 && <SelectItems />}
-          {step == 2 && <CheckDetails />}
+          {stage === 'setup' && <SetupReceive setStage={setStage} setBypassConfirmDialog={setBypassConfirmDialog} />}
+          {stage === 'add' && <AddReceiveItems setStage={setStage} setBypassConfirmDialog={setBypassConfirmDialog} />}
+          {/* {step == 2 && <CheckDetails />}
           {step == 3 && <SetPriceAndQuantities />}
-          {step == 4 && <PrintLabel receivedStock={receivedStock} />}
+          {step == 4 && <PrintLabel receivedStock={receivedStock} />} */}
         </div>
       </div>
     </MidScreenContainer>
@@ -207,9 +105,9 @@ export default function ReceiveStockScreen({ receiveBatch }) {
 
   function isDisabled() {
     return (
-      !receiveBasket?.vendorId ||
-      receiveBasket?.items?.length === 0 ||
-      receiveBasket?.items?.filter(
+      !batchReceiveSession?.vendorId ||
+      batchReceiveSession?.batchList?.length === 0 ||
+      batchReceiveSession?.batchList?.filter(
         (item) =>
           // !item?.item?.section ||
           item?.item?.isNew === null ||

@@ -43,7 +43,8 @@ export default function BatchPaymentScreen() {
         ? saveBatchAndRedirect(url)
         : openConfirm({
             open: true,
-            title: 'Do you want to save the current payment session?',
+            title: 'Save session?',
+            message: 'Do you want to save the current payment session?',
             yesText: 'Yes, Please Save',
             noText: 'No, Discard Changes',
             action: () => saveBatchAndRedirect(url),

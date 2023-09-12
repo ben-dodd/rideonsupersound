@@ -1,11 +1,5 @@
 export function getLaybyHoldQuantity(item) {
-  return (
-    (item?.quantityLayby +
-      item?.quantityHold +
-      item?.quantityUnlayby +
-      item?.quantityUnhold) *
-      -1 || 0
-  )
+  return (item?.quantityLayby + item?.quantityHold + item?.quantityUnlayby + item?.quantityUnhold) * -1 || 0
 }
 
 export function getReturnedQuantity(item) {
@@ -21,10 +15,7 @@ export function getReceivedQuantity(item) {
 }
 
 export function getDiscardedLostQuantity(item) {
-  return (
-    (item?.quantityDiscarded + item?.quantityLost + item?.quantityFound) * -1 ||
-    0
-  )
+  return (item?.quantityDiscarded + item?.quantityLost + item?.quantityFound) * -1 || 0
 }
 
 export function getRefundedQuantity(item) {
@@ -37,4 +28,11 @@ export function getAdjustmentQuantity(item) {
 
 export function getInStockQuantity(item) {
   return item?.quantity || 0
+}
+
+export function createBatchList(stockItems, stockMovements) {
+  let batchList = []
+  stockMovements?.forEach((sm) => {
+    let item = {}
+  })
 }

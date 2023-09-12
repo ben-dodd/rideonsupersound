@@ -1,6 +1,7 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import { ConfirmModal, AlertProps, ClippyProps } from 'lib/types'
 import { CartObject, SaleItemObject, SaleTransactionObject } from 'lib/types/sale'
+import { BatchReceiveObject, StockItemObject, StockMovementObject } from 'lib/types/stock'
 import { AccountPayment, BatchPaymentObject } from 'lib/types/vendor'
 
 export interface StoreState {
@@ -50,7 +51,11 @@ export interface StoreState {
   clippy?: ClippyProps
   createableCustomerName?: string
   cart: CartObject
-  receiveBasket?: BatchReceiveObject
+  batchReceiveSession?: {
+    batch?: BatchReceiveObject
+    stockItems?: StockItemObject[]
+    stockMovements?: StockMovementObject[]
+  }
   batchPaymentSession?: BatchPaymentObject
   sellPage?: {
     searchBar?: string
@@ -115,15 +120,16 @@ export interface StoreState {
   setCartItem: (id: number, update: any) => void
   setCartSale: (update: any, doMutate?: boolean) => void
   setClippy: (update: any) => void
-  setReceiveBasket: (update: any) => void
-  addReceiveBasketItem: (newItem: any) => void
-  updateReceiveBasketItem: (key: any, update: any) => void
+  setBatchReceiveSession: (update: any) => void
+  setBatchReceiveBatch: (update: any) => void
+  addBatchReceiveItem: (newItem: any) => void
+  updateBatchReceiveItem: (key: any, update: any) => void
   setBatchPaymentSession: (update: any) => void
   setBatchPaymentList: (list: AccountPayment[]) => void
   setBatchAccountPayment: (vendorId: number, update: any) => void
   resetBatchPaymentSession: () => void
   resetCart: () => void
-  resetReceiveBasket: () => void
+  resetBatchReceiveSession: () => void
   resetCustomer: () => void
   setSearchBar: (page: Pages, val: string) => void
   setPage: (page: Pages, update: any) => void

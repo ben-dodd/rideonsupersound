@@ -30,28 +30,16 @@ export const errorHandler = (method: string, route: string) => (err: any) => {
   }
 }
 
-const initState = {
-  view: {},
-  confirmModal: { open: false },
-  alert: { open: false },
-  clippy: {
-    visible: true,
-    showMessage: false,
-    image: 'default.png',
-    message:
-      'It looks like a customer is trying to buy an Adam Hattaway CD. Have you tried to sell them the Joe Sampson zine instead?',
-    position: { x: 100, y: 100 },
-    size: { height: 100, width: 100 },
-  },
-  createableCustomerName: '',
-  cart: {
-    sale: { id: null, customerId: null },
-    customer: {},
-    items: [],
-    transactions: [],
-    registerId: null,
-  },
-  receiveBasket: {
+const initCart = {
+  sale: { id: null, customerId: null },
+  customer: {},
+  items: [],
+  transactions: [],
+  registerId: null,
+}
+
+const initBatchReceiveSession = {
+  batch: {
     vendorId: null,
     items: [],
     media: null,
@@ -66,6 +54,26 @@ const initState = {
     storeCut: '0',
     margin: '25',
   },
+  stockItems: [],
+  stockMovements: [],
+}
+
+const initState = {
+  view: {},
+  confirmModal: { open: false },
+  alert: { open: false },
+  clippy: {
+    visible: true,
+    showMessage: false,
+    image: 'default.png',
+    message:
+      'It looks like a customer is trying to buy an Adam Hattaway CD. Have you tried to sell them the Joe Sampson zine instead?',
+    position: { x: 100, y: 100 },
+    size: { height: 100, width: 100 },
+  },
+  createableCustomerName: '',
+  cart: initCart,
+  batchReceiveSession: initBatchReceiveSession,
   batchPaymentSession: { paymentList: [] },
   sellPage: {
     searchBar: '',
@@ -352,40 +360,43 @@ export const useAppStore = createSelectors(
         }),
       )
     },
-    setReceiveBasket: (update) =>
+    setBatchReceiveSession: (update) =>
       set(
         produce((draft) => {
-          Object.entries(update).forEach(([key, value]) => (draft.receiveBasket[key] = value))
+          Object.entries(update).forEach(([key, value]) => (draft.batchReceiveSession[key] = value))
         }),
       ),
-    addReceiveBasketItem: (newItem) =>
+    setBatchReceiveBatch: (update) =>
       set(
         produce((draft) => {
-          draft.receiveBasket.items.push({ key: uuid(), item: newItem })
+          Object.entries(update).forEach(([key, value]) => (draft.batchReceiveSession.batch[key] = value))
         }),
       ),
-    updateReceiveBasketItem: (key, update) =>
+    addBatchReceiveItem: (newItem) =>
       set(
         produce((draft) => {
-          draft.receiveBasket.items.map((item) => (item?.key === key ? { ...item, ...update } : item))
+          draft.batchReceiveSession?.batch?.batchList?.push({ key: uuid(), item: newItem })
+        }),
+      ),
+    updateBatchReceiveItem: (key, update) =>
+      set(
+        produce((draft) => {
+          draft.batchReceiveSession?.batch?.batchList?.map((item) =>
+            item?.key === key ? { ...item, ...update } : item,
+          )
         }),
       ),
     resetCart: () => {
       set(
         produce((draft) => {
-          draft.cart = {
-            sale: { id: null, customerId: null },
-            customer: {},
-            items: [],
-            transactions: [],
-          }
+          draft.cart = initCart
         }),
       )
     },
-    resetReceiveBasket: () =>
+    resetBatchReceiveSession: () =>
       set(
         produce((draft) => {
-          draft.receiveStock = { items: [] }
+          draft.receiveStock = initBatchReceiveSession
         }),
       ),
     resetCustomer: () =>

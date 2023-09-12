@@ -13,7 +13,7 @@ import { Delete, Edit, ImportContacts, Print } from '@mui/icons-material'
 export default function ReceiveStockScreen({ receiveBatch }) {
   const router = useRouter()
   const { isStockListLoading } = useStockList()
-  const { receiveBasket, resetReceiveBasket, openConfirm, closeView } = useAppStore()
+  const { batchReceiveSession, resetBatchReceiveSession, openConfirm, closeView } = useAppStore()
   const { clerk } = useClerk()
   const [receivedStock, setReceivedStock] = useState(null)
   const [receiveLoading, setReceiveLoading] = useState(false)
@@ -40,7 +40,7 @@ export default function ReceiveStockScreen({ receiveBatch }) {
       full
       dark
     >
-      {receiveBasket?.dateCompleted ? (
+      {batchReceiveSession?.dateCompleted ? (
         // <ViewReceiveBatch />
         <div />
       ) : stage === 'add' ? (

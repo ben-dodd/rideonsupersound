@@ -3,6 +3,7 @@ import { StockMovementTypes } from 'lib/types/stock'
 import { dbGetAllSalesAndItems, dbGetSaleTransactions, getStockMovementQuantityByAct } from './sale'
 import { js2mysql } from './utils/helpers'
 import { SaleStateTypes } from 'lib/types/sale'
+import { createBatchList } from 'lib/functions/stock'
 const connection = require('./conn')
 
 export function dbGetStockList(db = connection) {
@@ -502,7 +503,7 @@ export function dbGetReceiveBatch(id, db = connection) {
             stockMovements?.map((sm) => sm?.stock_id),
             db,
           ).then((stockItems) => ({
-            batch,
+            batch: { ...batch, batchList: batch?.batchList || createBatchList(stockItems, stockMovements) },
             stockMovements,
             stockItems,
           })),
@@ -525,7 +526,8 @@ export function dbCreateReceiveBatch(receiveBatch, db = connection) {
     .catch((e) => Error(e.message))
 }
 
-export async function dbSaveReceiveBatch(receiveBatch, db = connection) {
+export async function dbSaveReceiveBatch(receiveBatchSession, db = connection) {
+  const { batch: receiveBatch } = receiveBatchSession
   return db.transaction(async (trx) => {
     let batchId = receiveBatch?.id
     const { batchList = [] } = receiveBatch || []
@@ -551,4 +553,13 @@ export async function dbDeleteReceiveBatch(batchId, db = connection) {
     await dbUpdateReceiveBatch({ isDeleted: true }, batchId, trx)
     await trx('stock_movement').update({ is_deleted: true }).where({ receive_batch_id: batchId })
   })
+}
+
+export function dbGetCurrentReceiveBatchId(db = connection) {
+  return db('batch_receive')
+    .select('id')
+    .where({ is_deleted: 0 })
+    .where({ date_completed: null })
+    .first()
+    .then((batch) => batch?.id)
 }

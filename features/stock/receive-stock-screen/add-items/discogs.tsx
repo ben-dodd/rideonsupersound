@@ -19,9 +19,9 @@ export default function Discogs() {
       }
     }
   }
-  const { receiveBasket, addReceiveBasketItem } = useAppStore()
+  const { batchReceiveSession, addBatchReceiveSessionItem } = useAppStore()
   const addItem = (item) => {
-    addReceiveBasketItem(item)
+    addBatchReceiveSessionItem(item)
     setBarcode('')
     setKey(uuid())
     setDiscogsOptions([])
@@ -64,7 +64,7 @@ export default function Discogs() {
           <DiscogsOption
             discogsOption={discogsOption}
             key={k}
-            vendorId={receiveBasket?.vendorId}
+            vendorId={batchReceiveSession?.vendorId}
             isNew={true}
             setItem={addItem}
             overrideItemDetails={true}

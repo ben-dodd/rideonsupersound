@@ -4,28 +4,28 @@ import { useState } from 'react'
 import Items from './items'
 
 export default function CheckDetails() {
-  const { receiveBasket, setReceiveBasket } = useAppStore()
-  const [item, setItem] = useState(receiveBasket?.items?.[0]?.item || null)
-  const [itemKey, setItemKey] = useState(receiveBasket?.items?.[0]?.key || null)
+  const { batchReceiveSession, setBatchReceiveSession } = useAppStore()
+  const [item, setItem] = useState(batchReceiveSession?.items?.[0]?.item || null)
+  const [itemKey, setItemKey] = useState(batchReceiveSession?.items?.[0]?.key || null)
   const [mode, setMode] = useState(0)
   const onItemClick = (newItem) => {
     if (item) {
-      const items = receiveBasket?.items?.map((i) => {
+      const items = batchReceiveSession?.items?.map((i) => {
         if (i?.key === itemKey) return { ...i, item }
         else return i
       })
-      setReceiveBasket({ items })
+      setBatchReceiveSession({ items })
     }
     setItem(newItem?.item)
     setItemKey(newItem?.key)
   }
   const setItemAndBasket = (item) => {
     setItem(item)
-    const items = receiveBasket?.items?.map((i) => {
+    const items = batchReceiveSession?.items?.map((i) => {
       if (i?.key === itemKey) return { ...i, item }
       else return i
     })
-    setReceiveBasket({ items })
+    setBatchReceiveSession({ items })
   }
   return (
     <div className="w-full">

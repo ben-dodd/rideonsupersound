@@ -13,12 +13,12 @@ export default function ReceiveStockPage() {
   const { id } = router.query
   const { view } = useAppStore()
   const { receiveBatch, isReceiveBatchLoading, isReceiveBatchError } = useReceiveBatch(`${id}`)
-  return isReceiveBatchError ? (
+  return (isReceiveBatchError || (!isReceiveBatchLoading && !receiveBatch?.batch?.id)) && id !== 'new' ? (
     <ErrorScreen message="Receive Batch Not Found" />
-  ) : isReceiveBatchLoading ? (
+  ) : isReceiveBatchLoading && id !== 'new' ? (
     <Loading />
   ) : (
-    <ReceiveStockScreen receiveBatch={receiveBatch} />
+    <ReceiveStockScreen />
   )
 }
 

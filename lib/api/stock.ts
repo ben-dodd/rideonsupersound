@@ -133,3 +133,7 @@ export function deleteReceiveBatch(batchId) {
     .then((res) => res.data)
     .catch((e) => Error(e.message))
 }
+
+export function useCurrentReceiveBatchId() {
+  return useData(`stock/receive/batch/current`, 'currentReceiveBatchId')
+}
