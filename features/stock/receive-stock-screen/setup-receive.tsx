@@ -71,7 +71,15 @@ export default function SetupReceive({ setStage, setBypassConfirmDialog }) {
                 label: val?.name || '',
               }))}
             />
-            {isVendorLoading ? <Loading /> : <GeneralDetails vendor={vendor} />}
+            {batchReceiveSession?.vendorId ? (
+              isVendorLoading ? (
+                <Loading />
+              ) : (
+                <GeneralDetails vendor={vendor} />
+              )
+            ) : (
+              <div />
+            )}
           </SectionPanel>
         </div>
         <div>

@@ -41,6 +41,8 @@ const initCart = {
 const initBatchReceiveSession = {
   vendorId: null,
   batchList: [],
+  dateCompleted: null,
+  dateStarted: null,
   media: null,
   format: null,
   isNew: false,
@@ -362,10 +364,16 @@ export const useAppStore = createSelectors(
           Object.entries(update).forEach(([key, value]) => (draft.batchReceiveSession[key] = value))
         }),
       ),
+    loadBatchReceiveSession: (session) =>
+      set(
+        produce((draft) => {
+          draft.batchReceiveSession = session
+        }),
+      ),
     addBatchReceiveItem: (newItem) =>
       set(
         produce((draft) => {
-          draft.batchReceiveSession?.batchList?.push({ key: uuid(), item: newItem })
+          draft.batchReceiveSession?.batchList?.push({ key: uuid(), ...newItem })
         }),
       ),
     updateBatchReceiveItem: (key, update) =>

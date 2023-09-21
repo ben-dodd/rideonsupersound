@@ -16,11 +16,9 @@ const StockScreen = () => {
   const { stockList, isStockListLoading } = useStockList()
   const {
     stockPage: { tab },
-    setSearchBar,
     setPage,
     openView,
-    setBatchReceiveSession,
-    resetBatchReceiveSession,
+    loadBatchReceiveSession,
     openConfirm,
   } = useAppStore()
   const router = useRouter()
@@ -28,8 +26,7 @@ const StockScreen = () => {
   const { currentReceiveBatchId } = useCurrentReceiveBatchId()
   const setTab = (tab) => setPage(Pages.stockPage, { tab })
   const handleCreateNewReceiveBatch = () => {
-    resetBatchReceiveSession()
-    setBatchReceiveSession({ startedByClerkId: clerk?.id, dateStarted: dayjs.utc().format() })
+    loadBatchReceiveSession({ startedByClerkId: clerk?.id, dateStarted: dayjs.utc().format() })
     router.push(`/stock/receive/new`)
   }
 

@@ -5,12 +5,12 @@ import Items from './items'
 
 export default function CheckDetails() {
   const { batchReceiveSession, setBatchReceiveSession } = useAppStore()
-  const [item, setItem] = useState(batchReceiveSession?.items?.[0]?.item || null)
-  const [itemKey, setItemKey] = useState(batchReceiveSession?.items?.[0]?.key || null)
+  const [item, setItem] = useState(batchReceiveSession?.batchList?.[0]?.item || null)
+  const [itemKey, setItemKey] = useState(batchReceiveSession?.batchList?.[0]?.key || null)
   const [mode, setMode] = useState(0)
   const onItemClick = (newItem) => {
     if (item) {
-      const items = batchReceiveSession?.items?.map((i) => {
+      const items = batchReceiveSession?.batchList?.map((i) => {
         if (i?.key === itemKey) return { ...i, item }
         else return i
       })
@@ -21,7 +21,7 @@ export default function CheckDetails() {
   }
   const setItemAndBasket = (item) => {
     setItem(item)
-    const items = batchReceiveSession?.items?.map((i) => {
+    const items = batchReceiveSession?.batchList?.map((i) => {
       if (i?.key === itemKey) return { ...i, item }
       else return i
     })

@@ -244,17 +244,18 @@ export interface BatchReceiveObject {
   completedByClerkId?: number
   completedByClerkName?: string
   dateCompleted?: string
+  doListOnWebsite?: boolean
   note?: string
   media?: string
   format?: string
   isNew?: boolean
   cond?: string
+  genre?: string[]
   section?: string
   country?: string
   totalSell?: string
   vendorCut?: string
-  storeCut?: string
-  margin?: string
+  defaultMargin?: string
 }
 
 export interface StockReceiveObject {

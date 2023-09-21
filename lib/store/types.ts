@@ -117,6 +117,7 @@ export interface StoreState {
   setCartSale: (update: any, doMutate?: boolean) => void
   setClippy: (update: any) => void
   setBatchReceiveSession: (update: any) => void
+  loadBatchReceiveSession: (session: BatchReceiveObject) => void
   addBatchReceiveItem: (newItem: any) => void
   updateBatchReceiveItem: (key: any, update: any) => void
   setBatchPaymentSession: (update: any) => void

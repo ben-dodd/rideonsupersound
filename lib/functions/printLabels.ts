@@ -14,3 +14,24 @@ export function getLabelPrinterCSV(items) {
     `${('00000' + item?.id || '').slice(-5)}`,
   ])
 }
+
+export function getBatchListCSVData(batchList) {
+  const csvList = []
+  batchList?.forEach((batchItem) => {
+    const labelItem = {
+      id: batchItem?.item?.id,
+      vendorId: batchItem?.item?.vendorId,
+      artist: batchItem?.item?.artist,
+      title: batchItem?.item?.title,
+      isNew: batchItem?.item?.isNew,
+      totalSell: batchItem?.price?.totalSell,
+      section: batchItem?.item?.section,
+      country: batchItem?.item?.country,
+    }
+    if (batchItem?.quantity > 1) {
+      const itemList = Array(batchItem?.quantity).fill(labelItem)
+      csvList.push(...itemList)
+    } else csvList.push(labelItem)
+  })
+  return getLabelPrinterCSV(csvList)
+}

@@ -1,13 +1,17 @@
+import { useStockForVendor } from 'lib/api/stock'
 import { getItemSkuDisplayName } from 'lib/functions/displayInventory'
-import { useStockList } from 'lib/api/stock'
 import { useAppStore } from 'lib/store'
-import { StockItemSearchObject } from 'lib/types/stock'
+import { StockReceiveObject } from 'lib/types/stock'
 import Select from 'react-select'
 
 export default function Vendor() {
-  const { stockList } = useStockList()
   const { batchReceiveSession, addBatchReceiveItem } = useAppStore()
-  const addItem = (item: any) => addBatchReceiveItem(item?.value)
+  const { vendorStockList } = useStockForVendor(batchReceiveSession?.vendorId)
+  console.log(vendorStockList)
+  const addItem = (item: any) => {
+    console.log(item)
+    addBatchReceiveItem(item?.value)
+  }
   return (
     <div>
       <div className="helper-text mb-2">{`Add items already in the vendor's inventory.`}</div>
@@ -15,15 +19,14 @@ export default function Vendor() {
         <Select
           className="w-full self-stretch"
           value={null}
-          options={stockList
+          options={vendorStockList
             ?.filter(
-              (item: StockItemSearchObject) =>
-                item?.vendorId === batchReceiveSession?.vendorId &&
-                !batchReceiveSession?.batchList?.map((item) => item?.item?.id).includes(item?.id),
+              (vendorItem: StockReceiveObject) =>
+                !batchReceiveSession?.batchList?.map((batchItem) => batchItem?.item?.id).includes(vendorItem?.item?.id),
             )
-            ?.map((item: StockItemSearchObject) => ({
-              value: item,
-              label: getItemSkuDisplayName(item),
+            ?.map((vendorItem: StockReceiveObject) => ({
+              value: vendorItem,
+              label: getItemSkuDisplayName(vendorItem?.item),
             }))}
           onChange={addItem}
         />

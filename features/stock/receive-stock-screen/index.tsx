@@ -9,12 +9,12 @@ import { useRouter } from 'next/router'
 import SetupReceive from './setup-receive'
 import AddReceiveItems from './add-items'
 import ViewReceiveBatch from './view-receive-batch'
-import { getLabelPrinterCSV } from 'lib/functions/printLabels'
+import { getBatchListCSVData } from 'lib/functions/printLabels'
 import dayjs from 'dayjs'
 import { dateYMD } from 'lib/types/date'
 
 export default function ReceiveStockScreen() {
-  const { batchReceiveSession, setBatchReceiveSession, openConfirm } = useAppStore()
+  const { batchReceiveSession, setBatchReceiveSession, resetBatchReceiveSession, openConfirm } = useAppStore()
   const router = useRouter()
   const id = router.query.id
   const { receiveBatch, isReceiveBatchLoading } = useReceiveBatch(`${id}`)
@@ -26,8 +26,13 @@ export default function ReceiveStockScreen() {
   useEffect(() => {
     console.log('New receive batch')
     console.log(receiveBatch)
-    !isReceiveBatchLoading && receiveBatch && setBatchReceiveSession(receiveBatch)
+    if (!isReceiveBatchLoading && receiveBatch) {
+      resetBatchReceiveSession()
+      setBatchReceiveSession(receiveBatch)
+    }
   }, [id, isReceiveBatchLoading])
+
+  console.log(batchReceiveSession)
 
   useEffect(() => {
     const saveBatchAndRedirect = (url) => {
@@ -61,26 +66,10 @@ export default function ReceiveStockScreen() {
     }
   }, [id, bypassConfirmDialog])
 
-  const batchListLabelData = useMemo(() => {
-    const batchList = []
-    batchReceiveSession?.batchList?.forEach((batchItem) => {
-      const labelItem = {
-        id: batchItem?.item?.id,
-        vendorId: batchItem?.item?.id,
-        artist: batchItem?.item?.artist,
-        title: batchItem?.item?.title,
-        isNew: batchItem?.item?.isNew,
-        totalSell: batchItem?.price?.totalSell,
-        section: batchItem?.item?.section,
-        country: batchItem?.item?.country,
-      }
-      if (batchItem?.quantity > 1) {
-        const itemList = Array(batchItem?.quantity).fill(labelItem)
-        batchList.push(...itemList)
-      } else batchList.push(labelItem)
-    })
-    return getLabelPrinterCSV(batchList)
-  }, [batchReceiveSession?.batchList])
+  const batchListLabelData = useMemo(
+    () => getBatchListCSVData(batchReceiveSession?.batchList),
+    [batchReceiveSession?.batchList],
+  )
 
   const menuItems = [
     { text: 'Edit', icon: <Edit />, onClick: null },
@@ -125,23 +114,4 @@ export default function ReceiveStockScreen() {
       </div>
     </MidScreenContainer>
   )
-
-  function isDisabled() {
-    return (
-      !batchReceiveSession?.vendorId ||
-      batchReceiveSession?.batchList?.length === 0 ||
-      batchReceiveSession?.batchList?.filter(
-        (receiveItem) =>
-          // !item?.item?.section ||
-          receiveItem?.item?.isNew === null ||
-          // (!item?.item?.is_new && !item?.item?.cond) ||
-          !Number.isInteger(parseInt(`${receiveItem?.quantity}`)) ||
-          !(
-            (Number.isInteger(parseInt(`${receiveItem?.price?.vendorCut}`)) &&
-              Number.isInteger(parseInt(`${receiveItem?.price?.totalSell}`))) ||
-            receiveItem?.item?.id
-          ),
-      ).length > 0
-    )
-  }
 }

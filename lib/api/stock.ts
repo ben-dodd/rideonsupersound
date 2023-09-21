@@ -12,6 +12,10 @@ export function usePrintLabelStockList() {
   return useData(`stock/label`, 'printLabelStockList')
 }
 
+export function useStockForVendor(vendorId: string | number) {
+  return useData(`stock/vendor/${vendorId}`, 'vendorStockList')
+}
+
 export function useBasicStockItem(id: string | number, wait?: boolean) {
   return useData(wait ? null : `stock/${id}?basic=true`, 'stockItem')
 }
