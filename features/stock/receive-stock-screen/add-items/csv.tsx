@@ -2,17 +2,19 @@ import { getItemDisplayName } from 'lib/functions/displayInventory'
 import { ChevronRight } from '@mui/icons-material'
 import { useState } from 'react'
 import { useCSVReader } from 'react-papaparse'
-import { parseCSVItems } from 'lib/functions/receiveInventory'
+import { getDefaultReceiveItem, parseCSVItems } from 'lib/functions/receiveStock'
 import { useAppStore } from 'lib/store'
 
 export default function Csv() {
   const { CSVReader } = useCSVReader()
   const { batchReceiveSession, setBatchReceiveSession } = useAppStore()
   const [csvItems, setCSVItems] = useState([])
+  const defaultItem = getDefaultReceiveItem(batchReceiveSession)
   const addItems = () => {
     setBatchReceiveSession({
-      items: batchReceiveSession?.items ? [...batchReceiveSession?.items, ...csvItems] : csvItems,
+      batchList: batchReceiveSession?.batchList ? [...batchReceiveSession?.batchList, ...csvItems] : csvItems,
     })
+    setCSVItems([])
   }
   return (
     <div>
@@ -20,7 +22,7 @@ export default function Csv() {
         <ol>
           <li>
             <a
-              className="underline"
+              className="underline mr-1"
               href="https://docs.google.com/spreadsheets/d/1xQSRFFkbYJBi-4-d2eDApVyUC3ym2we9Uh4nCumt_bI/edit?usp=sharing"
               target="_blank"
               rel="noopener noreferrer"
@@ -36,7 +38,10 @@ export default function Csv() {
           <li>Upload the CSV file using the button below.</li>
         </ol>
       </div>
-      <CSVReader onUploadAccepted={(results: any) => setCSVItems(parseCSVItems(results))} config={{ header: true }}>
+      <CSVReader
+        onUploadAccepted={(results: any) => setCSVItems(parseCSVItems(results, defaultItem))}
+        config={{ header: true, skipEmptyLines: true }}
+      >
         {({ getRootProps, acceptedFile, ProgressBar }: any) => (
           <>
             <div className="flex mb-2">
@@ -51,7 +56,7 @@ export default function Csv() {
                 {acceptedFile && acceptedFile.name}
               </div>
               <button
-                className="bg-col2-dark hover:bg-col2 disabled:bg-gray-200 p-2 rounded ml-2"
+                className="bg-col3-dark hover:bg-col3 disabled:bg-gray-200 p-2 rounded ml-2"
                 onClick={addItems}
                 disabled={!acceptedFile}
               >
@@ -65,8 +70,8 @@ export default function Csv() {
       {csvItems?.length > 0 && (
         <div>
           <div className="font-bold">{`${csvItems?.length} New Items`}</div>
-          {csvItems?.map((item, k) => (
-            <div key={k}>{getItemDisplayName(item?.item)}</div>
+          {csvItems?.map((csvItem, k) => (
+            <div key={k}>{getItemDisplayName(csvItem?.item)}</div>
           ))}
         </div>
       )}

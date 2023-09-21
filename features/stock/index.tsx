@@ -1,7 +1,7 @@
 import MidScreenContainer from 'components/container/mid-screen'
 import Tabs from 'components/navigation/tabs'
 import { useCurrentReceiveBatchId, useStockList } from 'lib/api/stock'
-import { useAppStore } from 'lib/store'
+import { initBatchReceiveSession, useAppStore } from 'lib/store'
 import ComingSoon from 'components/placeholders/coming-soon'
 import StockList from './stock-list'
 import { Pages, ViewProps } from 'lib/store/types'
@@ -26,7 +26,11 @@ const StockScreen = () => {
   const { currentReceiveBatchId } = useCurrentReceiveBatchId()
   const setTab = (tab) => setPage(Pages.stockPage, { tab })
   const handleCreateNewReceiveBatch = () => {
-    loadBatchReceiveSession({ startedByClerkId: clerk?.id, dateStarted: dayjs.utc().format() })
+    loadBatchReceiveSession({
+      ...initBatchReceiveSession,
+      startedByClerkId: clerk?.id,
+      dateStarted: dayjs.utc().format(),
+    })
     router.push(`/stock/receive/new`)
   }
 

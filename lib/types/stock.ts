@@ -245,6 +245,7 @@ export interface BatchReceiveObject {
   completedByClerkName?: string
   dateCompleted?: string
   doListOnWebsite?: boolean
+  doReorder?: boolean
   note?: string
   media?: string
   format?: string

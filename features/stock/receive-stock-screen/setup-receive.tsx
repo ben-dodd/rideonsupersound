@@ -143,8 +143,47 @@ export default function SetupReceive({ setStage, setBypassConfirmDialog }) {
               isMulti
               dbField="genre"
             />
+            <div className="flex items-center mt-4">
+              <input
+                type="checkbox"
+                className="cursor-pointer"
+                checked={batchReceiveSession?.doReorder}
+                onChange={(e) => setBatchReceiveSession({ doReorder: e.target.checked ? 1 : 0 })}
+              />
+              <div className="ml-2">Reorder items from vendor when stocks are low</div>
+            </div>
+            <div className="flex items-center my-2">
+              <input
+                type="checkbox"
+                className="cursor-pointer"
+                checked={batchReceiveSession?.doListOnWebsite}
+                onChange={(e) => setBatchReceiveSession({ doListOnWebsite: e.target.checked ? 1 : 0 })}
+              />
+              <div className="ml-2">List items on website</div>
+            </div>
           </SectionPanel>
           <SectionPanel title={'Default Prices'} icon={<Money />}>
+            {/* <div className="flex items-center">
+              <input
+                type="checkbox"
+                className="cursor-pointer"
+                checked={batchReceiveSession?.lockToMargin}
+                onChange={(e) => setBatchReceiveSession({ lockToMargin: e.target.checked ? 1 : 0 })}
+              />
+              <div className="ml-2">Lock prices to default margin</div>
+            </div>
+            <TextField
+              inputLabel="Default Margin To Lock Prices To"
+              divClass="text-4xl w-full bg-green-200 hover:bg-green-300"
+              endAdornment="%"
+              inputClass="text-center"
+              valueNum={parseInt(batchReceiveSession?.defaultMargin) || 25}
+              inputType="number"
+              max={100}
+              min={0}
+              error={batchReceiveSession?.defaultMargin && isNaN(parseInt(batchReceiveSession?.defaultMargin))}
+              onChange={(e) => setBatchReceiveSession({ defaultMargin: e.target.value })}
+            /> */}
             <div className="help-text pb-4">
               Select the default prices for the batch. You can still edit prices individually.
             </div>

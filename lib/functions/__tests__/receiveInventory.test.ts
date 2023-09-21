@@ -1,4 +1,4 @@
-import { parseCSVItems } from '../receiveInventory'
+import { parseCSVItems } from '../receiveStock'
 
 const exampleCSV = '[]'
 

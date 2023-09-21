@@ -10,6 +10,7 @@ import { PaymentMethodTypes, SaleStateTypes } from 'lib/types/sale'
 import { useSetRegisterId } from 'lib/api/register'
 import { axiosAuth } from 'lib/api'
 import { mysql2js } from 'lib/database/utils/helpers'
+import { BatchReceiveObject } from 'lib/types/stock'
 
 type WithSelectors<S> = S extends { getState: () => infer T } ? S & { use: { [K in keyof T]: () => T[K] } } : never
 
@@ -38,7 +39,7 @@ const initCart = {
   registerId: null,
 }
 
-const initBatchReceiveSession = {
+export const initBatchReceiveSession = <BatchReceiveObject>{
   vendorId: null,
   batchList: [],
   dateCompleted: null,
@@ -49,11 +50,12 @@ const initBatchReceiveSession = {
   cond: null,
   section: null,
   country: null,
-  genre: null,
+  doReorder: true,
+  doListOnWebsite: true,
+  genre: [],
   totalSell: '0',
   vendorCut: '0',
-  storeCut: '0',
-  margin: '25',
+  defaultMargin: '25',
 }
 
 const initState = {

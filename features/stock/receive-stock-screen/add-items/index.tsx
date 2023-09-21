@@ -10,6 +10,8 @@ import { saveReceiveBatch } from 'lib/api/stock'
 import { useAppStore } from 'lib/store'
 import { useSWRConfig } from 'swr'
 import { useRouter } from 'next/router'
+import Clothing from './clothing'
+import GoogleBooks from './googleBooks'
 
 export default function AddReceiveItems({ setStage, setBypassConfirmDialog }) {
   const [mode, setMode] = useState(0)
@@ -43,7 +45,14 @@ export default function AddReceiveItems({ setStage, setBypassConfirmDialog }) {
         </div>
       </div>
       <Tabs
-        tabs={['Receive Existing Items', 'Add New Items', 'Search Discogs', 'Search GoogleBooks', 'CSV Import']}
+        tabs={[
+          'Receive Existing Items',
+          'Add New Items',
+          'Clothing',
+          'Search Discogs',
+          'Search GoogleBooks',
+          'CSV Import',
+        ]}
         value={mode}
         onChange={setMode}
       />
@@ -56,10 +65,16 @@ export default function AddReceiveItems({ setStage, setBypassConfirmDialog }) {
             <Form />
           </div>
           <div hidden={mode !== 2}>
-            <Csv />
+            <Clothing />
           </div>
           <div hidden={mode !== 3}>
             <Discogs />
+          </div>
+          <div hidden={mode !== 4}>
+            <GoogleBooks />
+          </div>
+          <div hidden={mode !== 5}>
+            <Csv />
           </div>
         </div>
         <div className="w-2/5">

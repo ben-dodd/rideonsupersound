@@ -3,12 +3,27 @@ import { useState } from 'react'
 import { useAppStore } from 'lib/store'
 import { StockItemObject } from 'lib/types/stock'
 import StockEditForm from 'features/stock/stock-edit-dialog/form'
-import { getDefaultReceiveItem } from 'lib/functions/receiveStock'
 
-export default function Form() {
+export default function Clothing() {
   const { batchReceiveSession, addBatchReceiveItem } = useAppStore()
-  const defaultItem = getDefaultReceiveItem(batchReceiveSession)
-
+  const {
+    cond = '',
+    country = '',
+    format = '',
+    genre = [],
+    isNew = false,
+    media = '',
+    section = '',
+    totalSell = '',
+    vendorCut = '',
+    doListOnWebsite = true,
+    doReorder = true,
+  } = batchReceiveSession || {}
+  const defaultItem = {
+    item: { cond, country, format, genre, isNew, media, section, doListOnWebsite, doReorder },
+    quantity: 1,
+    price: { vendorCut, totalSell },
+  }
   const [item, setItem] = useState<StockItemObject>(defaultItem?.item)
   return (
     <div>

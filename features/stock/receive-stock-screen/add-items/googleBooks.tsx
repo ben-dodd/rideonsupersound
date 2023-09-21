@@ -6,7 +6,7 @@ import debounce from 'lodash/debounce'
 import { useMemo, useState } from 'react'
 import { v4 as uuid } from 'uuid'
 
-export default function Discogs() {
+export default function GoogleBooks() {
   const [barcode, setBarcode] = useState('')
   const [keyword, setKeyword] = useState('')
   const [discogsOptions, setDiscogsOptions] = useState([])
