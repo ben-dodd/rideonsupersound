@@ -1,6 +1,7 @@
 import { StockReceiveObject } from 'lib/types/stock'
 import { getItemSku } from './displayInventory'
 import { getLastValidElementByDate } from 'lib/utils'
+import { getProfitMargin, getStoreCut } from './pay'
 
 export function getLaybyHoldQuantity(item) {
   return (item?.quantityLayby + item?.quantityHold + item?.quantityUnlayby + item?.quantityUnhold) * -1 || 0
@@ -41,8 +42,16 @@ export function createBatchList(stockItems, stockMovements) {
     receiveObject.key = getItemSku({ id: item?.item?.id, vendorId: item?.item?.vendor_id })
     receiveObject.item = item?.item
     let stockMovement = stockMovements?.find((sm) => sm?.stockId === item?.id)
-    let price = getLastValidElementByDate(item?.stockPrices, 'date_valid_from', stockMovement?.date_moved)
-    receiveObject.price = price
+    let receivePrice = getLastValidElementByDate(item?.stockPrices, 'date_valid_from', stockMovement?.date_moved)
+    let slicedPrice = { totalSell: receivePrice?.total_sell, vendorCut: receivePrice?.vendor_cut }
+    console.log(item?.stockPrices)
+    let receivePriceObject = {
+      totalSell: receivePrice?.total_sell,
+      vendorCut: receivePrice?.vendor_cut,
+      storeCut: getStoreCut(slicedPrice),
+      margin: getProfitMargin(slicedPrice),
+    }
+    receiveObject.price = receivePriceObject
     receiveObject.quantity = stockMovement?.quantity
     batchList.push(receiveObject)
   })

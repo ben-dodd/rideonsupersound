@@ -485,8 +485,15 @@ export function dbGetReceiveBatches(db = connection) {
 
 export function dbGetReceiveBatch(id, db = connection) {
   return db('batch_receive')
-    .leftJoin('clerk', 'clerk.id', 'batch_receive.started_by_clerk_id')
-    .select('batch_receive.*', 'clerk.name as clerk_name')
+    .leftJoin('clerk as startedByClerk', 'startedByClerk.id', 'batch_receive.started_by_clerk_id')
+    .leftJoin('clerk as completedByClerk', 'completedByClerk.id', 'batch_receive.completed_by_clerk_id')
+    .leftJoin('vendor', 'vendor.id', 'batch_receive.vendor_id')
+    .select(
+      'batch_receive.*',
+      'vendor.name as vendor_name',
+      'startedByClerk.name as started_by_clerk_name',
+      'completedByClerk.name as completed_by_clerk_name',
+    )
     .where('batch_receive.id', id)
     .first()
     .then((batch) =>
@@ -526,9 +533,13 @@ export function dbCreateReceiveBatch(receiveBatch, db = connection) {
     .catch((e) => Error(e.message))
 }
 
-export async function dbSaveReceiveBatch(receiveBatchSession, db = connection) {
-  const { batch: receiveBatch } = receiveBatchSession
+export async function dbSaveReceiveBatch(receiveBatch, db = connection) {
+  console.log('Saving receive batch', receiveBatch)
   return db.transaction(async (trx) => {
+    delete receiveBatch.vendorName
+    delete receiveBatch.startedByClerkName
+    delete receiveBatch.completedByClerkName
+
     let batchId = receiveBatch?.id
     const { batchList = [] } = receiveBatch || []
 
@@ -560,6 +571,7 @@ export function dbGetCurrentReceiveBatchId(db = connection) {
     .select('id')
     .where({ is_deleted: 0 })
     .where({ date_completed: null })
+    .where('id', '>', 1629)
     .first()
     .then((batch) => batch?.id)
 }

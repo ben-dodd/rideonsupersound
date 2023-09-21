@@ -123,11 +123,13 @@ export default function EditSaleItem({ cartItem }: { cartItem: SaleItemObject })
           </div>
         </div>
         <div className="flex flex-col w-full pt-2 px-2 justify-between">
-          <div
-            className={`text-sm pl-1${!miscOrGiftItem ? ' link-blue' : ''}`}
-            onClick={miscOrGiftItem ? null : () => router.push(`/stock/${item?.id}`)}
-          >
-            {getItemDisplayName(item)}
+          <div>
+            <span
+              className={`text-sm pl-1${!miscOrGiftItem ? ' link-blue' : ''}`}
+              onClick={miscOrGiftItem ? null : () => router.push(`/stock/${item?.id}`)}
+            >
+              {getItemDisplayName(item)}
+            </span>
           </div>
           <div className="text-red-500 self-end">{writeCartItemPriceBreakdown(cartItem, stockItem)}</div>
           <div className="self-end text-xs">

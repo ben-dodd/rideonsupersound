@@ -1,3 +1,5 @@
+import { VendorObject } from './vendor'
+
 /* eslint-disable unused-imports/no-unused-vars */
 export enum StockMovementTypes {
   Received = 'received', // received from vendor
@@ -231,12 +233,16 @@ export interface BatchReceiveObject {
   batchList?: any[] | StockReceiveObject[]
   id?: number
   vendorId?: number
+  vendorName?: string
+  vendor?: VendorObject
   itemCount?: number
   itemList?: string
   registerId?: number
   startedByClerkId?: number
+  startedByClerkName?: string
   dateStarted?: string
   completedByClerkId?: number
+  completedByClerkName?: string
   dateCompleted?: string
   note?: string
   media?: string

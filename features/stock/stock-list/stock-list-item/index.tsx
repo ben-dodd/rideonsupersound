@@ -11,7 +11,13 @@ import ItemDetails from './item-details'
 import { useBasicStockItem } from 'lib/api/stock'
 import Prices from './prices'
 
-export default function StockListItem({ stockListItem }: { stockListItem: StockItemSearchObject }) {
+export default function StockListItem({
+  stockListItem,
+  stockPrice,
+}: {
+  stockListItem: StockItemSearchObject
+  stockPrice?: StockPriceObject
+}) {
   const router = useRouter()
   const { stockItem, isStockItemLoading } = useBasicStockItem(stockListItem?.id)
   const {
@@ -27,7 +33,7 @@ export default function StockListItem({ stockListItem }: { stockListItem: StockI
           <Title item={item} />
           <ItemDetails item={item} quantities={quantities} />
         </div>
-        {!isStockItemLoading && <Prices price={price} />}
+        {!isStockItemLoading && <Prices price={stockPrice || price} />}
       </div>
     </div>
   )

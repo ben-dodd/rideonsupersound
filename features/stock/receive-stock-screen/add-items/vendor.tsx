@@ -6,8 +6,8 @@ import Select from 'react-select'
 
 export default function Vendor() {
   const { stockList } = useStockList()
-  const { batchReceiveSession, addBatchReceiveSessionItem } = useAppStore()
-  const addItem = (item: any) => addBatchReceiveSessionItem(item?.value)
+  const { batchReceiveSession, addBatchReceiveItem } = useAppStore()
+  const addItem = (item: any) => addBatchReceiveItem(item?.value)
   return (
     <div>
       <div className="helper-text mb-2">{`Add items already in the vendor's inventory.`}</div>
@@ -19,7 +19,7 @@ export default function Vendor() {
             ?.filter(
               (item: StockItemSearchObject) =>
                 item?.vendorId === batchReceiveSession?.vendorId &&
-                !batchReceiveSession?.items?.map((item) => item?.item?.id).includes(item?.id),
+                !batchReceiveSession?.batchList?.map((item) => item?.item?.id).includes(item?.id),
             )
             ?.map((item: StockItemSearchObject) => ({
               value: item,

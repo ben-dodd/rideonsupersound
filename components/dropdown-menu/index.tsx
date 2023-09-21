@@ -2,6 +2,7 @@ import { Settings } from '@mui/icons-material'
 import { useMe } from 'lib/api/clerk'
 import { isUserAdmin } from 'lib/functions/user'
 import { useState } from 'react'
+import { CSVLink } from 'react-csv'
 
 const DropdownMenu = ({
   items,
@@ -47,16 +48,32 @@ const DropdownMenu = ({
                   : 'hover:bg-blue-500 hover:text-white'
               }`}
             >
-              <button
-                className={`flex items-center justify-start flex-nowrap w-dropdown p-2`}
-                onClick={() => {
-                  setMenuVisible(false)
-                  item?.onClick?.()
-                }}
-              >
-                <div className="mr-2 text-left">{item?.icon}</div>
-                <div className="text-left">{item?.text}</div>
-              </button>
+              {item?.data && !item?.isDisabled ? (
+                <CSVLink
+                  className={`flex items-center justify-start flex-nowrap w-dropdown p-2 normal-case`}
+                  data={item?.data}
+                  headers={item?.headers}
+                  filename={item?.fileName}
+                  onClick={() => {
+                    setMenuVisible(false)
+                    item?.onClick?.()
+                  }}
+                >
+                  <div className="mr-2 text-left">{item?.icon}</div>
+                  <div className="text-left">{item?.text}</div>
+                </CSVLink>
+              ) : (
+                <button
+                  className={`flex items-center justify-start flex-nowrap w-dropdown p-2`}
+                  onClick={() => {
+                    setMenuVisible(false)
+                    item?.onClick?.()
+                  }}
+                >
+                  <div className="mr-2 text-left">{item?.icon}</div>
+                  <div className="text-left">{item?.text}</div>
+                </button>
+              )}
             </div>
           ))}
       </div>

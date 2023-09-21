@@ -64,7 +64,7 @@ const StockScreen = () => {
 
   return (
     <MidScreenContainer
-      title="Stock List"
+      title="Stock"
       isLoading={isStockListLoading}
       titleClass="bg-col2"
       full={true}
