@@ -1,12 +1,14 @@
 import TextField from 'components/inputs/text-field'
 import DiscogsOption from 'features/stock/api-discogs/discogs-option'
 import { getDiscogsOptions } from 'lib/functions/discogs'
+import { getDefaultReceiveItem } from 'lib/functions/receiveStock'
 import { useAppStore } from 'lib/store'
 import debounce from 'lodash/debounce'
 import { useMemo, useState } from 'react'
 import { v4 as uuid } from 'uuid'
 
 export default function Discogs() {
+  const { batchReceiveSession, addBatchReceiveItem } = useAppStore()
   const [barcode, setBarcode] = useState('')
   const [keyword, setKeyword] = useState('')
   const [discogsOptions, setDiscogsOptions] = useState([])
@@ -19,10 +21,12 @@ export default function Discogs() {
       }
     }
   }
-  const { batchReceiveSession, addBatchReceiveItem } = useAppStore()
+  const defaultItem = getDefaultReceiveItem(batchReceiveSession)
   const addItem = (item) => {
-    addBatchReceiveItem(item)
+    console.log(item)
+    addBatchReceiveItem({ ...defaultItem, item: { ...defaultItem?.item, ...item } })
     setBarcode('')
+    setKeyword('')
     setKey(uuid())
     setDiscogsOptions([])
   }
@@ -46,7 +50,7 @@ export default function Discogs() {
           setBarcode(e.target.value)
           debouncedBarcode(e.target.value)
         }}
-        inputLabel="Barcode"
+        inputLabel="Scan Barcode"
         autoFocus
         selectOnFocus
       />
