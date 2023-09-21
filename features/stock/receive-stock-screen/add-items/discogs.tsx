@@ -23,7 +23,6 @@ export default function Discogs() {
   }
   const defaultItem = getDefaultReceiveItem(batchReceiveSession)
   const addItem = (item) => {
-    console.log(item)
     addBatchReceiveItem({ ...defaultItem, item: { ...defaultItem?.item, ...item } })
     setBarcode('')
     setKeyword('')
@@ -39,6 +38,12 @@ export default function Discogs() {
 
   return (
     <div>
+      <img
+        src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/discogs-logo.png`}
+        alt="Discogs Logo"
+        width="100px"
+        height="50px"
+      />
       <div className="helper-text mb-2">
         Use the barcode scanner to scan the item and select the correct option from Discogs.
       </div>

@@ -1,5 +1,8 @@
+import dayjs from 'dayjs'
 import { get } from 'lib/api/external'
 import { GoogleBooksItem } from 'lib/types/googleBooks'
+import { StockItemObject } from 'lib/types/stock'
+import { andList } from 'lib/utils'
 
 export async function getGoogleBooksOptionsByItem({ artist, title }: any) {
   console.log('Getting google books', artist, title)
@@ -10,7 +13,19 @@ export async function getGoogleBooksOptionsByItem({ artist, title }: any) {
       header: { key: process.env.NEXT_PUBLIC_GOOGLE_API_KEY },
     },
     (data) => {
-      console.log(data)
+      return data?.items || []
+    },
+  )
+}
+
+export async function getGoogleBooksOptionsByKeyword(keyword: string) {
+  return get(
+    `https://www.googleapis.com/books/v1/volumes`,
+    {
+      params: { q: keyword },
+      header: { key: process.env.NEXT_PUBLIC_GOOGLE_API_KEY },
+    },
+    (data) => {
       return data?.items || []
     },
   )
@@ -38,18 +53,16 @@ export async function setGoogleBooksItemToStockItem(googleBooksOption: GoogleBoo
   return update
 }
 
-export function mergeStockAndGoogleBooksItems(googleBooksItem) {
-  return {
-    // artist: discogsItem?.artists?.map((artist) => artist?.name)?.join(', '),
-    // barcode: discogsItem?.barcode?.join('\n'),
-    // country: discogsItem?.country,
-    // format: getFormatFromDiscogs(discogsItem?.format),
-    // media: 'Audio',
-    // genre: [
-    //   ...(discogsItem?.genre ? (Array.isArray(discogsItem?.genre) ? discogsItem?.genre : [discogsItem?.genre]) : []),
-    //   ...(discogsItem?.style ? (Array.isArray(discogsItem?.style) ? discogsItem?.style : [discogsItem?.style]) : []),
-    // ],
-    // title: discogsItem?.title,
-    // release_year: discogsItem?.year?.toString(),
+export function mergeStockAndGoogleBooksItems(googleBooksItem: GoogleBooksItem) {
+  const item = <StockItemObject>{
+    artist: andList(googleBooksItem?.volumeInfo?.authors),
+    title: googleBooksItem?.volumeInfo?.title,
+    format: googleBooksItem?.volumeInfo?.printType,
+    media: 'Literature',
+    releaseYear: googleBooksItem?.volumeInfo?.publishedDate
+      ? dayjs(googleBooksItem?.volumeInfo?.publishedDate).format('YYYY')
+      : '',
+    imageUrl: googleBooksItem?.volumeInfo?.imageLinks?.thumbnail,
   }
+  return item
 }

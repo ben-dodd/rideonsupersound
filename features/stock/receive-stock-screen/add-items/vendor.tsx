@@ -7,9 +7,7 @@ import Select from 'react-select'
 export default function Vendor() {
   const { batchReceiveSession, addBatchReceiveItem } = useAppStore()
   const { vendorStockList } = useStockForVendor(batchReceiveSession?.vendorId)
-  console.log(vendorStockList)
   const addItem = (item: any) => {
-    console.log(item)
     addBatchReceiveItem(item?.value)
   }
   return (

@@ -1,54 +1,34 @@
 import TextField from 'components/inputs/text-field'
-import DiscogsOption from 'features/stock/api-discogs/discogs-option'
-import { getDiscogsOptions } from 'lib/functions/discogs'
+import GoogleBooksOption from 'features/stock/api-google-books/google-books-option'
+import { getGoogleBooksOptionsByKeyword } from 'lib/functions/googleBooks'
+import { getDefaultReceiveItem } from 'lib/functions/receiveStock'
 import { useAppStore } from 'lib/store'
 import debounce from 'lodash/debounce'
 import { useMemo, useState } from 'react'
-import { v4 as uuid } from 'uuid'
 
 export default function GoogleBooks() {
-  const [barcode, setBarcode] = useState('')
-  const [keyword, setKeyword] = useState('')
-  const [discogsOptions, setDiscogsOptions] = useState([])
-  const [key, setKey] = useState(uuid())
-  const handleChange = async (barcode) => {
-    if (barcode !== '') {
-      const results: any = await getDiscogsOptions({ barcode })
-      if (results && results?.length > 0) {
-        setDiscogsOptions(results)
-      }
-    }
-  }
   const { batchReceiveSession, addBatchReceiveItem } = useAppStore()
+  const [keyword, setKeyword] = useState('')
+  const [googleBooksOptions, setGoogleBooksOptions] = useState([])
+  const defaultItem = getDefaultReceiveItem(batchReceiveSession)
   const addItem = (item) => {
-    addBatchReceiveItem(item)
-    setBarcode('')
-    setKey(uuid())
-    setDiscogsOptions([])
+    console.log(item)
+    addBatchReceiveItem({ ...defaultItem, item: { ...defaultItem?.item, ...item } })
+    setGoogleBooksOptions([])
   }
-  const searchDiscogs = async (k) => {
-    const results = await getDiscogsOptions({ query: k })
-    if (results && results?.length > 0) setDiscogsOptions(results)
+  const searchGoogleBooks = async (k) => {
+    const results = await getGoogleBooksOptionsByKeyword(k)
+    if (results && results?.length > 0) setGoogleBooksOptions(results)
   }
-  const debouncedSearch = useMemo(() => debounce(searchDiscogs, 2000), [])
-  const debouncedBarcode = useMemo(() => debounce(handleChange, 2000), [])
-
+  const debouncedSearch = useMemo(() => debounce(searchGoogleBooks, 2000), [])
+  console.log(googleBooksOptions)
   return (
     <div>
-      <div className="helper-text mb-2">
-        Use the barcode scanner to scan the item and select the correct option from Discogs.
-      </div>
-      <TextField
-        key={key}
-        id="barcode"
-        value={barcode || ''}
-        onChange={(e) => {
-          setBarcode(e.target.value)
-          debouncedBarcode(e.target.value)
-        }}
-        inputLabel="Barcode"
-        autoFocus
-        selectOnFocus
+      <img
+        src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/google-books-logo.png`}
+        alt="GoogleBooks Logo"
+        width="100px"
+        height="50px"
       />
       <TextField
         id="keyword"
@@ -57,12 +37,12 @@ export default function GoogleBooks() {
           setKeyword(e.target.value)
           debouncedSearch(e.target.value)
         }}
-        inputLabel="Search Keywords (e.g. 'palace of wisdom common threads cdr')"
+        inputLabel="Search Keywords (e.g. 'the bible')"
       />
-      {discogsOptions?.length > 0 ? (
-        discogsOptions?.map((discogsOption, k) => (
-          <DiscogsOption
-            discogsOption={discogsOption}
+      {googleBooksOptions?.length > 0 ? (
+        googleBooksOptions?.map((googleBooksOption, k) => (
+          <GoogleBooksOption
+            googleBooksOption={googleBooksOption}
             key={k}
             vendorId={batchReceiveSession?.vendorId}
             isNew={true}
@@ -70,7 +50,7 @@ export default function GoogleBooks() {
             overrideItemDetails={true}
           />
         ))
-      ) : barcode === '' ? (
+      ) : keyword === '' ? (
         <div />
       ) : (
         <div>Nothing found...</div>
