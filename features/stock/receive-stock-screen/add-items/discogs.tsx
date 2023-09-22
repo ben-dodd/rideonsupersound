@@ -1,3 +1,4 @@
+import { QrCodeScanner, Search } from '@mui/icons-material'
 import TextField from 'components/inputs/text-field'
 import DiscogsOption from 'features/stock/api-discogs/discogs-option'
 import { getDiscogsOptions } from 'lib/functions/discogs'
@@ -58,6 +59,8 @@ export default function Discogs() {
         inputLabel="Scan Barcode"
         autoFocus
         selectOnFocus
+        startAdornment={<QrCodeScanner />}
+        clearButton
       />
       <TextField
         id="keyword"
@@ -67,6 +70,8 @@ export default function Discogs() {
           debouncedSearch(e.target.value)
         }}
         inputLabel="Search Keywords (e.g. 'palace of wisdom common threads cdr')"
+        startAdornment={<Search />}
+        clearButton
       />
       {discogsOptions?.length > 0 ? (
         discogsOptions?.map((discogsOption, k) => (
@@ -77,6 +82,7 @@ export default function Discogs() {
             isNew={true}
             setItem={addItem}
             overrideItemDetails={true}
+            runDatabaseFunctions={false}
           />
         ))
       ) : barcode === '' ? (

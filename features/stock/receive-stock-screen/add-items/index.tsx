@@ -5,7 +5,17 @@ import Discogs from './discogs'
 import Form from './form'
 import Items from './items'
 import Vendor from './vendor'
-import { ArrowLeft, ArrowRight, Save } from '@mui/icons-material'
+import {
+  ArrowLeft,
+  ArrowRight,
+  Category,
+  Checkroom,
+  MenuBook,
+  MusicVideo,
+  Save,
+  Storefront,
+  UploadFile,
+} from '@mui/icons-material'
 import { saveReceiveBatch } from 'lib/api/stock'
 import { useAppStore } from 'lib/store'
 import { useSWRConfig } from 'swr'
@@ -22,10 +32,20 @@ export default function AddReceiveItems({ setStage, setBypassConfirmDialog }) {
   return (
     <div className="w-full">
       <div className="flex justify-between p-2">
-        <div className="text-2xl">ADD ITEMS</div>
+        <div>
+          <div className="text-2xl">ADD ITEMS</div>
+          <div className="help-text max-w-50">
+            <p>
+              Use the options below to add individual items to your <b>Receive Basket</b>.
+            </p>
+            <p>
+              Click <b>CONFIGURE ITEMS</b> to add quantities, prices and other details.
+            </p>
+          </div>
+        </div>
         <div className="px-4">
-          <div className="icon-text-button-highlight" onClick={() => setStage('add')}>
-            REVIEW ITEMS <ArrowRight />
+          <div className="icon-text-button-highlight" onClick={() => setStage('configure')}>
+            CONFIGURE ITEMS <ArrowRight />
           </div>
           <div className="icon-text-button" onClick={() => setStage('setup')}>
             BACK TO SETUP <ArrowLeft />
@@ -52,6 +72,14 @@ export default function AddReceiveItems({ setStage, setBypassConfirmDialog }) {
           'Search Discogs',
           'Search GoogleBooks',
           'CSV Import',
+        ]}
+        icons={[
+          <Storefront key={0} />,
+          <Category key={1} />,
+          <Checkroom key={2} />,
+          <MusicVideo key={3} />,
+          <MenuBook key={4} />,
+          <UploadFile key={5} />,
         ]}
         value={mode}
         onChange={setMode}

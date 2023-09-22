@@ -3,7 +3,7 @@ import { useAppStore } from 'lib/store'
 import { useState } from 'react'
 import Items from './items'
 
-export default function CheckDetails() {
+export default function ConfigureItems() {
   const { batchReceiveSession, setBatchReceiveSession } = useAppStore()
   const [item, setItem] = useState(batchReceiveSession?.batchList?.[0]?.item || null)
   const [itemKey, setItemKey] = useState(batchReceiveSession?.batchList?.[0]?.key || null)

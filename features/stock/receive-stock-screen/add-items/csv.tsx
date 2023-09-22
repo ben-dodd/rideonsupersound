@@ -22,7 +22,7 @@ export default function Csv() {
         <ol>
           <li>
             <a
-              className="underline mr-1"
+              className="link-blue mr-1"
               href="https://docs.google.com/spreadsheets/d/1xQSRFFkbYJBi-4-d2eDApVyUC3ym2we9Uh4nCumt_bI/edit?usp=sharing"
               target="_blank"
               rel="noopener noreferrer"
@@ -33,7 +33,7 @@ export default function Csv() {
           </li>
           <li>
             {"Once you're done. Click"}
-            <i>File | Download | Comma-separated values (*.csv)</i>
+            <i className="ml-1">File | Download | Comma-separated values (*.csv)</i>
           </li>
           <li>Upload the CSV file using the button below.</li>
         </ol>
@@ -52,14 +52,10 @@ export default function Csv() {
               >
                 Browse File
               </button>
-              <div className="flex border border-gray-500 grow items-center pl-2 italic">
+              <div className="flex border border-gray-500 grow items-center pl-2 italic mr-2">
                 {acceptedFile && acceptedFile.name}
               </div>
-              <button
-                className="bg-col3-dark hover:bg-col3 disabled:bg-gray-200 p-2 rounded ml-2"
-                onClick={addItems}
-                disabled={!acceptedFile}
-              >
+              <button className="prominent-button" onClick={addItems} disabled={csvItems?.length === 0}>
                 Add Items <ChevronRight />
               </button>
             </div>

@@ -19,7 +19,7 @@ export default function Form() {
             setItem(defaultItem?.item)
           }}
           disabled={!item?.title}
-          className="bg-col3-dark hover:bg-col3 ring-1 disabled:bg-gray-200 p-2 rounded"
+          className="prominent-button"
         >
           Add Item To Basket <ChevronRight />
         </button>

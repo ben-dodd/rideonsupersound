@@ -1,3 +1,5 @@
+import { Cancel } from '@mui/icons-material'
+
 interface TextFieldProps {
   id?: any
   value?: string
@@ -24,6 +26,7 @@ interface TextFieldProps {
   startAdornmentClass?: string
   endAdornmentClass?: string
   inputClass?: string
+  clearButton?: boolean
 }
 
 export default function TextField({
@@ -52,6 +55,7 @@ export default function TextField({
   startAdornmentClass,
   endAdornmentClass,
   inputClass,
+  clearButton = false,
 }: TextFieldProps) {
   let isError = error || (valueNum && (valueNum > parseFloat(`${max}`) || valueNum < parseFloat(`${min}`)))
   return (
@@ -96,6 +100,13 @@ export default function TextField({
           />
         )}
         {endAdornment && <div className={`mx-1 ${endAdornmentClass || ''}`}>{endAdornment}</div>}
+        {clearButton && (
+          <div className="text-xs mr-2">
+            <button onClick={() => onChange({ target: { value: '' } })}>
+              <Cancel />
+            </button>
+          </div>
+        )}
       </div>
       {((isError && errorText) || (fieldRequired && !value && !valueNum)) && (
         <div className="px-1 text-xs text-red-500 mt-2 mb-2">

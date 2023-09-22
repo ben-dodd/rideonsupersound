@@ -533,7 +533,7 @@ export function dbCreateReceiveBatch(receiveBatch, db = connection) {
     .catch((e) => Error(e.message))
 }
 
-export async function dbSaveReceiveBatch(receiveBatch, db = connection) {
+export async function dbSaveReceiveBatch(receiveBatch, doComplete = false, db = connection) {
   console.log('Saving receive batch', receiveBatch)
   return db.transaction(async (trx) => {
     delete receiveBatch.vendorName
@@ -548,9 +548,8 @@ export async function dbSaveReceiveBatch(receiveBatch, db = connection) {
     } else {
       batchId = await dbCreateReceiveBatch({ ...receiveBatch, batchList: JSON.stringify(batchList) }, trx)
     }
-    const receiveCompleted = receiveBatch?.dateCompleted
 
-    if (receiveCompleted) {
+    if (doComplete) {
       await dbReceiveStock(receiveBatch?.batchList, trx)
     }
 

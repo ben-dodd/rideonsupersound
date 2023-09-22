@@ -126,6 +126,10 @@
   @apply bg-secondary-dark hover:bg-secondary active:bg-secondary-light;
 }
 
+.prominent-button {
+  @apply bg-col3-dark hover:bg-col3 ring-1 disabled:bg-gray-200 p-2 rounded;
+}
+
 .dialog__footer--actions-right {
   @apply grid grid-cols-right bg-gray-100;
 }

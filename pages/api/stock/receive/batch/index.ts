@@ -15,8 +15,8 @@ const apiRoute = async (req: NextAuthenticatedApiRequest, res: NextApiResponse) 
     }
   } else if (req.method === 'POST') {
     try {
-      return dbSaveReceiveBatch(req.body).then((data) => {
-        console.log('Saved', data)
+      const { receiveBatch, doComplete } = req.body || {}
+      return dbSaveReceiveBatch(receiveBatch, doComplete).then((data) => {
         return res.status(200).json(data)
       })
     } catch (error) {

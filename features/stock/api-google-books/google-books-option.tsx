@@ -12,12 +12,14 @@ export default function GoogleBooksOption({
   googleBooksOption,
   overrideItemDetails = false,
   isNew = false,
+  runDatabaseFunctions = true,
   vendorId,
   setItem,
 }: {
   googleBooksOption: GoogleBooksItem
   overrideItemDetails?: boolean
   isNew?: boolean
+  runDatabaseFunctions?: boolean
   vendorId?: number
   setItem?: Function
 }) {
@@ -28,15 +30,17 @@ export default function GoogleBooksOption({
   const handleGoogleBooksOptionClick = async () => {
     setGoogleBooksItemToStockItem(googleBooksOption, overrideItemDetails)
       .then(async (update) => {
-        let newId = id
-        if (isNew) {
-          const newItem = await createStockItem({ ...update, vendorId }, clerk?.id)
-          setItem(newItem)
-          newId = newItem?.id
-        } else {
-          await updateStockItem(update, id)
-        }
-        return newId
+        if (runDatabaseFunctions) {
+          let newId = id
+          if (isNew) {
+            const newItem = await createStockItem({ ...update, vendorId }, clerk?.id)
+            setItem(newItem)
+            newId = newItem?.id
+          } else {
+            await updateStockItem(update, id)
+          }
+          return newId
+        } else setItem(update)
       })
       .then(() => mutate(`stock/${id}`))
   }

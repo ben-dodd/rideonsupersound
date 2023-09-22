@@ -1,3 +1,4 @@
+import { Search } from '@mui/icons-material'
 import TextField from 'components/inputs/text-field'
 import GoogleBooksOption from 'features/stock/api-google-books/google-books-option'
 import { getGoogleBooksOptionsByKeyword } from 'lib/functions/googleBooks'
@@ -21,7 +22,6 @@ export default function GoogleBooks() {
     if (results && results?.length > 0) setGoogleBooksOptions(results)
   }
   const debouncedSearch = useMemo(() => debounce(searchGoogleBooks, 2000), [])
-  console.log(googleBooksOptions)
   return (
     <div>
       <img
@@ -38,6 +38,8 @@ export default function GoogleBooks() {
           debouncedSearch(e.target.value)
         }}
         inputLabel="Search Keywords (e.g. 'the bible')"
+        startAdornment={<Search />}
+        clearButton
       />
       {googleBooksOptions?.length > 0 ? (
         googleBooksOptions?.map((googleBooksOption, k) => (
@@ -48,6 +50,7 @@ export default function GoogleBooks() {
             isNew={true}
             setItem={addItem}
             overrideItemDetails={true}
+            runDatabaseFunctions={false}
           />
         ))
       ) : keyword === '' ? (

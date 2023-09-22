@@ -9,12 +9,14 @@ export default function DiscogsOption({
   discogsOption,
   overrideItemDetails = false,
   isNew = false,
+  runDatabaseFunctions = true,
   vendorId,
   setItem,
 }: {
   discogsOption: DiscogsItem
   overrideItemDetails?: boolean
   isNew?: boolean
+  runDatabaseFunctions?: boolean
   vendorId?: number
   setItem?: Function
 }) {
@@ -25,15 +27,17 @@ export default function DiscogsOption({
   const handleDiscogsOptionClick = async () => {
     setDiscogsItemToStockItem(discogsOption, overrideItemDetails)
       .then(async (update) => {
-        let newId = id
-        if (isNew) {
-          const newItem = await createStockItem({ ...update, vendorId }, clerk?.id)
-          setItem(newItem)
-          newId = newItem?.id
-        } else {
-          await updateStockItem(update, id)
-        }
-        return newId
+        if (runDatabaseFunctions) {
+          let newId = id
+          if (isNew) {
+            const newItem = await createStockItem({ ...update, vendorId }, clerk?.id)
+            setItem(newItem)
+            newId = newItem?.id
+          } else {
+            await updateStockItem(update, id)
+          }
+          return newId
+        } else setItem(update)
       })
       .then(() => mutate(`stock/${id}`))
   }

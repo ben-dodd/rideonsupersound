@@ -121,9 +121,9 @@ export function useReceiveBatch(id) {
   return useData(id ? `stock/receive/${id}` : null, 'receiveBatch')
 }
 
-export function saveReceiveBatch(receiveBatch) {
+export function saveReceiveBatch(receiveBatch, doComplete = false) {
   return axiosAuth
-    .post(`/api/stock/receive/batch`, receiveBatch)
+    .post(`/api/stock/receive/batch`, { receiveBatch, doComplete })
     .then((res) => {
       // Returns saved batch payment session
       return mysql2js(res)
