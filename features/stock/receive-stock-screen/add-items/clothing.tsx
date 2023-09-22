@@ -6,6 +6,7 @@ import { getDefaultReceiveItem } from 'lib/functions/receiveStock'
 import { getClothingDisplayName, getImageSrc, getItemSku } from 'lib/functions/displayInventory'
 import TextField from 'components/inputs/text-field'
 import produce from 'immer'
+import SettingsSelect from 'components/inputs/settings-select'
 
 export default function Clothing() {
   const { batchReceiveSession, addBatchReceiveItem } = useAppStore()
@@ -21,10 +22,26 @@ export default function Clothing() {
       <div className="flex justify-end align-center">
         <button
           onClick={() => {
-            addBatchReceiveItem({ ...defaultItem, item })
+            Object.values(clothingList)?.forEach(
+              (row) =>
+                row?.size &&
+                row?.colour &&
+                addBatchReceiveItem({
+                  ...defaultItem,
+                  item: {
+                    ...item,
+                    media: 'Clothing/Accessories',
+                    format: item?.format || 'Shirt',
+                    size: row?.size,
+                    colour: row?.colour,
+                  },
+                  quantity: row?.quantity || defaultItem?.quantity,
+                }),
+            )
             setItem(defaultItem?.item)
+            setClothingList({})
           }}
-          disabled={!item?.title}
+          disabled={!item?.title && Object.keys(clothingList)?.length > 0}
           className="bg-col3-dark hover:bg-col3 ring-1 disabled:bg-gray-200 p-2 rounded"
         >
           {`Add ${itemCount ? `${itemCount} ` : ''}Item${itemCount === 1 ? '' : 's'} To Basket`} <ChevronRight />
@@ -32,6 +49,12 @@ export default function Clothing() {
       </div>
 
       <div>
+        <TextField
+          divClass="bg-green-500"
+          value={getClothingDisplayName({ ...item, ...clothingList?.[`0`] })}
+          inputLabel="DISPLAY NAME (EXAMPLE)"
+          displayOnly
+        />
         <div className="flex justify-start w-full">
           <div className="pr-2 w-52 mr-2">
             <div className="w-52 h-52 relative">
@@ -46,12 +69,7 @@ export default function Clothing() {
           <div className="w-full">
             <TextField id="artist" value={item?.artist || ''} onChange={handleChange} inputLabel="ARTIST" />
             <TextField id="title" value={item?.title || ''} onChange={handleChange} inputLabel="TITLE" />
-            <TextField
-              id="displayAs"
-              value={getClothingDisplayName({ ...item, ...clothingList?.[`0`] })}
-              inputLabel="DISPLAY NAME (EXAMPLE)"
-              displayOnly
-            />
+            <SettingsSelect object={item} onEdit={setItem} inputLabel="FORMAT" dbField="format" />
           </div>
         </div>
         <div className="py-2 border-b flex">

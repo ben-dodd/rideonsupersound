@@ -12,6 +12,7 @@ import ViewReceiveBatch from './view-receive-batch'
 import { getBatchListCSVData } from 'lib/functions/printLabels'
 import dayjs from 'dayjs'
 import { dateYMD } from 'lib/types/date'
+import ConfigureItems from './configure-items'
 
 export default function ReceiveStockScreen() {
   const { batchReceiveSession, setBatchReceiveSession, resetBatchReceiveSession, openConfirm } = useAppStore()
@@ -107,6 +108,10 @@ export default function ReceiveStockScreen() {
             <SetupReceive setStage={setStage} setBypassConfirmDialog={setBypassConfirmDialog} />
           ) : stage === 'add' ? (
             <AddReceiveItems setStage={setStage} setBypassConfirmDialog={setBypassConfirmDialog} />
+          ) : stage === 'configure' ? (
+            <ConfigureItems setStage={setStage} setBypassConfirmDialog={setBypassConfirmDialog} />
+          ) : stage === 'review' ? (
+            <div />
           ) : (
             <div />
           )}

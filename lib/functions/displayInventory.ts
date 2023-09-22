@@ -23,6 +23,7 @@ export function getItemDisplayName(item: StockItemObject) {
   if (item?.isMiscItem) return item?.miscItemDescription
   if (item?.displayAs) return item?.displayAs
   if (!item || !(item?.artist || item?.title)) return 'Untitled'
+  if (item?.media === 'Clothing/Accessories') return getClothingDisplayName(item)
   return `${item?.title || ''}${item?.title && item?.artist ? ' - ' : ''}${item?.artist || ''}`
 }
 
