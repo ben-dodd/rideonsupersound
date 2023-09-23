@@ -10,6 +10,7 @@ export async function getDiscogsOptions({ query, artist, title, barcode }: any) 
       release_title: title,
       artist,
       barcode,
+      type: 'release',
       key: process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_KEY,
       secret: process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_SECRET,
     },

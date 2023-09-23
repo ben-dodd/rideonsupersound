@@ -22,6 +22,7 @@ export default function Discogs() {
       }
     }
   }
+  console.log(discogsOptions)
   const defaultItem = getDefaultReceiveItem(batchReceiveSession)
   const addItem = (item) => {
     addBatchReceiveItem({ ...defaultItem, item: { ...defaultItem?.item, ...item } })
