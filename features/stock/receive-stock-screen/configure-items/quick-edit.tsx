@@ -1,10 +1,9 @@
 import { useAppStore } from 'lib/store'
 import { getItemDisplayName } from 'lib/functions/displayInventory'
 import { useMemo, useState } from 'react'
-import StockEditForm from 'features/stock/stock-edit-dialog/form'
 import { debounce } from 'lodash'
 
-export default function AllDetails() {
+export default function QuickEdit() {
   const { batchReceiveSession, updateBatchReceiveItemField } = useAppStore()
   const [selectedItem, setSelectedItem] = useState(null)
   const [index, setIndex] = useState(null)
@@ -14,9 +13,16 @@ export default function AllDetails() {
   }
   console.log(selectedItem)
   const debouncedHandleChange = useMemo(() => debounce(handleChange, 2000), [])
-  return (batchReceiveSession?.batchList?.map(batchItem => 
-    <div key={batchItem?.key} className="flex">
-      
+  return (
+    <div className="w-full">
+      {batchReceiveSession?.batchList?.map((batchItem) => {
+        const { item = {} } = batchItem || {}
+        return (
+          <div key={batchItem?.key} className="list-item">
+            {getItemDisplayName(item)}
+          </div>
+        )
+      })}
     </div>
   )
 }

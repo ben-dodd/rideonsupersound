@@ -3,10 +3,10 @@ import { useState } from 'react'
 import {
   ArrowLeft,
   ArrowRight,
+  Bolt,
   BrokenImage,
   Category,
   Filter9Plus,
-  Grade,
   Info,
   PriceChange,
   Save,
@@ -16,6 +16,8 @@ import { useAppStore } from 'lib/store'
 import { useSWRConfig } from 'swr'
 import { useRouter } from 'next/router'
 import AllDetails from './all-details'
+import QuickEdit from './quick-edit'
+import FormatSection from './format-section'
 
 export default function ConfigureItems({ setStage, setBypassConfirmDialog }) {
   const [mode, setMode] = useState(0)
@@ -57,10 +59,10 @@ export default function ConfigureItems({ setStage, setBypassConfirmDialog }) {
         </div>
       </div>
       <Tabs
-        tabs={['All Details', 'Main Details', 'Format/Section', 'Condition', 'Pricing', 'Quantities']}
+        tabs={['Edit By Item', 'Quick Edit', 'Format/Section', 'Condition', 'Pricing', 'Quantities']}
         icons={[
           <Info key={0} />,
-          <Grade key={1} />,
+          <Bolt key={1} />,
           <Category key={3} />,
           // <TravelExplore key={2} />,
           <BrokenImage key={4} />,
@@ -74,12 +76,13 @@ export default function ConfigureItems({ setStage, setBypassConfirmDialog }) {
         <div hidden={mode !== 0} className="w-full">
           <AllDetails />
         </div>
-        {/* <div hidden={mode !== 1}>
-            <Form />
-          </div>
-          <div hidden={mode !== 2}>
-            <Clothing />
-          </div>
+        <div hidden={mode !== 1} className="w-full">
+          <QuickEdit />
+        </div>
+        <div hidden={mode !== 2} className="w-full">
+          <FormatSection />
+        </div>
+        {/* 
           <div hidden={mode !== 3}>
             <Discogs />
           </div>

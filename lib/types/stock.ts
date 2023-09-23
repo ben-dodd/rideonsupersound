@@ -101,6 +101,31 @@ export interface StockItemObject extends BasicStockItemObject {
   giftCardIsValid?: boolean
 }
 
+// export const stockItemObjectFields = {
+//   artist: string,
+//   title: string,
+//   displayAs: string,
+//   media: string,
+//   section: string,
+//   format: string,
+//   isNew: boolean,
+//   cond: string,
+//   imageUrl: string,
+//   country: { type: string },
+//   releaseYear: {string},
+//   barcode: {string},
+//   publisher: {string},
+//   colour: {string},
+//   size: {string},
+//   description: {string},
+//   note: {string},
+//   imageId: {string},
+//   thumbUrl: {string},
+//   doReorder: {boolean}, // Reorder from vendor when stock runs out
+//   doListOnWebsite: {boolean},
+//   hasNoQuantity: {boolean}
+// }
+
 export interface BasicStockPriceObject {
   totalSell?: number
   vendorCut?: number
