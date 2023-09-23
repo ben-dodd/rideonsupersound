@@ -36,10 +36,10 @@ export default function SetupReceive({ setStage, setBypassConfirmDialog }) {
             className="icon-text-button"
             disabled={!batchReceiveSession?.vendorId}
             onClick={() => {
+              setBypassConfirmDialog(true)
               saveReceiveBatch(batchReceiveSession).then((savedBatchPayment) => {
                 mutate(`vendor/payment/batch/${savedBatchPayment?.id}`, savedBatchPayment)
-                setBypassConfirmDialog(true).then(() => router.push(`/stock`))
-                // router.push('/stock')
+                router.push(`/stock`)
               })
             }}
           >

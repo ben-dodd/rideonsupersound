@@ -16,7 +16,11 @@ export const convertKeyCase = (obj: any, keyCase: 'camelCase' | 'snakeCase') =>
       : keyCase === 'snakeCase'
       ? snakeCase(String(key))
       : key
-    acc[convertedKey] = isObject(value) ? convertKeyCase(value, keyCase) : checkValue(value)
+    acc[convertedKey] = isObject(value)
+      ? convertKeyCase(value, keyCase)
+      : isObject(JSON.parse(value))
+      ? convertKeyCase(JSON.parse(value), keyCase)
+      : checkValue(value)
   })
 
 export const convertKeyCaseSingleLayer = (obj: any, keyCase: 'camelCase' | 'snakeCase') =>

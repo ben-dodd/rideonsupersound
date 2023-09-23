@@ -72,9 +72,10 @@ export default function ReceiveStockScreen() {
       title: 'Delete receive session?',
       message: 'Do you want to delete the receive session?',
       action: () => {
+        setBypassConfirmDialog(true)
         deleteReceiveBatch(receiveBatch?.id).then(() => {
           mutate(`stock/receive`)
-          router.push(`stock`)
+          router.push(`/stock`)
         })
       },
     })
