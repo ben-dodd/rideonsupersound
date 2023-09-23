@@ -19,12 +19,17 @@ const ReceiveBatchItem = ({ receiveBatchItem }) => {
       <div className="w-full">
         <div className="flex justify-between">
           <div className="text-lg font-bold">
-            <span className="link-blue" onClick={() => router.push(`/stock/receive/${receiveBatch?.id}`)}>
-              Batch ID {receiveBatch?.id}
+            <span
+              className={receiveBatch?.dateCompleted ? 'link-blue' : 'link-red'}
+              onClick={() => router.push(`/stock/receive/${receiveBatch?.id}`)}
+            >
+              {`Batch #${receiveBatch?.id}${receiveBatch?.dateCompleted ? '' : ` (In Progress)`}`}
             </span>
-            {receiveBatch?.completedByClerkName ? ` - ${receiveBatch?.completedByClerkName}` : ''}
+            {receiveBatch?.completedByClerkName || receiveBatch?.startedByClerkName
+              ? ` - ${receiveBatch?.completedByClerkName || receiveBatch?.startedByClerkName}`
+              : ''}
           </div>
-          <div>{dayjs(receiveBatch?.dateCompleted).format(dateTime)}</div>
+          <div>{dayjs(receiveBatch?.dateCompleted || receiveBatch?.dateStarted).format(dateTime)}</div>
         </div>
         <div className="italic">{receiveBatch?.note}</div>
         {receiveBatch?.batchList?.map((batchItem) => (
