@@ -291,6 +291,10 @@
   @apply flex w-full p-2 hover:text-green-200 hover:bg-black items-center justify-between cursor-pointer;
 }
 
+.list-item-selected {
+  @apply flex w-full p-2 bg-red-500 items-center justify-between cursor-pointer;
+}
+
 .link-blue {
   @apply text-blue-400 hover:text-blue-600 cursor-pointer;
 }

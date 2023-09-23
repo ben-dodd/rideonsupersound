@@ -381,7 +381,17 @@ export const useAppStore = createSelectors(
     updateBatchReceiveItem: (key, update) =>
       set(
         produce((draft) => {
-          draft.batchReceiveSession?.batchList?.map((item) => (item?.key === key ? { ...item, ...update } : item))
+          const index = get().batchReceiveSession.batchList.findIndex((batchItem) => batchItem?.key === key)
+          draft.batchReceiveSession.batchList[index] = {
+            ...get().batchReceiveSession.batchList[index],
+            ...update,
+          }
+        }),
+      ),
+    updateBatchReceiveItemField: (i, objName, fieldName, newValue) =>
+      set(
+        produce((draft) => {
+          draft.batchReceiveSession.batchList[i][objName][fieldName] = newValue
         }),
       ),
     resetCart: () => {

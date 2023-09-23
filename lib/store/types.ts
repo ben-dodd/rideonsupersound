@@ -120,6 +120,7 @@ export interface StoreState {
   loadBatchReceiveSession: (session: BatchReceiveObject) => void
   addBatchReceiveItem: (newItem: any) => void
   updateBatchReceiveItem: (key: any, update: any) => void
+  updateBatchReceiveItemField: (index: number, objName: string, fieldName: string, newValue: any) => void
   setBatchPaymentSession: (update: any) => void
   setBatchPaymentList: (list: AccountPayment[]) => void
   setBatchAccountPayment: (vendorId: number, update: any) => void
