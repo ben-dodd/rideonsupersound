@@ -1,3 +1,4 @@
+import { parseJSON } from 'lib/utils'
 import { snakeCase, transform, camelCase, isObject, isArray, isBoolean } from 'lodash'
 
 export const js2mysql = (obj: any) => (typeof obj === 'object' ? convertKeyCaseSingleLayer(obj, 'snakeCase') : obj)
@@ -18,8 +19,8 @@ export const convertKeyCase = (obj: any, keyCase: 'camelCase' | 'snakeCase') =>
       : key
     acc[convertedKey] = isObject(value)
       ? convertKeyCase(value, keyCase)
-      : isObject(JSON.parse(value))
-      ? convertKeyCase(JSON.parse(value), keyCase)
+      : isObject(parseJSON(value))
+      ? convertKeyCase(parseJSON(value), keyCase)
       : checkValue(value)
   })
 

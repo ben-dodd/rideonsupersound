@@ -1,4 +1,5 @@
 import { createSetting, useSetting } from 'lib/api/settings'
+import { parseJSON } from 'lib/utils'
 import { useState } from 'react'
 import Select from 'react-select'
 import CreatableSelect from 'react-select/creatable'
@@ -61,6 +62,11 @@ export default function SettingsSelect({
               ? isMulti
                 ? Array.isArray(object?.[dbField])
                   ? object?.[dbField]?.map((val: string) => ({
+                      value: val,
+                      label: val,
+                    }))
+                  : Array.isArray(parseJSON(object?.[dbField]))
+                  ? parseJSON(object?.[dbField])?.map((val: string) => ({
                       value: val,
                       label: val,
                     }))

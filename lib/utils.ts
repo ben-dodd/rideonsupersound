@@ -146,3 +146,23 @@ export function getObjectDifference(obj1, obj2) {
   diffArray?.forEach?.((el) => (diffObj[el[0]] = el[1]))
   return diffObj
 }
+
+// function convertToArray(dataFromDatabase) {
+//   // Check if the data is a string
+//   if (typeof dataFromDatabase === 'string') {
+//     try {
+//       // Try to parse the JSON string into an array
+//       return JSON.parse(dataFromDatabase);
+//     } catch (error) {
+//       // If parsing fails, handle the error or return a default value
+//       console.error('Error parsing JSON:', error);
+//       return []; // You can return an empty array or handle the error differently
+//     }
+//   } else if (Array.isArray(dataFromDatabase)) {
+//     // If it's already an array, return it as is
+//     return dataFromDatabase;
+//   } else {
+//     // If it's neither a string nor an array, return a default value
+//     return [];
+//   }
+// }
