@@ -497,23 +497,25 @@ export function dbGetReceiveBatch(id, db = connection) {
     .where('batch_receive.id', id)
     .first()
     .then((batch) =>
-      dbGetStockMovementsForReceiveBatch(id, db)
-        .then((stockMovements) => {
-          return {
-            batch,
-            stockMovements,
-          }
-        })
-        .then(({ batch, stockMovements }) =>
-          dbGetStockItems(
-            stockMovements?.map((sm) => sm?.stock_id),
-            false,
-            db,
-          ).then((stockItems) => ({
-            ...batch,
-            batchList: batch?.batchList || createBatchList(stockItems, stockMovements),
-          })),
-        ),
+      batch?.batch_list
+        ? batch
+        : dbGetStockMovementsForReceiveBatch(id, db)
+            .then((stockMovements) => {
+              return {
+                batch,
+                stockMovements,
+              }
+            })
+            .then(({ batch, stockMovements }) =>
+              dbGetStockItems(
+                stockMovements?.map((sm) => sm?.stock_id),
+                false,
+                db,
+              ).then((stockItems) => ({
+                ...batch,
+                batchList: createBatchList(stockItems, stockMovements),
+              })),
+            ),
     )
 }
 

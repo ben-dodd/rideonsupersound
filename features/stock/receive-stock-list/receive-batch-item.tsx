@@ -14,16 +14,18 @@ const ReceiveBatchItem = ({ receiveBatchItem }) => {
     setExpanded(!expanded)
   }
 
+  const inProgress = !receiveBatch?.dateCompleted
+
   return (
     <div className="flex border-b py-4">
       <div className="w-full">
         <div className="flex justify-between">
           <div className="text-lg font-bold">
             <span
-              className={receiveBatch?.dateCompleted ? 'link-blue' : 'link-red'}
+              className={inProgress ? 'link-red' : 'link-blue'}
               onClick={() => router.push(`/stock/receive/${receiveBatch?.id}`)}
             >
-              {`Batch #${receiveBatch?.id}${receiveBatch?.dateCompleted ? '' : ` (In Progress)`}`}
+              {`Batch #${receiveBatch?.id}${inProgress ? ` (In Progress)` : ''}`}
             </span>
             {receiveBatch?.completedByClerkName || receiveBatch?.startedByClerkName
               ? ` - ${receiveBatch?.completedByClerkName || receiveBatch?.startedByClerkName}`
@@ -31,7 +33,9 @@ const ReceiveBatchItem = ({ receiveBatchItem }) => {
           </div>
           <div>{dayjs(receiveBatch?.dateCompleted || receiveBatch?.dateStarted).format(dateTime)}</div>
         </div>
-        <div className="italic">{receiveBatch?.note}</div>
+        <div className="italic">{`${receiveBatch?.vendorName}${
+          receiveBatch?.note ? ` - ${receiveBatch?.note}` : ''
+        }`}</div>
         {receiveBatch?.batchList?.map((batchItem) => (
           <div key={`${receiveBatch?.id}${batchItem?.key}`} className="flex items-center">
             <div className="text-xl text-red-500 whitespace-nowrap">{batchItem?.quantity} x</div>

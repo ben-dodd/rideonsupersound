@@ -3,13 +3,15 @@ import { getProfitMargin } from 'lib/functions/pay'
 import { priceCentsString } from 'lib/utils'
 
 const Prices = ({ price }) => {
-  return (
+  return price?.totalSell && price?.vendorCut ? (
     <div className="flex flex-col justify-between items-end">
       <div className="text-xl">{priceCentsString(price?.totalSell)}</div>
-      <div className="text-sm text-gray-500">{`${priceCentsString(price?.storeCut)}/${priceCentsString(
+      <div className="text-sm text-gray-500">{`${priceCentsString(price?.storeCut || 0)}/${priceCentsString(
         price?.vendorCut,
-      )} (${getProfitMargin(price)?.toFixed(1)}%)`}</div>
+      )}${getProfitMargin(price) ? ` (${getProfitMargin(price)?.toFixed(1)}%)` : ''}`}</div>
     </div>
+  ) : (
+    <div />
   )
 }
 

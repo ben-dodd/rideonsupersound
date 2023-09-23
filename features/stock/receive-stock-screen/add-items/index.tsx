@@ -53,9 +53,9 @@ export default function AddReceiveItems({ setStage, setBypassConfirmDialog }) {
           <div
             className="icon-text-button"
             onClick={() => {
+              setBypassConfirmDialog(true)
               saveReceiveBatch(batchReceiveSession).then((savedBatchPayment) => {
                 mutate(`vendor/payment/batch/${savedBatchPayment?.id}`, savedBatchPayment)
-                setBypassConfirmDialog(true)
                 router.push('/stock')
               })
             }}
