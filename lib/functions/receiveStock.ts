@@ -1,6 +1,6 @@
 import { andList, dollarsToCents } from 'lib/utils'
-import { getDisplayName } from 'next/dist/shared/lib/utils'
 import { v4 as uuid } from 'uuid'
+import { getItemDisplayName } from './displayInventory'
 
 export function parseCSVItems(results: any, defaultItem = { price: {}, item: {} }) {
   let parsedItems = []
@@ -68,11 +68,14 @@ export function convertPriceToCents(price) {
 }
 
 export function getItemList(batchList) {
-  const displayNames = batchList?.map?.((batchItem) => getDisplayName(batchItem?.item)) || null
+  // console.log('Getting item list', batchList)
+  const displayNames = batchList?.map?.((batchItem) => getItemDisplayName(batchItem?.item)) || null
   return displayNames ? andList(displayNames) : null
 }
 
 export function getItemCount(batchList) {
-  const itemCount = batchList?.reduce?.((acc, batchItem) => acc + (parseInt(batchItem?.qty) || 0), 0)
+  // console.log('Getting item count')
+  // console.log(batchList)
+  const itemCount = batchList?.reduce?.((acc, batchItem) => acc + (parseInt(batchItem?.quantity) || 0), 0)
   return itemCount
 }

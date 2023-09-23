@@ -11,10 +11,10 @@ const ItemDetails = ({ item, quantities }) => {
   const itemQuantity = getItemQuantity({ item, quantities }, cart?.items)
   return (
     <div className="flex text-sm">
-      <div>{`${item?.section ? `${item.section} / ` : ''}${item?.format} [${
+      <div>{`${item?.section ? `${item.section} / ` : ''}${item?.format ? `${item.format} ` : ''}[${
         item?.isNew ? 'NEW' : item?.cond?.toUpperCase() || 'USED'
       }]`}</div>
-      <div className="px-4">{`Selling for ${vendorName}`}</div>
+      <div className="px-4">{vendorName ? `Selling for ${vendorName}` : ''}</div>
       <div className={`${itemQuantity < 1 && 'text-red-500'}`}>
         {item?.id
           ? `${itemQuantity}${isInCart ? ' left' : ''} in stock${
