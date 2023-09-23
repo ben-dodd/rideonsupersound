@@ -38,8 +38,8 @@ export default function SetupReceive({ setStage, setBypassConfirmDialog }) {
             onClick={() => {
               saveReceiveBatch(batchReceiveSession).then((savedBatchPayment) => {
                 mutate(`vendor/payment/batch/${savedBatchPayment?.id}`, savedBatchPayment)
-                setBypassConfirmDialog(true)
-                router.push('/stock')
+                setBypassConfirmDialog(true).then(() => router.push(`/stock`))
+                // router.push('/stock')
               })
             }}
           >
