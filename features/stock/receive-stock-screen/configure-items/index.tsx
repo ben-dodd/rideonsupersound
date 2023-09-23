@@ -18,6 +18,9 @@ import { useRouter } from 'next/router'
 import AllDetails from './all-details'
 import QuickEdit from './quick-edit'
 import FormatSection from './format-section'
+import Condition from './condition'
+import Price from './price'
+import Quantities from './quantities'
 
 export default function ConfigureItems({ setStage, setBypassConfirmDialog }) {
   const [mode, setMode] = useState(0)
@@ -82,13 +85,15 @@ export default function ConfigureItems({ setStage, setBypassConfirmDialog }) {
         <div hidden={mode !== 2} className="w-full">
           <FormatSection />
         </div>
-        {/* 
-          <div hidden={mode !== 3}>
-            <Discogs />
-          </div>
-          <div hidden={mode !== 4}>
-            <GoogleBooks />
-          </div> */}
+        <div hidden={mode !== 3}>
+          <Condition />
+        </div>
+        <div hidden={mode !== 4}>
+          <Price />
+        </div>
+        <div hidden={mode !== 5}>
+          <Quantities />
+        </div>
       </div>
     </div>
   )
