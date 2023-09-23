@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useAppStore } from 'lib/store'
 import { StockItemObject } from 'lib/types/stock'
 import StockEditForm from 'features/stock/stock-edit-dialog/form'
-import { getDefaultReceiveItem } from 'lib/functions/receiveStock'
+import { convertPriceToCents, getDefaultReceiveItem } from 'lib/functions/receiveStock'
 
 export default function Form() {
   const { batchReceiveSession, addBatchReceiveItem } = useAppStore()
@@ -15,7 +15,7 @@ export default function Form() {
       <div className="flex justify-end align-center">
         <button
           onClick={() => {
-            addBatchReceiveItem({ ...defaultItem, item })
+            addBatchReceiveItem({ ...defaultItem, item, price: convertPriceToCents(defaultItem?.price) })
             setItem(defaultItem?.item)
           }}
           disabled={!item?.title}

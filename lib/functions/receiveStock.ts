@@ -1,3 +1,4 @@
+import { dollarsToCents } from 'lib/utils'
 import { v4 as uuid } from 'uuid'
 
 export function parseCSVItems(results: any, defaultItem = { price: {}, item: {} }) {
@@ -55,4 +56,12 @@ export function getDefaultReceiveItem(batchReceiveSession) {
     price: { vendorCut, totalSell },
   }
   return defaultItem
+}
+
+export function convertPriceToCents(price) {
+  return {
+    totalSell: price?.totalSell ? dollarsToCents(price.totalSell) : null,
+    storeCut: price?.storeCut ? dollarsToCents(price.storeCut) : null,
+    vendorCut: price?.vendorCut ? dollarsToCents(price.vendorCut) : null,
+  }
 }

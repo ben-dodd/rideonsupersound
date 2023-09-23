@@ -1,6 +1,6 @@
 import { Cancel } from '@mui/icons-material'
 
-interface TextFieldProps {
+export interface TextFieldProps {
   id?: any
   value?: string
   valueNum?: number

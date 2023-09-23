@@ -311,6 +311,10 @@
   @apply text-sm p-8 rounded-lg bg-gray-200 m-2;
 }
 
+.error-text {
+  @apply text-red-600 font-bold py-2;
+}
+
 /* .speech-bubble:before {
   content: '';
   position: absolute;

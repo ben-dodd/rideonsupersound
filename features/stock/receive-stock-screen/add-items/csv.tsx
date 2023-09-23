@@ -2,7 +2,7 @@ import { getItemDisplayName } from 'lib/functions/displayInventory'
 import { ChevronRight } from '@mui/icons-material'
 import { useState } from 'react'
 import { useCSVReader } from 'react-papaparse'
-import { getDefaultReceiveItem, parseCSVItems } from 'lib/functions/receiveStock'
+import { convertPriceToCents, getDefaultReceiveItem, parseCSVItems } from 'lib/functions/receiveStock'
 import { useAppStore } from 'lib/store'
 
 export default function Csv() {
@@ -39,7 +39,9 @@ export default function Csv() {
         </ol>
       </div>
       <CSVReader
-        onUploadAccepted={(results: any) => setCSVItems(parseCSVItems(results, defaultItem))}
+        onUploadAccepted={(results: any) =>
+          setCSVItems(parseCSVItems(results, { ...defaultItem, price: convertPriceToCents(defaultItem?.price) }))
+        }
         config={{ header: true, skipEmptyLines: true }}
       >
         {({ getRootProps, acceptedFile, ProgressBar }: any) => (

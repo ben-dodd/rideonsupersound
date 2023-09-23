@@ -2,7 +2,7 @@ import { QrCodeScanner, Search } from '@mui/icons-material'
 import TextField from 'components/inputs/text-field'
 import DiscogsOption from 'features/stock/api-discogs/discogs-option'
 import { getDiscogsOptions } from 'lib/functions/discogs'
-import { getDefaultReceiveItem } from 'lib/functions/receiveStock'
+import { convertPriceToCents, getDefaultReceiveItem } from 'lib/functions/receiveStock'
 import { useAppStore } from 'lib/store'
 import debounce from 'lodash/debounce'
 import { useMemo, useState } from 'react'
@@ -25,7 +25,11 @@ export default function Discogs() {
 
   const defaultItem = getDefaultReceiveItem(batchReceiveSession)
   const addItem = (item) => {
-    addBatchReceiveItem({ ...defaultItem, item: { ...defaultItem?.item, ...item } })
+    addBatchReceiveItem({
+      ...defaultItem,
+      item: { ...defaultItem?.item, ...item },
+      price: convertPriceToCents(defaultItem?.price),
+    })
     setBarcode('')
     setKeyword('')
     setKey(uuid())
@@ -74,22 +78,26 @@ export default function Discogs() {
         startAdornment={<Search />}
         clearButton
       />
-      {discogsOptions?.length > 0 ? (
-        discogsOptions?.map((discogsOption, k) => (
-          <DiscogsOption
-            discogsOption={discogsOption}
-            key={k}
-            vendorId={batchReceiveSession?.vendorId}
-            isNew={true}
-            setItem={addItem}
-            overrideItemDetails={true}
-            runDatabaseFunctions={false}
-          />
-        ))
-      ) : barcode === '' ? (
-        <div />
+      {Array.isArray(discogsOptions) ? (
+        discogsOptions?.length > 0 ? (
+          discogsOptions?.map((discogsOption, k) => (
+            <DiscogsOption
+              discogsOption={discogsOption}
+              key={k}
+              vendorId={batchReceiveSession?.vendorId}
+              isNew={true}
+              setItem={addItem}
+              overrideItemDetails={true}
+              runDatabaseFunctions={false}
+            />
+          ))
+        ) : barcode === '' && keyword === '' ? (
+          <div />
+        ) : (
+          <div>Nothing found...</div>
+        )
       ) : (
-        <div>Nothing found...</div>
+        <div className="error-text">{discogsOptions}</div>
       )}
     </div>
   )

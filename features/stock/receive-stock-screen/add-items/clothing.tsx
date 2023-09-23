@@ -2,7 +2,7 @@ import { ChevronRight } from '@mui/icons-material'
 import { useState } from 'react'
 import { useAppStore } from 'lib/store'
 import { StockItemObject } from 'lib/types/stock'
-import { getDefaultReceiveItem } from 'lib/functions/receiveStock'
+import { convertPriceToCents, getDefaultReceiveItem } from 'lib/functions/receiveStock'
 import { getClothingDisplayName, getImageSrc, getItemSku } from 'lib/functions/displayInventory'
 import TextField from 'components/inputs/text-field'
 import produce from 'immer'
@@ -35,6 +35,7 @@ export default function Clothing() {
                     size: row?.size,
                     colour: row?.colour,
                   },
+                  price: convertPriceToCents(defaultItem?.price),
                   quantity: row?.quantity || defaultItem?.quantity,
                 }),
             )

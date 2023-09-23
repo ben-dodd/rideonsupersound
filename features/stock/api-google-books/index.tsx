@@ -53,20 +53,24 @@ export default function GoogleBooksPanel() {
         </button>
       </div>
       <div className="flex-1 overflow-y-auto pt-4 mx-4">
-        {googleBooksItem ? (
-          <GoogleBooksItem googleBooksItem={googleBooksItem} />
-        ) : googleBooksOptions?.length > 0 ? (
-          <div>
-            {googleBooksOptions?.map?.((googleBooksOption: any, i: number) => (
-              <GoogleBooksOption key={i} googleBooksOption={googleBooksOption} />
-            ))}
-          </div>
-        ) : isLoading ? (
+        {isLoading ? (
           <div className="w-12">
             <Loading size="sm" />
           </div>
+        ) : googleBooksItem ? (
+          <GoogleBooksItem googleBooksItem={googleBooksItem} />
+        ) : Array.isArray(googleBooksOptions) ? (
+          googleBooksOptions?.length > 0 ? (
+            googleBooksOptions?.map?.((googleBooksOption: any, i: number) => (
+              <GoogleBooksOption key={i} googleBooksOption={googleBooksOption} />
+            ))
+          ) : (
+            <div>Item could not be found on GoogleBooks...</div>
+          )
+        ) : `${googleBooksOptions}`.includes?.('429') ? (
+          <div className="error-text">{googleBooksOptions} (Exceeded Request Limit)</div>
         ) : (
-          <div>Item could not be found on GoogleBooks...</div>
+          <div className="error-text">{googleBooksOptions}</div>
         )}
       </div>
       <div />
