@@ -85,13 +85,13 @@ export default function ConfigureItems({ setStage, setBypassConfirmDialog }) {
         <div hidden={mode !== 2} className="w-full">
           <FormatSection />
         </div>
-        <div hidden={mode !== 3}>
+        <div hidden={mode !== 3} className="w-full">
           <Condition />
         </div>
-        <div hidden={mode !== 4}>
+        <div hidden={mode !== 4} className="w-full">
           <Price />
         </div>
-        <div hidden={mode !== 5}>
+        <div hidden={mode !== 5} className="w-full">
           <Quantities />
         </div>
       </div>
