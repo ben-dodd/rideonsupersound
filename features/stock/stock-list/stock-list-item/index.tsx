@@ -26,14 +26,17 @@ export default function StockListItem({
     price = {},
   }: { item: BasicStockItemObject; quantities: BasicStockQuantitiesObject; price: StockPriceObject } = stockItem || {}
   return (
-    <div className={`list-item-click`} onClick={() => router.push(`/stock/${item?.id}`)}>
+    <div
+      className={item?.id ? `list-item-click` : 'list-item-click pointer-default'}
+      onClick={item?.id ? () => router.push(`/stock/${item?.id}`) : null}
+    >
       <ItemImage item={item} width={'w-imageXSmall'} faded={false} showSku={false} />
       <div className="flex justify-between w-full pl-2">
         <div>
           <Title item={item} />
           <ItemDetails item={item} quantities={quantities} />
         </div>
-        {!isStockItemLoading && <Prices price={stockPrice || price} />}
+        {(!isStockItemLoading || stockPrice) && <Prices price={stockPrice || price} />}
       </div>
     </div>
   )

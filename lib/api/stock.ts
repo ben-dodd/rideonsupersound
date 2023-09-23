@@ -17,7 +17,7 @@ export function useStockForVendor(vendorId: string | number) {
 }
 
 export function useBasicStockItem(id: string | number, wait?: boolean) {
-  return useData(wait ? null : `stock/${id}?basic=true`, 'stockItem')
+  return useData(wait || !id ? null : `stock/${id}?basic=true`, 'stockItem')
 }
 
 export function useStockItem(id: string | number) {

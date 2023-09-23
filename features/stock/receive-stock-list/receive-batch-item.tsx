@@ -38,7 +38,7 @@ const ReceiveBatchItem = ({ receiveBatchItem }) => {
         }`}</div>
         {receiveBatch?.batchList?.map((batchItem) => (
           <div key={`${receiveBatch?.id}${batchItem?.key}`} className="flex items-center">
-            <div className="text-xl text-red-500 whitespace-nowrap">{batchItem?.quantity} x</div>
+            <div className="text-xl text-red-500 whitespace-nowrap mr-2">{batchItem?.quantity} x</div>
             <StockListItem stockListItem={batchItem?.item} stockPrice={batchItem?.price} />
           </div>
         ))}
