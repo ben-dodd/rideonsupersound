@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useAppStore } from 'lib/store'
-import { useClerk } from 'lib/api/clerk'
-import { saveReceiveBatch, useReceiveBatch } from 'lib/api/stock'
+import { deleteReceiveBatch, saveReceiveBatch, useReceiveBatch } from 'lib/api/stock'
 import MidScreenContainer from 'components/container/mid-screen'
-import { Delete, Edit, ImportContacts, Print } from '@mui/icons-material'
+import { Delete, Edit, Print } from '@mui/icons-material'
 import { useSWRConfig } from 'swr'
 import { useRouter } from 'next/router'
 import SetupReceive from './setup-receive'
@@ -15,24 +14,15 @@ import { dateYMD } from 'lib/types/date'
 import ConfigureItems from './configure-items'
 
 export default function ReceiveStockScreen() {
-  const {
-    batchReceiveSession,
-    loadBatchReceiveSession,
-    setBatchReceiveSession,
-    resetBatchReceiveSession,
-    openConfirm,
-  } = useAppStore()
+  const { batchReceiveSession, loadBatchReceiveSession, openConfirm } = useAppStore()
   const router = useRouter()
   const id = router.query.id
   const { receiveBatch, isReceiveBatchLoading } = useReceiveBatch(`${id}`)
-  const { clerk } = useClerk()
   const [stage, setStage] = useState('setup')
   const [bypassConfirmDialog, setBypassConfirmDialog] = useState(false)
   const { mutate } = useSWRConfig()
 
   useEffect(() => {
-    // console.log('New receive batch')
-    // console.log(receiveBatch)
     if (!isReceiveBatchLoading && receiveBatch) {
       loadBatchReceiveSession(receiveBatch)
     }
@@ -44,9 +34,8 @@ export default function ReceiveStockScreen() {
     const saveBatchAndRedirect = (url) => {
       console.log('saving batch and redirect')
       saveReceiveBatch(batchReceiveSession).then((savedReceiveBatch) => {
-        // mutate(`stock/payment/batch/${savedBatchPayment?.id}`, savedBatchPayment)
-        // mutate(`vendor/payment/batch`)
-        // mutate(`vendor/payment`)
+        mutate(`stock/receive/${savedReceiveBatch?.id}`, savedReceiveBatch)
+        mutate(`stock/receive`)
         router.push(url)
       })
     }
@@ -77,12 +66,21 @@ export default function ReceiveStockScreen() {
     [batchReceiveSession?.batchList],
   )
 
-  const menuItems = [
-    { text: 'Edit', icon: <Edit />, onClick: null },
-    { text: 'Import Items from CSV', icon: <ImportContacts />, onClick: null },
-    { text: 'Print Labels', icon: <Print />, onClick: null },
-    { text: 'Delete Batch', icon: <Delete />, onClick: null },
-  ]
+  const deleteBatch = () => {
+    openConfirm({
+      open: true,
+      title: 'Delete receive session?',
+      message: 'Do you want to delete the receive session?',
+      action: () => {
+        deleteReceiveBatch(receiveBatch?.id).then(() => {
+          mutate(`stock/receive`)
+          router.push(`stock`)
+        })
+      },
+    })
+  }
+
+  const menuItems = [{ text: 'Delete Batch', icon: <Delete />, onClick: deleteBatch }]
 
   const completedMenuItems = [
     { text: 'Edit', icon: <Edit />, onClick: null, isDisabled: true },
