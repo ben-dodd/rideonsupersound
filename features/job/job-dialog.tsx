@@ -10,6 +10,7 @@ import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { createTask } from 'lib/api/jobs'
 import { useSWRConfig } from 'swr'
+import CheckBox from 'components/inputs/check-box'
 
 export default function JobDialog() {
   const { clerk } = useClerk()
@@ -90,12 +91,13 @@ export default function JobDialog() {
           onChange={(roleWrapper: any) => setAssignedTo(roleWrapper)}
         />
         <div className="flex mt-2">
-          <input
+          <CheckBox value={isPriority} onChange={() => setIsPriority(!isPriority)} />
+          {/* <input
             className="cursor-pointer"
             type="checkbox"
             checked={isPriority}
             onChange={() => setIsPriority(!isPriority)}
-          />
+          /> */}
           <div className="ml-2">Priority job</div>
         </div>
       </div>

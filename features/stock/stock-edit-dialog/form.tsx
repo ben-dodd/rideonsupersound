@@ -1,3 +1,4 @@
+import CheckBox from 'components/inputs/check-box'
 import RadioButton from 'components/inputs/radio-button'
 import SettingsSelect from 'components/inputs/settings-select'
 import TextField from 'components/inputs/text-field'
@@ -152,33 +153,21 @@ export default function StockEditForm({ item, setItem }) {
         disabled={disabled}
       />
       <div className="mt-4">
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            className="cursor-pointer"
-            checked={item?.doReorder}
-            onChange={(e) => setItem({ ...item, doReorder: e.target.checked ? 1 : 0 })}
-          />
-          <div className="ml-2">Reorder item from vendor when stocks are low</div>
-        </div>
-        <div className="flex items-center my-2">
-          <input
-            type="checkbox"
-            className="cursor-pointer"
-            checked={item?.doListOnWebsite}
-            onChange={(e) => setItem({ ...item, doListOnWebsite: e.target.checked ? 1 : 0 })}
-          />
-          <div className="ml-2">List on website</div>
-        </div>
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            className="cursor-pointer"
-            checked={item?.hasNoQuantity}
-            onChange={(e) => setItem({ ...item, hasNoQuantity: e.target.checked ? 1 : 0 })}
-          />
-          <div className="ml-2">Item has no stock quantity (e.g. lathe cut services)</div>
-        </div>
+        <CheckBox
+          value={item?.doReorder}
+          onChange={(e) => setItem({ ...item, doReorder: e.target.checked ? 1 : 0 })}
+          inputLabel={'Reorder item from vendor when stocks are low'}
+        />
+        <CheckBox
+          value={item?.doListOnWebsite}
+          onChange={(e) => setItem({ ...item, doListOnWebsite: e.target.checked ? 1 : 0 })}
+          inputLabel={'List on website'}
+        />
+        <CheckBox
+          value={item?.hasNoQuantity}
+          onChange={(e) => setItem({ ...item, hasNoQuantity: e.target.checked ? 1 : 0 })}
+          inputLabel={'Item has no stock quantity (e.g. lathe cut services)'}
+        />
       </div>
     </div>
   )

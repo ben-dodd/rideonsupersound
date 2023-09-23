@@ -5,6 +5,7 @@ import { saveReceiveBatch } from 'lib/api/stock'
 import { useAppStore } from 'lib/store'
 import { useSWRConfig } from 'swr'
 import { useRouter } from 'next/router'
+import GeneralDetails from './general-details'
 
 export default function ConfigureItems({ setStage, setBypassConfirmDialog }) {
   const [mode, setMode] = useState(0)
@@ -50,19 +51,19 @@ export default function ConfigureItems({ setStage, setBypassConfirmDialog }) {
         icons={[
           <Info key={0} />,
           <Category key={1} />,
-          <BrokenImage key={3} />,
-          <PriceChange key={4} />,
-          <Filter9Plus key={5} />,
+          <BrokenImage key={2} />,
+          <PriceChange key={3} />,
+          <Filter9Plus key={4} />,
         ]}
         value={mode}
         onChange={setMode}
       />
       <div className="flex w-full border-t pt-2">
         <div className="w-3/5 mr-4">
-          {/* <div hidden={mode !== 0}>
-            <Vendor />
+          <div hidden={mode !== 0}>
+            <GeneralDetails />
           </div>
-          <div hidden={mode !== 1}>
+          {/* <div hidden={mode !== 1}>
             <Form />
           </div>
           <div hidden={mode !== 2}>
@@ -73,9 +74,6 @@ export default function ConfigureItems({ setStage, setBypassConfirmDialog }) {
           </div>
           <div hidden={mode !== 4}>
             <GoogleBooks />
-          </div>
-          <div hidden={mode !== 5}>
-            <Csv />
           </div> */}
         </div>
       </div>

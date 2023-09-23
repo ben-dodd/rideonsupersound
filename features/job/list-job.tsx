@@ -5,6 +5,7 @@ import { completeTask } from 'lib/functions/job'
 import { useClerk, useClerks } from 'lib/api/clerk'
 import { useJobs } from 'lib/api/jobs'
 import { dateTime } from 'lib/types/date'
+import CheckBox from 'components/inputs/check-box'
 
 type ListItemProps = {
   task: TaskObject
@@ -29,10 +30,8 @@ export default function ListJob({ task }: ListItemProps) {
       <div className="flex flex-col sm:flex-row w-full justify-between">
         <div className="flex w-2/12">
           <div className="mx-2 w-1/12">
-            <input
-              className="cursor-pointer"
-              type="checkbox"
-              checked={checked}
+            <CheckBox
+              value={checked}
               disabled={checked}
               onChange={() => {
                 setChecked(!checked)
