@@ -2,8 +2,6 @@ import dayjs from 'dayjs'
 import { dateSimple } from 'lib/types/date'
 
 export default function Payments({ payments, storeCredits }) {
-  console.log(payments)
-  console.log(storeCredits)
   return (
     <div className="w-full">
       <div className="bg-orange-800 text-white font-bold italic px-2 py-1 mb-2">RIDE ON SUPER SOUND PAYMENTS</div>

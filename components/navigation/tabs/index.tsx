@@ -12,9 +12,9 @@ export default function Tabs({ tabs, icons, value, onChange }: TabProps) {
         {tabs?.map((val, index) => (
           <div
             onClick={() => onChange(index)}
-            className={`flex align-center uppercase px-4 py-1 cursor-pointer text-sm ${
+            className={`flex items-center justify-center uppercase px-4 py-1 cursor-pointer text-sm ${
               value === index
-                ? `text-green-500 hover:text-green-600 border-green-500 hover:border-green-600 border-b-2 font-bold`
+                ? `text-white bg-brown-dark hover:bg-brown font-bold rounded-md`
                 : 'text-gray-500 hover:text-gray-600 border-gray-500'
             }`}
             key={index}

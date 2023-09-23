@@ -9,7 +9,6 @@ import StockListItem from '../stock-list/stock-list-item'
 export default function ViewReceiveBatch() {
   const { batchReceiveSession, setBatchReceiveSession } = useAppStore()
   const { vendor, isVendorLoading } = useVendor(`${batchReceiveSession?.vendorId}`)
-  console.log(batchReceiveSession)
 
   return (
     <div>

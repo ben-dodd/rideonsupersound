@@ -44,7 +44,6 @@ export function createBatchList(stockItems, stockMovements) {
     let stockMovement = stockMovements?.find((sm) => sm?.stockId === item?.id)
     let receivePrice = getLastValidElementByDate(item?.stockPrices, 'date_valid_from', stockMovement?.date_moved)
     let slicedPrice = { totalSell: receivePrice?.total_sell, vendorCut: receivePrice?.vendor_cut }
-    console.log(item?.stockPrices)
     let receivePriceObject = {
       totalSell: receivePrice?.total_sell,
       vendorCut: receivePrice?.vendor_cut,

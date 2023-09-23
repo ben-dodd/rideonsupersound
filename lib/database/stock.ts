@@ -499,7 +499,6 @@ export function dbGetReceiveBatch(id, db = connection) {
     .then((batch) =>
       dbGetStockMovementsForReceiveBatch(id, db)
         .then((stockMovements) => {
-          // console.log(stockMovements)
           return {
             batch,
             stockMovements,
@@ -534,7 +533,6 @@ export function dbCreateReceiveBatch(receiveBatch, db = connection) {
 }
 
 export async function dbSaveReceiveBatch(receiveBatch, doComplete = false, db = connection) {
-  console.log('Saving receive batch', receiveBatch)
   return db.transaction(async (trx) => {
     delete receiveBatch.vendorName
     delete receiveBatch.startedByClerkName

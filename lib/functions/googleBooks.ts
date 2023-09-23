@@ -5,7 +5,6 @@ import { StockItemObject } from 'lib/types/stock'
 import { andList } from 'lib/utils'
 
 export async function getGoogleBooksOptionsByItem({ artist, title }: any) {
-  console.log('Getting google books', artist, title)
   return get(
     `https://www.googleapis.com/books/v1/volumes`,
     {

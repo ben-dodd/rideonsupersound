@@ -12,7 +12,6 @@ const SaleDaySale = ({ sale }) => {
       <div
         className="w-5/12 hover:text-blue-500 cursor-pointer"
         onClick={() => {
-          console.log(`sales/${sale?.id}`)
           router.push(`sales/${sale?.id}`)
         }}
       >{`[${sale?.id}] ${sale?.itemList}`}</div>

@@ -4,7 +4,6 @@ import SaleListItem from '../sale-list-item'
 
 const LaybysList = () => {
   const { laybys, isLaybysLoading } = useLaybys()
-  console.log(laybys)
   return isLaybysLoading ? (
     <Loading />
   ) : (

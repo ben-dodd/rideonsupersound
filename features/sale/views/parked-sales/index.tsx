@@ -4,7 +4,6 @@ import SaleListItem from '../sale-list-item'
 
 const ParkedSalesList = () => {
   const { parkedSales, isParkedSalesLoading } = useParkedSales()
-  console.log(parkedSales)
   return isParkedSalesLoading ? (
     <Loading />
   ) : (

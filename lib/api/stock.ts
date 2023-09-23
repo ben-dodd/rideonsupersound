@@ -73,7 +73,6 @@ export function createStockItem(stockItem: StockItemObject, clerk: ClerkObject) 
 }
 
 export function createStockPrice(stockPrice: StockPriceObject) {
-  console.log(stockPrice)
   return axiosAuth.post(`/api/stock/price`, stockPrice).then((res) => {
     const id = res.data
     return { ...stockPrice, id }
@@ -89,7 +88,6 @@ export function returnStock(returnStock: any) {
 }
 
 export function changeStockQuantity(update: any, id) {
-  console.log(update)
   // TODO does this need to be its own thing
   return axiosAuth.patch(`/api/stock/${id}/quantity`, update)
 }

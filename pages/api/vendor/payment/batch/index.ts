@@ -16,7 +16,6 @@ const apiRoute = async (req: NextAuthenticatedApiRequest, res: NextApiResponse) 
   } else if (req.method === 'POST') {
     try {
       return dbSaveBatchVendorPayment(req.body).then((data) => {
-        console.log('Saved', data)
         return res.status(200).json(data)
       })
     } catch (error) {

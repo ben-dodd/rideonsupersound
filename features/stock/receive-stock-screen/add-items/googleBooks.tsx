@@ -13,7 +13,6 @@ export default function GoogleBooks() {
   const [googleBooksOptions, setGoogleBooksOptions] = useState([])
   const defaultItem = getDefaultReceiveItem(batchReceiveSession)
   const addItem = (item) => {
-    console.log(item)
     addBatchReceiveItem({ ...defaultItem, item: { ...defaultItem?.item, ...item } })
     setGoogleBooksOptions([])
   }

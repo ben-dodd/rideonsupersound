@@ -335,7 +335,6 @@ export async function dbSaveCart(cart, db = connection) {
       return dbGetSale(newSale?.id, trx)
     })
     .then((cart) => {
-      console.log('Transaction succeeded')
       return cart
     })
     .catch((e) => {

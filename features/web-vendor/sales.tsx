@@ -22,9 +22,7 @@ export default function Sales({ sales, vendorStock }) {
             <div className="w-2/12 px-1 md:w-1/12 text-right">VENDOR TAKE</div>
           </div>
           {sales?.map((sale) => {
-            // console.log(sale);
             const stockItem = vendorStock?.find((s) => s?.id === sale?.item_id)
-            // console.log(stockItem);
             return (
               <div
                 key={`${sale?.sale_id}-${sale?.item_id}`}

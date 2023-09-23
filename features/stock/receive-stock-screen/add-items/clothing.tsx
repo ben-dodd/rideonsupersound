@@ -11,12 +11,12 @@ import SettingsSelect from 'components/inputs/settings-select'
 export default function Clothing() {
   const { batchReceiveSession, addBatchReceiveItem } = useAppStore()
   const defaultItem = getDefaultReceiveItem(batchReceiveSession)
+  const initClothingList = Array(20).fill({ size: '', colour: '', qty: '' })
   // M - Reaper Crew Sweatshirt (Petrol Blue)
   const [item, setItem] = useState<StockItemObject>(defaultItem?.item)
-  const [clothingList, setClothingList] = useState({})
+  const [clothingList, setClothingList] = useState(initClothingList)
   const handleChange = (e) => setItem({ ...item, [e.target.name]: e.target.value })
-  const itemCount = Object.values(clothingList)?.reduce?.((acc, row) => acc + parseInt(row?.qty) || 0, 0)
-
+  const itemCount = clothingList?.reduce?.((acc, row) => acc + (parseInt(row?.qty) || 0), 0)
   return (
     <div>
       <div className="flex justify-end align-center">
@@ -39,7 +39,7 @@ export default function Clothing() {
                 }),
             )
             setItem(defaultItem?.item)
-            setClothingList({})
+            setClothingList(initClothingList)
           }}
           disabled={!item?.title && Object.keys(clothingList)?.length > 0}
           className="bg-col3-dark hover:bg-col3 ring-1 disabled:bg-gray-200 p-2 rounded"
@@ -77,16 +77,15 @@ export default function Clothing() {
           <div className="font-bold w-2/3">COLOUR</div>
           <div className="font-bold w-1/6">QTY</div>
         </div>
-        {Array.from({ length: 20 }).map((k, i) => (
+        {clothingList?.map((row, i) => (
           <div key={i} className="flex">
             <div className="font-bold w-1/6">
               <TextField
-                value={clothingList[`${i}`]?.size}
+                value={row?.size}
                 onChange={(e) =>
                   setClothingList(
                     produce(clothingList, (draft) => {
-                      if (!draft[`${i}`]) draft[`${i}`] = {}
-                      draft[`${i}`].size = e.target.value?.toUpperCase()
+                      draft[i].size = e.target.value?.toUpperCase()
                     }),
                   )
                 }
@@ -94,12 +93,11 @@ export default function Clothing() {
             </div>
             <div className="font-bold w-2/3">
               <TextField
-                value={clothingList[`${i}`]?.colour}
+                value={row?.colour}
                 onChange={(e) =>
                   setClothingList(
                     produce(clothingList, (draft) => {
-                      if (!draft[`${i}`]) draft[`${i}`] = {}
-                      draft[`${i}`].colour = e.target.value
+                      draft[i].colour = e.target.value
                     }),
                   )
                 }
@@ -107,14 +105,13 @@ export default function Clothing() {
             </div>
             <div className="font-bold w-1/6">
               <TextField
-                valueNum={clothingList[`${i}`]?.qty}
+                valueNum={row?.qty}
                 inputType="number"
                 min={0}
                 onChange={(e) =>
                   setClothingList(
                     produce(clothingList, (draft) => {
-                      if (!draft[`${i}`]) draft[`${i}`] = {}
-                      draft[`${i}`].qty = e.target.value
+                      draft[i].qty = e.target.value
                     }),
                   )
                 }

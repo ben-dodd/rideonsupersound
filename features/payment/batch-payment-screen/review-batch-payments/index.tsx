@@ -51,7 +51,7 @@ export default function ReviewBatchPayments({ setStage, setBypassConfirmDialog }
                 completedByClerkId: clerk?.id,
                 dateCompleted: dayjs.utc().format(),
               }).then((savedBatchPayment) => {
-                console.log('Downloading the saved batch payment', savedBatchPayment)
+                // console.log('Downloading the saved batch payment', savedBatchPayment)
                 mutate(`vendor/payment/batch/${savedBatchPayment?.id}`, savedBatchPayment)
                 mutate(`vendor/payment/batch`)
                 mutate(`vendor/payment`)

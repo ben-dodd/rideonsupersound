@@ -17,7 +17,6 @@ export default function SetupReceive({ setStage, setBypassConfirmDialog }) {
   const { batchReceiveSession, setBatchReceiveSession } = useAppStore()
   const { vendors, mutateVendors } = useVendors()
   const { vendor, isVendorLoading } = useVendor(`${batchReceiveSession?.vendorId}`)
-  console.log(batchReceiveSession)
   const { mutate } = useSWRConfig()
   const router = useRouter()
 

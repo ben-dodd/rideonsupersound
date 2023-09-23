@@ -58,7 +58,7 @@ export default function BatchPaymentScreen() {
     }
   }, [batchPaymentSession, bypassConfirmDialog])
 
-  console.log(batchPaymentSession)
+  // console.log(batchPaymentSession)
 
   const totalPay = dollarsToCents(
     batchPaymentSession?.paymentList?.reduce((prev, v) => (v?.isChecked ? parseFloat(v?.payAmount) : 0) + prev, 0),

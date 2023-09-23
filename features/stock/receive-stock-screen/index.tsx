@@ -15,7 +15,13 @@ import { dateYMD } from 'lib/types/date'
 import ConfigureItems from './configure-items'
 
 export default function ReceiveStockScreen() {
-  const { batchReceiveSession, setBatchReceiveSession, resetBatchReceiveSession, openConfirm } = useAppStore()
+  const {
+    batchReceiveSession,
+    loadBatchReceiveSession,
+    setBatchReceiveSession,
+    resetBatchReceiveSession,
+    openConfirm,
+  } = useAppStore()
   const router = useRouter()
   const id = router.query.id
   const { receiveBatch, isReceiveBatchLoading } = useReceiveBatch(`${id}`)
@@ -25,11 +31,10 @@ export default function ReceiveStockScreen() {
   const { mutate } = useSWRConfig()
 
   useEffect(() => {
-    console.log('New receive batch')
-    console.log(receiveBatch)
+    // console.log('New receive batch')
+    // console.log(receiveBatch)
     if (!isReceiveBatchLoading && receiveBatch) {
-      resetBatchReceiveSession()
-      setBatchReceiveSession(receiveBatch)
+      loadBatchReceiveSession(receiveBatch)
     }
   }, [id, isReceiveBatchLoading])
 

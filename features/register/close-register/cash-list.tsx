@@ -8,7 +8,7 @@ const CashList = ({ register }) => {
   const closeCashReceived = tallyCash(register?.cashReceived, 'cashReceived')
   const closePettyBalance = tallyCash(register?.pettyCash, 'amount')
   const closeManualPayments = tallyCash(register?.manualPayments, 'amount')
-  console.log(register)
+  // console.log(register)
   return (
     <div>
       {register?.cashReceived?.length > 0 && (

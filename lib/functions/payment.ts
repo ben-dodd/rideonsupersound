@@ -101,7 +101,6 @@ function writeOutKBBFile(kbb) {
 export function writePaymentNotificationEmail({ paymentList, includeUnchecked = false, includeNoBank = false }: any) {
   let csvContent = 'data:text/csv;charset=utf-8,'
   csvContent += 'CODE,NAME,RECIPIENT,ACCOUNT,OWING,LINK,DATE,CHECKED,VALID BANK NUM,STORE CREDIT ONLY\r\n'
-  console.log(paymentList)
   let vendorArrays = paymentList
     ?.filter((v) => (includeUnchecked || v?.isChecked) && (includeNoBank || !v?.invalidBankAccountNumber))
     ?.map((v) => [
@@ -116,7 +115,6 @@ export function writePaymentNotificationEmail({ paymentList, includeUnchecked = 
       v?.invalidBankAccountNumber,
       Boolean(v?.storeCreditOnly),
     ])
-  console.log(vendorArrays)
   vendorArrays?.forEach((vendorArray) => {
     let row = vendorArray?.join(',')
     csvContent += row + '\r\n'
@@ -288,7 +286,6 @@ export const checkDefaultChecked = (vendor) =>
     : false
 
 export const prepareKiwiBankBatchFile = (id, paymentList) => {
-  console.log('writing kiwibank', paymentList)
   return writeKiwiBankBatchFile({
     transactions: paymentList
       ?.filter((p) => p?.isChecked)

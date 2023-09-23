@@ -34,7 +34,6 @@ export function dbCreateVendor(vendor: VendorObject, db = connection) {
     .insert(js2mysql(vendor))
     .then((rows) => rows[0])
     .catch((e) => {
-      console.log(e)
       Error(e.message)
     })
 }
@@ -192,9 +191,7 @@ export function dbGetVendor(id, db = connection) {
           const totalPrice = getCartItemTotal(cartItem, stockItem, price)
           return acc + totalPrice
         }, 0)
-      // console.log(payments)
       const lastPaid = dayjs.max(payments?.map((p) => dayjs(p?.date)))
-      // console.log(sales)
       const lastSold = dayjs.max(sales?.filter((s) => s?.date_sale_closed)?.map((s) => dayjs(s?.date_sale_closed)))
       const totalOwing = totalSell - totalPaid
 
@@ -261,7 +258,6 @@ export function dbCreateBatchPayment(batchPayment: BatchPaymentObject, db = conn
 }
 
 export function dbUpdateBatchPayment(batchPayment: BatchPaymentObject, id: number, db = connection) {
-  console.log('updating batch payment', batchPayment)
   return db('batch_payment')
     .where({ id })
     .update(js2mysql(batchPayment))
@@ -281,7 +277,6 @@ export async function dbSaveBatchVendorPayment(batchPayment, db = connection) {
 
   return db.transaction(async (trx) => {
     let batchId = savedBatchPayment?.id
-    console.log('Batch ID is', batchId)
     const { paymentList = [] } = savedBatchPayment || []
 
     if (batchId) {
@@ -289,8 +284,6 @@ export async function dbSaveBatchVendorPayment(batchPayment, db = connection) {
     } else {
       batchId = await dbCreateBatchPayment({ ...savedBatchPayment, paymentList: JSON.stringify(paymentList) }, trx)
     }
-
-    console.log('Batch ID is', batchId)
     const paymentCompleted = savedBatchPayment?.dateCompleted
 
     if (paymentCompleted) {
@@ -340,7 +333,6 @@ export async function dbSaveBatchVendorPayment(batchPayment, db = connection) {
 }
 
 export async function dbDeleteBatchPayment(batchId, db = connection) {
-  console.log('Deleting', batchId)
   return db.transaction(async (trx) => {
     await dbUpdateBatchPayment({ isDeleted: true }, batchId, trx)
     await trx('vendor_payment').update({ is_deleted: true }).where({ batch_id: batchId })
@@ -372,7 +364,6 @@ export function dbGetBatchVendorPayments(db = connection) {
 }
 
 export function dbGetBatchVendorPayment(id, db = connection) {
-  console.log('Getting batch payment', id)
   return db('batch_payment')
     .where({ id, is_deleted: false })
     .first()
@@ -380,25 +371,6 @@ export function dbGetBatchVendorPayment(id, db = connection) {
       return { ...batchPayment, payment_list: JSON.parse(batchPayment?.payment_list || '[]') }
     })
 }
-
-// export function dbGetBatchVendorPayment(id, db = connection) {
-//   console.log('Getting batch payment id ', id)
-//   return db('batch_payment')
-//     .where({ id })
-//     .first()
-//     .then((batchPayment) => {
-//       return batchPayment
-//         ? dbGetVendorPaymentsByBatchId(id, (db = connection)).then((payments) => ({
-//             ...batchPayment,
-//             paymentList: payments?.map((payment) => ({
-//               ...payment,
-//               isChecked: true,
-//               payAmount: centsToDollars(payment?.amount)?.toFixed(2),
-//             })),
-//           }))
-//         : null
-//     })
-// }
 
 export function dbGetCurrentVendorBatchPaymentId(db = connection) {
   return db('batch_payment')
