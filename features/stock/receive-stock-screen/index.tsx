@@ -12,6 +12,7 @@ import { getBatchListCSVData } from 'lib/functions/printLabels'
 import dayjs from 'dayjs'
 import { dateYMD } from 'lib/types/date'
 import ConfigureItems from './configure-items'
+import { getItemCount, getItemList } from 'lib/functions/receiveStock'
 
 export default function ReceiveStockScreen() {
   const { batchReceiveSession, loadBatchReceiveSession, openConfirm } = useAppStore()
@@ -33,7 +34,11 @@ export default function ReceiveStockScreen() {
   useEffect(() => {
     const saveBatchAndRedirect = (url) => {
       console.log('saving batch and redirect')
-      saveReceiveBatch(batchReceiveSession).then((savedReceiveBatch) => {
+      saveReceiveBatch({
+        ...batchReceiveSession,
+        itemList: getItemList(batchReceiveSession?.batchList),
+        itemCount: getItemCount(batchReceiveSession?.batchList),
+      }).then((savedReceiveBatch) => {
         mutate(`stock/receive/${savedReceiveBatch?.id}`, savedReceiveBatch)
         mutate(`stock/receive`)
         router.push(url)
