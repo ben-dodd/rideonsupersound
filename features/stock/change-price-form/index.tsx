@@ -1,7 +1,7 @@
 import TextField from 'components/inputs/text-field'
 import { getProfitMargin } from 'lib/functions/pay'
 
-export default function ChangePriceForm({ obj, setObj }) {
+export default function ChangePriceForm({ obj, setObj, className }) {
   const handleSetPrice = (e) => {
     const value = parseFloat(e.target.value)
     const textboxId = e.target.id
@@ -46,7 +46,7 @@ export default function ChangePriceForm({ obj, setObj }) {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className={className || 'grid grid-cols-2 gap-4'}>
       <TextField
         id="totalSell"
         inputLabel="Total Sell"
