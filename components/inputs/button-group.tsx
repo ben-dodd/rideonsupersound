@@ -11,7 +11,7 @@ const ButtonGroup = ({ items, value, onChange, className = '' }) => {
     <div className={`rounded-lg border ${className} shadow-md`}>
       <div className="flex w-full h-full">
         {items?.map((item) => (
-          <div
+          <button
             key={item?.key}
             className={`p-2 flex-grow text-center cursor-pointer ${
               selected === item?.key ? 'bg-green-200 hover:bg-green-300' : 'hover:bg-green-100'
@@ -19,7 +19,7 @@ const ButtonGroup = ({ items, value, onChange, className = '' }) => {
             onClick={() => handleClickSelect(item)}
           >
             {item?.label || item?.key}
-          </div>
+          </button>
         ))}
       </div>
     </div>

@@ -61,6 +61,7 @@ export const initBatchReceiveSession = <BatchReceiveObject>{
 const initState = {
   view: {},
   confirmModal: { open: false },
+  infoModal: { open: false },
   alert: { open: false },
   clippy: {
     visible: true,
@@ -154,6 +155,18 @@ export const useAppStore = createSelectors(
       set(
         produce((draft) => {
           draft.confirmModal = { open: false }
+        }),
+      ),
+    openInfo: (info) =>
+      set(
+        produce((draft) => {
+          draft.infoModal = info
+        }),
+      ),
+    closeInfo: () =>
+      set(
+        produce((draft) => {
+          draft.infoModal = { open: false }
         }),
       ),
     setAlert: (alert) =>

@@ -1,7 +1,7 @@
 import { useAppStore } from 'lib/store'
-import { getItemDisplayName } from 'lib/functions/displayInventory'
 import { useMemo, useState } from 'react'
 import { debounce } from 'lodash'
+import ComingSoon from 'components/placeholders/coming-soon'
 
 export default function QuickEdit() {
   const { batchReceiveSession, updateBatchReceiveItemField } = useAppStore()
@@ -13,16 +13,15 @@ export default function QuickEdit() {
   }
   console.log(selectedItem)
   const debouncedHandleChange = useMemo(() => debounce(handleChange, 2000), [])
-  return (
-    <div className="w-full">
-      {batchReceiveSession?.batchList?.map((batchItem) => {
-        const { item = {} } = batchItem || {}
-        return (
-          <div key={batchItem?.key} className="list-item">
-            {getItemDisplayName(item)}
-          </div>
-        )
-      })}
-    </div>
-  )
+  return <ComingSoon />
+  // <div className="w-full">
+  //   {batchReceiveSession?.batchList?.map((batchItem) => {
+  //     const { item = {} } = batchItem || {}
+  //     return (
+  //       <div key={batchItem?.key} className="list-item">
+  //         {getItemDisplayName(item)}
+  //       </div>
+  //     )
+  //   })}
+  // </div>
 }

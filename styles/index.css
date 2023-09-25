@@ -189,6 +189,14 @@
   @apply top-0 sticky flex justify-between items-start border-b border-gray-200 bg-col10 text-brown-dark shadow-sm px-2;
 }
 
+.info-modal__title-div {
+  @apply top-0 sticky flex justify-between items-start border-b border-gray-200 bg-brown-dark text-white shadow-sm px-2;
+}
+
+.info-modal__body {
+  @apply px-6 pt-6 flex-grow overflow-y-scroll max-h-dialog;
+}
+
 .modal__title {
   @apply text-2xl font-extrabold py-4;
 }

@@ -59,6 +59,14 @@ export interface ConfirmModal {
   buttons?: ModalButton[]
 }
 
+export interface InfoModal {
+  open: boolean
+  title?: string
+  message?: string
+  styledMessage?: any
+  width?: string
+}
+
 export interface LogObject {
   id?: number
   log: string

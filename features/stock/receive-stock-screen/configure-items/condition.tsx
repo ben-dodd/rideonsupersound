@@ -3,9 +3,10 @@ import { useState } from 'react'
 import { getItemDisplayName } from 'lib/functions/displayInventory'
 import ButtonGroup from 'components/inputs/button-group'
 import { DiscogsConditionTypes } from 'lib/types/discogs'
+import { cassetteGradingGuide, cdGradingGuide, vinylGradingGuide } from './resources'
 
 export default function Condition() {
-  const { batchReceiveSession, updateBatchReceiveItemField } = useAppStore()
+  const { batchReceiveSession, updateBatchReceiveItemField, openInfo } = useAppStore()
   const [bulkChange, setBulkChange] = useState({})
   const handleBulkChange = (value, field) => {
     setBulkChange({ ...bulkChange, [field]: value })
@@ -53,6 +54,27 @@ export default function Condition() {
   ]
   return (
     <div className="w-full">
+      <div className="grid grid-cols-4 gap-2">
+        Record Grading Guides
+        <button
+          className={'icon-text-button'}
+          onClick={() => openInfo({ open: true, title: 'How To Grade Vinyl', styledMessage: vinylGradingGuide })}
+        >
+          How To Grade Vinyl
+        </button>
+        <button
+          className={'icon-text-button'}
+          onClick={() => openInfo({ open: true, title: 'How To Grade CDs', message: cdGradingGuide })}
+        >
+          How To Grade CDs
+        </button>
+        <button
+          className={'icon-text-button'}
+          onClick={() => openInfo({ open: true, title: 'How To Grade Cassettes', message: cassetteGradingGuide })}
+        >
+          How To Grade Cassettes
+        </button>
+      </div>
       <div className="w-full border-b bg-green-300 p-2">
         <div className="font-bold">BULK EDIT</div>
         <div className="flex w-full">

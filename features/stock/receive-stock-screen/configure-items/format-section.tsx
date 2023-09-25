@@ -41,6 +41,7 @@ export default function FormatSection() {
             dbField="section"
             isCreateDisabled={true}
           />
+          {/* Add NZ button */}
           <SettingsSelect
             object={bulkChange}
             customEdit={(e) => handleBulkChange(e, 'country')}

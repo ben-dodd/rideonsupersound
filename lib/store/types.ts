@@ -1,5 +1,5 @@
 /* eslint-disable unused-imports/no-unused-vars */
-import { ConfirmModal, AlertProps, ClippyProps } from 'lib/types'
+import { ConfirmModal, AlertProps, ClippyProps, InfoModal } from 'lib/types'
 import { CartObject, SaleItemObject, SaleTransactionObject } from 'lib/types/sale'
 import { BatchReceiveObject } from 'lib/types/stock'
 import { AccountPayment, BatchPaymentObject } from 'lib/types/vendor'
@@ -47,6 +47,7 @@ export interface StoreState {
     vendorEditDialog?: boolean
   }
   confirmModal?: ConfirmModal
+  infoModal?: InfoModal
   alert?: AlertProps
   clippy?: ClippyProps
   createableCustomerName?: string
@@ -103,6 +104,8 @@ export interface StoreState {
   closeView: (view: ViewProps) => void
   openConfirm: (confirm: any) => void
   closeConfirm: () => void
+  openInfo: (confirm: any) => void
+  closeInfo: () => void
   setAlert: (alert: any) => void
   closeAlert: () => void
   setCreateableCustomerName: (name: string) => void
