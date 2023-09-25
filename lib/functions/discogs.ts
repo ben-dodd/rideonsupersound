@@ -2,6 +2,7 @@ import axios from 'axios'
 import { DiscogsItem } from 'lib/types/discogs'
 import { StockItemObject } from 'lib/types/stock'
 import { priceDollarsString } from 'lib/utils'
+import { camelCase } from 'lodash'
 
 export async function getDiscogsOptions({ query, artist, title, barcode }: any) {
   return axios(`https://api.discogs.com/database/search`, {
@@ -108,14 +109,20 @@ export function getFormatFromDiscogs(formats: string[]) {
   return format
 }
 
-export function getPriceSuggestion(item: StockItemObject) {
-  if (item?.discogsItem?.priceSuggestions) {
-    const priceSuggestions = item?.discogsItem?.priceSuggestions
-    return priceSuggestions[item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)']?.value
-      ? `${priceDollarsString(priceSuggestions[item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)']?.value)} NZD (${
-          item?.isNew ? 'Mint (M)' : item?.cond || 'Good (G)'
-        } condition)`
-      : null
-  }
-  return null
+export function getPriceSuggestionText(item: StockItemObject) {
+  const suggestion = getPriceSuggestion(item)
+  const condBackUp = item?.isNew ? 'Mint (M)' : 'Good (G)'
+  return suggestion?.value
+    ? `${priceDollarsString(suggestion?.value)} NZD\n(${item?.cond || condBackUp} condition)`
+    : ''
+}
+
+export function getPriceSuggestion(item) {
+  const { discogsItem, isNew, cond } = item
+  const camelCaseKey = <string>camelCase(cond)
+  const priceSuggestions = discogsItem?.priceSuggestions || {}
+  const priceBackUp = isNew
+    ? priceSuggestions['Mint (M)'] || priceSuggestions?.mintM || null
+    : priceSuggestions['Good (G)'] || priceSuggestions?.goodG || null
+  return priceSuggestions[cond] || priceSuggestions[camelCaseKey] || priceBackUp
 }

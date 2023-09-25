@@ -1,7 +1,7 @@
 import { useAppStore } from 'lib/store'
 import { useState } from 'react'
 import { getItemDisplayName } from 'lib/functions/displayInventory'
-import ChangePriceForm from 'features/stock/change-price-form'
+import { getPriceSuggestionText } from 'lib/functions/discogs'
 
 export default function Price() {
   const { batchReceiveSession, updateBatchReceiveItemField } = useAppStore()
@@ -19,13 +19,25 @@ export default function Price() {
     <div className="w-full">
       <div className="w-full border-b bg-green-300 p-2">
         <div className="font-bold">BULK EDIT</div>
-        <ChangePriceForm className="grid grid-cols-4 gap-2" obj={bulkChange} setObj={setBulkChange} />
+        <div className="grid grid-cols-5"></div>
       </div>
       {batchReceiveSession?.batchList?.map((batchItem, index) => {
+        console.log(batchItem)
         return (
           <div key={batchItem?.key} className="p-2">
             <div className="font-bold">{getItemDisplayName(batchItem?.item)}</div>
-            <ChangePriceForm className="grid grid-cols-4 gap-2" obj={batchItem?.price} setObj={handleItemChange} />
+            <div className="grid grid-cols-6 gap-2">
+              <div className="col-span-2">
+                {batchItem?.item?.discogsItem?.priceSuggestions ? (
+                  <div className="bg-green-200 border p-2">
+                    <div className="text-xs mt-2 mb-2">SUGGESTED DISCOGS PRICE</div>
+                    <div className="font-bold">{getPriceSuggestionText(batchItem?.item)}</div>
+                  </div>
+                ) : (
+                  <div />
+                )}
+              </div>
+            </div>
           </div>
         )
       })}

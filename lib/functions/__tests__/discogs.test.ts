@@ -9,7 +9,7 @@ import {
   getDiscogsOptions,
   getDiscogsPriceSuggestions,
   getFormatFromDiscogs,
-  getPriceSuggestion,
+  getPriceSuggestionText,
 } from '../discogs'
 import { DiscogsConditionTypes } from '../../types/discogs'
 
@@ -25,13 +25,13 @@ describe('getPriceSuggestion', () => {
       discogsItem: { priceSuggestions },
       isNew: true,
     }
-    expect(getPriceSuggestion(item)).toBe('$10.00 NZD (Mint (M) condition)')
+    expect(getPriceSuggestionText(item)).toBe('$10.00 NZD (Mint (M) condition)')
     item.isNew = false
-    expect(getPriceSuggestion(item)).toBe('$5.00 NZD (Good (G) condition)')
+    expect(getPriceSuggestionText(item)).toBe('$5.00 NZD (Good (G) condition)')
     item.cond = DiscogsConditionTypes.P
-    expect(getPriceSuggestion(item)).toBe('$1.00 NZD (Poor (P) condition)')
+    expect(getPriceSuggestionText(item)).toBe('$1.00 NZD (Poor (P) condition)')
     item.discogsItem.priceSuggestions = {}
-    expect(getPriceSuggestion(item)).toBe(null)
+    expect(getPriceSuggestionText(item)).toBe(null)
   })
 })
 
@@ -80,11 +80,7 @@ describe('getDiscogsItemArtistDetails', () => {
       ],
     })
       .then((data) => {
-        expect(data?.map((artist) => artist.name)).toStrictEqual([
-          'Cutmaster Swiff',
-          'Andre Benjamin',
-          'Bunny Sigler',
-        ])
+        expect(data?.map((artist) => artist.name)).toStrictEqual(['Cutmaster Swiff', 'Andre Benjamin', 'Bunny Sigler'])
       })
       .catch((e) => Error(e.message))
   })
