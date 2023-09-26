@@ -4,6 +4,7 @@ import {
   BasicStockQuantitiesObject,
   StockItemSearchObject,
   StockPriceObject,
+  StockQuantitiesObject,
 } from 'lib/types/stock'
 import { useRouter } from 'next/router'
 import Title from './title'
@@ -14,9 +15,11 @@ import Prices from './prices'
 export default function StockListItem({
   stockListItem,
   stockPrice,
+  stockQuantities,
 }: {
   stockListItem: StockItemSearchObject
   stockPrice?: StockPriceObject
+  stockQuantities?: StockQuantitiesObject
 }) {
   const router = useRouter()
   const { stockItem, isStockItemLoading } = useBasicStockItem(stockListItem?.id)
@@ -34,7 +37,7 @@ export default function StockListItem({
       <div className="flex justify-between w-full pl-2">
         <div>
           <Title item={item} />
-          <ItemDetails item={item} quantities={quantities} />
+          <ItemDetails item={item} quantities={stockQuantities || quantities} />
         </div>
         {(!isStockItemLoading || stockPrice) && <Prices price={stockPrice || price} />}
       </div>

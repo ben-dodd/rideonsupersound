@@ -16,7 +16,9 @@ const ItemDetails = ({ item, quantities }) => {
       }]`}</div>
       <div className="px-4">{vendorName ? `Selling for ${vendorName}` : ''}</div>
       <div className={`${itemQuantity < 1 && 'text-red-500'}`}>
-        {item?.id
+        {quantities?.receiving
+          ? `Receiving ${quantities?.receiving} item${quantities?.receiving === 1 ? '' : 's'}`
+          : item?.id
           ? `${itemQuantity}${isInCart ? ' left' : ''} in stock${
               quantities?.hold > 0 ? `, ${quantities?.hold} on hold` : ''
             }${quantities?.layby > 0 ? `, ${quantities?.layby} on layby` : ''}`

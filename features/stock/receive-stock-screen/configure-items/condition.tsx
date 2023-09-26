@@ -15,11 +15,8 @@ export default function Condition() {
     })
   }
   const handleItemChange = (index, value, field) => {
-    console.log(index, field, value)
     updateBatchReceiveItemField(index, 'item', field, value)
   }
-
-  console.log(bulkChange)
 
   const newItems = [
     { key: true, label: 'NEW' },
@@ -81,7 +78,7 @@ export default function Condition() {
           <ButtonGroup
             className="w-1/6"
             items={newItems}
-            value={bulkChange?.isNew}
+            value={Boolean(bulkChange?.isNew)}
             onChange={(item) => handleBulkChange(item?.key, 'isNew')}
           />
           <div className="mx-2" />
@@ -101,7 +98,7 @@ export default function Condition() {
               <ButtonGroup
                 className="w-1/6"
                 items={newItems}
-                value={batchItem?.item?.isNew}
+                value={Boolean(batchItem?.item?.isNew)}
                 onChange={(item) => handleItemChange(index, item?.key, 'isNew')}
               />
               <div className="mx-2" />

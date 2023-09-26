@@ -11,7 +11,6 @@ export default function QuickEdit() {
     console.log('Doing handleChange update', { [e?.target?.id]: e?.target?.value })
     updateBatchReceiveItemField(index, 'item', e.target.id, e.target.value)
   }
-  console.log(selectedItem)
   const debouncedHandleChange = useMemo(() => debounce(handleChange, 2000), [])
   return <ComingSoon />
   // <div className="w-full">

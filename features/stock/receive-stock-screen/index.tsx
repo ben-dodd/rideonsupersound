@@ -13,6 +13,7 @@ import dayjs from 'dayjs'
 import { dateYMD } from 'lib/types/date'
 import ConfigureItems from './configure-items'
 import { getItemCount, getItemList } from 'lib/functions/receiveStock'
+import ReviewItems from './review-items'
 
 export default function ReceiveStockScreen() {
   const { batchReceiveSession, loadBatchReceiveSession, openConfirm } = useAppStore()
@@ -120,7 +121,7 @@ export default function ReceiveStockScreen() {
           ) : stage === 'configure' ? (
             <ConfigureItems setStage={setStage} setBypassConfirmDialog={setBypassConfirmDialog} />
           ) : stage === 'review' ? (
-            <div />
+            <ReviewItems setStage={setStage} setBypassConfirmDialog={setBypassConfirmDialog} />
           ) : (
             <div />
           )}

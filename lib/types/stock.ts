@@ -148,6 +148,7 @@ export interface StockQuantitiesObject extends BasicStockQuantitiesObject {
   discardedLost?: number
   refunded?: number
   adjustment?: number
+  receiving?: number
 }
 
 export interface BasicStockObject {
