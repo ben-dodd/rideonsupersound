@@ -1,7 +1,7 @@
 import TextField from 'components/inputs/text-field'
 import { getProfitMargin } from 'lib/functions/pay'
 
-export default function ChangePriceForm({ obj, setObj, className }) {
+export default function ChangePriceForm({ obj, setObj, className }: { obj; setObj; className?: string }) {
   const handleSetPrice = (e) => {
     const value = parseFloat(e.target.value)
     const textboxId = e.target.id

@@ -28,7 +28,7 @@ export default function Quantities() {
       <div className="w-full border-b bg-green-300 p-2 flex justify-between">
         <div className="font-bold">BULK EDIT</div>
         <TextField
-          valueNum={bulkChange?.quantity}
+          valueNum={bulkChange}
           inputType="number"
           min={0}
           onChange={(e) => handleBulkChange(e)}

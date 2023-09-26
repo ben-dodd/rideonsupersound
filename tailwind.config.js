@@ -134,7 +134,7 @@ module.exports = {
     },
   },
   variants: {
-    backgroundColor: ['odd', 'even', 'hover', 'disabled', 'focus', 'active'],
+    backgroundColor: ['odd', 'even', 'hover', 'disabled', 'focus', 'active', 'selection'],
     textColor: ['disabled', 'hover'],
     animation: ['hover'],
     border: ['active', 'focus'],
