@@ -16,10 +16,12 @@ export default function StockListItem({
   stockListItem,
   stockPrice,
   stockQuantities,
+  noClick = false,
 }: {
   stockListItem: StockItemSearchObject
   stockPrice?: StockPriceObject
   stockQuantities?: StockQuantitiesObject
+  noClick?: boolean
 }) {
   const router = useRouter()
   const { stockItem, isStockItemLoading } = useBasicStockItem(stockListItem?.id)
@@ -30,8 +32,8 @@ export default function StockListItem({
   }: { item: BasicStockItemObject; quantities: BasicStockQuantitiesObject; price: StockPriceObject } = stockItem || {}
   return (
     <div
-      className={item?.id ? `list-item-click` : 'list-item-click pointer-default'}
-      onClick={item?.id ? () => router.push(`/stock/${item?.id}`) : null}
+      className={item?.id && !noClick ? `list-item-click` : 'list-item-click pointer-default'}
+      onClick={item?.id && !noClick ? () => router.push(`/stock/${item?.id}`) : null}
     >
       <ItemImage item={item} width={'w-imageXSmall'} faded={false} showSku={false} />
       <div className="flex justify-between w-full pl-2">

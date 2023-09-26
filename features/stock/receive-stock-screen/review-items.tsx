@@ -1,49 +1,51 @@
 import dayjs from 'dayjs'
-import { CSVLink } from 'react-csv'
-import { getBatchListCSVData } from 'lib/functions/printLabels'
 import { useClerk } from 'lib/api/clerk'
-import { dateYMD } from 'lib/types/date'
 import { ArrowLeft, Done, Save } from '@mui/icons-material'
 import { useAppStore } from 'lib/store'
 import { useSWRConfig } from 'swr'
 import { useRouter } from 'next/router'
 import { saveReceiveBatch } from 'lib/api/stock'
 import { getItemCount, getItemList } from 'lib/functions/receiveStock'
-import { useState } from 'react'
 import StockListItem from '../stock-list/stock-list-item'
 
 export default function ReviewItems({ setStage, setBypassConfirmDialog }) {
   const { clerk } = useClerk()
   const { batchReceiveSession, openConfirm, closeConfirm } = useAppStore()
-  const [batchListLabelData, setBatchListLabelData] = useState('')
   const { mutate } = useSWRConfig()
   const router = useRouter()
 
-  const completeReceiveBatch = (event, done) => {
+  const completeReceiveBatch = () => {
     openConfirm({
       open: true,
       title: 'Receive Items?',
       yesText: 'Yes, Receive Items',
       noText: 'Cancel',
       action: () => {
-        saveReceiveBatch({
-          ...batchReceiveSession,
-          completedByClerkId: clerk?.id,
-          dateCompleted: dayjs.utc().format(),
-          itemList: getItemList(batchReceiveSession?.batchList),
-          itemCount: getItemCount(batchReceiveSession?.batchList),
-        })
+        setBypassConfirmDialog(true)
+        saveReceiveBatch(
+          {
+            ...batchReceiveSession,
+            completedByClerkId: clerk?.id,
+            dateCompleted: dayjs.utc().format(),
+            itemList: getItemList(batchReceiveSession?.batchList),
+            itemCount: getItemCount(batchReceiveSession?.batchList),
+          },
+          true,
+        )
           .then((savedReceiveBatch) => {
-            setBatchListLabelData(getBatchListCSVData(savedReceiveBatch?.batchList))
+            console.log(savedReceiveBatch)
+            // const data = getBatchListCSVData(savedReceiveBatch?.batchList)
+            // const headers = ['SKU', 'ARTIST', 'TITLE', 'NEW/USED', 'SELL PRICE', 'SECTION', 'BARCODE']
+            // const fileName = `label-print-${savedReceiveBatch?.vendorName}-${dayjs().format(dateYMD)}.csv`
+            // downloadCSV(headers, data, fileName)
             mutate(`stock/receive/${savedReceiveBatch?.id}`, savedReceiveBatch)
             mutate(`stock/receive`)
+            closeConfirm()
             router.push(`/stock`)
-            done()
           })
           .catch((e) => {
-            done(false)
+            closeConfirm()
           })
-        closeConfirm()
       },
     })
   }
@@ -62,16 +64,9 @@ export default function ReviewItems({ setStage, setBypassConfirmDialog }) {
             </div>
           </div>
           <div className="px-4">
-            <CSVLink
-              className="icon-text-button-final"
-              data={batchListLabelData}
-              headers={['SKU', 'ARTIST', 'TITLE', 'NEW/USED', 'SELL PRICE', 'SECTION', 'BARCODE']}
-              filename={`label-print-${dayjs().format(dateYMD)}.csv`}
-              onClick={completeReceiveBatch}
-              asyncOnClick={true}
-            >
+            <div className="icon-text-button-final" onClick={completeReceiveBatch}>
               COMPLETE RECEIVE <Done />
-            </CSVLink>
+            </div>
             <div className="icon-text-button" onClick={() => setStage('configure')}>
               BACK TO CONFIGURE <ArrowLeft />
             </div>
@@ -98,6 +93,7 @@ export default function ReviewItems({ setStage, setBypassConfirmDialog }) {
                   stockListItem={{ ...batchItem?.item, vendorId: batchReceiveSession?.vendorId }}
                   stockPrice={batchItem?.price}
                   stockQuantities={{ receiving: batchItem?.quantity }}
+                  noClick={true}
                 />
               ))}
         </div>

@@ -1,5 +1,6 @@
 import { getItemSku } from 'lib/functions/displayInventory'
 import { priceCentsString } from 'lib/utils'
+import { downloadFile } from './payment'
 
 export function getLabelPrinterCSV(items) {
   return items?.map((item: any) => [
@@ -34,4 +35,10 @@ export function getBatchListCSVData(batchList) {
     } else csvList.push(labelItem)
   })
   return getLabelPrinterCSV(csvList)
+}
+
+export function downloadCSV(headers, data, fileName) {
+  let string = headers?.join(',')
+  string = string + data?.map((row) => `\n${row?.join(',')}`)
+  downloadFile(string, fileName)
 }
