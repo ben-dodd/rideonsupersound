@@ -2,13 +2,14 @@ import { useAppStore } from 'lib/store'
 import { useState } from 'react'
 import TextField from 'components/inputs/text-field'
 import { getItemDisplayName } from 'lib/functions/displayInventory'
+import { StockReceiveObject } from 'lib/types/stock'
 
 export default function Quantities() {
   const { batchReceiveSession, updateBatchReceiveItem } = useAppStore()
   const [bulkChange, setBulkChange] = useState(1)
   const handleBulkChange = (e) => {
     setBulkChange(e.target.value)
-    batchReceiveSession?.batchList?.forEach((batchItem) => {
+    batchReceiveSession?.batchList?.forEach((batchItem: StockReceiveObject) => {
       handleItemChange(batchItem?.key, e)
     })
   }
@@ -16,7 +17,7 @@ export default function Quantities() {
     updateBatchReceiveItem(key, { quantity: e?.target?.value })
   }
   const itemCount = batchReceiveSession?.batchList?.reduce?.(
-    (acc, batchItem) => acc + (parseInt(batchItem?.quantity) || 0),
+    (acc, batchItem) => acc + (parseInt(`${batchItem?.quantity}`) || 0),
     0,
   )
   return (

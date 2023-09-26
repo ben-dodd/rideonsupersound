@@ -24,19 +24,19 @@ export default function Price() {
 
   const handleItemChange = (key, index, e, field) => {
     if (!isNaN(Number(e?.target?.value))) {
-      const convertedPrices = {
-        storeCut: dollarsToCents(itemPrices[index]?.storeCut),
-        vendorCut: dollarsToCents(itemPrices[index]?.vendorCut),
-        totalSell: dollarsToCents(itemPrices[index]?.totalSell),
-        margin: itemPrices[index]?.margin,
-      }
-      const priceEdits = getPriceEdits(convertedPrices, field, e?.target?.value || '', locked)
+      const priceEdits = getPriceEdits(itemPrices[index], field, e?.target?.value || '', locked)
       setItemPrices((itemPrices) =>
         produce(itemPrices, (draft) => {
           draft[index] = priceEdits
         }),
       )
-      updateBatchReceiveItem(key, { price: priceEdits })
+      const convertedPrices = {
+        storeCut: dollarsToCents(priceEdits?.storeCut),
+        vendorCut: dollarsToCents(priceEdits?.vendorCut),
+        totalSell: dollarsToCents(priceEdits?.totalSell),
+        margin: priceEdits?.margin,
+      }
+      updateBatchReceiveItem(key, { price: convertedPrices })
     }
   }
   useEffect(() => {
@@ -51,6 +51,7 @@ export default function Price() {
     })
     setItemPrices(prices)
   }, [batchReceiveSession?.id])
+
   return (
     <div className="w-full">
       <div className="w-full border-b bg-green-300 p-2">
@@ -115,7 +116,7 @@ export default function Price() {
             inputLabel="STORE CUT"
             startAdornment={'$'}
             value={bulkChange?.storeCut}
-            onChange={(e) => handleBulkChange(e, 'vendorCut')}
+            onChange={(e) => handleBulkChange(e, 'storeCut')}
           />
           <TextField
             inputLabel="MARGIN"
@@ -133,7 +134,6 @@ export default function Price() {
         </div>
       </div>
       {batchReceiveSession?.batchList?.map((batchItem, index) => {
-        console.log(batchItem)
         return (
           <div key={batchItem?.key} className="p-2 border-b">
             <div className="font-bold">{getItemDisplayName(batchItem?.item)}</div>
