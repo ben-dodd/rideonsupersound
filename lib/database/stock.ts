@@ -1,5 +1,5 @@
 import { getImageSrc, getItemSkuDisplayName } from 'lib/functions/displayInventory'
-import { StockMovementTypes } from 'lib/types/stock'
+import { BatchReceiveObject, StockMovementTypes } from 'lib/types/stock'
 import { dbGetAllSalesAndItems, dbGetSaleTransactions, getStockMovementQuantityByAct } from './sale'
 import { js2mysql } from './utils/helpers'
 import { SaleStateTypes } from 'lib/types/sale'
@@ -292,7 +292,10 @@ export function dbGetGiftCard(id, db = connection) {
 }
 
 export function dbCreateStockItem(stockItem, db = connection) {
-  return db('stock').insert(js2mysql(stockItem))
+  return db('stock')
+    .insert(js2mysql(stockItem))
+    .then((rows) => rows?.[0])
+    .catch((e) => Error(e.message))
 }
 
 export function dbUpdateStockItem(update, id, db = connection) {
@@ -328,37 +331,38 @@ export function dbDeleteStockItem(id, db = connection) {
   return db('stock').where({ id }).update({ is_deleted: 1 })
 }
 
-export async function dbReceiveStock(receiveStock: any, db = connection) {
+export async function dbReceiveStock(receiveBatch: BatchReceiveObject, db = connection) {
+  const { batchList = [], vendorId, completedByClerkId: clerkId, id: batchReceiveId } = receiveBatch || {}
+  console.log('Receiving stock', batchList)
   return db
     .transaction(async (trx) => {
-      const { clerkId, registerId, vendorId } = receiveStock
       const receivedStock = []
       await Promise.all(
-        receiveStock?.items?.map(async (receiveItem: any) => {
-          if (receiveItem?.item?.id) {
+        batchList?.map(async (batchItem: any) => {
+          if (batchItem?.item?.id) {
             await dbCreateStockMovement(
               {
-                stockId: receiveItem?.item?.id,
-                quantity: receiveItem?.quantity,
+                stockId: batchItem?.item?.id,
+                quantity: batchItem?.quantity,
                 clerkId,
-                registerId,
+                batchReceiveId,
                 act: StockMovementTypes?.Received,
                 note: 'Existing stock received.',
               },
               trx,
             )
             receivedStock.push({
-              item: receiveItem?.item,
-              quantity: receiveItem?.quantity,
+              item: batchItem?.item,
+              quantity: batchItem?.quantity,
             })
           } else {
-            const stockId = await dbCreateStockItem({ ...receiveItem?.item, vendorId }, trx)
+            const stockId = await dbCreateStockItem({ ...batchItem?.item, vendorId }, trx)
             dbCreateStockPrice(
               {
                 stockId,
                 clerkId,
-                totalSell: parseFloat(receiveItem?.totalSell) * 100,
-                vendorCut: parseFloat(receiveItem?.vendorCut) * 100,
+                totalSell: batchItem?.totalSell,
+                vendorCut: batchItem?.vendorCut,
                 note: 'New stock priced.',
               },
               trx,
@@ -367,8 +371,8 @@ export async function dbReceiveStock(receiveStock: any, db = connection) {
               {
                 stockId,
                 clerkId,
-                quantity: receiveItem?.quantity,
-                registerId,
+                quantity: batchItem?.quantity,
+                batchReceiveId,
                 act: StockMovementTypes?.Received,
                 note: 'New stock received.',
               },
@@ -376,12 +380,12 @@ export async function dbReceiveStock(receiveStock: any, db = connection) {
             )
             receivedStock.push({
               item: {
-                ...receiveItem?.item,
+                ...batchItem?.item,
                 vendorId,
-                totalSell: parseFloat(receiveItem?.totalSell) * 100,
+                totalSell: batchItem?.totalSell,
                 id: stockId,
               },
-              quantity: receiveItem?.quantity,
+              quantity: batchItem?.quantity,
             })
           }
         }),
@@ -497,25 +501,25 @@ export function dbGetReceiveBatch(id, db = connection) {
     .where('batch_receive.id', id)
     .first()
     .then((batch) =>
-      batch?.batch_list
-        ? batch
-        : dbGetStockMovementsForReceiveBatch(id, db)
-            .then((stockMovements) => {
-              return {
-                batch,
-                stockMovements,
-              }
-            })
-            .then(({ batch, stockMovements }) =>
-              dbGetStockItems(
-                stockMovements?.map((sm) => sm?.stock_id),
-                false,
-                db,
-              ).then((stockItems) => ({
-                ...batch,
-                batchList: createBatchList(stockItems, stockMovements),
-              })),
-            ),
+      // batch?.batch_list
+      //   ? batch :
+      dbGetStockMovementsForReceiveBatch(id, db)
+        .then((stockMovements) => {
+          return {
+            batch,
+            stockMovements,
+          }
+        })
+        .then(({ batch, stockMovements }) =>
+          dbGetStockItems(
+            stockMovements?.map((sm) => sm?.stock_id),
+            false,
+            db,
+          ).then((stockItems) => ({
+            ...batch,
+            batchList: createBatchList(stockItems, stockMovements),
+          })),
+        ),
     )
 }
 
@@ -524,7 +528,7 @@ export function dbGetStockMovementsForReceiveBatch(id, db) {
 }
 
 export function dbUpdateReceiveBatch(update, id, db = connection) {
-  console.log('updating batch ', id, update)
+  // console.log('updating batch ', id, update)
   return db('batch_receive').where({ id }).update(js2mysql(update))
 }
 
@@ -544,6 +548,8 @@ export async function dbSaveReceiveBatch(receiveBatch, doComplete = false, db = 
     let batchId = receiveBatch?.id
     const { batchList = [] } = receiveBatch || []
 
+    // console.log('Saving receive batch', receiveBatch)
+
     if (batchId) {
       await dbUpdateReceiveBatch({ ...receiveBatch, batchList: JSON.stringify(batchList) }, batchId, trx)
     } else {
@@ -551,7 +557,8 @@ export async function dbSaveReceiveBatch(receiveBatch, doComplete = false, db = 
     }
 
     if (doComplete) {
-      await dbReceiveStock(receiveBatch?.batchList, trx)
+      // console.log('Doing complete', receiveBatch?.batchList)
+      await dbReceiveStock(receiveBatch, trx)
     }
 
     return dbGetReceiveBatch(batchId, trx)

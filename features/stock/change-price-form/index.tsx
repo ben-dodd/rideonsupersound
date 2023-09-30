@@ -22,7 +22,7 @@ export default function ChangePriceForm({ obj, setObj, className }: { obj; setOb
         divClass="text-4xl"
         startAdornment="$"
         inputClass="text-center"
-        value={obj?.totalSell}
+        value={obj?.totalSell || ''}
         error={obj?.totalSell && isNaN(parseFloat(obj?.totalSell))}
         onChange={handleSetPrice}
       />
@@ -32,7 +32,7 @@ export default function ChangePriceForm({ obj, setObj, className }: { obj; setOb
         divClass="text-4xl w-full"
         startAdornment="$"
         inputClass="text-center"
-        value={obj?.vendorCut}
+        value={obj?.vendorCut || ''}
         error={obj?.vendorCut && isNaN(parseFloat(obj?.vendorCut))}
         onChange={handleSetPrice}
       />
@@ -42,7 +42,7 @@ export default function ChangePriceForm({ obj, setObj, className }: { obj; setOb
         divClass="text-4xl"
         endAdornment="%"
         inputClass="text-center"
-        value={obj?.margin}
+        value={obj?.margin || ''}
         error={(obj?.margin && isNaN(parseFloat(obj?.margin))) || parseFloat(obj?.margin) > 100}
         onChange={handleSetPrice}
       />
@@ -52,7 +52,7 @@ export default function ChangePriceForm({ obj, setObj, className }: { obj; setOb
         divClass="text-4xl"
         startAdornment="$"
         inputClass="text-center"
-        value={obj?.storeCut}
+        value={obj?.storeCut || ''}
         error={obj?.storeCut && isNaN(parseFloat(obj?.storeCut))}
         onChange={handleSetPrice}
       />

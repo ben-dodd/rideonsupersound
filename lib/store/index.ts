@@ -40,6 +40,7 @@ const initCart = {
 }
 
 export const initBatchReceiveSession = <BatchReceiveObject>{
+  id: null,
   vendorId: null,
   batchList: [],
   dateCompleted: null,
@@ -376,6 +377,8 @@ export const useAppStore = createSelectors(
     setBatchReceiveSession: (update) =>
       set(
         produce((draft) => {
+          console.log(draft.batchReceiveSession)
+          console.log(update)
           Object.entries(update).forEach(([key, value]) => (draft.batchReceiveSession[key] = value))
         }),
       ),
@@ -417,6 +420,7 @@ export const useAppStore = createSelectors(
     resetBatchReceiveSession: () =>
       set(
         produce((draft) => {
+          console.log('Resetting batch receive')
           draft.receiveStock = initBatchReceiveSession
         }),
       ),

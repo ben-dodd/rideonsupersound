@@ -18,6 +18,8 @@ const ReceiveStockList = () => {
     `${receiveBatch?.id}`?.includes(searchBar?.toUpperCase()),
   )
 
+  console.log(receiveBatches)
+
   return (
     <div className="h-content overflow-y-scroll">
       <div className="px-2">

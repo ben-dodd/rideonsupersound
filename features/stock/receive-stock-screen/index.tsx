@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useAppStore } from 'lib/store'
-import { deleteReceiveBatch, saveReceiveBatch, useReceiveBatch } from 'lib/api/stock'
+import { deleteReceiveBatch, useReceiveBatch } from 'lib/api/stock'
 import MidScreenContainer from 'components/container/mid-screen'
 import { Delete, Edit, Print } from '@mui/icons-material'
 import { useSWRConfig } from 'swr'
@@ -12,60 +12,82 @@ import { getBatchListCSVData } from 'lib/functions/printLabels'
 import dayjs from 'dayjs'
 import { dateYMD } from 'lib/types/date'
 import ConfigureItems from './configure-items'
-import { getItemCount, getItemList } from 'lib/functions/receiveStock'
 import ReviewItems from './review-items'
 
 export default function ReceiveStockScreen() {
-  const { batchReceiveSession, loadBatchReceiveSession, openConfirm } = useAppStore()
+  const { batchReceiveSession, loadBatchReceiveSession, resetBatchReceiveSession, openConfirm } = useAppStore()
   const router = useRouter()
   const id = router.query.id
   const { receiveBatch, isReceiveBatchLoading } = useReceiveBatch(`${id}`)
   const [stage, setStage] = useState('setup')
+  const [update, setUpdate] = useState(0)
   const [bypassConfirmDialog, setBypassConfirmDialog] = useState(false)
   const { mutate } = useSWRConfig()
 
   useEffect(() => {
+    console.log('change loadbatch', batchReceiveSession)
     if (!isReceiveBatchLoading && receiveBatch) {
+      console.log('Loading batch receive session', receiveBatch)
       loadBatchReceiveSession(receiveBatch)
+      setUpdate((update) => update + 1)
     }
   }, [id, isReceiveBatchLoading])
 
   console.log(batchReceiveSession)
 
-  useEffect(() => {
-    const saveBatchAndRedirect = (url) => {
-      console.log('saving batch and redirect')
-      saveReceiveBatch({
-        ...batchReceiveSession,
-        itemList: getItemList(batchReceiveSession?.batchList),
-        itemCount: getItemCount(batchReceiveSession?.batchList),
-      }).then((savedReceiveBatch) => {
-        mutate(`stock/receive/${savedReceiveBatch?.id}`, savedReceiveBatch)
-        mutate(`stock/receive`)
-        router.push(url)
-      })
-    }
-    const changePage = (url) => {
-      bypassConfirmDialog
-        ? null
-        : batchReceiveSession?.id
-        ? saveBatchAndRedirect(url)
-        : openConfirm({
-            open: true,
-            title: 'Save session?',
-            message: 'Do you want to save the current stock receive session?',
-            yesText: 'Yes, Please Save',
-            noText: 'No, Discard Changes',
-            action: () => saveBatchAndRedirect(url),
-          })
-    }
-    router.events.on('routeChangeStart', changePage)
+  // useEffect(() => {
+  //   // const saveBatchAndRedirect = (url) => {
+  //   //   const receiveBatchToSave = {
+  //   //     ...batchReceiveSession,
+  //   //     itemList: getItemList(batchReceiveSession?.batchList),
+  //   //     itemCount: getItemCount(batchReceiveSession?.batchList),
+  //   //   }
+  //   //   console.log('saving batch and redirect', receiveBatchToSave)
+  //   //   saveReceiveBatch(receiveBatchToSave).then((savedReceiveBatch) => {
+  //   //     console.log('saved batch', savedReceiveBatch)
+  //   //     resetBatchReceiveSession()
+  //   //     mutate(`stock/receive/${savedReceiveBatch?.id}`, savedReceiveBatch)
+  //   //     mutate(`stock/receive`)
+  //   //     router.push(url)
+  //   //   })
+  //   // }
+  //   const changePage = (url) => {
+  //     // console.log('changing page', batchReceiveSession)
+  //     if (bypassConfirmDialog) {
+  //       // console.log('Do nothing')
+  //       // resetBatchReceiveSession()
+  //     } else {
+  //       openConfirm({
+  //         open: true,
+  //         title: 'Leave without saving?',
+  //         message: 'If you leave the page you will lose unsaved changes. Continue or go back and save?',
+  //         yesText: 'Continue',
+  //         noText: 'Go Back and Save',
+  //         action: () => saveBatchAndRedirect(url),
 
-    // unsubscribe on component destroy in useEffect return function
-    return () => {
-      router.events.off('routeChangeStart', changePage)
-    }
-  }, [id, bypassConfirmDialog])
+  //       })
+  //     }
+  //     //  else if (batchReceiveSession?.id) {
+  //     //   console.log('save batch and redirect')
+  //     //   saveBatchAndRedirect(url)
+  //     // } else {
+  //     //   openConfirm({
+  //     //     open: true,
+  //     //     title: 'Save session?',
+  //     //     message: 'Do you want to save the current stock receive session?',
+  //     //     yesText: 'Yes, Please Save',
+  //     //     noText: 'No, Discard Changes',
+  //     //     action: () => saveBatchAndRedirect(url),
+  //     //   })
+  //     // }
+  //   }
+  //   router.events.on('routeChangeStart', changePage)
+
+  //   // unsubscribe on component destroy in useEffect return function
+  //   return () => {
+  //     router.events.off('routeChangeStart', changePage)
+  //   }
+  // }, [id, batchReceiveSession?.id, isReceiveBatchLoading, bypassConfirmDialog])
 
   const batchListLabelData = useMemo(
     () => getBatchListCSVData(batchReceiveSession?.batchList),
@@ -80,6 +102,8 @@ export default function ReceiveStockScreen() {
       action: () => {
         setBypassConfirmDialog(true)
         deleteReceiveBatch(receiveBatch?.id).then(() => {
+          console.log('Delete batch complete')
+          resetBatchReceiveSession()
           mutate(`stock/receive`)
           router.push(`/stock`)
         })
