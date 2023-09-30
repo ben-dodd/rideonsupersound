@@ -87,15 +87,15 @@
 }
 
 .icon-text-button {
-  @apply flex w-full justify-between items-center text-sm rounded py-1 px-2 m-1 whitespace-nowrap cursor-pointer bg-brown-dark text-white hover:bg-brown disabled:pointer-events-none disabled:bg-gray-300;
+  @apply flex w-full justify-between items-center text-sm rounded py-1 px-2 m-1 whitespace-nowrap select-none cursor-pointer bg-brown-dark text-white hover:bg-brown disabled:pointer-events-none disabled:bg-gray-300;
 }
 
 .icon-text-button-highlight {
-  @apply w-full flex justify-between items-center text-sm rounded py-1 px-2 m-1 whitespace-nowrap cursor-pointer bg-primary-dark text-white hover:bg-primary disabled:pointer-events-none disabled:bg-gray-300;
+  @apply w-full flex justify-between items-center text-sm rounded py-1 px-2 m-1 whitespace-nowrap select-none cursor-pointer bg-primary-dark text-white hover:bg-primary disabled:pointer-events-none disabled:bg-gray-300;
 }
 
 .icon-text-button-final {
-  @apply w-full flex justify-between items-center text-sm rounded py-1 px-2 m-1 whitespace-nowrap cursor-pointer bg-secondary-dark text-white hover:bg-secondary disabled:pointer-events-none disabled:bg-gray-300;
+  @apply w-full flex justify-between items-center text-sm rounded py-1 px-2 m-1 whitespace-nowrap select-none cursor-pointer bg-secondary-dark text-white hover:bg-secondary disabled:pointer-events-none disabled:bg-gray-300;
 }
 
 .pill-button {
