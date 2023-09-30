@@ -14,6 +14,7 @@ interface ModalProps {
   buttons?: ModalButton[]
   loading?: boolean
   width?: string
+  // modalTitleClass?: string
   children: JSX.Element
 }
 
@@ -25,6 +26,7 @@ export default function Modal({
   buttons,
   loading = false,
   width,
+  // modalTitleClass = '',
   children,
 }: ModalProps) {
   return (

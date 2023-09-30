@@ -57,6 +57,7 @@ export interface ConfirmModal {
   noText?: string
   yesButtonOnly?: boolean
   buttons?: ModalButton[]
+  type?: string
 }
 
 export interface InfoModal {

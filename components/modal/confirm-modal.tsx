@@ -39,6 +39,9 @@ export default function ConfirmModal() {
     : confirmModal?.altAction
     ? [altButton, yesButton]
     : [noButton, yesButton]
+
+  // const modalTitleClass = confirmModal?.type === 'warning' ? 'bg-orange-700' : ''
+
   return (
     <Modal
       open={confirmModal?.open}

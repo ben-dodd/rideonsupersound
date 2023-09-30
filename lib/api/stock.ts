@@ -93,7 +93,7 @@ export function changeStockQuantity(update: any, id) {
 }
 
 export function updateStockItem(update: any, id) {
-  return axiosAuth.patch(`/api/stock/${id}`, update)
+  return id ? axiosAuth.patch(`/api/stock/${id}`, update) : null
 }
 
 export function createStocktakeTemplate(stocktakeTemplate: StocktakeTemplateObject, clerk: ClerkObject) {

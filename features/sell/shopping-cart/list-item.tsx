@@ -34,11 +34,19 @@ export default function SellListItem({ cartItem }: { cartItem: SaleItemObject })
       openConfirm({
         open: true,
         title: 'Are you sure you want to add to cart?',
+        type: 'warning',
         styledMessage: (
-          <span>
-            There is not enough of <b>{getItemDisplayName(item)}</b> in stock. Are you sure you want to change the
-            quantity to {e?.target?.value}?
-          </span>
+          <div>
+            <div>
+              {quantities?.inStock === 1 ? (
+                <span>There is only 1 copy of </span>
+              ) : (
+                <span>There are only {quantities?.inStock} copies of </span>
+              )}
+              <b>{getItemDisplayName(item)}</b> in stock. Are you sure you want to sell {e?.target?.value}?
+            </div>
+            <div className="font-bold text-red-500 text-sm">THIS WILL PUT THE STOCK COUNT INTO NEGATIVES</div>
+          </div>
         ),
         yesText: "YES, I'M SURE",
         action: () => onChangeCart({ target: { value: newQuantity } }, 'quantity'),
