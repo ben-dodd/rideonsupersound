@@ -11,10 +11,14 @@ export default function Vendor() {
   const [duplicateItem, setDuplicateItem] = useState(false)
   console.log(duplicateItem)
   const addItem = (item: any) => {
-    const newItem = item?.value
+    let newItem = item?.value
+    delete newItem?.quantities
+    newItem.quantity = 1
     if (duplicateItem) {
       console.log(newItem)
-      delete newItem?.item?.id
+      const dupItem = { ...newItem?.item }
+      delete dupItem?.id
+      newItem = { ...newItem, item: dupItem }
     }
     addBatchReceiveItem(newItem)
   }
@@ -41,10 +45,10 @@ export default function Vendor() {
           className="w-full self-stretch"
           value={null}
           options={vendorStockList
-            ?.filter(
-              (vendorItem: StockReceiveObject) =>
-                !batchReceiveSession?.batchList?.map((batchItem) => batchItem?.item?.id).includes(vendorItem?.item?.id),
-            )
+            // ?.filter(
+            //   (vendorItem: StockReceiveObject) =>
+            //     !batchReceiveSession?.batchList?.map((batchItem) => batchItem?.item?.id).includes(vendorItem?.item?.id),
+            // )
             ?.map((vendorItem: StockReceiveObject) => ({
               value: vendorItem,
               label: getItemSkuDisplayName(vendorItem?.item),

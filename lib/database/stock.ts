@@ -303,6 +303,7 @@ export function dbUpdateStockItem(update, id, db = connection) {
 }
 
 export function dbCreateStockMovement(stockMovement, db = connection) {
+  console.log(js2mysql(stockMovement))
   return db('stock_movement')
     .insert(js2mysql(stockMovement))
     .then((rows) => {
@@ -357,12 +358,12 @@ export async function dbReceiveStock(receiveBatch: BatchReceiveObject, db = conn
             })
           } else {
             const stockId = await dbCreateStockItem({ ...batchItem?.item, vendorId }, trx)
-            dbCreateStockPrice(
+            await dbCreateStockPrice(
               {
                 stockId,
                 clerkId,
-                totalSell: batchItem?.totalSell,
-                vendorCut: batchItem?.vendorCut,
+                totalSell: batchItem?.price?.totalSell,
+                vendorCut: batchItem?.price?.vendorCut,
                 note: 'New stock priced.',
               },
               trx,
@@ -547,9 +548,6 @@ export async function dbSaveReceiveBatch(receiveBatch, doComplete = false, db = 
 
     let batchId = receiveBatch?.id
     const { batchList = [] } = receiveBatch || []
-
-    // console.log('Saving receive batch', receiveBatch)
-
     if (batchId) {
       await dbUpdateReceiveBatch({ ...receiveBatch, batchList: JSON.stringify(batchList) }, batchId, trx)
     } else {
@@ -557,8 +555,7 @@ export async function dbSaveReceiveBatch(receiveBatch, doComplete = false, db = 
     }
 
     if (doComplete) {
-      // console.log('Doing complete', receiveBatch?.batchList)
-      await dbReceiveStock(receiveBatch, trx)
+      await dbReceiveStock({ ...receiveBatch, id: batchId }, trx)
     }
 
     return dbGetReceiveBatch(batchId, trx)

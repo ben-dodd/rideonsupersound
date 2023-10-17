@@ -33,11 +33,6 @@ export default function ReviewItems({ setStage, setBypassConfirmDialog }) {
           true,
         )
           .then((savedReceiveBatch) => {
-            console.log(savedReceiveBatch)
-            // const data = getBatchListCSVData(savedReceiveBatch?.batchList)
-            // const headers = ['SKU', 'ARTIST', 'TITLE', 'NEW/USED', 'SELL PRICE', 'SECTION', 'BARCODE']
-            // const fileName = `label-print-${savedReceiveBatch?.vendorName}-${dayjs().format(dateYMD)}.csv`
-            // downloadCSV(headers, data, fileName)
             mutate(`stock/receive/${savedReceiveBatch?.id}`, savedReceiveBatch)
             mutate(`stock/receive`)
             closeConfirm()

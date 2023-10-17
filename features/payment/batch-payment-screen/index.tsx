@@ -14,7 +14,7 @@ import ReviewBatchPayments from './review-batch-payments'
 import { useAppStore } from 'lib/store'
 import ViewBatchPayments from './view-batch-payments'
 import { useSWRConfig } from 'swr'
-import { Delete, Email, NoTransfer } from '@mui/icons-material'
+import { Delete, Email, ReceiptLong } from '@mui/icons-material'
 import dayjs from 'dayjs'
 
 export default function BatchPaymentScreen() {
@@ -118,7 +118,7 @@ export default function BatchPaymentScreen() {
     // { text: 'Edit', icon: <Edit />, onClick: () => setBatchPaymentSession({ dateCompleted: null }) },
     {
       text: 'Download KBB File',
-      icon: <NoTransfer />,
+      icon: <ReceiptLong />,
       onClick: () =>
         downloadFile(
           batchPaymentSession?.kbbFile,

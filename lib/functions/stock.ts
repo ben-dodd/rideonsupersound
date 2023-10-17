@@ -36,6 +36,7 @@ export function getInStockQuantity(item) {
 }
 
 export function createBatchList(stockItems, stockMovements) {
+  console.log('creating batch list', stockItems, stockMovements)
   let batchList = []
   stockItems?.forEach((item) => {
     let receiveObject: StockReceiveObject = {}

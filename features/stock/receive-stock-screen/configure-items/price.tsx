@@ -151,25 +151,25 @@ export default function Price() {
               <TextField
                 inputLabel="VENDOR CUT"
                 startAdornment={'$'}
-                value={itemPrices[index]?.vendorCut}
+                value={itemPrices[index]?.vendorCut || ''}
                 onChange={(e) => handleItemChange(batchItem?.key, index, e, 'vendorCut')}
               />
               <TextField
                 inputLabel="STORE CUT"
                 startAdornment={'$'}
-                value={itemPrices[index]?.storeCut}
+                value={itemPrices[index]?.storeCut || ''}
                 onChange={(e) => handleItemChange(batchItem?.key, index, e, 'storeCut')}
               />
               <TextField
                 inputLabel="MARGIN"
                 endAdornment={'%'}
-                value={itemPrices[index]?.margin}
+                value={itemPrices[index]?.margin || ''}
                 onChange={(e) => handleItemChange(batchItem?.key, index, e, 'margin')}
               />
               <TextField
                 inputLabel="SELL PRICE"
                 startAdornment={'$'}
-                value={itemPrices[index]?.totalSell}
+                value={itemPrices[index]?.totalSell || ''}
                 onChange={(e) => handleItemChange(batchItem?.key, index, e, 'totalSell')}
                 divClass="bg-yellow-400 font-bold selection:bg-blue-400 hover:bg-yellow-300"
               />
