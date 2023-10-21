@@ -16,7 +16,9 @@ export default function Quantities() {
   const handleItemChange = (key, e) => {
     updateBatchReceiveItem(key, { quantity: parseInt(e?.target?.value) })
   }
-  const itemCount = batchReceiveSession?.batchList?.reduce?.((acc, batchItem) => acc + (batchItem?.quantity || 0), 0)
+  const itemCount = batchReceiveSession?.batchList
+    ?.map((batchItem) => batchItem?.quantity)
+    ?.reduce?.((acc, batchItemQuantity) => acc + (batchItemQuantity || 0), 0)
   return (
     <div className="w-full">
       <div className="w-full p-2 flex justify-between">

@@ -7,7 +7,7 @@ import { cassetteGradingGuide, cdGradingGuide, vinylGradingGuide } from './resou
 
 export default function Condition() {
   const { batchReceiveSession, updateBatchReceiveItemField, openInfo } = useAppStore()
-  const [bulkChange, setBulkChange] = useState({})
+  const [bulkChange, setBulkChange] = useState<any>({})
   const handleBulkChange = (value, field) => {
     setBulkChange({ ...bulkChange, [field]: value })
     batchReceiveSession?.batchList?.forEach((batchItem, index) => {
