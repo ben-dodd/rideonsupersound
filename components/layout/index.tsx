@@ -25,14 +25,12 @@ export default function Layout({ children }) {
       setRouteLoading(false)
     })
     return () => {
-      return () => {
-        router.events.off('routeChangeStart', () => {
-          setRouteLoading(true)
-        })
-        router.events.off('routeChangeComplete', () => {
-          setRouteLoading(false)
-        })
-      }
+      router.events.off('routeChangeStart', () => {
+        setRouteLoading(true)
+      })
+      router.events.off('routeChangeComplete', () => {
+        setRouteLoading(false)
+      })
     }
   }, [router.events])
   return isClerkLoading ? (
