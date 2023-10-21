@@ -25,7 +25,7 @@ export default function AllDetails() {
         )}
       </div>
       <div className="w-2/5 ml-2 h-content overflow-y-scroll">
-        {batchReceiveSession?.batchList?.map((batchItem, i) => (
+        {batchReceiveSession?.batchList?.map((batchItem) => (
           <div
             key={batchItem?.key}
             className={batchItem?.key === selectedItemKey ? 'list-item-selected' : 'list-item-click'}

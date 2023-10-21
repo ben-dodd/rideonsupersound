@@ -15,7 +15,7 @@ interface ScreenProps {
 }
 
 export default function ScreenContainer({
-  show = true,
+  // show = true,
   closeFunction,
   title,
   loading,

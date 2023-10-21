@@ -20,8 +20,8 @@ export default function ReceiveStockScreen() {
   const id = router.query.id
   const { receiveBatch, isReceiveBatchLoading } = useReceiveBatch(`${id}`)
   const [stage, setStage] = useState('setup')
-  const [update, setUpdate] = useState(0)
-  const [bypassConfirmDialog, setBypassConfirmDialog] = useState(false)
+  const [, setUpdate] = useState(0)
+  const [, setBypassConfirmDialog] = useState(false)
   const { mutate } = useSWRConfig()
 
   useEffect(() => {
@@ -31,6 +31,7 @@ export default function ReceiveStockScreen() {
       loadBatchReceiveSession(receiveBatch)
       setUpdate((update) => update + 1)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, isReceiveBatchLoading])
 
   console.log(batchReceiveSession)

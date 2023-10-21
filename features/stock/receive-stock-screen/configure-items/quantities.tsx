@@ -33,7 +33,7 @@ export default function Quantities() {
           inputLabel="QUANTITY"
         />
       </div>
-      {batchReceiveSession?.batchList?.map((batchItem, index) => {
+      {batchReceiveSession?.batchList?.map((batchItem) => {
         return (
           <div key={batchItem?.key} className="w-full p-2 flex justify-between">
             <div className="font-bold">{getItemDisplayName(batchItem?.item)}</div>

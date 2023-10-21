@@ -50,6 +50,7 @@ export default function Price() {
       })
     })
     setItemPrices(prices)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [batchReceiveSession?.id])
 
   return (

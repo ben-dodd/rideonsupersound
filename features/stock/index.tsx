@@ -13,7 +13,7 @@ import { useClerk } from 'lib/api/clerk'
 import dayjs from 'dayjs'
 
 const StockScreen = () => {
-  const { stockList, isStockListLoading } = useStockList()
+  const { isStockListLoading } = useStockList()
   const {
     stockPage: { tab },
     setPage,

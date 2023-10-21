@@ -45,7 +45,7 @@ export default function SelectBatchPayments({ setStage, setBypassConfirmDialog }
               type="checkbox"
               className="cursor-pointer"
               checked={checked}
-              onChange={(e) => {
+              onChange={() => {
                 if (checked) {
                   setBatchPaymentList(
                     paymentList?.map((vendor) => ({

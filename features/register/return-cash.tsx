@@ -34,7 +34,8 @@ export default function ReturnCashDialog() {
           note,
           date: dayjs.utc().format(),
         }
-        const id = await savePettyCash(pettyCash)
+        // const id = await savePettyCash(pettyCash)
+        await savePettyCash(pettyCash)
         setAlert({
           open: true,
           type: 'success',

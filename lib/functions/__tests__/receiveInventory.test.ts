@@ -1,6 +1,6 @@
-import { parseCSVItems } from '../receiveStock'
+// import { parseCSVItems } from '../receiveStock'
 
-const exampleCSV = '[]'
+// const exampleCSV = '[]'
 
 describe('parseCSVItems', () => {
   it('should read a csv and return a list of items', () => {

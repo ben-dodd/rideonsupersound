@@ -14,7 +14,7 @@ if (input.includes('\r\n')) {
 let tables: any = []
 let tableCount = 0
 
-lines.forEach(function (line, i) {
+lines.forEach(function (line) {
   if (line.startsWith('CREATE TABLE')) {
     let tableName = line.substring(14, line.length - 3)
     console.log(tableName)
@@ -75,20 +75,12 @@ tables.forEach((table: any) => {
       sqlString += `.integer('${columnName}', ${size})`
     }
 
-    if (
-      columnType &&
-      columnType.startsWith('smallint') &&
-      autoIncrement === false
-    ) {
+    if (columnType && columnType.startsWith('smallint') && autoIncrement === false) {
       size = columnType.slice(9, -1)
       sqlString += `.integer('${columnName}', ${size})`
     }
 
-    if (
-      columnType &&
-      columnType.startsWith('tinyint') &&
-      autoIncrement === false
-    ) {
+    if (columnType && columnType.startsWith('tinyint') && autoIncrement === false) {
       size = columnType.slice(8, -1)
       sqlString += `.integer('${columnName}', ${size})`
     }
@@ -242,16 +234,11 @@ tables.forEach((table: any) => {
   sqlString = `\t});\n};`
   written += sqlString + '\n'
 
-  sqlString =
-    `\nexports.down = function (knex) {` +
-    `\n\treturn knex.schema.dropTable('${table.tableName}');` +
-    `\n};`
+  sqlString = `\nexports.down = function (knex) {` + `\n\treturn knex.schema.dropTable('${table.tableName}');` + `\n};`
   written += sqlString + '\n'
 
   fs.writeFileSync(
-    `migrations/202211282148${count.toString().padStart(2, '0')}_create_table_${
-      table.tableName
-    }.js`,
-    written
+    `migrations/202211282148${count.toString().padStart(2, '0')}_create_table_${table.tableName}.js`,
+    written,
   )
 })

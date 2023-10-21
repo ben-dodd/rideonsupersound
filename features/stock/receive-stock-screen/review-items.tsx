@@ -38,7 +38,7 @@ export default function ReviewItems({ setStage, setBypassConfirmDialog }) {
             closeConfirm()
             router.push(`/stock`)
           })
-          .catch((e) => {
+          .catch(() => {
             closeConfirm()
           })
       },

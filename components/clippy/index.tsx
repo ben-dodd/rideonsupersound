@@ -6,12 +6,12 @@ import { useState } from 'react'
 const Clippy = () => {
   const { clippy, setClippy } = useAppStore()
   console.log('Rendering clippy', clippy)
-  const [isDragging, setIsDragging] = useState(false)
+  const [isDragging] = useState(false)
   const x = useMotionValue(clippy?.position?.x)
   const y = useMotionValue(clippy?.position?.y)
 
   const handleTapClippy = () => {
-    console.log('Clippy clicked')
+    // console.log('Clippy clicked')
     if (!isDragging)
       setClippy({
         showMessage: true,

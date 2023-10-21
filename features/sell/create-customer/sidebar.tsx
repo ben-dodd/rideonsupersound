@@ -15,7 +15,7 @@ export default function CreateCustomerSidebar() {
   const {
     view,
     cart: { customer },
-    createableCustomerName,
+    // createableCustomerName,
     setCart,
     setCartSale,
     closeView,

@@ -28,7 +28,7 @@ import { dateYMD } from 'lib/types/date'
 // const skipPageResetRef:any = useRef();
 // skipPageResetRef.current = false;
 
-function GlobalFilter({ preGlobalFilteredRows, globalFilter, setGlobalFilter, skipPageResetRef, colorLight }) {
+function GlobalFilter({ globalFilter, colorLight }) {
   const [searchValue, setSearchValue] = useState(globalFilter)
   // const onChange = useAsyncDebounce((value) => {
   //   // skipPageResetRef.current = true;
@@ -80,7 +80,6 @@ function Table({
   showFooter,
   heading,
   pageSize,
-  onClickRow,
   sortOptions,
   hiddenColumns,
   downloadCSV,
@@ -112,8 +111,6 @@ function Table({
     previousPage,
     // setPageSize,
     // allColumns,
-    preGlobalFilteredRows,
-    setGlobalFilter,
     state,
   } = useTable(
     {
@@ -157,13 +154,7 @@ function Table({
           ) : (
             <div />
           )}
-          <GlobalFilter
-            preGlobalFilteredRows={preGlobalFilteredRows}
-            globalFilter={state.globalFilter}
-            setGlobalFilter={setGlobalFilter}
-            skipPageResetRef={null}
-            colorLight={colorLight || null}
-          />
+          <GlobalFilter globalFilter={state.globalFilter} colorLight={colorLight || null} />
         </div>
       </div>
       <div className="overflow-x-scroll w-full">

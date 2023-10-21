@@ -6,7 +6,7 @@ import { Pages } from 'lib/store/types'
 import GiftCardListItem from './gift-card-list-item'
 
 const GiftCardScreen = () => {
-  const { giftCardsPage, setPage, setSearchBar } = useAppStore()
+  const { giftCardsPage, setSearchBar } = useAppStore()
   const handleSearch = (e) => setSearchBar(Pages.giftCardsPage, e.target.value)
   const { giftCards, isGiftCardsLoading } = useGiftCards()
   return (

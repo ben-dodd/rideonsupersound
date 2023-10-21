@@ -60,7 +60,7 @@ const VendorReport = ({ vendor }) => (
 )
 
 const renderUrl = (vendor) =>
-  new Promise(async (resolve, reject) => {
+  new Promise(async (resolve) => {
     const blob = await pdf(<VendorReport vendor={vendor} />).toBlob()
     const url = URL.createObjectURL(blob)
     if (url && url.length > 0) {
@@ -77,7 +77,7 @@ export const getVendorReport = (vendor) => {
       .then((generatedUrl) => {
         if (generatedUrl) {
           let aTag = document.createElement('a')
-          aTag.href = generatedUrl
+          aTag.href = `${generatedUrl}`
           aTag.style = 'display: none'
           aTag.download = 'VendorReport.pdf'
           document.body.appendChild(aTag)

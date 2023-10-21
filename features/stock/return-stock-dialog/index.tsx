@@ -126,7 +126,7 @@ export default function ReturnStockScreen() {
                   ...returnItems,
                 ])
               }
-              onInputChange={(newValue, actionMeta, prevInputValue) => {
+              onInputChange={(newValue, actionMeta) => {
                 if (
                   actionMeta?.action === 'input-change' &&
                   returnOptions?.filter((opt) => newValue === `${('00000' + opt?.value || '').slice(-5)}`)?.length > 0

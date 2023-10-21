@@ -7,7 +7,7 @@ import { useState } from 'react'
 import StockListItem from './stock-list-item'
 
 const StockList = () => {
-  const { stockList, isStockListLoading } = useStockList()
+  const { stockList } = useStockList()
   const {
     stockPage: { searchBar },
     setSearchBar,

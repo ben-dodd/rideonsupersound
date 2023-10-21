@@ -27,6 +27,7 @@ export function dbUpdateVendorPayment(id, update, db = connection) {
 }
 
 export function dbGetVendorStoreCreditByVendorUid(vendorUid, db = connection) {
+  console.log(db)
   return null
   // return dbGetVendorIdFromUid(vendorUid).then(vendorId => db('sale'))
   // return {

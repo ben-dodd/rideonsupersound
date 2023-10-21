@@ -12,6 +12,7 @@ export default function OpenRegisterPage() {
 
   useEffect(() => {
     if (!isRegisterIdLoading && registerId) router.push('/sell')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [registerId, isRegisterIdLoading])
   return (
     <div className="flex justify-center items-center w-full h-main">

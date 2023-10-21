@@ -56,6 +56,7 @@ export default function BatchPaymentScreen() {
     return () => {
       router.events.off('routeChangeStart', changePage)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [batchPaymentSession, bypassConfirmDialog])
 
   // console.log(batchPaymentSession)
@@ -67,6 +68,7 @@ export default function BatchPaymentScreen() {
 
   useEffect(() => {
     setBatchPaymentSession({ totalPay, totalNumVendors })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalPay, totalNumVendors])
 
   useEffect(() => {
@@ -94,6 +96,7 @@ export default function BatchPaymentScreen() {
           return b?.totalOwing - a?.totalOwing
         })
     setBatchPaymentSession({ ...batchPayment, paymentList })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vendorAccounts, id])
 
   const deleteBatchPayment = () => {

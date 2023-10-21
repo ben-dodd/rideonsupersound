@@ -29,7 +29,11 @@ export default function MidScreenContainer({
             {title}
           </div>
           {actionButtons}
-          {menuItems && (!adminOnlyMenuTest || isAdmin) ? <DropdownMenu items={menuItems} dark={dark} /> : <div />}
+          {menuItems && (!adminOnlyMenuTest || adminOnlyMenu || isAdmin) ? (
+            <DropdownMenu items={menuItems} dark={dark} />
+          ) : (
+            <div />
+          )}
         </div>
       )}
       {isLoading ? (

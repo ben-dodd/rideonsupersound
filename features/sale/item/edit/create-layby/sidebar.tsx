@@ -10,17 +10,17 @@ import { saveCart } from 'lib/api/sale'
 import { SaleStateTypes } from 'lib/types/sale'
 import dayjs from 'dayjs'
 import { useRouter } from 'next/router'
-import { useSWRConfig } from 'swr'
+// import { useSWRConfig } from 'swr'
 
 export default function CreateLaybySidebar() {
   const { cart, view, setAlert, resetCart, openView, closeView, setCreateableCustomerName } = useAppStore()
   const { sale = {} } = cart || {}
   const { clerk } = useClerk()
   const { customers } = useCustomers()
-  const [submitting, setSubmitting] = useState(false)
+  const [submitting] = useState(false)
   const [customerId, setCustomerId] = useState(sale?.customerId || null)
   const router = useRouter()
-  const { mutate } = useSWRConfig()
+  // const { mutate } = useSWRConfig()
 
   const handleSubmit = (e) => {
     e.preventDefault()

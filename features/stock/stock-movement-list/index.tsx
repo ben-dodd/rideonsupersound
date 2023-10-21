@@ -12,7 +12,7 @@ const StockMovementList = () => {
     setSearchBar,
   } = useAppStore()
   const [limit, setLimit] = useState(50)
-  const { stockMovements, isStockMovementsLoading } = useStockMovements()
+  const { stockMovements } = useStockMovements()
 
   const handleSearch = (e) => setSearchBar(Pages.stockPage, e.target.value)
   const filteredList = stockMovements?.filter?.((sm) => `${sm?.id}`?.includes(searchBar?.toUpperCase()))

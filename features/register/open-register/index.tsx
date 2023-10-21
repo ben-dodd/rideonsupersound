@@ -17,7 +17,7 @@ import { dateTime } from 'lib/types/date'
 
 export default function OpenRegisterScreen() {
   const { clerk } = useClerk()
-  const { previousRegister, isPreviousRegisterLoading } = usePreviousRegister()
+  const { previousRegister } = usePreviousRegister()
   const { setAlert, setOption } = useAppStore()
   const [till, setTill] = useState({})
   const [notes, setNotes] = useState('')

@@ -72,6 +72,7 @@ export function useSaleProperties(cart, updateCart = false): any {
         )
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items, sale, transactions, stockTable])
   return properties
 }

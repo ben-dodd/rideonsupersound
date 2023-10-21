@@ -64,7 +64,7 @@ export default function StockDetails() {
             <div>No stock movements found.</div>
           ) : (
             <div>
-              {stockMovements?.map((s, i) => {
+              {stockMovements?.map((s) => {
                 runningQuantity -= prevQuantity || 0
                 prevQuantity = s?.quantity
                 const saleId = s?.saleId ? s?.saleId : s?.act === 'sold' ? sales[saleIndex]?.saleId : null

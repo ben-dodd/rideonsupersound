@@ -1,12 +1,12 @@
-import { Column } from "primereact/column";
-import { DataTable } from "primereact/datatable";
-import { Button } from "primereact/button";
-import { InputText } from "primereact/inputtext";
-import { useState } from "react";
+import { Column } from 'primereact/column'
+import { DataTable } from 'primereact/datatable'
+import { Button } from 'primereact/button'
+import { InputText } from 'primereact/inputtext'
+import { useState } from 'react'
 
 export default function Table({ data, columns }) {
-  const [globalFilter, setGlobalFilter] = useState(null);
-  const dataColumns = columns?.map((col, i) => {
+  const [globalFilter, setGlobalFilter] = useState(null)
+  const dataColumns = columns?.map((col) => {
     return (
       <Column
         key={col.field}
@@ -16,8 +16,8 @@ export default function Table({ data, columns }) {
         sortable={col.sortable || false}
         style={col.style || null}
       ></Column>
-    );
-  });
+    )
+  })
 
   return (
     <DataTable
@@ -42,9 +42,9 @@ export default function Table({ data, columns }) {
               />
             </span>
           </div>
-        );
+        )
       }}
-      globalFilterFields={["clerk", "status"]}
+      globalFilterFields={['clerk', 'status']}
       responsiveLayout="scroll"
       resizableColumns
       columnResizeMode="fit"
@@ -56,5 +56,5 @@ export default function Table({ data, columns }) {
     >
       {dataColumns}
     </DataTable>
-  );
+  )
 }

@@ -30,6 +30,7 @@ export default function GoogleBooksPanel() {
   useEffect(() => {
     if (!Boolean(item?.googleBooksItem) && (Boolean(item?.artist) || Boolean(item?.title)))
       handleGetGoogleBooksOptions()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (

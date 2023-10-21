@@ -30,6 +30,7 @@ export default function DiscogsPanel() {
   useEffect(() => {
     if (!Boolean(item?.discogsItem) && (Boolean(item?.artist) || Boolean(item?.title) || Boolean(item?.barcode)))
       handleGetDiscogsOptions()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (

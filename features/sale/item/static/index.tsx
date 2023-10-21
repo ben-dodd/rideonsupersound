@@ -11,7 +11,7 @@ import { ViewProps } from 'lib/store/types'
 
 const SaleItemScreen = ({ saleItem }) => {
   const router = useRouter()
-  const { openView, loadSaleToCart, openConfirm, setAlert, closeView, resetCart } = useAppStore()
+  const { openView, loadSaleToCart, openConfirm, setAlert } = useAppStore()
   const { sale = {} } = saleItem || {}
   const { mutate } = useSWRConfig()
 

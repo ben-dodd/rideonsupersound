@@ -13,6 +13,7 @@ const SpeechBubble = () => {
   // // Animate the speech bubble on mount
   useEffect(() => {
     controls.start({ opacity: 1, y: bubbleY, x: bubbleX, transition: { duration: 0.5 } })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // // Animate the speech bubble on message change
@@ -23,6 +24,7 @@ const SpeechBubble = () => {
     }
     if (clippy?.showMessage) controls.start({ opacity: 1, y: bubbleY, x: bubbleX, transition: { duration: 0.3 } })
     else hideClippy()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clippy?.showMessage, clippy?.message])
 
   // Animate the speech bubble on unmount
