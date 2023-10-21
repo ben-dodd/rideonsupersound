@@ -15,7 +15,6 @@ import {
   dbGetGiftCard,
 } from './stock'
 import { js2mysql, mysql2js } from './utils/helpers'
-import { SignalCellularNullTwoTone } from '@mui/icons-material'
 import { getItemSkuDisplayName } from 'lib/functions/displayInventory'
 
 export function dbGetAllSales(db = connection) {
@@ -290,7 +289,7 @@ export function dbUpdateStockMovement(id, update, db = connection) {
 export async function dbSaveCart(cart, db = connection) {
   return db
     .transaction(async (trx) => {
-      const prevSale = cart?.sale?.id ? await dbGetSaleState(cart?.sale?.id, trx) : SignalCellularNullTwoTone
+      const prevSale = cart?.sale?.id ? await dbGetSaleState(cart?.sale?.id, trx) : null
       const { sale = {}, items = [], transactions = [], registerId = null } = cart || {}
       const newSale = {
         ...sale,

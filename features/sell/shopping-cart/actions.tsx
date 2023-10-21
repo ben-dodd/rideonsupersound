@@ -50,7 +50,7 @@ export default function ShoppingCartActions() {
 
   async function onClickContinueLayby() {
     setSaveSaleLoading(true)
-    saveCart({ ...cart, sale: { ...sale, state: SaleStateTypes.Layby } }, sale?.state)
+    saveCart({ ...cart, sale: { ...sale, state: SaleStateTypes.Layby } })
     setAlert({
       open: true,
       type: 'success',
