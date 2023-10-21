@@ -6,7 +6,7 @@ export default function MoneyTextField(textFieldProps: TextFieldProps) {
     ...textFieldProps,
     startAdornment: '$',
     onChange: textFieldProps?.onChange ? textFieldProps?.onChange((e) => dollarsToCents(e?.target?.value)) : null,
-    value: textFieldProps?.value ? centsToDollars(textFieldProps?.value) : '',
+    value: textFieldProps?.value ? `${centsToDollars(textFieldProps?.value)}` : '',
   }
   return <TextField {...moneyTextProps} />
 }
