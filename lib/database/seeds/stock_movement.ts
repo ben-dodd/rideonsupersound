@@ -1,6 +1,6 @@
 import { StockMovementTypes } from 'lib/types/stock'
 
-exports.seed = (knex) =>
+export const seed = (knex) =>
   knex('stock_movement')
     .del()
     .then(() =>

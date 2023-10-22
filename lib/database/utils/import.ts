@@ -43,7 +43,7 @@ let count = 0
 tables.forEach((table: any) => {
   count += 1
   console.log('// -----------')
-  let sqlString = 'exports.up = function(knex, Promise) {\n'
+  let sqlString = 'export const up = function(knex, Promise) {\n'
   sqlString += `\treturn knex.schema.createTable('${table.tableName}', function (table) {`
 
   // console.log(sqlString);

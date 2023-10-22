@@ -33,3 +33,5 @@
 // };
 
 // const MyWrappedComponent = withLogging(MyComponent);
+
+export {}

@@ -1,5 +1,5 @@
 import { query } from 'lib/database/utils/db'
-import { StockMovementTypes } from 'lib/types'
+import { StockMovementTypes } from 'lib/types/stock'
 import { NextApiHandler } from 'next'
 
 const handler: NextApiHandler = async (req, res) => {
@@ -60,7 +60,7 @@ const handler: NextApiHandler = async (req, res) => {
         SELECT id FROM vendor WHERE uid = ?
         )
       `,
-      uid
+      uid,
     )
 
     return res.json(results)

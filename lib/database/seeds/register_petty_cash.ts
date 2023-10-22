@@ -1,4 +1,4 @@
-exports.seed = (knex) =>
+export const seed = (knex) =>
   knex('register_petty_cash')
     .del()
     .then(() =>
@@ -19,5 +19,5 @@ exports.seed = (knex) =>
           is_take: 1,
           note: 'Took $20 form the till for beers',
         },
-      ])
+      ]),
     )

@@ -1,4 +1,4 @@
-exports.seed = (knex) =>
+export const seed = (knex) =>
   knex('register')
     .del()
     .then(() =>
@@ -10,5 +10,5 @@ exports.seed = (knex) =>
           open_note: 'Opened with $500',
           open_till_id: 1,
         },
-      ])
+      ]),
     )

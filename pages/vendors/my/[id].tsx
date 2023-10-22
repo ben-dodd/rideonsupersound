@@ -1,6 +1,5 @@
 import { filterInventory } from 'lib/functions/sell'
 import Payments from 'features/web-vendor/payments'
-import { StockObject } from 'lib/types'
 import {
   useVendorByUid,
   useVendorPaymentsByUid,
@@ -23,24 +22,12 @@ export default function VendorScreen() {
   const router = useRouter()
   const { id } = router.query
   const { vendor, isVendorLoading, isVendorError } = useVendorByUid(id)
-  const { vendorStock, isVendorStockLoading, isVendorStockError } =
-    useVendorStockByUid(id)
-  const { isVendorStockMovementLoading, isVendorStockMovementError } =
-    useVendorStockMovementByUid(id)
-  const {
-    vendorStockPrice,
-    isVendorStockPriceLoading,
-    isVendorStockPriceError,
-  } = useVendorStockPriceByUid(id)
-  const { vendorSales, isVendorSalesLoading, isVendorSalesError } =
-    useVendorSalesByUid(id)
-  const { vendorPayments, isVendorPaymentsLoading, isVendorPaymentsError } =
-    useVendorPaymentsByUid(id)
-  const {
-    vendorStoreCredits,
-    isVendorStoreCreditsError,
-    isVendorStoreCreditsLoading,
-  } = useVendorStoreCreditsByUid(id)
+  const { vendorStock, isVendorStockLoading, isVendorStockError } = useVendorStockByUid(id)
+  const { isVendorStockMovementLoading, isVendorStockMovementError } = useVendorStockMovementByUid(id)
+  const { vendorStockPrice, isVendorStockPriceLoading, isVendorStockPriceError } = useVendorStockPriceByUid(id)
+  const { vendorSales, isVendorSalesLoading, isVendorSalesError } = useVendorSalesByUid(id)
+  const { vendorPayments, isVendorPaymentsLoading, isVendorPaymentsError } = useVendorPaymentsByUid(id)
+  const { vendorStoreCredits, isVendorStoreCreditsError, isVendorStoreCreditsLoading } = useVendorStoreCreditsByUid(id)
   const loading =
     isVendorLoading ||
     isVendorStockLoading ||
@@ -74,9 +61,7 @@ export default function VendorScreen() {
   useEffect(() => {
     const totalSales = vendorSales?.map((sale) => {
       const price = vendorStockPrice?.filter?.(
-        (v) =>
-          v?.stock_id === sale?.item_id &&
-          dayjs(v?.date_valid_from)?.isBefore(dayjs(sale?.date_sale_closed))
+        (v) => v?.stock_id === sale?.item_id && dayjs(v?.date_valid_from)?.isBefore(dayjs(sale?.date_sale_closed)),
       )?.[0]
       return {
         ...sale,
@@ -85,20 +70,10 @@ export default function VendorScreen() {
       }
     })
     const filteredSales = totalSales?.filter?.((sale) =>
-      dayjs(sale?.date_sale_closed)?.isBetween(
-        dayjs(startDate),
-        dayjs(endDate),
-        null,
-        '[]'
-      )
+      dayjs(sale?.date_sale_closed)?.isBetween(dayjs(startDate), dayjs(endDate), null, '[]'),
     )
     const filteredPayments = vendorPayments?.filter?.((payment) =>
-      dayjs(payment?.date)?.isBetween(
-        dayjs(startDate),
-        dayjs(endDate),
-        null,
-        '[]'
-      )
+      dayjs(payment?.date)?.isBetween(dayjs(startDate), dayjs(endDate), null, '[]'),
     )
     setSales(filteredSales)
     setPayments(filteredPayments)
@@ -116,9 +91,7 @@ export default function VendorScreen() {
           <div className="loading-icon" />
         </div>
       ) : error ? (
-        <div className="flex h-screen w-screen p-8">
-          AN UNKNOWN ERROR HAS OCCURRED!
-        </div>
+        <div className="flex h-screen w-screen p-8">AN UNKNOWN ERROR HAS OCCURRED!</div>
       ) : (
         <div className="flex h-screen w-screen p-4 md:p-8">
           <div
@@ -140,28 +113,16 @@ export default function VendorScreen() {
               <div>{`VENDOR ID: ${vendor?.id}`}</div>
             </div>
             <div className="w-full">
-              <Tabs
-                tabs={['Sales', 'Payments', 'Stock']}
-                value={tab}
-                onChange={setTab}
-              />
+              <Tabs tabs={['Sales', 'Payments', 'Stock']} value={tab} onChange={setTab} />
             </div>
             {/* <div className="bg-orange-800 text-white font-bold italic px-2 py-1 mb-2" /> */}
             {tab !== 2 && (
               <div className="mb-2 md:flex md:justify-between">
                 <div className="flex items-start mb-2">
                   <div className="font-bold mr-2">FROM</div>
-                  <input
-                    type="date"
-                    onChange={(e) => setStartDate(e.target.value)}
-                    value={startDate}
-                  />
+                  <input type="date" onChange={(e) => setStartDate(e.target.value)} value={startDate} />
                   <div className="font-bold mx-2">TO</div>
-                  <input
-                    type="date"
-                    onChange={(e) => setEndDate(e.target.value)}
-                    value={endDate}
-                  />
+                  <input type="date" onChange={(e) => setEndDate(e.target.value)} value={endDate} />
                 </div>
                 <div className="w-full text-sm font-bold text-right md:w-2/5">
                   <div className="w-full flex">
@@ -169,27 +130,21 @@ export default function VendorScreen() {
                       TOTAL TAKE TO DATE
                     </div>
                     <div className="pl-2 py-2 w-1/12 text-left">$</div>
-                    <div className="py-2 w-2/12">
-                      {(totalTake / 100)?.toFixed(2)}
-                    </div>
+                    <div className="py-2 w-2/12">{(totalTake / 100)?.toFixed(2)}</div>
                   </div>
                   <div className="w-full flex">
                     <div className="p-2 w-3/4 whitespace-nowrap bg-gradient-to-r from-white to-gray-200 hover:to-orange-200">
                       TOTAL PAID TO DATE
                     </div>
                     <div className="pl-2 py-2 w-1/12 text-left">$</div>
-                    <div className="py-2 w-2/12">
-                      {(totalPaid / 100)?.toFixed(2)}
-                    </div>
+                    <div className="py-2 w-2/12">{(totalPaid / 100)?.toFixed(2)}</div>
                   </div>
                   <div className="w-full flex">
                     <div className="p-2 w-3/4 whitespace-nowrap bg-gradient-to-r from-white to-gray-100 hover:to-green-100">
                       PAYMENT OWING ►
                     </div>
                     <div className="pl-2 py-2 w-1/12 text-left">$</div>
-                    <div className="py-2 w-2/12">
-                      {((totalTake - totalPaid) / 100)?.toFixed(2)}
-                    </div>
+                    <div className="py-2 w-2/12">{((totalTake - totalPaid) / 100)?.toFixed(2)}</div>
                   </div>
                 </div>
               </div>
@@ -213,15 +168,15 @@ export default function VendorScreen() {
                 />
                 {vendorStock
                   .filter((item) => filterInventory(item, stockSearch))
-                  ?.sort((a: StockObject, b: StockObject) => {
+                  ?.sort((a: any, b: any) => {
                     if (a?.quantity === b?.quantity) return 0
                     if (a?.quantity < 1) return 1
                     if (b?.quantity < 1) return -1
                     return 0
                   })
                   .slice(1000)
-                  ?.map((item: StockObject) => (
-                    <StockItem key={item.id} item={item} />
+                  ?.map((item: any) => (
+                    <StockItem key={item.id} stockItem={item} />
                   ))}
               </div>
             </div>

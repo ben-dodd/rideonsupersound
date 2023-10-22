@@ -40,5 +40,5 @@ const cf = {
     useNullAsDefault: true,
   },
 }
-// export default cf
-module.exports = cf
+export default cf
+// module.exports = cf

@@ -2,7 +2,7 @@ import { getImageSrc, getItemSku } from 'lib/functions/displayInventory'
 import { priceCentsString } from 'lib/utils'
 import { useRouter } from 'next/router'
 
-export default function StockItem({ stockItem, size = 'lg' }) {
+export default function StockItem({ stockItem, size = 'lg' }: { stockItem: any; size?: string }) {
   const router = useRouter()
   const { item = {}, price = {}, quantities = {} } = stockItem || {}
   return (

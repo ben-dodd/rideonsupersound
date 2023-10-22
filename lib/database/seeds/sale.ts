@@ -1,6 +1,6 @@
 import { SaleStateTypes } from 'lib/types/sale'
 
-exports.seed = (knex) =>
+export const seed = (knex) =>
   knex('sale')
     .del()
     .then(() =>

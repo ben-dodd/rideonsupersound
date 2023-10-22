@@ -257,7 +257,7 @@ export function dbCreateBatchPayment(batchPayment: BatchPaymentObject, db = conn
     .catch((e) => Error(e.message))
 }
 
-export function dbUpdateBatchPayment(batchPayment: BatchPaymentObject, id: number, db = connection) {
+export function dbUpdateBatchPayment(batchPayment: any, id: number, db = connection) {
   return db('batch_payment')
     .where({ id })
     .update(js2mysql(batchPayment))

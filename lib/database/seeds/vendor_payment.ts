@@ -1,6 +1,6 @@
 import { VendorPaymentTypes } from 'lib/types/vendor'
 
-exports.seed = (knex) =>
+export const seed = (knex) =>
   knex('vendor_payment')
     .del()
     .then(() =>
