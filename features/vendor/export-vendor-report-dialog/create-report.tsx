@@ -78,7 +78,7 @@ export const getVendorReport = (vendor) => {
         if (generatedUrl) {
           let aTag = document.createElement('a')
           aTag.href = `${generatedUrl}`
-          aTag.style = 'display: none'
+          // aTag.style = 'display: none'
           aTag.download = 'VendorReport.pdf'
           document.body.appendChild(aTag)
           aTag.click()
