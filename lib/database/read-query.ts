@@ -1,4 +1,4 @@
-import { StockMovementTypes } from 'lib/types'
+import { StockMovementTypes } from 'lib/types/stock'
 
 export function getSaleWithItemsQuery(sale_id?) {
   const where = [
