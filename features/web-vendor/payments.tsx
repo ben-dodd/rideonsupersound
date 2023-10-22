@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
 import { dateSimple } from 'lib/types/date'
+import { VendorPaymentTypes } from 'lib/types/vendor'
 
 export default function Payments({ payments, storeCredits }) {
   return (
