@@ -27,9 +27,6 @@ const MyApp = ({ Component, pageProps }) => {
   // dayjs.locale("en-nz");
 
   const getLayout = Component.getLayout || ((page) => page)
-
-  console.log(process.env)
-
   return <UserProvider>{getLayout(<Component {...pageProps} />)}</UserProvider>
 }
 
