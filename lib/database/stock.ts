@@ -4,7 +4,7 @@ import { dbGetAllSalesAndItems, dbGetSaleTransactions, getStockMovementQuantityB
 import { js2mysql } from './utils/helpers'
 import { SaleStateTypes } from 'lib/types/sale'
 import { createBatchList } from 'lib/functions/stock'
-const connection = require('./conn')
+import connection from './conn'
 
 export function dbGetStockList(db = connection) {
   return db('stock')

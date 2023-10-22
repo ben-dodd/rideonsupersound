@@ -14,7 +14,6 @@ const registerService = (name, initFn) => {
 }
 
 const connection = registerService('db', () => knex(config[env]))
-
 export default connection
 
 // module.exports = connection
