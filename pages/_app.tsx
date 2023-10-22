@@ -28,6 +28,8 @@ const MyApp = ({ Component, pageProps }) => {
 
   const getLayout = Component.getLayout || ((page) => page)
 
+  console.log(process.env)
+
   return <UserProvider>{getLayout(<Component {...pageProps} />)}</UserProvider>
 }
 

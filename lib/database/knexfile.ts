@@ -1,6 +1,7 @@
 // import { Knex } from "knex"
 // const { Knex } = require('knex')
-const path = require('path')
+import path from 'path'
+// const path = require('path')
 // Update with your config settings.
 
 const cf = {
