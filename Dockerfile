@@ -3,7 +3,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN  npm install --production --legacy-peer-deps
+RUN  npm install --omit=dev --legacy-peer-deps
 
 FROM node:18-alpine AS builder
 WORKDIR /app
