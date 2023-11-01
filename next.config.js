@@ -1,4 +1,5 @@
 module.exports = {
+  swcMinify: true,
   images: {
     domains: ['localhost', 'hmn.exu.mybluehost.me', 'img.discogs.com', 'i.discogs.com', 'books.google.com'],
   },
