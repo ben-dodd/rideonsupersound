@@ -5,9 +5,10 @@ import { Pages } from 'lib/store/types'
 import { useState } from 'react'
 import LoadMoreButton from 'components/button/load-more-button'
 import ReceiveBatchItem from './receive-batch-item'
+import Loading from 'components/placeholders/loading'
 
 const ReceiveStockList = () => {
-  const { receiveBatches } = useReceiveBatches()
+  const { receiveBatches, isReceiveBatchesLoading } = useReceiveBatches()
   const {
     stockPage: { searchBar },
     setSearchBar,
@@ -18,9 +19,9 @@ const ReceiveStockList = () => {
     `${receiveBatch?.id}`?.includes(searchBar?.toUpperCase()),
   )
 
-  console.log(receiveBatches)
-
-  return (
+  return isReceiveBatchesLoading ? (
+    <Loading />
+  ) : (
     <div className="h-content overflow-y-scroll">
       <div className="px-2">
         <SearchInput searchValue={searchBar} handleSearch={handleSearch} />

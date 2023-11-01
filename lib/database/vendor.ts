@@ -1,5 +1,6 @@
 import connection from './conn'
 import dayjs from 'dayjs'
+import minMax from 'dayjs/plugin/minMax'
 import { getCartItemStoreCut, getCartItemTotal, getDiscountedPrice } from 'lib/functions/sell'
 import { BatchPaymentObject, VendorObject, VendorPaymentObject } from 'lib/types/vendor'
 import { dbGetAllVendorPayments } from './payment'
@@ -8,6 +9,9 @@ import { dbGetSimpleStockCount, dbGetStockItemsForVendor } from './stock'
 import { js2mysql } from './utils/helpers'
 import { dollarsToCents } from 'lib/utils'
 import { modulusCheck, prepareKiwiBankBatchFile, preparePaymentNotificationEmailList } from 'lib/functions/payment'
+
+// eslint-disable-next-line import/no-named-as-default-member
+dayjs.extend(minMax)
 
 const fullVendorQuery = (db) =>
   db('vendor').select(

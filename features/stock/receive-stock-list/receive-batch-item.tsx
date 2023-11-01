@@ -6,7 +6,7 @@ import { dateTime } from 'lib/types/date'
 import { useRouter } from 'next/router'
 
 const ReceiveBatchItem = ({ receiveBatchItem }) => {
-  const { receiveBatch } = useReceiveBatch(receiveBatchItem?.id)
+  const { receiveBatch, isReceiveBatchLoading } = useReceiveBatch(receiveBatchItem?.id)
   // const [expanded, setExpanded] = useState(false)
   const router = useRouter()
 
@@ -16,7 +16,9 @@ const ReceiveBatchItem = ({ receiveBatchItem }) => {
 
   const inProgress = !receiveBatch?.dateCompleted
 
-  return (
+  return isReceiveBatchLoading ? (
+    <div />
+  ) : (
     <div className="flex border-b py-4">
       <div className="w-full">
         <div className="flex justify-between">

@@ -15,9 +15,11 @@ const StockList = () => {
   const [limit, setLimit] = useState(30)
 
   const handleSearch = (e) => setSearchBar(Pages.stockPage, e.target.value)
-  const filteredList = stockList?.filter?.((stockItem) =>
-    `${stockItem?.artist} ${stockItem?.title}`?.toUpperCase?.()?.includes(searchBar?.toUpperCase()),
-  )
+  const filteredList = stockList
+    ?.filter?.((stockItem) =>
+      `${stockItem?.artist} ${stockItem?.title}`?.toUpperCase?.()?.includes(searchBar?.toUpperCase()),
+    )
+    ?.reverse()
 
   return (
     <div className="h-content overflow-y-scroll">
