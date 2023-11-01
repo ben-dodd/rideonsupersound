@@ -1,4 +1,8 @@
-module.exports = {
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+})
+
+module.exports = withBundleAnalyzer({
   swcMinify: true,
   images: {
     domains: ['localhost', 'hmn.exu.mybluehost.me', 'img.discogs.com', 'i.discogs.com', 'books.google.com'],
@@ -15,4 +19,4 @@ module.exports = {
     ]
   },
   trailingSlash: false,
-}
+})

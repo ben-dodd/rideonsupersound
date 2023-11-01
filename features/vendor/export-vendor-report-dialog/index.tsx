@@ -2,14 +2,16 @@ import Modal from 'components/modal'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { ModalButton } from 'lib/types'
-import { getVendorReport } from './create-report'
+// import { getVendorReport } from './create-report'
 
+// eslint-disable-next-line unused-imports/no-unused-vars
 const ExportVendorReportDialog = ({ vendor }) => {
   const { view, closeView } = useAppStore()
   const buttons: ModalButton[] = [
     {
       type: 'ok',
-      onClick: () => getVendorReport(vendor),
+      // onClick: () => getVendorReport(vendor),
+      onClick: null,
       text: 'DOWNLOAD',
     },
   ]
