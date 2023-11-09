@@ -25,6 +25,10 @@ const cf = {
       password: process.env.MYSQL_PASSWORD,
       database: process.env.MYSQL_DATABASE,
     },
+    pool: {
+      min: 2,
+      max: 10,
+    },
   },
   test: {
     client: 'sqlite3',
