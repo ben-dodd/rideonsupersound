@@ -25,7 +25,7 @@ export default function InventoryTable() {
 
   // Atoms
   const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom)
-
+  console.log(inventory)
   // Constants
   const data = useMemo(
     () =>
@@ -76,7 +76,7 @@ export default function InventoryTable() {
       {
         accessor: 'id',
         Header: 'ID',
-        width: 70,
+        width: 80,
         Cell: (params: any) => (
           <span
             className="cursor-pointer underline"
@@ -119,7 +119,7 @@ export default function InventoryTable() {
       {
         accessor: 'format',
         Header: 'Format',
-        width: 100,
+        width: 90,
       },
       {
         accessor: 'sell',
@@ -173,7 +173,7 @@ export default function InventoryTable() {
         columns={columns}
         heading={'Inventory'}
         pageSize={20}
-        sortOptions={[{ id: 'title', desc: false }]}
+        sortOptions={[{ id: 'id', desc: true }]}
         downloadCSV={true}
       />
     </TableContainer>
