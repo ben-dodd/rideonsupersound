@@ -1,44 +1,44 @@
 // DB
-import { useClerks, useInventory, useLogs, useVendors } from "@/lib/swr-hooks";
-import { ClerkObject } from "@/lib/types";
+import { useClerks, useInventory, useLogs, useVendors } from '@/lib/swr-hooks'
+import { ClerkObject } from '@/lib/types'
 
 // Components
-import Select from "react-select";
-import MaskedInput from "react-text-mask";
-import TextField from "@/components/_components/inputs/text-field";
-import SettingsSelect from "@/components/_components/inputs/settings-select";
-import dayjs from "dayjs";
+import Select from 'react-select'
+import MaskedInput from 'react-text-mask'
+import TextField from '@/components/_components/inputs/text-field'
+import SettingsSelect from '@/components/_components/inputs/settings-select'
+import dayjs from 'dayjs'
 import {
   clerkAtom,
   confirmModalAtom,
   loadedVendorIdAtom,
   pageAtom,
-} from "@/lib/atoms";
-import { useAtom } from "jotai";
-import { deleteVendorFromDatabase, saveLog } from "@/lib/db-functions";
+} from '@/lib/atoms'
+import { useAtom } from 'jotai'
+import { deleteVendorFromDatabase, saveLog } from '@/lib/db-functions'
 
-import DeleteIcon from "@mui/icons-material/Delete";
+import DeleteIcon from '@mui/icons-material/Delete'
 
 export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
   // SWR
-  const { clerks } = useClerks();
-  const [clerk] = useAtom(clerkAtom);
-  const [, setConfirmModal] = useAtom(confirmModalAtom);
-  const [loadedVendorId, setLoadedVendorId] = useAtom(loadedVendorIdAtom);
-  const [page] = useAtom(pageAtom);
-  const { logs, mutateLogs } = useLogs();
-  const { vendors, mutateVendors } = useVendors();
-  const { inventory } = useInventory();
+  const { clerks } = useClerks()
+  const [clerk] = useAtom(clerkAtom)
+  const [, setConfirmModal] = useAtom(confirmModalAtom)
+  const [loadedVendorId, setLoadedVendorId] = useAtom(loadedVendorIdAtom)
+  const [page] = useAtom(pageAtom)
+  const { logs, mutateLogs } = useLogs()
+  const { vendors, mutateVendors } = useVendors()
+  const { inventory } = useInventory()
 
   const bankAccountMask = [
     /\d/,
     /\d/,
-    "-",
+    '-',
     /\d/,
     /\d/,
     /\d/,
     /\d/,
-    "-",
+    '-',
     /\d/,
     /\d/,
     /\d/,
@@ -46,14 +46,14 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
     /\d/,
     /\d/,
     /\d/,
-    "-",
+    '-',
     /\d/,
     /\d/,
     /\d/,
-  ];
+  ]
 
   const vendorIsUsed =
-    inventory?.filter((i) => i?.vendor_id === vendor?.id)?.length > 0;
+    inventory?.filter?.((i) => i?.vendor_id === vendor?.id)?.length > 0
 
   // Functions
   function onClickDelete() {
@@ -62,7 +62,7 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
     //   saleItems?.filter((s) => s?.item_id === item?.id)?.length > 0;
     setConfirmModal({
       open: true,
-      title: "Are you sure you want to delete this item?",
+      title: 'Are you sure you want to delete this item?',
       styledMessage: (
         <div>
           {vendorIsUsed ? (
@@ -79,7 +79,7 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
           )}
         </div>
       ),
-      yesText: vendorIsUsed ? "OK" : "YES, I'M SURE",
+      yesText: vendorIsUsed ? 'OK' : "YES, I'M SURE",
       action: vendorIsUsed
         ? () => {}
         : async () =>
@@ -87,20 +87,20 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
               mutateVendors(
                 vendors?.filter((v) => v?.id !== vendor?.id),
                 false
-              );
+              )
               saveLog(
                 {
                   log: `Vendor #${vendor?.id} ${vendor?.name} deleted.`,
                   clerk_id: clerk?.id,
-                  table_id: "vendor",
+                  table_id: 'vendor',
                   row_id: vendor?.id,
                 },
                 logs,
                 mutateLogs
-              );
-              setLoadedVendorId({ ...loadedVendorId, [page]: 0 });
+              )
+              setLoadedVendorId({ ...loadedVendorId, [page]: 0 })
             }),
-    });
+    })
   }
 
   return (
@@ -108,7 +108,7 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
       <div className="w-1/2">
         <TextField
           inputLabel="Name"
-          value={vendor?.name || ""}
+          value={vendor?.name || ''}
           onChange={(e: any) => setVendor({ ...vendor, name: e.target.value })}
         />
         <SettingsSelect
@@ -150,7 +150,7 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
             className={`appearance-none w-full py-1 px-2 outline-none bg-transparent`}
             mask={bankAccountMask}
             guide={false}
-            value={vendor?.bank_account_number || ""}
+            value={vendor?.bank_account_number || ''}
             onChange={(e) =>
               setVendor({
                 ...vendor,
@@ -183,24 +183,24 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
         </div>
         <TextField
           inputLabel="Contact Name"
-          value={vendor?.contact_name || ""}
+          value={vendor?.contact_name || ''}
           onChange={(e: any) =>
             setVendor({ ...vendor, contact_name: e.target.value })
           }
         />
         <TextField
           inputLabel="Email"
-          value={vendor?.email || ""}
+          value={vendor?.email || ''}
           onChange={(e: any) => setVendor({ ...vendor, email: e.target.value })}
         />
         <TextField
           inputLabel="Phone"
-          value={vendor?.phone || ""}
+          value={vendor?.phone || ''}
           onChange={(e: any) => setVendor({ ...vendor, phone: e.target.value })}
         />
         <TextField
           inputLabel="Postal Address"
-          value={vendor?.postal_address || ""}
+          value={vendor?.postal_address || ''}
           onChange={(e: any) =>
             setVendor({ ...vendor, postal_address: e.target.value })
           }
@@ -209,7 +209,7 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
         />
         <TextField
           inputLabel="Notes"
-          value={vendor?.note || ""}
+          value={vendor?.note || ''}
           onChange={(e) => setVendor({ ...vendor, note: e.target.value })}
           multiline
           rows={3}
@@ -231,14 +231,14 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
           <div>LAST SALE</div>
           <div>
             {vendorDetails?.lastSold
-              ? dayjs(vendorDetails?.lastSold).format("D MMMM YYYY")
-              : "N/A"}
+              ? dayjs(vendorDetails?.lastSold).format('D MMMM YYYY')
+              : 'N/A'}
           </div>
           <div>LAST PAID</div>
           <div>
             {vendorDetails?.lastPaid
-              ? dayjs(vendorDetails?.lastPaid).format("D MMMM YYYY")
-              : "N/A"}
+              ? dayjs(vendorDetails?.lastPaid).format('D MMMM YYYY')
+              : 'N/A'}
           </div>
           <div>TOTAL TAKE</div>
           <div>{`$${(vendorDetails?.totalSell
@@ -259,5 +259,5 @@ export default function GeneralDetails({ vendor, setVendor, vendorDetails }) {
         <div />
       </div>
     </div>
-  );
+  )
 }

@@ -939,9 +939,10 @@ export function filterInventory({
   slice = 50,
   emptyReturn = false,
 }) {
+  console.log(inventory)
   if (!inventory) return []
   return inventory
-    .filter((item: StockObject) => {
+    ?.filter((item: StockObject) => {
       let res = true
       if (!search || search === '') return emptyReturn
 
