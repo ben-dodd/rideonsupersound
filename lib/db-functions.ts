@@ -1177,6 +1177,7 @@ export async function saveStockToDatabase(
   item: StockObject | GiftCardObject,
   clerk: ClerkObject
 ) {
+  console.log('saving stock to database', item)
   try {
     const res = await fetch(
       `/api/create-stock-item?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
@@ -1670,7 +1671,11 @@ export async function receiveStock(
         const newStockID = await saveStockToDatabase(
           {
             ...receiveItem?.item,
-            is_new: receiveItem?.item?.is_new || 1,
+            is_new:
+              receiveItem?.item?.is_new === null ||
+              receiveItem?.item?.is_new === undefined
+                ? 1
+                : receiveItem?.item?.is_new,
             vendor_id: basket?.vendor_id,
           },
           clerk

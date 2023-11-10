@@ -110,7 +110,7 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
                         ...bucket.items[i],
                         item: {
                           ...bucket.items[i].item,
-                          cond: e.value,
+                          cond: e?.value || null,
                         },
                       }
                     : bItem
@@ -126,7 +126,8 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
           <SettingsSelect
             className="w-1/2"
             object={item}
-            customEdit={(e) =>
+            error={item?.media === 'Audio' && !item?.section}
+            customEdit={(e) => {
               setBucket({
                 ...bucket,
                 items: bucket?.items?.map((bItem, i) =>
@@ -135,13 +136,13 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
                         ...bucket.items[i],
                         item: {
                           ...bucket.items[i].item,
-                          section: e.value,
+                          section: e?.value || null,
                         },
                       }
                     : bItem
                 ),
               })
-            }
+            }}
             inputLabel="SECTION"
             dbField="section"
             isCreateDisabled={true}
@@ -156,7 +157,10 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
                   bItem?.key === receiveItem?.key
                     ? {
                         ...bucket.items[i],
-                        item: { ...bucket.items[i].item, country: e.value },
+                        item: {
+                          ...bucket.items[i].item,
+                          country: e?.value || null,
+                        },
                       }
                     : bItem
                 ),
@@ -171,6 +175,7 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
             inputLabel="VENDOR CUT"
             className="w-24 mr-6"
             startAdornment={'$'}
+            error={isNaN(Number(receiveItem?.vendor_cut))}
             // disabled={Boolean(item?.id)}
             value={`${
               receiveItem?.vendor_cut ||
@@ -191,6 +196,10 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
             inputLabel="TOTAL SELL"
             className="w-24 mr-6"
             startAdornment={'$'}
+            error={
+              isNaN(Number(receiveItem?.total_sell)) ||
+              Number(receiveItem?.total_sell) === 0
+            }
             value={`${
               receiveItem?.total_sell ||
               (item?.total_sell ? item?.total_sell / 100 : '')

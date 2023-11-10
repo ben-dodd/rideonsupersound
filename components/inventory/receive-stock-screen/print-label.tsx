@@ -19,6 +19,8 @@ export default function PrintLabel({ receivedStock }) {
     0
   )
 
+  console.log('print label screen', receivedStock)
+
   function getStock() {
     let res = []
     receivedStock?.forEach((receiveItem) => {

@@ -1,24 +1,24 @@
-import RadioButton from "@/components/_components/inputs/radio-button";
-import Image from "next/image";
-import SettingsSelect from "@/components/_components/inputs/settings-select";
-import TextField from "@/components/_components/inputs/text-field";
+import RadioButton from '@/components/_components/inputs/radio-button'
+import Image from 'next/image'
+import SettingsSelect from '@/components/_components/inputs/settings-select'
+import TextField from '@/components/_components/inputs/text-field'
 import {
   getImageSrc,
   getItemDisplayName,
   getItemSku,
-} from "@/lib/data-functions";
-import { StockObject, VendorObject } from "@/lib/types";
-import { useMemo } from "react";
-import { useLogs, useVendors } from "@/lib/swr-hooks";
-import CreateableSelect from "@/components/_components/inputs/createable-select";
-import { saveLog, saveVendorToDatabase } from "@/lib/db-functions";
-import { useAtom } from "jotai";
-import { clerkAtom } from "@/lib/atoms";
+} from '@/lib/data-functions'
+import { StockObject, VendorObject } from '@/lib/types'
+import { useMemo } from 'react'
+import { useLogs, useVendors } from '@/lib/swr-hooks'
+import CreateableSelect from '@/components/_components/inputs/createable-select'
+import { saveLog, saveVendorToDatabase } from '@/lib/db-functions'
+import { useAtom } from 'jotai'
+import { clerkAtom } from '@/lib/atoms'
 
 interface inventoryProps {
-  item: StockObject;
-  setItem: Function;
-  disabled?: boolean;
+  item: StockObject
+  setItem: Function
+  disabled?: boolean
 }
 
 export default function InventoryItemForm({
@@ -27,10 +27,12 @@ export default function InventoryItemForm({
   disabled,
 }: inventoryProps) {
   const handleChange = (e) =>
-    setItem({ ...item, [e.target.name]: e.target.value });
-  const { vendors } = useVendors();
-  const { logs, mutateLogs } = useLogs();
-  const [clerk] = useAtom(clerkAtom);
+    setItem({ ...item, [e.target.name]: e.target.value })
+  const { vendors } = useVendors()
+  const { logs, mutateLogs } = useLogs()
+  const [clerk] = useAtom(clerkAtom)
+
+  console.log(item)
 
   // const vendor = useMemo(
   //   () =>
@@ -53,7 +55,7 @@ export default function InventoryItemForm({
             <img
               className="object-cover absolute"
               src={getImageSrc(item)}
-              alt={item?.title || "Inventory image"}
+              alt={item?.title || 'Inventory image'}
             />
             {item?.id && (
               <div className="absolute w-52 h-8 bg-opacity-50 bg-black text-white flex justify-center items-center">
@@ -65,13 +67,13 @@ export default function InventoryItemForm({
         {/* MAIN DETAILS */}
         <div className="w-full">
           <TextField
-            value={item?.artist || ""}
+            value={item?.artist || ''}
             onChange={(e: any) => setItem({ ...item, artist: e.target.value })}
             inputLabel="ARTIST"
             disabled={disabled}
           />
           <TextField
-            value={item?.title || ""}
+            value={item?.title || ''}
             onChange={(e: any) => setItem({ ...item, title: e.target.value })}
             inputLabel="TITLE"
             disabled={disabled}
@@ -93,7 +95,7 @@ export default function InventoryItemForm({
                 label={
                   vendors?.filter(
                     (v: VendorObject) => v?.id === item?.vendor_id
-                  )?.[0]?.name || ""
+                  )?.[0]?.name || ''
                 }
                 onChange={(vendorObject: any) =>
                   setItem({ ...item, vendor_id: parseInt(vendorObject?.value) })
@@ -101,7 +103,7 @@ export default function InventoryItemForm({
                 onCreateOption={async (inputValue: string) => {
                   const vendorId = await saveVendorToDatabase({
                     name: inputValue,
-                  });
+                  })
                   saveLog(
                     {
                       log: `Vendor ${inputValue} (${vendorId}) created.`,
@@ -109,12 +111,12 @@ export default function InventoryItemForm({
                     },
                     logs,
                     mutateLogs
-                  );
-                  setItem({ ...item, vendor_id: vendorId });
+                  )
+                  setItem({ ...item, vendor_id: vendorId })
                 }}
                 options={vendors?.map((val: VendorObject) => ({
                   value: val?.id,
-                  label: val?.name || "",
+                  label: val?.name || '',
                 }))}
               />
             </div>
@@ -126,7 +128,7 @@ export default function InventoryItemForm({
           id="barcode"
           multiline
           inputLabel="BARCODE"
-          value={item?.barcode || ""}
+          value={item?.barcode || ''}
           onChange={handleChange}
           disabled={disabled}
           rows={1}
@@ -149,7 +151,7 @@ export default function InventoryItemForm({
           isDisabled={disabled}
         />
       </div>
-      {item?.format == "Shirt" ? (
+      {item?.format == 'Shirt' ? (
         <div className="grid grid-cols-2 gap-2 mb-2">
           <SettingsSelect
             object={item}
@@ -172,13 +174,19 @@ export default function InventoryItemForm({
             key={`isNew${item?.is_new}`}
             inputLabel="CONDITION"
             group="isNew"
-            value={item?.is_new ? "true" : "false"}
+            value={
+              item?.is_new === null || item?.is_new === undefined
+                ? 'true'
+                : item?.is_new
+                ? 'true'
+                : 'false'
+            }
             onChange={(value: string) =>
-              setItem({ ...item, is_new: value === "true" ? 1 : 0 })
+              setItem({ ...item, is_new: value === 'true' ? 1 : 0 })
             }
             options={[
-              { id: "new", value: "true", label: "New" },
-              { id: "used", value: "false", label: "Used" },
+              { id: 'new', value: 'true', label: 'New' },
+              { id: 'used', value: 'false', label: 'Used' },
             ]}
             disabled={disabled}
           />
@@ -238,7 +246,7 @@ export default function InventoryItemForm({
       <TextField
         id="description"
         inputLabel="DESCRIPTION / NOTES"
-        value={item?.description || ""}
+        value={item?.description || ''}
         onChange={handleChange}
         multiline
         disabled={disabled}
@@ -278,5 +286,5 @@ export default function InventoryItemForm({
         </div>
       </div>
     </div>
-  );
+  )
 }
