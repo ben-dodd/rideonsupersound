@@ -53,7 +53,6 @@ export async function setDiscogsItemToStockItem(discogsOption: DiscogsItem, over
     ...detailedDiscogsItem,
     priceSuggestions,
   }
-  console.log(discogsItem)
   let update = {
     thumbUrl: discogsOption?.thumb || null,
     imageUrl: discogsOption?.cover_image || null,

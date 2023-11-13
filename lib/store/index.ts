@@ -377,8 +377,8 @@ export const useAppStore = createSelectors(
     setBatchReceiveSession: (update) =>
       set(
         produce((draft) => {
-          console.log(draft.batchReceiveSession)
-          console.log(update)
+          // console.log(draft.batchReceiveSession)
+          // console.log(update)
           Object.entries(update).forEach(([key, value]) => (draft.batchReceiveSession[key] = value))
         }),
       ),

@@ -82,7 +82,6 @@ export function isPreApp(date?: Date | string) {
 }
 
 export function getLastValidElementByDate(list, dateField, targetDate) {
-  console.log(targetDate)
   return list
     ?.filter(
       (el) => dayjs(targetDate)?.isSame(dayjs(el?.[dateField])) || dayjs(targetDate)?.isAfter(dayjs(el?.[dateField])),

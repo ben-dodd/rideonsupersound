@@ -9,13 +9,11 @@ export default function Vendor() {
   const { batchReceiveSession, addBatchReceiveItem } = useAppStore()
   const { vendorStockList } = useStockForVendor(batchReceiveSession?.vendorId)
   const [duplicateItem, setDuplicateItem] = useState(false)
-  console.log(duplicateItem)
   const addItem = (item: any) => {
     let newItem = item?.value
     delete newItem?.quantities
     newItem.quantity = 1
     if (duplicateItem) {
-      console.log(newItem)
       const dupItem = { ...newItem?.item }
       delete dupItem?.id
       newItem = { ...newItem, item: dupItem }

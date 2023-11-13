@@ -39,7 +39,6 @@ export async function setGoogleBooksItemToStockItem(googleBooksOption: GoogleBoo
     // ...detailedDiscogsItem,
     // priceSuggestions,
   }
-  console.log(googleBooksItem)
   let update = {
     // thumbUrl: discogsOption?.thumb || null,
     // imageUrl: discogsOption?.cover_image || null,

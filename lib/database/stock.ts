@@ -303,7 +303,6 @@ export function dbUpdateStockItem(update, id, db = connection) {
 }
 
 export function dbCreateStockMovement(stockMovement, db = connection) {
-  console.log(js2mysql(stockMovement))
   return db('stock_movement')
     .insert(js2mysql(stockMovement))
     .then((rows) => {
@@ -529,7 +528,6 @@ export function dbGetStockMovementsForReceiveBatch(id, db) {
 }
 
 export function dbUpdateReceiveBatch(update, id, db = connection) {
-  // console.log('updating batch ', id, update)
   return db('batch_receive').where({ id }).update(js2mysql(update))
 }
 
@@ -563,7 +561,6 @@ export async function dbSaveReceiveBatch(receiveBatch, doComplete = false, db = 
 }
 
 export async function dbDeleteReceiveBatch(batchId, db = connection) {
-  console.log('Deleting', batchId)
   return db.transaction(async (trx) => {
     await dbUpdateReceiveBatch({ isDeleted: true }, batchId, trx)
     await trx('stock_movement').update({ is_deleted: true }).where({ batch_receive_id: batchId })
