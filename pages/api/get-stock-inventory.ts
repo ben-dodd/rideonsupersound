@@ -18,9 +18,6 @@ const handler: NextApiHandler = async (req, res) => {
         s.artist,
         s.title,
         s.media,
-        s.display_as,
-        s.cond,
-        s.image_url,
         s.format,
         s.section,
         s.is_new,
@@ -68,3 +65,13 @@ const handler: NextApiHandler = async (req, res) => {
 }
 
 export default handler
+
+// s.title,
+// s.display_as,
+// s.media,
+// s.format,
+// s.section,
+// s.is_new,
+// s.cond,
+// s.image_url,
+// s.is_gift_card,
