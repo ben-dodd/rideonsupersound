@@ -5,7 +5,6 @@ import { CustomerObject, ModalButton } from 'lib/types'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { useCustomers } from 'lib/api/customer'
-import { saveCart } from 'lib/api/sale'
 import TextField from 'components/inputs/text-field'
 
 export default function CreateMailOrder() {
@@ -26,8 +25,7 @@ export default function CreateMailOrder() {
   }
 
   async function onClickCreateMailOrder() {
-    const saleUpdate = { ...sale, isMailOrder: true, postage: Number(postage), postalAddress }
-    saveCart({ ...cart, sale: saleUpdate })
+    setCartSale({ isMailOrder: true, postage: Number(postage), postalAddress })
     closeView(ViewProps.createMailOrder)
     setPostage(0)
     setPostalAddress('')
@@ -78,15 +76,14 @@ export default function CreateMailOrder() {
         <TextField
           inputLabel="Postage Fee"
           startAdornment="$"
-          inputType="number"
           error={Number.isNaN(postage)}
-          valueNum={postage}
+          value={`${postage || ''}`}
           onChange={(e: any) => setPostage(e.target.value)}
         />
         <TextField
           inputLabel="Postal Address"
           multiline
-          value={postalAddress}
+          value={postalAddress || ''}
           onChange={(e: any) => setPostalAddress(e.target.value)}
         />
       </div>
