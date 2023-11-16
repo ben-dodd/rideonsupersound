@@ -6,7 +6,7 @@ import { getItemSkuDisplayName } from 'lib/functions/displayInventory'
 import { useClerk } from 'lib/api/clerk'
 import { Pages, ViewProps } from 'lib/store/types'
 
-const Actions = ({ item, itemQuantity, holdsQuantity, isItemLoading }) => {
+const Actions = ({ item, itemQuantity, holdsQuantity }) => {
   const router = useRouter()
   const {
     sellPage: { searchBar },
@@ -70,7 +70,7 @@ const Actions = ({ item, itemQuantity, holdsQuantity, isItemLoading }) => {
       <div className="self-center pl-1 hidden sm:inline">
         {/* <Tooltip title="Add item to sale."> */}
         <button
-          disabled={isItemLoading}
+          // disabled={isItemLoading}
           className={`pill-button`}
           // className={`icon-button-large text-brown-dark ${isItemLoading ? 'text-gray-400' : 'hover:text-brown'}`}
           // disabled={!item?.totalSell}

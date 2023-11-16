@@ -24,6 +24,10 @@ export function useStockItem(id: string | number) {
   return useData(`stock/${id}`, 'stockItem')
 }
 
+export function useStockItemList(itemIds: number[]) {
+  return useData(`stock/items${itemIds?.length > 0 ? `?items=${itemIds?.join('+')}` : ''}`, 'stockItemList')
+}
+
 export function useSaleStockItems(items: SaleItemObject[]) {
   return useData(
     `stock/items${items?.length > 0 ? `?items=${items?.map((item) => item?.itemId)?.join('+')}` : ''}`,
