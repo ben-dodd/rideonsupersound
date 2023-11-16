@@ -81,6 +81,10 @@ export default function Gift({ totalRemaining }) {
       buttons={buttons}
     >
       <>
+        {' '}
+        <div className="text-sm">
+          {isRefund ? `ENTER AMOUNT TO REFUND AS A GIFT CARD` : `ENTER GIFT CARD CODE AND AMOUNT TO PAY WITH GIFT CARD`}
+        </div>
         {isRefund ? (
           <div className="flex justify-between items-center">
             <div className="text-8xl text-red-800 font-mono">{newGiftCardCode}</div>

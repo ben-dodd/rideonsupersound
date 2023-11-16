@@ -65,6 +65,9 @@ export default function Cash({ totalRemaining }) {
       buttons={buttons}
     >
       <>
+        <div className="text-sm">
+          {isRefund ? `ENTER AMOUNT OF CASH TO REFUND TO CUSTOMER` : `ENTER AMOUNT OF CASH GIVEN BY CUSTOMER`}
+        </div>
         <TextField
           divClass="text-8xl"
           startAdornment="$"

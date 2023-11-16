@@ -11,12 +11,11 @@ export function useSaleProperties(cart, updateCart = false): any {
   const { setCartSale } = useAppStore()
   const [stockTable, setStockTable]: [BasicStockObject[], Function] = useState(null)
   const { items = [], sale = {}, transactions = [] } = cart || {}
-  // console.log(cart)
-  // console.log(items, sale)
 
   useEffect(() => {
     // Fetch the stock table from the database here
     // and set it using setStockTable()
+    console.log('Changing cart stock items')
     setProperties({ isLoading: true })
     // console.log('getting cart items...')
     if (items?.length === 0) setStockTable([])

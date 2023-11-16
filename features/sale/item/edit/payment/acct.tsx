@@ -64,6 +64,7 @@ export default function Acct({ totalRemaining }) {
       buttons={buttons}
     >
       <>
+        <div className="text-sm">{`ENTER AMOUNT TO PAY WITH CUSTOMER'S ACCOUNT`}</div>
         <TextField
           divClass="text-8xl"
           startAdornment="$"
