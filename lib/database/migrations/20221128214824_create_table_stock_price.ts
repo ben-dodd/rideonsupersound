@@ -1,4 +1,4 @@
-export const up = function (knex) {
+export async function up(knex): Promise<any> {
   return knex.schema.createTable('stock_price', function (table) {
     table.increments('id').notNullable()
     table.integer('stock_id', 11).notNullable()

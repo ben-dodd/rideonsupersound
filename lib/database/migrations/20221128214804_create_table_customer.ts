@@ -1,4 +1,4 @@
-export const up = function (knex) {
+export async function up(knex): Promise<any> {
   return knex.schema.createTable('customer', function (table) {
     table.increments('id').notNullable()
     table.string('name', 256).nullable()
@@ -13,6 +13,6 @@ export const up = function (knex) {
   })
 }
 
-export const down = function (knex) {
+export async function down(knex): Promise<any> {
   return knex.schema.dropTable('customer')
 }

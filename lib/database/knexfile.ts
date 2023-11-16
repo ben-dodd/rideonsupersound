@@ -1,10 +1,11 @@
 // import { Knex } from "knex"
 // const { Knex } = require('knex')
-import path from 'path'
-// const path = require('path')
+// import path from 'path'
+require('ts-node/register')
+const path = require('path')
 // Update with your config settings.
 
-const cf = {
+module.exports = {
   development: {
     client: 'mysql',
     connection: {
@@ -45,5 +46,3 @@ const cf = {
     useNullAsDefault: true,
   },
 }
-export default cf
-// module.exports = cf
