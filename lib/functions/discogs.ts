@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { DiscogsItem } from 'lib/types/discogs'
+import { genreLibrary } from 'lib/types/genreLibrary'
 import { StockItemObject } from 'lib/types/stock'
 import { priceDollarsString } from 'lib/utils'
 import { camelCase } from 'lodash'
@@ -67,16 +68,17 @@ export async function setDiscogsItemToStockItem(discogsOption: DiscogsItem, over
 }
 
 export function mergeStockAndDiscogsItems(discogsItem) {
+  const discogsStyles = (
+    discogsItem?.genre ? (Array.isArray(discogsItem?.genre) ? discogsItem?.genre : [discogsItem?.genre]) : []
+  ).concat(discogsItem?.style ? (Array.isArray(discogsItem?.style) ? discogsItem?.style : [discogsItem?.style]) : [])
   return {
     artist: discogsItem?.artists?.map((artist) => artist?.name)?.join(', '),
     barcode: discogsItem?.barcode?.join('\n'),
     country: discogsItem?.country,
     format: getFormatFromDiscogs(discogsItem?.format),
     media: 'Audio',
-    genre: [
-      ...(discogsItem?.genre ? (Array.isArray(discogsItem?.genre) ? discogsItem?.genre : [discogsItem?.genre]) : []),
-      ...(discogsItem?.style ? (Array.isArray(discogsItem?.style) ? discogsItem?.style : [discogsItem?.style]) : []),
-    ],
+    section: getSectionFromDiscogsStyles(discogsStyles, genreLibrary),
+    genre: discogsStyles,
     title: discogsItem?.title,
     release_year: discogsItem?.year?.toString(),
   }
@@ -128,7 +130,7 @@ export function getPriceSuggestion(item) {
 }
 
 export function getSectionFromDiscogsStyles(itemStyles, genreLibrary) {
-  let bestMatch = { matchCount: 0, nonMatchingCount: Infinity, code: 'UNKNOWN' }
+  let bestMatch = { matchCount: 0, nonMatchingCount: Infinity, code: null }
 
   for (const section of genreLibrary) {
     const sectionGenres = section.discogsStyles.split(',').map((s) => s.trim())
