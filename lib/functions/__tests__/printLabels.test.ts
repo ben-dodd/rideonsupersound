@@ -33,11 +33,11 @@ describe('getLabelPrinterCSV', () => {
           section: 'PUNK',
           country: 'New Zealand',
         },
-      ])
+      ]),
     ).toStrictEqual([
-      ['034/00024', 'Nirvana', 'Nevermind', 'NEW', '$10', 'PUNK', '00024'],
-      ['666/00001', 'Nirvana', 'Nevermind', 'NEW', '$1', 'NZ', '00001'],
-      ['002/00010', 'Nirvana', 'Nevermind', 'USED', '$1', 'PUNK/NZ', '00010'],
+      ['034/00024', 'Nirvana', 'Nevermind', 'NEW', '$10.00', 'PUNK', '00024'],
+      ['666/00001', 'Nirvana', 'Nevermind', 'NEW', '$1.00', 'NZ', '00001'],
+      ['002/00010', 'Nirvana', 'Nevermind', 'USED', '$0.50', 'PUNK/NZ', '00010'],
     ])
   })
   it.todo('should handle undefined values and not print "ned", etc.')
