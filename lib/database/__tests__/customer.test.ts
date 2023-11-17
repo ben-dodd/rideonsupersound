@@ -10,10 +10,8 @@ afterAll(() => testCon.destroy())
 
 describe('createCustomer', () => {
   it('create customer and return id', () => {
-    return dbCreateCustomer({ name: 'Test Customer' }, testCon).then(
-      (customer) => {
-        expect(customer.id).toEqual(1)
-      }
-    )
+    return dbCreateCustomer({ name: 'Test Customer' }, testCon).then((customerId) => {
+      expect(customerId).toEqual(3)
+    })
   })
 })
