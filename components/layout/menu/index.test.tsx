@@ -33,13 +33,13 @@ describe('Menu', () => {
     const inventoryListItem = listItems[1]
     expect(inventoryListItem).toHaveTextContent('STOCK')
     fireEvent.click(inventoryListItem)
-    expect(mockRouter.pathname).toBe('/inventory')
+    expect(mockRouter.pathname).toBe('/stock')
 
     const vendorListItem = listItems[2]
     expect(vendorListItem).toHaveTextContent('VENDORS')
     expect(vendorListItem).not.toHaveClass('bg-black')
     fireEvent.click(vendorListItem)
-    expect(mockRouter.pathname).toBe('/vendor')
+    expect(mockRouter.pathname).toBe('/vendors')
     expect(vendorListItem).toHaveClass('bg-black')
   })
 })

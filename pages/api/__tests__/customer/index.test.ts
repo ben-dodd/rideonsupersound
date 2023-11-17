@@ -25,3 +25,6 @@ jest.mock('lib/api/utils')
 //     expect(res.json[0]).toBe(1)
 //   })
 // })
+describe('placeholder', () => {
+  it.todo('write tests')
+})

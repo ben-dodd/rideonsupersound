@@ -2,14 +2,8 @@ import { NextAuthenticatedApiRequest } from '@serverless-jwt/next/dist/types'
 import { NextApiResponse } from 'next'
 import { createMocks, RequestMethod } from 'node-mocks-http'
 
-export function mockRequestResponse(
-  method: RequestMethod = 'POST',
-  permissions: string
-) {
-  const {
-    req,
-    res,
-  }: { req: NextAuthenticatedApiRequest; res: NextApiResponse } = createMocks({
+export function mockRequestResponse(method: RequestMethod = 'POST', permissions: string) {
+  const { req, res }: { req: NextAuthenticatedApiRequest; res: NextApiResponse } = createMocks({
     method,
   })
   req.headers = {
@@ -21,3 +15,7 @@ export function mockRequestResponse(
   }
   return { req, res }
 }
+
+describe('placeholder', () => {
+  it.todo('write tests')
+})

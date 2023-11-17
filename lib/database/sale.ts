@@ -329,7 +329,7 @@ export async function dbSaveCart(cart, db = connection) {
         promises.push(handleSaveSaleTransaction(trans, newSale, trx))
       }
 
-      await Promise.all(promises).catch((e) => console.error(e.message)) // catch any unhandled promise rejections
+      await Promise.all(promises).catch((e) => console.error(e)) // catch any unhandled promise rejections
 
       return dbGetSale(newSale?.id, trx)
     })
