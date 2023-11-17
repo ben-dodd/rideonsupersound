@@ -2,6 +2,7 @@
 import testCon from '../testConn'
 import { dbCheckIfRestockNeeded, dbCreateStockMovement, dbGetStockItem, dbGetStockItems, dbGetWebStock } from '../stock'
 import { StockMovementTypes } from 'lib/types/stock'
+import { SaleStateTypes } from 'lib/types/sale'
 
 beforeAll(() => testCon.migrate.latest())
 
@@ -11,7 +12,7 @@ afterAll(() => testCon.destroy())
 
 describe('getStockItem', () => {
   it('get stock item that matches the id', () => {
-    return dbGetStockItem(1, testCon).then((stockItem) => {
+    return dbGetStockItem(1, true, testCon).then((stockItem) => {
       expect(stockItem?.item?.id).toBe(1)
     })
   })
@@ -19,7 +20,7 @@ describe('getStockItem', () => {
 
 describe('getStockItems', () => {
   it('gets all stock items from a list', () => {
-    return dbGetStockItems([1, 2], testCon).then((stockItems) => {
+    return dbGetStockItems([1, 2], true, testCon).then((stockItems) => {
       expect(stockItems).toHaveLength(2)
       expect(stockItems[0]?.item?.artist).toBe('The Beatles')
       expect(stockItems[0]?.quantities?.inStock).toEqual(3)
@@ -27,7 +28,7 @@ describe('getStockItems', () => {
     })
   })
   it('gets a stock item when there is only one item', () => {
-    return dbGetStockItems([1], testCon).then((stockItems) => {
+    return dbGetStockItems([1], true, testCon).then((stockItems) => {
       expect(stockItems).toHaveLength(1)
     })
   })
@@ -55,7 +56,7 @@ describe('getWebStock', () => {
 
 describe('checkIfRestockNeeded', () => {
   it('checks if there is any more of the item in stock and changes the stock item restock flag to true', () =>
-    dbCheckIfRestockNeeded(1, testCon).then((needsRestock) => {
+    dbCheckIfRestockNeeded(1, SaleStateTypes.Completed, testCon).then((needsRestock) => {
       expect(needsRestock).toBeTruthy()
       return dbGetStockItem(1, true, testCon)
         .then((stockItem) => {
@@ -65,7 +66,7 @@ describe('checkIfRestockNeeded', () => {
     }))
   it('wont flag restock if there is no more in stock', () => {
     return dbCreateStockMovement({ stockId: 1, quantity: -3, act: StockMovementTypes.Sold }, testCon)
-      .then(() => dbCheckIfRestockNeeded(1, testCon))
+      .then(() => dbCheckIfRestockNeeded(1, SaleStateTypes.Completed, testCon))
       .then((needsRestock) => {
         expect(needsRestock).toBeFalsy()
         return dbGetStockItem(1, true, testCon).then((stockItem) => {

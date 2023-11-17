@@ -277,6 +277,7 @@ describe('saveCart', () => {
     cart.sale.itemList = 'Test Items'
     cart.sale.postalAddress = '30 Hornbrook St'
     return dbSaveCart(cart, testCon).then((savedCart) => {
+      console.log(savedCart)
       return dbGetJobsLike(`Post Sale ${savedCart?.sale?.id}`, testCon).then((tasks) => {
         expect(tasks).toHaveLength(1)
         expect(tasks?.[0]?.description).toContain(`Post Sale ${savedCart?.sale?.id}`)
@@ -399,6 +400,7 @@ describe('saveCart', () => {
     return dbSaveCart(cart, testCon)
       .then((savedCart) => {
         const newCart = { ...mysql2js(savedCart) }
+        console.log(newCart)
         newCart.items[0].isDeleted = true
         return dbSaveCart(newCart, testCon)
       })

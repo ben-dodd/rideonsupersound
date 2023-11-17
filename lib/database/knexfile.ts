@@ -33,16 +33,17 @@ module.exports = {
   },
   test: {
     client: 'sqlite3',
-    connection: {
-      filename: path.join(__dirname, 'dev.sqlite3'),
-      // filename: ':memory:',
-    },
+    connection: ':memory:',
+    //   // filename: path.join(__dirname, 'dev.sqlite3'),
+    //   filename: ':memory:',
+    // },
     migrations: {
       directory: path.join(__dirname, 'migrations'),
     },
     seeds: {
       directory: path.join(__dirname, 'seeds'),
     },
+    // debug: true,
     useNullAsDefault: true,
   },
 }

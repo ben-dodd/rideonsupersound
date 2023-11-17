@@ -117,7 +117,7 @@ export async function dbGetSale(id, db = connection) {
   const cart: any = {}
   cart.sale = await db('sale').where({ id }).first()
   if (!cart?.sale) cart.sale = {}
-  cart.customer = cart?.sale?.customer_id ? await dbGetCustomer(cart?.sale?.customer_id) : null
+  cart.customer = cart?.sale?.customer_id ? await dbGetCustomer(cart?.sale?.customer_id, db) : null
   cart.items = await dbGetSaleItemsBySaleId(id, db)
   cart.transactions = await dbGetSaleTransactionsBySaleId(id, db)
   return cart
@@ -303,7 +303,7 @@ export async function dbSaveCart(cart, db = connection) {
       }
       if (newSale?.isMailOrder && newSale?.state === SaleStateTypes.Completed) {
         // Check if mail order already exists
-        const prevMailOrderJob = await dbGetJobsLike(`Post Sale ${newSale?.id}`).first()
+        const prevMailOrderJob = await dbGetJobsLike(`Post Sale ${newSale?.id}`, trx).first()
         if (!prevMailOrderJob) {
           const customer = await dbGetCustomer(newSale?.customerId, trx)
           const mailOrderJob = {

@@ -6,6 +6,6 @@ export async function up(knex): Promise<any> {
   })
 }
 
-export const down = function (knex) {
+export async function down(knex): Promise<any> {
   return knex.schema.dropTable('order_line_item')
 }
