@@ -2,7 +2,7 @@
 // const { Knex } = require('knex')
 import path from 'path'
 // require('ts-node/register')
-import 'ts-node/register'
+// import 'ts-node/register'
 // const path = require('path')
 // Update with your config settings.
 
