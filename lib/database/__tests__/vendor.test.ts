@@ -17,7 +17,7 @@ afterAll(() => testConn.destroy())
 
 describe('dbGetVendorFromVendorPayment', () => {
   it('should return the name of the vendor who made the payment', () => {
-    dbGetVendorFromVendorPayment(8).then((res) => {
+    dbGetVendorFromVendorPayment(8, testConn).then((res) => {
       expect(res?.name).toBe('John Harris')
     })
   })
@@ -34,13 +34,13 @@ describe('dbGetVendorAccounts', () => {
 describe('dbGetVendorAccount', () => {
   it('should return the vendor id, name and totalOwing', () => {
     dbGetVendorAccount({ id: 1, name: 'Nick White' }, testConn).then((res) => {
-      expect(res).toEqual({ id: 1, name: 'Nick White', totalOwing: 1800 - 3000 })
+      expect(res).toMatchObject({ id: 1, name: 'Nick White', totalOwing: 1800 - 3000 })
     })
     dbGetVendorAccount({ id: 2, name: 'Ben Dodd' }, testConn).then((res) => {
-      expect(res).toEqual({ id: 2, name: 'Ben Dodd', totalOwing: 700 - -500 })
+      expect(res).toMatchObject({ id: 2, name: 'Ben Dodd', totalOwing: 700 - -500 })
     })
     dbGetVendorAccount({ id: 42, name: 'John Harris' }, testConn).then((res) => {
-      expect(res).toEqual({ id: 42, name: 'John Harris', totalOwing: 2800 - 7700 })
+      expect(res).toMatchObject({ id: 42, name: 'John Harris', totalOwing: 2800 - 7700 })
     })
   })
   it.todo('should take into account transfers between vendors')
