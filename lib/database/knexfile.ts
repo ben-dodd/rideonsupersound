@@ -44,8 +44,9 @@ const cf = {
     seeds: {
       directory: path.join(__dirname, 'seeds'),
     },
-    // debug: true,
+    // debug:s true,
     useNullAsDefault: true,
   },
 }
+
 export default cf
