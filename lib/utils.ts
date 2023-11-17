@@ -120,15 +120,25 @@ export function dollarsToCents(amount: number | string) {
   return dollars * 100
 }
 
-export function priceCentsString(cents: number | string) {
+export function priceCentsString(cents: number | string, roundToDollar: boolean = false) {
   return isNaN(Number(cents))
     ? 'N/A'
-    : centsToDollars(cents).toLocaleString('en-NZ', { style: 'currency', currency: 'NZD' })
+    : centsToDollars(cents).toLocaleString('en-NZ', {
+        style: 'currency',
+        currency: 'NZD',
+        maximumFractionDigits: roundToDollar ? 0 : 2,
+      })
 }
 
-export function priceDollarsString(amount: number | string) {
+export function priceDollarsString(amount: number | string, roundToDollar: boolean = false) {
   const dollars = Number(amount)
-  return isNaN(dollars) ? 'N/A' : dollars.toLocaleString('en-NZ', { style: 'currency', currency: 'NZD' })
+  return isNaN(dollars)
+    ? 'N/A'
+    : dollars.toLocaleString('en-NZ', {
+        style: 'currency',
+        currency: 'NZD',
+        maximumFractionDigits: roundToDollar ? 0 : 2,
+      })
 }
 
 export function eraseWhiteSpace(str) {

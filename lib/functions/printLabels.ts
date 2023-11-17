@@ -8,7 +8,7 @@ export function getLabelPrinterCSV(items) {
     item?.artist,
     item?.title,
     item?.isNew ? 'NEW' : 'USED',
-    priceCentsString(item?.totalSell),
+    priceCentsString(item?.totalSell, true),
     `${item?.section || ''}${item?.section && item?.country === 'New Zealand' ? '/' : ''}${
       item?.country === 'New Zealand' ? 'NZ' : ''
     }`,

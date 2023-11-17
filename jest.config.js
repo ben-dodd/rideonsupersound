@@ -16,7 +16,7 @@ const customJestConfig = {
   modulePathIgnorePatterns: ['__mocks__', '__data__'],
   testEnvironment: 'jest-environment-jsdom',
   testEnvironmentOptions: { url: 'http://localhost:8080' },
-  collectCoverageFrom: ['./**/*.{ts,tsx}'],
+  collectCoverageFrom: ['lib/functions/**/*.{ts,tsx}'],
   // roots: ['<rootDir>/.'],
   // transform: {
   //   '^.+\\.tsx?$': 'ts-jest',

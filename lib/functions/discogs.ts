@@ -47,6 +47,7 @@ export async function getDiscogsItemArtistDetails({ artists }: any) {
 export async function setDiscogsItemToStockItem(discogsOption: DiscogsItem, overrideItemDetails: boolean) {
   const detailedDiscogsItem = await getDiscogsItem(discogsOption)
   const priceSuggestions = await getDiscogsPriceSuggestions(discogsOption)
+  console.log(detailedDiscogsItem)
 
   const discogsItem = {
     ...discogsOption,
@@ -112,7 +113,7 @@ export function getPriceSuggestionText(item: StockItemObject) {
   const suggestion = getPriceSuggestion(item)
   const condBackUp = item?.isNew ? 'Mint (M)' : 'Good (G)'
   return suggestion?.value
-    ? `${priceDollarsString(suggestion?.value)} NZD\n(${item?.cond || condBackUp} condition)`
+    ? `${priceDollarsString(suggestion?.value, true)} NZD\n(${item?.cond || condBackUp} condition)`
     : ''
 }
 
@@ -124,4 +125,23 @@ export function getPriceSuggestion(item) {
     ? priceSuggestions['Mint (M)'] || priceSuggestions?.mintM || null
     : priceSuggestions['Good (G)'] || priceSuggestions?.goodG || null
   return priceSuggestions[cond] || priceSuggestions[camelCaseKey] || priceBackUp
+}
+
+export function getSectionFromDiscogsStyles(itemStyles, genreLibrary) {
+  let bestMatch = { matchCount: 0, nonMatchingCount: Infinity, code: 'UNKNOWN' }
+
+  for (const section of genreLibrary) {
+    const sectionGenres = section.discogsStyles.split(',').map((s) => s.trim())
+    const intersection = itemStyles.filter((genre) => sectionGenres.includes(genre))
+    const nonMatchingCount = sectionGenres?.length - intersection?.length
+
+    if (
+      intersection.length > bestMatch.matchCount ||
+      (intersection.length === bestMatch.matchCount && nonMatchingCount < bestMatch.nonMatchingCount)
+    ) {
+      bestMatch = { matchCount: intersection.length, nonMatchingCount, code: section.code }
+    }
+  }
+
+  return bestMatch.code
 }

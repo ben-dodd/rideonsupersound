@@ -9,9 +9,11 @@ import {
   getDiscogsPriceSuggestions,
   getFormatFromDiscogs,
   getPriceSuggestionText,
+  getSectionFromDiscogsStyles,
 } from '../discogs'
 import { DiscogsConditionTypes } from '../../types/discogs'
 import { StockItemObject } from 'lib/types/stock'
+import { genreLibrary } from 'lib/types/genreLibrary'
 
 describe('getPriceSuggestion', () => {
   it('should get the price suggestion from stock object', () => {
@@ -25,11 +27,11 @@ describe('getPriceSuggestion', () => {
       discogsItem: { priceSuggestions },
       isNew: true,
     }
-    expect(getPriceSuggestionText(item)).toBe('$10.00 NZD\n(Mint (M) condition)')
+    expect(getPriceSuggestionText(item)).toBe('$10 NZD\n(Mint (M) condition)')
     item.isNew = false
-    expect(getPriceSuggestionText(item)).toBe('$5.00 NZD\n(Good (G) condition)')
+    expect(getPriceSuggestionText(item)).toBe('$5 NZD\n(Good (G) condition)')
     item.cond = DiscogsConditionTypes.P
-    expect(getPriceSuggestionText(item)).toBe('$1.00 NZD\n(Poor (P) condition)')
+    expect(getPriceSuggestionText(item)).toBe('$1 NZD\n(Poor (P) condition)')
     item.discogsItem.priceSuggestions = {}
     expect(getPriceSuggestionText(item)).toBe('')
   })
@@ -92,4 +94,14 @@ describe('getFormatFromDiscogs', () => {
     expect(getFormatFromDiscogs(['Poetry', 'LP', 'Cassette'])).toBe('LP')
     expect(getFormatFromDiscogs(['Poetry', 'Books', 'Cushions'])).toBe('Poetry')
   })
+})
+
+describe('getSectionFromDiscogsStyles', () => {
+  it('should get the correct code from the discogs styles', () => {
+    expect(getSectionFromDiscogsStyles(['Rock', 'Punk'], genreLibrary)).toBe('PUN')
+    expect(getSectionFromDiscogsStyles(['Rock', 'Ska', 'Punk'], genreLibrary)).toBe('SKP')
+    expect(getSectionFromDiscogsStyles(['Rock', 'Punk', 'Pop Punk'], genreLibrary)).toBe('CHP')
+    expect(getSectionFromDiscogsStyles(['Rock', 'Reggae', 'Ska'], genreLibrary)).toBe('SKA')
+  })
+  it.todo('should handle not finding anything')
 })

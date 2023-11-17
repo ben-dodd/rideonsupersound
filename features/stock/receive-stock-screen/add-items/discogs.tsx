@@ -42,6 +42,8 @@ export default function Discogs() {
   const debouncedSearch = useMemo(() => debounce(searchDiscogs, 2000), [])
   const debouncedBarcode = useMemo(() => debounce(handleChange, 2000), [])
 
+  console.log(discogsOptions)
+
   return (
     <div>
       <img
