@@ -1,6 +1,6 @@
 export interface KiwiBankTransactionObject {
   name?: string
-  vendor_id?: string
+  vendorId?: string
   amount?: number
   accountNumber?: string
 }

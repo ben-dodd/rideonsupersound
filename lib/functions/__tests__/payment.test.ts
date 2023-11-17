@@ -1,9 +1,5 @@
 import dayjs from 'dayjs'
-import {
-  modulusCheck,
-  splitAccountNumber,
-  writeKiwiBankBatchFile,
-} from '../payment'
+import { modulusCheck, splitAccountNumber, writeKiwiBankBatchFile } from '../payment'
 import { KiwiBankTransactionObject } from '../../types/payment'
 
 const dummyTransactions: KiwiBankTransactionObject[] = [
@@ -11,7 +7,7 @@ const dummyTransactions: KiwiBankTransactionObject[] = [
     accountNumber: '38 90160725779 000',
     amount: 5150,
     name: 'Shay Horay',
-    vendor_id: '25',
+    vendorId: '25',
   },
   {
     accountNumber: '25-2500-2608586-001',
@@ -22,7 +18,7 @@ const dummyTransactions: KiwiBankTransactionObject[] = [
     accountNumber: '38 90160704505 000',
     amount: 2000,
     name: 'Another really long vendor name this guy is called Sam',
-    vendor_id: '666',
+    vendorId: '666',
   },
   { accountNumber: '10-8530-6186593-00', amount: 500, name: 'No one' },
 ]
@@ -34,9 +30,9 @@ test('test kbb file', () => {
       transactions: dummyTransactions,
       batchNumber: '22',
       sequenceNumber: '42375',
-    })
+    }),
   ).toBe(
-    `data:text/csv;charset=utf-8,1,,22,4237,389020005748600,7,${date},${date},%0D%0A2,3890160725779000,50,5150,Shay%20Horay,RideOn%20Pay,25%20Shay%20Hora,,Reg%2022,Ride%20On%20Super%20Sound,Reg%2022,25%20Shay%20Hora,Seq%20${date}%0D%0A2,3890160704505000,50,2000,Another%20really%20long%20,RideOn%20Pay,666%20Another%20,,Reg%2022,Ride%20On%20Super%20Sound,Reg%2022,666%20Another%20,Seq%20${date}%0D%0A3,7150,2,80321430284`
+    `data:text/csv;charset=utf-8,1,,22,4237,389020005748600,7,${date},${date},%0D%0A2,3890160725779000,50,5150,Shay%20Horay,RideOn%20Pay,25%20Shay%20Hora,,Reg%2022,Ride%20On%20Super%20Sound,Reg%2022,25%20Shay%20Hora,Seq%20${date}%0D%0A2,3890160704505000,50,2000,Another%20really%20long%20,RideOn%20Pay,666%20Another%20,,Reg%2022,Ride%20On%20Super%20Sound,Reg%2022,666%20Another%20,Seq%20${date}%0D%0A3,7150,2,80321430284`,
   )
 })
 
