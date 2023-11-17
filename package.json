@@ -9,6 +9,7 @@
     "test": "jest --watch",
     "testa": "jest --watchAll",
     "testc": "jest --watchAll -- --coverage",
+    "testca": "jest --coverage --watchAll",
     "lint": "next lint",
     "knex:migrate:make": "knex --knexfile lib/database/knexfile.ts -x ts migrate:make",
     "knex:migrate:latest": "knex --knexfile lib/database/knexfile.ts migrate:latest",
