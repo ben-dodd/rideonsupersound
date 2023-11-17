@@ -2,7 +2,6 @@
  * @jest-environment node
  */
 
-import { StockObject } from 'lib/types'
 import {
   getDiscogsItem,
   getDiscogsItemArtistDetails,
@@ -12,6 +11,7 @@ import {
   getPriceSuggestionText,
 } from '../discogs'
 import { DiscogsConditionTypes } from '../../types/discogs'
+import { StockItemObject } from 'lib/types/stock'
 
 describe('getPriceSuggestion', () => {
   it('should get the price suggestion from stock object', () => {
@@ -21,17 +21,17 @@ describe('getPriceSuggestion', () => {
       [DiscogsConditionTypes.G]: { value: 5 },
       [DiscogsConditionTypes.P]: { value: 1 },
     }
-    let item: StockObject = {
+    let item: StockItemObject = {
       discogsItem: { priceSuggestions },
       isNew: true,
     }
-    expect(getPriceSuggestionText(item)).toBe('$10.00 NZD (Mint (M) condition)')
+    expect(getPriceSuggestionText(item)).toBe('$10.00 NZD\n(Mint (M) condition)')
     item.isNew = false
-    expect(getPriceSuggestionText(item)).toBe('$5.00 NZD (Good (G) condition)')
+    expect(getPriceSuggestionText(item)).toBe('$5.00 NZD\n(Good (G) condition)')
     item.cond = DiscogsConditionTypes.P
-    expect(getPriceSuggestionText(item)).toBe('$1.00 NZD (Poor (P) condition)')
+    expect(getPriceSuggestionText(item)).toBe('$1.00 NZD\n(Poor (P) condition)')
     item.discogsItem.priceSuggestions = {}
-    expect(getPriceSuggestionText(item)).toBe(null)
+    expect(getPriceSuggestionText(item)).toBe('')
   })
 })
 
