@@ -58,17 +58,24 @@ describe('writeCartItemPriceBreakdown', () => {
     )
   })
   it('should handle misc items', () => {
-    expect(writeCartItemPriceBreakdown(cartItem, { item: miscItem, price: stockItemPrice3 })).toBe('2 × $4.00')
+    expect(writeCartItemPriceBreakdown(cartItem, { item: miscItem, price: stockItemPrice3 })).toBe('2 × $4.00 ($8.00)')
+    expect(writeCartItemPriceBreakdown({ quantity: '1' }, { item: miscItem })).toBe('1 × $4.00')
   })
   it('should handle normal items', () => {
-    expect(writeCartItemPriceBreakdown(cartItem2, { item: stockItem2, price: stockItemPrice2 })).toBe('2 × $55.00')
+    expect(writeCartItemPriceBreakdown(cartItem2, { item: stockItem2, price: stockItemPrice2 })).toBe(
+      '2 × $55.00 ($110.00)',
+    )
   })
   it('should handle discounts', () => {
     expect(writeCartItemPriceBreakdown(cartItem, { item: stockItem, price: stockItemPrice })).toBe(
-      '2 × V50% × S25% × $3.00',
+      '2 × V50% × S25% × $3.00 ($4.00)',
     )
-    expect(writeCartItemPriceBreakdown(cartItem3, { item: stockItem, price: stockItemPrice })).toBe('1 × V50% × $3.00')
-    expect(writeCartItemPriceBreakdown(cartItem4, { item: stockItem, price: stockItemPrice })).toBe('1 × S25% × $3.00')
+    expect(writeCartItemPriceBreakdown(cartItem3, { item: stockItem, price: stockItemPrice })).toBe(
+      '1 × V50% × $3.00 ($2.50)',
+    )
+    expect(writeCartItemPriceBreakdown(cartItem4, { item: stockItem, price: stockItemPrice })).toBe(
+      '1 × S25% × $3.00 ($2.50)',
+    )
   })
 })
 

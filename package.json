@@ -7,7 +7,12 @@
     "start": "next start",
     "migrate": "node scripts/migrate-db.js",
     "test": "jest --watch",
-    "lint": "next lint"
+    "testa": "jest --watchAll",
+    "testc": "jest --watchAll -- --coverage",
+    "lint": "next lint",
+    "knex:migrate:make": "knex --knexfile lib/database/knexfile.ts -x ts migrate:make",
+    "knex:migrate:latest": "knex --knexfile lib/database/knexfile.ts migrate:latest",
+    "knex:migrate:rollback": "knex --knexfile lib/database/knexfile.ts migrate:rollback"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^2.6.1",
@@ -21,7 +26,7 @@
     "eslint-config-next": "^13.0.3",
     "framer-motion": "^10.16.4",
     "immer": "^9.0.16",
-    "knex": "^2.3.0",
+    "knex": "^3.0.1",
     "lodash": "^4.17.21",
     "next": "^13.0.2",
     "primeicons": "^5.0.0",

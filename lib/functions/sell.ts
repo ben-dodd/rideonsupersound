@@ -19,7 +19,11 @@ export function writeCartItemPriceBreakdown(cartItem: SaleItemObject, stockItem:
     return `${priceCentsString(item?.giftCardAmount)} GIFT VOUCHER`
   }
   if (item?.isMiscItem) {
-    return `${cartItem?.quantity} × ${priceCentsString(item?.miscItemAmount)}`
+    return `${cartItem?.quantity} × ${priceCentsString(item?.miscItemAmount)}${
+      parseInt(cartItem?.quantity) > 1
+        ? ` (${priceCentsString(parseInt(cartItem?.quantity) * item?.miscItemAmount)})`
+        : ''
+    }`
   }
   if (price?.totalSell === null || price?.totalSell === undefined) return '...'
   return `${cartItem?.quantity}${parseInt(cartItem?.vendorDiscount) > 0 ? ` × V${cartItem?.vendorDiscount}%` : ''}${
