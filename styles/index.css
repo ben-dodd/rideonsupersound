@@ -52,40 +52,6 @@
   @apply flex h-main w-board;
 }
 
-.loading-icon {
-  margin: auto;
-  display: inline-block;
-  position: relative;
-  width: 80px;
-  height: 80px;
-}
-.loading-icon:after {
-  content: ' ';
-  display: block;
-  border-radius: 50%;
-  width: 0;
-  height: 0;
-  margin: 8px;
-  box-sizing: border-box;
-  border: 32px solid #000;
-  border-color: #000 transparent #000 transparent;
-  animation: loading-icon 1.2s infinite;
-}
-
-@keyframes loading-icon {
-  0% {
-    transform: rotate(0);
-    animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
-  }
-  50% {
-    transform: rotate(900deg);
-    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
-  }
-  100% {
-    transform: rotate(1800deg);
-  }
-}
-
 .icon-text-button {
   @apply flex w-full justify-between items-center text-sm rounded py-1 px-2 m-1 whitespace-nowrap select-none cursor-pointer bg-brown-dark text-white hover:bg-brown disabled:pointer-events-none disabled:bg-gray-300;
 }
@@ -340,3 +306,85 @@
   border: 10px solid transparent;
   border-right-color: #ffffff;
 } */
+
+.lds-ripple {
+  margin: auto;
+  display: inline-block;
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+.lds-ripple div {
+  position: absolute;
+  border: 8px solid #ff00d4;
+  opacity: 1;
+  border-radius: 50%;
+  animation: lds-ripple 2s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+.lds-ripple div:nth-child(2) {
+  animation-delay: -1s;
+}
+@keyframes lds-ripple {
+  0% {
+    top: 72px;
+    left: 72px;
+    width: 0;
+    height: 0;
+    opacity: 0;
+  }
+  4.9% {
+    top: 72px;
+    left: 72px;
+    width: 0;
+    height: 0;
+    opacity: 0;
+  }
+  5% {
+    top: 72px;
+    left: 72px;
+    width: 0;
+    height: 0;
+    opacity: 1;
+  }
+  100% {
+    top: 0px;
+    left: 0px;
+    width: 144px;
+    height: 144px;
+    opacity: 0;
+  }
+}
+
+.loading-icon {
+  margin: auto;
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+.loading-icon:after {
+  content: ' ';
+  display: block;
+  border-radius: 50%;
+  width: 0;
+  height: 0;
+  margin: 8px;
+  box-sizing: border-box;
+  border: 32px solid #000;
+  border-color: #000 transparent #000 transparent;
+  animation: loading-icon 1.2s infinite;
+}
+
+@keyframes loading-icon {
+  0% {
+    transform: rotate(0);
+    animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+  }
+  50% {
+    transform: rotate(900deg);
+    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+  100% {
+    transform: rotate(1800deg);
+  }
+}

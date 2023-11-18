@@ -1,11 +1,22 @@
 import Image from 'next/image'
 
-const Loading = ({ size = 'md', type = 'spin' }: { size?: 'full' | 'md' | 'sm'; type?: 'spin' | 'pyramid' }) => {
+const Loading = ({
+  size = 'md',
+  type = 'ripple',
+}: {
+  size?: 'full' | 'md' | 'sm'
+  type?: 'ripple' | 'spin' | 'pyramid'
+}) => {
   return (
     <div
       className={`flex ${size === 'full' ? 'h-screen w-screen' : size === 'md' ? 'h-full w-full' : 'h-full w-full'}`}
     >
-      {type === 'spin' ? (
+      {type === 'ripple' ? (
+        <div className="lds-ripple">
+          <div />
+          <div />
+        </div>
+      ) : type === 'spin' ? (
         <div className="loading-icon" />
       ) : (
         <Image
