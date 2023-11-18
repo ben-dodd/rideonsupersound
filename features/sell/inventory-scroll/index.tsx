@@ -16,23 +16,20 @@ export default function InventoryScroll() {
     ?.sort(sortInventory)
     ?.slice(0, maxItemsInList)
     ?.map((item: StockItemSearchObject) => item?.id)
-  console.log(idList)
   const { stockItemList = [], isStockItemListLoading = true } = useStockItemList(idList)
   return (
     <div className="h-content overflow-y-scroll px-2">
       {isStockListLoading ? (
         <Loading />
       ) : searchBar ? (
-        isStockItemListLoading ? (
-          <Loading />
-        ) : idList?.length === 0 ? (
+        idList?.length === 0 ? (
           <div className="text-xl">No items found...</div>
+        ) : isStockItemListLoading ? (
+          <Loading />
         ) : (
-          <>
-            {stockItemList?.map((stockItem: BasicStockObject) => (
-              <ListItem stockItem={stockItem} key={stockItem?.item?.id} />
-            )) || []}
-          </>
+          stockItemList?.map((stockItem: BasicStockObject) => (
+            <ListItem stockItem={stockItem} key={stockItem?.item?.id} />
+          ))
         )
       ) : (
         <div className="text-xl">Use the search bar to find an item...</div>

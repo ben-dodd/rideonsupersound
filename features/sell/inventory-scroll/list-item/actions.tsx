@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import { Info, AddCircleOutline } from '@mui/icons-material'
+import { ArrowRight } from '@mui/icons-material'
 import { skuScan } from 'lib/functions/sell'
 import { useAppStore } from 'lib/store'
 import { getItemSkuDisplayName } from 'lib/functions/displayInventory'
@@ -54,29 +54,16 @@ const Actions = ({ item, itemQuantity, holdsQuantity }) => {
 
   return (
     <div className="flex py-2">
-      <div className="self-center pl-8 hidden sm:inline">
-        <span>
-          {/* <Tooltip title="View and edit item details."> */}
-          <button
-            // className="icon-button-large text-brown-dark hover:text-brown"
-            className={`pill-button`}
-            onClick={() => router.push(`/stock/${item?.id}`)}
-          >
-            <Info style={{ fontSize: '40px' }} />
-          </button>
-        </span>
-        {/* </Tooltip> */}
-      </div>
       <div className="self-center pl-1 hidden sm:inline">
         {/* <Tooltip title="Add item to sale."> */}
         <button
           // disabled={isItemLoading}
-          className={`pill-button`}
+          className={`prominent-button`}
           // className={`icon-button-large text-brown-dark ${isItemLoading ? 'text-gray-400' : 'hover:text-brown'}`}
           // disabled={!item?.totalSell}
           onClick={clickAddToCart}
         >
-          <AddCircleOutline style={{ fontSize: '40px' }} />
+          <ArrowRight style={{ fontSize: '40px' }} />
         </button>
         {/* </Tooltip> */}
       </div>
