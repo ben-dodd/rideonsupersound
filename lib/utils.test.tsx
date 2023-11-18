@@ -3,6 +3,7 @@ import {
   camelCase,
   convertDegToCardinal,
   convertMPStoKPH,
+  getArrayOfNumbersBetweenTwoNumbers,
   getLastValidElementByDate,
   pascalCase,
 } from './utils'
@@ -43,4 +44,22 @@ test('get the last valid element in a list', () => {
   ]
   expect(getLastValidElementByDate(testList, 'dateCompleted', '2016-04-20')?.id).toBe(1)
   expect(getLastValidElementByDate(testList, 'dateStarted', '2016-04-20')?.id).toBe(2)
+})
+
+describe('getArrayOfNumbersBetweenTwoNumbers', () => {
+  it('should return an array of numbers between two numbers', () => {
+    const arr = getArrayOfNumbersBetweenTwoNumbers(6, 10)
+    const expected = [6, 7, 8, 9, 10]
+    expect(arr).toEqual(expected)
+  })
+  it('should handle numbers that are in the wrong order', () => {
+    const arr = getArrayOfNumbersBetweenTwoNumbers(9, 4)
+    const expected = [4, 5, 6, 7, 8, 9]
+    expect(arr).toEqual(expected)
+  })
+  it('should handle zero key numbers', () => {
+    const arr = getArrayOfNumbersBetweenTwoNumbers(3, 0)
+    const expected = [0, 1, 2, 3]
+    expect(arr).toEqual(expected)
+  })
 })

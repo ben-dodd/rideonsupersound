@@ -90,6 +90,13 @@ export function getLastValidElementByDate(list, dateField, targetDate) {
     ?.reverse()?.[0]
 }
 
+export function getArrayOfNumbersBetweenTwoNumbers(num1: number, num2: number) {
+  const min = Math.min(num1, num2)
+  const max = Math.max(num1, num2)
+  const arr = Array.from({ length: max - min + 1 }, (v, k) => k + min)
+  return arr
+}
+
 export function compareDates(a, b) {
   const dateA = dayjs(a.date)
   const dateB = dayjs(b.date)
