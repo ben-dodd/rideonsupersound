@@ -11,6 +11,7 @@ import ReceiveStockList from './receive-stock-list'
 import StockMovementList from './stock-movement-list'
 import { useClerk } from 'lib/api/clerk'
 import dayjs from 'dayjs'
+import ViewButton from 'components/button/view-button'
 
 const StockScreen = () => {
   const { isStockListLoading } = useStockList()
@@ -71,11 +72,16 @@ const StockScreen = () => {
       full={true}
       menuItems={menuItems}
     >
-      <Tabs
-        tabs={['Stock List', 'Stock Arrivals', 'Recently Sold', 'Best Sellers', 'Stock Movement']}
-        value={tab}
-        onChange={setTab}
-      />
+      <div className="flex justify-between">
+        <Tabs
+          tabs={['Stock List', 'Stock Arrivals', 'Recently Sold', 'Best Sellers', 'Stock Movement']}
+          value={tab}
+          onChange={setTab}
+        />
+        <div className="my-1 mx-4">
+          <ViewButton />
+        </div>
+      </div>
       {tab === 0 && <StockList />}
       {tab === 1 && <ReceiveStockList />}
       {tab === 2 && <ComingSoon />}

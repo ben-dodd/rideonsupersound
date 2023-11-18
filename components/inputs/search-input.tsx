@@ -4,7 +4,7 @@ const SearchInput = ({ searchValue, handleSearch }) => {
   return (
     <div
       className={`flex flex-1 my-1 justify-between items-center ring-1 ring-gray-400 w-auto bg-gray-100 hover:bg-gray-200 ${
-        searchValue && 'bg-pink-200 hover:bg-pink-300'
+        searchValue && 'bg-blue-100 hover:bg-blue-200'
       }`}
     >
       <div className="flex items-center flex-1">

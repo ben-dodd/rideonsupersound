@@ -23,8 +23,9 @@ const StockList = () => {
 
   return (
     <div className="h-content overflow-y-scroll">
-      <div className="px-2">
+      <div className="px-2 flex justify-between">
         <SearchInput searchValue={searchBar} handleSearch={handleSearch} />
+        <div className="flex ml-2"></div>
       </div>
       <div className="px-2">
         {filteredList?.slice(0, limit)?.map((stockItem) => (
