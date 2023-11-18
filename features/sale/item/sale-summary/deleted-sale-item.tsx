@@ -32,7 +32,7 @@ export default function DeletedSaleItem({ saleItem }: SellListItemProps) {
       <div className="flex flex-col w-full py-2 pl-2 justify-between">
         <div className="text-sm pl-1">
           <div>{getItemDisplayName(item)}</div>
-          <div className={'text-red-500'}>DELETED</div> : <div />
+          <div className={'text-red-500'}>DELETED</div>
         </div>
         <div className={`text-red-500 self-end line-through`}>
           <div>{writeCartItemPriceBreakdown(saleItem, stockItem)}</div>

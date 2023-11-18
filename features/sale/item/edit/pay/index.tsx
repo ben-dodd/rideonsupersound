@@ -6,7 +6,7 @@ import Actions from './actions'
 import Image from 'next/image'
 import MailOrder from './mail-order'
 
-export default function Pay({ totalRemaining, defaultAction }) {
+export default function Pay({ totalRemaining, defaultAction, secondaryAction = null }) {
   const { cart, setCartSale } = useAppStore()
   const { sale = {} } = cart || {}
 
@@ -39,7 +39,7 @@ export default function Pay({ totalRemaining, defaultAction }) {
               height={200}
             />
           )}
-          <Actions defaultAction={defaultAction} />
+          <Actions defaultAction={defaultAction} secondaryAction={secondaryAction} />
         </>
       ) : (
         <div className="w-full h-full flex justify-center items-center">...</div>

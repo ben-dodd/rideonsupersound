@@ -165,7 +165,17 @@ const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
       ? { label: 'PARK SALE AGAIN', onClick: clickParkSale, icon: <DirectionsCar /> }
       : sale?.state === SaleStateTypes.Layby
       ? { label: 'CLOSE LAYBY', onClick: clickLayby, icon: <DryCleaning /> }
-      : null
+      : { label: 'PARK SALE', onClick: clickParkSale, icon: <DirectionsCar /> }
+
+  const secondaryAction =
+    totalRemaining === 0
+      ? null
+      : sale?.state === SaleStateTypes.Parked
+      ? null
+      : sale?.state === SaleStateTypes.Layby
+      ? null
+      : // : { label: 'START LAYBY', onClick: clickLayby, icon: <DryCleaning /> }
+        null
 
   return (
     <MidScreenContainer
@@ -174,17 +184,17 @@ const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
       }]`}
       titleClass="bg-brown-dark text-white"
       menuItems={menuItems}
-      // showBackButton
+      showBackButton
       full
       dark
       isLoading={isLoading}
     >
       <div className="flex h-content">
-        <div className="w-2/3">
+        <div className="w-2/3 h-content overflow-y-scroll">
           <SaleSummary cart={cart} isEditable />
         </div>
         <div className="w-1/3 h-content p-2 flex flex-col justify-between shadow-md">
-          <Pay totalRemaining={totalRemaining} defaultAction={defaultAction} />
+          <Pay totalRemaining={totalRemaining} defaultAction={defaultAction} secondaryAction={secondaryAction} />
         </div>
       </div>
       <CreateHoldSidebar />
