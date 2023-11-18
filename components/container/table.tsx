@@ -1,9 +1,5 @@
+import Loading from 'components/placeholders/loading'
+
 export default function TableContainer({ loading, children }) {
-  return loading ? (
-    <div className="loading-screen">
-      <div className="loading-icon" />
-    </div>
-  ) : (
-    <div className="h-main w-board overflow-x-hidden bg-white">{children}</div>
-  )
+  return loading ? <Loading /> : <div className="h-main w-board overflow-x-hidden bg-white">{children}</div>
 }

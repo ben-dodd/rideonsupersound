@@ -2,13 +2,12 @@ import { useJobs } from 'lib/api/jobs'
 import { TaskObject } from 'lib/types'
 import dayjs from 'dayjs'
 import ListJob from './list-job'
+import Loading from 'components/placeholders/loading'
 
 export default function JobView({ filter }) {
   const { jobs, isJobsLoading } = useJobs()
   return isJobsLoading ? (
-    <div className="w-full flex h-full">
-      <div className="loading-icon" />
-    </div>
+    <Loading />
   ) : (
     jobs
       ?.filter(filter)

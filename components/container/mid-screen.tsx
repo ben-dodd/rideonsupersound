@@ -1,5 +1,6 @@
 import BackButton from 'components/button/back-button'
 import DropdownMenu from 'components/dropdown-menu'
+import Loading from 'components/placeholders/loading'
 import { useMe } from 'lib/api/clerk'
 import { isUserAdmin } from 'lib/functions/user'
 
@@ -36,13 +37,7 @@ export default function MidScreenContainer({
           )}
         </div>
       )}
-      {isLoading ? (
-        <div className="loading-screen">
-          <div className="loading-icon" />
-        </div>
-      ) : (
-        <div className="h-content overflow-y-scroll">{children}</div>
-      )}
+      {isLoading ? <Loading /> : <div className="h-content overflow-y-scroll">{children}</div>}
     </div>
   )
 }

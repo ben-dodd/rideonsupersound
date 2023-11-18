@@ -4,6 +4,7 @@ import ArrowLeft from '@mui/icons-material/ArrowLeft'
 import CircularProgress from '@mui/material/CircularProgress'
 import { CSVLink } from 'react-csv'
 import { useRouter } from 'next/router'
+import Loading from 'components/placeholders/loading'
 interface ScreenProps {
   show?: boolean
   closeFunction?: any
@@ -26,9 +27,7 @@ export default function ScreenContainer({
   const router = useRouter()
   const routerBack = () => router.back()
   return loading ? (
-    <div className="loading-screen">
-      <div className="loading-icon" />
-    </div>
+    <Loading />
   ) : (
     <div className="screen__content">
       <div className={`screen__title ${titleClass || 'bg-primary-light'}`}>

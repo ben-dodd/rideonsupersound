@@ -5,6 +5,7 @@ import { CSVLink } from 'react-csv'
 
 import { ModalButton } from 'lib/types'
 import { MouseEventHandler } from 'react'
+import Loading from 'components/placeholders/loading'
 
 interface ModalProps {
   open: boolean
@@ -36,15 +37,7 @@ export default function Modal({
         {title && <div className="modal__title">{title}</div>}
         {closeFunction ? <CloseButton closeFunction={closeFunction} /> : <div />}
       </div>
-      <div className="modal__body">
-        {loading ? (
-          <div className="loading-screen h-dialogsm">
-            <div className="loading-icon" />
-          </div>
-        ) : (
-          children
-        )}
-      </div>
+      <div className="modal__body">{loading ? <Loading /> : children}</div>
       {buttons && (
         <div className={`grid gap-4 ${buttons?.length === 1 ? 'grid-cols-1' : 'grid-cols-2'} p-4 pt-6`}>
           {buttons.map((button: ModalButton, i: number) =>
