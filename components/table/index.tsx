@@ -1,8 +1,5 @@
 import { useMemo, useState } from 'react'
-
 import { SaleStateTypes } from 'lib/types/sale'
-
-// Material UI Components
 import {
   useBlockLayout,
   useFilters,
@@ -12,18 +9,11 @@ import {
   useSortBy,
   useTable,
 } from 'react-table'
-
-// Material UI Icons
-import ArrowDown from '@mui/icons-material/ArrowDropDown'
-import ArrowUp from '@mui/icons-material/ArrowDropUp'
-import MdFirstPage from '@mui/icons-material/FirstPage'
-import MdLastPage from '@mui/icons-material/LastPage'
-import MdNavigateBefore from '@mui/icons-material/NavigateBefore'
-import MdNavigateNext from '@mui/icons-material/NavigateNext'
 import SearchIcon from '@mui/icons-material/Search'
 import dayjs from 'dayjs'
 import { CSVLink } from 'react-csv'
 import { dateYMD } from 'lib/types/date'
+import { ArrowDropDown, ArrowDropUp, FirstPage, LastPage, NavigateBefore, NavigateNext } from '@mui/icons-material'
 
 // const skipPageResetRef:any = useRef();
 // skipPageResetRef.current = false;
@@ -176,11 +166,11 @@ function Table({
                         {column.isSorted ? (
                           column.isSortedDesc ? (
                             <div className="ml-1">
-                              <ArrowDown />
+                              <ArrowDropDown />
                             </div>
                           ) : (
                             <div className="ml-1">
-                              <ArrowUp />
+                              <ArrowDropUp />
                             </div>
                           )
                         ) : (
@@ -258,16 +248,16 @@ function Table({
           </strong>
         </span>
         <button className="icon-button" onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-          <MdFirstPage />
+          <FirstPage />
         </button>
         <button className="icon-button" onClick={() => previousPage()} disabled={!canPreviousPage}>
-          <MdNavigateBefore />
+          <NavigateBefore />
         </button>
         <button className="icon-button" onClick={() => nextPage()} disabled={!canNextPage}>
-          <MdNavigateNext />
+          <NavigateNext />
         </button>
         <button className="icon-button" onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
-          <MdLastPage />
+          <LastPage />
         </button>
       </div>
     </div>
