@@ -1,50 +1,26 @@
-import React, { useEffect, useState } from 'react'
-import TextInput from './TextInput'
+import { ExpandLess, ExpandMore } from '@mui/icons-material'
+import { useState } from 'react'
 
-interface FilterType {
-  setFilterFunc: Function
-  initFilters: Filter[]
-  expandable?: boolean
-}
-
-interface Filter {
-  id: number
-  type: string
-  value: any
-  filterConstructor: (val: any) => (row: any) => boolean
-}
-
-const Filter = ({ setFilterFunc, initFilters, expandable = true }: FilterType) => {
-  const [expanded, setExpanded] = useState(false)
-  const [filters, setFilters]: [Filter[], Function] = useState(initFilters)
-  useEffect(() => {
-    setFilterFunc(() => (row: any) => {
-      let ret = true
-      filters.forEach((filter) => {
-        if (!filter.filterConstructor(filter.value)(row)) ret = false
-      })
-      return ret
-    })
-  }, [filters])
+const FilterPanel = ({ visible, children, collapsible = true, closedByDefault = false }) => {
+  const [panelOpen, setPanelOpen] = useState(!closedByDefault)
+  const togglePanel = () => setPanelOpen((panelOpen) => !panelOpen)
   return (
-    <div className="w-full">
-      {filters?.map((filter) =>
-        filter.type === 'text' ? (
-          <TextInput
-            key={filter.id}
-            updateFilter={(val: string) => {
-              setFilters((otherFilters: Filter[]) => [
-                ...otherFilters.filter((otherFilter) => otherFilter.id !== filter.id),
-                { ...filter, value: val },
-              ])
-            }}
-          />
-        ) : (
+    <div className="rounded border mt-2">
+      <div
+        className={`flex justify-between text-xl p-2 border-b bg-gray-100 hover:border-gray-300 hover:shadow-sm select-none ${
+          collapsible ? 'cursor-pointer' : ''
+        }`}
+      >
+        {visible}
+        {!collapsible ? (
           <div />
-        ),
-      )}
+        ) : (
+          <div onClick={collapsible ? togglePanel : null}>{panelOpen ? <ExpandLess /> : <ExpandMore />}</div>
+        )}
+      </div>
+      <div className={`p-2 ${!panelOpen && collapsible && ' hidden'}`}>{children}</div>
     </div>
   )
 }
 
-export default Filter
+export default FilterPanel

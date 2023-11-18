@@ -46,6 +46,7 @@ export interface StoreState {
     exportVendorReportDialog?: boolean
     vendorEditDialog?: boolean
   }
+  viewMode: string
   confirmModal?: ConfirmModal
   infoModal?: InfoModal
   alert?: AlertProps
@@ -111,6 +112,7 @@ export interface StoreState {
   }
   openView: (view: ViewProps) => void
   closeView: (view: ViewProps) => void
+  setViewMode: (mode: string) => void
   openConfirm: (confirm: any) => void
   closeConfirm: () => void
   openInfo: (confirm: any) => void

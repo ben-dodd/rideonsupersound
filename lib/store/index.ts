@@ -62,6 +62,7 @@ export const initBatchReceiveSession = <BatchReceiveObject>{
 
 const initState = {
   view: {},
+  viewMode: 'table',
   confirmModal: { open: false },
   infoModal: { open: false },
   alert: { open: false },
@@ -130,6 +131,15 @@ const initState = {
   options: {
     doBypassRegister: false,
   },
+  dataTable: {
+    data: [],
+    schema: [],
+    active: [],
+    corner: [],
+    widthRatios: [],
+    loading: false,
+    error: '',
+  },
 }
 
 export const useAppStore = createSelectors(
@@ -145,6 +155,12 @@ export const useAppStore = createSelectors(
       set(
         produce((draft) => {
           draft.view[view] = false
+        }),
+      ),
+    setViewMode: (mode) =>
+      set(
+        produce((draft) => {
+          draft.viewMode = mode
         }),
       ),
     openConfirm: (confirm) =>

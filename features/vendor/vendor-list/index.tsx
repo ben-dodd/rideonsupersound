@@ -3,6 +3,7 @@ import Loading from 'components/placeholders/loading'
 import { useVendors } from 'lib/api/vendor'
 import React, { useState } from 'react'
 import VendorListItem from './vendor-list-item'
+import FilterPanel from 'components/table/filter'
 
 const VendorList = () => {
   const { vendors, isVendorsLoading } = useVendors()
@@ -12,9 +13,16 @@ const VendorList = () => {
     <Loading />
   ) : (
     <div className="h-content overflow-y-scroll">
-      <div className="px-2">
-        <SearchInput searchValue={searchValue} handleSearch={handleSearch} />
-      </div>
+      <FilterPanel
+        visible={
+          <div className="flex justify-between w-full">
+            <SearchInput searchValue={searchValue} handleSearch={handleSearch} />
+          </div>
+        }
+      >
+        <div className="grid grid-cols-4">Filter</div>
+      </FilterPanel>
+
       <div className="px-2">
         {vendors
           ?.filter?.((vendor) => vendor?.name?.toUpperCase?.()?.includes(searchValue?.toUpperCase()))

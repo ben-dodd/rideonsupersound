@@ -17,6 +17,10 @@ export enum RoleTypes {
   RS = 'Retail Samurai',
 }
 
+export interface ViewModeTypes {
+  viewModes: 'table' | 'list' | 'sheet'
+}
+
 export interface ClerkObject {
   id: number
   name?: string
