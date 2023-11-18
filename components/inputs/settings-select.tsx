@@ -22,7 +22,7 @@ export default function SettingsSelect({
   dbField,
   inputLabel,
   isMulti,
-  isDisabled,
+  isDisabled = false,
   isClearable,
   isCreateDisabled,
   sorted = true,

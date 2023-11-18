@@ -1,14 +1,15 @@
-import LoadMoreButton from 'components/button/load-more-button'
 import SearchInput from 'components/inputs/search-input'
 import { useStockList } from 'lib/api/stock'
 import { useAppStore } from 'lib/store'
 import { Pages } from 'lib/store/types'
 import { useState } from 'react'
-import StockListItem from './stock-list-item'
 import StockFilter from './filter'
+import DataTable from 'components/table/data-table'
+import { StockItemObject } from 'lib/types/stock'
+import { getItemSku } from 'lib/functions/displayInventory'
 
 const StockList = () => {
-  const { stockList } = useStockList()
+  const { stockList, isStockListLoading } = useStockList()
   const {
     stockPage: { searchBar },
     setSearchBar,
@@ -40,6 +41,20 @@ const StockList = () => {
     )
     ?.reverse()
 
+  const stockSchema = [
+    { key: 'id', header: 'Stock ID' },
+    { key: 'vendorId', header: 'Vendor ID' },
+    { key: 'sku', header: 'SKU', getValue: (row: StockItemObject) => getItemSku(row), isLocked: true },
+    {
+      key: 'artist',
+      header: 'Artist',
+    },
+    {
+      key: 'title',
+      header: 'Title',
+    },
+  ]
+
   return (
     <div className="h-content overflow-y-scroll">
       <div className="px-2 flex justify-between w-full">
@@ -47,10 +62,11 @@ const StockList = () => {
         <StockFilter stockList={stockList} setSettings={setSetting} filterSettings={filterSettings} />
       </div>
       <div className="px-2">
-        {filteredList?.slice(0, limit)?.map((stockItem) => (
+        <DataTable initData={filteredList} initSchema={stockSchema} isLoading={isStockListLoading} />
+        {/* {filteredList?.slice(0, limit)?.map((stockItem) => (
           <StockListItem key={stockItem?.id} stockListItem={stockItem} />
         ))}
-        {limit < filteredList?.length && <LoadMoreButton onClick={() => setLimit((limit) => limit + 30)} />}
+        {limit < filteredList?.length && <LoadMoreButton onClick={() => setLimit((limit) => limit + 30)} />} */}
       </div>
     </div>
   )

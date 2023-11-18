@@ -13,6 +13,7 @@ const DataTable = ({ initData, initSchema, isLoading }) => {
     dtClearSelection,
     dtClearCellRange,
     dtGetSelectionAsText,
+    dtSetData,
     // undo,
     // redo,
     dtSetSchema,
@@ -56,6 +57,8 @@ const DataTable = ({ initData, initSchema, isLoading }) => {
   }, [])
   // }, [undo])
   useEffect(() => {
+    dtSetData(initData)
+    dtSetSchema(initSchema)
     dtSetInitialWidthRatios(getColumnRatios(schema, data))
   }, [isLoading])
 

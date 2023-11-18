@@ -502,6 +502,13 @@ export const useAppStore = createSelectors(
       loading: false,
       error: '',
     },
+    dtSetData: (data) => {
+      set(
+        produce((draft) => {
+          draft.dataTable.data = data
+        }),
+      )
+    },
     dtGetSelection: () => {
       const selection = []
       const [topLeft, bottomRight] = getSelectionCorners(get().dataTable.active, get().dataTable.corner)
@@ -533,6 +540,9 @@ export const useAppStore = createSelectors(
     dtSetCell: (cellRef, value) => {
       set(
         produce((draft) => {
+          console.log(cellRef)
+          console.log(get().dataTable.schema)
+          console.log(get().dataTable.schema[cellRef[1]])
           const propName = draft.dataTable.schema[cellRef[1]].key
           draft.dataTable.data[cellRef[0]][propName] = value
         }),
@@ -612,7 +622,7 @@ export const useAppStore = createSelectors(
           } else if (evt.key === 'ArrowUp' || (evt.key === 'Enter' && evt.shiftKey)) {
             draft.dataTable.corner[0] = draft.dataTable.corner[0] === 0 ? 0 : draft.dataTable.corner[0] - 1
           } else if (evt.key === 'ArrowDown' || (evt.key === 'Enter' && !evt.shiftKey)) {
-            const maxRow = draft.dataTable.stock.length - 1
+            const maxRow = draft.dataTable.data.length - 1
             draft.dataTable.corner[0] = draft.dataTable.corner[0] === maxRow ? maxRow : draft.dataTable.corner[0] + 1
           }
           if (!evt.shiftKey || evt.key === 'Enter' || evt.key === 'Tab') {

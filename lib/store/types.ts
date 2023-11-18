@@ -149,6 +149,7 @@ export interface StoreState {
   resetPage: (page: Pages) => void
   setOption: (option: string, value: any) => void
   dtGetSelection: () => any[]
+  dtSetData: (data: any[]) => void
   dtGetSelectionAsText: () => string
   dtSetSchema: (schema: any[]) => void
   dtSetCell: (cellRef: any[], value: string) => void
