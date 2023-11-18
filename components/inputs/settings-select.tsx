@@ -1,8 +1,5 @@
 import { createSetting, useSetting } from 'lib/api/settings'
-import { parseJSON } from 'lib/utils'
-import { useState } from 'react'
-import Select from 'react-select'
-import CreatableSelect from 'react-select/creatable'
+import SelectInput from './select-input'
 
 interface SettingsSelectProps {
   object?: any
@@ -34,7 +31,6 @@ export default function SettingsSelect({
   className,
 }: SettingsSelectProps) {
   const { selects, isSelectsLoading } = useSetting(dbField)
-  const [isLoading, setLoading] = useState(false)
   const options = sorted
     ? selects?.sort()?.map((opt: string) => ({
         value: opt,
@@ -46,118 +42,22 @@ export default function SettingsSelect({
       }))
 
   return (
-    <div className={className}>
-      <div className="input-label">{inputLabel}</div>
-      {isCreateDisabled ? (
-        <Select
-          style={{ menu: { zIndex: 5000, position: 'absolute' } }}
-          classNamePrefix="react-select mt-0"
-          isMulti={isMulti || false}
-          isDisabled={isLoading || isSelectsLoading || isDisabled || false}
-          isLoading={isLoading || isSelectsLoading || false}
-          isClearable={isClearable || true}
-          options={options}
-          value={
-            dbField
-              ? isMulti
-                ? Array.isArray(object?.[dbField])
-                  ? object?.[dbField]?.map((val: string) => ({
-                      value: val,
-                      label: val,
-                    }))
-                  : Array.isArray(parseJSON(object?.[dbField]))
-                  ? parseJSON(object?.[dbField])?.map((val: string) => ({
-                      value: val,
-                      label: val,
-                    }))
-                  : object?.[dbField]
-                  ? [
-                      {
-                        value: object?.[dbField] || '',
-                        label: object?.[dbField] || '',
-                      },
-                    ]
-                  : []
-                : {
-                    value: object?.[dbField] || '',
-                    label: object?.[dbField] || '',
-                  }
-              : null
-          }
-          onChange={(e: any) => {
-            customEdit
-              ? customEdit(e)
-              : isMulti
-              ? onEdit({
-                  ...object,
-                  [dbField]: e ? e.map((obj: any) => obj.value) : [],
-                })
-              : onEdit({ ...object, [dbField]: e?.value || null })
-          }}
-        />
-      ) : (
-        <CreatableSelect
-          style={{ menu: { zIndex: 5000, position: 'absolute' } }}
-          classNamePrefix="react-select mt-0"
-          isMulti={isMulti || false}
-          isDisabled={isLoading || isSelectsLoading || isDisabled || false}
-          isLoading={isLoading || isSelectsLoading || false}
-          isClearable={isClearable || true}
-          delimiter={delimiter || null}
-          value={
-            dbField
-              ? isMulti
-                ? Array.isArray(object?.[dbField])
-                  ? object?.[dbField]?.map((val: string) => ({
-                      value: val,
-                      label: val,
-                    }))
-                  : object?.[dbField]
-                  ? [
-                      {
-                        value: object?.[dbField] || '',
-                        label: object?.[dbField] || '',
-                      },
-                    ]
-                  : []
-                : {
-                    value: object?.[dbField] || '',
-                    label: object?.[dbField] || '',
-                  }
-              : null
-          }
-          onChange={(e: any) => {
-            customEdit
-              ? customEdit(e)
-              : isMulti
-              ? onEdit({
-                  ...object,
-                  [dbField]: e ? e.map((obj: any) => obj.value) : [],
-                })
-              : onEdit({ ...object, [dbField]: e?.value || null })
-          }}
-          onCreateOption={(inputValue: string) => {
-            if (!isCreateDisabled) {
-              setLoading(true)
-              createSetting({ label: inputValue, settingSelect: dbField })
-              if (isMulti)
-                onEdit({
-                  ...object,
-                  [dbField]: inputValue
-                    ? object?.[dbField]
-                      ? Array.isArray(object[dbField])
-                        ? [...object[dbField], inputValue]
-                        : [object[dbField], inputValue]
-                      : [inputValue]
-                    : [],
-                })
-              else onEdit({ ...object, [dbField]: inputValue || null })
-              setLoading(false)
-            }
-          }}
-          options={options}
-        />
-      )}
-    </div>
+    <SelectInput
+      options={options}
+      isInitLoading={isSelectsLoading}
+      className={className}
+      isCreateDisabled={isCreateDisabled}
+      isMulti={isMulti}
+      isDisabled={isDisabled}
+      isClearable={isClearable}
+      delimiter={delimiter}
+      dbField={dbField}
+      object={object}
+      customEdit={customEdit}
+      onEdit={onEdit}
+      sorted={sorted}
+      inputLabel={inputLabel}
+      onCreateValue={(inputValue) => createSetting({ label: inputValue, settingSelect: dbField })}
+    />
   )
 }

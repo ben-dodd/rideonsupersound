@@ -1,4 +1,5 @@
 import { List, TableChart } from '@mui/icons-material'
+import { Tooltip } from '@mui/material'
 import { useAppStore } from 'lib/store'
 
 interface ViewModeTypes {
@@ -17,15 +18,16 @@ const ViewButton = () => {
   return (
     <div className="rounded-md shadow-md flex overflow-hidden">
       {viewModes?.map((mode) => (
-        <div
-          key={mode.mode}
-          className={`${
-            mode.mode === viewMode ? 'bg-blue-500 hover:bg-blue-400' : 'bg-gray-200 hover:bg-gray-300'
-          } w-30 p-1 overflow-hidden cursor-pointer`}
-          onClick={() => setViewMode(mode.mode)}
-        >
-          {mode.icon}
-        </div>
+        <Tooltip key={mode.mode} title={mode.tooltip}>
+          <div
+            className={`${
+              mode.mode === viewMode ? 'bg-blue-500 hover:bg-blue-400' : 'bg-gray-200 hover:bg-gray-300'
+            } w-30 p-1 overflow-hidden cursor-pointer`}
+            onClick={() => setViewMode(mode.mode)}
+          >
+            {mode.icon}
+          </div>
+        </Tooltip>
       ))}
     </div>
   )

@@ -5,6 +5,7 @@ import { useAppStore } from 'lib/store'
 import { Pages } from 'lib/store/types'
 import { useState } from 'react'
 import StockListItem from './stock-list-item'
+import StockFilter from './filter'
 
 const StockList = () => {
   const { stockList } = useStockList()
@@ -14,18 +15,36 @@ const StockList = () => {
   } = useAppStore()
   const [limit, setLimit] = useState(30)
 
+  const [filterSettings, setFilterSettings] = useState({
+    sortBy: [],
+    artist: [],
+    vendor: [],
+  })
+
+  const setSetting = (setting, e) => {
+    setFilterSettings((settings) => ({
+      ...settings,
+      [setting]: e ? e.map((obj: any) => obj.value) : [],
+    }))
+  }
+
+  console.log(filterSettings)
+
   const handleSearch = (e) => setSearchBar(Pages.stockPage, e.target.value)
+
   const filteredList = stockList
-    ?.filter?.((stockItem) =>
-      `${stockItem?.artist} ${stockItem?.title}`?.toUpperCase?.()?.includes(searchBar?.toUpperCase()),
+    ?.filter?.(
+      (stockItem) =>
+        (filterSettings?.artist?.length === 0 || filterSettings.artist?.includes(stockItem?.artist)) &&
+        `${stockItem?.artist} ${stockItem?.title}`?.toUpperCase?.()?.includes(searchBar?.toUpperCase()),
     )
     ?.reverse()
 
   return (
     <div className="h-content overflow-y-scroll">
-      <div className="px-2 flex justify-between">
+      <div className="px-2 flex justify-between w-full">
         <SearchInput searchValue={searchBar} handleSearch={handleSearch} />
-        <div className="flex ml-2"></div>
+        <StockFilter stockList={stockList} setSettings={setSetting} filterSettings={filterSettings} />
       </div>
       <div className="px-2">
         {filteredList?.slice(0, limit)?.map((stockItem) => (

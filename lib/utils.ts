@@ -163,6 +163,14 @@ export function getObjectDifference(obj1, obj2) {
   return diffObj
 }
 
+export function getUniqueValues(field, array) {
+  return Array.from(new Set(array?.map((item: any) => item[field])))?.sort() || []
+}
+
+export function arrayToReactSelect(array) {
+  return array?.map((val) => ({ value: val || '', label: val || '' }))
+}
+
 // function convertToArray(dataFromDatabase) {
 //   // Check if the data is a string
 //   if (typeof dataFromDatabase === 'string') {
