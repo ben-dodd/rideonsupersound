@@ -4,9 +4,10 @@ import { useAppStore } from 'lib/store'
 import { Pages } from 'lib/store/types'
 import { useState } from 'react'
 import StockFilter from './filter'
-import DataTable from 'components/table/data-table'
 import { StockItemObject } from 'lib/types/stock'
 import { getItemSku } from 'lib/functions/displayInventory'
+import StockListItem from './stock-list-item'
+import LoadMoreButton from 'components/button/load-more-button'
 
 const StockList = () => {
   const { stockList, isStockListLoading } = useStockList()
@@ -62,11 +63,11 @@ const StockList = () => {
         <StockFilter stockList={stockList} setSettings={setSetting} filterSettings={filterSettings} />
       </div>
       <div className="px-2">
-        <DataTable initData={filteredList} initSchema={stockSchema} isLoading={isStockListLoading} />
-        {/* {filteredList?.slice(0, limit)?.map((stockItem) => (
+        {/* <DataTable initData={filteredList} initSchema={stockSchema} isLoading={isStockListLoading} /> */}
+        {filteredList?.slice(0, limit)?.map((stockItem) => (
           <StockListItem key={stockItem?.id} stockListItem={stockItem} />
         ))}
-        {limit < filteredList?.length && <LoadMoreButton onClick={() => setLimit((limit) => limit + 30)} />} */}
+        {limit < filteredList?.length && <LoadMoreButton onClick={() => setLimit((limit) => limit + 30)} />}
       </div>
     </div>
   )
