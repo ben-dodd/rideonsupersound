@@ -82,9 +82,9 @@ export default function VendorScreen() {
   const [totalTake, setTotalTake] = useState(0)
   const [totalPaid, setTotalPaid] = useState(0)
 
-  console.log(vendorSales)
-  console.log(vendorStockPrice)
-  console.log(vendorStockMovement)
+  // console.log(vendorSales)
+  // console.log(vendorStockPrice)
+  // console.log(vendorStockMovement)
 
   useEffect(() => {
     const totalSales = vendorSales?.map((sale) => {

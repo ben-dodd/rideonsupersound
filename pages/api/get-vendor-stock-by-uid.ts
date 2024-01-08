@@ -1,9 +1,9 @@
-import { StockMovementTypes } from "@/lib/types";
-import { NextApiHandler } from "next";
-import { query } from "../../lib/db";
+import { StockMovementTypes } from '@/lib/types'
+import { NextApiHandler } from 'next'
+import { query } from '../../lib/db'
 
 const handler: NextApiHandler = async (req, res) => {
-  const { uid } = req.query;
+  const { uid } = req.query
   try {
     const results = await query(
       `
@@ -40,13 +40,13 @@ const handler: NextApiHandler = async (req, res) => {
         (SELECT stock_id, SUM(quantity) AS quantity FROM stock_movement GROUP BY stock_id) AS q
         ON q.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_hold FROM stock_movement WHERE act = '${StockMovementTypes.Hold}' GROUP BY stock_id) AS hol
+        (SELECT stock_id, SUM(quantity) AS quantity_hold FROM stock_movement WHERE act = '${StockMovementTypes.Hold}' OR act = '${StockMovementTypes.Unhold}' GROUP BY stock_id) AS hol
         ON hol.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_layby FROM stock_movement WHERE act = '${StockMovementTypes.Layby}' GROUP BY stock_id) AS lay
+        (SELECT stock_id, SUM(quantity) AS quantity_layby FROM stock_movement WHERE act = '${StockMovementTypes.Layby}' OR act='${StockMovementTypes.Unlayby}' GROUP BY stock_id) AS lay
         ON lay.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_sold FROM stock_movement WHERE act = '${StockMovementTypes.Sold}' GROUP BY stock_id) AS sol
+        (SELECT stock_id, SUM(quantity) AS quantity_sold FROM stock_movement WHERE act = '${StockMovementTypes.Sold}' OR act = '${StockMovementTypes.Unsold}' GROUP BY stock_id) AS sol
         ON sol.stock_id = s.id
       LEFT JOIN stock_price AS p ON p.stock_id = s.id
       WHERE
@@ -61,12 +61,12 @@ const handler: NextApiHandler = async (req, res) => {
         )
       `,
       uid
-    );
+    )
 
-    return res.json(results);
+    return res.json(results)
   } catch (e) {
-    res.status(500).json({ message: e.message });
+    res.status(500).json({ message: e.message })
   }
-};
+}
 
-export default handler;
+export default handler
