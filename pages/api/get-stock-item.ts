@@ -1,12 +1,12 @@
-import { NextApiHandler } from "next";
-import { query } from "@/lib/db";
-import { StockMovementTypes } from "@/lib/types";
+import { NextApiHandler } from 'next'
+import { query } from '@/lib/db'
+import { StockMovementTypes } from '@/lib/types'
 
 const handler: NextApiHandler = async (req, res) => {
-  const { stock_id, k } = req.query;
+  const { stock_id, k } = req.query
   try {
     if (!k || k !== process.env.NEXT_PUBLIC_SWR_API_KEY)
-      return res.status(401).json({ message: "Resource Denied." });
+      return res.status(401).json({ message: 'Resource Denied.' })
     const results = await query(
       `
       SELECT
@@ -17,13 +17,9 @@ const handler: NextApiHandler = async (req, res) => {
         rec.quantity_received,
         ret.quantity_returned,
         sol.quantity_sold,
-        uns.quantity_unsold,
         hol.quantity_hold,
-        unh.quantity_unhold,
         lay.quantity_layby,
-        unl.quantity_unlayby,
         los.quantity_lost,
-        fou.quantity_found,
         dis.quantity_discarded,
         adj.quantity_adjustment
       FROM stock AS s
@@ -37,29 +33,17 @@ const handler: NextApiHandler = async (req, res) => {
         (SELECT stock_id, SUM(quantity) AS quantity_returned FROM stock_movement WHERE act = '${StockMovementTypes.Returned}' GROUP BY stock_id) AS ret
         ON ret.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_sold FROM stock_movement WHERE act = '${StockMovementTypes.Sold}' GROUP BY stock_id) AS sol
+        (SELECT stock_id, SUM(quantity) AS quantity_sold FROM stock_movement WHERE act = '${StockMovementTypes.Sold}' OR ${StockMovementTypes.Unsold} GROUP BY stock_id) AS sol
         ON sol.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_unsold FROM stock_movement WHERE act = '${StockMovementTypes.Unsold}' GROUP BY stock_id) AS uns
-        ON uns.stock_id = s.id
-      LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_hold FROM stock_movement WHERE act = '${StockMovementTypes.Hold}' GROUP BY stock_id) AS hol
+        (SELECT stock_id, SUM(quantity) AS quantity_hold FROM stock_movement WHERE act = '${StockMovementTypes.Hold}' OR ${StockMovementTypes.Unhold} GROUP BY stock_id) AS hol
         ON hol.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_unhold FROM stock_movement WHERE act = '${StockMovementTypes.Unhold}' GROUP BY stock_id) AS unh
-        ON unh.stock_id = s.id
-      LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_layby FROM stock_movement WHERE act = '${StockMovementTypes.Layby}' GROUP BY stock_id) AS lay
+        (SELECT stock_id, SUM(quantity) AS quantity_layby FROM stock_movement WHERE act = '${StockMovementTypes.Layby}' OR ${StockMovementTypes.Unlayby} GROUP BY stock_id) AS lay
         ON lay.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_unlayby FROM stock_movement WHERE act = '${StockMovementTypes.Unlayby}' GROUP BY stock_id) AS unl
-        ON unl.stock_id = s.id
-      LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_lost FROM stock_movement WHERE act = '${StockMovementTypes.Lost}' GROUP BY stock_id) AS los
+        (SELECT stock_id, SUM(quantity) AS quantity_lost FROM stock_movement WHERE act = '${StockMovementTypes.Lost}' OR act = '${StockMovementTypes.Found}' GROUP BY stock_id) AS los
         ON los.stock_id = s.id
-      LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_found FROM stock_movement WHERE act = '${StockMovementTypes.Found}' GROUP BY stock_id) AS fou
-        ON fou.stock_id = s.id
       LEFT JOIN
         (SELECT stock_id, SUM(quantity) AS quantity_discarded FROM stock_movement WHERE act = '${StockMovementTypes.Discarded}' GROUP BY stock_id) AS dis
         ON dis.stock_id = s.id
@@ -77,12 +61,12 @@ const handler: NextApiHandler = async (req, res) => {
       AND s.id = ?
       `,
       stock_id
-    );
+    )
 
-    return res.json(results);
+    return res.json(results)
   } catch (e) {
-    res.status(500).json({ message: e.message });
+    res.status(500).json({ message: e.message })
   }
-};
+}
 
-export default handler;
+export default handler

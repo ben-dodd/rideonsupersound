@@ -51,12 +51,7 @@ export default function List() {
               : 0,
           quantity: t?.quantity || 0,
           quantityReceived: t?.quantity_received || 0,
-          quantityHoldLayby:
-            (t?.quantity_layby +
-              t?.quantity_hold +
-              t?.quantity_unlayby +
-              t?.quantity_unhold) *
-              -1 || 0,
+          quantityHoldLayby: (t?.quantity_layby + t?.quantity_hold) * -1 || 0,
           quantityReturned: Math.abs(t?.quantity_returned || 0),
           quantitySold: Math.abs(t?.quantity_sold || 0),
         })),

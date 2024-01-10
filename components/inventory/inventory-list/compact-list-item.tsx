@@ -81,16 +81,12 @@ export default function ListItem({ item }: ListItemProps) {
           <div
             className={`${itemQuantity < 1 && 'text-red-500'}`}
           >{`${itemQuantity} in stock${
-            (item?.quantity_hold || 0) + (item?.quantity_unhold || 0) > 0
-              ? `, ${-(
-                  (item?.quantity_hold || 0) + (item?.quantity_unhold || 0)
-                )} on hold`
+            item?.quantity_hold || 0 > 0
+              ? `, ${-(item?.quantity_hold || 0)} on hold`
               : ''
           }${
-            (item?.quantity_layby || 0) + (item?.quantity_unlayby || 0) > 0
-              ? `, ${-(
-                  (item?.quantity_layby || 0) + (item?.quantity_unlayby || 0)
-                )} on layby`
+            item?.quantity_layby || 0 > 0
+              ? `, ${-(item?.quantity_layby || 0)} on layby`
               : ''
           }`}</div>
         </Tooltip>
