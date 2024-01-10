@@ -246,7 +246,7 @@ export async function saveSaleItemsTransactionsToDatabase(
     if (!item?.is_gift_card && !item?.is_misc_item) {
       if (cart?.state === SaleStateTypes.Completed) {
         // If it was a layby, unlayby it before marking as sold
-        if (prevState === SaleStateTypes.Layby && !item?.is_gift_card) {
+        if (prevState === SaleStateTypes.Layby) {
           saveStockMovementToDatabase(
             item,
             clerk,

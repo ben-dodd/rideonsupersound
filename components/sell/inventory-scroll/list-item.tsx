@@ -11,7 +11,13 @@ import {
   alertAtom,
   sellSearchBarAtom,
 } from '@/lib/atoms'
-import { useWeather, useInventory, useLogs, useVendors } from '@/lib/swr-hooks'
+import {
+  useWeather,
+  useInventory,
+  useLogs,
+  useVendors,
+  useStockItemImage,
+} from '@/lib/swr-hooks'
 import { StockObject, VendorObject } from '@/lib/types'
 
 // Components
@@ -45,6 +51,7 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
   const { inventory } = useInventory()
   const { vendors } = useVendors()
   const { logs, mutateLogs } = useLogs()
+  const { stockItemImage } = useStockItemImage(item?.id)
 
   // Atoms
   const [cart, setCart] = useAtom(cartAtom)
@@ -153,7 +160,10 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
             width="100%"
             // layout="fill"
             // objectFit="cover"
-            src={getImageSrc(item)}
+            src={getImageSrc({
+              ...item,
+              image_url: stockItemImage || item?.image_url,
+            })}
             alt={item?.title || 'Inventory image'}
           />
         </div>

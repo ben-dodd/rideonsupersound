@@ -140,6 +140,18 @@ export function useStockItem(stock_id: number) {
   }
 }
 
+export function useStockItemImage(stock_id: number) {
+  const { data, error, mutate } = useSWR(
+    `/api/get-stock-item-image?stock_id=${stock_id}`,
+    fetcher
+  )
+  return {
+    stockItemImage: data?.[0],
+    isStockItemImageLoading: !error && !data,
+    isStockItemImageError: error,
+  }
+}
+
 export function useSaleById(sale_id: number) {
   const { data, error, mutate } = useSWR(
     `/api/get-sale-by-id?sale_id=${sale_id}`,
