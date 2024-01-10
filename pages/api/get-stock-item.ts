@@ -33,13 +33,13 @@ const handler: NextApiHandler = async (req, res) => {
         (SELECT stock_id, SUM(quantity) AS quantity_returned FROM stock_movement WHERE act = '${StockMovementTypes.Returned}' GROUP BY stock_id) AS ret
         ON ret.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_sold FROM stock_movement WHERE act = '${StockMovementTypes.Sold}' OR ${StockMovementTypes.Unsold} GROUP BY stock_id) AS sol
+        (SELECT stock_id, SUM(quantity) AS quantity_sold FROM stock_movement WHERE act = '${StockMovementTypes.Sold}' OR act = '${StockMovementTypes.Unsold}' GROUP BY stock_id) AS sol
         ON sol.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_hold FROM stock_movement WHERE act = '${StockMovementTypes.Hold}' OR ${StockMovementTypes.Unhold} GROUP BY stock_id) AS hol
+        (SELECT stock_id, SUM(quantity) AS quantity_hold FROM stock_movement WHERE act = '${StockMovementTypes.Hold}' OR act = '${StockMovementTypes.Unhold}' GROUP BY stock_id) AS hol
         ON hol.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_layby FROM stock_movement WHERE act = '${StockMovementTypes.Layby}' OR ${StockMovementTypes.Unlayby} GROUP BY stock_id) AS lay
+        (SELECT stock_id, SUM(quantity) AS quantity_layby FROM stock_movement WHERE act = '${StockMovementTypes.Layby}' OR act = '${StockMovementTypes.Unlayby}' GROUP BY stock_id) AS lay
         ON lay.stock_id = s.id
       LEFT JOIN
         (SELECT stock_id, SUM(quantity) AS quantity_lost FROM stock_movement WHERE act = '${StockMovementTypes.Lost}' OR act = '${StockMovementTypes.Found}' GROUP BY stock_id) AS los
