@@ -146,7 +146,7 @@ export function useStockItemImage(stock_id: number) {
     fetcher
   )
   return {
-    stockItemImage: data?.[0],
+    stockItemImage: data?.[0]?.image_url || null,
     isStockItemImageLoading: !error && !data,
     isStockItemImageError: error,
   }
