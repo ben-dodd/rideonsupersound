@@ -1,6 +1,6 @@
 // Packages
-import { useEffect, useState } from "react";
-import { useAtom } from "jotai";
+import { useEffect, useState } from 'react'
+import { useAtom } from 'jotai'
 
 // DB
 import {
@@ -12,7 +12,7 @@ import {
   useRegisterID,
   useWeather,
   useLogs,
-} from "@/lib/swr-hooks";
+} from '@/lib/swr-hooks'
 import {
   viewAtom,
   clerkAtom,
@@ -20,14 +20,14 @@ import {
   pageAtom,
   alertAtom,
   cartAtom,
-} from "@/lib/atoms";
+} from '@/lib/atoms'
 import {
   ModalButton,
   HoldObject,
   CustomerObject,
   ClerkObject,
   StockObject,
-} from "@/lib/types";
+} from '@/lib/types'
 
 // Functions
 import {
@@ -36,81 +36,84 @@ import {
   loadSaleToCart,
   saveLog,
   saveSystemLog,
-} from "@/lib/db-functions";
+} from '@/lib/db-functions'
 
 // Components
-import Modal from "@/components/_components/container/modal";
-import TextField from "@/components/_components/inputs/text-field";
-import HoldListItem from "./list-item";
-import dayjs from "dayjs";
-import { getItemDisplayName } from "@/lib/data-functions";
+import Modal from '@/components/_components/container/modal'
+import TextField from '@/components/_components/inputs/text-field'
+import HoldListItem from './list-item'
+import dayjs from 'dayjs'
+import { getItemDisplayName } from '@/lib/data-functions'
 
 export default function HoldDialog() {
-  const { weather } = useWeather();
+  const { weather } = useWeather()
   // State
-  const [geolocation, setGeolocation] = useState(null);
+  const [geolocation, setGeolocation] = useState(null)
 
   useEffect(() => {
     if (!navigator.geolocation) {
-      console.log("Geolocation is not supported by your browser");
+      console.log('Geolocation is not supported by your browser')
     } else {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setGeolocation(position?.coords);
+          setGeolocation(position?.coords)
         },
-        () => console.log("Unable to retrieve location.")
-      );
+        () => console.log('Unable to retrieve location.')
+      )
     }
-  }, []);
+  }, [])
   // Atoms
-  const [view, setView] = useAtom(viewAtom);
-  const [, setAlert] = useAtom(alertAtom);
-  const [loadedHoldId, setLoadedHoldId] = useAtom(loadedHoldIdAtom);
-  const [clerk] = useAtom(clerkAtom);
-  const [page, setPage] = useAtom(pageAtom);
-  const [cart, setCart] = useAtom(cartAtom);
+  const [view, setView] = useAtom(viewAtom)
+  const [, setAlert] = useAtom(alertAtom)
+  const [loadedHoldId, setLoadedHoldId] = useAtom(loadedHoldIdAtom)
+  const [clerk] = useAtom(clerkAtom)
+  const [page, setPage] = useAtom(pageAtom)
+  const [cart, setCart] = useAtom(cartAtom)
 
   // SWR
-  const { holds, isHoldsLoading, mutateHolds } = useHolds();
-  const { inventory, mutateInventory } = useInventory();
-  const { logs, mutateLogs } = useLogs();
-  const { customers } = useCustomers();
-  const { clerks } = useClerks();
-  const { registerID } = useRegisterID();
+  const { holds, isHoldsLoading, mutateHolds } = useHolds()
+  const { inventory, mutateInventory } = useInventory()
+  const { logs, mutateLogs } = useLogs()
+  const { customers } = useCustomers()
+  const { clerks } = useClerks()
+  const { registerID } = useRegisterID()
 
   // States
   const originalHold = holds?.filter(
     (h: HoldObject) => h?.id === loadedHoldId[page]
-  )[0];
-  const [hold, setHold] = useState(originalHold);
+  )[0]
+  const [hold, setHold] = useState(originalHold)
+  const [disableHoldButton, setDisabledHoldButton] = useState(false)
   const customerName = customers?.filter(
     (c: CustomerObject) => c?.id === hold?.customer_id
-  )[0]?.name;
+  )[0]?.name
   const clerkName = clerks?.filter(
     (c: ClerkObject) => c?.id === hold?.started_by
-  )[0]?.name;
+  )[0]?.name
 
   function closeDialog() {
-    setLoadedHoldId({ ...loadedHoldId, [page]: 0 });
-    setHold(null);
+    setLoadedHoldId({ ...loadedHoldId, [page]: 0 })
+    setHold(null)
   }
 
   // Constants
   const buttons: ModalButton[] = [
     {
-      type: "cancel",
-      text: "Return to Stock",
-      onClick: () => {
-        saveSystemLog("Hold dialog - Return hold to stock clicked.", clerk?.id);
-        returnHoldToStock(
+      type: 'cancel',
+      text: 'Return to Stock',
+      disabled: disableHoldButton,
+      onClick: async () => {
+        setDisabledHoldButton(true)
+        saveSystemLog('Hold dialog - Return hold to stock clicked.', clerk?.id)
+        await returnHoldToStock(
           hold,
           clerk,
           holds,
           mutateHolds,
           mutateInventory,
           registerID
-        );
-        closeDialog();
+        )
+        closeDialog()
         saveLog(
           {
             log: `${getItemDisplayName(
@@ -120,52 +123,53 @@ export default function HoldDialog() {
           },
           logs,
           mutateLogs
-        );
+        )
         setAlert({
           open: true,
-          type: "success",
+          type: 'success',
           message: `ITEM RETURNED TO STOCK FROM HOLD`,
-        });
+        })
+        setDisabledHoldButton(false)
       },
     },
     {
-      type: "alt1",
-      text: "Add To Cart",
+      type: 'alt1',
+      text: 'Add To Cart',
       onClick: addHoldToCart,
     },
     {
-      type: "ok",
-      text: "Update",
+      type: 'ok',
+      text: 'Update',
       disabled:
         (hold?.hold_period === originalHold?.hold_period &&
           hold?.note === originalHold?.note) ||
         isNaN(parseInt(hold?.hold_period)),
       onClick: () => {
-        saveSystemLog("Hold dialog - Update hold clicked.", clerk?.id);
+        saveSystemLog('Hold dialog - Update hold clicked.', clerk?.id)
         if (hold?.hold_period !== null || hold?.note !== null) {
           const otherHolds = holds?.filter(
             (h: HoldObject) => h?.id !== loadedHoldId
-          );
-          mutateHolds([...otherHolds, hold], false);
-          updateHoldInDatabase(hold);
+          )
+          mutateHolds([...otherHolds, hold], false)
+          updateHoldInDatabase(hold)
         }
-        closeDialog();
+        closeDialog()
       },
     },
-  ];
+  ]
 
   return (
     <Modal
       open={Boolean(loadedHoldId[page])}
       closeFunction={closeDialog}
-      title={"HOLD ITEM"}
+      title={'HOLD ITEM'}
       loading={isHoldsLoading}
       buttons={buttons}
     >
       <>
         <HoldListItem cartItem={hold} />
         <div>{`Item held for ${customerName} (hold set up by ${clerkName})`}</div>
-        <div>{`Item held for ${dayjs().diff(hold?.date_from, "day")} of ${
+        <div>{`Item held for ${dayjs().diff(hold?.date_from, 'day')} of ${
           hold?.hold_period || 30
         } days.`}</div>
         <TextField
@@ -187,11 +191,11 @@ export default function HoldDialog() {
         />
       </>
     </Modal>
-  );
+  )
 
   function addHoldToCart() {
     // TODO do we need to check if it is another customer?
-    saveSystemLog("Hold dialog - Add hold to cart.", clerk?.id);
+    saveSystemLog('Hold dialog - Add hold to cart.', clerk?.id)
     returnHoldToStock(
       hold,
       clerk,
@@ -199,22 +203,22 @@ export default function HoldDialog() {
       mutateHolds,
       mutateInventory,
       registerID
-    );
-    closeDialog();
+    )
+    closeDialog()
 
-    let newItems = cart?.items || [];
+    let newItems = cart?.items || []
     let index = newItems.findIndex(
       (cartItem) => cartItem.item_id === hold?.item_id
-    );
+    )
     if (index < 0)
       newItems.push({
         item_id: hold?.item_id,
         quantity: hold?.quantity,
-      });
+      })
     else
       newItems[index].quantity = `${
         parseInt(newItems[index].quantity) + hold?.quantity
-      }`;
+      }`
     setCart({
       id: cart?.id || null,
       date_sale_opened: cart?.date_sale_opened || dayjs.utc().format(),
@@ -228,23 +232,23 @@ export default function HoldDialog() {
       weather: cart?.weather || weather,
       geo_latitude: cart?.geo_latitude || geolocation?.latitude,
       geo_longitude: cart?.geo_longitude || geolocation?.longitude,
-    });
-    setPage("sell");
-    setView({ ...view, cart: true });
+    })
+    setPage('sell')
+    setView({ ...view, cart: true })
     saveLog(
       {
         log: `${getItemDisplayName(
           inventory?.filter((i: StockObject) => i?.id === hold?.item_id)[0]
-        )} added to cart${cart?.id ? ` (sale #${cart?.id}) from hold` : ""}.`,
+        )} added to cart${cart?.id ? ` (sale #${cart?.id}) from hold` : ''}.`,
         clerk_id: clerk?.id,
       },
       logs,
       mutateLogs
-    );
+    )
     setAlert({
       open: true,
-      type: "success",
+      type: 'success',
       message: `ITEM ADDED TO CART FROM HOLD`,
-    });
+    })
   }
 }
