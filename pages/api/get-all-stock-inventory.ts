@@ -1,12 +1,12 @@
-import { NextApiHandler } from "next";
-import { query } from "../../lib/db";
-import { StockMovementTypes } from "@/lib/types";
+import { NextApiHandler } from 'next'
+import { query } from '../../lib/db'
+import { StockMovementTypes } from '@/lib/types'
 
 const handler: NextApiHandler = async (req, res) => {
-  const { k } = req.query;
+  const { k } = req.query
   try {
     if (!k || k !== process.env.NEXT_PUBLIC_SWR_API_KEY)
-      return res.status(401).json({ message: "Resource Denied." });
+      return res.status(401).json({ message: 'Resource Denied.' })
     const results = await query(
       `
       SELECT
@@ -43,13 +43,13 @@ const handler: NextApiHandler = async (req, res) => {
         (SELECT stock_id, SUM(quantity) AS quantity FROM stock_movement GROUP BY stock_id) AS q
         ON q.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_hold FROM stock_movement WHERE act = '${StockMovementTypes.Hold}' GROUP BY stock_id) AS hol
+        (SELECT stock_id, SUM(quantity) AS quantity_hold FROM stock_movement WHERE NOT is_deleted AND act = '${StockMovementTypes.Hold}' GROUP BY stock_id) AS hol
         ON hol.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_layby FROM stock_movement WHERE act = '${StockMovementTypes.Layby}' GROUP BY stock_id) AS lay
+        (SELECT stock_id, SUM(quantity) AS quantity_layby FROM stock_movement WHERE NOT is_deleted AND act = '${StockMovementTypes.Layby}' GROUP BY stock_id) AS lay
         ON lay.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_sold FROM stock_movement WHERE act = '${StockMovementTypes.Sold}' GROUP BY stock_id) AS sol
+        (SELECT stock_id, SUM(quantity) AS quantity_sold FROM stock_movement WHERE NOT is_deleted AND act = '${StockMovementTypes.Sold}' GROUP BY stock_id) AS sol
         ON sol.stock_id = s.id
       LEFT JOIN stock_price AS p ON p.stock_id = s.id
       WHERE
@@ -59,17 +59,17 @@ const handler: NextApiHandler = async (req, res) => {
             WHERE stock_id = s.id
          ) OR s.is_gift_card OR s.is_misc_item)
       `
-    );
+    )
 
     // AND NOT is_deleted
 
-    return res.json(results);
+    return res.json(results)
   } catch (e) {
-    res.status(500).json({ message: e.message });
+    res.status(500).json({ message: e.message })
   }
-};
+}
 
-export default handler;
+export default handler
 
 // SELECT
 //   s.id,
