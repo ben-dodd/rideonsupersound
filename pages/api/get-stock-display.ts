@@ -28,7 +28,7 @@ const handler: NextApiHandler = async (req, res) => {
         q.quantity
       FROM stock AS s
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity FROM stock_movement GROUP BY stock_id) AS q
+        (SELECT stock_id, SUM(quantity) AS quantity FROM stock_movement WHERE NOT is_deleted GROUP BY stock_id) AS q
         ON q.stock_id = s.id
       LEFT JOIN stock_price AS p ON p.stock_id = s.id
       WHERE

@@ -1,5 +1,5 @@
-import { NextApiHandler } from "next";
-import { query } from "../../lib/db";
+import { NextApiHandler } from 'next'
+import { query } from '../../lib/db'
 
 const handler: NextApiHandler = async (req, res) => {
   try {
@@ -13,7 +13,7 @@ const handler: NextApiHandler = async (req, res) => {
         p.total_sell
       FROM stock AS s
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity FROM stock_movement GROUP BY stock_id) AS q
+        (SELECT stock_id, SUM(quantity) AS quantity FROM stock_movement WHERE NOT is_deleted GROUP BY stock_id) AS q
         ON q.stock_id = s.id
       LEFT JOIN stock_price AS p ON p.stock_id = s.id
       WHERE
@@ -29,12 +29,12 @@ const handler: NextApiHandler = async (req, res) => {
          ) OR s.is_gift_card OR s.is_misc_item)
       ORDER BY s.format, s.artist, s.title
       `
-    );
+    )
 
-    return res.json(results);
+    return res.json(results)
   } catch (e) {
-    res.status(500).json({ message: e.message });
+    res.status(500).json({ message: e.message })
   }
-};
+}
 
-export default handler;
+export default handler
