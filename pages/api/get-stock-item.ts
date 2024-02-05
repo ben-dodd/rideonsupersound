@@ -24,31 +24,31 @@ const handler: NextApiHandler = async (req, res) => {
         adj.quantity_adjustment
       FROM stock AS s
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity FROM stock_movement GROUP BY stock_id) AS q
+        (SELECT stock_id, SUM(quantity) AS quantity FROM stock_movement WHERE NOT is_deleted GROUP BY stock_id) AS q
         ON q.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_received FROM stock_movement WHERE act = '${StockMovementTypes.Received}' GROUP BY stock_id) AS rec
+        (SELECT stock_id, SUM(quantity) AS quantity_received FROM stock_movement WHERE NOT is_deleted AND act = '${StockMovementTypes.Received}' GROUP BY stock_id) AS rec
         ON rec.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_returned FROM stock_movement WHERE act = '${StockMovementTypes.Returned}' GROUP BY stock_id) AS ret
+        (SELECT stock_id, SUM(quantity) AS quantity_returned FROM stock_movement WHERE NOT is_deleted AND act = '${StockMovementTypes.Returned}' GROUP BY stock_id) AS ret
         ON ret.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_sold FROM stock_movement WHERE act = '${StockMovementTypes.Sold}' OR act = '${StockMovementTypes.Unsold}' GROUP BY stock_id) AS sol
+        (SELECT stock_id, SUM(quantity) AS quantity_sold FROM stock_movement WHERE NOT is_deleted AND (act = '${StockMovementTypes.Sold}' OR act = '${StockMovementTypes.Unsold}') GROUP BY stock_id) AS sol
         ON sol.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_hold FROM stock_movement WHERE act = '${StockMovementTypes.Hold}' OR act = '${StockMovementTypes.Unhold}' GROUP BY stock_id) AS hol
+        (SELECT stock_id, SUM(quantity) AS quantity_hold FROM stock_movement WHERE NOT is_deleted AND (act = '${StockMovementTypes.Hold}' OR act = '${StockMovementTypes.Unhold}') GROUP BY stock_id) AS hol
         ON hol.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_layby FROM stock_movement WHERE act = '${StockMovementTypes.Layby}' OR act = '${StockMovementTypes.Unlayby}' GROUP BY stock_id) AS lay
+        (SELECT stock_id, SUM(quantity) AS quantity_layby FROM stock_movement WHERE NOT is_deleted AND (act = '${StockMovementTypes.Layby}' OR act = '${StockMovementTypes.Unlayby}') GROUP BY stock_id) AS lay
         ON lay.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_lost FROM stock_movement WHERE act = '${StockMovementTypes.Lost}' OR act = '${StockMovementTypes.Found}' GROUP BY stock_id) AS los
+        (SELECT stock_id, SUM(quantity) AS quantity_lost FROM stock_movement WHERE NOT is_deleted AND (act = '${StockMovementTypes.Lost}' OR act = '${StockMovementTypes.Found}') GROUP BY stock_id) AS los
         ON los.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_discarded FROM stock_movement WHERE act = '${StockMovementTypes.Discarded}' GROUP BY stock_id) AS dis
+        (SELECT stock_id, SUM(quantity) AS quantity_discarded FROM stock_movement WHERE NOT is_deleted AND act = '${StockMovementTypes.Discarded}' GROUP BY stock_id) AS dis
         ON dis.stock_id = s.id
       LEFT JOIN
-        (SELECT stock_id, SUM(quantity) AS quantity_adjustment FROM stock_movement WHERE act = '${StockMovementTypes.Adjustment}' GROUP BY stock_id) AS adj
+        (SELECT stock_id, SUM(quantity) AS quantity_adjustment FROM stock_movement WHERE NOT is_deleted AND act = '${StockMovementTypes.Adjustment}' GROUP BY stock_id) AS adj
         ON adj.stock_id = s.id
       LEFT JOIN
         stock_price AS p ON p.stock_id = s.id
