@@ -15,15 +15,18 @@ import { saveReceiveBatch } from 'lib/api/stock'
 import { useAppStore } from 'lib/store'
 import { useSWRConfig } from 'swr'
 import { useRouter } from 'next/router'
-import AllDetails from './all-details'
-import QuickEdit from './quick-edit'
-import FormatSection from './format-section'
-import Condition from './condition'
-import Price from './price'
-import Quantities from './quantities'
+import dynamic from 'next/dynamic'
+import Loading from 'components/placeholders/loading'
+import Tab from 'components/navigation/tabs/tab'
+const AllDetails = dynamic(() => import('./all-details'), { loading: () => <Loading /> })
+const QuickEdit = dynamic(() => import('./quick-edit'), { loading: () => <Loading /> })
+const FormatSection = dynamic(() => import('./format-section'), { loading: () => <Loading /> })
+const Condition = dynamic(() => import('./condition'), { loading: () => <Loading /> })
+const Price = dynamic(() => import('./price'), { loading: () => <Loading /> })
+const Quantities = dynamic(() => import('./quantities'), { loading: () => <Loading /> })
 
 export default function ConfigureItems({ setStage, setBypassConfirmDialog }) {
-  const [mode, setMode] = useState(0)
+  const [selectedTab, setSelectedTab] = useState(0)
   const { batchReceiveSession } = useAppStore()
   const { mutate } = useSWRConfig()
   const router = useRouter()
@@ -72,28 +75,28 @@ export default function ConfigureItems({ setStage, setBypassConfirmDialog }) {
           <PriceChange key={5} />,
           <Filter9Plus key={6} />,
         ]}
-        value={mode}
-        onChange={setMode}
+        value={selectedTab}
+        onChange={setSelectedTab}
       />
       <div className="flex w-full border-t pt-2">
-        <div hidden={mode !== 0} className="w-full">
+        <Tab tab={0} selectedTab={selectedTab}>
           <AllDetails />
-        </div>
-        <div hidden={mode !== 1} className="w-full">
+        </Tab>
+        <Tab tab={1} selectedTab={selectedTab}>
           <QuickEdit />
-        </div>
-        <div hidden={mode !== 2} className="w-full">
+        </Tab>
+        <Tab tab={2} selectedTab={selectedTab}>
           <FormatSection />
-        </div>
-        <div hidden={mode !== 3} className="w-full">
+        </Tab>
+        <Tab tab={3} selectedTab={selectedTab}>
           <Condition />
-        </div>
-        <div hidden={mode !== 4} className="w-full">
+        </Tab>
+        <Tab tab={4} selectedTab={selectedTab}>
           <Price />
-        </div>
-        <div hidden={mode !== 5} className="w-full">
+        </Tab>
+        <Tab tab={5} selectedTab={selectedTab}>
           <Quantities />
-        </div>
+        </Tab>
       </div>
     </div>
   )

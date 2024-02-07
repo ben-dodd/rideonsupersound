@@ -1,10 +1,11 @@
+import dynamic from 'next/dynamic'
 import HelpIcon from '@mui/icons-material/Help'
 import { useClerk } from 'lib/api/clerk'
 import { ViewProps } from 'lib/store/types'
 import { useAppStore } from 'lib/store'
 import { useRouter } from 'next/router'
 import { ExitToApp, PointOfSaleTwoTone } from '@mui/icons-material'
-import { Tooltip } from '@mui/material'
+const Tooltip = dynamic(() => import('@mui/material/Tooltip'))
 import { useCurrentRegisterId } from 'lib/api/register'
 
 // REVIEW fix all actions and clean up files

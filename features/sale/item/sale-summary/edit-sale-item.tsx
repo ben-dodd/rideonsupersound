@@ -1,3 +1,4 @@
+import dynamic from 'next/dynamic'
 import { useState } from 'react'
 import { SaleItemObject, SaleStateTypes } from 'lib/types/sale'
 import TextField from 'components/inputs/text-field'
@@ -9,7 +10,7 @@ import { useBasicStockItem, useStockList } from 'lib/api/stock'
 import { priceCentsString } from 'lib/utils'
 import { deleteSaleItem } from 'lib/api/sale'
 import { ArrowDropDown, ArrowDropUp, EventBusy } from '@mui/icons-material'
-import { Tooltip } from '@mui/material'
+const Tooltip = dynamic(() => import('@mui/material/Tooltip'))
 import { useRouter } from 'next/router'
 
 export default function EditSaleItem({ cartItem }: { cartItem: SaleItemObject }) {

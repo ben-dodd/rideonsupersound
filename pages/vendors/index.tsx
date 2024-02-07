@@ -2,7 +2,9 @@ import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import Layout from 'components/layout'
 import VendorsScreen from 'features/vendor'
 import { useAppStore } from 'lib/store'
-import VendorEditDialog from 'features/vendor/vendor-edit-dialog'
+import dynamic from 'next/dynamic'
+
+const VendorEditDialog = dynamic(() => import('features/vendor/vendor-edit-dialog'))
 
 export default function VendorsPage() {
   const { view } = useAppStore()

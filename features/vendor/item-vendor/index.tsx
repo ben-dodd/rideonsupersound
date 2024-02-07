@@ -1,8 +1,10 @@
 import { useState } from 'react'
+import dynamic from 'next/dynamic'
 import Tabs from 'components/navigation/tabs'
-import VendorItems from './items'
-import VendorPayments from './payments'
-import VendorSales from './sales'
+import Tab from 'components/navigation/tabs/tab'
+const VendorItems = dynamic(() => import('./items'))
+const VendorPayments = dynamic(() => import('./payments'))
+const VendorSales = dynamic(() => import('./sales'))
 import { VendorObject } from 'lib/types/vendor'
 import MidScreenContainer from 'components/container/mid-screen'
 import GeneralDetails from './general-details'
@@ -37,15 +39,15 @@ export default function VendorScreen({ vendor }: { vendor: VendorObject }) {
         </div>
         <div className="w-3/4 px-2">
           <Tabs tabs={['Sales', 'Payments', 'Stock']} value={tab} onChange={setTab} />
-          <div hidden={tab !== 0}>
+          <Tab tab={0} selectedTab={tab}>
             <VendorSales sales={sales} />
-          </div>
-          <div hidden={tab !== 1}>
+          </Tab>
+          <Tab tab={1} selectedTab={tab}>
             <VendorPayments payments={payments} />
-          </div>
-          <div hidden={tab !== 2}>
+          </Tab>
+          <Tab tab={2} selectedTab={tab}>
             <VendorItems items={items} />
-          </div>
+          </Tab>
         </div>
       </div>
     </MidScreenContainer>

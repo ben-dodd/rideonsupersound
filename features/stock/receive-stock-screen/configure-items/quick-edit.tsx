@@ -1,7 +1,8 @@
 // import { useAppStore } from 'lib/store'
 // import { useMemo, useState } from 'react'
 // import { debounce } from 'lodash'
-import ComingSoon from 'components/placeholders/coming-soon'
+import dynamic from 'next/dynamic'
+const ComingSoon = dynamic(() => import('components/placeholders/coming-soon'))
 
 export default function QuickEdit() {
   // const { updateBatchReceiveItemField } = useAppStore()

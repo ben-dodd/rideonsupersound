@@ -1,15 +1,16 @@
 import Head from 'next/head'
 import Nav from './nav'
 import Menu from './menu'
-import ConfirmModal from 'components/modal/confirm-modal'
-import SnackAlert from 'components/alert'
 import { useClerk } from 'lib/api/clerk'
 import Loading from 'components/placeholders/loading'
 import { useAppStore } from 'lib/store'
-import HelpDialog from 'features/help'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
-import InfoModal from 'components/modal/info-modal'
+import dynamic from 'next/dynamic'
+const InfoModal = dynamic(() => import('components/modal/info-modal'))
+const ConfirmModal = dynamic(() => import('components/modal/confirm-modal'))
+const HelpDialog = dynamic(() => import('features/help'))
+const SnackAlert = dynamic(() => import('components/alert'))
 // import Clippy from 'components/clippy'
 
 export default function Layout({ children }) {

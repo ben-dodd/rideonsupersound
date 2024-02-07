@@ -1,14 +1,15 @@
 import Layout from 'components/layout'
+import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
 import { useAppStore } from 'lib/store'
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import { useSaleProperties } from 'lib/hooks/sale'
-import Acct from 'features/sale/item/edit/payment/acct'
-import Card from 'features/sale/item/edit/payment/card'
-import Cash from 'features/sale/item/edit/payment/cash'
-import Gift from 'features/sale/item/edit/payment/gift'
-import SaleEditItemScreen from 'features/sale/item/edit'
-import ReturnItemDialog from 'features/sale/return-item-dialog'
-import { useRouter } from 'next/router'
+const Acct = dynamic(() => import('features/sale/item/edit/payment/acct'))
+const Card = dynamic(() => import('features/sale/item/edit/payment/card'))
+const Cash = dynamic(() => import('features/sale/item/edit/payment/cash'))
+const Gift = dynamic(() => import('features/sale/item/edit/payment/gift'))
+const SaleEditItemScreen = dynamic(() => import('features/sale/item/edit'))
+const ReturnItemDialog = dynamic(() => import('features/sale/return-item-dialog'))
 
 export default function PayPage() {
   const { view, cart } = useAppStore()

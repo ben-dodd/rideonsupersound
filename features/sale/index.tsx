@@ -1,17 +1,15 @@
 import { DisplaySettings, Summarize } from '@mui/icons-material'
+import dynamic from 'next/dynamic'
 import MidScreenContainer from 'components/container/mid-screen'
 import Tabs from 'components/navigation/tabs'
-import ComingSoon from 'components/placeholders/coming-soon'
-import { useSalesForRange } from 'lib/hooks/sales'
 import { useAppStore } from 'lib/store'
 import { Pages } from 'lib/store/types'
-import { useState } from 'react'
-import SalesCalendarView from './views/calendar-view'
-import SalesListView from './views/calendar-view'
-import HoldsList from './holds-list'
-import LaybysList from './views/laybys'
-import ParkedSalesList from './views/parked-sales'
-import SalesList from './views/sales-list'
+const SalesCalendarView = dynamic(() => import('./views/calendar-view'))
+const HoldsList = dynamic(() => import('./holds-list'))
+const ParkedSalesList = dynamic(() => import('./views/parked-sales'))
+const LaybysList = dynamic(() => import('./views/laybys'))
+const SalesList = dynamic(() => import('./views/sales-list'))
+const ComingSoon = dynamic(() => import('components/placeholders/coming-soon'))
 
 const SalesScreen = () => {
   const { salesPage, holdsPage, setPage } = useAppStore()

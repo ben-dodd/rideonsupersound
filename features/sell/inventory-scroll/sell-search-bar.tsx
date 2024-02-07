@@ -1,7 +1,6 @@
 import MiscItemIcon from '@mui/icons-material/DeviceUnknown'
 import GiftCardsIcon from '@mui/icons-material/Redeem'
 import SearchInput from 'components/inputs/search-input'
-// import Tooltip from '@mui/material/Tooltip'
 import { useAppStore } from 'lib/store'
 import { Pages, ViewProps } from 'lib/store/types'
 import debounce from 'lodash/debounce'

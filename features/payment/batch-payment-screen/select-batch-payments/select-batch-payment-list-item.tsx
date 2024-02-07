@@ -1,8 +1,9 @@
+import dynamic from 'next/dynamic'
 import TextField from 'components/inputs/text-field'
 import NoBankDetailsIcon from '@mui/icons-material/CreditCardOff'
 import StoreCreditOnlyIcon from '@mui/icons-material/ShoppingBag'
 import QuantityCheckIcon from '@mui/icons-material/Warning'
-import { Tooltip } from '@mui/material'
+const Tooltip = dynamic(() => import('@mui/material/Tooltip'))
 import dayjs from 'dayjs'
 import { modulusCheck } from 'lib/functions/payment'
 import { priceCentsString } from 'lib/utils'

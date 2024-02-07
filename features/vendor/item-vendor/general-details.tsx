@@ -1,5 +1,6 @@
+import dynamic from 'next/dynamic'
 import { CheckCircleOutline, CreditCardOff } from '@mui/icons-material'
-import Tooltip from '@mui/material/Tooltip'
+const Tooltip = dynamic(() => import('@mui/material/Tooltip'))
 import InfoBox from 'components/container/info-box'
 import dayjs from 'dayjs'
 import { useClerks } from 'lib/api/clerk'

@@ -1,9 +1,12 @@
 import { useAppStore } from 'lib/store'
+import dynamic from 'next/dynamic'
 import { useState } from 'react'
 import { getItemDisplayName } from 'lib/functions/displayInventory'
 import ButtonGroup from 'components/inputs/button-group'
 import { DiscogsConditionTypes } from 'lib/types/discogs'
-import { cassetteGradingGuide, cdGradingGuide, vinylGradingGuide } from './resources'
+const CassetteGradingGuide = dynamic(() => import('./resources').then((resources) => resources.cassetteGradingGuide))
+const CdGradingGuide = dynamic(() => import('./resources').then((resources) => resources.cdGradingGuide))
+const VinylGradingGuide = dynamic(() => import('./resources').then((resources) => resources.vinylGradingGuide))
 
 export default function Condition() {
   const { batchReceiveSession, updateBatchReceiveItemField, openInfo } = useAppStore()
@@ -55,19 +58,19 @@ export default function Condition() {
         Record Grading Guides
         <button
           className={'icon-text-button'}
-          onClick={() => openInfo({ open: true, title: 'How To Grade Vinyl', styledMessage: vinylGradingGuide })}
+          onClick={() => openInfo({ open: true, title: 'How To Grade Vinyl', styledMessage: VinylGradingGuide })}
         >
           How To Grade Vinyl
         </button>
         <button
           className={'icon-text-button'}
-          onClick={() => openInfo({ open: true, title: 'How To Grade CDs', message: cdGradingGuide })}
+          onClick={() => openInfo({ open: true, title: 'How To Grade CDs', styledMessage: CdGradingGuide })}
         >
           How To Grade CDs
         </button>
         <button
           className={'icon-text-button'}
-          onClick={() => openInfo({ open: true, title: 'How To Grade Cassettes', message: cassetteGradingGuide })}
+          onClick={() => openInfo({ open: true, title: 'How To Grade Cassettes', styledMessage: CassetteGradingGuide })}
         >
           How To Grade Cassettes
         </button>

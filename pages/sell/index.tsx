@@ -1,13 +1,4 @@
-import CreateCustomerSidebar from 'features/sell/create-customer/sidebar'
-import CreateHoldSidebar from 'features/sell/create-hold/sidebar'
-import CloseRegisterScreen from 'features/register/close-register/sidebar'
-import ReturnCashDialog from 'features/register/return-cash'
-import TakeCashDialog from 'features/register/take-cash'
-import InventoryScroll from 'features/sell/inventory-scroll'
-import GiftCardDialog from 'features/sell/inventory-scroll/gift-card-dialog'
-import MiscItemDialog from 'features/sell/inventory-scroll/misc-item-dialog'
-import SellSearchBar from 'features/sell/inventory-scroll/sell-search-bar'
-import ShoppingCart from 'features/sell/shopping-cart'
+import dynamic from 'next/dynamic'
 import { useSwipeable } from 'react-swipeable'
 import { ViewProps } from 'lib/store/types'
 import { useAppStore } from 'lib/store'
@@ -15,7 +6,17 @@ import { useCurrentRegister } from 'lib/api/register'
 import { useRouter } from 'next/router'
 import Layout from 'components/layout'
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
-import CheckHoldsDialog from 'features/sell/inventory-scroll/check-holds-dialog'
+const CreateCustomerSidebar = dynamic(() => import('features/sell/create-customer/sidebar'))
+const CreateHoldSidebar = dynamic(() => import('features/sell/create-hold/sidebar'))
+const CloseRegisterScreen = dynamic(() => import('features/register/close-register/sidebar'))
+const ReturnCashDialog = dynamic(() => import('features/register/return-cash'))
+const TakeCashDialog = dynamic(() => import('features/register/take-cash'))
+const InventoryScroll = dynamic(() => import('features/sell/inventory-scroll'))
+const GiftCardDialog = dynamic(() => import('features/sell/inventory-scroll/gift-card-dialog'))
+const MiscItemDialog = dynamic(() => import('features/sell/inventory-scroll/misc-item-dialog'))
+const SellSearchBar = dynamic(() => import('features/sell/inventory-scroll/sell-search-bar'))
+const ShoppingCart = dynamic(() => import('features/sell/shopping-cart'))
+const CheckHoldsDialog = dynamic(() => import('features/sell/inventory-scroll/check-holds-dialog'))
 // import withRoleAuthorization from 'components/auth/roleAuthorization'
 
 export default function SellPage() {

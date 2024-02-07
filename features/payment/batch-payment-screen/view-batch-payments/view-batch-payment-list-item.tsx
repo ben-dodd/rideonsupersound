@@ -1,8 +1,9 @@
+import dynamic from 'next/dynamic'
 import CheckIcon from '@mui/icons-material/CheckCircleOutline'
 import NoBankDetailsIcon from '@mui/icons-material/CreditCardOff'
 import StoreCreditOnlyIcon from '@mui/icons-material/ShoppingBag'
 import QuantityCheckIcon from '@mui/icons-material/Warning'
-import { Tooltip } from '@mui/material'
+const Tooltip = dynamic(() => import('@mui/material/Tooltip'))
 import { dollarsToCents, priceCentsString, priceDollarsString } from 'lib/utils'
 
 export default function ViewBatchPaymentListItem({ payment }) {

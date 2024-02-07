@@ -1,9 +1,11 @@
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import Layout from 'components/layout'
 import StockScreen from 'features/stock'
-import LabelPrintDialog from 'features/stock/label-print-dialog'
-import ReturnStockScreen from 'features/stock/return-stock-dialog'
 import { useAppStore } from 'lib/store'
+import dynamic from 'next/dynamic'
+
+const ReturnStockScreen = dynamic(() => import('features/stock/return-stock-dialog'))
+const LabelPrintDialog = dynamic(() => import('features/stock/label-print-dialog'))
 
 export default function StockPage() {
   const { view } = useAppStore()

@@ -1,9 +1,9 @@
-import { Warning } from '@mui/icons-material'
+import dynamic from 'next/dynamic'
+import Warning from '@mui/icons-material/Warning'
 import CheckIcon from '@mui/icons-material/CheckCircleOutline'
 import NoBankDetailsIcon from '@mui/icons-material/CreditCardOff'
 import StoreCreditOnlyIcon from '@mui/icons-material/ShoppingBag'
-import QuantityCheckIcon from '@mui/icons-material/Warning'
-import { Tooltip } from '@mui/material'
+const Tooltip = dynamic(() => import('@mui/material/Tooltip'))
 import { modulusCheck } from 'lib/functions/payment'
 import { centsToDollars, dollarsToCents, priceCentsString, priceDollarsString } from 'lib/utils'
 
@@ -41,7 +41,7 @@ export default function ReviewBatchPaymentListItem({ payment }) {
         {payment?.hasNegativeQuantityItems ? (
           <Tooltip title="Vendor has negative quantity items. Please check!">
             <div className="text-purple-500 pl-2">
-              <QuantityCheckIcon />
+              <Warning />
             </div>
           </Tooltip>
         ) : (

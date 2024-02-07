@@ -1,9 +1,11 @@
 import { CloudDownload, CloudUpload, DisplaySettings, Summarize } from '@mui/icons-material'
+import dynamic from 'next/dynamic'
 import MidScreenContainer from 'components/container/mid-screen'
 import Tabs from 'components/navigation/tabs'
-import ComingSoon from 'components/placeholders/coming-soon'
 import { useAppStore } from 'lib/store'
 import { ViewProps, Pages } from 'lib/store/types'
+import Tab from 'components/navigation/tabs/tab'
+const ComingSoon = dynamic(() => import('components/placeholders/coming-soon'))
 
 const RegistersScreen = () => {
   const isLoading = false
@@ -22,8 +24,12 @@ const RegistersScreen = () => {
   return (
     <MidScreenContainer title="REGISTERS" isLoading={isLoading} titleClass="bg-col6" full={true} menuItems={menuItems}>
       <Tabs tabs={['Registers', 'Banking']} value={tab} onChange={setTab} />
-      {tab === 0 && <ComingSoon />}
-      {tab === 1 && <ComingSoon />}
+      <Tab selectedTab={tab} tab={0}>
+        <ComingSoon />
+      </Tab>
+      <Tab selectedTab={tab} tab={1}>
+        <ComingSoon />
+      </Tab>
     </MidScreenContainer>
   )
 }

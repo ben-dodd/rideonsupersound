@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import CircularProgress from '@mui/material/CircularProgress'
-import Tooltip from '@mui/material/Tooltip'
-import Actions from './actions'
-import ListItem from './list-item'
+import dynamic from 'next/dynamic'
+const CircularProgress = dynamic(() => import('@mui/material/CircularProgress'))
+const Tooltip = dynamic(() => import('@mui/material/Tooltip'))
+const Actions = dynamic(() => import('./actions'))
+const ListItem = dynamic(() => import('./list-item'))
 import HoldIcon from '@mui/icons-material/PanTool'
 import PayIcon from '@mui/icons-material/ShoppingCart'
 import { useAppStore } from 'lib/store'

@@ -1,5 +1,8 @@
+import dynamic from 'next/dynamic'
 import { CalendarViewDay, CalendarViewMonth, CalendarViewWeek, Close } from '@mui/icons-material'
-import { Chip, IconButton, Tooltip } from '@mui/material'
+const Tooltip = dynamic(() => import('@mui/material/Tooltip'))
+const Chip = dynamic(() => import('@mui/material/Chip'))
+const IconButton = dynamic(() => import('@mui/material/IconButton'))
 import dayjs from 'dayjs'
 import { useClerks } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'

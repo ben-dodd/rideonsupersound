@@ -1,8 +1,8 @@
 import MidScreenContainer from 'components/container/mid-screen'
+import dynamic from 'next/dynamic'
 import Tabs from 'components/navigation/tabs'
 import { useCurrentReceiveBatchId, useStockList } from 'lib/api/stock'
 import { initBatchReceiveSession, useAppStore } from 'lib/store'
-import ComingSoon from 'components/placeholders/coming-soon'
 import StockList from './stock-list'
 import { Pages, ViewProps } from 'lib/store/types'
 import { AutoFixHigh, CollectionsBookmark, DisplaySettings, EventBusy, Print } from '@mui/icons-material'
@@ -12,6 +12,8 @@ import StockMovementList from './stock-movement-list'
 import { useClerk } from 'lib/api/clerk'
 import dayjs from 'dayjs'
 import ViewButton from 'components/button/view-button'
+import Tab from 'components/navigation/tabs/tab'
+const ComingSoon = dynamic(() => import('components/placeholders/coming-soon'))
 
 const StockScreen = () => {
   const { isStockListLoading } = useStockList()
@@ -82,11 +84,21 @@ const StockScreen = () => {
           <ViewButton />
         </div>
       </div>
-      {tab === 0 && <StockList />}
-      {tab === 1 && <ReceiveStockList />}
-      {tab === 2 && <ComingSoon />}
-      {tab === 3 && <ComingSoon />}
-      {tab === 4 && <StockMovementList />}
+      <Tab selectedTab={tab} tab={0}>
+        <StockList />
+      </Tab>
+      <Tab selectedTab={tab} tab={1}>
+        <ReceiveStockList />
+      </Tab>
+      <Tab selectedTab={tab} tab={2}>
+        <ComingSoon />
+      </Tab>
+      <Tab selectedTab={tab} tab={3}>
+        <ComingSoon />
+      </Tab>
+      <Tab selectedTab={tab} tab={4}>
+        <StockMovementList />
+      </Tab>
     </MidScreenContainer>
   )
 }

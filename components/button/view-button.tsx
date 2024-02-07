@@ -1,6 +1,7 @@
-import { List, TableChart } from '@mui/icons-material'
-import { Tooltip } from '@mui/material'
 import { useAppStore } from 'lib/store'
+import dynamic from 'next/dynamic'
+import { List, TableChart } from '@mui/icons-material'
+const Tooltip = dynamic(() => import('@mui/material/Tooltip'))
 
 interface ViewModeTypes {
   icon: any

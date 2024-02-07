@@ -1,12 +1,12 @@
-// Packages
 import { useRouter } from 'next/router'
-import Loading from 'components/placeholders/loading'
 import Layout from 'components/layout'
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
-import ErrorScreen from 'components/container/error-screen'
-import ReceiveStockScreen from 'features/stock/receive-stock-screen'
 import { useReceiveBatch } from 'lib/api/stock'
+import Loading from 'components/placeholders/loading'
+import dynamic from 'next/dynamic'
 
+const ErrorScreen = dynamic(() => import('components/container/error-screen'), { loading: () => <Loading /> })
+const ReceiveStockScreen = dynamic(() => import('features/stock/receive-stock-screen'), { loading: () => <Loading /> })
 export default function ReceiveStockPage() {
   const router = useRouter()
   const { id } = router.query

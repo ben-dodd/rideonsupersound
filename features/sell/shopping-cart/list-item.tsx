@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import dynamic from 'next/dynamic'
 import { SaleItemObject } from 'lib/types/sale'
 import TextField from 'components/inputs/text-field'
 import { getImageSrc, getItemDisplayName, getItemSku } from 'lib/functions/displayInventory'
@@ -10,8 +11,7 @@ import { priceCentsString } from 'lib/utils'
 import { deleteSale, deleteSaleItem } from 'lib/api/sale'
 import { ViewProps } from 'lib/store/types'
 import { ArrowDropDown, ArrowDropUp, PanTool } from '@mui/icons-material'
-import { Tooltip } from '@mui/material'
-
+const Tooltip = dynamic(() => import('@mui/material/Tooltip'))
 // TODO make list items share more components
 
 export default function SellListItem({ cartItem }: { cartItem: SaleItemObject }) {

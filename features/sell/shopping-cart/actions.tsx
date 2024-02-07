@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import CircularProgress from '@mui/material/CircularProgress'
-import Tooltip from '@mui/material/Tooltip'
+import dynamic from 'next/dynamic'
+const CircularProgress = dynamic(() => import('@mui/material/CircularProgress'))
+const Tooltip = dynamic(() => import('@mui/material/Tooltip'))
 import { SaleStateTypes } from 'lib/types/sale'
 import { useAppStore } from 'lib/store'
 import { Pages, ViewProps } from 'lib/store/types'

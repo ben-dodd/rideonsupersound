@@ -6,6 +6,7 @@
     "build": "next build",
     "start": "next start",
     "migrate": "node scripts/migrate-db.js",
+    "analyze": "ANALYZE=true next build",
     "test": "jest --watch",
     "testa": "jest --watchAll",
     "testc": "jest --watchAll -- --coverage",

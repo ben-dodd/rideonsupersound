@@ -1,4 +1,5 @@
 import { useAppStore } from 'lib/store'
+import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import { getItemDisplayName } from 'lib/functions/displayInventory'
 import { getPriceSuggestionText } from 'lib/functions/discogs'
@@ -7,7 +8,7 @@ import { centsToDollars, dollarsToCents } from 'lib/utils'
 import { getProfitMargin, getStoreCut } from 'lib/functions/pay'
 import produce from 'immer'
 import { Lock, LockOpen } from '@mui/icons-material'
-import { Tooltip } from '@mui/material'
+const Tooltip = dynamic(() => import('@mui/material/Tooltip'))
 import { getPriceEdits } from 'lib/functions/stock'
 
 export default function Price() {

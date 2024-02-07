@@ -1,4 +1,4 @@
-export const vinylGradingGuide = (
+export const vinylGradingGuide = () => (
   <div>
     <div className="flex mb-8">
       <div className="w-1/4">
@@ -97,7 +97,7 @@ export const vinylGradingGuide = (
   </div>
 )
 
-export const cdGradingGuide = (
+export const cdGradingGuide = () => (
   <div>
     <div className="italic mb-4">Standard Jewel Cases are not graded as they are replaceable.</div>
     <div className="flex mb-8">
@@ -194,7 +194,7 @@ export const cdGradingGuide = (
   </div>
 )
 
-export const cassetteGradingGuide = (
+export const cassetteGradingGuide = () => (
   <div>
     <div className="flex mb-8">
       <div className="w-1/4">

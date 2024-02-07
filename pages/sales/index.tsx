@@ -1,8 +1,10 @@
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import Layout from 'components/layout'
 import SalesScreen from 'features/sale'
-import ReturnHoldToCartDialog from 'features/sale/return-hold-to-cart-dialog'
 import { useAppStore } from 'lib/store'
+import dynamic from 'next/dynamic'
+
+const ReturnHoldToCartDialog = dynamic(() => import('features/sale/return-hold-to-cart-dialog'))
 export default function SalesPage() {
   const { salesPage } = useAppStore()
   return (
