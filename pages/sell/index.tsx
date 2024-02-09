@@ -47,9 +47,9 @@ export default function SellPage() {
         <SellSearchBar />
         <InventoryScroll />
       </div>
-      <ShoppingCart />
-      <CreateHoldSidebar />
-      <CreateCustomerSidebar />
+      {view?.cart && <ShoppingCart />}
+      {view?.createHold && <CreateHoldSidebar />}
+      {view?.createCustomer && <CreateCustomerSidebar />}
       {view?.miscItemDialog && <MiscItemDialog />}
       {view?.giftCardDialog && <GiftCardDialog />}
       {view?.closeRegisterScreen && <CloseRegisterScreen />}
