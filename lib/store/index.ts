@@ -237,7 +237,8 @@ export const useAppStore = createSelectors(
       )
     },
     mutateCart: async (mutates = []) => {
-      await saveCart(get().cart)
+      const newCart = await saveCart(get().cart)
+      get().setCart(newCart)
       mutates.forEach((key) => mutate(key))
       // set(
       //   produce((draft) => {
