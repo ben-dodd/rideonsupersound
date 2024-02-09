@@ -90,7 +90,7 @@ export default function TextField({
             name={id || inputLabel || null}
             type={inputType || 'text'}
             className={`appearance-none w-full py-1 px-2 outline-none bg-transparent ${inputClass || ''}`}
-            value={inputType === 'number' ? valueNum : value}
+            value={inputType === 'number' ? valueNum ?? '' : value ?? ''}
             onChange={onChange}
             autoFocus={Boolean(autoFocus) || false}
             onFocus={selectOnFocus ? (e) => e.target.select() : null}

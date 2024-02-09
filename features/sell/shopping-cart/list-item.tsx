@@ -152,7 +152,7 @@ export default function SellListItem({ cartItem }: { cartItem: SaleItemObject })
                 selectOnFocus
                 min={1}
                 inputType="number"
-                valueNum={parseInt(cartItem?.quantity)}
+                valueNum={parseInt(cartItem?.quantity ?? '1')}
                 onChange={(e: any) => onChangeQuantity(e)}
               />
               <TextField
@@ -162,8 +162,8 @@ export default function SellListItem({ cartItem }: { cartItem: SaleItemObject })
                 max={100}
                 inputType="number"
                 endAdornment="%"
-                error={parseInt(cartItem?.vendorDiscount) > 100}
-                valueNum={parseInt(cartItem?.vendorDiscount)}
+                error={parseInt(cartItem?.vendorDiscount ?? '0') > 100}
+                valueNum={parseInt(cartItem?.vendorDiscount ?? '0')}
                 onChange={(e: any) => onChangeCart(e, 'vendorDiscount')}
               />
               <TextField
@@ -173,8 +173,8 @@ export default function SellListItem({ cartItem }: { cartItem: SaleItemObject })
                 max={100}
                 inputType="number"
                 endAdornment="%"
-                error={parseInt(cartItem?.storeDiscount) > 100}
-                valueNum={parseInt(cartItem?.storeDiscount)}
+                error={parseInt(cartItem?.storeDiscount ?? '0') > 100}
+                valueNum={parseInt(cartItem?.storeDiscount ?? '0')}
                 onChange={(e: any) => onChangeCart(e, 'storeDiscount')}
               />
             </div>

@@ -13,7 +13,9 @@ import dayjs from 'dayjs'
 import { dateTime } from 'lib/types/date'
 
 export default function ShoppingCartActions() {
-  const { cart, setCart, loadSaleToCart, setAlert, openConfirm, closeView, resetCart, resetSearchBar } = useAppStore()
+  const { cart, setCart, loadSaleToCartById, setAlert, openConfirm, closeView, resetCart, resetSearchBar } =
+    useAppStore()
+  console.log(cart)
   const { parkedSales } = useParkedSales()
   const [parkedSaleItems, setParkedSaleItems] = useState([])
   const { sale = {}, items = [] } = cart || {}
@@ -29,10 +31,10 @@ export default function ShoppingCartActions() {
     setParkedSaleItems(
       parkedSales?.map((sale) => ({
         text: `[${dayjs(sale?.dateSaleOpened).format(dateTime)}] ${sale?.itemList}`,
-        onClick: () => loadSaleToCart(sale?.id),
+        onClick: () => loadSaleToCartById(sale?.id),
       })),
     )
-  }, [parkedSales, loadSaleToCart])
+  }, [parkedSales, loadSaleToCartById])
 
   async function onClickSaveSale() {
     setSaveSaleLoading(true)

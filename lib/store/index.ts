@@ -9,9 +9,9 @@ import { mutate } from 'swr'
 import { PaymentMethodTypes, SaleStateTypes } from 'lib/types/sale'
 import { useSetRegisterId } from 'lib/api/register'
 import { axiosAuth } from 'lib/api'
-import { mysql2js } from 'lib/database/utils/helpers'
 import { BatchReceiveObject } from 'lib/types/stock'
 import { arraysAreEqual, getMatrixValue, getSelectionCorners } from 'lib/functions/dataTable'
+import { mysql2js } from 'lib/database/utils/helpers'
 
 type WithSelectors<S> = S extends { getState: () => infer T } ? S & { use: { [K in keyof T]: () => T[K] } } : never
 
@@ -213,13 +213,7 @@ export const useAppStore = createSelectors(
       )
     },
     loadSaleToCartById: (saleId) => {
-      return axiosAuth.get(`api/sale/${saleId}`).then((newCart) => {
-        set(
-          produce((draft) => {
-            draft.cart = mysql2js(newCart)
-          }),
-        )
-      })
+      return axiosAuth.get(`api/sale/${saleId}`).then((newCart) => get().loadSaleToCart(mysql2js(newCart)))
     },
     loadSaleToCart: (newCart) => {
       const alert = { open: true, type: 'success', message: 'SALE LOADED' }

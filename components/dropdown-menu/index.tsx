@@ -60,7 +60,7 @@ const DropdownMenu = ({
                   }}
                 >
                   <div className="mr-2 text-left">{item?.icon}</div>
-                  <div className="text-left">{item?.text}</div>
+                  <div className="text-left line-clamp-3">{item?.text}</div>
                 </CSVLink>
               ) : (
                 <button
@@ -71,7 +71,7 @@ const DropdownMenu = ({
                   }}
                 >
                   <div className="mr-2 text-left">{item?.icon}</div>
-                  <div className="text-left">{item?.text}</div>
+                  <div className="text-left line-clamp-3">{item?.text}</div>
                 </button>
               )}
             </div>

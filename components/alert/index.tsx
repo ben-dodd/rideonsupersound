@@ -1,8 +1,10 @@
+import Alert from '@mui/material/Alert'
+import Slide from '@mui/material/Slide'
+import Snackbar from '@mui/material/Snackbar'
 import { useAppStore } from 'lib/store'
-import dynamic from 'next/dynamic'
-const Alert = dynamic(() => import('@mui/material/Alert'))
-const Slide = dynamic(() => import('@mui/material/Slide'))
-const Snackbar = dynamic(() => import('@mui/material/Snackbar'))
+// const Alert = dynamic(() => import('@mui/material/Alert'))
+// const Slide = dynamic(() => import('@mui/material/Slide'))
+// const Snackbar = dynamic(() => import('@mui/material/Snackbar'))
 
 export default function SnackAlert() {
   const { alert, closeAlert } = useAppStore()
