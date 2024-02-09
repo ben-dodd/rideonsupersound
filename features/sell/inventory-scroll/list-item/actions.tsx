@@ -58,7 +58,7 @@ const Actions = ({ item, itemQuantity, holdsQuantity }) => {
         {/* <Tooltip title="Add item to sale."> */}
         <button
           // disabled={isItemLoading}
-          className={`prominent-button`}
+          className={`white-button`}
           // className={`icon-button-large text-brown-dark ${isItemLoading ? 'text-gray-400' : 'hover:text-brown'}`}
           // disabled={!item?.totalSell}
           onClick={clickAddToCart}

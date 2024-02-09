@@ -27,7 +27,7 @@ export default function ViewReceiveBatch() {
         {batchReceiveSession?.batchList?.map((receiveItem) => (
           <div key={receiveItem?.item?.id} className="flex items-center">
             <div className="text-xl text-red-500 whitespace-nowrap">{receiveItem?.quantity} x</div>
-            <StockListItem stockListItem={receiveItem?.item} stockPrice={receiveItem?.price} />
+            <StockListItem stockListItem={receiveItem} />
           </div>
         ))}
       </SectionPanel>

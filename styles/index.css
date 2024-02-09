@@ -100,6 +100,10 @@
   @apply bg-col3-dark hover:bg-col3 ring-1 disabled:bg-gray-200 p-2 rounded;
 }
 
+.white-button {
+  @apply bg-white hover:bg-gray-100 ring-1 disabled:bg-gray-200 p-2 rounded;
+}
+
 .dialog__footer--actions-right {
   @apply grid grid-cols-right bg-gray-100;
 }

@@ -1,10 +1,10 @@
 import SearchInput from 'components/inputs/search-input'
-import { useStockList } from 'lib/api/stock'
+import { useStockItemList, useStockList } from 'lib/api/stock'
 import { useAppStore } from 'lib/store'
 import { Pages } from 'lib/store/types'
 import { useState } from 'react'
 import StockFilter from './filter'
-import { StockItemObject } from 'lib/types/stock'
+import { StockItemObject, StockItemSearchObject } from 'lib/types/stock'
 import { getItemSku } from 'lib/functions/displayInventory'
 import StockListItem from './stock-list-item'
 import LoadMoreButton from 'components/button/load-more-button'
@@ -34,13 +34,17 @@ const StockList = () => {
 
   const handleSearch = (e) => setSearchBar(Pages.stockPage, e.target.value)
 
-  const filteredList = stockList
+  const idList = stockList
     ?.filter?.(
       (stockItem) =>
         (filterSettings?.artist?.length === 0 || filterSettings.artist?.includes(stockItem?.artist)) &&
         `${stockItem?.artist} ${stockItem?.title}`?.toUpperCase?.()?.includes(searchBar?.toUpperCase()),
     )
     ?.reverse()
+    ?.slice(0, limit)
+    ?.map((item: StockItemSearchObject) => item?.id)
+
+  const { stockItemList = [], isStockItemListLoading = true } = useStockItemList(idList)
 
   const stockSchema = [
     { key: 'id', header: 'Stock ID' },
@@ -64,10 +68,10 @@ const StockList = () => {
       </div>
       <div className="px-2">
         {/* <DataTable initData={filteredList} initSchema={stockSchema} isLoading={isStockListLoading} /> */}
-        {filteredList?.slice(0, limit)?.map((stockItem) => (
-          <StockListItem key={stockItem?.id} stockListItem={stockItem} />
+        {stockItemList?.map((stockItem) => (
+          <StockListItem key={stockItem?.item?.id} stockListItem={stockItem} />
         ))}
-        {limit < filteredList?.length && <LoadMoreButton onClick={() => setLimit((limit) => limit + 30)} />}
+        {limit < idList?.length && <LoadMoreButton onClick={() => setLimit((limit) => limit + 30)} />}
       </div>
     </div>
   )

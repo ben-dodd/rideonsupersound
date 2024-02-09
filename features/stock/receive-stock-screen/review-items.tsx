@@ -85,9 +85,10 @@ export default function ReviewItems({ setStage, setBypassConfirmDialog }) {
             : batchReceiveSession?.batchList?.map((batchItem) => (
                 <StockListItem
                   key={batchItem?.key}
-                  stockListItem={{ ...batchItem?.item, vendorId: batchReceiveSession?.vendorId }}
-                  stockPrice={batchItem?.price}
-                  stockQuantities={{ receiving: batchItem?.quantity }}
+                  stockListItem={{
+                    ...batchItem,
+                    item: { ...batchItem?.item, vendorId: batchReceiveSession?.vendorId },
+                  }}
                   noClick={true}
                 />
               ))}
