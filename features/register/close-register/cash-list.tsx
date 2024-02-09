@@ -18,7 +18,7 @@ const CashList = ({ register }) => {
             <CashItem transaction={transaction} field={'cashReceived'} key={i} />
           ))}
           <div
-            className={`w-24 text-right border-t text-sm font-bold ${
+            className={`w-1/3 text-right border-t text-sm font-bold ${
               closeCashReceived < 0 ? 'text-tertiary' : 'text-secondary'
             }`}
           >{`${closeCashReceived < 0 ? '-' : '+'} ${priceDollarsString(Math.abs(closeCashReceived))}`}</div>
@@ -30,7 +30,7 @@ const CashList = ({ register }) => {
           {register?.cashGiven?.map((transaction: SaleTransactionObject, i: number) => (
             <CashItem transaction={transaction} field={'changeGiven'} negative key={i} />
           ))}
-          <div className={`w-24 text-right border-t text-sm font-bold text-tertiary`}>{`- ${priceDollarsString(
+          <div className={`w-1/3 text-right border-t text-sm font-bold text-tertiary`}>{`- ${priceDollarsString(
             Math.abs(closeCashGiven),
           )}`}</div>
         </>
@@ -41,7 +41,7 @@ const CashList = ({ register }) => {
           {register?.manualPayments.map((transaction: SaleTransactionObject, i: number) => (
             <CashItem transaction={transaction} negative key={i} />
           ))}
-          <div className={`w-24 text-right border-t text-sm font-bold text-tertiary`}>{`- ${priceDollarsString(
+          <div className={`w-1/3 text-right border-t text-sm font-bold text-tertiary`}>{`- ${priceDollarsString(
             Math.abs(closeManualPayments),
           )}`}</div>
         </>
@@ -53,7 +53,7 @@ const CashList = ({ register }) => {
             <CashItem transaction={transaction} key={i} />
           ))}
           <div
-            className={`w-24 text-right border-t text-sm font-bold ${
+            className={`w-1/3 text-right border-t text-sm font-bold ${
               closePettyBalance < 0 ? 'text-tertiary' : 'text-secondary'
             }`}
           >{`${closePettyBalance < 0 ? '-' : '+'} ${priceDollarsString(Math.abs(closePettyBalance))}`}</div>
