@@ -4,10 +4,11 @@ import { useAppStore } from 'lib/store'
 import { Pages } from 'lib/store/types'
 import { useState } from 'react'
 import StockFilter from './filter'
-import { StockItemObject, StockItemSearchObject } from 'lib/types/stock'
+import { StockItemSearchObject } from 'lib/types/stock'
 import { getItemSku } from 'lib/functions/displayInventory'
 import StockListItem from './stock-list-item'
 import LoadMoreButton from 'components/button/load-more-button'
+import DataTable from 'components/table/data-table'
 
 const StockList = () => {
   const { stockList, isStockListLoading } = useStockList()
@@ -15,7 +16,7 @@ const StockList = () => {
     stockPage: { searchBar },
     setSearchBar,
   } = useAppStore()
-  const [limit, setLimit] = useState(30)
+  const [limit, setLimit] = useState(3)
 
   const [filterSettings, setFilterSettings] = useState({
     sortBy: [],
@@ -30,7 +31,7 @@ const StockList = () => {
     }))
   }
 
-  console.log(filterSettings)
+  // console.log(filterSettings)
 
   const handleSearch = (e) => setSearchBar(Pages.stockPage, e.target.value)
 
@@ -46,17 +47,25 @@ const StockList = () => {
 
   const { stockItemList = [], isStockItemListLoading = true } = useStockItemList(idList)
 
+  console.log(stockItemList)
+
   const stockSchema = [
-    { key: 'id', header: 'Stock ID' },
-    { key: 'vendorId', header: 'Vendor ID' },
-    { key: 'sku', header: 'SKU', getValue: (row: StockItemObject) => getItemSku(row), isLocked: true },
+    {
+      key: 'id',
+      header: 'Stock ID',
+      getValue: (row) => row?.item?.id,
+    },
+    { key: 'vendorId', header: 'Vendor ID', getValue: (row) => row?.item?.vendorId },
+    { key: 'sku', header: 'SKU', getValue: (row) => getItemSku(row?.item), isLocked: true },
     {
       key: 'artist',
       header: 'Artist',
+      getValue: (row) => row?.item?.artist,
     },
     {
       key: 'title',
       header: 'Title',
+      getValue: (row) => row?.item?.title,
     },
   ]
 
@@ -67,7 +76,7 @@ const StockList = () => {
         <StockFilter stockList={stockList} setSettings={setSetting} filterSettings={filterSettings} />
       </div>
       <div className="px-2">
-        {/* <DataTable initData={filteredList} initSchema={stockSchema} isLoading={isStockListLoading} /> */}
+        <DataTable initData={stockItemList} initSchema={stockSchema} isLoading={isStockListLoading} />
         {stockItemList?.map((stockItem) => (
           <StockListItem key={stockItem?.item?.id} stockListItem={stockItem} />
         ))}

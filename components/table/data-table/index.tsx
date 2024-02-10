@@ -26,7 +26,7 @@ const DataTable = ({ initData, initSchema, isLoading }) => {
   const widths = widthRatios?.map((ratio) => Math.floor(ratio * tableWidth))
   const [mouseDown, setMouseDown] = useState(false)
   useEffect(() => {
-    dtSetSchema(defaultSchema.map((col, i) => ({ ...col, ref: i })))
+    dtSetSchema(schema.map((col, i) => ({ ...col, ref: i })))
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         e.preventDefault()
@@ -105,9 +105,10 @@ const DataTable = ({ initData, initSchema, isLoading }) => {
         onMouseUp={handleMouseUp}
       >
         <DataHeaderRow />
-        {data.map((dataRow, i) => (
-          <DataRow key={i} row={dataRow} widths={widths} />
-        ))}
+        {data.map((dataRow, i) => {
+          console.log(dataRow)
+          return <DataRow key={i} row={dataRow} widths={widths} />
+        })}
       </div>
     </div>
   )

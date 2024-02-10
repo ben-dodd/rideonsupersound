@@ -10,6 +10,7 @@ interface DataCellType {
 const DataCell = ({ col, row, width }: DataCellType) => {
   const { dataTable, dtClickCell, dtSetCell } = useAppStore()
   const { active: activeCell, corner: cornerCell } = dataTable || {}
+  console.log(col, row)
   const cellRef = [row.ref, col.ref]
   const isActive = arraysAreEqual(activeCell, cellRef)
   const isSelected = refInRange(cellRef, activeCell, cornerCell)

@@ -3,7 +3,7 @@ import { arrayToReactSelect, getUniqueValues } from 'lib/utils'
 
 const StockFilter = ({ stockList, setSettings, filterSettings }) => {
   const artists = getUniqueValues('artist', stockList)
-  console.log(artists?.sort())
+  // console.log(artists?.sort())
   return (
     <div className="flex w-1/2 my-1 ml-2">
       <SelectInput
