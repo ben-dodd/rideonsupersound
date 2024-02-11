@@ -1,50 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { SaleStateTypes } from 'lib/types/sale'
-import {
-  useBlockLayout,
-  useFilters,
-  useGlobalFilter,
-  usePagination,
-  useResizeColumns,
-  useSortBy,
-  useTable,
-} from 'react-table'
-import SearchIcon from '@mui/icons-material/Search'
-// import dayjs from 'dayjs'
-// import { CSVLink } from 'react-csv'
-// import { dateYMD } from 'lib/types/date'
-import { ArrowDropDown, ArrowDropUp, FirstPage, LastPage, NavigateBefore, NavigateNext } from '@mui/icons-material'
-
-// const skipPageResetRef:any = useRef();
-// skipPageResetRef.current = false;
-
-function GlobalFilter({ globalFilter, colorLight }) {
-  const [searchValue, setSearchValue] = useState(globalFilter)
-  // const onChange = useAsyncDebounce((value) => {
-  //   // skipPageResetRef.current = true;
-  //   setGlobalFilter(value || undefined)
-  // }, 100)
-  return (
-    <div
-      className={`flex items-center ring-1 ring-gray-400 rounded-md mr-1 my-2 ml-3 w-auto ${
-        colorLight ? `bg-gray-100 hover:${colorLight}` : 'bg-gray-200 hover:bg-gray-300'
-      }`}
-    >
-      <div className="pl-3 pr-1">
-        <SearchIcon />
-      </div>
-      <input
-        className="w-full py-1 px-2 outline-none bg-transparent"
-        value={searchValue || ''}
-        onChange={(e) => {
-          setSearchValue(e.target.value)
-          // onChange(e.target.value)
-        }}
-        placeholder="SEARCH…"
-      />
-    </div>
-  )
-}
+import { useBlockLayout, useFilters, useGlobalFilter, useResizeColumns, useSortBy, useTable } from 'react-table'
+import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material'
 
 interface TableProps {
   color?: string
@@ -54,68 +11,26 @@ interface TableProps {
   columns?: any[]
   showFooter?: boolean
   heading?: string
-  pageSize?: number
   onClickRow?: Function
   sortOptions?: any
   hiddenColumns?: string[]
   downloadCSV?: boolean
 }
 
-function Table({
-  color,
-  colorLight,
-  colorDark,
-  data,
-  columns,
-  showFooter,
-  heading,
-  pageSize,
-  sortOptions,
-  hiddenColumns,
-  downloadCSV,
-}: TableProps) {
+function Table({ color, colorDark, data, columns, showFooter, sortOptions, hiddenColumns }: TableProps) {
   const defaultColumn = useMemo(
     () => ({
       minWidth: 30,
     }),
     [],
   )
-  // useEffect(() => {
-  //   skipPageResetRef.current = false;
-  // });
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    footerGroups,
-    prepareRow,
-    // rows,
-    page,
-    canPreviousPage,
-    canNextPage,
-    pageOptions,
-    pageCount,
-    gotoPage,
-    nextPage,
-    previousPage,
-    // setPageSize,
-    // allColumns,
-    state,
-  } = useTable(
+  const { getTableProps, getTableBodyProps, headerGroups, footerGroups, prepareRow, rows } = useTable(
     {
       columns,
       data,
       defaultColumn,
-      // autoResetPage: false,
-      // autoResetExpanded: false,
-      // autoResetGroupBy: false,
-      // autoResetSelectedRows: false,
-      // autoResetSortBy: false,
-      // autoResetFilters: false,
-      // autoResetRowState: false,
       initialState: {
-        pageSize: pageSize || 15,
         sortBy: sortOptions || [],
         hiddenColumns: hiddenColumns || [],
       },
@@ -125,38 +40,20 @@ function Table({
     useFilters,
     useGlobalFilter,
     useSortBy,
-    usePagination,
   )
 
   return (
     <div className="ml-1">
-      {/* <div className={`flex justify-between items-center px-2 mb-1 ${color || ''}`}>
-        {heading ? <div className={`text-4xl font-bold uppercase sticky`}>{heading}</div> : <div />}
-        <div className="flex items-center">
-          {downloadCSV ? (
-            <CSVLink
-              className={`text-gray-600 bg-gray-100 hover:bg-gray-200 p-2 py-1 my-1 rounded border border-gray-600`}
-              filename={`${heading?.toLowerCase?.()}-${dayjs().format(dateYMD)}.csv`}
-              data={data}
-            >
-              DOWNLOAD DATA
-            </CSVLink>
-          ) : (
-            <div />
-          )}
-          <GlobalFilter globalFilter={state.globalFilter} colorLight={colorLight || null} />
-        </div>
-      </div> */}
       <div className="overflow-x-scroll w-full">
-        <table {...getTableProps()} className="table-auto w-full">
+        <table {...getTableProps()} className="table-auto w-full text-sm">
           <thead className="sticky">
             {headerGroups.map((headerGroup, i) => (
               <tr key={i} {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column, i) => (
                   <th
                     key={i}
-                    className={`border border-white ${
-                      color ? `${color} hover:${colorDark}` : 'bg-gray-500 hover:bg-gray-800'
+                    className={`border border-white select-none h-6 ${
+                      color ? `${color} hover:${colorDark}` : 'bg-gray-200 hover:bg-gray-400'
                     } text-left px-2 truncate`}
                     {...column.getHeaderProps()}
                   >
@@ -188,14 +85,12 @@ function Table({
             ))}
           </thead>
           <tbody {...getTableBodyProps()}>
-            {page.map((row, i) => {
-              // {rows.map((row) => {
+            {rows.map((row, i) => {
               prepareRow(row)
-              let rowProps = row.getRowProps()
               return (
                 <tr
                   key={i}
-                  {...rowProps}
+                  {...row.getRowProps()}
                   className={`${
                     row?.cells[2]?.value === SaleStateTypes.Completed ||
                     row?.cells[5]?.value === 'Audio' ||
@@ -239,26 +134,6 @@ function Table({
             </tfoot>
           )}
         </table>
-      </div>
-      <div className="flex justify-end items-center py-2">
-        <span>
-          Page{' '}
-          <strong>
-            {(state?.pageIndex || 0) + 1} of {pageOptions.length}
-          </strong>
-        </span>
-        <button className="icon-button" onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-          <FirstPage />
-        </button>
-        <button className="icon-button" onClick={() => previousPage()} disabled={!canPreviousPage}>
-          <NavigateBefore />
-        </button>
-        <button className="icon-button" onClick={() => nextPage()} disabled={!canNextPage}>
-          <NavigateNext />
-        </button>
-        <button className="icon-button" onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
-          <LastPage />
-        </button>
       </div>
     </div>
   )

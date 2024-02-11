@@ -157,6 +157,7 @@ export function dbGetStockItem(id, basic = false, db = connection) {
         inStock: stockMovements.reduce((acc, stockMovement) => acc + stockMovement.quantity, 0),
         layby: getQuantities([StockMovementTypes.Layby, StockMovementTypes.Unlayby], stockMovements, true),
         hold: getQuantities([StockMovementTypes.Hold, StockMovementTypes.Unhold], stockMovements, true),
+        sold: getQuantities([StockMovementTypes.Sold, StockMovementTypes.Unsold], stockMovements, true),
       }
       const latestPrice = stockPrices[0]
       const totalSell = latestPrice?.total_sell

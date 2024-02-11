@@ -15,7 +15,7 @@ import { dateTime } from 'lib/types/date'
 export default function ShoppingCartActions() {
   const { cart, setCart, loadSaleToCartById, setAlert, openConfirm, closeView, resetCart, resetSearchBar } =
     useAppStore()
-  console.log(cart)
+  // console.log(cart)
   const { parkedSales } = useParkedSales()
   const [parkedSaleItems, setParkedSaleItems] = useState([])
   const { sale = {}, items = [] } = cart || {}

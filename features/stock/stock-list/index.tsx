@@ -4,12 +4,12 @@ import { useAppStore } from 'lib/store'
 import { Pages } from 'lib/store/types'
 import StockFilter from './filter'
 import { StockItemSearchObject } from 'lib/types/stock'
-import { getItemSku } from 'lib/functions/displayInventory'
-import StockListList from './list'
-import StockListTable from './table'
-import StockListSheet from './sheet'
+const StockListList = dynamic(() => import('./list'))
+const StockListTable = dynamic(() => import('./table'))
+const StockListSheet = dynamic(() => import('./sheet'))
 import TablePagination from '@mui/material/TablePagination'
 import { useMemo } from 'react'
+import dynamic from 'next/dynamic'
 
 const StockList = () => {
   const { stockList, isStockListLoading } = useStockList()
@@ -49,29 +49,6 @@ const StockList = () => {
 
   // console.log(stockItemList)
 
-  const stockSchema = [
-    {
-      id: 'id',
-      key: 'id',
-      header: 'Stock ID',
-      getValue: (row) => row?.item?.id,
-    },
-    { id: 'vendorId', key: 'vendorId', header: 'Vendor ID', getValue: (row) => row?.item?.vendorId },
-    { id: 'sku', key: 'sku', header: 'SKU', getValue: (row) => getItemSku(row?.item), isLocked: true },
-    {
-      id: 'artist',
-      key: 'artist',
-      header: 'Artist',
-      getValue: (row) => row?.item?.artist,
-    },
-    {
-      id: 'title',
-      key: 'title',
-      header: 'Title',
-      getValue: (row) => row?.item?.title,
-    },
-  ]
-
   return (
     <div className="h-content overflow-y-scroll">
       <div className="px-2 flex justify-between w-full">
@@ -88,9 +65,9 @@ const StockList = () => {
       />
       <div className="px-2">
         {viewMode === 'table' ? (
-          <StockListTable stockItemList={stockItemList} stockSchema={stockSchema} />
+          <StockListTable stockItemList={stockItemList} />
         ) : viewMode === 'sheet' ? (
-          <StockListSheet stockItemList={stockItemList} stockSchema={stockSchema} isLoading={isStockItemListLoading} />
+          <StockListSheet stockItemList={stockItemList} isLoading={isStockItemListLoading} />
         ) : (
           <StockListList stockItemList={stockItemList} />
         )}

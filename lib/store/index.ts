@@ -96,7 +96,7 @@ const initState = {
     },
     tab: 0,
     pageNum: 0,
-    limit: 30,
+    limit: 10,
   },
   vendorsPage: {
     searchBar: '',
