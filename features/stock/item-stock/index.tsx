@@ -1,7 +1,7 @@
 import { AttachMoney, Delete, Edit, LibraryAdd } from '@mui/icons-material'
 import MidScreenContainer from 'components/container/mid-screen'
 import Tabs from 'components/navigation/tabs'
-import { deleteStockItem } from 'lib/api/stock'
+import { deleteStockItem, useStockItem } from 'lib/api/stock'
 import { getItemSkuDisplayName } from 'lib/functions/displayInventory'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
@@ -19,6 +19,8 @@ const StockItemScreen = ({ item, sales }) => {
   const [tab, setTab] = useState(0)
   const router = useRouter()
   const { mutate } = useSWRConfig()
+
+  const { stockItem } = useStockItem(`${item?.id}`)
 
   function onClickDelete() {
     const hasBeenSold = sales?.length > 0
@@ -75,19 +77,19 @@ const StockItemScreen = ({ item, sales }) => {
           <div hidden={tab !== 0}>
             <div className="flex">
               <div className="w-1/3">
-                <StockItemDisplay />
+                <StockItemDisplay stockItem={stockItem} />
               </div>
               <div className="w-2/3 ml-4">
-                <PriceDetails />
-                <StockDetails />
+                <PriceDetails stockItem={stockItem} />
+                <StockDetails stockItem={stockItem} />
               </div>
             </div>
           </div>
           <div hidden={!(tab === 1 && (item?.media === 'Audio' || item?.media === 'Video' || item?.media === 'Mixed'))}>
-            <DiscogsPanel />
+            <DiscogsPanel stockItem={stockItem} />
           </div>
           <div hidden={!(tab === 1 && item?.media === 'Literature') && !(tab === 2 && item?.media === 'Mixed')}>
-            <GoogleBooksPanel />
+            <GoogleBooksPanel stockItem={stockItem} />
           </div>
         </div>
       </>

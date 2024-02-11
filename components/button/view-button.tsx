@@ -1,6 +1,6 @@
 import { useAppStore } from 'lib/store'
 import dynamic from 'next/dynamic'
-import { List, TableChart } from '@mui/icons-material'
+import { Apps, List, TableChart } from '@mui/icons-material'
 const Tooltip = dynamic(() => import('@mui/material/Tooltip'))
 
 interface ViewModeTypes {
@@ -14,7 +14,7 @@ const ViewButton = () => {
   const viewModes: ViewModeTypes[] = [
     { icon: <TableChart />, tooltip: 'View as Table', mode: 'table' },
     { icon: <List />, tooltip: 'View as List', mode: 'list' },
-    // { icon: <Apps />, tooltip: 'View as Data Sheet (Quick Edit)', mode: 'sheet' },
+    { icon: <Apps />, tooltip: 'View as Data Sheet (Quick Edit)', mode: 'sheet' },
   ]
   return (
     <div className="rounded-md shadow-md flex overflow-hidden">

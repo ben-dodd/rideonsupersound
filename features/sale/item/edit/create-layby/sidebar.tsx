@@ -58,7 +58,7 @@ export default function CreateLaybySidebar() {
     {
       type: 'ok',
       onClick: onClickConfirmLayby,
-      disabled: !sale?.customerId,
+      disabled: !customerId,
       text: submitting ? 'LAYBYING...' : 'CONFIRM LAYBY',
     },
   ]
@@ -76,7 +76,7 @@ export default function CreateLaybySidebar() {
           autoFocus
           fieldRequired
           value={customerId}
-          label={customers?.find((c: CustomerObject) => c?.id === sale?.customerId)?.name || ''}
+          label={customers?.find((c: CustomerObject) => c?.id === customerId)?.name || ''}
           onChange={(customerObject: any) => {
             setCustomerId(parseInt(customerObject?.value))
           }}

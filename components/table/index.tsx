@@ -10,9 +10,9 @@ import {
   useTable,
 } from 'react-table'
 import SearchIcon from '@mui/icons-material/Search'
-import dayjs from 'dayjs'
-import { CSVLink } from 'react-csv'
-import { dateYMD } from 'lib/types/date'
+// import dayjs from 'dayjs'
+// import { CSVLink } from 'react-csv'
+// import { dateYMD } from 'lib/types/date'
 import { ArrowDropDown, ArrowDropUp, FirstPage, LastPage, NavigateBefore, NavigateNext } from '@mui/icons-material'
 
 // const skipPageResetRef:any = useRef();
@@ -130,7 +130,7 @@ function Table({
 
   return (
     <div className="ml-1">
-      <div className={`flex justify-between items-center px-2 mb-1 ${color || ''}`}>
+      {/* <div className={`flex justify-between items-center px-2 mb-1 ${color || ''}`}>
         {heading ? <div className={`text-4xl font-bold uppercase sticky`}>{heading}</div> : <div />}
         <div className="flex items-center">
           {downloadCSV ? (
@@ -146,7 +146,7 @@ function Table({
           )}
           <GlobalFilter globalFilter={state.globalFilter} colorLight={colorLight || null} />
         </div>
-      </div>
+      </div> */}
       <div className="overflow-x-scroll w-full">
         <table {...getTableProps()} className="table-auto w-full">
           <thead className="sticky">

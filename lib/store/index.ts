@@ -89,7 +89,14 @@ const initState = {
   },
   stockPage: {
     searchBar: '',
+    filterSettings: {
+      sortBy: [],
+      artist: [],
+      vendor: [],
+    },
     tab: 0,
+    pageNum: 0,
+    limit: 30,
   },
   vendorsPage: {
     searchBar: '',
@@ -447,6 +454,18 @@ export const useAppStore = createSelectors(
         produce((draft) => {
           draft[page].searchBar = val
           page === Pages.sellPage ? (draft.sellPage.isSearching = true) : null
+        }),
+      )
+    },
+    setPageFilter: (page, setting, update) => {
+      set(
+        produce((draft) => {
+          const filterSetting = { ...get()[page]?.filterSetting }
+          filterSetting[setting] = update
+          draft[page] = {
+            ...get()[page],
+            filterSetting,
+          }
         }),
       )
     },

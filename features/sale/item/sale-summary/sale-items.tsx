@@ -9,7 +9,7 @@ import Loading from 'components/placeholders/loading'
 
 const SaleItems = ({ items, isEditable }) => {
   const router = useRouter()
-  const { stockItemList = [], isStockItemListLoading = true } = useStockItemList(items?.map((item) => item?.id))
+  const { stockItemList = [], isStockItemListLoading = true } = useStockItemList(items?.map((item) => item?.itemId))
   return isStockItemListLoading ? (
     <Loading />
   ) : items?.length > 0 ? (

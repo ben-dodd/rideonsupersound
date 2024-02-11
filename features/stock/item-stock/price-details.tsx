@@ -1,12 +1,10 @@
-import { useStockItem } from 'lib/api/stock'
 import { getGrossProfit, getProfitMarginString } from 'lib/functions/pay'
 import { priceDollarsString, priceCentsString } from 'lib/utils'
 import { useRouter } from 'next/router'
 
-export default function PriceDetails() {
+export default function PriceDetails({ stockItem }) {
   const router = useRouter()
   const { id } = router.query
-  const { stockItem } = useStockItem(`${id}`)
   const { item = {}, price = {} } = stockItem || {}
 
   return (

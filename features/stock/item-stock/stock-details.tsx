@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import { useRouter } from 'next/router'
-import { deleteStockPrice, useStockItem } from 'lib/api/stock'
+import { deleteStockPrice } from 'lib/api/stock'
 import { isPreApp, priceCentsString } from 'lib/utils'
 import { Delete, MonetizationOnRounded, ShoppingCartCheckoutRounded, StackedBarChartRounded } from '@mui/icons-material'
 import SectionPanel from 'components/container/section-panel'
@@ -10,12 +10,11 @@ import { useHoldsForItem } from 'lib/api/sale'
 import { StockMovementTypes } from 'lib/types/stock'
 import { dateTime } from 'lib/types/date'
 
-export default function StockDetails() {
+export default function StockDetails({ stockItem }) {
   const router = useRouter()
   const { openConfirm, closeConfirm } = useAppStore()
   const { mutate } = useSWRConfig()
   const { id } = router.query
-  const { stockItem } = useStockItem(`${id}`)
   const { itemHolds } = useHoldsForItem(id)
   const { quantities = {}, stockMovements = [], stockPrices = [], sales = [] } = stockItem || {}
   let runningQuantity = quantities?.inStock || 0

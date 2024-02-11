@@ -65,6 +65,9 @@ export interface StoreState {
   }
   stockPage?: {
     tab?: number
+    pageNum?: number
+    limit?: number
+    filterSettings?: any
     searchBar?: string
   }
   vendorsPage?: any
@@ -143,6 +146,7 @@ export interface StoreState {
   resetBatchReceiveSession: () => void
   resetCustomer: () => void
   setSearchBar: (page: Pages, val: string) => void
+  setPageFilter: (page: Pages, setting: string, update: any) => void
   setPage: (page: Pages, update: any) => void
   togglePageOption: (page: Pages, option: string) => void
   resetSearchBar: (page: Pages) => void

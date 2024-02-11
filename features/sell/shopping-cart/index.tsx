@@ -15,10 +15,12 @@ import { useRouter } from 'next/router'
 import { SaleStateTypes } from 'lib/types/sale'
 import { ArrowCircleLeftRounded } from '@mui/icons-material'
 import { priceDollarsString } from 'lib/utils'
+import { useStockItemList } from 'lib/api/stock'
 
 export default function ShoppingCart() {
   const { cart, view, setCart, openView, closeView } = useAppStore()
   const { sale = {}, items = [], transactions = [] } = cart || {}
+  const { stockItemList } = useStockItemList(items?.map((item) => item?.itemId))
   const { clerk } = useClerk()
   const router = useRouter()
   const [loadingSale, setLoadingSale] = useState(false)
@@ -52,7 +54,10 @@ export default function ShoppingCart() {
           {items?.length > 0 ? (
             items
               .filter((cartItem) => !cartItem?.isDeleted && !cartItem?.isRefunded)
-              .map((cartItem) => <ListItem key={cartItem?.itemId} cartItem={cartItem} />)
+              .map((cartItem) => {
+                const stockItem = stockItemList?.find((stockItem) => stockItem?.item?.id === cartItem?.itemId)
+                return <ListItem key={cartItem?.itemId} cartItem={cartItem} stockItem={stockItem} />
+              })
           ) : (
             <Tooltip title="To add items to the cart. Use the search bar and then add items with the (+) icon.">
               <div>No items in cart...</div>

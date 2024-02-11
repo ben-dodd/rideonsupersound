@@ -8,64 +8,51 @@ import { getItemSku } from 'lib/functions/displayInventory'
 import StockListList from './list'
 import StockListTable from './table'
 import StockListSheet from './sheet'
-import TablePagination from '@mui/material/TablePagination'
-import { useMemo } from 'react'
 
 const StockList = () => {
   const { stockList, isStockListLoading } = useStockList()
   const {
     viewMode,
-    stockPage: { searchBar, limit, pageNum, filterSettings },
+    stockPage: { searchBar, limit, filterSettings },
     setSearchBar,
     setPageFilter,
-    setPage,
   } = useAppStore()
 
   const setSetting = (setting, e) => {
     setPageFilter(Pages.stockPage, setting, e ? e.map((obj: any) => obj.value) : [])
   }
   const handleSearch = (e) => setSearchBar(Pages.stockPage, e.target.value)
-  const handlePageChange = (e, newPage) => setPage(Pages.stockPage, { pageNum: newPage })
-  const handleRowsPerPageChange = (e) => setPage(Pages.stockPage, { limit: parseInt(e.target.value), pageNum: 0 })
 
   // console.log(filterSettings)
 
-  const idList = useMemo(
-    () =>
-      stockList
-        ?.filter?.(
-          (stockItem) =>
-            (filterSettings?.artist?.length === 0 || filterSettings.artist?.includes(stockItem?.artist)) &&
-            `${stockItem?.artist} ${stockItem?.title}`?.toUpperCase?.()?.includes(searchBar?.toUpperCase()),
-        )
-        ?.reverse()
-        ?.map((item: StockItemSearchObject) => item?.id),
-    [filterSettings.artist, searchBar, stockList],
-  )
+  const idList = stockList
+    ?.filter?.(
+      (stockItem) =>
+        (filterSettings?.artist?.length === 0 || filterSettings.artist?.includes(stockItem?.artist)) &&
+        `${stockItem?.artist} ${stockItem?.title}`?.toUpperCase?.()?.includes(searchBar?.toUpperCase()),
+    )
+    ?.reverse()
+    ?.slice(0, limit)
+    ?.map((item: StockItemSearchObject) => item?.id)
 
-  const paginatedIdList = idList?.slice(pageNum * limit, pageNum * limit + limit)
-
-  const { stockItemList = [], isStockItemListLoading = true } = useStockItemList(paginatedIdList)
+  const { stockItemList = [], isStockItemListLoading = true } = useStockItemList(idList)
 
   // console.log(stockItemList)
 
   const stockSchema = [
     {
-      id: 'id',
       key: 'id',
       header: 'Stock ID',
       getValue: (row) => row?.item?.id,
     },
-    { id: 'vendorId', key: 'vendorId', header: 'Vendor ID', getValue: (row) => row?.item?.vendorId },
-    { id: 'sku', key: 'sku', header: 'SKU', getValue: (row) => getItemSku(row?.item), isLocked: true },
+    { key: 'vendorId', header: 'Vendor ID', getValue: (row) => row?.item?.vendorId },
+    { key: 'sku', header: 'SKU', getValue: (row) => getItemSku(row?.item), isLocked: true },
     {
-      id: 'artist',
       key: 'artist',
       header: 'Artist',
       getValue: (row) => row?.item?.artist,
     },
     {
-      id: 'title',
       key: 'title',
       header: 'Title',
       getValue: (row) => row?.item?.title,
@@ -78,14 +65,6 @@ const StockList = () => {
         <SearchInput searchValue={searchBar} handleSearch={handleSearch} />
         <StockFilter stockList={stockList} setSettings={setSetting} filterSettings={filterSettings} />
       </div>
-      <TablePagination
-        component="div"
-        count={idList?.length}
-        page={pageNum}
-        onPageChange={handlePageChange}
-        rowsPerPage={limit}
-        onRowsPerPageChange={handleRowsPerPageChange}
-      />
       <div className="px-2">
         {viewMode === 'table' ? (
           <StockListTable stockItemList={stockItemList} stockSchema={stockSchema} />

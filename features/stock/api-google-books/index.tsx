@@ -4,15 +4,14 @@ import { getGoogleBooksOptionsByItem } from 'lib/functions/googleBooks'
 import GoogleBooksItem from './google-books-item'
 import GoogleBooksOption from './google-books-option'
 import { useRouter } from 'next/router'
-import { updateStockItem, useStockItem } from 'lib/api/stock'
+import { updateStockItem } from 'lib/api/stock'
 import { useSWRConfig } from 'swr'
 import { parseJSON } from 'lib/utils'
 import Loading from 'components/placeholders/loading'
 
-export default function GoogleBooksPanel() {
+export default function GoogleBooksPanel({ stockItem }) {
   const router = useRouter()
   const { id } = router.query
-  const { stockItem } = useStockItem(`${id}`)
   const { item = {} } = stockItem || {}
   const [googleBooksOptions, setGoogleBooksOptions] = useState([])
   const googleBooksItem = parseJSON(item?.googleBooksItem, null)

@@ -6,18 +6,24 @@ import { getImageSrc, getItemDisplayName, getItemSku } from 'lib/functions/displ
 import DeleteIcon from '@mui/icons-material/Delete'
 import { getCartItemTotal, writeCartItemPriceBreakdown } from 'lib/functions/sell'
 import { useAppStore } from 'lib/store'
-import { useBasicStockItem, useStockList } from 'lib/api/stock'
+import { useStockList } from 'lib/api/stock'
 import { priceCentsString } from 'lib/utils'
 import { deleteSale, deleteSaleItem } from 'lib/api/sale'
 import { ViewProps } from 'lib/store/types'
 import { ArrowDropDown, ArrowDropUp, PanTool } from '@mui/icons-material'
+import { BasicStockObject } from 'lib/types/stock'
 const Tooltip = dynamic(() => import('@mui/material/Tooltip'))
 // TODO make list items share more components
 
-export default function SellListItem({ cartItem }: { cartItem: SaleItemObject }) {
+export default function SellListItem({
+  cartItem,
+  stockItem,
+}: {
+  cartItem: SaleItemObject
+  stockItem: BasicStockObject
+}) {
   const { cart, openConfirm, setCartItem, setCart, resetCart, closeView, setAlert } = useAppStore()
   const { sale = {}, items = [], transactions = [] } = cart || {}
-  const { stockItem } = useBasicStockItem(`${cartItem?.itemId}`)
   const { stockList = [] } = useStockList()
   const stockListItem = stockList.find((stock) => stock?.id === cartItem?.itemId) || {}
 

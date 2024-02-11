@@ -22,8 +22,8 @@ const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
   const { sale = {} } = cart || {}
   const router = useRouter()
   const { mutate } = useSWRConfig()
-  console.log(sale)
-  console.log('cart', cart)
+  // console.log(sale)
+  // console.log('cart', cart)
 
   useEffect(() => {
     if (sale?.state === SaleStateTypes.Completed && totalRemaining !== 0)
