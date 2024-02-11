@@ -1,16 +1,16 @@
-import { useStockItem } from 'lib/api/stock'
 import { getImageSrc, getItemDisplayName, getItemSku } from 'lib/functions/displayInventory'
 import { SaleItemObject } from 'lib/types/sale'
 import { writeCartItemPriceBreakdown } from '../../../../lib/functions/sell'
+import { BasicStockObject } from 'lib/types/stock'
 
 // Components
 
 type SellListItemProps = {
   saleItem: SaleItemObject
+  stockItem: BasicStockObject
 }
 
-export default function RefundedSaleItem({ saleItem }: SellListItemProps) {
-  const { stockItem } = useStockItem(`${saleItem?.itemId}`)
+export default function RefundedSaleItem({ saleItem, stockItem }: SellListItemProps) {
   const { item = {} } = stockItem || {}
 
   return (

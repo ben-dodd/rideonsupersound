@@ -1,19 +1,19 @@
-import { useStockItem } from 'lib/api/stock'
 import { getImageSrc, getItemDisplayName, getItemSku } from 'lib/functions/displayInventory'
 import { SaleItemObject } from 'lib/types/sale'
 import { MouseEventHandler } from 'react'
 import { writeCartItemPriceBreakdown } from '../../../../lib/functions/sell'
+import { BasicStockObject } from 'lib/types/stock'
 
 // Components
 
 type SellListItemProps = {
   saleItem: SaleItemObject
+  stockItem: BasicStockObject
   selected?: boolean
   onClick?: MouseEventHandler
 }
 
-export default function StaticSaleItem({ saleItem, selected, onClick }: SellListItemProps) {
-  const { stockItem } = useStockItem(`${saleItem?.itemId}`)
+export default function StaticSaleItem({ saleItem, stockItem, selected, onClick }: SellListItemProps) {
   const { item = {} } = stockItem || {}
 
   // TODO make image + sku a reusable component

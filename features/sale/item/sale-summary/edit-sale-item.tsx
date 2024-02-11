@@ -6,17 +6,23 @@ import { getImageSrc, getItemDisplayName, getItemSku } from 'lib/functions/displ
 import DeleteIcon from '@mui/icons-material/Delete'
 import { getCartItemTotal, writeCartItemPriceBreakdown } from 'lib/functions/sell'
 import { useAppStore } from 'lib/store'
-import { useBasicStockItem, useStockList } from 'lib/api/stock'
+import { useStockList } from 'lib/api/stock'
 import { priceCentsString } from 'lib/utils'
 import { deleteSaleItem } from 'lib/api/sale'
 import { ArrowDropDown, ArrowDropUp, EventBusy } from '@mui/icons-material'
 const Tooltip = dynamic(() => import('@mui/material/Tooltip'))
 import { useRouter } from 'next/router'
+import { BasicStockObject } from 'lib/types/stock'
 
-export default function EditSaleItem({ cartItem }: { cartItem: SaleItemObject }) {
+export default function EditSaleItem({
+  cartItem,
+  stockItem,
+}: {
+  cartItem: SaleItemObject
+  stockItem: BasicStockObject
+}) {
   const { cart, openConfirm, closeConfirm, setCartItem, setAlert } = useAppStore()
   const { sale = {} } = cart || {}
-  const { stockItem } = useBasicStockItem(`${cartItem?.itemId}`)
   const { stockList = [] } = useStockList()
   const stockListItem = stockList.find((stock) => stock?.id === cartItem?.itemId) || {}
   const router = useRouter()

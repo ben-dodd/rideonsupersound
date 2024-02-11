@@ -1,9 +1,10 @@
 import { filterInventory, sortInventory } from 'lib/functions/sell'
-import ListItem from './list-item'
+const ListItem = dynamic(() => import('./list-item'))
 import Loading from 'components/placeholders/loading'
 import { useStockItemList, useStockList } from 'lib/api/stock'
 import { useAppStore } from 'lib/store'
 import { BasicStockObject, StockItemSearchObject } from 'lib/types/stock'
+import dynamic from 'next/dynamic'
 
 export default function InventoryScroll() {
   const maxItemsInList = 50

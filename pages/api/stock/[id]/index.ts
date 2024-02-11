@@ -5,10 +5,10 @@ import { dbGetStockItem, dbUpdateStockItem } from 'lib/database/stock'
 
 const getHandler = async (req, res) => {
   const { id, basic } = req.query
-  var startTime = performance.now()
+  // var startTime = performance.now()
   const data = await dbGetStockItem(id, Boolean(basic))
-  var endTime = performance.now()
-  console.log(`dbGetStockItem for ${id} took ${Math.round(endTime - startTime)} ms`)
+  // var endTime = performance.now()
+  // console.log(`dbGetStockItem for ${id} took ${Math.round(endTime - startTime)} ms`)
   res.status(200).json(data)
 }
 

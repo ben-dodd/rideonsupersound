@@ -42,16 +42,18 @@ export default function DiscogsPanel() {
           width="100px"
           height="50px"
         />
-        <button
-          className="icon-text-button"
-          onClick={() => {
-            updateStockItem({ discogsItem: null }, id)
-            mutate(`stock/${id}`)
-            handleGetDiscogsOptions()
-          }}
-        >
-          <SyncIcon /> Refresh Discogs Search
-        </button>
+        <div>
+          <button
+            className="icon-text-button"
+            onClick={() => {
+              updateStockItem({ discogsItem: null }, id)
+              mutate(`stock/${id}`)
+              handleGetDiscogsOptions()
+            }}
+          >
+            <SyncIcon /> Refresh Discogs Search
+          </button>
+        </div>
       </div>
       <div className="flex-1 overflow-y-auto pt-4 mx-4">
         {discogsItem ? (
