@@ -89,14 +89,11 @@ const initState = {
   },
   stockPage: {
     searchBar: '',
-    filterSettings: {
-      sortBy: [],
-      artist: [],
-      vendor: [],
+    pagination: {
+      pageIndex: 0,
+      pageSize: 15,
     },
     tab: 0,
-    pageNum: 0,
-    limit: 10,
   },
   vendorsPage: {
     searchBar: '',
@@ -470,6 +467,7 @@ export const useAppStore = createSelectors(
       )
     },
     setPage: (page, update) => {
+      console.log('Setting page', update)
       set(
         produce((draft) => {
           draft[page] = {

@@ -24,23 +24,15 @@ function Table({
   colorDark,
   data,
   columns,
-  sortOptions,
-  hiddenColumns,
   showFooter,
   showPagination,
   onPaginationChange,
   totalRowNum,
 }: TableProps) {
-  // const defaultColumn = useMemo(
-  //   () => ({
-  //     minWidth: 30,
-  //   }),
-  //   [],
-  // )
   const rerender = useReducer(() => ({}), {})[1]
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: 15,
   })
   const pagination = useMemo(
     () => ({
@@ -55,7 +47,7 @@ function Table({
   const table = useReactTable({
     columns,
     data,
-    pageCount: Math.round(totalRowNum / pageSize) ?? -1,
+    pageCount: Math.ceil(totalRowNum / pageSize) ?? -1,
     onPaginationChange: (e) => {
       onPaginationChange && onPaginationChange(e)
       setPagination(e)
@@ -117,6 +109,7 @@ function Table({
               return (
                 <tr
                   key={row.id}
+                  className="bg-gray-100 opacity-70 hover:opacity-100 mt-1"
                   // className={`${
                   //   row?.cells[2]?.value === SaleStateTypes.Completed ||
                   //   row?.cells[5]?.value === 'Audio' ||
@@ -206,7 +199,7 @@ function Table({
                 table.setPageSize(Number(e.target.value))
               }}
             >
-              {[10, 20, 30, 40, 50].map((pageSize) => (
+              {[15, 30, 50, 100, 200, 500, 1000].map((pageSize) => (
                 <option key={pageSize} value={pageSize}>
                   Show {pageSize}
                 </option>
