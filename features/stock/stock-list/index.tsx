@@ -1,13 +1,11 @@
 import SearchInput from 'components/inputs/search-input'
-import { useStockItemList, useStockList } from 'lib/api/stock'
+import { useStockList } from 'lib/api/stock'
 import { useAppStore } from 'lib/store'
 import { Pages } from 'lib/store/types'
-import StockFilter from './filter'
 import { StockItemSearchObject } from 'lib/types/stock'
-const StockListList = dynamic(() => import('./list'))
+// const StockListList = dynamic(() => import('./list'))
 const StockListTable = dynamic(() => import('./table'))
-const StockListSheet = dynamic(() => import('./sheet'))
-import TablePagination from '@mui/material/TablePagination'
+// const StockListSheet = dynamic(() => import('./sheet'))
 import { useMemo } from 'react'
 import dynamic from 'next/dynamic'
 
@@ -33,19 +31,14 @@ const StockList = () => {
   const idList = useMemo(
     () =>
       stockList
-        ?.filter?.(
-          (stockItem) =>
-            (filterSettings?.artist?.length === 0 || filterSettings.artist?.includes(stockItem?.artist)) &&
-            `${stockItem?.artist} ${stockItem?.title}`?.toUpperCase?.()?.includes(searchBar?.toUpperCase()),
+        ?.filter?.((stockItem) =>
+          // (filterSettings?.artist?.length === 0 || filterSettings.artist?.includes(stockItem?.artist)) &&
+          `${stockItem?.artist} ${stockItem?.title}`?.toUpperCase?.()?.includes(searchBar?.toUpperCase()),
         )
         ?.reverse()
         ?.map((item: StockItemSearchObject) => item?.id),
-    [filterSettings.artist, searchBar, stockList],
+    [searchBar, stockList],
   )
-
-  const paginatedIdList = idList?.slice(pageNum * limit, pageNum * limit + limit)
-
-  const { stockItemList = [], isStockItemListLoading = true } = useStockItemList(paginatedIdList)
 
   // console.log(stockItemList)
 
@@ -53,24 +46,26 @@ const StockList = () => {
     <div className="h-content overflow-y-scroll">
       <div className="px-2 flex justify-between w-full">
         <SearchInput searchValue={searchBar} handleSearch={handleSearch} />
-        <StockFilter stockList={stockList} setSettings={setSetting} filterSettings={filterSettings} />
+        {/* <StockFilter stockList={stockList} setSettings={setSetting} filterSettings={filterSettings} /> */}
       </div>
-      <TablePagination
+      {/* <TablePagination
         component="div"
         count={idList?.length}
         page={pageNum}
         onPageChange={handlePageChange}
         rowsPerPage={limit}
         onRowsPerPageChange={handleRowsPerPageChange}
-      />
+      /> */}
       <div className="px-2">
-        {viewMode === 'table' ? (
-          <StockListTable stockItemList={stockItemList} />
+        <StockListTable idList={idList} />
+        {/* {viewMode === 'table' ? (
+          <StockListTable idList={idList} />
         ) : viewMode === 'sheet' ? (
           <StockListSheet stockItemList={stockItemList} isLoading={isStockItemListLoading} />
         ) : (
           <StockListList stockItemList={stockItemList} />
-        )}
+        )
+        } */}
       </div>
     </div>
   )

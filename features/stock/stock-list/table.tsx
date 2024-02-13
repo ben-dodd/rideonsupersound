@@ -1,15 +1,21 @@
+import { PaginationState } from '@tanstack/react-table'
 import Table from 'components/table'
+import { useStockItemList } from 'lib/api/stock'
 import { useVendors } from 'lib/api/vendor'
 import { priceCentsString } from 'lib/utils'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 
-const StockListTable = ({ stockItemList }) => {
+const StockListTable = ({ idList }) => {
+  const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
+  const paginatedIdList = idList?.slice(pageIndex * pageSize, pageIndex * pageSize + pageSize)
+
+  const { stockItemList = [], isStockItemListLoading = true } = useStockItemList(paginatedIdList)
   const { vendors } = useVendors()
   const data = useMemo(
     () =>
       stockItemList?.map((stockItem) => {
         const { item = {}, price = {}, quantities = {} } = stockItem || {}
-        console.log(stockItem)
+        // console.log(stockItem)
         const vendor = vendors?.find((vendor) => vendor?.id === item?.vendorId)
         return {
           id: item?.id,
@@ -28,32 +34,43 @@ const StockListTable = ({ stockItemList }) => {
     [stockItemList, vendors],
   )
 
-  const schema = [
-    {
-      accessor: 'id',
-      Header: 'Stock ID',
-      width: 100,
-    },
-    {
-      accessor: 'title',
-      Header: 'Title',
-      width: 300,
-    },
-    {
-      accessor: 'artist',
-      Header: 'Artist',
-      width: 190,
-    },
-    { accessor: 'vendor', Header: 'Vendor', width: 180 },
-    { accessor: 'section', Header: 'Section', width: 100 },
-    { accessor: 'format', Header: 'Format', width: 100 },
-    { accessor: 'sell', Header: 'Sell', width: 80 },
-    { accessor: 'qty', Header: 'QTY', width: 60 },
-    { accessor: 'qtyHoldLayby', Header: 'H/L', width: 60 },
-    { accessor: 'qtySold', Header: 'SOLD', width: 60 },
-  ]
-  console.log(data)
-  return <Table columns={schema} data={data} />
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: 'id',
+        header: 'Stock ID',
+        width: 100,
+      },
+      {
+        accessorKey: 'title',
+        header: 'Title',
+        width: 300,
+      },
+      {
+        accessorKey: 'artist',
+        header: 'Artist',
+        width: 190,
+      },
+      { accessorKey: 'vendor', header: 'Vendor', width: 180 },
+      { accessorKey: 'section', header: 'Section', width: 100 },
+      { accessorKey: 'format', header: 'Format', width: 100 },
+      { accessorKey: 'sell', header: 'Sell', width: 80 },
+      { accessorKey: 'qty', header: 'QTY', width: 60 },
+      { accessorKey: 'qtyHoldLayby', header: 'H/L', width: 60 },
+      { accessorKey: 'qtySold', header: 'SOLD', width: 60 },
+    ],
+    [],
+  )
+  // console.log(data)
+  return (
+    <Table
+      columns={columns}
+      data={data}
+      showPagination
+      onPaginationChange={setPagination}
+      totalRowNum={idList?.length || 0}
+    />
+  )
 }
 
 export default StockListTable
