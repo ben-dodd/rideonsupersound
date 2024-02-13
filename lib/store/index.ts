@@ -467,7 +467,6 @@ export const useAppStore = createSelectors(
       )
     },
     setPage: (page, update) => {
-      console.log('Setting page', update)
       set(
         produce((draft) => {
           draft[page] = {

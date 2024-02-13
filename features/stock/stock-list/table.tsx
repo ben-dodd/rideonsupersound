@@ -13,6 +13,7 @@ const StockListTable = ({ idList }) => {
     stockPage: { pagination: storedPagination },
     setPage,
   } = useAppStore()
+  console.log(storedPagination)
   const [{ pageIndex, pageSize }, setPagination] = useState(storedPagination)
   useEffect(() => {
     setPage(Pages.stockPage, { pagination: { pageIndex, pageSize } })
@@ -40,21 +41,21 @@ const StockListTable = ({ idList }) => {
         accessorKey: 'id',
         header: 'Stock ID',
         cell: (info) => (
-          <span className="list-item-click" onClick={() => router.push(`/stock/${info.getValue()}`)}>
+          <span className="link-blue" onClick={() => router.push(`/stock/${info.getValue()}`)}>
             {info.getValue()}
           </span>
         ),
-        width: 100,
+        size: 100,
       },
       {
         accessorKey: 'title',
         header: 'Title',
-        width: 300,
+        size: 300,
       },
       {
         accessorKey: 'artist',
         header: 'Artist',
-        width: 190,
+        size: 190,
       },
       {
         header: 'Vendor',
@@ -66,21 +67,30 @@ const StockListTable = ({ idList }) => {
             </span>
           )
         },
-        width: 180,
+        size: 180,
       },
-      { accessorKey: 'section', header: 'Section', width: 100 },
-      { accessorKey: 'format', header: 'Format', width: 100 },
-      { accessorKey: 'totalSell', header: 'Sell', cell: (info) => priceCentsString(info?.getValue()), width: 80 },
-      { accessorKey: 'inStock', header: 'QTY', width: 60 },
+      { accessorKey: 'section', header: 'Section', size: 100 },
+      { accessorKey: 'format', header: 'Format', size: 100 },
+      {
+        accessorKey: 'totalSell',
+        header: 'Sell',
+        cell: (info) => priceCentsString(info?.getValue()),
+        size: 80,
+        footer: (info) => {
+          console.log(info)
+          return 50
+        },
+      },
+      { accessorKey: 'inStock', header: 'QTY', size: 60 },
       {
         header: 'H/L',
         cell: (info) => {
           const row = info?.row?.original
           return row?.hold || 0 + row?.layby || 0
         },
-        width: 60,
+        size: 60,
       },
-      { accessorKey: 'sold', header: 'SOLD', width: 60 },
+      { accessorKey: 'sold', header: 'SOLD', size: 60 },
     ],
     [],
   )
@@ -90,8 +100,10 @@ const StockListTable = ({ idList }) => {
       columns={columns}
       data={data}
       showPagination
+      initPagination={storedPagination}
       onPaginationChange={setPagination}
       totalRowNum={idList?.length || 0}
+      showFooter
     />
   )
 }
