@@ -1,5 +1,5 @@
 import { useMemo, useReducer, useState } from 'react'
-import { PaginationState, getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import { PaginationState, SortingState, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table'
 import { MemoizedTableBody, TableBody } from './body'
 import { Pagination } from './pagination'
 import { Header } from './header'
@@ -20,6 +20,8 @@ interface TableProps {
   showPagination?: boolean
   initPagination?: PaginationState
   onPaginationChange?: Function
+  initSorting?: SortingState
+  onSortingChange?: Function
   totalRowNum?: number
 }
 
@@ -32,10 +34,13 @@ function Table({
   showPagination,
   initPagination = { pageIndex: 0, pageSize: 10 },
   onPaginationChange,
+  initSorting = [],
+  onSortingChange,
   totalRowNum,
 }: TableProps) {
   const rerender = useReducer(() => ({}), {})[1]
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>(initPagination)
+  const [sorting, setSorting] = useState<SortingState>(initSorting)
   const pagination = useMemo(
     () => ({
       pageIndex,
@@ -43,6 +48,8 @@ function Table({
     }),
     [pageIndex, pageSize],
   )
+
+  console.log(sorting)
 
   const table = useReactTable({
     columns,
@@ -57,9 +64,14 @@ function Table({
       onPaginationChange && onPaginationChange(e)
       setPagination(e)
     },
+    onSortingChange: (e) => {
+      onSortingChange && onSortingChange(e)
+      setSorting(e)
+    },
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     manualPagination: true,
-    state: { pagination },
+    state: { pagination, sorting },
     debugTable: true,
     debugHeaders: true,
     debugColumns: true,

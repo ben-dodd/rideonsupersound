@@ -3,7 +3,7 @@ import Loading from 'components/placeholders/loading'
 import { useVendors } from 'lib/api/vendor'
 import React, { useState } from 'react'
 import VendorListItem from './vendor-list-item'
-import FilterPanel from 'components/table/filter'
+import FilterPanel from 'components/data/filter'
 
 const VendorList = () => {
   const { vendors, isVendorsLoading } = useVendors()

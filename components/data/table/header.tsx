@@ -1,3 +1,4 @@
+import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material'
 import { flexRender } from '@tanstack/react-table'
 
 export const Header = ({ table, color, colorDark }) => (
@@ -9,7 +10,7 @@ export const Header = ({ table, color, colorDark }) => (
             key={header.id}
             colSpan={header.colSpan}
             {...{
-              className: `border border-white select-none h-6 ${
+              className: `border border-white select-none h-8 ${
                 color ? `${color} hover:${colorDark}` : 'bg-gray-200 hover:bg-gray-400'
               } text-left px-2 truncate`,
               style: {
@@ -17,7 +18,30 @@ export const Header = ({ table, color, colorDark }) => (
               },
             }}
           >
-            {header.isPlaceholder ? null : <div>{flexRender(header.column.columnDef.header, header.getContext())}</div>}
+            {header.isPlaceholder ? null : (
+              <div
+                {...{
+                  className: header.column.getCanSort()
+                    ? 'flex justify-between items-center cursor-pointer select-none'
+                    : '',
+                  onClick: header.column.getToggleSortingHandler(),
+                }}
+              >
+                {flexRender(header.column.columnDef.header, header.getContext())}
+                {{
+                  asc: (
+                    <div className="ml-1 p-0">
+                      <ArrowDropDown />
+                    </div>
+                  ),
+                  desc: (
+                    <div className="ml-1 p-0">
+                      <ArrowDropUp />
+                    </div>
+                  ),
+                }[header.column.getIsSorted() as string] ?? null}
+              </div>
+            )}
             <div
               {...{
                 onDoubleClick: () => header.column.resetSize(),

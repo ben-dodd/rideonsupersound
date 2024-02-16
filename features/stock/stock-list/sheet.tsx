@@ -1,4 +1,4 @@
-import DataTable from 'components/table/data-table'
+import DataTable from 'components/data/data-table'
 import { getItemSku } from 'lib/functions/displayInventory'
 
 const StockListSheet = ({ stockItemList, isLoading }) => {

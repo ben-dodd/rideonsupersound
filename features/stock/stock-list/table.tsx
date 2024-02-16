@@ -1,4 +1,4 @@
-import Table from 'components/table'
+import Table from 'components/data/table'
 import { useStockItemList } from 'lib/api/stock'
 import { useVendors } from 'lib/api/vendor'
 import { useAppStore } from 'lib/store'
