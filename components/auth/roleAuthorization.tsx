@@ -8,6 +8,7 @@ const withRoleAuthorization = (Success, allowedRoles) => {
     function arrContains(arr1, arr2) {
       return arr1.some((item) => arr2.includes(item))
     }
+    console.log(user)
     const usersRoles = user[`${process.env.NEXT_PUBLIC_AUTH0_AUDIENCE}/roles`]
     if (!Array.isArray(usersRoles) || !Array.isArray(allowedRoles) || !arrContains(usersRoles, allowedRoles)) {
       return <Error />

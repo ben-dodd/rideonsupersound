@@ -103,7 +103,6 @@ const StockListTable = ({ idList }) => {
       initPagination={storedPagination}
       onPaginationChange={setPagination}
       totalRowNum={idList?.length || 0}
-      showFooter
     />
   )
 }
