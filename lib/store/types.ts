@@ -1,5 +1,5 @@
 /* eslint-disable unused-imports/no-unused-vars */
-import { PaginationState } from '@tanstack/react-table'
+import { PaginationState, SortingState } from '@tanstack/react-table'
 import { ConfirmModal, AlertProps, ClippyProps, InfoModal } from 'lib/types'
 import { CartObject, SaleItemObject, SaleTransactionObject } from 'lib/types/sale'
 import { BatchReceiveObject } from 'lib/types/stock'
@@ -67,6 +67,7 @@ export interface StoreState {
   stockPage?: {
     tab?: number
     pagination?: PaginationState
+    sorting?: SortingState
     searchBar?: string
   }
   vendorsPage?: any

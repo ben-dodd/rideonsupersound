@@ -6,25 +6,18 @@ import { StockItemSearchObject } from 'lib/types/stock'
 // const StockListList = dynamic(() => import('./list'))
 const StockListTable = dynamic(() => import('./table'))
 // const StockListSheet = dynamic(() => import('./sheet'))
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 
 const StockList = () => {
-  const { stockList, isStockListLoading } = useStockList()
   const {
-    viewMode,
-    stockPage: { searchBar, limit, pageNum, filterSettings },
+    stockPage: { searchBar, sorting },
     setSearchBar,
-    setPageFilter,
-    setPage,
   } = useAppStore()
 
-  const setSetting = (setting, e) => {
-    setPageFilter(Pages.stockPage, setting, e ? e.map((obj: any) => obj.value) : [])
-  }
+  const [filters, setFilters] = useState({ sorting })
+  const { stockList, isStockListLoading } = useStockList()
   const handleSearch = (e) => setSearchBar(Pages.stockPage, e.target.value)
-  const handlePageChange = (e, newPage) => setPage(Pages.stockPage, { pageNum: newPage })
-  const handleRowsPerPageChange = (e) => setPage(Pages.stockPage, { limit: parseInt(e.target.value), pageNum: 0 })
 
   // console.log(filterSettings)
 
@@ -57,7 +50,7 @@ const StockList = () => {
         onRowsPerPageChange={handleRowsPerPageChange}
       /> */}
       <div className="px-2">
-        <StockListTable idList={idList} />
+        <StockListTable idList={idList} filters={filters} setFilters={setFilters} />
         {/* {viewMode === 'table' ? (
           <StockListTable idList={idList} />
         ) : viewMode === 'sheet' ? (

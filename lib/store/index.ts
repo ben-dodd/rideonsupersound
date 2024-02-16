@@ -93,6 +93,7 @@ const initState = {
       pageIndex: 0,
       pageSize: 15,
     },
+    sorting: [],
     tab: 0,
   },
   vendorsPage: {

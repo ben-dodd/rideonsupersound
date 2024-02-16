@@ -7,19 +7,23 @@ import { priceCentsString } from 'lib/utils'
 import { useRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
 
-const StockListTable = ({ idList }) => {
+const StockListTable = ({ idList, filters, setFilters }) => {
   const router = useRouter()
   const {
-    stockPage: { pagination: storedPagination },
+    stockPage: { pagination: storedPagination, sorting: storedSorting },
     setPage,
   } = useAppStore()
-  console.log(storedPagination)
   const [{ pageIndex, pageSize }, setPagination] = useState(storedPagination)
+  const [sorting, setSorting] = useState(storedSorting)
   useEffect(() => {
     setPage(Pages.stockPage, { pagination: { pageIndex, pageSize } })
   }, [pageIndex, pageSize, setPage])
-  const paginatedIdList = idList?.slice(pageIndex * pageSize, pageIndex * pageSize + pageSize)
+  useEffect(() => {
+    setFilters({ ...filters, sorting })
+    setPage(Pages.stockPage, { sorting })
+  }, [filters, setFilters, setPage, sorting])
 
+  const paginatedIdList = idList?.slice(pageIndex * pageSize, pageIndex * pageSize + pageSize)
   const { stockItemList = [], isStockItemListLoading = true } = useStockItemList(paginatedIdList)
   const { vendors } = useVendors()
   const data = useMemo(
@@ -102,6 +106,8 @@ const StockListTable = ({ idList }) => {
       showPagination
       initPagination={storedPagination}
       onPaginationChange={setPagination}
+      initSorting={storedSorting}
+      onSortingChange={setSorting}
       totalRowNum={idList?.length || 0}
     />
   )

@@ -5,7 +5,11 @@ import { axiosAuth, useData } from './'
 import { mysql2js } from 'lib/database/utils/helpers'
 
 export function useStockList() {
-  return useData(`stock`, 'stockList')
+  return useData(
+    // `stock${sorting ? `?sortColumn=${sorting[0]?.id}&sortOrder=${sorting[0]?.desc ? 'desc' : 'asc'}` : ''}`,
+    `stock`,
+    'stockList',
+  )
 }
 
 export function usePrintLabelStockList() {

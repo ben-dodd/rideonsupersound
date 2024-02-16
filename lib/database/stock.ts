@@ -7,31 +7,34 @@ import { createBatchList } from 'lib/functions/stock'
 import connection from './conn'
 
 export function dbGetStockList(db = connection) {
-  return db('stock')
-    .leftJoin('stock_movement', 'stock.id', 'stock_movement.stock_id')
-    .leftJoin('vendor', 'stock.vendor_id', 'vendor.id')
-    .groupBy('stock.id')
-    .select(
-      'stock.id',
-      'stock.vendor_id',
-      'vendor.name as vendor_name',
-      'stock.artist',
-      'stock.title',
-      'stock.display_as',
-      // 'stock.image_url',
-      'stock.media',
-      'stock.format',
-      'stock.section',
-      'stock.genre',
-      'stock.is_new',
-      'stock.cond',
-      'stock.tags',
-      'stock.needs_restock',
-    )
-    .sum('stock_movement.quantity as quantity')
-    .where(`stock.is_deleted`, 0)
-    .where(`stock.is_misc_item`, 0)
-    .where(`stock.is_gift_card`, 0)
+  return (
+    db('stock')
+      // .leftJoin('stock_movement', 'stock.id', 'stock_movement.stock_id')
+      // .leftJoin('vendor', 'stock.vendor_id', 'vendor.id')
+      .groupBy('stock.id')
+      .select(
+        'stock.id',
+        // 'stock.vendor_id',
+        // 'vendor.name as vendor_name',
+        'stock.artist',
+        'stock.title',
+        'stock.display_as',
+        // 'stock.image_url',
+        // 'stock.media',
+        // 'stock.format',
+        // 'stock.section',
+        // 'stock.genre',
+        // 'stock.is_new',
+        // 'stock.cond',
+        'stock.tags',
+        // 'stock.needs_restock',
+      )
+      // .sum('stock_movement.quantity as quantity')
+      .where(`stock.is_deleted`, 0)
+      .where(`stock.is_misc_item`, 0)
+      .where(`stock.is_gift_card`, 0)
+  )
+  // .orderBy(`stock.${sortColumn}`, sortOrder)
 }
 
 export function dbGetSimpleStockCount(db = connection) {
