@@ -1,7 +1,7 @@
 import { getImageSrc, getItemSkuDisplayName } from 'lib/functions/displayInventory'
 import { BatchReceiveObject, StockMovementTypes } from 'lib/types/stock'
 import { dbGetAllSalesAndItems, dbGetSaleTransactions, getStockMovementQuantityByAct } from './sale'
-import { js2mysql } from 'lib/utils'
+import { js2mysql, query2obj } from 'lib/utils'
 import { SaleStateTypes } from 'lib/types/sale'
 import { createBatchList } from 'lib/functions/stock'
 import connection from './conn'
@@ -37,9 +37,13 @@ export function dbGetStockList(db = connection) {
   // .orderBy(`stock.${sortColumn}`, sortOrder)
 }
 
-export function dbGetStockTableData(q = '', db = connection) {
-  console.log(q)
-  return db('stock').select().limit(1)
+export function dbGetStockTableData(q: any = {}, db = connection) {
+  const params = query2obj(q)
+  console.log(params)
+  return db('stock')
+    .select()
+    .offset(params?.pagination?.pageIndex ?? 0)
+    .limit(params?.pagination?.pageSize ?? 15)
 }
 
 export function dbGetSimpleStockCount(db = connection) {

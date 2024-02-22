@@ -5,9 +5,10 @@ import { Pages } from 'lib/store/types'
 // const StockListList = dynamic(() => import('./list'))
 const StockListTable = dynamic(() => import('./table'))
 // const StockListSheet = dynamic(() => import('./sheet'))
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import Loading from 'components/placeholders/loading'
+import { obj2query } from 'lib/utils'
 
 const StockList = () => {
   const {
@@ -18,8 +19,10 @@ const StockList = () => {
   const [filters, setFilters] = useState(storedFilters)
   const handleSearch = (e) => setSearchBar(Pages.stockPage, e.target.value)
 
-  const { stockTableData = [], isStockTableDataLoading = true } = useStockTableData({ ...filters, searchBar })
+  const queryString = useMemo(() => obj2query({ ...filters, searchBar }), [filters, searchBar])
 
+  const { stockTableData = [], isStockTableDataLoading = true } = useStockTableData(queryString)
+  console.log(stockTableData)
   // console.log(filterSe
 
   return (

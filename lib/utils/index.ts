@@ -231,7 +231,7 @@ export const obj2query = (obj) => {
 
 export const query2obj = (queryString) => {
   const params = new URLSearchParams(queryString)
-  const obj = {}
+  const obj: any = {}
 
   params.forEach((value, key) => {
     const keys = key.split('.')
