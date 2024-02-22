@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import { axiosAuth } from 'lib/api'
-import { mysql2js } from 'lib/database/utils/helpers'
+import { mysql2js } from 'lib/utils'
 import { useState, useEffect } from 'react'
 
 export function useSalesForRange({

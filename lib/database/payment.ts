@@ -1,5 +1,5 @@
 import connection from './conn'
-import { js2mysql } from './utils/helpers'
+import { js2mysql } from 'lib/utils'
 import { dbGetVendorIdFromUid } from './vendor'
 
 export function dbGetAllVendorPayments(db = connection) {

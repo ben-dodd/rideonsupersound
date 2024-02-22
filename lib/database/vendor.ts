@@ -6,7 +6,7 @@ import { BatchPaymentObject, VendorObject, VendorPaymentObject } from 'lib/types
 import { dbGetAllVendorPayments } from './payment'
 import { dbGetAllSalesAndItems } from './sale'
 import { dbGetSimpleStockCount, dbGetStockItemsForVendor } from './stock'
-import { js2mysql } from './utils/helpers'
+import { js2mysql } from 'lib/utils'
 import { dollarsToCents } from 'lib/utils'
 import { modulusCheck, prepareKiwiBankBatchFile, preparePaymentNotificationEmailList } from 'lib/functions/payment'
 

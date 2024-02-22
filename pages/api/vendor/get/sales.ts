@@ -28,7 +28,7 @@ const handler: NextApiHandler = async (req, res) => {
         )
         ORDER BY sale.date_sale_closed DESC
       `,
-      uid
+      uid,
     )
 
     return res.json(results)

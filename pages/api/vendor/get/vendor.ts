@@ -9,7 +9,7 @@ const handler: NextApiHandler = async (req, res) => {
       SELECT * FROM vendor
       WHERE uid = ?
       `,
-      uid
+      uid,
     )
 
     return res.json(results)

@@ -1,7 +1,7 @@
 import { ClerkObject } from 'lib/types'
 import { CartObject, HoldObject, SaleItemObject } from 'lib/types/sale'
 import { axiosAuth, useData } from './'
-import { mysql2js } from 'lib/database/utils/helpers'
+import { mysql2js } from 'lib/utils'
 
 export function useSaleItemsForSale(saleId) {
   return useData(`sale/items/${saleId}`, 'saleItems')

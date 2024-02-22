@@ -1,5 +1,5 @@
 import connection from './conn'
-import { js2mysql } from './utils/helpers'
+import { js2mysql } from 'lib/utils'
 
 export function dbGetCustomers(db = connection) {
   return db('customer').where(`is_deleted`, 0)

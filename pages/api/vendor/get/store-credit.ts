@@ -15,7 +15,7 @@ const handler: NextApiHandler = async (req, res) => {
                 ))) AS payment
             ON sale.id = payment.sale_id
       `,
-      uid
+      uid,
     )
 
     return res.json(results)

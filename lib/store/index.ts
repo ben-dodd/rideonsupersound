@@ -11,7 +11,7 @@ import { useSetRegisterId } from 'lib/api/register'
 import { axiosAuth } from 'lib/api'
 import { BatchReceiveObject } from 'lib/types/stock'
 import { arraysAreEqual, getMatrixValue, getSelectionCorners } from 'lib/functions/dataTable'
-import { mysql2js } from 'lib/database/utils/helpers'
+import { mysql2js } from 'lib/utils'
 
 type WithSelectors<S> = S extends { getState: () => infer T } ? S & { use: { [K in keyof T]: () => T[K] } } : never
 
@@ -89,11 +89,13 @@ const initState = {
   },
   stockPage: {
     searchBar: '',
-    pagination: {
-      pageIndex: 0,
-      pageSize: 15,
+    filters: {
+      sorting: [],
+      pagination: {
+        pageIndex: 0,
+        pageSize: 15,
+      },
     },
-    sorting: [],
     tab: 0,
   },
   vendorsPage: {

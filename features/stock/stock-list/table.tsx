@@ -1,41 +1,40 @@
 import Table from 'components/data/table'
-import { useStockItemList } from 'lib/api/stock'
-import { useVendors } from 'lib/api/vendor'
 import { useAppStore } from 'lib/store'
 import { Pages } from 'lib/store/types'
 import { priceCentsString } from 'lib/utils'
 import { useRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
 
-const StockListTable = ({ idList, filters, setFilters }) => {
+const StockListTable = ({ data, filters, setFilters }) => {
   const router = useRouter()
   const {
-    stockPage: { pagination: storedPagination, sorting: storedSorting },
+    stockPage: { filters: storedFilters },
     setPage,
   } = useAppStore()
-  const [{ pageIndex, pageSize }, setPagination] = useState(storedPagination)
-  const [sorting, setSorting] = useState(storedSorting)
+  const [pagination, setPagination] = useState(filters?.pagination)
+  const [sorting, setSorting] = useState(filters?.sorting)
   useEffect(() => {
-    setPage(Pages.stockPage, { pagination: { pageIndex, pageSize } })
-  }, [pageIndex, pageSize, setPage])
+    setFilters({ ...filters, pagination })
+    setPage(Pages.stockPage, { pagination })
+  }, [pagination, setPage])
   useEffect(() => {
     setFilters({ ...filters, sorting })
     setPage(Pages.stockPage, { sorting })
   }, [filters, setFilters, setPage, sorting])
 
-  const paginatedIdList = idList?.slice(pageIndex * pageSize, pageIndex * pageSize + pageSize)
-  const { stockItemList = [], isStockItemListLoading = true } = useStockItemList(paginatedIdList)
-  const { vendors } = useVendors()
-  const data = useMemo(
-    () =>
-      stockItemList?.map((stockItem) => {
-        const { item = {}, price = {}, quantities = {} } = stockItem || {}
-        // console.log(stockItem)
-        const vendor = vendors?.find((vendor) => vendor?.id === item?.vendorId)
-        return { ...item, ...price, ...quantities, vendorName: vendor?.name }
-      }),
-    [stockItemList, vendors],
-  )
+  // const paginatedIdList = idList?.slice(pageIndex * pageSize, pageIndex * pageSize + pageSize)
+  // const { stockItemList = [], isStockItemListLoading = true } = useStockItemList(paginatedIdList)
+  // const { vendors } = useVendors()
+  // const data = useMemo(
+  //   () =>
+  //     stockItemList?.map((stockItem) => {
+  //       const { item = {}, price = {}, quantities = {} } = stockItem || {}
+  //       // console.log(stockItem)
+  //       const vendor = vendors?.find((vendor) => vendor?.id === item?.vendorId)
+  //       return { ...item, ...price, ...quantities, vendorName: vendor?.name }
+  //     }),
+  //   [stockItemList, vendors],
+  // )
 
   console.log(data)
 
@@ -104,11 +103,11 @@ const StockListTable = ({ idList, filters, setFilters }) => {
       columns={columns}
       data={data}
       showPagination
-      initPagination={storedPagination}
+      initPagination={storedFilters?.pagination}
       onPaginationChange={setPagination}
-      initSorting={storedSorting}
+      initSorting={storedFilters?.sorting}
       onSortingChange={setSorting}
-      totalRowNum={idList?.length || 0}
+      totalRowNum={data?.length || 0}
     />
   )
 }

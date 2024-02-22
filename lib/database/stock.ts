@@ -1,7 +1,7 @@
 import { getImageSrc, getItemSkuDisplayName } from 'lib/functions/displayInventory'
 import { BatchReceiveObject, StockMovementTypes } from 'lib/types/stock'
 import { dbGetAllSalesAndItems, dbGetSaleTransactions, getStockMovementQuantityByAct } from './sale'
-import { js2mysql } from './utils/helpers'
+import { js2mysql } from 'lib/utils'
 import { SaleStateTypes } from 'lib/types/sale'
 import { createBatchList } from 'lib/functions/stock'
 import connection from './conn'
@@ -35,6 +35,11 @@ export function dbGetStockList(db = connection) {
       .where(`stock.is_gift_card`, 0)
   )
   // .orderBy(`stock.${sortColumn}`, sortOrder)
+}
+
+export function dbGetStockTableData(q = '', db = connection) {
+  console.log(q)
+  return db('stock').select().limit(1)
 }
 
 export function dbGetSimpleStockCount(db = connection) {

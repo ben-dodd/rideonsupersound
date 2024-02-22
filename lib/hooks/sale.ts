@@ -1,9 +1,8 @@
 import { axiosAuth } from 'lib/api'
-import { mysql2js } from 'lib/database/utils/helpers'
+import { mysql2js, dollarsToCents } from 'lib/utils'
 import { getTotalPaid, roundToTenCents, sumPrices, writeItemList } from 'lib/functions/pay'
 import { useAppStore } from 'lib/store'
 import { BasicStockObject } from 'lib/types/stock'
-import { dollarsToCents } from 'lib/utils'
 import { useState, useEffect } from 'react'
 
 export function useSaleProperties(cart, updateCart = false): any {

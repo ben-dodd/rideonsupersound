@@ -1,6 +1,5 @@
 import useSWR from 'swr'
-import { camelCase, pascalCase } from '../utils'
-import { mysql2js } from 'lib/database/utils/helpers'
+import { camelCase, mysql2js, pascalCase } from 'lib/utils'
 import axios from 'axios'
 
 export function useData(url: string, label: string) {

@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import { RegisterObject, TillObject } from 'lib/types/register'
 import { VendorPaymentTypes } from 'lib/types/vendor'
 import connection from './conn'
-import { js2mysql } from './utils/helpers'
+import { js2mysql } from 'lib/utils'
 
 export function dbGetRegisters(db = connection) {
   return db('register').where(`is_deleted`, 0)

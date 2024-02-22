@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { differenceWith, isEqual, toPairs } from 'lodash'
+import { snakeCase, transform, isObject, isArray, isBoolean, differenceWith, isEqual, toPairs } from 'lodash'
 
 export function camelCase(str: string) {
   if (!str) return str
@@ -190,3 +190,109 @@ export function arrayToReactSelect(array) {
 //     return [];
 //   }
 // }
+
+export const js2mysql = (obj: any) => (typeof obj === 'object' ? convertKeyCaseSingleLayer(obj, 'snakeCase') : obj)
+
+export const checkValue = (value) => (value === -0 ? 0 : value)
+
+export const mysql2js = (obj: any) =>
+  obj == null ? obj : typeof obj === 'object' ? convertKeyCase(obj, 'camelCase') : checkValue(obj)
+
+export const flattenObj = (obj, parentKey = '') => {
+  let queryString = ''
+  for (let key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      let value = obj[key]
+      let newKey = parentKey ? `${parentKey}.${key}` : key
+      if (typeof value === 'object' && !Array.isArray(value)) {
+        queryString += flattenObj(value, newKey)
+      } else if (Array.isArray(value)) {
+        value.forEach((item, index) => {
+          if (typeof item === 'object') {
+            queryString += flattenObj(item, `${newKey}.${index}`)
+          } else {
+            queryString += `${encodeURIComponent(`${newKey}.${index}`)}=${encodeURIComponent(item)}&`
+          }
+        })
+      } else {
+        queryString += `${encodeURIComponent(newKey)}=${encodeURIComponent(value)}&`
+      }
+    }
+  }
+  return queryString
+}
+
+export const obj2query = (obj) => {
+  const queryString = flattenObj(obj)?.slice(0, -1)
+  console.log('QUERY STRING')
+  console.log(queryString)
+  return queryString
+}
+
+export const query2obj = (queryString) => {
+  const params = new URLSearchParams(queryString)
+  const obj = {}
+
+  params.forEach((value, key) => {
+    const keys = key.split('.')
+    let nestedObj = obj
+    keys.forEach((nestedKey, index) => {
+      // console.log('Nested: ', nestedKey, index)
+      const nextKey = keys[index + 1]
+      if (nextKey && /^\d+$/.test(nextKey)) {
+        // Check if the next key is a number
+        if (!nestedObj[nestedKey]) nestedObj[nestedKey] = []
+        nestedObj = nestedObj[nestedKey]
+      } else {
+        if (!nestedObj[nestedKey]) {
+          nestedObj[nestedKey] = index === keys.length - 1 ? parseValue(value) : {}
+        }
+        nestedObj = nestedObj[nestedKey]
+      }
+    })
+  })
+
+  return obj
+}
+
+const parseValue = (value) => {
+  // Check if the value is an integer or a decimal
+  const integerValueRegex = /^\d+$/
+  const decimalValueRegex = /^\d+\.\d+$/
+
+  if (integerValueRegex.test(value)) {
+    return parseInt(value)
+  } else if (decimalValueRegex.test(value)) {
+    return parseFloat(value)
+  } else {
+    return decodeURIComponent(value)
+  }
+}
+
+export const convertKeyCase = (obj: any, keyCase: 'camelCase' | 'snakeCase') =>
+  transform(obj, (acc, value, key, target) => {
+    const convertedKey = isArray(target)
+      ? key
+      : keyCase === 'camelCase'
+      ? camelCase(String(key))
+      : keyCase === 'snakeCase'
+      ? snakeCase(String(key))
+      : key
+    acc[convertedKey] = isObject(value)
+      ? convertKeyCase(value, keyCase)
+      : isObject(parseJSON(value))
+      ? convertKeyCase(parseJSON(value), keyCase)
+      : checkValue(value)
+  })
+
+export const convertKeyCaseSingleLayer = (obj: any, keyCase: 'camelCase' | 'snakeCase') =>
+  transform(obj, (acc, value, key, target) => {
+    const convertedKey = isArray(target)
+      ? key
+      : keyCase === 'camelCase'
+      ? camelCase(String(key))
+      : keyCase === 'snakeCase'
+      ? snakeCase(String(key))
+      : key
+    acc[convertedKey] = isObject(value) ? JSON.stringify(value) : isBoolean(value) ? (value ? 1 : 0) : checkValue(value)
+  })

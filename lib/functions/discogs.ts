@@ -2,8 +2,7 @@ import axios from 'axios'
 import { DiscogsItem } from 'lib/types/discogs'
 import { genreLibrary } from 'lib/types/genreLibrary'
 import { StockItemObject } from 'lib/types/stock'
-import { priceDollarsString } from 'lib/utils'
-import { camelCase } from 'lodash'
+import { camelCase, priceDollarsString } from 'lib/utils'
 
 export async function getDiscogsOptions({ query, artist, title, barcode }: any) {
   return axios(`https://api.discogs.com/database/search`, {

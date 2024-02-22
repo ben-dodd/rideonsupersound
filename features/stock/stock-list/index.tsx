@@ -1,39 +1,26 @@
 import SearchInput from 'components/inputs/search-input'
-import { useStockList } from 'lib/api/stock'
+import { useStockTableData } from 'lib/api/stock'
 import { useAppStore } from 'lib/store'
 import { Pages } from 'lib/store/types'
-import { StockItemSearchObject } from 'lib/types/stock'
 // const StockListList = dynamic(() => import('./list'))
 const StockListTable = dynamic(() => import('./table'))
 // const StockListSheet = dynamic(() => import('./sheet'))
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import dynamic from 'next/dynamic'
+import Loading from 'components/placeholders/loading'
 
 const StockList = () => {
   const {
-    stockPage: { searchBar, sorting },
+    stockPage: { searchBar, filters: storedFilters },
     setSearchBar,
   } = useAppStore()
-
-  const [filters, setFilters] = useState({ sorting })
-  const { stockList, isStockListLoading } = useStockList()
+  console.log(storedFilters)
+  const [filters, setFilters] = useState(storedFilters)
   const handleSearch = (e) => setSearchBar(Pages.stockPage, e.target.value)
 
-  // console.log(filterSettings)
+  const { stockTableData = [], isStockTableDataLoading = true } = useStockTableData({ ...filters, searchBar })
 
-  const idList = useMemo(
-    () =>
-      stockList
-        ?.filter?.((stockItem) =>
-          // (filterSettings?.artist?.length === 0 || filterSettings.artist?.includes(stockItem?.artist)) &&
-          `${stockItem?.artist} ${stockItem?.title}`?.toUpperCase?.()?.includes(searchBar?.toUpperCase()),
-        )
-        ?.reverse()
-        ?.map((item: StockItemSearchObject) => item?.id),
-    [searchBar, stockList],
-  )
-
-  // console.log(stockItemList)
+  // console.log(filterSe
 
   return (
     <div className="h-content overflow-y-scroll">
@@ -41,16 +28,12 @@ const StockList = () => {
         <SearchInput searchValue={searchBar} handleSearch={handleSearch} />
         {/* <StockFilter stockList={stockList} setSettings={setSetting} filterSettings={filterSettings} /> */}
       </div>
-      {/* <TablePagination
-        component="div"
-        count={idList?.length}
-        page={pageNum}
-        onPageChange={handlePageChange}
-        rowsPerPage={limit}
-        onRowsPerPageChange={handleRowsPerPageChange}
-      /> */}
       <div className="px-2">
-        <StockListTable idList={idList} filters={filters} setFilters={setFilters} />
+        {isStockTableDataLoading ? (
+          <Loading />
+        ) : (
+          <StockListTable data={stockTableData} filters={filters} setFilters={setFilters} />
+        )}
         {/* {viewMode === 'table' ? (
           <StockListTable idList={idList} />
         ) : viewMode === 'sheet' ? (

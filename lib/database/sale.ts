@@ -14,7 +14,7 @@ import {
   dbUpdateStockItem,
   dbGetGiftCard,
 } from './stock'
-import { js2mysql, mysql2js } from './utils/helpers'
+import { js2mysql, mysql2js } from 'lib/utils'
 import { getItemSkuDisplayName } from 'lib/functions/displayInventory'
 
 export function dbGetAllSales(db = connection) {

@@ -1,4 +1,4 @@
-import { mysql2js } from 'lib/database/utils/helpers'
+import { mysql2js } from 'lib/utils'
 import { axiosAuth, useData } from './'
 
 export function useVendors() {

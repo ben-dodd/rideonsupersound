@@ -13,7 +13,7 @@ const handler: NextApiHandler = async (req, res) => {
         )
         ORDER BY date DESC
       `,
-      uid
+      uid,
     )
 
     return res.json(results)

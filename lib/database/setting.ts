@@ -1,5 +1,5 @@
 import connection from './conn'
-import { js2mysql } from './utils/helpers'
+import { js2mysql } from 'lib/utils'
 
 export function dbGetSetting(dbField, db = connection) {
   return db('select_option')

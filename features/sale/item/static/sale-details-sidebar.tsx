@@ -6,8 +6,8 @@ import { CustomerObject } from 'lib/types'
 import { dateTime } from 'lib/types/date'
 import { CartObject } from 'lib/types/sale'
 import { OpenWeatherObject } from 'lib/types/weather'
-import { convertDegToCardinal, convertMPStoKPH, parseJSON, priceDollarsString } from 'lib/utils'
-import { camelCase, startCase } from 'lodash'
+import { camelCase, convertDegToCardinal, convertMPStoKPH, parseJSON, priceDollarsString } from 'lib/utils'
+import { startCase } from 'lodash'
 
 export default function SaleDetailsSidebar({ cart }: { cart: CartObject }) {
   const { clerks } = useClerks()

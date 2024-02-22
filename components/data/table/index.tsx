@@ -49,8 +49,6 @@ function Table({
     [pageIndex, pageSize],
   )
 
-  console.log(sorting)
-
   const table = useReactTable({
     columns,
     data,
@@ -70,7 +68,10 @@ function Table({
     },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    // manualSorting: true,
     manualPagination: true,
+    enableMultiRemove: true,
+    enableMultiSort: true,
     state: { pagination, sorting },
     debugTable: true,
     debugHeaders: true,

@@ -2,14 +2,16 @@ import { ClerkObject } from 'lib/types'
 import { SaleItemObject } from 'lib/types/sale'
 import { StockItemObject, StockPriceObject, StocktakeTemplateObject } from 'lib/types/stock'
 import { axiosAuth, useData } from './'
-import { mysql2js } from 'lib/database/utils/helpers'
+import { mysql2js, obj2query } from 'lib/utils'
 
 export function useStockList() {
-  return useData(
-    // `stock${sorting ? `?sortColumn=${sorting[0]?.id}&sortOrder=${sorting[0]?.desc ? 'desc' : 'asc'}` : ''}`,
-    `stock`,
-    'stockList',
-  )
+  return useData(`stock`, 'stockList')
+}
+
+export function useStockTableData(params) {
+  const query = obj2query(params)
+  console.log(query)
+  return useData(`stock/table?q=${query}`, 'stockData')
 }
 
 export function usePrintLabelStockList() {
@@ -19,10 +21,6 @@ export function usePrintLabelStockList() {
 export function useStockForVendor(vendorId: string | number) {
   return useData(`stock/vendor/${vendorId}`, 'vendorStockList')
 }
-
-// export function useBasicStockItem(id: string | number, wait?: boolean) {
-//   return useData(wait || !id ? null : `stock/${id}?basic=true`, 'stockItem')
-// }
 
 export function useStockItem(id: string | number) {
   return useData(`stock/${id}`, 'stockItem')
