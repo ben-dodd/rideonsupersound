@@ -1,5 +1,15 @@
 import dayjs from 'dayjs'
-import { snakeCase, transform, isObject, isArray, isBoolean, differenceWith, isEqual, toPairs } from 'lodash'
+import {
+  snakeCase,
+  transform,
+  isObject,
+  isArray,
+  isBoolean,
+  differenceWith,
+  isEqual,
+  toPairs,
+  camelCase as _camelCase,
+} from 'lodash'
 
 export function camelCase(str: string) {
   if (!str) return str
@@ -274,7 +284,7 @@ export const convertKeyCase = (obj: any, keyCase: 'camelCase' | 'snakeCase') =>
     const convertedKey = isArray(target)
       ? key
       : keyCase === 'camelCase'
-      ? camelCase(String(key))
+      ? _camelCase(String(key))
       : keyCase === 'snakeCase'
       ? snakeCase(String(key))
       : key
@@ -290,7 +300,7 @@ export const convertKeyCaseSingleLayer = (obj: any, keyCase: 'camelCase' | 'snak
     const convertedKey = isArray(target)
       ? key
       : keyCase === 'camelCase'
-      ? camelCase(String(key))
+      ? _camelCase(String(key))
       : keyCase === 'snakeCase'
       ? snakeCase(String(key))
       : key

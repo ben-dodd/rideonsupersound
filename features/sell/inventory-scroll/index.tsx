@@ -18,6 +18,7 @@ export default function InventoryScroll() {
     ?.slice(0, maxItemsInList)
     ?.map((item: StockItemSearchObject) => item?.id)
   const { stockItemList = [], isStockItemListLoading = true } = useStockItemList(idList)
+  console.log(stockItemList)
   return (
     <div className="h-content overflow-y-scroll px-2">
       {isStockListLoading ? (
