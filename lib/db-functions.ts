@@ -182,6 +182,7 @@ export async function saveSaleItemsTransactionsToDatabase(
     number_of_items: numberOfItems,
     item_list: itemList,
   }
+  console.log('saving sale and items', newSale)
   let newSaleId = newSale?.id
   //
   // HANDLE SALE OBJECT
@@ -205,10 +206,14 @@ export async function saveSaleItemsTransactionsToDatabase(
     addNewMailOrderTask(newSale, customer)
   }
 
+  // Check if sale is a refund
+  const isRefund = cart?.items?.filter((item) => item?.is_refunded)?.length > 0
+
   //
   // HANDLE ITEMS
   //
   for (const item of cart?.items) {
+    console.log('saving item', item)
     let invItem = inventory?.filter(
       (i: StockObject) => i?.id === item?.item_id
     )?.[0]
@@ -267,7 +272,7 @@ export async function saveSaleItemsTransactionsToDatabase(
             null,
             newSaleId
           )
-        } else {
+        } else if (!isRefund) {
           // Mark stock as sold
           saveStockMovementToDatabase(
             item,

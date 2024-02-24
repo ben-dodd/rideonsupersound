@@ -9,7 +9,7 @@ const handler: NextApiHandler = async (req, res) => {
       return res.status(401).json({ message: 'Resource Denied.' })
     const results = await query(
       `
-      DELETE FROM stock_movement WHERE sale_id = ?
+      UPDATE stock_movement SET is_deleted = 1 WHERE sale_id = ?
       `,
       // `
       // UPDATE stock_movement SET is_deleted = 1 WHERE sale_id = ?

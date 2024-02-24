@@ -8,7 +8,7 @@ const handler: NextApiHandler = async (req, res) => {
     if (!k || k !== process.env.NEXT_PUBLIC_SWR_API_KEY)
       return res.status(401).json({ message: 'Resource Denied.' })
 
-    // s.misc_item_description,
+    // s.misc_item_description,5
     // s.misc_item_amount,
     const results = await query(
       `

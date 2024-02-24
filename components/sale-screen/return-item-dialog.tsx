@@ -1,56 +1,56 @@
 // Packages
-import { useState } from "react";
-import { useAtom } from "jotai";
+import { useState } from 'react'
+import { useAtom } from 'jotai'
 
 // DB
-import { useSaleItemsForSale, useInventory, useLogs } from "@/lib/swr-hooks";
-import { viewAtom, clerkAtom, alertAtom, cartAtom } from "@/lib/atoms";
-import { ModalButton, SaleItemObject, SaleStateTypes } from "@/lib/types";
+import { useSaleItemsForSale, useInventory, useLogs } from '@/lib/swr-hooks'
+import { viewAtom, clerkAtom, alertAtom, cartAtom } from '@/lib/atoms'
+import { ModalButton, SaleItemObject, SaleStateTypes } from '@/lib/types'
 
 // Functions
-import { writeItemList } from "@/lib/data-functions";
-import { saveLog, saveSystemLog } from "@/lib/db-functions";
+import { writeItemList } from '@/lib/data-functions'
+import { saveLog, saveSystemLog } from '@/lib/db-functions'
 
 // Components
-import Modal from "@/components/_components/container/modal";
-import TextField from "@/components/_components/inputs/text-field";
-import ItemListItem from "./item-list-item";
+import Modal from '@/components/_components/container/modal'
+import TextField from '@/components/_components/inputs/text-field'
+import ItemListItem from './item-list-item'
 
 export default function ReturnItemsDialog({ sale }) {
   // Atoms
-  const [clerk] = useAtom(clerkAtom);
-  const [view, setView] = useAtom(viewAtom);
-  const [, setAlert] = useAtom(alertAtom);
-  const [cart, setCart] = useAtom(cartAtom);
+  const [clerk] = useAtom(clerkAtom)
+  const [view, setView] = useAtom(viewAtom)
+  const [, setAlert] = useAtom(alertAtom)
+  const [cart, setCart] = useAtom(cartAtom)
 
   // SWR
-  const { items, mutateSaleItems } = useSaleItemsForSale(sale?.id);
-  const { logs, mutateLogs } = useLogs();
-  const { inventory } = useInventory();
+  const { items, mutateSaleItems } = useSaleItemsForSale(sale?.id)
+  const { logs, mutateLogs } = useLogs()
+  const { inventory } = useInventory()
 
   // State
-  const [refundItems, setRefundItems] = useState([]);
-  const [notes, setNotes] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+  const [refundItems, setRefundItems] = useState([])
+  const [notes, setNotes] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
   function closeDialog() {
-    setView({ ...view, returnItemDialog: false });
-    setRefundItems([]);
-    setNotes("");
+    setView({ ...view, returnItemDialog: false })
+    setRefundItems([])
+    setNotes('')
   }
 
   // Constants
   const buttons: ModalButton[] = [
     {
-      type: "ok",
+      type: 'ok',
       loading: submitting,
       onClick: () => {
-        saveSystemLog("RETURN ITEMS - OK clicked.", clerk?.id);
+        saveSystemLog('RETURN ITEMS - OK clicked.', clerk?.id)
         const updatedCartItems = cart?.items?.map((item: SaleItemObject) =>
           refundItems.includes(item?.id)
             ? { ...item, is_refunded: true, refund_note: notes }
             : item
-        );
+        )
         setCart({
           ...cart,
           items: updatedCartItems,
@@ -58,8 +58,8 @@ export default function ReturnItemsDialog({ sale }) {
             cart?.state === SaleStateTypes.Completed
               ? SaleStateTypes.InProgress
               : cart?.state,
-        });
-        closeDialog();
+        })
+        closeDialog()
         saveLog(
           {
             log: `${writeItemList(
@@ -70,16 +70,16 @@ export default function ReturnItemsDialog({ sale }) {
           },
           logs,
           mutateLogs
-        );
+        )
         setAlert({
           open: true,
-          type: "success",
-          message: `ITEM${refundItems?.length === 1 ? "" : "S"} REFUNDED.`,
-        });
+          type: 'success',
+          message: `ITEM${refundItems?.length === 1 ? '' : 'S'} REFUNDED.`,
+        })
       },
-      text: "COMPLETE",
+      text: 'COMPLETE',
     },
-  ];
+  ]
 
   // REVIEW allow returning less than the total quantity of an item
 
@@ -87,7 +87,7 @@ export default function ReturnItemsDialog({ sale }) {
     <Modal
       open={view?.returnItemDialog}
       closeFunction={closeDialog}
-      title={"RETURN ITEMS"}
+      title={'RETURN ITEMS'}
       buttons={buttons}
       width="max-w-xl"
     >
@@ -103,14 +103,14 @@ export default function ReturnItemsDialog({ sale }) {
                 saleItem={item}
                 selected={refundItems.includes(item?.id)}
                 onClick={() => {
-                  saveSystemLog(`ITEM ${item?.id} CLICKED`, clerk?.id);
-                  let newRefundItems = [...refundItems];
+                  saveSystemLog(`ITEM ${item?.id} CLICKED`, clerk?.id)
+                  let newRefundItems = [...refundItems]
                   if (refundItems?.includes(item?.id))
                     newRefundItems = newRefundItems.filter(
                       (x: number) => x !== item?.id
-                    );
-                  else newRefundItems.push(item?.id);
-                  setRefundItems(newRefundItems);
+                    )
+                  else newRefundItems.push(item?.id)
+                  setRefundItems(newRefundItems)
                 }}
               />
             </div>
@@ -124,5 +124,5 @@ export default function ReturnItemsDialog({ sale }) {
         />
       </>
     </Modal>
-  );
+  )
 }
