@@ -513,10 +513,10 @@ export async function getDiscogsPriceSuggestions(discogsItem: DiscogsItem) {
 
 export async function getDiscogsItemArtistDetails(discogsItem: DiscogsItem) {
   const artists = []
-  console.log(discogsItem?.artists)
+  // console.log(discogsItem?.artists)
   if (discogsItem?.artists) {
     for (const discogsArtist of discogsItem?.artists) {
-      console.log(discogsArtist)
+      // console.log(discogsArtist)
       if (discogsArtist?.resource_url) {
         try {
           const res = await fetch(discogsArtist?.resource_url)
@@ -537,7 +537,7 @@ export async function getDiscogsItemArtistDetails(discogsItem: DiscogsItem) {
 export function getFormatFromDiscogs(formats: string[]) {
   if (!formats) return ''
   let format = null
-  console.log(formats)
+  // console.log(formats)
   ;[
     'LP',
     'CD',
@@ -562,7 +562,7 @@ export function getFormatFromDiscogs(formats: string[]) {
     if (formats?.includes(f)) format = f
   })
   if (!format) format = formats[0]
-  console.log(format)
+  // console.log(format)
   return format
 }
 
@@ -794,7 +794,7 @@ export function makeGiftCardCode(giftCards: GiftCardObject[]) {
 //               //
 
 export function getCSVData(items) {
-  console.log(items)
+  // console.log(items)
   return items?.map((item: any) => [
     getItemSku(item),
     item?.artist,
@@ -939,7 +939,7 @@ export function filterInventory({
   slice = 50,
   emptyReturn = false,
 }) {
-  console.log(inventory)
+  // console.log(inventory)
   if (!inventory) return []
   return inventory
     ?.filter((item: StockObject) => {

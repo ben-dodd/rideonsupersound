@@ -69,9 +69,43 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
       (vendor: VendorObject) => vendor?.id === item?.vendor_id
     )[0] || null
 
+  // console.log(item)
+
   // Functions
   function clickAddToCart() {
-    if (itemQuantity < 1) {
+    // console.log('Hold: ', item?.quantity_hold)
+    // console.log('Layby: ', item?.quantity_layby)
+    // console.log('Qty: ', itemQuantity)
+    if (item?.quantity_hold < 0) {
+      setConfirmModal({
+        open: true,
+        title: 'Item on hold.',
+        styledMessage: (
+          <span>
+            <b>{getItemDisplayName(item)}</b> is listed as ON HOLD. If you are
+            selling the held version, go to the Holds page to add to the cart
+            from there.
+          </span>
+        ),
+        yesText: 'CONTINUE ADDING TO CART',
+        noText: 'Cancel',
+        action: () => addItemToCart(),
+      })
+    } else if (item?.quantity_layby < 0) {
+      setConfirmModal({
+        open: true,
+        title: 'Item on layby.',
+        styledMessage: (
+          <span>
+            <b>{getItemDisplayName(item)}</b> is listed as part of a layby.
+            Check if this is from a layby.
+          </span>
+        ),
+        yesText: 'CONTINUE ADDING TO CART',
+        noText: 'Cancel',
+        action: () => addItemToCart(),
+      })
+    } else if (itemQuantity < 1) {
       setConfirmModal({
         open: true,
         title: 'Are you sure you want to add to cart?',
