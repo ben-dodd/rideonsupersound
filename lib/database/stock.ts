@@ -124,6 +124,16 @@ export function dbGetRestockList(db = connection) {
     .andWhere('is_deleted', 0)
 }
 
+export function dbGetStockCount(db = connection) {
+  return db('stock')
+    .count('* as stockCount')
+    .where('is_deleted', 0)
+    .then((rows) => rows[0].stockCount)
+    .catch((err) => {
+      console.error(err)
+    })
+}
+
 export function dbGetStockItem(id, basic = false, db = connection) {
   return db('stock')
     .select(

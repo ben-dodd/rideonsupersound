@@ -5,7 +5,7 @@ import { priceCentsString } from 'lib/utils'
 import { useRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
 
-const StockListTable = ({ data, filters, setFilters }) => {
+const StockListTable = ({ data, rowCount, filters, setFilters }) => {
   const router = useRouter()
   const {
     stockPage: { filters: storedFilters },
@@ -107,7 +107,7 @@ const StockListTable = ({ data, filters, setFilters }) => {
       onPaginationChange={setPagination}
       initSorting={storedFilters?.sorting}
       onSortingChange={setSorting}
-      totalRowNum={data?.length || 0}
+      totalRowNum={rowCount || 0}
     />
   )
 }

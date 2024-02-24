@@ -13,6 +13,10 @@ export function useStockTableData(query) {
   return useData(`stock/table?${query}`, 'stockTableData')
 }
 
+export function useStockCount() {
+  return useData(`stock/count`, 'stockCount')
+}
+
 export function usePrintLabelStockList() {
   return useData(`stock/label`, 'printLabelStockList')
 }

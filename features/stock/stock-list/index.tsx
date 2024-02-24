@@ -1,5 +1,5 @@
 import SearchInput from 'components/inputs/search-input'
-import { useStockTableData } from 'lib/api/stock'
+import { useStockCount, useStockTableData } from 'lib/api/stock'
 import { useAppStore } from 'lib/store'
 import { Pages } from 'lib/store/types'
 // const StockListList = dynamic(() => import('./list'))
@@ -18,6 +18,9 @@ const StockList = () => {
   console.log(storedFilters)
   const [filters, setFilters] = useState(storedFilters)
   const handleSearch = (e) => setSearchBar(Pages.stockPage, e.target.value)
+  const { stockCount = 0 } = useStockCount()
+
+  console.log(stockCount)
 
   const queryString = useMemo(() => obj2query({ ...filters, searchBar }), [filters, searchBar])
 
@@ -35,7 +38,7 @@ const StockList = () => {
         {isStockTableDataLoading ? (
           <Loading />
         ) : (
-          <StockListTable data={stockTableData} filters={filters} setFilters={setFilters} />
+          <StockListTable data={stockTableData} rowCount={stockCount} filters={filters} setFilters={setFilters} />
         )}
         {/* {viewMode === 'table' ? (
           <StockListTable idList={idList} />
