@@ -14,6 +14,7 @@ export default function SetPriceAndQuantities() {
       </div>
       {bucket?.items?.map((receiveItem) => (
         <ListItem
+          key={receiveItem?.key}
           receiveItem={receiveItem}
           bucket={bucket}
           setBucket={setBucket}

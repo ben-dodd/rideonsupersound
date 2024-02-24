@@ -32,7 +32,7 @@ export default function InventoryItemForm({
   const { logs, mutateLogs } = useLogs()
   const [clerk] = useAtom(clerkAtom)
 
-  console.log(item)
+  // console.log(item)
 
   // const vendor = useMemo(
   //   () =>

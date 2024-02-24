@@ -37,6 +37,9 @@ export default function ReceiveStockScreen() {
   const [receivedStock, setReceivedStock] = useState(null)
   const [receiveLoading, setReceiveLoading] = useState(false)
 
+  console.log('basket', basket)
+  console.log('receivedStock', receivedStock)
+
   // SWR
   const { registerID } = useRegisterID()
 
@@ -126,9 +129,11 @@ export default function ReceiveStockScreen() {
             `Receive stock screen - Set step 4, receive stock called`,
             clerk?.id
           )
+          console.log('Receiving stock', basket)
           const receivedStock = await receiveStock(basket, clerk, registerID)
           mutateInventory()
           setReceivedStock(receivedStock)
+          console.log('Receiving stock set to', receivedStock)
           setReceiveLoading(false)
           setStep(4)
         },
@@ -217,7 +222,7 @@ export default function ReceiveStockScreen() {
   )
 
   function isDisabled() {
-    console.log(basket)
+    // console.log(basket)
     return (
       !basket?.vendor_id ||
       basket?.items?.length === 0 ||

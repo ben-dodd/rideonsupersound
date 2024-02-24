@@ -1676,11 +1676,7 @@ export async function receiveStock(
         const newStockID = await saveStockToDatabase(
           {
             ...receiveItem?.item,
-            is_new:
-              receiveItem?.item?.is_new === null ||
-              receiveItem?.item?.is_new === undefined
-                ? 1
-                : receiveItem?.item?.is_new,
+            is_new: receiveItem?.item?.is_new ?? 1,
             vendor_id: basket?.vendor_id,
           },
           clerk
@@ -1705,7 +1701,7 @@ export async function receiveStock(
         receivedStock.push({
           item: {
             ...receiveItem?.item,
-            is_new: receiveItem?.item?.is_new || 1,
+            is_new: receiveItem?.item?.is_new ?? 1,
             vendor_id: basket?.vendor_id,
             total_sell: parseFloat(receiveItem?.total_sell) * 100,
             id: newStockID,
