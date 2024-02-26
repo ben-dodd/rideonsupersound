@@ -40,8 +40,9 @@ const StockList = () => {
       </div>
       <div className="px-2">
         {isStockTableDataLoading ? (
-          <StockListTable data={dummyData} rowCount={stockCount} onChangeFilters={onChangeFilters} />
+          <div />
         ) : (
+          // <StockListTable data={dummyData} rowCount={stockCount} onChangeFilters={onChangeFilters} />
           <StockListTable data={stockTableData} rowCount={stockCount} onChangeFilters={onChangeFilters} />
         )}
         {/* {viewMode === 'table' ? (

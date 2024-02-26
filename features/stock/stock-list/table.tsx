@@ -1,4 +1,5 @@
 import Table from 'components/data/table'
+import { EditCell } from 'components/data/table/editCell'
 import { useAppStore } from 'lib/store'
 import { Pages } from 'lib/store/types'
 import { priceCentsString } from 'lib/utils'
@@ -61,12 +62,17 @@ const StockListTable = ({ data, rowCount, onChangeFilters }) => {
       {
         accessorKey: 'title',
         header: 'Title',
+        cell: EditCell,
         size: 300,
         sortDescFirst: false,
       },
       {
         accessorKey: 'artist',
         header: 'Artist',
+        cell: EditCell,
+        // meta: {
+        //   type: 'date',
+        // },
         size: 190,
         sortDescFirst: false,
       },
@@ -85,6 +91,15 @@ const StockListTable = ({ data, rowCount, onChangeFilters }) => {
       {
         accessorKey: 'section',
         header: 'Section',
+        cell: EditCell,
+        meta: {
+          type: 'select',
+          options: [
+            { value: 'NOI', label: 'Noise/Drone' },
+            { value: 'EXP', label: 'Art Rock/Experimental' },
+            { value: 'LOU', label: 'Lounge/Moog/Spaceage' },
+          ],
+        },
         size: 100,
       },
       {

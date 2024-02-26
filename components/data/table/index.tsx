@@ -41,7 +41,7 @@ function Table({
   const rerender = useReducer(() => ({}), {})[1]
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>(initPagination)
   const [sorting, setSorting] = useState<SortingState>(initSorting)
-  const tableData = useMemo(() => data ?? new Array(pageSize).fill({}), [data, pageSize])
+  const [tableData, setTableData] = useState(data || [])
   const pagination = useMemo(
     () => ({
       pageIndex,
@@ -65,7 +65,7 @@ function Table({
       onPaginationChange && onPaginationChange(e)
       setPagination(e)
     },
-    // autoResetPageIndex: true,
+    autoResetPageIndex: true,
     onSortingChange: (e) => {
       console.log('sorting change', e)
       onSortingChange && onSortingChange(e)
@@ -78,6 +78,21 @@ function Table({
     enableMultiRemove: true,
     enableMultiSort: true,
     state: { pagination, sorting },
+    // meta: {
+    //   updateData: (rowIndex: number, columnId: string, value: string) => {
+    //     setTableData((old) =>
+    //       old.map((row, index) => {
+    //         if (index === rowIndex) {
+    //           return {
+    //             ...old[rowIndex],
+    //             [columnId]: value,
+    //           }
+    //         }
+    //         return row
+    //       }),
+    //     )
+    //   },
+    // },
   })
 
   const columnSizeVars = useMemo(() => {
@@ -90,6 +105,7 @@ function Table({
     }
     return colSizes
   }, [table.getState().columnSizingInfo])
+  // Give our default column cell renderer editing superpowers!
 
   return (
     <div className="ml-1">
