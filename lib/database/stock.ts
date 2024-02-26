@@ -39,11 +39,20 @@ export function dbGetStockList(db = connection) {
 
 export function dbGetStockTableData(q: any = {}, db = connection) {
   const params = query2obj(q)
+  console.log('PERFORMING DB FUNCTION')
   console.log(params)
+  const {
+    pagination: { pageIndex = 0, pageSize = 15 },
+    sorting = [],
+  } = params || {}
+  const orderBy = sorting?.map((sort) => {
+    return { column: sort?.id, order: sort?.desc === 'true' ? 'desc' : 'asc' }
+  })
   return db('stock')
-    .select()
-    .offset(params?.pagination?.pageIndex ?? 0)
-    .limit(params?.pagination?.pageSize ?? 15)
+    .select('id', 'artist', 'title')
+    .orderBy(orderBy)
+    .offset(pageIndex * pageSize)
+    .limit(pageSize)
 }
 
 export function dbGetSimpleStockCount(db = connection) {

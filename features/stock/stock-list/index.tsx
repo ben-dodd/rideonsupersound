@@ -7,7 +7,6 @@ const StockListTable = dynamic(() => import('./table'))
 // const StockListSheet = dynamic(() => import('./sheet'))
 import { useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
-import Loading from 'components/placeholders/loading'
 import { obj2query } from 'lib/utils'
 
 const StockList = () => {
@@ -20,12 +19,17 @@ const StockList = () => {
   const handleSearch = (e) => setSearchBar(Pages.stockPage, e.target.value)
   const { stockCount = 0 } = useStockCount()
 
-  console.log(stockCount)
+  // console.log(stockCount)
+
+  const onChangeFilters = (newFilters) => {
+    setFilters(newFilters)
+  }
 
   const queryString = useMemo(() => obj2query({ ...filters, searchBar }), [filters, searchBar])
+  const dummyData = useMemo(() => new Array(filters?.pagination?.pageSize).fill({}), [filters?.pagination?.pageSize])
 
   const { stockTableData = [], isStockTableDataLoading = true } = useStockTableData(queryString)
-  console.log(stockTableData)
+  // console.log(stockTableData)
   // console.log(filterSe
 
   return (
@@ -36,9 +40,9 @@ const StockList = () => {
       </div>
       <div className="px-2">
         {isStockTableDataLoading ? (
-          <Loading />
+          <StockListTable data={dummyData} rowCount={stockCount} onChangeFilters={onChangeFilters} />
         ) : (
-          <StockListTable data={stockTableData} rowCount={stockCount} filters={filters} setFilters={setFilters} />
+          <StockListTable data={stockTableData} rowCount={stockCount} onChangeFilters={onChangeFilters} />
         )}
         {/* {viewMode === 'table' ? (
           <StockListTable idList={idList} />

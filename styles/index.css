@@ -420,15 +420,15 @@
   }
 }
 
-/* table,
+table,
 .divTable {
-  border: 1px solid lightgray;
+  /* border: 1px solid lightgray; */
   width: fit-content;
-} */
+}
 
-/* .tr {
+.tr {
   display: flex;
-} */
+}
 
 /* tr,
 .tr {
@@ -452,8 +452,8 @@ th,
   text-align: center;
   height: 30px; */
 }
-
-/* td,
+/* 
+td,
 .td {
   height: 30px;
 } */

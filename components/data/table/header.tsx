@@ -12,7 +12,7 @@ export const Header = ({ table, color, colorDark }) => (
             {...{
               className: `border border-white select-none h-8 ${
                 color ? `${color} hover:${colorDark}` : 'bg-gray-200 hover:bg-gray-400'
-              } text-left px-2 truncate`,
+              } text-left px-2`,
               style: {
                 width: `calc(var(--header-${header?.id}-size) * 1px)`,
               },

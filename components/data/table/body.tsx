@@ -26,7 +26,7 @@ export const TableBody = ({ table, showFooter }) => (
           >
             {row.getVisibleCells().map((cell) => {
               return (
-                <td key={cell?.id} className="border border-white truncate relative pl-2 pr-4 border-r-4">
+                <td key={cell?.id} className="border border-white relative pl-2 pr-4 border-r-4 truncate">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               )

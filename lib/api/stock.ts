@@ -10,6 +10,7 @@ export function useStockList() {
 
 export function useStockTableData(query) {
   // const query = obj2query(params)
+  console.log('Getting stock table data')
   return useData(`stock/table?${query}`, 'stockTableData')
 }
 

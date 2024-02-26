@@ -41,6 +41,7 @@ function Table({
   const rerender = useReducer(() => ({}), {})[1]
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>(initPagination)
   const [sorting, setSorting] = useState<SortingState>(initSorting)
+  const tableData = useMemo(() => data ?? new Array(pageSize).fill({}), [data, pageSize])
   const pagination = useMemo(
     () => ({
       pageIndex,
@@ -51,31 +52,32 @@ function Table({
 
   const table = useReactTable({
     columns,
-    data,
-    defaultColumn: {
-      minSize: 60,
-      maxSize: 800,
-    },
+    data: tableData,
+    // debugAll: true,
+    // defaultColumn: {
+    //   minSize: 60,
+    //   maxSize: 800,
+    // },
     columnResizeMode: 'onChange',
     pageCount: Math.ceil(totalRowNum / pageSize) ?? -1,
     onPaginationChange: (e) => {
+      console.log('pagination change', e)
       onPaginationChange && onPaginationChange(e)
       setPagination(e)
     },
+    // autoResetPageIndex: true,
     onSortingChange: (e) => {
+      console.log('sorting change', e)
       onSortingChange && onSortingChange(e)
       setSorting(e)
     },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    // manualSorting: true,
+    manualSorting: true,
     manualPagination: true,
     enableMultiRemove: true,
     enableMultiSort: true,
     state: { pagination, sorting },
-    debugTable: true,
-    debugHeaders: true,
-    debugColumns: true,
   })
 
   const columnSizeVars = useMemo(() => {
@@ -93,7 +95,7 @@ function Table({
     <div className="ml-1">
       <div className="overflow-x-scroll w-full">
         <table
-          className="table-auto w-full text-sm"
+          className="table-fixed w-full text-sm"
           {...{
             style: {
               ...columnSizeVars, //Define column sizes on the <table> element

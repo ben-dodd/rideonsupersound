@@ -460,11 +460,11 @@ export const useAppStore = createSelectors(
     setPageFilter: (page, setting, update) => {
       set(
         produce((draft) => {
-          const filterSetting = { ...get()[page]?.filterSetting }
-          filterSetting[setting] = update
+          const filters = { ...get()[page]?.filters }
+          filters[setting] = update
           draft[page] = {
             ...get()[page],
-            filterSetting,
+            filters,
           }
         }),
       )

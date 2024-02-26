@@ -5,22 +5,30 @@ import { priceCentsString } from 'lib/utils'
 import { useRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
 
-const StockListTable = ({ data, rowCount, filters, setFilters }) => {
+const StockListTable = ({ data, rowCount, onChangeFilters }) => {
   const router = useRouter()
   const {
-    stockPage: { filters: storedFilters },
+    stockPage: { filters },
     setPage,
   } = useAppStore()
   const [pagination, setPagination] = useState(filters?.pagination)
   const [sorting, setSorting] = useState(filters?.sorting)
+
+  // Handle sort, pagination and filter changes
+  // Do not add filters or setFilters to dependencies
   useEffect(() => {
-    setFilters({ ...filters, pagination })
-    setPage(Pages.stockPage, { pagination })
-  }, [pagination, setPage])
-  useEffect(() => {
-    setFilters({ ...filters, sorting })
-    setPage(Pages.stockPage, { sorting })
-  }, [filters, setFilters, setPage, sorting])
+    const newFilters = { pagination, sorting }
+    console.log(newFilters)
+    onChangeFilters(newFilters)
+    setPage(Pages.stockPage, { filters: newFilters })
+  }, [pagination, sorting])
+
+  // useEffect(() => {
+  //   console.log('changing new sorting', sorting)
+  //   const newFilters = { ...filters, sorting }
+  //   changeFilters(newFilters)
+  //   setPage(Pages.stockPage, newFilters)
+  // }, [sorting])
 
   // const paginatedIdList = idList?.slice(pageIndex * pageSize, pageIndex * pageSize + pageSize)
   // const { stockItemList = [], isStockItemListLoading = true } = useStockItemList(paginatedIdList)
@@ -54,11 +62,13 @@ const StockListTable = ({ data, rowCount, filters, setFilters }) => {
         accessorKey: 'title',
         header: 'Title',
         size: 300,
+        sortDescFirst: false,
       },
       {
         accessorKey: 'artist',
         header: 'Artist',
         size: 190,
+        sortDescFirst: false,
       },
       {
         header: 'Vendor',
@@ -72,8 +82,16 @@ const StockListTable = ({ data, rowCount, filters, setFilters }) => {
         },
         size: 180,
       },
-      { accessorKey: 'section', header: 'Section', size: 100 },
-      { accessorKey: 'format', header: 'Format', size: 100 },
+      {
+        accessorKey: 'section',
+        header: 'Section',
+        size: 100,
+      },
+      {
+        accessorKey: 'format',
+        header: 'Format',
+        size: 100,
+      },
       {
         accessorKey: 'totalSell',
         header: 'Sell',
@@ -93,7 +111,11 @@ const StockListTable = ({ data, rowCount, filters, setFilters }) => {
         },
         size: 60,
       },
-      { accessorKey: 'sold', header: 'SOLD', size: 60 },
+      {
+        accessorKey: 'sold',
+        header: 'SOLD',
+        size: 60,
+      },
     ],
     [],
   )
@@ -103,9 +125,9 @@ const StockListTable = ({ data, rowCount, filters, setFilters }) => {
       columns={columns}
       data={data}
       showPagination
-      initPagination={storedFilters?.pagination}
+      initPagination={filters?.pagination}
       onPaginationChange={setPagination}
-      initSorting={storedFilters?.sorting}
+      initSorting={filters?.sorting}
       onSortingChange={setSorting}
       totalRowNum={rowCount || 0}
     />
