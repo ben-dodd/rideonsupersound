@@ -6,6 +6,7 @@ import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
 import { SaleItemObject, SaleStateTypes } from 'lib/types/sale'
 import StaticSaleItem from '../item/sale-summary/static-sale-item'
+import { useStockItemList } from 'lib/api/stock'
 
 export default function ReturnItemsDialog({ sale }) {
   const { cart, view, setCart, setCartSale, closeView, setAlert } = useAppStore()
@@ -13,6 +14,7 @@ export default function ReturnItemsDialog({ sale }) {
   const [refundItems, setRefundItems] = useState([])
   const [notes, setNotes] = useState('')
   const [submitting] = useState(false)
+  const { stockItemList = [], isStockItemListLoading = true } = useStockItemList(items?.map((item) => item?.id))
 
   function closeDialog() {
     closeView(ViewProps.returnItemDialog)
@@ -59,21 +61,25 @@ export default function ReturnItemsDialog({ sale }) {
         <div className="help-text">Select items to refund.</div>
         {items
           ?.filter((item: SaleItemObject) => !item?.isDeleted && !item?.isRefunded)
-          ?.map((item: SaleItemObject) => (
-            <div className="flex" key={item?.id}>
-              <StaticSaleItem
-                saleItem={item}
-                selected={refundItems.includes(item?.id)}
-                onClick={() => {
-                  let newRefundItems = [...refundItems]
-                  if (refundItems?.includes(item?.id))
-                    newRefundItems = newRefundItems.filter((x: number) => x !== item?.id)
-                  else newRefundItems.push(item?.id)
-                  setRefundItems(newRefundItems)
-                }}
-              />
-            </div>
-          ))}
+          ?.map((item: SaleItemObject) => {
+            const stockItem = stockItemList?.find((stockItem) => stockItem?.item?.id === item?.id)
+            return (
+              <div className="flex" key={item?.id}>
+                <StaticSaleItem
+                  saleItem={item}
+                  stockItem={stockItem}
+                  selected={refundItems.includes(item?.id)}
+                  onClick={() => {
+                    let newRefundItems = [...refundItems]
+                    if (refundItems?.includes(item?.id))
+                      newRefundItems = newRefundItems.filter((x: number) => x !== item?.id)
+                    else newRefundItems.push(item?.id)
+                    setRefundItems(newRefundItems)
+                  }}
+                />
+              </div>
+            )
+          })}
         <TextField
           inputLabel="Notes"
           multiline

@@ -4,7 +4,7 @@ import { dbSaveCart } from '../sale'
 import { CartObject, SaleStateTypes } from 'lib/types/sale'
 import { dbGetJobsLike } from '../jobs'
 import { dbGetStockItem } from '../stock'
-import { checkValue, mysql2js } from '../../utils/helpers'
+import { checkValue, mysql2js } from 'lib/utils'
 
 beforeAll(() => testCon.migrate.latest())
 
