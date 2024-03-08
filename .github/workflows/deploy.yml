@@ -12,10 +12,10 @@ jobs:
       - name: Deploy Ride On Super Sound
         uses: appleboy/ssh-action@v0.1.2
         with:
-          host: ${{SSH_HOST}}
-          key: ${{SSH_KEY}}
-          username: ${{SSH_USERNAME}}
-          password: ${{SSH_PASSWORD}}
+          host: $SSH_HOST
+          key: $SSH_KEY
+          username: $SSH_USERNAME
+          password: $SSH_PASSWORD
 
           script: |
             cd rideonsupersound
