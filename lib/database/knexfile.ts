@@ -8,7 +8,7 @@ import path from 'path'
 
 const cf = {
   development: {
-    client: 'mysql',
+    client: 'mysql2',
     connection: {
       host: process.env.MYSQL_DEV_HOST,
       port: Number(process.env.MYSQL_DEV_PORT),
@@ -19,7 +19,7 @@ const cf = {
   },
 
   production: {
-    client: 'mysql',
+    client: 'mysql2',
     connection: {
       host: process.env.MYSQL_HOST,
       port: Number(process.env.MYSQL_PORT),
