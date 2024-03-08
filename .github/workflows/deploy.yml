@@ -7,14 +7,13 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: ROSS - Digital Ocean
     steps:
       - name: Deploy Ride On Super Sound
         uses: appleboy/ssh-action@v0.1.2
         with:
-          host: ${{ vars.SSH_HOST }}
-          key: ${{ vars.SSH_KEY }}
-          username: ${{ vars.SSH_USERNAME }}
+          host: ${{ secrets.SSH_HOST }}
+          key: ${{ secrets.SSH_KEY }}
+          username: ${{ secrets.SSH_USERNAME }}
 
           script: |
             cd rideonsupersound
