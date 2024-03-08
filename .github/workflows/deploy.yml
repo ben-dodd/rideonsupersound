@@ -7,6 +7,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: ROSS - Digital Ocean
     steps:
       - name: Deploy Ride On Super Sound
         uses: appleboy/ssh-action@v0.1.2
