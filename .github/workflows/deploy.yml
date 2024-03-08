@@ -12,9 +12,9 @@ jobs:
       - name: Deploy Ride On Super Sound
         uses: appleboy/ssh-action@v0.1.2
         with:
-          host: $SSH_HOST
-          key: $SSH_KEY
-          username: $SSH_USERNAME
+          host: ${{ vars.SSH_HOST }}
+          key: ${{ vars.SSH_KEY }}
+          username: ${{ vars.SSH_USERNAME }}
 
           script: |
             cd rideonsupersound
