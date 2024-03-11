@@ -1,5 +1,8 @@
 import { CheckCircle, Cancel } from '@mui/icons-material'
+import { Image } from 'components/image'
+import { UploadableImage } from 'components/image/uploadable'
 import { useRouter } from 'next/router'
+import { MouseEventHandler } from 'react'
 
 interface infoOption {
   label?: string
@@ -10,7 +13,19 @@ interface infoOption {
   isHorizontalRule?: boolean
 }
 
-const InfoBox = ({ title, image, data }: { title?: string; image?: string; data: infoOption[] }) => {
+const InfoBox = ({
+  title,
+  image,
+  data,
+  imageIsClickable,
+  onImageUpload,
+}: {
+  title?: string
+  image?: string
+  data: infoOption[]
+  imageIsClickable?: boolean
+  onImageUpload?: MouseEventHandler
+}) => {
   const router = useRouter()
   return (
     <div className="bg-white text-brown rounded p-2 my-2 border max-w-md">
@@ -18,7 +33,11 @@ const InfoBox = ({ title, image, data }: { title?: string; image?: string; data:
       {image && (
         <div className="flex">
           <div className="w-52 h-52 aspect-ratio-square">
-            <img className="h-full w-full object-cover" src={image} alt={'Info Box Image'} />
+            {imageIsClickable ? (
+              <UploadableImage imageUrl={image} onImageUpload={onImageUpload} />
+            ) : (
+              <Image imageUrl={image} />
+            )}
           </div>
         </div>
       )}

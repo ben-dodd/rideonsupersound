@@ -1,7 +1,7 @@
 import { AttachMoney, Delete, Edit, LibraryAdd } from '@mui/icons-material'
 import MidScreenContainer from 'components/container/mid-screen'
 import Tabs from 'components/navigation/tabs'
-import { deleteStockItem, useStockItem } from 'lib/api/stock'
+import { deleteStockItem, useStockItem, updateStockItem } from 'lib/api/stock'
 import { getItemSkuDisplayName } from 'lib/functions/displayInventory'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
@@ -43,6 +43,10 @@ const StockItemScreen = ({ item, sales }) => {
     })
   }
 
+  const onImageUpload = (imageUrl) => {
+    updateStockItem({ imageUrl }, item?.id).then(() => mutate(`stock/${item?.d}`))
+  }
+
   const menuItems = [
     { text: 'Edit', icon: <Edit />, onClick: () => openView(ViewProps.stockEditDialog) },
     { text: 'Change Price', icon: <AttachMoney />, onClick: () => openView(ViewProps.changePriceDialog) },
@@ -77,7 +81,7 @@ const StockItemScreen = ({ item, sales }) => {
           <div hidden={tab !== 0}>
             <div className="flex">
               <div className="w-1/3">
-                <StockItemDisplay stockItem={stockItem} />
+                <StockItemDisplay stockItem={stockItem} onImageUpload={onImageUpload} />
               </div>
               <div className="w-2/3 ml-4">
                 <PriceDetails stockItem={stockItem} />
