@@ -39,7 +39,7 @@ export default function Layout({ children }) {
   ) : (
     <>
       <Head>
-        <title>R.O.S.S. P.O.S.</title>
+        <title>R.O.S. P.O.S.</title>
       </Head>
       <Nav />
       <div className="flex h-main relative overflow-y-hidden">
