@@ -13,4 +13,5 @@ export interface NextApiRequestWithFormData extends NextApiRequest {
     path: string
     size: number
   }
+  folder: string
 }

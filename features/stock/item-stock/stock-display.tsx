@@ -42,6 +42,7 @@ export default function StockItemDisplay({ stockItem, onImageUpload }) {
         ]}
         imageIsClickable
         onImageUpload={onImageUpload}
+        uploadFolder={'stock'}
       />
     </div>
   )

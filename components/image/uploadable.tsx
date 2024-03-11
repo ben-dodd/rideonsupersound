@@ -1,4 +1,4 @@
-export const UploadableImage = ({ imageUrl, onImageUpload }) => {
+export const UploadableImage = ({ imageUrl, onImageUpload, uploadFolder }) => {
   const handleFileChange = async (e) => {
     console.log(e)
     const file = e?.target?.files?.[0]
@@ -8,6 +8,7 @@ export const UploadableImage = ({ imageUrl, onImageUpload }) => {
 
     // Append the resized file to the FormData object
     formData.append('image', file)
+    formData.append('folder', uploadFolder)
 
     try {
       const response = await fetch('/api/image', {

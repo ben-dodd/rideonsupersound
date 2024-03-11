@@ -19,12 +19,14 @@ const InfoBox = ({
   data,
   imageIsClickable,
   onImageUpload,
+  uploadFolder,
 }: {
   title?: string
   image?: string
   data: infoOption[]
   imageIsClickable?: boolean
   onImageUpload?: MouseEventHandler
+  uploadFolder?: string
 }) => {
   const router = useRouter()
   return (
@@ -34,7 +36,7 @@ const InfoBox = ({
         <div className="flex">
           <div className="w-52 h-52 aspect-ratio-square">
             {imageIsClickable ? (
-              <UploadableImage imageUrl={image} onImageUpload={onImageUpload} />
+              <UploadableImage imageUrl={image} onImageUpload={onImageUpload} uploadFolder={uploadFolder} />
             ) : (
               <Image imageUrl={image} />
             )}

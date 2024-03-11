@@ -39,6 +39,9 @@ export default async function handler(req: NextApiRequestWithFormData, res: Next
         }
 
         const file = req.file // File uploaded via multer
+        const folder = req.body?.folder
+
+        console.log(folder)
 
         if (!file) {
           return res.status(400).json({ error: 'No file uploaded' })
@@ -53,7 +56,7 @@ export default async function handler(req: NextApiRequestWithFormData, res: Next
           const uploadParams = {
             Bucket: process.env.S3_BUCKET,
             ACL: 'public-read',
-            Key: `${uuid()}${file.originalname}`, // Use the original file name as the key
+            Key: `${folder}/${uuid()}${file.originalname}`, // Use the original file name as the key
             Body: resizedImageBuffer, // Use the resized image buffer
             ContentType: file.mimetype, // Use the MIME type of the file
           }
