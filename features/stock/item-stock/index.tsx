@@ -44,6 +44,7 @@ const StockItemScreen = ({ item, sales }) => {
   }
 
   const onImageUpload = (imageUrl) => {
+    console.log(imageUrl)
     updateStockItem({ imageUrl }, item?.id).then(() => mutate(`stock/${item?.d}`))
   }
 

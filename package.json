@@ -24,6 +24,7 @@
     "@mui/material": "^5.9.0",
     "@serverless-jwt/next": "^0.2.1",
     "@tanstack/react-table": "^8.11.8",
+    "aws-sdk": "^2.1574.0",
     "axios": "^0.27.2",
     "dayjs": "^1.11.3",
     "eslint-config-next": "^13.0.3",

@@ -1,12 +1,13 @@
 export const UploadableImage = ({ imageUrl, onImageUpload }) => {
   const handleFileChange = async (e) => {
+    console.log(e)
     const file = e?.target?.files?.[0]
     if (!file) return
 
     const formData = new FormData()
-    formData.append('image', file)
 
-    console.log(formData)
+    // Append the resized file to the FormData object
+    formData.append('image', file)
 
     try {
       const response = await fetch('/api/image', {
@@ -15,7 +16,7 @@ export const UploadableImage = ({ imageUrl, onImageUpload }) => {
       })
       if (response.ok) {
         const data = await response.json()
-        onImageUpload(data.imageUrl) // Execute callback function with the new image URL
+        onImageUpload(data.url) // Execute callback function with the new image URL
         alert('Image uploaded successfully!')
       } else {
         alert('Failed to upload image')

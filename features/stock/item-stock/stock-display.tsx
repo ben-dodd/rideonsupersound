@@ -1,11 +1,9 @@
 import { getImageSrc, getItemSku } from 'lib/functions/displayInventory'
 import { useVendors } from 'lib/api/vendor'
-import router from 'next/router'
 import InfoBox from 'components/container/info-box'
 import { VendorObject } from 'lib/types/vendor'
 
 export default function StockItemDisplay({ stockItem, onImageUpload }) {
-  const { id } = router.query
   // TODO fix up stock item type so it can be used here
   const { item = {} } = stockItem || {}
   const { vendors } = useVendors()
