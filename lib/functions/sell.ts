@@ -2,7 +2,6 @@ import { getItemDisplayName, getItemSku } from 'lib/functions/displayInventory'
 import { saveLog } from 'lib/functions/log'
 import { SaleItemObject } from 'lib/types/sale'
 import {
-  BasicStockObject,
   BasicStockPriceObject,
   GiftCardObject,
   StockItemObject,
