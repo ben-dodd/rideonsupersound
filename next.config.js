@@ -8,7 +8,7 @@ module.exports = withBundleAnalyzer({
     domains: [
       'localhost',
       'hmn.exu.mybluehost.me',
-      'https://ross.syd1.cdn.digitaloceanspaces.com',
+      'ross.syd1.cdn.digitaloceanspaces.com',
       'img.discogs.com',
       'i.discogs.com',
       'books.google.com',
