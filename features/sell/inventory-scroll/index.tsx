@@ -1,9 +1,9 @@
 import { filterInventory, sortInventory } from 'lib/functions/sell'
 const ListItem = dynamic(() => import('./list-item'))
 import Loading from 'components/placeholders/loading'
-import { useStockItemList, useStockList } from 'lib/api/stock'
+import { useStockList } from 'lib/api/stock'
 import { useAppStore } from 'lib/store'
-import { BasicStockObject, StockItemSearchObject } from 'lib/types/stock'
+import { StockItemSearchObject } from 'lib/types/stock'
 import dynamic from 'next/dynamic'
 import { useMemo } from 'react';
 
