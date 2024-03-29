@@ -71,12 +71,11 @@ export function getCartItemPrices(cartItem: any, item: StockItemObject, price: B
   }
 }
 
-export function getItemQuantity(stockObject: BasicStockObject | StockObject, saleItems: SaleItemObject[]) {
-  const { item = {}, quantities = {} } = stockObject || {}
-  if (quantities?.inStock === undefined || quantities?.inStock === null) return null
+export function getItemQuantity(item: StockItemSearchObject, saleItems: SaleItemObject[]) {
+  if (item?.quantity === undefined || item?.quantity === null) return null
   const saleItem = saleItems?.find((i: SaleItemObject) => i?.itemId === item?.id)
   const cartQuantity = parseInt(saleItem?.quantity || '0')
-  const itemQuantity = quantities?.inStock || 0
+  const itemQuantity = item?.quantity || 0
   return itemQuantity - cartQuantity
 }
 

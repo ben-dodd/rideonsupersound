@@ -7,16 +7,47 @@ import { createBatchList } from 'lib/functions/stock'
 import connection from './conn'
 
 export function dbGetStockList(db = connection) {
+  const subQueryQ = db('stock_movement')
+  .select('stock_id')
+  .sum('quantity as quantity')
+  .whereNot('is_deleted', true)
+  .groupBy('stock_id');
+
+const subQueryHol = db('stock_movement')
+  .select('stock_id')
+  .sum('quantity as quantity_hold')
+  .whereNot('is_deleted', true)
+  .whereIn('act', [StockMovementTypes.Hold, StockMovementTypes.Unhold])
+  .groupBy('stock_id');
+
+const subQueryLay = db('stock_movement')
+  .select('stock_id')
+  .sum('quantity as quantity_layby')
+  .whereNot('is_deleted', true)
+  .whereIn('act', [StockMovementTypes.Layby, StockMovementTypes.Unlayby])
+  .groupBy('stock_id');
+
+const subQuerySol = db('stock_movement')
+  .select('stock_id')
+  .sum('quantity as quantity_sold')
+  .whereNot('is_deleted', true)
+  .whereIn('act', [StockMovementTypes.Sold, StockMovementTypes.Unsold])
+  .groupBy('stock_id');
+
   return db('stock')
-    .leftJoin('stock_movement', 'stock.id', 'stock_movement.stock_id')
-    .leftJoin('stock_price', 'stock.id', 'stock_price.stock_id')
     .leftJoin('vendor', 'stock.vendor_id', 'vendor.id')
+    .leftJoin(subQueryQ.as('q'), 'q.stock_id', 'stock.id')
+    .leftJoin(subQueryHol.as('hol'), 'hol.stock_id', 'stock.id')
+    .leftJoin(subQueryLay.as('lay'), 'lay.stock_id', 'stock.id')
+    .leftJoin(subQuerySol.as('sol'), 'sol.stock_id', 'stock.id')
+    .leftJoin('stock_price', 'stock.id', 'stock_price.stock_id')
     .groupBy('stock.id')
     .select(
       'stock.id',
       'stock.vendor_id',
       'vendor.name as vendor_name',
       'stock_price.total_sell',
+      'stock_price.vendor_cut',
       'stock.artist',
       'stock.title',
       'stock.display_as',
@@ -29,8 +60,11 @@ export function dbGetStockList(db = connection) {
       'stock.cond',
       'stock.tags',
       'stock.needs_restock',
+      'q.quantity',
+      'hol.quantity_hold',
+      'lay.quantity_layby',
+      'sol.quantity_sold'
     )
-    .sum('stock_movement.quantity as quantity')
     .where(`stock.is_deleted`, 0)
     .where(`stock.is_misc_item`, 0)
     .where(`stock.is_gift_card`, 0)

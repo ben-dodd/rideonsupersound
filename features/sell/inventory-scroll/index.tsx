@@ -5,32 +5,31 @@ import { useStockItemList, useStockList } from 'lib/api/stock'
 import { useAppStore } from 'lib/store'
 import { BasicStockObject, StockItemSearchObject } from 'lib/types/stock'
 import dynamic from 'next/dynamic'
+import { useMemo } from 'react';
 
 export default function InventoryScroll() {
   const maxItemsInList = 50
   const { stockList = [], isStockListLoading = true } = useStockList()
+  console.log(stockList)
   const {
     sellPage: { searchBar },
   } = useAppStore()
-  const idList = stockList
-    ?.filter((item: StockItemSearchObject) => filterInventory(item, searchBar))
-    ?.sort(sortInventory)
-    ?.slice(0, maxItemsInList)
-    ?.map((item: StockItemSearchObject) => item?.id)
-  const { stockItemList = [], isStockItemListLoading = true } = useStockItemList(idList)
-  console.log(stockItemList)
+  const filteredList = useMemo(() => stockList?.filter((item: StockItemSearchObject) => filterInventory(item, searchBar))
+  ?.sort(sortInventory)
+  ?.slice(0, maxItemsInList), [searchBar])
+  console.log(filteredList)
   return (
     <div className="h-content overflow-y-scroll px-2">
       {isStockListLoading ? (
         <Loading />
       ) : searchBar ? (
-        idList?.length === 0 ? (
+        filteredList?.length === 0 ? (
           <div className="text-xl">No items found...</div>
-        ) : isStockItemListLoading ? (
+        ) : isStockListLoading ? (
           <Loading />
         ) : (
-          stockItemList?.map((stockItem: BasicStockObject) => (
-            <ListItem stockItem={stockItem} key={stockItem?.item?.id} />
+          filteredList?.map((item: StockItemSearchObject) => (
+            <ListItem item={item} key={item?.id} />
           ))
         )
       ) : (

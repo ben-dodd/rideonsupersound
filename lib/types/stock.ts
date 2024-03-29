@@ -53,6 +53,11 @@ export interface StockItemSearchObject extends StockItemBaseObject {
   cond?: string
   tags?: string[]
   quantity?: number
+  quantityLayby?: number
+  quantityHold?: number
+  quantitySold?: number
+  totalPrice?: number
+  vendorCut?: number
   vendorName?: string
   needsRestock?: boolean
 }

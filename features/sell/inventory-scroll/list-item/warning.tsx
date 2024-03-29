@@ -1,5 +1,5 @@
 // TODO add warning if item is on hold
-const Warning = ({ item, itemQuantity, isInCart }) => {
+const Warning = ({ item, isInCart, itemQuantity }) => {
   return (
     <div className={`${item?.needsRestock ? 'text-yellow-400' : 'text-red-400'} font-bold text-2xl`}>
       {item?.needsRestock || (isInCart && itemQuantity > 0)
