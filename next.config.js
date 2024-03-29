@@ -17,13 +17,5 @@ module.exports = withBundleAnalyzer({
   eslint: {
     dirs: ['components', 'features', 'lib', 'pages', 'views'],
   },
-  // async rewrites() {
-  //   return [
-  //     {
-  //       source: '/file/:path*',
-  //       destination: 'https://hmn.exu.mybluehost.me/:path*',
-  //     },
-  //   ]
-  // },
   trailingSlash: false,
 })
