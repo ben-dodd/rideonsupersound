@@ -1,5 +1,12 @@
 import { useMemo, useReducer, useState } from 'react'
-import { PaginationState, SortingState, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table'
+import {
+  PaginationState,
+  SortingState,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table'
 import { MemoizedTableBody, TableBody } from './body'
 import { Pagination } from './pagination'
 import { Header } from './header'
@@ -39,42 +46,43 @@ function Table({
   totalRowNum,
 }: TableProps) {
   const rerender = useReducer(() => ({}), {})[1]
-  const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>(initPagination)
+  const [pagination, setPagination] = useState<PaginationState>(initPagination)
   const [sorting, setSorting] = useState<SortingState>(initSorting)
-  const [tableData, setTableData] = useState(data || [])
-  const pagination = useMemo(
-    () => ({
-      pageIndex,
-      pageSize,
-    }),
-    [pageIndex, pageSize],
-  )
+  // const [tableData, setTableData] = useState(data || [])
+  // const pagination = useMemo(
+  //   () => ({
+  //     pageIndex,
+  //     pageSize,
+  //   }),
+  //   [pageIndex, pageSize],
+  // )
 
   const table = useReactTable({
     columns,
-    data: tableData,
+    data,
     // debugAll: true,
     // defaultColumn: {
     //   minSize: 60,
     //   maxSize: 800,
     // },
     columnResizeMode: 'onChange',
-    pageCount: Math.ceil(totalRowNum / pageSize) ?? -1,
+    // pageCount: Math.ceil(totalRowNum / pageSize) ?? -1,
     onPaginationChange: (e) => {
       console.log('pagination change', e)
       onPaginationChange && onPaginationChange(e)
       setPagination(e)
     },
-    autoResetPageIndex: true,
+    autoResetPageIndex: false,
     onSortingChange: (e) => {
-      console.log('sorting change', e)
+      // console.log('sorting change', e)
       onSortingChange && onSortingChange(e)
       setSorting(e)
     },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    manualSorting: true,
-    manualPagination: true,
+    getPaginationRowModel: getPaginationRowModel(),
+    // manualSorting: true,
+    // manualPagination: true,
     enableMultiRemove: true,
     enableMultiSort: true,
     state: { pagination, sorting },

@@ -38,6 +38,13 @@ export function dbGetStockList(db = connection) {
   // .orderBy(`stock.${sortColumn}`, sortOrder)
 }
 
+export function dbGetFullStockTable(db = connection) {
+  return db('stock')
+    .select('id')
+    .where('is_deleted', 0)
+    .then((rows) => Promise.all(rows?.map((row) => dbGetStockItem(row?.id, true, db))))
+}
+
 export function dbGetStockTableData(q: any = {}, db = connection) {
   const params = query2obj(q)
   console.log('PERFORMING DB FUNCTION')
@@ -87,45 +94,6 @@ export function dbGetPrintLabelStockList(db = connection) {
     .where(`stock.is_gift_card`, 0)
     .whereRaw(`(stock_price.id = (SELECT MAX(id) FROM stock_price WHERE stock_id = stock.id))`)
 }
-
-// export function dbGetStockList(db = connection) {
-//   return db('stock')
-//     .leftJoin('stock_movement', 'stock.id', 'stock_movement.stock_id')
-//     .leftJoin('stock_price', 'stock.id', 'stock_price.stock_id')
-//     .leftJoin('vendor', 'stock.vendor_id', 'vendor.id')
-//     .groupBy('stock.id')
-//     .select(
-//       'stock.id',
-//       'stock.vendor_id',
-//       'vendor.name as vendorName',
-//       'stock.artist',
-//       'stock.title',
-//       'stock.display_as',
-//       'stock.media',
-//       'stock.format',
-//       'stock.section',
-//       'stock.country',
-//       'stock.is_new',
-//       'stock.cond',
-//       'stock.image_url',
-//       'stock.needs_restock',
-//       'stock_price.vendor_cut',
-//       'stock_price.total_sell',
-//       knex.raw('SUM(stock_movement.quantity) as total_quantity'),
-//       knex.raw(
-//         'SUM(CASE WHEN stock_movement.act IN ("hold", "unhold") THEN stock_movement.quantity ELSE 0 END) as hold_quantity'
-//       ),
-//       knex.raw(
-//         'SUM(CASE WHEN stock_movement.act IN ("layby", "unlayby") THEN stock_movement.quantity ELSE 0 END) as layby_quantity'
-//       )
-//     )
-//     .where(`stock.is_deleted`, 0)
-//     .where(`stock.is_misc_item`, 0)
-//     .where(`stock.is_gift_card`, 0)
-//     .andWhereRaw(
-//       `(stock_price.id = (SELECT MAX(id) FROM stock_price WHERE stock_id = stock.id))`
-//     )
-// }
 
 export function dbGetRestockList(db = connection) {
   return db('stock')
@@ -609,3 +577,42 @@ export function dbGetCurrentReceiveBatchId(db = connection) {
     .first()
     .then((batch) => batch?.id)
 }
+
+// export function dbGetStockList(db = connection) {
+//   return db('stock')
+//     .leftJoin('stock_movement', 'stock.id', 'stock_movement.stock_id')
+//     .leftJoin('stock_price', 'stock.id', 'stock_price.stock_id')
+//     .leftJoin('vendor', 'stock.vendor_id', 'vendor.id')
+//     .groupBy('stock.id')
+//     .select(
+//       'stock.id',
+//       'stock.vendor_id',
+//       'vendor.name as vendorName',
+//       'stock.artist',
+//       'stock.title',
+//       'stock.display_as',
+//       'stock.media',
+//       'stock.format',
+//       'stock.section',
+//       'stock.country',
+//       'stock.is_new',
+//       'stock.cond',
+//       'stock.image_url',
+//       'stock.needs_restock',
+//       'stock_price.vendor_cut',
+//       'stock_price.total_sell',
+//       knex.raw('SUM(stock_movement.quantity) as total_quantity'),
+//       knex.raw(
+//         'SUM(CASE WHEN stock_movement.act IN ("hold", "unhold") THEN stock_movement.quantity ELSE 0 END) as hold_quantity'
+//       ),
+//       knex.raw(
+//         'SUM(CASE WHEN stock_movement.act IN ("layby", "unlayby") THEN stock_movement.quantity ELSE 0 END) as layby_quantity'
+//       )
+//     )
+//     .where(`stock.is_deleted`, 0)
+//     .where(`stock.is_misc_item`, 0)
+//     .where(`stock.is_gift_card`, 0)
+//     .andWhereRaw(
+//       `(stock_price.id = (SELECT MAX(id) FROM stock_price WHERE stock_id = stock.id))`
+//     )
+// }

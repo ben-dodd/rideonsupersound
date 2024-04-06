@@ -1,13 +1,11 @@
 import SearchInput from 'components/inputs/search-input'
-import { useStockCount, useStockTableData } from 'lib/api/stock'
+import { useFullStockTable } from 'lib/api/stock'
 import { useAppStore } from 'lib/store'
 import { Pages } from 'lib/store/types'
 // const StockListList = dynamic(() => import('./list'))
 const StockListTable = dynamic(() => import('./table'))
 // const StockListSheet = dynamic(() => import('./sheet'))
-import { useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
-import { obj2query } from 'lib/utils'
 
 const StockList = () => {
   const {
@@ -15,20 +13,27 @@ const StockList = () => {
     setSearchBar,
   } = useAppStore()
   console.log(storedFilters)
-  const [filters, setFilters] = useState(storedFilters)
+  // const [filters, setFilters] = useState(storedFilters)
   const handleSearch = (e) => setSearchBar(Pages.stockPage, e.target.value)
-  const { stockCount = 0 } = useStockCount()
+  // const { stockCount = 0 } = useStockCount()
 
   // console.log(stockCount)
 
-  const onChangeFilters = (newFilters) => {
-    setFilters(newFilters)
-  }
+  // const onChangeFilters = (newFilters) => {
+  //   setFilters(newFilters)
+  // }
 
-  const queryString = useMemo(() => obj2query({ ...filters, searchBar }), [filters, searchBar])
-  const dummyData = useMemo(() => new Array(filters?.pagination?.pageSize).fill({}), [filters?.pagination?.pageSize])
+  // const queryString = useMemo(() => obj2query({ ...filters, searchBar }), [filters, searchBar])
+  // const dummyData = useMemo(() => new Array(filters?.pagination?.pageSize).fill({}), [filters?.pagination?.pageSize])
 
-  const { stockTableData = [], isStockTableDataLoading = true } = useStockTableData(queryString)
+  const { stockTableData = [], isStockTableDataLoading = true } = useFullStockTable()
+  const stockCount = stockTableData?.length
+  // const { pageIndex = 0, pageSize = 50 } = filters?.pagination || {}
+  // const data = useMemo(
+  //   () => stockTableData?.slice(pageIndex * pageSize, pageIndex * pageSize + pageSize),
+  //   [filters?.pagination, stockTableData],
+  // )
+
   // console.log(stockTableData)
   // console.log(filterSe
 
@@ -43,7 +48,7 @@ const StockList = () => {
           <div />
         ) : (
           // <StockListTable data={dummyData} rowCount={stockCount} onChangeFilters={onChangeFilters} />
-          <StockListTable data={stockTableData} rowCount={stockCount} onChangeFilters={onChangeFilters} />
+          <StockListTable data={stockTableData?.slice(0, 200)} rowCount={200} />
         )}
         {/* {viewMode === 'table' ? (
           <StockListTable idList={idList} />

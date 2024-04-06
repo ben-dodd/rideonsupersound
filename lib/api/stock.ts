@@ -14,6 +14,10 @@ export function useStockTableData(query) {
   return useData(`stock/table?${query}`, 'stockTableData')
 }
 
+export function useFullStockTable() {
+  return useData(`stock/table`, 'stockTableData')
+}
+
 export function useStockCount() {
   return useData(`stock/count`, 'stockCount')
 }

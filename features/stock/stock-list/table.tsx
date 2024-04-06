@@ -6,7 +6,7 @@ import { priceCentsString } from 'lib/utils'
 import { useRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
 
-const StockListTable = ({ data, rowCount, onChangeFilters }) => {
+const StockListTable = ({ data, rowCount }) => {
   const router = useRouter()
   const {
     stockPage: { filters },
@@ -19,9 +19,9 @@ const StockListTable = ({ data, rowCount, onChangeFilters }) => {
   // Do not add filters or setFilters to dependencies
   useEffect(() => {
     const newFilters = { pagination, sorting }
-    console.log(newFilters)
-    onChangeFilters(newFilters)
+    // onChangeFilters(newFilters)
     setPage(Pages.stockPage, { filters: newFilters })
+    // const paginatedIdList = idList?.slice(pageIndex * pageSize, pageIndex * pageSize + pageSize)
   }, [pagination, sorting])
 
   // useEffect(() => {
@@ -45,12 +45,10 @@ const StockListTable = ({ data, rowCount, onChangeFilters }) => {
   //   [stockItemList, vendors],
   // )
 
-  console.log(data)
-
   const columns = useMemo(
     () => [
       {
-        accessorKey: 'id',
+        accessorKey: 'item.id',
         header: 'Stock ID',
         cell: (info) => (
           <span className="link-blue" onClick={() => router.push(`/stock/${info.getValue()}`)}>
@@ -60,14 +58,14 @@ const StockListTable = ({ data, rowCount, onChangeFilters }) => {
         size: 100,
       },
       {
-        accessorKey: 'title',
+        accessorKey: 'item.title',
         header: 'Title',
         cell: EditCell,
         size: 300,
         sortDescFirst: false,
       },
       {
-        accessorKey: 'artist',
+        accessorKey: 'item.artist',
         header: 'Artist',
         cell: EditCell,
         // meta: {
@@ -81,43 +79,43 @@ const StockListTable = ({ data, rowCount, onChangeFilters }) => {
         cell: (info) => {
           const row = info?.row?.original
           return (
-            <span className="link-blue" onClick={() => router.push(`/vendors/${row?.vendorId}`)}>
-              {`[${row?.vendorId}] ${row?.vendorName}`}
+            <span className="link-blue" onClick={() => router.push(`/vendors/${row?.item?.vendorId}`)}>
+              {`[${row?.item?.vendorId}] ${row?.item?.vendorName}`}
             </span>
           )
         },
         size: 180,
       },
       {
-        accessorKey: 'section',
+        accessorKey: 'item.section',
         header: 'Section',
-        cell: EditCell,
-        meta: {
-          type: 'select',
-          options: [
-            { value: 'NOI', label: 'Noise/Drone' },
-            { value: 'EXP', label: 'Art Rock/Experimental' },
-            { value: 'LOU', label: 'Lounge/Moog/Spaceage' },
-          ],
-        },
+        // cell: EditCell,
+        // meta: {
+        //   type: 'select',
+        //   options: [
+        //     { value: 'NOI', label: 'Noise/Drone' },
+        //     { value: 'EXP', label: 'Art Rock/Experimental' },
+        //     { value: 'LOU', label: 'Lounge/Moog/Spaceage' },
+        //   ],
+        // },
         size: 100,
       },
       {
-        accessorKey: 'format',
+        accessorKey: 'item.format',
         header: 'Format',
         size: 100,
       },
       {
-        accessorKey: 'totalSell',
+        accessorKey: 'price.totalSell',
         header: 'Sell',
         cell: (info) => priceCentsString(info?.getValue()),
         size: 80,
-        footer: (info) => {
-          console.log(info)
-          return 50
-        },
+        // footer: (info) => {
+        //   console.log(info)
+        //   return 50
+        // },
       },
-      { accessorKey: 'inStock', header: 'QTY', size: 60 },
+      { accessorKey: 'quantities.inStock', header: 'QTY', size: 60 },
       {
         header: 'H/L',
         cell: (info) => {
@@ -127,7 +125,7 @@ const StockListTable = ({ data, rowCount, onChangeFilters }) => {
         size: 60,
       },
       {
-        accessorKey: 'sold',
+        accessorKey: 'quantities.sold',
         header: 'SOLD',
         size: 60,
       },

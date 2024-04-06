@@ -93,7 +93,7 @@ const initState = {
       sorting: [],
       pagination: {
         pageIndex: 0,
-        pageSize: 15,
+        pageSize: 10,
       },
     },
     tab: 0,
