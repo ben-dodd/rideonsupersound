@@ -2,15 +2,17 @@ import { getItemDisplayName, getItemSku } from 'lib/functions/displayInventory'
 import { saveLog } from 'lib/functions/log'
 import { SaleItemObject } from 'lib/types/sale'
 import {
+  BasicStockObject,
   BasicStockPriceObject,
   GiftCardObject,
   StockItemObject,
-  BasicStockItemObject,
+  StockItemSearchObject,
   StockObject,
 } from 'lib/types/stock'
 import { priceCentsString } from 'lib/utils'
 
-export function writeCartItemPriceBreakdown(cartItem: SaleItemObject, item: BasicStockItemObject) {
+export function writeCartItemPriceBreakdown(cartItem: SaleItemObject, stockItem: StockObject) {
+  const { item = {}, price = {} } = stockItem || {}
   // Writes out the sale item in the following form:
   // 1 x V10% x R50% x $27.00
   if (item?.isGiftCard) {
@@ -23,12 +25,12 @@ export function writeCartItemPriceBreakdown(cartItem: SaleItemObject, item: Basi
         : ''
     }`
   }
-  if (item?.totalPrice === null || item?.totalPrice === undefined) return '...'
+  if (price?.totalSell === null || price?.totalSell === undefined) return '...'
   return `${cartItem?.quantity}${parseInt(cartItem?.vendorDiscount) > 0 ? ` × V${cartItem?.vendorDiscount}%` : ''}${
     parseInt(cartItem?.storeDiscount) > 0 ? ` × S${cartItem?.storeDiscount}%` : ''
-  } × ${priceCentsString(cartItem?.totalSell ?? item?.totalPrice)}${
+  } × ${priceCentsString(cartItem?.totalSell ?? price?.totalSell)}${
     cartItem?.storeDiscount || cartItem?.vendorDiscount || parseInt(cartItem?.quantity) !== 1
-      ? ` (${priceCentsString(getCartItemTotal(cartItem, item))})`
+      ? ` (${priceCentsString(getCartItemTotal(cartItem, {}, price))})`
       : ''
   }`
 }
@@ -37,17 +39,17 @@ export function getDiscountedPrice(cost: number | string, discount: number | str
   return (parseInt(`${quantity}`) ?? 1) * ((parseFloat(`${cost}`) || 0) * (1 - (parseFloat(`${discount}`) || 0) / 100))
 }
 
-export function getCartItemVendorCut(cartItem: SaleItemObject, item) {
-  const vendorPrice: number = getDiscountedPrice(item?.vendorCut, cartItem?.vendorDiscount, cartItem?.quantity)
+export function getCartItemVendorCut(cartItem: SaleItemObject, price) {
+  const vendorPrice: number = getDiscountedPrice(price?.vendorCut, cartItem?.vendorDiscount, cartItem?.quantity)
   return vendorPrice
 }
 
-export function getCartItemStoreCut(cartItem, item) {
-  const storePrice: number = getDiscountedPrice(item?.storeCut, cartItem?.storeDiscount, cartItem?.quantity)
+export function getCartItemStoreCut(cartItem, price) {
+  const storePrice: number = getDiscountedPrice(price?.storeCut, cartItem?.storeDiscount, cartItem?.quantity)
   return storePrice
 }
 
-export function getCartItemTotal(cartItem, item) {
+export function getCartItemTotal(cartItem, item, price) {
   const totalSell: number = !cartItem
     ? 0
     : item?.isGiftCard
@@ -56,28 +58,29 @@ export function getCartItemTotal(cartItem, item) {
     ? item?.miscItemAmount || 0
     : null
   if (totalSell) return totalSell
-  return getCartItemVendorCut(cartItem, item) + getCartItemStoreCut(cartItem, item)
+  return getCartItemVendorCut(cartItem, price) + getCartItemStoreCut(cartItem, price)
 }
 
-export function getCartItemPrices(cartItem: any, item: BasicStockItemObject) {
+export function getCartItemPrices(cartItem: any, item: StockItemObject, price: BasicStockPriceObject) {
   // Gets three prices for each sale item: the vendor cut, store cut, and total
   // Price is returned in cents
   return {
-    storePrice: getCartItemStoreCut(cartItem, item),
-    vendorPrice: getCartItemVendorCut(cartItem, item),
-    totalPrice: getCartItemTotal(cartItem, item),
+    storePrice: getCartItemStoreCut(cartItem, price),
+    vendorPrice: getCartItemVendorCut(cartItem, price),
+    totalPrice: getCartItemTotal(cartItem, item, price),
   }
 }
 
-export function getItemQuantity(item: BasicStockItemObject, saleItems: SaleItemObject[]) {
-  if (item?.quantity === undefined || item?.quantity === null) return null
+export function getItemQuantity(stockObject: BasicStockObject | StockObject, saleItems: SaleItemObject[]) {
+  const { item = {}, quantities = {} } = stockObject || {}
+  if (quantities?.inStock === undefined || quantities?.inStock === null) return null
   const saleItem = saleItems?.find((i: SaleItemObject) => i?.itemId === item?.id)
   const cartQuantity = parseInt(saleItem?.quantity || '0')
-  const itemQuantity = item?.quantity || 0
+  const itemQuantity = quantities?.inStock || 0
   return itemQuantity - cartQuantity
 }
 
-export function filterInventory(item: BasicStockItemObject, searchString) {
+export function filterInventory(item: StockItemSearchObject, searchString) {
   if (!searchString || searchString === '') return []
   let res = true
   let terms = searchString.split(' ')
@@ -112,7 +115,7 @@ export function filterInventory(item: BasicStockItemObject, searchString) {
   return res
 }
 
-export function sortInventory(a: BasicStockItemObject, b: BasicStockItemObject) {
+export function sortInventory(a: StockItemSearchObject, b: StockItemSearchObject) {
   if (a?.quantity === b?.quantity) return 0
   if (a?.quantity < 1) return 1
   if (b?.quantity < 1) return -1

@@ -1,4 +1,4 @@
-import { StockItemObject, BasicStockItemObject } from 'lib/types/stock'
+import { StockItemObject, StockItemSearchObject } from 'lib/types/stock'
 import { VendorObject } from 'lib/types/vendor'
 // import { VendorObject } from 'lib/types/vendor'
 
@@ -51,7 +51,7 @@ export function getImageSrc(item: StockItemObject) {
   return `${process.env.NEXT_PUBLIC_RESOURCE_URL}img/${src}.png`
 }
 
-export function mapInventoryItem(item: BasicStockItemObject, vendors: VendorObject[]) {
+export function mapInventoryItem(item: StockItemSearchObject, vendors: VendorObject[]) {
   return {
     id: item?.id,
     title: item?.title || '-',

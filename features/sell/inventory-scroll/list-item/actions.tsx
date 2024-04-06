@@ -6,7 +6,7 @@ import { getItemSkuDisplayName } from 'lib/functions/displayInventory'
 import { useClerk } from 'lib/api/clerk'
 import { Pages, ViewProps } from 'lib/store/types'
 
-const Actions = ({ item, itemQuantity }) => {
+const Actions = ({ item, itemQuantity, holdsQuantity }) => {
   const router = useRouter()
   const {
     sellPage: { searchBar },
@@ -43,7 +43,7 @@ const Actions = ({ item, itemQuantity }) => {
 
   const itemIsNotInCart = cart?.items?.findIndex((cartItem) => cartItem?.itemId === item?.id) < 0
 
-  const handleAddItemToCart = () => (item?.quantityHold > 0 && itemIsNotInCart ? handleCheckHolds() : addItemToCart())
+  const handleAddItemToCart = () => (holdsQuantity > 0 && itemIsNotInCart ? handleCheckHolds() : addItemToCart())
 
   function handleInputSku() {
     resetSearchBar(Pages.sellPage)

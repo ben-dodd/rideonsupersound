@@ -1,39 +1,37 @@
 import { filterInventory, sortInventory } from 'lib/functions/sell'
 const ListItem = dynamic(() => import('./list-item'))
 import Loading from 'components/placeholders/loading'
-import { useStockList } from 'lib/api/stock'
+import { useStockItemList, useStockList } from 'lib/api/stock'
 import { useAppStore } from 'lib/store'
+import { BasicStockObject, StockItemSearchObject } from 'lib/types/stock'
 import dynamic from 'next/dynamic'
-import { useMemo } from 'react'
-import { BasicStockItemObject } from 'lib/types/stock'
 
 export default function InventoryScroll() {
   const maxItemsInList = 50
   const { stockList = [], isStockListLoading = true } = useStockList()
-  // console.log(stockList)
   const {
     sellPage: { searchBar },
   } = useAppStore()
-  const filteredList = useMemo(
-    () =>
-      stockList
-        ?.filter((item: BasicStockItemObject) => filterInventory(item, searchBar))
-        ?.sort(sortInventory)
-        ?.slice(0, maxItemsInList),
-    [searchBar],
-  )
-  // console.log(filteredList)
+  const idList = stockList
+    ?.filter((item: StockItemSearchObject) => filterInventory(item, searchBar))
+    ?.sort(sortInventory)
+    ?.slice(0, maxItemsInList)
+    ?.map((item: StockItemSearchObject) => item?.id)
+  const { stockItemList = [], isStockItemListLoading = true } = useStockItemList(idList)
+  console.log(stockItemList)
   return (
     <div className="h-content overflow-y-scroll px-2">
       {isStockListLoading ? (
         <Loading />
       ) : searchBar ? (
-        filteredList?.length === 0 ? (
+        idList?.length === 0 ? (
           <div className="text-xl">No items found...</div>
-        ) : isStockListLoading ? (
+        ) : isStockItemListLoading ? (
           <Loading />
         ) : (
-          filteredList?.map((item: BasicStockItemObject) => <ListItem item={item} key={item?.id} />)
+          stockItemList?.map((stockItem: BasicStockObject) => (
+            <ListItem stockItem={stockItem} key={stockItem?.item?.id} />
+          ))
         )
       ) : (
         <div className="text-xl">Use the search bar to find an item...</div>
