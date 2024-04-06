@@ -4,31 +4,35 @@ import { getTotalPaid, roundToTenCents, sumPrices, writeItemList } from 'lib/fun
 import { useAppStore } from 'lib/store'
 import { BasicStockObject } from 'lib/types/stock'
 import { useState, useEffect } from 'react'
+import { useStockList } from 'lib/api/stock'
 
 export function useSaleProperties(cart, updateCart = false): any {
   const [properties, setProperties]: [any, Function] = useState({ isLoading: true })
   const { setCartSale } = useAppStore()
-  const [stockTable, setStockTable]: [BasicStockObject[], Function] = useState(null)
+  const { stockList = [] } = useStockList()
   const { items = [], sale = {}, transactions = [] } = cart || {}
+  // const stockTable = stockList?.filter((stockItem) => items?.map((item) => item?.itemId)?.includes(stockItem?.id))
+  const [stockTable, setStockTable]: [BasicStockObject[], Function] = useState(null)
 
   useEffect(() => {
     // Fetch the stock table from the database here
     // and set it using setStockTable()
-    console.log('Changing cart stock items')
+    // console.log('Changing cart stock items')
     setProperties({ isLoading: true })
-    // console.log('getting cart items...')
-    if (items?.length === 0) setStockTable([])
-    else
-      axiosAuth
-        .get(
-          `/api/stock/items?items=${items
-            ?.filter((item) => !item?.isDeleted)
-            ?.map((item) => item?.itemId)
-            ?.join('+')}`,
-        )
-        .then((data) => {
-          setStockTable(mysql2js(data))
-        })
+    console.log('getting cart items...')
+    setStockTable(stockList?.filter((stockItem) => items?.map((item) => item?.itemId)?.includes(stockItem?.id)))
+    // if (items?.length === 0) setStockTable([])
+    // else setStock
+    //   axiosAuth
+    //     .get(
+    //       `/api/stock/items?items=${items
+    //         ?.filter((item) => !item?.isDeleted)
+    //         ?.map((item) => item?.itemId)
+    //         ?.join('+')}`,
+    //     )
+    //     .then((data) => {
+    //       setStockTable(mysql2js(data))
+    //     })
   }, [items])
 
   useEffect(() => {

@@ -3,7 +3,7 @@ import utc from 'dayjs/plugin/utc'
 import { getItemDisplayName } from 'lib/functions/displayInventory'
 import { getCartItemPrices } from 'lib/functions/sell'
 import { PaymentMethodTypes, SaleItemObject, SaleTransactionObject } from 'lib/types/sale'
-import { BasicStockObject, StockItemObject } from 'lib/types/stock'
+import { BasicStockObject, StockItemObject, BasicStockItemObject } from 'lib/types/stock'
 import { VendorPaymentObject, VendorSaleItemObject } from 'lib/types/vendor'
 import { dollarsToCents, priceDollarsString } from 'lib/utils'
 
@@ -58,13 +58,12 @@ export function getStoreCut(price: any) {
   return sellNum - costNum
 }
 
-export function writeItemList(stockList: BasicStockObject[], cartItems: SaleItemObject[]) {
+export function writeItemList(stockList: BasicStockItemObject[], cartItems: SaleItemObject[]) {
   if (cartItems && stockList) {
     return cartItems
       .filter((cartItem: SaleItemObject) => !cartItem?.isDeleted)
       .map((cartItem: SaleItemObject) => {
-        let stockObject = stockList?.find((obj) => obj?.item?.id === cartItem?.itemId)
-        const { item = {} } = stockObject || {}
+        const item = stockList?.find((item) => item?.id === cartItem?.itemId)
         if (item?.isGiftCard) {
           return `Gift Voucher [${item?.giftCardCode}]`
         } else {

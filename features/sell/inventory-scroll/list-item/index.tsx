@@ -6,10 +6,10 @@ import { getItemQuantity } from 'lib/functions/sell'
 import { useAppStore } from 'lib/store'
 import ItemImage from './item-image'
 import Title from './title'
-import { StockItemSearchObject } from 'lib/types/stock'
+import { BasicStockItemObject } from 'lib/types/stock'
 import { useEffect, useState } from 'react'
 
-export default function ListItem({ item }: { item: StockItemSearchObject }) {
+export default function ListItem({ item }: { item: BasicStockItemObject }) {
   const {
     cart,
     sellPage: { isSearching },

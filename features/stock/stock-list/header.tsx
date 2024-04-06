@@ -3,7 +3,7 @@
 // import { useAppStore } from 'lib/store'
 // import { Pages } from 'lib/store/types'
 // import StockFilter from './filter'
-// import { StockItemSearchObject } from 'lib/types/stock'
+// import { BasicStockItemObject } from 'lib/types/stock'
 // import { getItemSku } from 'lib/functions/displayInventory'
 // import StockListList from './list'
 // import StockListTable from './table'
@@ -33,7 +33,7 @@
 //     )
 //     ?.reverse()
 //     ?.slice(0, limit)
-//     ?.map((item: StockItemSearchObject) => item?.id)
+//     ?.map((item: BasicStockItemObject) => item?.id)
 
 //   const { stockItemList = [], isStockItemListLoading = true } = useStockItemList(idList)
 

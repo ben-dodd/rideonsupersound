@@ -44,7 +44,26 @@ export interface StockItemBaseObject {
 
 // Adds properties that are useful for searching through entire list
 // This is returned by useStockList
-export interface StockItemSearchObject extends StockItemBaseObject {
+// export interface BasicStockItemObject extends StockItemBaseObject {
+//   media?: string
+//   section?: string
+//   format?: string
+//   genre?: string[] | string
+//   isNew?: boolean
+//   cond?: string
+//   tags?: string[]
+//   quantity?: number
+//   quantityLayby?: number
+//   quantityHold?: number
+//   quantitySold?: number
+//   totalPrice?: number
+//   vendorCut?: number
+//   vendorName?: string
+//   needsRestock?: boolean
+// }
+
+// Adds properties for displaying rich list item of object
+export interface BasicStockItemObject extends StockItemBaseObject {
   media?: string
   section?: string
   format?: string
@@ -60,18 +79,8 @@ export interface StockItemSearchObject extends StockItemBaseObject {
   vendorCut?: number
   vendorName?: string
   needsRestock?: boolean
-}
-
-// Adds properties for displaying rich list item of object
-export interface BasicStockItemObject extends StockItemBaseObject {
-  media?: string
-  section?: string
-  format?: string
-  isNew?: boolean
-  cond?: string
   country?: string
   imageUrl?: string
-  needsRestock?: boolean
   isGiftCard?: boolean
   giftCardCode?: string
   giftCardAmount?: number

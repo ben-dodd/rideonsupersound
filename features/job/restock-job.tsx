@@ -1,11 +1,11 @@
 // DB
 import { getItemSkuDisplayName } from 'lib/functions/displayInventory'
-import { StockItemSearchObject } from 'lib/types/stock'
+import { BasicStockItemObject } from 'lib/types/stock'
 import { completeRestockTask } from 'lib/functions/job'
 import { useStockList } from 'lib/api/stock'
 
 type ListItemProps = {
-  item: StockItemSearchObject
+  item: BasicStockItemObject
 }
 
 export default function RestockJob({ item }: ListItemProps) {
@@ -21,7 +21,7 @@ export default function RestockJob({ item }: ListItemProps) {
               type="checkbox"
               onChange={() => {
                 mutateStockList(
-                  stockList?.map((i: StockItemSearchObject) =>
+                  stockList?.map((i: BasicStockItemObject) =>
                     i?.id === item?.id ? { ...item, needsRestock: false } : i,
                   ),
                   false,

@@ -15,12 +15,13 @@ import { useRouter } from 'next/router'
 import { SaleStateTypes } from 'lib/types/sale'
 import { ArrowCircleLeftRounded } from '@mui/icons-material'
 import { priceDollarsString } from 'lib/utils'
-import { useStockItemList } from 'lib/api/stock'
+import { useStockItemList, useStockList } from 'lib/api/stock'
 
 export default function ShoppingCart() {
   const { cart, view, setCart, openView, closeView } = useAppStore()
   const { sale = {}, items = [], transactions = [] } = cart || {}
-  const { stockItemList } = useStockItemList(items?.map((item) => item?.itemId))
+  const { stockList = [] } = useStockList()
+  const stockItemList = stockList?.filter((stockItem) => items?.map((item) => item?.itemId)?.includes(stockItem?.id))
   const { clerk } = useClerk()
   const router = useRouter()
   const [loadingSale, setLoadingSale] = useState(false)

@@ -10,7 +10,7 @@ import { useCurrentRegisterId } from 'lib/api/register'
 import { useClerk } from 'lib/api/clerk'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
-import { StockItemSearchObject } from 'lib/types/stock'
+import { BasicStockItemObject } from 'lib/types/stock'
 import { VendorObject } from 'lib/types/vendor'
 import Modal from 'components/modal'
 
@@ -60,7 +60,7 @@ export default function ReturnStockScreen() {
         returnItems?.filter(
           (returnItem: any) =>
             isNaN(returnItem?.quantity) ||
-            stockList?.find((i: StockItemSearchObject) => i?.id === parseInt(returnItem?.id))?.quantity <
+            stockList?.find((i: BasicStockItemObject) => i?.id === parseInt(returnItem?.id))?.quantity <
               parseInt(`${returnItem?.quantity}`) ||
             returnItem?.quantity < 0,
         ).length > 0,
@@ -70,12 +70,12 @@ export default function ReturnStockScreen() {
 
   const returnOptions = stockList
     ?.filter(
-      (item: StockItemSearchObject) =>
+      (item: BasicStockItemObject) =>
         item?.vendorId === vendorWrapper?.value &&
         returnItems?.filter((i) => i?.id === item?.id)?.length === 0 &&
         item?.quantity > 0,
     )
-    ?.map((item: StockItemSearchObject) => ({
+    ?.map((item: BasicStockItemObject) => ({
       value: item?.id,
       label: getItemSkuDisplayName(item),
     }))
@@ -121,7 +121,7 @@ export default function ReturnStockScreen() {
                 setReturnItems([
                   {
                     id: item?.value,
-                    quantity: stockList?.find((i: StockItemSearchObject) => i?.id === item?.value)?.quantity || 1,
+                    quantity: stockList?.find((i: BasicStockItemObject) => i?.id === item?.value)?.quantity || 1,
                   },
                   ...returnItems,
                 ])
@@ -132,7 +132,7 @@ export default function ReturnStockScreen() {
                   returnOptions?.filter((opt) => newValue === `${('00000' + opt?.value || '').slice(-5)}`)?.length > 0
                 ) {
                   let returnItem = stockList?.filter(
-                    (i: StockItemSearchObject) =>
+                    (i: BasicStockItemObject) =>
                       i?.id ===
                       returnOptions?.find((opt) => newValue === `${('00000' + opt?.value || '').slice(-5)}`)?.[0]
                         ?.value,
@@ -161,8 +161,8 @@ export default function ReturnStockScreen() {
                 <div className="font-bold text-xl">{`RETURNING ${numItems} ITEM${numItems === 1 ? '' : 'S'}`}</div>
                 <div className="h-full overflow-y-scroll">
                   {returnItems?.map((returnItem: any, i: number) => {
-                    const item: StockItemSearchObject = stockList?.find(
-                      (i: StockItemSearchObject) => i?.id === parseInt(returnItem?.id),
+                    const item: BasicStockItemObject = stockList?.find(
+                      (i: BasicStockItemObject) => i?.id === parseInt(returnItem?.id),
                     )
                     return (
                       <div className="flex justify-between my-2 border-b w-full" key={`${returnItem?.id}-${i}`}>

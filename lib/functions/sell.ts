@@ -5,7 +5,7 @@ import {
   BasicStockPriceObject,
   GiftCardObject,
   StockItemObject,
-  StockItemSearchObject,
+  BasicStockItemObject,
   StockObject,
 } from 'lib/types/stock'
 import { priceCentsString } from 'lib/utils'
@@ -70,7 +70,7 @@ export function getCartItemPrices(cartItem: any, item: StockItemObject, price: B
   }
 }
 
-export function getItemQuantity(item: StockItemSearchObject, saleItems: SaleItemObject[]) {
+export function getItemQuantity(item: BasicStockItemObject, saleItems: SaleItemObject[]) {
   if (item?.quantity === undefined || item?.quantity === null) return null
   const saleItem = saleItems?.find((i: SaleItemObject) => i?.itemId === item?.id)
   const cartQuantity = parseInt(saleItem?.quantity || '0')
@@ -78,7 +78,7 @@ export function getItemQuantity(item: StockItemSearchObject, saleItems: SaleItem
   return itemQuantity - cartQuantity
 }
 
-export function filterInventory(item: StockItemSearchObject, searchString) {
+export function filterInventory(item: BasicStockItemObject, searchString) {
   if (!searchString || searchString === '') return []
   let res = true
   let terms = searchString.split(' ')
@@ -113,7 +113,7 @@ export function filterInventory(item: StockItemSearchObject, searchString) {
   return res
 }
 
-export function sortInventory(a: StockItemSearchObject, b: StockItemSearchObject) {
+export function sortInventory(a: BasicStockItemObject, b: BasicStockItemObject) {
   if (a?.quantity === b?.quantity) return 0
   if (a?.quantity < 1) return 1
   if (b?.quantity < 1) return -1

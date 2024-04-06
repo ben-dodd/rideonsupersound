@@ -1,5 +1,5 @@
 import { useStockList } from 'lib/api/stock'
-import { StockItemSearchObject } from 'lib/types/stock'
+import { BasicStockItemObject } from 'lib/types/stock'
 import RestockJob from './restock-job'
 import Loading from 'components/placeholders/loading'
 
@@ -9,7 +9,7 @@ export default function RestockTaskView() {
     <Loading />
   ) : (
     stockList
-      ?.filter((item: StockItemSearchObject) => item?.needsRestock)
-      .map((item: StockItemSearchObject) => <RestockJob item={item} key={item?.id} />)
+      ?.filter((item: BasicStockItemObject) => item?.needsRestock)
+      .map((item: BasicStockItemObject) => <RestockJob item={item} key={item?.id} />)
   )
 }
