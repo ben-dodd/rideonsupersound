@@ -1,5 +1,7 @@
 import SearchInput from 'components/inputs/search-input'
-import { useFullStockTable } from 'lib/api/stock'
+import { useAllStockMovements, useStockList } from 'lib/api/stock'
+import { filterInventory } from 'lib/functions/sell'
+import { collateStockList } from 'lib/functions/stock'
 import { useAppStore } from 'lib/store'
 import { Pages } from 'lib/store/types'
 // const StockListList = dynamic(() => import('./list'))
@@ -8,34 +10,19 @@ const StockListTable = dynamic(() => import('./table'))
 import dynamic from 'next/dynamic'
 
 const StockList = () => {
+  const { stockList = [], isStockListLoading = true } = useStockList()
+  const { stockMovements = [], isStockMovementsLoading = true } = useAllStockMovements()
+
   const {
     stockPage: { searchBar, filters: storedFilters },
     setSearchBar,
   } = useAppStore()
   console.log(storedFilters)
-  // const [filters, setFilters] = useState(storedFilters)
   const handleSearch = (e) => setSearchBar(Pages.stockPage, e.target.value)
-  // const { stockCount = 0 } = useStockCount()
 
-  // console.log(stockCount)
+  const collatedStockList = collateStockList(stockList, stockMovements)
 
-  // const onChangeFilters = (newFilters) => {
-  //   setFilters(newFilters)
-  // }
-
-  // const queryString = useMemo(() => obj2query({ ...filters, searchBar }), [filters, searchBar])
-  // const dummyData = useMemo(() => new Array(filters?.pagination?.pageSize).fill({}), [filters?.pagination?.pageSize])
-
-  const { stockTableData = [], isStockTableDataLoading = true } = useFullStockTable()
-  const stockCount = stockTableData?.length
-  // const { pageIndex = 0, pageSize = 50 } = filters?.pagination || {}
-  // const data = useMemo(
-  //   () => stockTableData?.slice(pageIndex * pageSize, pageIndex * pageSize + pageSize),
-  //   [filters?.pagination, stockTableData],
-  // )
-
-  // console.log(stockTableData)
-  // console.log(filterSe
+  const filteredStockList = collatedStockList?.filter((item) => filterInventory(item, searchBar))
 
   return (
     <div className="h-content overflow-y-scroll">
@@ -44,11 +31,11 @@ const StockList = () => {
         {/* <StockFilter stockList={stockList} setSettings={setSetting} filterSettings={filterSettings} /> */}
       </div>
       <div className="px-2">
-        {isStockTableDataLoading ? (
+        {isStockListLoading || isStockMovementsLoading ? (
           <div />
         ) : (
           // <StockListTable data={dummyData} rowCount={stockCount} onChangeFilters={onChangeFilters} />
-          <StockListTable data={stockTableData?.slice(0, 200)} rowCount={200} />
+          <StockListTable data={filteredStockList} />
         )}
         {/* {viewMode === 'table' ? (
           <StockListTable idList={idList} />

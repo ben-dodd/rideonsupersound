@@ -29,7 +29,6 @@ interface TableProps {
   onPaginationChange?: Function
   initSorting?: SortingState
   onSortingChange?: Function
-  totalRowNum?: number
 }
 
 function Table({
@@ -43,7 +42,6 @@ function Table({
   onPaginationChange,
   initSorting = [],
   onSortingChange,
-  totalRowNum,
 }: TableProps) {
   const rerender = useReducer(() => ({}), {})[1]
   const [pagination, setPagination] = useState<PaginationState>(initPagination)

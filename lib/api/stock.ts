@@ -57,6 +57,10 @@ export function useGiftCard(id) {
   return useData(id ? `stock/giftcard/${id}` : null, 'giftCard')
 }
 
+export function useAllStockMovements() {
+  return useData(`stock/movement/all`, 'stockMovements')
+}
+
 export function useStockMovements(limit = 50) {
   return useData(`stock/movement/${limit}`, 'stockMovements')
 }

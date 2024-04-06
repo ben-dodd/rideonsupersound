@@ -1,4 +1,4 @@
-import { StockReceiveObject } from 'lib/types/stock'
+import { StockMovementTypes, StockReceiveObject } from 'lib/types/stock'
 import { getItemSku } from './displayInventory'
 import { getLastValidElementByDate } from 'lib/utils'
 import { getProfitMargin, getStoreCut } from './pay'
@@ -165,4 +165,38 @@ export function getPriceEdits(
     if (isNaN(newPrice[key])) newPrice[key] = ''
   })
   return newPrice
+}
+
+export function collateStockList(stock, stockMovements) {
+  return stock?.map((item) => {
+    const sm = stockMovements?.filter((sm) => sm?.stockId === item?.id)
+    const quantities: any = {}
+    quantities.inStock = Number(item?.quantity)
+    quantities.layby = getQuantities([StockMovementTypes.Layby, StockMovementTypes.Unlayby], sm, true)
+    quantities.hold = getQuantities([StockMovementTypes.Hold, StockMovementTypes.Unhold], sm, true)
+    quantities.holdLayby = quantities.layby + quantities.hold
+    quantities.sold = getQuantities([StockMovementTypes.Sold, StockMovementTypes.Unsold], sm, true)
+    quantities.received = getQuantities([StockMovementTypes.Received], sm)
+    quantities.sold = getQuantities([StockMovementTypes.Sold], sm, true)
+    quantities.returned = getQuantities([StockMovementTypes.Returned], sm, true)
+    quantities.laybyHold = quantities.layby + quantities.hold
+    quantities.discarded = getQuantities([StockMovementTypes.Discarded], sm, true)
+    quantities.lost = getQuantities([StockMovementTypes.Lost, StockMovementTypes.Found], sm, true)
+    quantities.discardedLost = quantities.discarded + quantities.lost
+    quantities.refunded = getQuantities([StockMovementTypes.Unsold], sm)
+    quantities.adjustment = getQuantities([StockMovementTypes.Adjustment], sm)
+    const lastMovements: any = {}
+    lastMovements.modified = item?.dateModified
+    lastMovements.sold = sm?.filter((sm) => sm?.act === StockMovementTypes.Sold)?.[0]?.dateMoved
+    lastMovements.received = sm?.filter((sm) => sm?.act === StockMovementTypes.Received)?.[0]?.dateMoved
+    lastMovements.returned = sm?.filter((sm) => sm?.act === StockMovementTypes.Returned)?.[0]?.dateMoved
+    return { ...item, quantities, lastMovements }
+  })
+}
+
+export function getQuantities(types, stockMovements, reverse = false) {
+  const sum = stockMovements
+    .filter((stockMovement) => types.includes(stockMovement?.act))
+    .reduce((acc, stockMovement) => acc + stockMovement.quantity, 0)
+  return sum === undefined ? 0 : sum === 0 || !reverse ? sum : sum * -1
 }

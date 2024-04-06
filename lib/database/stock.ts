@@ -3,7 +3,7 @@ import { BatchReceiveObject, StockMovementTypes } from 'lib/types/stock'
 import { dbGetAllSalesAndItems, dbGetSaleTransactions, getStockMovementQuantityByAct } from './sale'
 import { js2mysql, query2obj } from 'lib/utils'
 import { SaleStateTypes } from 'lib/types/sale'
-import { createBatchList } from 'lib/functions/stock'
+import { createBatchList, getQuantities } from 'lib/functions/stock'
 import connection from './conn'
 
 export function dbGetStockList(db = connection) {
@@ -28,6 +28,7 @@ export function dbGetStockList(db = connection) {
       'stock.is_new',
       'stock.cond',
       'stock.tags',
+      'stock.date_modified',
       'stock.needs_restock',
     )
     .sum('stock_movement.quantity as quantity')
@@ -185,13 +186,6 @@ export function dbGetStockItem(id, basic = false, db = connection) {
     })
 }
 
-export function getQuantities(types, stockMovements, reverse = false) {
-  const sum = stockMovements
-    .filter((stockMovement) => types.includes(stockMovement?.act))
-    .reduce((acc, stockMovement) => acc + stockMovement.quantity, 0)
-  return reverse ? sum * -1 : sum
-}
-
 export function dbGetStockItems(itemIds, basic = true, db = connection) {
   return Promise.all(itemIds?.map((itemId) => dbGetStockItem(itemId, basic, db)))
 }
@@ -206,6 +200,10 @@ export function dbGetStockItemsForVendor(vendorId, db = connection) {
         db,
       ),
     )
+}
+
+export function dbGetAllStockMovements(db = connection) {
+  return db('stock_movement').where('is_deleted', 0)
 }
 
 export function dbGetStockMovements(limit, db = connection) {

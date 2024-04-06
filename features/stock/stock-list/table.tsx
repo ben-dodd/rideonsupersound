@@ -1,12 +1,15 @@
 import Table from 'components/data/table'
 import { EditCell } from 'components/data/table/editCell'
+import dayjs from 'dayjs'
+import { getItemSku } from 'lib/functions/displayInventory'
 import { useAppStore } from 'lib/store'
 import { Pages } from 'lib/store/types'
+import { dateSlash } from 'lib/types/date'
 import { priceCentsString } from 'lib/utils'
 import { useRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
 
-const StockListTable = ({ data, rowCount }) => {
+const StockListTable = ({ data }) => {
   const router = useRouter()
   const {
     stockPage: { filters },
@@ -44,28 +47,29 @@ const StockListTable = ({ data, rowCount }) => {
   //     }),
   //   [stockItemList, vendors],
   // )
+  console.log(data)
 
   const columns = useMemo(
     () => [
       {
-        accessorKey: 'item.id',
+        accessorKey: 'id',
         header: 'Stock ID',
         cell: (info) => (
           <span className="link-blue" onClick={() => router.push(`/stock/${info.getValue()}`)}>
-            {info.getValue()}
+            {getItemSku(info.row?.original)}
           </span>
         ),
         size: 100,
       },
       {
-        accessorKey: 'item.title',
+        accessorKey: 'title',
         header: 'Title',
         cell: EditCell,
         size: 300,
         sortDescFirst: false,
       },
       {
-        accessorKey: 'item.artist',
+        accessorKey: 'artist',
         header: 'Artist',
         cell: EditCell,
         // meta: {
@@ -79,15 +83,15 @@ const StockListTable = ({ data, rowCount }) => {
         cell: (info) => {
           const row = info?.row?.original
           return (
-            <span className="link-blue" onClick={() => router.push(`/vendors/${row?.item?.vendorId}`)}>
-              {`[${row?.item?.vendorId}] ${row?.item?.vendorName}`}
+            <span className="link-blue" onClick={() => router.push(`/vendors/${row?.vendorId}`)}>
+              {`[${row?.vendorId}] ${row?.vendorName}`}
             </span>
           )
         },
         size: 180,
       },
       {
-        accessorKey: 'item.section',
+        accessorKey: 'section',
         header: 'Section',
         // cell: EditCell,
         // meta: {
@@ -101,12 +105,12 @@ const StockListTable = ({ data, rowCount }) => {
         size: 100,
       },
       {
-        accessorKey: 'item.format',
+        accessorKey: 'format',
         header: 'Format',
         size: 100,
       },
       {
-        accessorKey: 'price.totalSell',
+        accessorKey: 'totalSell',
         header: 'Sell',
         cell: (info) => priceCentsString(info?.getValue()),
         size: 80,
@@ -117,17 +121,20 @@ const StockListTable = ({ data, rowCount }) => {
       },
       { accessorKey: 'quantities.inStock', header: 'QTY', size: 60 },
       {
+        accessorKey: 'quantities.holdLayby',
         header: 'H/L',
-        cell: (info) => {
-          const row = info?.row?.original
-          return row?.hold || 0 + row?.layby || 0
-        },
         size: 60,
       },
       {
         accessorKey: 'quantities.sold',
         header: 'SOLD',
         size: 60,
+      },
+      {
+        accessorKey: 'lastMovements.modified',
+        header: 'Last Modified',
+        cell: (info) => dayjs(info?.getValue()).format(dateSlash),
+        size: 120,
       },
     ],
     [],
@@ -142,7 +149,6 @@ const StockListTable = ({ data, rowCount }) => {
       onPaginationChange={setPagination}
       initSorting={filters?.sorting}
       onSortingChange={setSorting}
-      totalRowNum={rowCount || 0}
     />
   )
 }
