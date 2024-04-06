@@ -52,89 +52,110 @@ const StockListTable = ({ data }) => {
   const columns = useMemo(
     () => [
       {
-        accessorKey: 'id',
-        header: 'Stock ID',
-        cell: (info) => (
-          <span className="link-blue" onClick={() => router.push(`/stock/${info.getValue()}`)}>
-            {getItemSku(info.row?.original)}
-          </span>
-        ),
-        size: 100,
+        header: 'Details',
+        columns: [
+          {
+            accessorKey: 'id',
+            header: 'Stock ID',
+            cell: (info) => (
+              <span className="link-blue" onClick={() => router.push(`/stock/${info.getValue()}`)}>
+                {getItemSku(info.row?.original)}
+              </span>
+            ),
+            size: 100,
+          },
+          {
+            accessorKey: 'title',
+            header: 'Title',
+            cell: EditCell,
+            size: 300,
+            sortDescFirst: false,
+          },
+          {
+            accessorKey: 'artist',
+            header: 'Artist',
+            cell: EditCell,
+            // meta: {
+            //   type: 'date',
+            // },
+            size: 190,
+            sortDescFirst: false,
+          },
+          {
+            header: 'Vendor',
+            accessorKey: 'vendorName',
+            cell: (info) => {
+              const row = info?.row?.original
+              return (
+                <span className="link-blue" onClick={() => router.push(`/vendors/${row?.vendorId}`)}>
+                  {`[${row?.vendorId}] ${row?.vendorName}`}
+                </span>
+              )
+            },
+            size: 180,
+          },
+          {
+            accessorKey: 'section',
+            header: 'Section',
+            // cell: EditCell,
+            // meta: {
+            //   type: 'select',
+            //   options: [
+            //     { value: 'NOI', label: 'Noise/Drone' },
+            //     { value: 'EXP', label: 'Art Rock/Experimental' },
+            //     { value: 'LOU', label: 'Lounge/Moog/Spaceage' },
+            //   ],
+            // },
+            size: 100,
+          },
+          {
+            accessorKey: 'format',
+            header: 'Format',
+            size: 100,
+          },
+        ],
       },
       {
-        accessorKey: 'title',
-        header: 'Title',
-        cell: EditCell,
-        size: 300,
-        sortDescFirst: false,
+        header: 'Prices',
+        columns: [
+          {
+            accessorKey: 'totalSell',
+            header: 'Sell',
+            cell: (info) => priceCentsString(info?.getValue()),
+            size: 80,
+            // footer: (info) => {
+            //   console.log(info)
+            //   return 50
+            // },
+          },
+        ],
       },
       {
-        accessorKey: 'artist',
-        header: 'Artist',
-        cell: EditCell,
-        // meta: {
-        //   type: 'date',
-        // },
-        size: 190,
-        sortDescFirst: false,
+        header: 'Quantities',
+        columns: [
+          { accessorKey: 'quantities.inStock', header: 'QTY', size: 60 },
+          {
+            accessorKey: 'quantities.holdLayby',
+            header: 'H/L',
+            size: 60,
+          },
+          {
+            accessorKey: 'quantities.sold',
+            header: 'SOLD',
+            size: 60,
+          },
+        ],
       },
       {
-        header: 'Vendor',
-        cell: (info) => {
-          const row = info?.row?.original
-          return (
-            <span className="link-blue" onClick={() => router.push(`/vendors/${row?.vendorId}`)}>
-              {`[${row?.vendorId}] ${row?.vendorName}`}
-            </span>
-          )
-        },
-        size: 180,
-      },
-      {
-        accessorKey: 'section',
-        header: 'Section',
-        // cell: EditCell,
-        // meta: {
-        //   type: 'select',
-        //   options: [
-        //     { value: 'NOI', label: 'Noise/Drone' },
-        //     { value: 'EXP', label: 'Art Rock/Experimental' },
-        //     { value: 'LOU', label: 'Lounge/Moog/Spaceage' },
-        //   ],
-        // },
-        size: 100,
-      },
-      {
-        accessorKey: 'format',
-        header: 'Format',
-        size: 100,
-      },
-      {
-        accessorKey: 'totalSell',
-        header: 'Sell',
-        cell: (info) => priceCentsString(info?.getValue()),
-        size: 80,
-        // footer: (info) => {
-        //   console.log(info)
-        //   return 50
-        // },
-      },
-      { accessorKey: 'quantities.inStock', header: 'QTY', size: 60 },
-      {
-        accessorKey: 'quantities.holdLayby',
-        header: 'H/L',
-        size: 60,
-      },
-      {
-        accessorKey: 'quantities.sold',
-        header: 'SOLD',
-        size: 60,
-      },
-      {
-        accessorKey: 'lastMovements.modified',
-        header: 'Last Modified',
-        cell: (info) => dayjs(info?.getValue()).format(dateSlash),
-        size: 120,
+        header: 'Actions',
+        columns: [
+          {
+            accessorKey: 'lastMovements.modified',
+            header: 'Last Modified',
+            cell: (info) => dayjs(info?.getValue()).format(dateSlash),
+            size: 120,
+          },
+        ],
       },
     ],
     [],
