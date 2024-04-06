@@ -67,6 +67,7 @@ export interface StoreState {
     tab?: number
     filters?: any
     searchBar?: string
+    visibleColumns?: any
   }
   vendorsPage?: any
   paymentsPage?: any

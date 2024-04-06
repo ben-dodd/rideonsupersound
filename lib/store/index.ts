@@ -96,6 +96,7 @@ const initState = {
         pageSize: 10,
       },
     },
+    visibleColumns: {},
     tab: 0,
   },
   vendorsPage: {

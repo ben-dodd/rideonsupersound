@@ -10,6 +10,7 @@ import {
 import { MemoizedTableBody, TableBody } from './body'
 import { Pagination } from './pagination'
 import { Header } from './header'
+import { ColumnSelect } from './columnSelect'
 
 interface TableProps {
   color?: string
@@ -24,11 +25,14 @@ interface TableProps {
   downloadCSV?: boolean
   // View options
   showFooter?: boolean
+  columnSelectable?: boolean
   showPagination?: boolean
   initPagination?: PaginationState
   onPaginationChange?: Function
   initSorting?: SortingState
   onSortingChange?: Function
+  initColumnVisibility?: any
+  onColumnVisibilityChange?: Function
 }
 
 function Table({
@@ -37,15 +41,19 @@ function Table({
   data,
   columns,
   showFooter,
+  columnSelectable = true,
   showPagination,
   initPagination = { pageIndex: 0, pageSize: 10 },
   onPaginationChange,
   initSorting = [],
   onSortingChange,
+  initColumnVisibility = {},
+  onColumnVisibilityChange,
 }: TableProps) {
   const rerender = useReducer(() => ({}), {})[1]
   const [pagination, setPagination] = useState<PaginationState>(initPagination)
   const [sorting, setSorting] = useState<SortingState>(initSorting)
+  const [columnVisibility, setColumnVisibility] = useState(initColumnVisibility)
   // const [tableData, setTableData] = useState(data || [])
   // const pagination = useMemo(
   //   () => ({
@@ -76,6 +84,10 @@ function Table({
       onSortingChange && onSortingChange(e)
       setSorting(e)
     },
+    onColumnVisibilityChange: (e) => {
+      onColumnVisibilityChange && onColumnVisibilityChange(e)
+      setColumnVisibility(e)
+    },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -83,7 +95,7 @@ function Table({
     // manualPagination: true,
     enableMultiRemove: true,
     enableMultiSort: true,
-    state: { pagination, sorting },
+    state: { pagination, sorting, columnVisibility },
     // meta: {
     //   updateData: (rowIndex: number, columnId: string, value: string) => {
     //     setTableData((old) =>
@@ -116,6 +128,7 @@ function Table({
   return (
     <div className="ml-1">
       <div className="overflow-x-scroll w-full">
+        {columnSelectable && <ColumnSelect table={table} />}
         <table
           className="table-fixed w-full text-sm"
           {...{

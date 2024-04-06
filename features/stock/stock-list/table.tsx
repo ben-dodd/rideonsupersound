@@ -12,11 +12,12 @@ import { useEffect, useMemo, useState } from 'react'
 const StockListTable = ({ data }) => {
   const router = useRouter()
   const {
-    stockPage: { filters },
+    stockPage: { filters, visibleColumns },
     setPage,
   } = useAppStore()
   const [pagination, setPagination] = useState(filters?.pagination)
   const [sorting, setSorting] = useState(filters?.sorting)
+  const [columnVisibility, setColumnVisibility] = useState(visibleColumns)
 
   // Handle sort, pagination and filter changes
   // Do not add filters or setFilters to dependencies
@@ -26,6 +27,10 @@ const StockListTable = ({ data }) => {
     setPage(Pages.stockPage, { filters: newFilters })
     // const paginatedIdList = idList?.slice(pageIndex * pageSize, pageIndex * pageSize + pageSize)
   }, [pagination, sorting])
+
+  useEffect(() => {
+    setPage(Pages.stockPage, { visibleColumns: columnVisibility })
+  }, [columnVisibility])
 
   // useEffect(() => {
   //   console.log('changing new sorting', sorting)
@@ -170,6 +175,8 @@ const StockListTable = ({ data }) => {
       onPaginationChange={setPagination}
       initSorting={filters?.sorting}
       onSortingChange={setSorting}
+      initColumnVisibility={visibleColumns}
+      onColumnVisibilityChange={setColumnVisibility}
     />
   )
 }
