@@ -10,8 +10,7 @@ import {
 } from 'lib/types/stock'
 import { priceCentsString } from 'lib/utils'
 
-export function writeCartItemPriceBreakdown(cartItem: SaleItemObject, stockItem: StockObject) {
-  const { item = {}, price = {} } = stockItem || {}
+export function writeCartItemPriceBreakdown(cartItem: SaleItemObject, item: BasicStockItemObject) {
   // Writes out the sale item in the following form:
   // 1 x V10% x R50% x $27.00
   if (item?.isGiftCard) {
@@ -24,12 +23,12 @@ export function writeCartItemPriceBreakdown(cartItem: SaleItemObject, stockItem:
         : ''
     }`
   }
-  if (price?.totalSell === null || price?.totalSell === undefined) return '...'
+  if (item?.totalPrice === null || item?.totalPrice === undefined) return '...'
   return `${cartItem?.quantity}${parseInt(cartItem?.vendorDiscount) > 0 ? ` × V${cartItem?.vendorDiscount}%` : ''}${
     parseInt(cartItem?.storeDiscount) > 0 ? ` × S${cartItem?.storeDiscount}%` : ''
-  } × ${priceCentsString(cartItem?.totalSell ?? price?.totalSell)}${
+  } × ${priceCentsString(cartItem?.totalSell ?? item?.totalPrice)}${
     cartItem?.storeDiscount || cartItem?.vendorDiscount || parseInt(cartItem?.quantity) !== 1
-      ? ` (${priceCentsString(getCartItemTotal(cartItem, {}, price))})`
+      ? ` (${priceCentsString(getCartItemTotal(cartItem, item))})`
       : ''
   }`
 }
@@ -38,17 +37,17 @@ export function getDiscountedPrice(cost: number | string, discount: number | str
   return (parseInt(`${quantity}`) ?? 1) * ((parseFloat(`${cost}`) || 0) * (1 - (parseFloat(`${discount}`) || 0) / 100))
 }
 
-export function getCartItemVendorCut(cartItem: SaleItemObject, price) {
-  const vendorPrice: number = getDiscountedPrice(price?.vendorCut, cartItem?.vendorDiscount, cartItem?.quantity)
+export function getCartItemVendorCut(cartItem: SaleItemObject, item) {
+  const vendorPrice: number = getDiscountedPrice(item?.vendorCut, cartItem?.vendorDiscount, cartItem?.quantity)
   return vendorPrice
 }
 
-export function getCartItemStoreCut(cartItem, price) {
-  const storePrice: number = getDiscountedPrice(price?.storeCut, cartItem?.storeDiscount, cartItem?.quantity)
+export function getCartItemStoreCut(cartItem, item) {
+  const storePrice: number = getDiscountedPrice(item?.storeCut, cartItem?.storeDiscount, cartItem?.quantity)
   return storePrice
 }
 
-export function getCartItemTotal(cartItem, item, price) {
+export function getCartItemTotal(cartItem, item) {
   const totalSell: number = !cartItem
     ? 0
     : item?.isGiftCard
@@ -57,16 +56,16 @@ export function getCartItemTotal(cartItem, item, price) {
     ? item?.miscItemAmount || 0
     : null
   if (totalSell) return totalSell
-  return getCartItemVendorCut(cartItem, price) + getCartItemStoreCut(cartItem, price)
+  return getCartItemVendorCut(cartItem, item) + getCartItemStoreCut(cartItem, item)
 }
 
-export function getCartItemPrices(cartItem: any, item: StockItemObject, price: BasicStockPriceObject) {
+export function getCartItemPrices(cartItem: any, item: BasicStockItemObject) {
   // Gets three prices for each sale item: the vendor cut, store cut, and total
   // Price is returned in cents
   return {
-    storePrice: getCartItemStoreCut(cartItem, price),
-    vendorPrice: getCartItemVendorCut(cartItem, price),
-    totalPrice: getCartItemTotal(cartItem, item, price),
+    storePrice: getCartItemStoreCut(cartItem, item),
+    vendorPrice: getCartItemVendorCut(cartItem, item),
+    totalPrice: getCartItemTotal(cartItem, item),
   }
 }
 

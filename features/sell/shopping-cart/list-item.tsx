@@ -11,23 +11,17 @@ import { priceCentsString } from 'lib/utils'
 import { deleteSale, deleteSaleItem } from 'lib/api/sale'
 import { ViewProps } from 'lib/store/types'
 import { ArrowDropDown, ArrowDropUp, PanTool } from '@mui/icons-material'
-import { BasicStockObject } from 'lib/types/stock'
+import { BasicStockItemObject, BasicStockObject } from 'lib/types/stock'
 const Tooltip = dynamic(() => import('@mui/material/Tooltip'))
 // TODO make list items share more components
 
-export default function SellListItem({
-  cartItem,
-  stockItem,
-}: {
-  cartItem: SaleItemObject
-  stockItem: BasicStockObject
-}) {
+export default function SellListItem({ cartItem, item }: { cartItem: SaleItemObject; item: BasicStockItemObject }) {
   const { cart, openConfirm, setCartItem, setCart, resetCart, closeView, setAlert } = useAppStore()
   const { sale = {}, items = [], transactions = [] } = cart || {}
   const { stockList = [] } = useStockList()
   const stockListItem = stockList.find((stock) => stock?.id === cartItem?.itemId) || {}
 
-  const { item = stockListItem || {}, quantities = { inStock: stockListItem?.quantity }, price = {} } = stockItem || {}
+  // const { item = stockListItem || {}, quantities = { inStock: stockListItem?.quantity }, price = {} } = stockItem || {}
   const [expanded, setExpanded] = useState(false)
 
   function onChangeCart(e: any, property: string) {
@@ -35,7 +29,7 @@ export default function SellListItem({
   }
 
   function onChangeQuantity(e: any) {
-    if (quantities?.inStock < parseInt(e?.target?.value)) {
+    if (item?.quantity < parseInt(e?.target?.value)) {
       const newQuantity = e?.target?.value
       openConfirm({
         open: true,
@@ -44,10 +38,10 @@ export default function SellListItem({
         styledMessage: (
           <div>
             <div>
-              {quantities?.inStock === 1 ? (
+              {item?.quantity === 1 ? (
                 <span>There is only 1 copy of </span>
               ) : (
-                <span>There are only {quantities?.inStock} copies of </span>
+                <span>There are only {item?.quantity} copies of </span>
               )}
               <b>{getItemDisplayName(item)}</b> in stock. Are you sure you want to sell {e?.target?.value}?
             </div>
@@ -128,7 +122,7 @@ export default function SellListItem({
               <div />
             )}
           </div>
-          <div className="text-red-500 self-end">{writeCartItemPriceBreakdown(cartItem, stockItem)}</div>
+          <div className="text-red-500 self-end">{writeCartItemPriceBreakdown(cartItem, item)}</div>
           <div className="self-end text-xs">
             {expanded ? (
               <div>
@@ -194,9 +188,9 @@ export default function SellListItem({
             onChange={(e: any) => onChangeCart(e, 'note')}
           />
           <div className="flex w-full justify-between place-start">
-            <div className="font-bold">{writeCartItemPriceBreakdown(cartItem, stockItem)}</div>
+            <div className="font-bold">{writeCartItemPriceBreakdown(cartItem, item)}</div>
             <div>
-              <div className="font-bold self-center">{priceCentsString(getCartItemTotal(cartItem, item, price))}</div>
+              <div className="font-bold self-center">{priceCentsString(getCartItemTotal(cartItem, item))}</div>
               <div className="w-50 text-right">
                 <button
                   className="py-2 text-tertiary hover:text-tertiary-dark"

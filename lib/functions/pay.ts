@@ -67,7 +67,7 @@ export function writeItemList(stockList: BasicStockItemObject[], cartItems: Sale
         if (item?.isGiftCard) {
           return `Gift Voucher [${item?.giftCardCode}]`
         } else {
-          let cartQuantity = cartItem?.quantity || 1
+          let cartQuantity = Number(cartItem?.quantity || 1)
           let str = ''
           if (cartQuantity > 1) str = `${cartQuantity} x `
           str = str + getItemDisplayName(item)

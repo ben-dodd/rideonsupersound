@@ -56,8 +56,10 @@ export default function ShoppingCart() {
             items
               .filter((cartItem) => !cartItem?.isDeleted && !cartItem?.isRefunded)
               .map((cartItem) => {
-                const stockItem = stockItemList?.find((stockItem) => stockItem?.item?.id === cartItem?.itemId)
-                return <ListItem key={cartItem?.itemId} cartItem={cartItem} stockItem={stockItem} />
+                console.log(cartItem)
+                const stockItem = stockItemList?.find((stockItem) => stockItem?.id === cartItem?.itemId)
+                console.log(stockItem)
+                return <ListItem key={cartItem?.itemId} cartItem={cartItem} item={stockItem} />
               })
           ) : (
             <Tooltip title="To add items to the cart. Use the search bar and then add items with the (+) icon.">
