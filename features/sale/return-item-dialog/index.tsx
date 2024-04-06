@@ -14,7 +14,7 @@ export default function ReturnItemsDialog({ sale }) {
   const [refundItems, setRefundItems] = useState([])
   const [notes, setNotes] = useState('')
   const [submitting] = useState(false)
-  const { stockItemList = [], isStockItemListLoading = true } = useStockItemList(items?.map((item) => item?.id))
+  const { stockItemList = [] } = useStockItemList(items?.map((item) => item?.id))
 
   function closeDialog() {
     closeView(ViewProps.returnItemDialog)

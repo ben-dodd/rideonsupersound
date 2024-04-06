@@ -13,7 +13,7 @@ const SaleItems = ({ items, isEditable }) => {
   return isStockItemListLoading ? (
     <Loading />
   ) : items?.length > 0 ? (
-    items?.map((saleItem: SaleItemObject, i) => {
+    items?.map((saleItem: SaleItemObject) => {
       const stockItem = stockItemList?.find((stockItem) => stockItem?.item?.id === saleItem?.itemId)
       return saleItem?.isDeleted ? (
         <DeletedSaleItem key={saleItem?.itemId} saleItem={saleItem} stockItem={stockItem} />

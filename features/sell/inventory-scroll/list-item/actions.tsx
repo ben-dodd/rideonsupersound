@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router'
 import { ArrowRight } from '@mui/icons-material'
 import { skuScan } from 'lib/functions/sell'
 import { useAppStore } from 'lib/store'
@@ -7,7 +6,6 @@ import { useClerk } from 'lib/api/clerk'
 import { Pages, ViewProps } from 'lib/store/types'
 
 const Actions = ({ item, itemQuantity, holdsQuantity }) => {
-  const router = useRouter()
   const {
     sellPage: { searchBar },
     cart,

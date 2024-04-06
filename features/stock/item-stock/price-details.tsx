@@ -1,10 +1,7 @@
 import { getGrossProfit, getProfitMarginString } from 'lib/functions/pay'
 import { priceDollarsString, priceCentsString } from 'lib/utils'
-import { useRouter } from 'next/router'
 
 export default function PriceDetails({ stockItem }) {
-  const router = useRouter()
-  const { id } = router.query
   const { item = {}, price = {} } = stockItem || {}
 
   return (

@@ -28,11 +28,11 @@ const StockListTable = ({ data }) => {
     // onChangeFilters(newFilters)
     setPage(Pages.stockPage, { filters: newFilters })
     // const paginatedIdList = idList?.slice(pageIndex * pageSize, pageIndex * pageSize + pageSize)
-  }, [pagination, sorting])
+  }, [pagination, setPage, sorting])
 
   useEffect(() => {
     setPage(Pages.stockPage, { visibleColumns: columnVisibility })
-  }, [columnVisibility])
+  }, [columnVisibility, setPage])
 
   // useEffect(() => {
   //   console.log('changing new sorting', sorting)
