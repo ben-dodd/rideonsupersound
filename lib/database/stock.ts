@@ -17,6 +17,8 @@ export function dbGetStockList(db = connection) {
       'stock.vendor_id',
       'vendor.name as vendor_name',
       'stock_price.total_sell',
+      'stock_price.vendor_cut',
+      'stock_price.date_valid_from as price_last_changed',
       'stock.artist',
       'stock.title',
       'stock.display_as',

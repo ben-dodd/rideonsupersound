@@ -45,7 +45,7 @@ export function getProfitMargin(price: any) {
   let sellNum = price?.totalSell || 0,
     costNum = price?.vendorCut || 0
   if (sellNum > 0) return ((sellNum - costNum) / sellNum) * 100
-  else return null
+  else return 0
 }
 
 export function getProfitMarginString(price: any) {
@@ -68,7 +68,7 @@ export function writeItemList(stockList: BasicStockObject[], cartItems: SaleItem
         if (item?.isGiftCard) {
           return `Gift Voucher [${item?.giftCardCode}]`
         } else {
-          let cartQuantity = cartItem?.quantity || 1
+          let cartQuantity = Number(cartItem?.quantity || 1)
           let str = ''
           if (cartQuantity > 1) str = `${cartQuantity} x `
           str = str + getItemDisplayName(item)

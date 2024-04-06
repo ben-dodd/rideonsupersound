@@ -1,7 +1,9 @@
+import { Check, Close } from '@mui/icons-material'
 import Table from 'components/data/table'
 import { EditCell } from 'components/data/table/editCell'
 import dayjs from 'dayjs'
 import { getItemSku } from 'lib/functions/displayInventory'
+import { getProfitMargin, getProfitMarginString } from 'lib/functions/pay'
 import { useAppStore } from 'lib/store'
 import { Pages } from 'lib/store/types'
 import { dateSlash } from 'lib/types/date'
@@ -114,9 +116,32 @@ const StockListTable = ({ data }) => {
             size: 100,
           },
           {
+            accessorKey: 'media',
+            header: 'Media',
+            size: 100,
+          },
+          {
             accessorKey: 'format',
             header: 'Format',
             size: 100,
+          },
+          {
+            accessorKey: 'genre',
+            header: 'Genre',
+            size: 100,
+          },
+          {
+            accessorKey: 'isNew',
+            header: 'Is New?',
+            size: 50,
+            cell: (info) => (info?.getValue() ? <Check /> : <Close className="text-red-500" />),
+          },
+          { accessorKey: 'cond', header: 'Condition', size: 50 },
+          {
+            accessorKey: 'needsRestock',
+            header: 'Needs Restock?',
+            size: 50,
+            cell: (info) => (info?.getValue() ? <Check /> : ''),
           },
         ],
       },
@@ -128,10 +153,29 @@ const StockListTable = ({ data }) => {
             header: 'Sell',
             cell: (info) => priceCentsString(info?.getValue()),
             size: 80,
-            // footer: (info) => {
-            //   console.log(info)
-            //   return 50
-            // },
+          },
+          {
+            accessorKey: 'vendorCut',
+            header: 'Vendor Cut',
+            cell: (info) => priceCentsString(info?.getValue()),
+            size: 80,
+          },
+          {
+            header: 'Store Cut',
+            accessorKey: 'storeCut',
+            cell: (info) => priceCentsString(info?.row?.original?.totalSell - info?.row?.original?.vendorCut),
+            sortingFn: (rowA, rowB) =>
+              rowA?.original?.totalSell -
+              rowA?.original?.vendorCut -
+              (rowB?.original?.totalSell - rowB?.original?.vendorCut),
+            size: 80,
+          },
+          {
+            header: 'Margin',
+            accessorKey: 'margin',
+            cell: (info) => getProfitMarginString(info?.row?.original),
+            sortingFn: (rowA, rowB) => getProfitMargin(rowA?.original) - getProfitMargin(rowB?.original),
+            size: 80,
           },
         ],
       },
@@ -139,6 +183,8 @@ const StockListTable = ({ data }) => {
         header: 'Quantities',
         columns: [
           { accessorKey: 'quantities.inStock', header: 'QTY', size: 60 },
+          { accessorKey: 'quantities.received', header: 'REC', size: 60 },
+          { accessorKey: 'quantities.returned', header: 'RET', size: 60 },
           {
             accessorKey: 'quantities.holdLayby',
             header: 'H/L',
@@ -155,10 +201,28 @@ const StockListTable = ({ data }) => {
         header: 'Actions',
         columns: [
           {
+            accessorKey: 'lastMovements.sold',
+            header: 'Last Sold',
+            cell: (info) => (info?.getValue() ? dayjs(info?.getValue()).format(dateSlash) : ''),
+            size: 80,
+          },
+          {
+            accessorKey: 'lastMovements.received',
+            header: 'Last Received',
+            cell: (info) => (info?.getValue() ? dayjs(info?.getValue()).format(dateSlash) : ''),
+            size: 80,
+          },
+          {
+            accessorKey: 'lastMovements.returned',
+            header: 'Last Returned',
+            cell: (info) => (info?.getValue() ? dayjs(info?.getValue()).format(dateSlash) : ''),
+            size: 80,
+          },
+          {
             accessorKey: 'lastMovements.modified',
             header: 'Last Modified',
-            cell: (info) => dayjs(info?.getValue()).format(dateSlash),
-            size: 120,
+            cell: (info) => (info?.getValue() ? dayjs(info?.getValue()).format(dateSlash) : ''),
+            size: 80,
           },
         ],
       },
