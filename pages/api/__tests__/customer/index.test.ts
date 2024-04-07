@@ -28,3 +28,5 @@ jest.mock('lib/api/utils')
 describe('placeholder', () => {
   it.todo('write tests')
 })
+
+export {}

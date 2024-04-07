@@ -87,7 +87,7 @@ describe('<Quantities />', () => {
   })
 
   it('should handle undefined price', async () => {
-    render(<Quantities quantities={{}} itemQuantity={4} />)
+    render(<Quantities quantities={{}} itemQuantity={4} price={{}} isInCart={false} />)
 
     expect(screen.queryAllByRole('generic')[3]).toHaveTextContent('N/A')
   })
