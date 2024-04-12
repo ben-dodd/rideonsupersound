@@ -86,7 +86,7 @@ export default function TransferVendorPaymentDialog() {
         setSubmitting(true)
         if (vendor_pay_id !== 'store') {
           let vendorPayPayment = {
-            date: dayjs.utc().format(),
+            date: dayjs.utc().format('YYYY-MM-DD HH:mm:ss'),
             amount: Math.round(parseFloat(payment) * 100),
             clerk_id: clerk?.id,
             vendor_id: vendor_pay_id,
@@ -102,7 +102,7 @@ export default function TransferVendorPaymentDialog() {
           )
         }
         let vendorReceivePayment = {
-          date: dayjs.utc().format(),
+          date: dayjs.utc().format('YYYY-MM-DD HH:mm:ss'),
           amount: Math.round(parseFloat(payment) * -100),
           clerk_id: clerk?.id,
           vendor_id: vendor_receive_id,

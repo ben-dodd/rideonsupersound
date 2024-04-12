@@ -85,7 +85,7 @@ export default function Acct() {
       onClick: () => {
         setSubmitting(true)
         let transaction: SaleTransactionObject = {
-          date: dayjs.utc().format(),
+          date: dayjs.utc().format('YYYY-MM-DD HH:mm:ss'),
           sale_id: cart?.id,
           clerk_id: clerk?.id,
           payment_method: PaymentMethodTypes.Account,

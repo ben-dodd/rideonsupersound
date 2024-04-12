@@ -92,7 +92,8 @@ export default function GiftCardDialog() {
         setCart({
           id: cart?.id || null,
           // REVIEW check the date to string thing works ok
-          date_sale_opened: cart?.date_sale_opened || dayjs.utc().format(),
+          date_sale_opened:
+            cart?.date_sale_opened || dayjs.utc().format('YYYY-MM-DD HH:mm:ss'),
           sale_opened_by: cart?.sale_opened_by || clerk?.id,
           items: newItems,
           weather: cart?.weather || weather,

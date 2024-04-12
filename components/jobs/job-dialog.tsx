@@ -65,7 +65,7 @@ export default function JobDialog() {
           assigned_to: assignedTo?.value,
           is_priority: isPriority || false,
           created_by_clerk_id: clerk?.id,
-          date_created: dayjs.utc().format(),
+          date_created: dayjs.utc().format('YYYY-MM-DD HH:mm:ss'),
         }
         const id = await saveTaskToDatabase(newTask)
         mutateJobs([...jobs, { ...newTask, id }], false)

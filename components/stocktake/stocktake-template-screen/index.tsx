@@ -210,7 +210,7 @@ export default function StocktakeTemplateScreen() {
                       status: StocktakeStatuses?.inProgress,
                     })
                     let newStocktake: StocktakeObject = {
-                      date_started: dayjs.utc().format(),
+                      date_started: dayjs.utc().format('YYYY-MM-DD HH:mm:ss'),
                       started_by: clerk?.id,
                       stocktake_template_id: stocktakeTemplate?.id,
                       total_estimated: stocktakeTemplate?.total_estimated,
