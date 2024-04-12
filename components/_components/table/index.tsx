@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from 'react'
 
-import { SaleStateTypes, PaymentMethodTypes } from "@/lib/types";
+import { SaleStateTypes, PaymentMethodTypes } from '@/lib/types'
 
 // Material UI Components
 import {
@@ -11,19 +11,19 @@ import {
   useSortBy,
   useFilters,
   useGlobalFilter,
-  useAsyncDebounce,
-} from "react-table";
+  // useAsyncDebounce,
+} from 'react-table'
 
 // Material UI Icons
-import SearchIcon from "@mui/icons-material/Search";
-import MdFirstPage from "@mui/icons-material/FirstPage";
-import MdNavigateBefore from "@mui/icons-material/NavigateBefore";
-import MdNavigateNext from "@mui/icons-material/NavigateNext";
-import MdLastPage from "@mui/icons-material/LastPage";
-import ArrowDown from "@mui/icons-material/ArrowDropDown";
-import ArrowUp from "@mui/icons-material/ArrowDropUp";
-import { CSVLink } from "react-csv";
-import dayjs from "dayjs";
+import SearchIcon from '@mui/icons-material/Search'
+import MdFirstPage from '@mui/icons-material/FirstPage'
+import MdNavigateBefore from '@mui/icons-material/NavigateBefore'
+import MdNavigateNext from '@mui/icons-material/NavigateNext'
+import MdLastPage from '@mui/icons-material/LastPage'
+import ArrowDown from '@mui/icons-material/ArrowDropDown'
+import ArrowUp from '@mui/icons-material/ArrowDropUp'
+import { CSVLink } from 'react-csv'
+import dayjs from 'dayjs'
 
 // const skipPageResetRef:any = useRef();
 // skipPageResetRef.current = false;
@@ -35,17 +35,18 @@ function GlobalFilter({
   skipPageResetRef,
   colorLight,
 }) {
-  const [searchValue, setSearchValue] = useState(globalFilter);
-  const onChange = useAsyncDebounce((value) => {
-    // skipPageResetRef.current = true;
-    setGlobalFilter(value || undefined);
-  }, 100);
+  const [searchValue, setSearchValue] = useState(globalFilter)
+  // const onChange = useAsyncDebounce((value) => {
+  //   // skipPageResetRef.current = true;
+  //   setGlobalFilter(value || undefined);
+  // }, 100);
+  const onChange = (value) => setGlobalFilter(value || undefined)
   return (
     <div
       className={`flex items-center ring-1 ring-gray-400 rounded-md mr-1 my-2 ml-3 w-auto ${
         colorLight
           ? `bg-gray-100 hover:${colorLight}`
-          : "bg-gray-200 hover:bg-gray-300"
+          : 'bg-gray-200 hover:bg-gray-300'
       }`}
     >
       <div className="pl-3 pr-1">
@@ -53,30 +54,30 @@ function GlobalFilter({
       </div>
       <input
         className="w-full py-1 px-2 outline-none bg-transparent"
-        value={searchValue || ""}
+        value={searchValue || ''}
         onChange={(e) => {
-          setSearchValue(e.target.value);
-          onChange(e.target.value);
+          setSearchValue(e.target.value)
+          onChange(e.target.value)
         }}
         placeholder="SEARCH…"
       />
     </div>
-  );
+  )
 }
 
 interface TableProps {
-  color?: string;
-  colorLight?: string;
-  colorDark?: string;
-  data?: any[];
-  columns?: any[];
-  showFooter?: boolean;
-  heading?: string;
-  pageSize?: number;
-  onClickRow?: Function;
-  sortOptions?: any;
-  hiddenColumns?: string[];
-  downloadCSV?: boolean;
+  color?: string
+  colorLight?: string
+  colorDark?: string
+  data?: any[]
+  columns?: any[]
+  showFooter?: boolean
+  heading?: string
+  pageSize?: number
+  onClickRow?: Function
+  sortOptions?: any
+  hiddenColumns?: string[]
+  downloadCSV?: boolean
 }
 
 function Table({
@@ -98,7 +99,7 @@ function Table({
       minWidth: 30,
     }),
     []
-  );
+  )
   // useEffect(() => {
   //   skipPageResetRef.current = false;
   // });
@@ -147,12 +148,12 @@ function Table({
     useGlobalFilter,
     useSortBy,
     usePagination
-  );
+  )
 
   return (
     <div className="ml-1">
       <div
-        className={`flex justify-between items-center px-2 mb-1 ${color || ""}`}
+        className={`flex justify-between items-center px-2 mb-1 ${color || ''}`}
       >
         {heading ? (
           <div className={`text-4xl font-bold uppercase sticky`}>{heading}</div>
@@ -164,7 +165,7 @@ function Table({
             <CSVLink
               className={`text-gray-600 bg-gray-100 hover:bg-gray-200 p-2 py-1 my-1 rounded border border-gray-600`}
               filename={`${heading?.toLowerCase?.()}-${dayjs().format(
-                "YYYY-MM-DD"
+                'YYYY-MM-DD'
               )}.csv`}
               data={data}
             >
@@ -192,7 +193,7 @@ function Table({
                     className={`border border-white ${
                       color
                         ? `${color} hover:${colorDark}`
-                        : "bg-gray-500 hover:bg-gray-800"
+                        : 'bg-gray-500 hover:bg-gray-800'
                     } text-left px-2 truncate`}
                     {...column.getHeaderProps()}
                   >
@@ -200,7 +201,7 @@ function Table({
                       {...column.getSortByToggleProps()}
                       className="flex justify-between"
                     >
-                      <div>{column.render("Header")}</div>
+                      <div>{column.render('Header')}</div>
                       <div>
                         {column.isSorted ? (
                           column.isSortedDesc ? (
@@ -229,25 +230,25 @@ function Table({
           <tbody {...getTableBodyProps()}>
             {page.map((row) => {
               // {rows.map((row) => {
-              prepareRow(row);
-              let rowProps = row.getRowProps();
+              prepareRow(row)
+              let rowProps = row.getRowProps()
               return (
                 <tr
                   {...rowProps}
                   className={`${
                     row?.cells[2]?.value === SaleStateTypes.Completed ||
-                    row?.cells[5]?.value === "Audio" ||
-                    row?.cells[4]?.value === "BAND"
-                      ? "bg-blue-100"
+                    row?.cells[5]?.value === 'Audio' ||
+                    row?.cells[4]?.value === 'BAND'
+                      ? 'bg-blue-100'
                       : row?.cells[2]?.value === SaleStateTypes.Layby ||
-                        row?.cells[5]?.value === "Literature" ||
-                        row?.cells[4]?.value === "LABEL"
-                      ? "bg-yellow-100"
+                        row?.cells[5]?.value === 'Literature' ||
+                        row?.cells[4]?.value === 'LABEL'
+                      ? 'bg-yellow-100'
                       : row?.cells[2]?.value === SaleStateTypes.Parked
-                      ? "bg-green-100"
-                      : "bg-gray-100"
+                      ? 'bg-green-100'
+                      : 'bg-gray-100'
                   } ${
-                    row?.cells[9]?.value === 0 && "text-gray-600"
+                    row?.cells[9]?.value === 0 && 'text-gray-600'
                   } opacity-70 hover:opacity-100 mt-1`}
                 >
                   {row.cells.map((cell: any) => {
@@ -257,12 +258,12 @@ function Table({
                         className="border border-white truncate relative pl-2 pr-4 border-r-4"
                         {...cell.getCellProps()}
                       >
-                        {cell.render("Cell")}
+                        {cell.render('Cell')}
                       </td>
-                    );
+                    )
                   })}
                 </tr>
-              );
+              )
             })}
           </tbody>
           {showFooter && (
@@ -271,7 +272,7 @@ function Table({
                 <tr {...group.getFooterGroupProps()}>
                   {group.headers.map((column) => (
                     <td {...column.getFooterProps()}>
-                      <b>{column.render("Footer")}</b>
+                      <b>{column.render('Footer')}</b>
                     </td>
                   ))}
                 </tr>
@@ -282,7 +283,7 @@ function Table({
       </div>
       <div className="flex justify-end items-center py-2">
         <span>
-          Page{" "}
+          Page{' '}
           <strong>
             {(state?.pageIndex || 0) + 1} of {pageOptions.length}
           </strong>
@@ -317,7 +318,7 @@ function Table({
         </button>
       </div>
     </div>
-  );
+  )
 }
 
-export default Table;
+export default Table
