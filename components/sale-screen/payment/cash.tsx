@@ -1,8 +1,8 @@
 // Packages
-import { useState } from "react";
-import { useAtom } from "jotai";
-import dayjs from "dayjs";
-import UTC from "dayjs/plugin/utc";
+import { useState } from 'react'
+import { useAtom } from 'jotai'
+import dayjs from 'dayjs'
+import UTC from 'dayjs/plugin/utc'
 
 // DB
 import {
@@ -10,62 +10,62 @@ import {
   useInventory,
   useLogs,
   useRegisterID,
-} from "@/lib/swr-hooks";
-import { viewAtom, cartAtom, clerkAtom, alertAtom } from "@/lib/atoms";
+} from '@/lib/swr-hooks'
+import { viewAtom, cartAtom, clerkAtom, alertAtom } from '@/lib/atoms'
 import {
   ModalButton,
   SaleTransactionObject,
   PaymentMethodTypes,
   CustomerObject,
-} from "@/lib/types";
+} from '@/lib/types'
 
 // Functions
-import { getSaleVars } from "@/lib/data-functions";
+import { getSaleVars, mysqlDate } from '@/lib/data-functions'
 
 // Components
-import Modal from "@/components/_components/container/modal";
-import TextField from "@/components/_components/inputs/text-field";
-import { saveLog } from "@/lib/db-functions";
+import Modal from '@/components/_components/container/modal'
+import TextField from '@/components/_components/inputs/text-field'
+import { saveLog } from '@/lib/db-functions'
 
 export default function Cash() {
-  dayjs.extend(UTC);
+  dayjs.extend(UTC)
   // Atoms
-  const [clerk] = useAtom(clerkAtom);
-  const [view, setView] = useAtom(viewAtom);
-  const [cart, setCart] = useAtom(cartAtom);
-  const [, setAlert] = useAtom(alertAtom);
+  const [clerk] = useAtom(clerkAtom)
+  const [view, setView] = useAtom(viewAtom)
+  const [cart, setCart] = useAtom(cartAtom)
+  const [, setAlert] = useAtom(alertAtom)
 
   // SWR
-  const { inventory } = useInventory();
-  const { customers } = useCustomers();
-  const { registerID } = useRegisterID();
-  const { logs, mutateLogs } = useLogs();
+  const { inventory } = useInventory()
+  const { customers } = useCustomers()
+  const { registerID } = useRegisterID()
+  const { logs, mutateLogs } = useLogs()
 
-  const { totalRemaining } = getSaleVars(cart, inventory);
+  const { totalRemaining } = getSaleVars(cart, inventory)
 
   // State
-  const isRefund = totalRemaining < 0;
+  const isRefund = totalRemaining < 0
   const [cashReceived, setCashReceived] = useState(
     `${Math.abs(totalRemaining).toFixed(2)}`
-  );
-  const [submitting, setSubmitting] = useState(false);
+  )
+  const [submitting, setSubmitting] = useState(false)
 
   // Constants
-  const changeToGive = (parseFloat(cashReceived) - totalRemaining)?.toFixed(2);
+  const changeToGive = (parseFloat(cashReceived) - totalRemaining)?.toFixed(2)
   const buttons: ModalButton[] = [
     {
-      type: "ok",
+      type: 'ok',
       disabled:
         submitting ||
         parseFloat(cashReceived) <= 0 ||
         (isRefund && parseFloat(cashReceived) > Math.abs(totalRemaining)) ||
-        cashReceived === "" ||
+        cashReceived === '' ||
         isNaN(parseFloat(cashReceived)),
       loading: submitting,
       onClick: () => {
-        setSubmitting(true);
+        setSubmitting(true)
         let transaction: SaleTransactionObject = {
-          date: dayjs.utc().format(),
+          date: mysqlDate(dayjs.utc().format()),
           sale_id: cart?.id,
           clerk_id: clerk?.id,
           payment_method: PaymentMethodTypes.Cash,
@@ -82,11 +82,11 @@ export default function Cash() {
             : null,
           register_id: registerID,
           is_refund: isRefund,
-        };
-        let transactions = cart?.transactions || [];
-        transactions.push(transaction);
-        setCart({ ...cart, transactions });
-        setSubmitting(false);
+        }
+        let transactions = cart?.transactions || []
+        transactions.push(transaction)
+        setCart({ ...cart, transactions })
+        setSubmitting(false)
         saveLog(
           {
             log: `$${parseFloat(cashReceived)?.toFixed(2)} ${
@@ -96,35 +96,35 @@ export default function Cash() {
                 ? customers?.filter(
                     (c: CustomerObject) => c?.id === cart?.customer_id
                   )[0]?.name
-                : "customer"
-            }${cart?.id ? ` (sale #${cart?.id}).` : ""}.${
+                : 'customer'
+            }${cart?.id ? ` (sale #${cart?.id}).` : ''}.${
               parseFloat(changeToGive) > 0
                 ? ` $${changeToGive} change given.`
-                : ""
+                : ''
             }`,
             clerk_id: clerk?.id,
           },
           logs,
           mutateLogs
-        );
-        setView({ ...view, cashPaymentDialog: false });
+        )
+        setView({ ...view, cashPaymentDialog: false })
         setAlert({
           open: true,
-          type: "success",
+          type: 'success',
           message: `$${parseFloat(cashReceived)?.toFixed(2)} ${
             isRefund
               ? `CASH REFUNDED.`
               : `CASH TAKEN.${
                   parseFloat(changeToGive) > 0
                     ? ` $${changeToGive} CHANGE GIVEN.`
-                    : ""
+                    : ''
                 }`
           }`,
-        });
+        })
       },
-      text: "COMPLETE",
+      text: 'COMPLETE',
     },
-  ];
+  ]
 
   return (
     <Modal
@@ -144,28 +144,28 @@ export default function Cash() {
           onChange={(e: any) => setCashReceived(e.target.value)}
         />
         <div className="text-center">{`Remaining to ${
-          isRefund ? "refund" : "pay"
+          isRefund ? 'refund' : 'pay'
         }: $${Math.abs(totalRemaining)?.toFixed(2)}`}</div>
         <div className="text-center text-xl font-bold my-4">
-          {cashReceived === "" || parseFloat(cashReceived) === 0
-            ? "..."
+          {cashReceived === '' || parseFloat(cashReceived) === 0
+            ? '...'
             : parseFloat(cashReceived) < 0
-            ? "NO NEGATIVES ALLOWED"
+            ? 'NO NEGATIVES ALLOWED'
             : isNaN(parseFloat(cashReceived))
-            ? "NUMBERS ONLY PLEASE"
+            ? 'NUMBERS ONLY PLEASE'
             : isRefund && parseFloat(cashReceived) > Math.abs(totalRemaining)
-            ? "TOO MUCH CASH REFUNDED"
+            ? 'TOO MUCH CASH REFUNDED'
             : isRefund
-            ? "ALL GOOD!"
+            ? 'ALL GOOD!'
             : parseFloat(cashReceived) > totalRemaining
             ? `GIVE $${changeToGive} IN CHANGE`
             : parseFloat(cashReceived) < Math.abs(totalRemaining)
             ? `AMOUNT SHORT BY $${(
                 totalRemaining - parseFloat(cashReceived)
               )?.toFixed(2)}`
-            : "ALL GOOD!"}
+            : 'ALL GOOD!'}
         </div>
       </>
     </Modal>
-  );
+  )
 }

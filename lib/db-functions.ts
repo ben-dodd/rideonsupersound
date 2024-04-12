@@ -33,6 +33,7 @@ import {
   getItemQuantity,
   getItemSkuDisplayNameById,
   getSaleVars,
+  mysqlDate,
 } from './data-functions'
 
 export async function loadSaleToCart(
@@ -411,7 +412,7 @@ export async function saveSaleTransaction(
       type: transaction?.is_refund
         ? VendorPaymentTypes.SaleRefund
         : VendorPaymentTypes.Sale,
-      date: dayjs.utc().format(),
+      date: mysqlDate(dayjs.utc().format()),
       register_id: transaction?.register_id,
     }
     vendorPaymentId = await saveVendorPaymentToDatabase(vendorPayment)
@@ -480,7 +481,7 @@ export async function saveClosedRegisterToDatabase(
           ...register,
           id: register_id,
           close_till_id: tillID,
-          close_date: dayjs.utc().format(),
+          close_date: mysqlDate(dayjs.utc().format()),
         }),
       }
     )
@@ -521,7 +522,7 @@ export async function saveAndOpenRegister(
         body: JSON.stringify({
           ...register,
           open_till_id: tillID,
-          open_date: dayjs.utc().format(),
+          open_date: mysqlDate(dayjs.utc().format()),
         }),
       }
     )
@@ -569,7 +570,7 @@ export async function savePettyCashToRegister(
           amount: numberAmount,
           is_take: isTake,
           note,
-          date: dayjs.utc().format(),
+          date: mysqlDate(dayjs.utc().format()),
         }),
       }
     )
@@ -885,7 +886,7 @@ export async function returnHoldToStock(
 ) {
   updateHoldInDatabase({
     ...hold,
-    date_removed_from_hold: dayjs.utc().format(),
+    date_removed_from_hold: mysqlDate(dayjs.utc().format()),
     removed_from_hold_by: clerk?.id,
   })
   mutateHolds(
@@ -941,7 +942,7 @@ export async function saveGiftCardToDatabase() {
 }
 export async function saveSystemLog(log: string, clerkID: number) {
   let logObj = {
-    date_created: dayjs.utc().format(),
+    date_created: mysqlDate(dayjs.utc().format()),
     log: log,
     clerk_id: clerkID,
     table_id: 'system',
@@ -970,7 +971,7 @@ export async function saveLog(
   mutateLogs?: Function
 ) {
   let logObj = {
-    date_created: dayjs.utc().format(),
+    date_created: mysqlDate(dayjs.utc().format()),
     log: log?.log,
     table_id: log?.table_id || null,
     row_id: log?.row_id || null,
@@ -1029,7 +1030,7 @@ export async function addNewMailOrderTask(sale: SaleObject, customer: string) {
           }${sale?.postal_address}`,
           created_by_clerk_id: sale?.sale_opened_by,
           assigned_to: RoleTypes?.MC,
-          date_created: dayjs.utc().format(),
+          date_created: mysqlDate(dayjs.utc().format()),
           is_post_mail_order: 1,
         }),
       }
@@ -1119,7 +1120,7 @@ export async function saveStockPriceToDatabase(
           clerk_id: clerk?.id,
           vendor_cut,
           total_sell,
-          date_valid_from: dayjs.utc().format(),
+          date_valid_from: mysqlDate(dayjs.utc().format()),
           note,
         }),
       }
@@ -1166,7 +1167,7 @@ export async function saveStockMovementToDatabase(
           note,
           sale_id,
           stocktake_id,
-          date_moved: dayjs.utc().format(),
+          date_moved: mysqlDate(dayjs.utc().format()),
         }),
       }
     )
@@ -1804,7 +1805,7 @@ export function processStocktake(
           item?.quantity_recorded
         } in the system.`,
         created_by_clerk_id: clerk?.id,
-        date_created: dayjs.utc().format(),
+        date_created: mysqlDate(dayjs.utc().format()),
       }
       const id = await saveTaskToDatabase(newTask)
       tasks?.push({ ...newTask, id })
@@ -1840,12 +1841,12 @@ export function processStocktake(
   })
   updateStocktakeInDatabase({
     ...stocktake,
-    date_closed: dayjs.utc().format(),
+    date_closed: mysqlDate(dayjs.utc().format()),
     closed_by: clerk?.id,
   })
   updateStocktakeTemplateInDatabase({
     ...stocktakeTemplate,
-    last_completed: dayjs.utc().format(),
+    last_completed: mysqlDate(dayjs.utc().format()),
     status: StocktakeStatuses?.completed,
   })
 }

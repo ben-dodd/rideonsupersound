@@ -1,6 +1,6 @@
 // Packages
-import { useState } from "react";
-import { useAtom } from "jotai";
+import { useState } from 'react'
+import { useAtom } from 'jotai'
 
 // DB
 import {
@@ -12,57 +12,57 @@ import {
   useGiftCards,
   useRegisterID,
   useStockSaleVars,
-} from "@/lib/swr-hooks";
-import { clerkAtom, alertAtom, cartAtom, viewAtom } from "@/lib/atoms";
-import { ModalButton, CustomerObject, SaleStateTypes } from "@/lib/types";
+} from '@/lib/swr-hooks'
+import { clerkAtom, alertAtom, cartAtom, viewAtom } from '@/lib/atoms'
+import { ModalButton, CustomerObject, SaleStateTypes } from '@/lib/types'
 
 // Functions
-import { getSaleVars } from "@/lib/data-functions";
+import { getSaleVars, mysqlDate } from '@/lib/data-functions'
 import {
   saveSaleAndPark,
   saveLog,
   saveSaleItemsTransactionsToDatabase,
   saveSystemLog,
-} from "@/lib/db-functions";
+} from '@/lib/db-functions'
 
 // Components
-import Pay from "./pay";
-import SaleSummary from "./sale-summary";
-import Acct from "./payment/acct";
-import Card from "./payment/card";
-import Cash from "./payment/cash";
-import Gift from "./payment/gift";
-import ScreenContainer from "@/components/_components/container/screen";
-import CreateCustomerSidebar from "@/components/customer/create-customer-sidebar";
-import ReturnItemDialog from "./return-item-dialog";
-import dayjs from "dayjs";
+import Pay from './pay'
+import SaleSummary from './sale-summary'
+import Acct from './payment/acct'
+import Card from './payment/card'
+import Cash from './payment/cash'
+import Gift from './payment/gift'
+import ScreenContainer from '@/components/_components/container/screen'
+import CreateCustomerSidebar from '@/components/customer/create-customer-sidebar'
+import ReturnItemDialog from './return-item-dialog'
+import dayjs from 'dayjs'
 
 // TODO add returns to sale items
 // TODO refund dialog like PAY, refund with store credit, cash or card
 
 export default function SaleScreen() {
   // Atoms
-  const [cart, setCart] = useAtom(cartAtom);
-  const [clerk] = useAtom(clerkAtom);
-  const [, setAlert] = useAtom(alertAtom);
-  const [view, setView] = useAtom(viewAtom);
+  const [cart, setCart] = useAtom(cartAtom)
+  const [clerk] = useAtom(clerkAtom)
+  const [, setAlert] = useAtom(alertAtom)
+  const [view, setView] = useAtom(viewAtom)
 
   // SWR
-  const { customers } = useCustomers();
+  const { customers } = useCustomers()
   // const { stockSaleVars, mutateStockSaleVars } = useStockSaleVars();
-  const { inventory, mutateInventory } = useInventory();
-  const { isSaleTransactionsLoading } = useSaleTransactionsForSale(cart?.id);
-  const { sales, mutateSales } = useSales();
-  const { giftCards, mutateGiftCards } = useGiftCards();
-  const { logs, mutateLogs } = useLogs();
-  const { registerID } = useRegisterID();
+  const { inventory, mutateInventory } = useInventory()
+  const { isSaleTransactionsLoading } = useSaleTransactionsForSale(cart?.id)
+  const { sales, mutateSales } = useSales()
+  const { giftCards, mutateGiftCards } = useGiftCards()
+  const { logs, mutateLogs } = useLogs()
+  const { registerID } = useRegisterID()
 
   // State
   // const [saleLoading, setSaleLoading] = useState(false);
-  const [laybyLoading, setLaybyLoading] = useState(false);
-  const [addMoreItemsLoading, setAddMoreItemsLoading] = useState(false);
-  const [completeSaleLoading, setCompleteSaleLoading] = useState(false);
-  const [parkSaleLoading, setParkSaleLoading] = useState(false);
+  const [laybyLoading, setLaybyLoading] = useState(false)
+  const [addMoreItemsLoading, setAddMoreItemsLoading] = useState(false)
+  const [completeSaleLoading, setCompleteSaleLoading] = useState(false)
+  const [parkSaleLoading, setParkSaleLoading] = useState(false)
   // BUG fix bug where close register screen appears (pressing TAB) - have fixed by just hiding sidebars and screens
   // BUG fix bug where bottom of dialog is visible
   // BUG dates are wrong on vercel
@@ -72,12 +72,12 @@ export default function SaleScreen() {
   const { totalRemaining, totalPrice, numberOfItems } = getSaleVars(
     cart,
     inventory
-  );
+  )
 
   // Functions
   async function clickParkSale() {
-    saveSystemLog("PARK SALE clicked.", clerk?.id);
-    setParkSaleLoading(true);
+    saveSystemLog('PARK SALE clicked.', clerk?.id)
+    setParkSaleLoading(true)
     saveSaleAndPark(
       cart,
       clerk,
@@ -91,21 +91,21 @@ export default function SaleScreen() {
       mutateInventory,
       giftCards,
       mutateGiftCards
-    );
+    )
     setAlert({
       open: true,
-      type: "success",
-      message: "SALE PARKED",
-    });
-    setCart(null);
-    setView({ ...view, saleScreen: false });
-    setParkSaleLoading(false);
+      type: 'success',
+      message: 'SALE PARKED',
+    })
+    setCart(null)
+    setView({ ...view, saleScreen: false })
+    setParkSaleLoading(false)
   }
 
   async function clickLayby() {
-    saveSystemLog("START LAYBY started.", clerk?.id);
-    setLaybyLoading(true);
-    let laybySale = { ...cart };
+    saveSystemLog('START LAYBY started.', clerk?.id)
+    setLaybyLoading(true)
+    let laybySale = { ...cart }
     if (cart?.state !== SaleStateTypes.Layby) {
       // If not already a layby in progress...
       // Change cart state to layby
@@ -114,9 +114,9 @@ export default function SaleScreen() {
       laybySale = {
         ...laybySale,
         state: SaleStateTypes.Layby,
-        date_layby_started: dayjs.utc().format(),
+        date_layby_started: mysqlDate(dayjs.utc().format()),
         layby_started_by: clerk?.id,
-      };
+      }
       saveLog(
         {
           log: `Layby started${
@@ -126,9 +126,9 @@ export default function SaleScreen() {
                     (c: CustomerObject) => c?.id === cart?.customer_id
                   )[0]?.name
                 }`
-              : ""
+              : ''
           } (${numberOfItems} item${
-            numberOfItems === 1 ? "" : "s"
+            numberOfItems === 1 ? '' : 's'
           } / $${totalPrice?.toFixed(2)} with $${totalRemaining?.toFixed(
             2
           )} left to pay).`,
@@ -136,12 +136,12 @@ export default function SaleScreen() {
         },
         logs,
         mutateLogs
-      );
+      )
       setAlert({
         open: true,
-        type: "success",
-        message: "LAYBY STARTED.",
-      });
+        type: 'success',
+        message: 'LAYBY STARTED.',
+      })
     }
     saveSaleItemsTransactionsToDatabase(
       laybySale,
@@ -154,16 +154,16 @@ export default function SaleScreen() {
       giftCards,
       mutateGiftCards,
       cart?.state
-    );
+    )
     // close dialog
-    setLaybyLoading(false);
-    setView({ ...view, saleScreen: false });
-    setCart(null);
+    setLaybyLoading(false)
+    setView({ ...view, saleScreen: false })
+    setCart(null)
   }
 
   async function clickCompleteSale() {
-    saveSystemLog("COMPLETE SALE clicked.", clerk?.id);
-    setCompleteSaleLoading(true);
+    saveSystemLog('COMPLETE SALE clicked.', clerk?.id)
+    setCompleteSaleLoading(true)
     // Update sale to 'complete', add date_sale_closed, sale_closed_by
     let completedSale = {
       ...cart,
@@ -175,8 +175,8 @@ export default function SaleScreen() {
         : null,
       state: SaleStateTypes.Completed,
       sale_closed_by: clerk?.id,
-      date_sale_closed: dayjs.utc().format(),
-    };
+      date_sale_closed: mysqlDate(dayjs.utc().format()),
+    }
 
     const saleId = await saveSaleItemsTransactionsToDatabase(
       completedSale,
@@ -190,77 +190,77 @@ export default function SaleScreen() {
       mutateGiftCards,
       cart?.state,
       customers?.filter((c) => c?.id === cart?.customer_id)[0]?.name
-    );
-    setCart(null);
-    setView({ ...view, saleScreen: false });
-    setCompleteSaleLoading(false);
+    )
+    setCart(null)
+    setView({ ...view, saleScreen: false })
+    setCompleteSaleLoading(false)
     saveLog(
       {
         log: `Sale #${cart?.id || saleId} completed.`,
         clerk_id: clerk?.id,
-        table_id: "sale",
+        table_id: 'sale',
         row_id: cart?.id || saleId,
       },
       logs,
       mutateLogs
-    );
+    )
     setAlert({
       open: true,
-      type: "success",
-      message: "SALE COMPLETED.",
-    });
+      type: 'success',
+      message: 'SALE COMPLETED.',
+    })
   }
 
   // Constants
   const buttons: ModalButton[] = [
     // REVIEW discard sale, do confirm dialog
     {
-      type: "cancel",
+      type: 'cancel',
       onClick: () => {
-        saveSystemLog("DISCARD SALE clicked.", clerk?.id);
-        setCart(null);
-        setView({ ...view, saleScreen: false });
+        saveSystemLog('DISCARD SALE clicked.', clerk?.id)
+        setCart(null)
+        setView({ ...view, saleScreen: false })
       },
       disabled: Boolean(cart?.transactions) || totalRemaining === 0,
       text:
-        cart?.state === SaleStateTypes.Layby ? "CANCEL LAYBY" : "DISCARD SALE",
+        cart?.state === SaleStateTypes.Layby ? 'CANCEL LAYBY' : 'DISCARD SALE',
     },
     {
-      type: "alt2",
+      type: 'alt2',
       onClick: () => {
-        saveSystemLog("CHANGE ITEMS clicked.", clerk?.id);
-        setView({ ...view, saleScreen: false });
+        saveSystemLog('CHANGE ITEMS clicked.', clerk?.id)
+        setView({ ...view, saleScreen: false })
       },
       disabled: totalRemaining === 0,
       loading: addMoreItemsLoading,
-      text: "CHANGE ITEMS",
+      text: 'CHANGE ITEMS',
     },
     {
-      type: "alt3",
+      type: 'alt3',
       onClick: clickParkSale,
       disabled: cart?.state === SaleStateTypes.Layby || totalRemaining === 0,
       loading: parkSaleLoading,
-      text: "PARK SALE",
+      text: 'PARK SALE',
     },
     {
-      type: "alt1",
+      type: 'alt1',
       onClick: clickLayby,
       disabled: laybyLoading || !cart?.customer_id || totalRemaining <= 0,
       loading: laybyLoading,
       text:
-        cart?.state === SaleStateTypes.Layby ? "CONTINUE LAYBY" : "START LAYBY",
+        cart?.state === SaleStateTypes.Layby ? 'CONTINUE LAYBY' : 'START LAYBY',
     },
     {
-      type: "ok",
+      type: 'ok',
       onClick: clickCompleteSale,
       disabled:
         completeSaleLoading ||
         totalRemaining !== 0 ||
         cart?.state === SaleStateTypes.Completed,
       loading: completeSaleLoading,
-      text: "COMPLETE SALE",
+      text: 'COMPLETE SALE',
     },
-  ];
+  ]
 
   return (
     <>
@@ -270,26 +270,23 @@ export default function SaleScreen() {
           if (totalRemaining === 0) {
             if (cart?.state === SaleStateTypes.Completed) {
               saveSystemLog(
-                "Sale screen closed. Total remaining === 0. Cart set to null.",
+                'Sale screen closed. Total remaining === 0. Cart set to null.',
                 clerk?.id
-              );
-              setCart(null);
+              )
+              setCart(null)
             } else {
               saveSystemLog(
-                "Sale screen closed. Total remaining === 0. Sale completed.",
+                'Sale screen closed. Total remaining === 0. Sale completed.',
                 clerk?.id
-              );
-              clickCompleteSale();
+              )
+              clickCompleteSale()
             }
           }
-          saveSystemLog(
-            "Sale screen closed. Total remaining not 0.",
-            clerk?.id
-          );
-          setView({ ...view, saleScreen: false });
+          saveSystemLog('Sale screen closed. Total remaining not 0.', clerk?.id)
+          setView({ ...view, saleScreen: false })
         }}
         title={`${cart?.id ? `SALE #${cart?.id}` : `NEW SALE`} [${
-          cart?.state ? cart?.state.toUpperCase() : "IN PROGRESS"
+          cart?.state ? cart?.state.toUpperCase() : 'IN PROGRESS'
         }]`}
         loading={isSaleTransactionsLoading}
         buttons={buttons}
@@ -312,7 +309,7 @@ export default function SaleScreen() {
       {view?.createCustomer && <CreateCustomerSidebar />}
       {view?.returnItemDialog && <ReturnItemDialog sale={cart} />}
     </>
-  );
+  )
 }
 
 // TODO fix parked sale bug, make it easier to delete parked sales

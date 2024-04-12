@@ -43,7 +43,7 @@ import Modal from '@/components/_components/container/modal'
 import TextField from '@/components/_components/inputs/text-field'
 import HoldListItem from './list-item'
 import dayjs from 'dayjs'
-import { getItemDisplayName } from '@/lib/data-functions'
+import { getItemDisplayName, mysqlDate } from '@/lib/data-functions'
 
 export default function HoldDialog() {
   const { weather } = useWeather()
@@ -221,7 +221,8 @@ export default function HoldDialog() {
       }`
     setCart({
       id: cart?.id || null,
-      date_sale_opened: cart?.date_sale_opened || dayjs.utc().format(),
+      date_sale_opened:
+        cart?.date_sale_opened || mysqlDate(dayjs.utc().format()),
       sale_opened_by: cart?.sale_opened_by || clerk?.id,
       items: newItems,
       transactions: cart?.transactions || [],

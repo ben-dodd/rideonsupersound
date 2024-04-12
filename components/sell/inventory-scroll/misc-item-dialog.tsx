@@ -1,118 +1,119 @@
 // Packages
-import { useState } from "react";
-import { useAtom } from "jotai";
+import { useState } from 'react'
+import { useAtom } from 'jotai'
 
 // DB
-import { useInventory, useLogs, useWeather } from "@/lib/swr-hooks";
+import { useInventory, useLogs, useWeather } from '@/lib/swr-hooks'
 import {
   viewAtom,
   cartAtom,
   clerkAtom,
   alertAtom,
   sellSearchBarAtom,
-} from "@/lib/atoms";
-import { ModalButton, StockObject } from "@/lib/types";
+} from '@/lib/atoms'
+import { ModalButton, StockObject } from '@/lib/types'
 
 // Functions
-import { getGeolocation } from "@/lib/data-functions";
-import { saveLog, saveStockToDatabase } from "@/lib/db-functions";
+import { getGeolocation, mysqlDate } from '@/lib/data-functions'
+import { saveLog, saveStockToDatabase } from '@/lib/db-functions'
 
 // Components
-import Modal from "@/components/_components/container/modal";
-import TextField from "@/components/_components/inputs/text-field";
-import dayjs from "dayjs";
+import Modal from '@/components/_components/container/modal'
+import TextField from '@/components/_components/inputs/text-field'
+import dayjs from 'dayjs'
 
 export default function MiscItemDialog() {
   // Atoms
-  const [clerk] = useAtom(clerkAtom);
-  const [view, setView] = useAtom(viewAtom);
-  const [, setAlert] = useAtom(alertAtom);
-  const [cart, setCart] = useAtom(cartAtom);
-  const [, setSearch] = useAtom(sellSearchBarAtom);
+  const [clerk] = useAtom(clerkAtom)
+  const [view, setView] = useAtom(viewAtom)
+  const [, setAlert] = useAtom(alertAtom)
+  const [cart, setCart] = useAtom(cartAtom)
+  const [, setSearch] = useAtom(sellSearchBarAtom)
 
   // SWR
-  const { logs, mutateLogs } = useLogs();
-  const { inventory, mutateInventory } = useInventory();
-  const geolocation = getGeolocation();
-  const { weather } = useWeather();
+  const { logs, mutateLogs } = useLogs()
+  const { inventory, mutateInventory } = useInventory()
+  const geolocation = getGeolocation()
+  const { weather } = useWeather()
 
   // State
-  const [description, setDescription] = useState("");
-  const [amount, setAmount] = useState("");
-  const [notes, setNotes] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+  const [description, setDescription] = useState('')
+  const [amount, setAmount] = useState('')
+  const [notes, setNotes] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
   function clearDialog() {
-    setDescription("");
-    setAmount("");
-    setNotes("");
+    setDescription('')
+    setAmount('')
+    setNotes('')
   }
 
   const buttons: ModalButton[] = [
     {
-      type: "ok",
-      disabled: amount === "" || isNaN(parseFloat(amount)),
+      type: 'ok',
+      disabled: amount === '' || isNaN(parseFloat(amount)),
       loading: submitting,
       onClick: async () => {
-        setSubmitting(true);
-        setSearch("");
+        setSubmitting(true)
+        setSearch('')
         let newMiscItem: StockObject = {
           is_misc_item: true,
           misc_item_description: description,
           misc_item_amount: parseFloat(amount) * 100,
           note: notes,
-        };
-        const id = await saveStockToDatabase(newMiscItem, clerk);
-        mutateInventory([...inventory, { ...newMiscItem, id }], false);
-        setSubmitting(false);
-        clearDialog();
+        }
+        const id = await saveStockToDatabase(newMiscItem, clerk)
+        mutateInventory([...inventory, { ...newMiscItem, id }], false)
+        setSubmitting(false)
+        clearDialog()
 
         // Add to cart
-        let newItems = cart?.items || [];
+        let newItems = cart?.items || []
         newItems.push({
           item_id: id,
-          quantity: "1",
+          quantity: '1',
           is_misc_item: true,
-        });
+        })
         setCart({
           id: cart?.id || null,
           // REVIEW check the date to string thing works ok
-          date_sale_opened: cart?.date_sale_opened || dayjs.utc().format(),
+          date_sale_opened:
+            cart?.date_sale_opened || mysqlDate(dayjs.utc().format()),
           sale_opened_by: cart?.sale_opened_by || clerk?.id,
           items: newItems,
           weather: cart?.weather || weather,
           geo_latitude: cart?.geo_latitude || geolocation?.latitude,
           geo_longitude: cart?.geo_longitude || geolocation?.longitude,
-        });
-        setView({ ...view, miscItemDialog: false, cart: true });
+        })
+        setView({ ...view, miscItemDialog: false, cart: true })
         saveLog(
           {
             log: `New misc item (${description}) created and added to cart.`,
             clerk_id: clerk?.id,
-            table_id: "stock",
+            table_id: 'stock',
             row_id: id,
           },
           logs,
           mutateLogs
-        );
+        )
         setAlert({
           open: true,
-          type: "success",
+          type: 'success',
           message: `NEW MISC ITEM CREATED`,
-        });
+        })
       },
-      text: "CREATE MISC ITEM",
+      text: 'CREATE MISC ITEM',
     },
-  ];
+  ]
 
   return (
     <Modal
       open={view?.miscItemDialog}
       closeFunction={() => {
-        clearDialog();
-        setView({ ...view, miscItemDialog: false });
+        clearDialog()
+        setView({ ...view, miscItemDialog: false })
       }}
-      title={"CREATE MISC ITEM"}
+      title={'CREATE MISC ITEM'}
       buttons={buttons}
     >
       <>
@@ -141,5 +142,5 @@ export default function MiscItemDialog() {
         />
       </>
     </Modal>
-  );
+  )
 }

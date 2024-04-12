@@ -18,7 +18,7 @@ import { VendorObject, ModalButton, VendorPaymentTypes } from '@/lib/types'
 
 // Functions
 import { saveLog, saveVendorPaymentToDatabase } from '@/lib/db-functions'
-import { getVendorDetails } from '@/lib/data-functions'
+import { getVendorDetails, mysqlDate } from '@/lib/data-functions'
 
 // Components
 import TextField from '@/components/_components/inputs/text-field'
@@ -86,7 +86,7 @@ export default function TransferVendorPaymentDialog() {
         setSubmitting(true)
         if (vendor_pay_id !== 'store') {
           let vendorPayPayment = {
-            date: dayjs.utc().format(),
+            date: mysqlDate(dayjs.utc().format()),
             amount: Math.round(parseFloat(payment) * 100),
             clerk_id: clerk?.id,
             vendor_id: vendor_pay_id,
@@ -102,7 +102,7 @@ export default function TransferVendorPaymentDialog() {
           )
         }
         let vendorReceivePayment = {
-          date: dayjs.utc().format(),
+          date: mysqlDate(dayjs.utc().format()),
           amount: Math.round(parseFloat(payment) * -100),
           clerk_id: clerk?.id,
           vendor_id: vendor_receive_id,

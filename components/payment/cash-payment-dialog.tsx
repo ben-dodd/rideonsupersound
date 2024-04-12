@@ -18,7 +18,7 @@ import { VendorObject, ModalButton, VendorPaymentTypes } from '@/lib/types'
 
 // Functions
 import { saveLog, saveVendorPaymentToDatabase } from '@/lib/db-functions'
-import { getVendorDetails } from '@/lib/data-functions'
+import { getVendorDetails, mysqlDate } from '@/lib/data-functions'
 
 // Components
 import TextField from '@/components/_components/inputs/text-field'
@@ -65,7 +65,7 @@ export default function CashPaymentDialog() {
       onClick: async () => {
         setSubmitting(true)
         let vendorPayment = {
-          date: dayjs.utc().format(),
+          date: mysqlDate(dayjs.utc().format()),
           amount: Math.round(parseFloat(payment) * 100),
           clerk_id: clerk?.id,
           vendor_id: vendor?.id,

@@ -25,7 +25,7 @@ import {
 import SyncIcon from '@mui/icons-material/Sync'
 
 // Functions
-import { getSaleVars, makeGiftCardCode } from '@/lib/data-functions'
+import { getSaleVars, makeGiftCardCode, mysqlDate } from '@/lib/data-functions'
 
 // Components
 import Modal from '@/components/_components/container/modal'
@@ -112,7 +112,7 @@ export default function Gift() {
           }
         }
         let transaction: SaleTransactionObject = {
-          date: dayjs.utc().format(),
+          date: mysqlDate(dayjs.utc().format()),
           sale_id: cart?.id,
           clerk_id: clerk?.id,
           payment_method: PaymentMethodTypes.GiftCard,

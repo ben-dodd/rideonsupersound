@@ -22,7 +22,7 @@ import {
 } from '@/lib/types'
 
 // Functions
-import { getSaleVars, getVendorDetails } from '@/lib/data-functions'
+import { getSaleVars, getVendorDetails, mysqlDate } from '@/lib/data-functions'
 
 // Components
 import Modal from '@/components/_components/container/modal'
@@ -85,7 +85,7 @@ export default function Acct() {
       onClick: () => {
         setSubmitting(true)
         let transaction: SaleTransactionObject = {
-          date: dayjs.utc().format(),
+          date: mysqlDate(dayjs.utc().format()),
           sale_id: cart?.id,
           clerk_id: clerk?.id,
           payment_method: PaymentMethodTypes.Account,

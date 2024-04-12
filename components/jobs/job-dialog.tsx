@@ -1,43 +1,44 @@
 // Packages
-import { useState } from "react";
-import { useAtom } from "jotai";
+import { useState } from 'react'
+import { useAtom } from 'jotai'
 
 // DB
-import { useJobs, useLogs, useClerks } from "@/lib/swr-hooks";
-import { viewAtom, clerkAtom, alertAtom } from "@/lib/atoms";
-import { ModalButton, TaskObject, ClerkObject, RoleTypes } from "@/lib/types";
+import { useJobs, useLogs, useClerks } from '@/lib/swr-hooks'
+import { viewAtom, clerkAtom, alertAtom } from '@/lib/atoms'
+import { ModalButton, TaskObject, ClerkObject, RoleTypes } from '@/lib/types'
 
 // Functions
-import { saveLog, saveTaskToDatabase } from "@/lib/db-functions";
+import { saveLog, saveTaskToDatabase } from '@/lib/db-functions'
 
 // Components
-import Modal from "@/components/_components/container/modal";
-import TextField from "@/components/_components/inputs/text-field";
-import Select from "react-select";
-import dayjs from "dayjs";
+import Modal from '@/components/_components/container/modal'
+import TextField from '@/components/_components/inputs/text-field'
+import Select from 'react-select'
+import dayjs from 'dayjs'
+import { mysqlDate } from '@/lib/data-functions'
 
 export default function JobDialog() {
   // Atoms
-  const [clerk] = useAtom(clerkAtom);
-  const [view, setView] = useAtom(viewAtom);
-  const [, setAlert] = useAtom(alertAtom);
+  const [clerk] = useAtom(clerkAtom)
+  const [view, setView] = useAtom(viewAtom)
+  const [, setAlert] = useAtom(alertAtom)
 
   // SWR
   // const { clerks } = useClerks();
-  const { logs, mutateLogs } = useLogs();
-  const { jobs, mutateJobs } = useJobs();
+  const { logs, mutateLogs } = useLogs()
+  const { jobs, mutateJobs } = useJobs()
 
   // State
-  const [description, setDescription] = useState("");
-  const [assignedTo, setAssignedTo] = useState(null);
-  const [isPriority, setIsPriority] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
+  const [description, setDescription] = useState('')
+  const [assignedTo, setAssignedTo] = useState(null)
+  const [isPriority, setIsPriority] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
 
   function clearDialog() {
-    setDescription("");
-    setAssignedTo(null);
-    setIsPriority(false);
-    setView({ ...view, taskDialog: false });
+    setDescription('')
+    setAssignedTo(null)
+    setIsPriority(false)
+    setView({ ...view, taskDialog: false })
   }
 
   const roles = [
@@ -50,51 +51,51 @@ export default function JobDialog() {
     RoleTypes.RC,
     RoleTypes.RS,
     RoleTypes.VLG,
-  ];
+  ]
 
   const buttons: ModalButton[] = [
     {
-      type: "ok",
-      disabled: description === "",
+      type: 'ok',
+      disabled: description === '',
       loading: submitting,
       onClick: async () => {
-        setSubmitting(true);
+        setSubmitting(true)
         let newTask: TaskObject = {
           description,
           assigned_to: assignedTo?.value,
           is_priority: isPriority || false,
           created_by_clerk_id: clerk?.id,
-          date_created: dayjs.utc().format(),
-        };
-        const id = await saveTaskToDatabase(newTask);
-        mutateJobs([...jobs, { ...newTask, id }], false);
-        setSubmitting(false);
-        clearDialog();
+          date_created: mysqlDate(dayjs.utc().format()),
+        }
+        const id = await saveTaskToDatabase(newTask)
+        mutateJobs([...jobs, { ...newTask, id }], false)
+        setSubmitting(false)
+        clearDialog()
         saveLog(
           {
             log: `New job (${description}) created.`,
             clerk_id: clerk?.id,
-            table_id: "stock",
+            table_id: 'stock',
             row_id: id,
           },
           logs,
           mutateLogs
-        );
+        )
         setAlert({
           open: true,
-          type: "success",
+          type: 'success',
           message: `NEW JOB CREATED`,
-        });
+        })
       },
-      text: "CREATE JOB",
+      text: 'CREATE JOB',
     },
-  ];
+  ]
 
   return (
     <Modal
       open={view?.taskDialog}
       closeFunction={clearDialog}
-      title={"NEW JOB"}
+      title={'NEW JOB'}
       buttons={buttons}
     >
       <div className="h-dialogsm">
@@ -126,5 +127,5 @@ export default function JobDialog() {
         </div>
       </div>
     </Modal>
-  );
+  )
 }
