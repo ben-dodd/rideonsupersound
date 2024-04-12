@@ -226,7 +226,7 @@ function completeBatchPayment(
       ?.forEach((v) => {
         updateVendorLastContactedInDatabase({
           id: v?.id,
-          last_contacted: mysqlDate(dayjs.utc().format()),
+          last_contacted: dayjs.utc().format(),
         })
       })
   }
@@ -240,7 +240,7 @@ function completeBatchPayment(
     ?.forEach(async (vendor: any) => {
       let vendorPayment = {
         amount: Math.round(parseFloat(vendor?.payAmount || '0') * 100),
-        date: mysqlDate(dayjs.utc().format()),
+        date: dayjs.utc().format(),
         bank_account_number: vendor?.bank_account_number,
         batchNumber: `${registerID}`,
         sequenceNumber: 'Batch',

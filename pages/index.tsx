@@ -1,5 +1,5 @@
 import { useAccount, useRegisterID } from '@/lib/swr-hooks'
-import { useSession } from 'next-auth/client'
+// import { useSession } from 'next-auth/client'
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import LandingPage from '@/components/main/landing-page'
 import SignIn from './api/auth/signin'

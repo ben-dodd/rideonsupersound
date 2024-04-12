@@ -133,8 +133,7 @@ export default function ListItem({ item, geolocation }: ListItemProps) {
     else newItems[index].quantity = `${parseInt(newItems[index].quantity) + 1}`
     setCart({
       id: cart?.id || null,
-      date_sale_opened:
-        cart?.date_sale_opened || mysqlDate(dayjs.utc().format()),
+      date_sale_opened: cart?.date_sale_opened || dayjs.utc().format(),
       sale_opened_by: cart?.sale_opened_by || clerk?.id,
       items: newItems,
       transactions: cart?.transactions || [],

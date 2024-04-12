@@ -1,4 +1,4 @@
-import { signOut } from 'next-auth/client'
+// import { signOut } from 'next-auth/client'
 import { useRouter } from 'next/router'
 
 export default function SignOutButton() {

@@ -2,7 +2,7 @@ import 'primereact/resources/themes/lara-light-indigo/theme.css' //theme
 import 'primereact/resources/primereact.min.css' //core css
 import 'primeicons/primeicons.css' //icons
 import '../styles/index.css'
-import { Provider as NextAuthProvider } from 'next-auth/client'
+// import { Provider as NextAuthProvider } from 'next-auth/client'
 import { UserProvider } from '@auth0/nextjs-auth0/client'
 import { Provider as JotaiProvider } from 'jotai'
 // import { SessionProvider } from "next-auth/react";

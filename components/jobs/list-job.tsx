@@ -49,7 +49,7 @@ export default function ListJob({ task }: ListItemProps) {
                 )
                 const completedTask = {
                   ...task,
-                  date_completed: mysqlDate(dayjs.utc().format()),
+                  date_completed: dayjs.utc().format(),
                   completed_by_clerk_id: clerk?.id,
                   is_completed: true,
                 }

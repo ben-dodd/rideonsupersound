@@ -3,7 +3,7 @@ import Image from 'next/image'
 import Head from 'next/head'
 import { useUser } from '@auth0/nextjs-auth0/client'
 
-import SignInButton from '@/components/_components/button/sign-in-button'
+// import SignInButton from '@/components/_components/button/sign-in-button'
 
 export default function SignIn() {
   // const [session] = useSession()
@@ -21,7 +21,7 @@ export default function SignIn() {
             width={200}
           />
         </div>
-        <SignInButton />
+        {/* <SignInButton /> */}
         {/* {user && (
           <div className="text-xs px-8 pt-4 text-center">
             <b>{user?.sub}</b>

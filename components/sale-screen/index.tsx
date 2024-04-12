@@ -114,7 +114,7 @@ export default function SaleScreen() {
       laybySale = {
         ...laybySale,
         state: SaleStateTypes.Layby,
-        date_layby_started: mysqlDate(dayjs.utc().format()),
+        date_layby_started: dayjs.utc().format(),
         layby_started_by: clerk?.id,
       }
       saveLog(
@@ -175,7 +175,7 @@ export default function SaleScreen() {
         : null,
       state: SaleStateTypes.Completed,
       sale_closed_by: clerk?.id,
-      date_sale_closed: mysqlDate(dayjs.utc().format()),
+      date_sale_closed: dayjs.utc().format(),
     }
 
     const saleId = await saveSaleItemsTransactionsToDatabase(

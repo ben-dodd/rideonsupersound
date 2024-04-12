@@ -85,7 +85,7 @@ export default function CountItems() {
       countedItem.quantity_counted += 1
       countedItem.quantity_difference = countedItem?.quantity_difference + 1
       countedItem.counted_by = clerk?.id
-      countedItem.date_counted = mysqlDate(dayjs.utc().format())
+      countedItem.date_counted = dayjs.utc().format()
       countedItem.review_decision = null
       updateStocktakeItemInDatabase(countedItem)
     } else {
@@ -97,7 +97,7 @@ export default function CountItems() {
         quantity_recorded: stockItem?.quantity || 0,
         quantity_difference: 1 - (stockItem?.quantity || 0),
         counted_by: clerk?.id,
-        date_counted: mysqlDate(dayjs.utc().format()),
+        date_counted: dayjs.utc().format(),
       }
       saveStocktakeItemToDatabase(countedItem)
     }

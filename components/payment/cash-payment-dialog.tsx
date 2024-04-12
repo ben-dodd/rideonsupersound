@@ -65,7 +65,7 @@ export default function CashPaymentDialog() {
       onClick: async () => {
         setSubmitting(true)
         let vendorPayment = {
-          date: mysqlDate(dayjs.utc().format()),
+          date: dayjs.utc().format(),
           amount: Math.round(parseFloat(payment) * 100),
           clerk_id: clerk?.id,
           vendor_id: vendor?.id,
