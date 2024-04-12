@@ -939,7 +939,7 @@ export function filterInventory({
   slice = 50,
   emptyReturn = false,
 }) {
-  // console.log(inventory)
+  console.log(inventory)
   if (!inventory) return []
   return inventory
     ?.filter((item: StockObject) => {
