@@ -15,7 +15,6 @@ import Modal from '@/components/_components/container/modal'
 import TextField from '@/components/_components/inputs/text-field'
 import Select from 'react-select'
 import dayjs from 'dayjs'
-import { mysqlDate } from '@/lib/data-functions'
 
 export default function JobDialog() {
   // Atoms

@@ -1056,6 +1056,3 @@ export const expandRanges = (inputStr) => {
 
   return output
 }
-
-export const mysqlDate = (isoString) =>
-  isoString ? isoString?.slice(0, 19).replace('T', ' ') : ''

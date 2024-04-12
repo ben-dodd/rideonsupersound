@@ -43,7 +43,7 @@ import Modal from '@/components/_components/container/modal'
 import TextField from '@/components/_components/inputs/text-field'
 import HoldListItem from './list-item'
 import dayjs from 'dayjs'
-import { getItemDisplayName, mysqlDate } from '@/lib/data-functions'
+import { getItemDisplayName } from '@/lib/data-functions'
 
 export default function HoldDialog() {
   const { weather } = useWeather()

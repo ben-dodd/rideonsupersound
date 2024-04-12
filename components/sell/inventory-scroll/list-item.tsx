@@ -36,7 +36,6 @@ import {
   getItemDisplayName,
   getItemQuantity,
   getImageSrc,
-  mysqlDate,
 } from '@/lib/data-functions'
 import { saveLog } from '@/lib/db-functions'
 import dayjs from 'dayjs'

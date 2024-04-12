@@ -25,7 +25,7 @@ import {
 import SyncIcon from '@mui/icons-material/Sync'
 
 // Functions
-import { getSaleVars, makeGiftCardCode, mysqlDate } from '@/lib/data-functions'
+import { getSaleVars, makeGiftCardCode } from '@/lib/data-functions'
 
 // Components
 import Modal from '@/components/_components/container/modal'

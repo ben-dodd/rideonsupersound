@@ -18,7 +18,7 @@ import { VendorObject, ModalButton, VendorPaymentTypes } from '@/lib/types'
 
 // Functions
 import { saveLog, saveVendorPaymentToDatabase } from '@/lib/db-functions'
-import { getVendorDetails, mysqlDate } from '@/lib/data-functions'
+import { getVendorDetails } from '@/lib/data-functions'
 
 // Components
 import TextField from '@/components/_components/inputs/text-field'

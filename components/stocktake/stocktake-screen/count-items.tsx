@@ -27,7 +27,7 @@ import {
   updateStocktakeInDatabase,
   updateStocktakeItemInDatabase,
 } from '@/lib/db-functions'
-import { getItemSkuDisplayName, mysqlDate } from '@/lib/data-functions'
+import { getItemSkuDisplayName } from '@/lib/data-functions'
 
 // Components
 import TextField from '@/components/_components/inputs/text-field'

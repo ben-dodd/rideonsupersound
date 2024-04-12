@@ -30,7 +30,6 @@ import ScreenContainer from '@/components/_components/container/screen'
 import {
   getVendorDetails,
   isValidBankAccountNumber,
-  mysqlDate,
 } from '@/lib/data-functions'
 import dayjs from 'dayjs'
 import SelectBatchPayments from './select-batch-payments'

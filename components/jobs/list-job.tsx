@@ -7,7 +7,6 @@ import { TaskObject, ClerkObject } from '@/lib/types'
 import { clerkAtom } from '@/lib/atoms'
 import { completeTask } from '@/lib/db-functions'
 import dayjs from 'dayjs'
-import { mysqlDate } from '@/lib/data-functions'
 
 type ListItemProps = {
   task: TaskObject

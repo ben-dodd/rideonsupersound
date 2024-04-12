@@ -14,7 +14,7 @@ import {
 import { ModalButton, StockObject } from '@/lib/types'
 
 // Functions
-import { getGeolocation, mysqlDate } from '@/lib/data-functions'
+import { getGeolocation } from '@/lib/data-functions'
 import { saveLog, saveStockToDatabase } from '@/lib/db-functions'
 
 // Components

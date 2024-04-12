@@ -33,7 +33,6 @@ import {
   getItemQuantity,
   getItemSkuDisplayNameById,
   getSaleVars,
-  mysqlDate,
 } from './data-functions'
 
 export async function loadSaleToCart(

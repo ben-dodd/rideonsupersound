@@ -19,11 +19,7 @@ import {
 import { GiftCardObject, ModalButton } from '@/lib/types'
 
 // Functions
-import {
-  getGeolocation,
-  makeGiftCardCode,
-  mysqlDate,
-} from '@/lib/data-functions'
+import { getGeolocation, makeGiftCardCode } from '@/lib/data-functions'
 import { saveLog, saveStockToDatabase } from '@/lib/db-functions'
 
 // Components

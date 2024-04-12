@@ -17,7 +17,7 @@ import { clerkAtom, alertAtom, cartAtom, viewAtom } from '@/lib/atoms'
 import { ModalButton, CustomerObject, SaleStateTypes } from '@/lib/types'
 
 // Functions
-import { getSaleVars, mysqlDate } from '@/lib/data-functions'
+import { getSaleVars } from '@/lib/data-functions'
 import {
   saveSaleAndPark,
   saveLog,

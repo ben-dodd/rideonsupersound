@@ -22,7 +22,7 @@ import {
 } from '@/lib/types'
 
 // Functions
-import { getSaleVars, getVendorDetails, mysqlDate } from '@/lib/data-functions'
+import { getSaleVars, getVendorDetails } from '@/lib/data-functions'
 
 // Components
 import Modal from '@/components/_components/container/modal'

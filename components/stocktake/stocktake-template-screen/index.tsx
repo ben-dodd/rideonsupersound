@@ -36,7 +36,6 @@ import {
 // Components
 import ScreenContainer from '@/components/_components/container/screen'
 import {
-  mysqlDate,
   parseJSON,
   writeStocktakeFilterDescription,
 } from '@/lib/data-functions'

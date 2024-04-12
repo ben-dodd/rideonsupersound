@@ -20,7 +20,7 @@ import {
 } from '@/lib/types'
 
 // Functions
-import { getSaleVars, mysqlDate } from '@/lib/data-functions'
+import { getSaleVars } from '@/lib/data-functions'
 
 // Components
 import Modal from '@/components/_components/container/modal'
