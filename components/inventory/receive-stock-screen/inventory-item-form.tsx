@@ -42,7 +42,7 @@ export default function InventoryItemForm({
             <UploadableImage
               imageUrl={getImageSrc(item)}
               onImageUpload={(imageUrl) =>
-                handleChange({ target: { name: 'imageUrl', value: imageUrl } })
+                handleChange({ target: { name: 'image_url', value: imageUrl } })
               }
               uploadFolder={'stock'}
             />
