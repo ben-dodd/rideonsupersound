@@ -719,7 +719,7 @@ export function writeItemList(
         if (item?.is_gift_card) {
           return `Gift Card [${stockItem?.gift_card_code}]`
         } else {
-          let cartQuantity = item?.quantity || 1
+          let cartQuantity = Number(item?.quantity || 1)
           let str = ''
           if (cartQuantity > 1) str = `${cartQuantity} x `
           str = str + getItemDisplayName(stockItem)
