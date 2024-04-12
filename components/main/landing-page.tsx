@@ -1,24 +1,30 @@
-import { useEffect } from "react";
-import { useAccount, useAccountClerks } from "@/lib/swr-hooks";
-import { useSession } from "next-auth/client";
-import { useAtom } from "jotai";
-import { clerkAtom } from "@/lib/atoms";
+import { useEffect } from 'react'
+import { useAccount, useAccountClerks } from '@/lib/swr-hooks'
+// import { useSession } from 'next-auth/client'
+import { useUser } from '@auth0/nextjs-auth0/client'
+import { useAtom } from 'jotai'
+import { clerkAtom } from '@/lib/atoms'
 
-import MainPage from "./main-page";
-import SplashPage from "./splash-page";
+import MainPage from './main-page'
+import SplashPage from './splash-page'
 
 export default function LandingPage() {
   // Get google auth details
-  const [session] = useSession();
-  const { account } = useAccount(session?.user?.email);
+  // const [session] = useSession()
+  const { user } = useUser()
+  const { account } = useAccount(user?.sub)
   // Get clerk details
-  const { clerks, isAccountClerksLoading } = useAccountClerks(account?.id);
-  const [clerk, setClerk] = useAtom(clerkAtom);
+  const { clerks, isAccountClerksLoading } = useAccountClerks(account?.id)
+  const [clerk, setClerk] = useAtom(clerkAtom)
 
   useEffect(() => {
     // If google account only connected to one clerk, automatically set clerk
-    if (clerks && clerks.length === 1) setClerk(clerks[0]);
-  }, [clerks]);
+    if (clerks && clerks.length === 1) setClerk(clerks[0])
+  }, [clerks])
+
+  console.log(user)
+
+  console.log(account)
 
   return (
     <>
@@ -32,5 +38,5 @@ export default function LandingPage() {
         <SplashPage clerks={clerks} />
       )}
     </>
-  );
+  )
 }

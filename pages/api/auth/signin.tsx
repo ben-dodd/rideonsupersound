@@ -1,11 +1,13 @@
-import { useSession } from "next-auth/client";
-import Image from "next/image";
-import Head from "next/head";
+// import { useSession } from 'next-auth/client'
+import Image from 'next/image'
+import Head from 'next/head'
+import { useUser } from '@auth0/nextjs-auth0/client'
 
-import SignInButton from "@/components/_components/button/sign-in-button";
+import SignInButton from '@/components/_components/button/sign-in-button'
 
 export default function SignIn() {
-  const [session] = useSession();
+  // const [session] = useSession()
+  const { user } = useUser()
   return (
     <>
       <Head>
@@ -20,14 +22,14 @@ export default function SignIn() {
           />
         </div>
         <SignInButton />
-        {session && (
+        {/* {user && (
           <div className="text-xs px-8 pt-4 text-center">
-            <b>{session?.user?.email}</b>
+            <b>{user?.sub}</b>
             <br />
             is not an authenticated email address
           </div>
-        )}
+        )} */}
       </div>
     </>
-  );
+  )
 }

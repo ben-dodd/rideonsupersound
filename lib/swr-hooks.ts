@@ -15,17 +15,14 @@ async function nakedFetcher(url: string) {
   })
 }
 
-export function useAccount(email: string) {
+export function useAccount(sub: string) {
   // if (!email)
   //   return {
   //     account: null,
   //     isLoading: false,
   //     isError: "No email.",
   //   };
-  const { data, error } = useSWR(
-    `/api/get-account?email=${email}`,
-    nakedFetcher
-  )
+  const { data, error } = useSWR(`/api/get-account?sub=${sub}`, nakedFetcher)
   return {
     account: data?.[0],
     isAccountLoading: !error && !data,
