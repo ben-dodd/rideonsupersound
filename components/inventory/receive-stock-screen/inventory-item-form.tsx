@@ -14,6 +14,7 @@ import CreateableSelect from '@/components/_components/inputs/createable-select'
 import { saveLog, saveVendorToDatabase } from '@/lib/db-functions'
 import { useAtom } from 'jotai'
 import { clerkAtom } from '@/lib/atoms'
+import { UploadableImage } from '@/components/_components/image/uploadable'
 
 interface inventoryProps {
   item: StockObject
@@ -32,31 +33,24 @@ export default function InventoryItemForm({
   const { logs, mutateLogs } = useLogs()
   const [clerk] = useAtom(clerkAtom)
 
-  // console.log(item)
-
-  // const vendor = useMemo(
-  //   () =>
-  //     (vendors &&
-  //       vendors.filter(
-  //         (vendor: VendorObject) => vendor?.id === item?.vendor_id
-  //       )[0]) ||
-  //     null,
-  //   [item?.vendor_id]
-  // );
-
-  // console.log(item);
-
   return (
     <div>
       <div className="flex justify-start w-full">
         {/* IMAGE */}
         <div className="pr-2 w-52 mr-2">
           <div className="w-52 h-52 relative">
-            <img
+            <UploadableImage
+              imageUrl={getImageSrc(item)}
+              onImageUpload={(imageUrl) =>
+                handleChange({ target: { name: 'imageUrl', value: imageUrl } })
+              }
+              uploadFolder={'stock'}
+            />
+            {/* <img
               className="object-cover absolute"
               src={getImageSrc(item)}
               alt={item?.title || 'Inventory image'}
-            />
+            /> */}
             {item?.id && (
               <div className="absolute w-52 h-8 bg-opacity-50 bg-black text-white flex justify-center items-center">
                 {getItemSku(item)}
