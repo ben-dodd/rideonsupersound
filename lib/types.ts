@@ -1,3 +1,5 @@
+import { NextApiRequest } from 'next'
+
 export enum SaleStateTypes {
   InProgress = 'in progress', // sale in cart
   Layby = 'layby', // sale held on layby
@@ -771,3 +773,19 @@ export const bgLight = [
   'bg-col9-light',
   'bg-col10-light',
 ]
+
+// Custom type definition for Next.js API request with form data
+export interface NextApiRequestWithFormData extends NextApiRequest {
+  file: {
+    buffer: any
+    fieldname: string
+    originalname: string
+    encoding: string
+    mimetype: string
+    destination: string
+    filename: string
+    path: string
+    size: number
+  }
+  folder: string
+}

@@ -25,7 +25,7 @@ export default function InventoryTable() {
 
   // Atoms
   const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom)
-  console.log(inventory)
+  // console.log(inventory)
   // Constants
   const data = useMemo(
     () =>
