@@ -1,3 +1,5 @@
+import Close from '@mui/icons-material/Close'
+
 export const UploadableImage = ({ imageUrl, onImageUpload, uploadFolder }) => {
   const handleFileChange = async (e) => {
     console.log(e)
@@ -37,6 +39,12 @@ export const UploadableImage = ({ imageUrl, onImageUpload, uploadFolder }) => {
 
   return (
     <>
+      <button
+        className="absolute w-4 h-4 right-0 bg-opacity-50 bg-black text-white flex justify-center items-center"
+        onClick={() => onImageUpload(null)}
+      >
+        <Close />
+      </button>
       <img
         className="h-full w-full object-cover cursor-pointer hover:opacity-50"
         src={imageUrl}
