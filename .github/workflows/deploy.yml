@@ -8,7 +8,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy Ride On Super Sound
+      - name: Deploy Ride On Super Sound Vendors
         uses: appleboy/ssh-action@v0.1.2
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -17,8 +17,8 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
 
           script: |
-            cd ross-original/rideonsupersound
-            git pull origin main
+            cd vendor/rideonsupersound
+            git pull origin vendor
             npm install --legacy-peer-deps &&
             npm run build &&
-            pm2 restart ross-original
+            pm2 restart vendor
