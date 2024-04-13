@@ -55,7 +55,7 @@ const handler: NextApiHandler = async (req, res) => {
             FROM stock_price
             WHERE stock_id = s.id
          ) OR s.is_gift_card OR s.is_misc_item)
-      AND NOT is_deleted
+      AND s.is_deleted = 0
       AND vendor_id = (
         SELECT id FROM vendor WHERE uid = ?
         )

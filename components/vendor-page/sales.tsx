@@ -1,6 +1,4 @@
 import dayjs from 'dayjs'
-// import { XYPlot, VerticalBarSeries, XAxis, YAxis } from "react-vis";
-// import { timeFormatDefaultLocale } from "d3-time-format";
 
 export default function Sales({ sales, vendorStock }) {
   return (

@@ -22,14 +22,6 @@ import { useEffect, useState } from 'react'
 export default function VendorScreen() {
   const router = useRouter()
   const { id } = router.query
-  // const [uid, setUid] = useState(null);
-  // useEffect(() => {
-  //   if (!router.isReady) {
-  //     const { id } = router.query;
-  //     console.log(id);
-  //     setUid(id);
-  //   }
-  // }, [router.isReady]);
   const { vendor, isVendorLoading, isVendorError } = useVendorByUid(id)
   const { vendorStock, isVendorStockLoading, isVendorStockError } =
     useVendorStockByUid(id)
@@ -71,10 +63,6 @@ export default function VendorScreen() {
 
   const [tab, setTab] = useState(0)
   const [stockSearch, setStockSearch] = useState('')
-
-  // const [startDate, setStartDate] = useState(
-  //   dayjs().subtract(1, "year").format("YYYY-MM-DD")
-  // );
   const [startDate, setStartDate] = useState('2018-11-03')
   const [endDate, setEndDate] = useState(dayjs().format('YYYY-MM-DD'))
   const [sales, setSales] = useState([])
@@ -82,9 +70,12 @@ export default function VendorScreen() {
   const [totalTake, setTotalTake] = useState(0)
   const [totalPaid, setTotalPaid] = useState(0)
 
-  // console.log(vendorSales)
-  // console.log(vendorStockPrice)
-  // console.log(vendorStockMovement)
+  console.log(vendorStock)
+  console.log(vendorPayments)
+  console.log(vendorSales)
+  console.log(vendorStockPrice)
+  console.log(vendorStockMovement)
+  console.log(vendorStoreCredits)
 
   useEffect(() => {
     const totalSales = vendorSales?.map((sale) => {
@@ -146,7 +137,7 @@ export default function VendorScreen() {
           >
             <div className="pb-4">
               <img
-                src="http://hmn.exu.mybluehost.me/img/POS-RIDEONSUPERSOUNDLOGOBLACK.png"
+                src="https://ross.syd1.digitaloceanspaces.com/img/POS-RIDEONSUPERSOUNDLOGOBLACK.png"
                 width="500px"
               />
             </div>
