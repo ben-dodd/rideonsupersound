@@ -1,6 +1,6 @@
 // Packages
-import { useMemo } from "react";
-import { useAtom } from "jotai";
+import { useMemo } from 'react'
+import { useAtom } from 'jotai'
 
 // DB
 import {
@@ -10,29 +10,29 @@ import {
   useInventory,
   useSalesJoined,
   useVendorPayments,
-} from "@/lib/swr-hooks";
-import { loadedVendorIdAtom } from "@/lib/atoms";
-import { VendorObject, ClerkObject, StockObject } from "@/lib/types";
+} from '@/lib/swr-hooks'
+import { loadedVendorIdAtom } from '@/lib/atoms'
+import { VendorObject, ClerkObject, StockObject } from '@/lib/types'
 
 // Functions
-import { getVendorDetails } from "@/lib/data-functions";
+import { getVendorDetails } from '@/lib/data-functions'
 
 // Components
-import Table from "@/components/_components/table";
-import TableContainer from "@/components/_components/container/table";
-import { CSVLink } from "react-csv";
+import Table from '@/components/_components/table'
+import TableContainer from '@/components/_components/container/table'
+import { CSVLink } from 'react-csv'
 
 export default function VendorsScreen() {
   // Atoms
-  const [loadedVendorId, setLoadedVendorId] = useAtom(loadedVendorIdAtom);
+  const [loadedVendorId, setLoadedVendorId] = useAtom(loadedVendorIdAtom)
 
   // SWR
-  const { inventory, isInventoryLoading } = useInventory();
-  const { sales, isSalesLoading } = useSalesJoined();
-  const { vendorPayments, isVendorPaymentsLoading } = useVendorPayments();
-  const { vendors, isVendorsLoading } = useVendors();
-  const { clerks, isClerksLoading } = useClerks();
-  const { customers, isCustomersLoading } = useCustomers();
+  const { inventory, isInventoryLoading } = useInventory()
+  const { sales, isSalesLoading } = useSalesJoined()
+  const { vendorPayments, isVendorPaymentsLoading } = useVendorPayments()
+  const { vendors, isVendorsLoading } = useVendors()
+  const { clerks, isClerksLoading } = useClerks()
+  const { customers, isCustomersLoading } = useCustomers()
 
   // const wrongSales: any[] = sales?.filter((s: any) => {
   //   let vendorDiscountFactor = 100,
@@ -60,17 +60,17 @@ export default function VendorsScreen() {
                 sales,
                 vendorPayments,
                 v?.id
-              );
+              )
               return {
                 id: v?.id,
-                name: v?.name || "-",
-                contactName: v?.contact_name || "-",
+                name: v?.name || '-',
+                contactName: v?.contact_name || '-',
                 storeContact:
                   clerks?.filter((c: ClerkObject) => c?.id === v?.clerk_id)[0]
-                    ?.name || "-",
-                type: v?.vendor_category || "-",
-                email: v?.email || "",
-                bankAccountNumber: v?.bank_account_number || "-",
+                    ?.name || '-',
+                type: v?.vendor_category || '-',
+                email: v?.email || '',
+                bankAccountNumber: v?.bank_account_number || '-',
                 totalTake: vendorVars?.totalSell || 0,
                 totalOwing: vendorVars?.totalOwing || 0,
                 totalDebitAmount: vendorVars?.totalPaid || 0,
@@ -82,25 +82,25 @@ export default function VendorsScreen() {
                     (item?.quantity || 0) + sum,
                   0
                 ),
-                url: `../vendor/${v?.uid}`,
-              };
+                url: `https://vendor.rideonsupersound.co.nz/${v?.uid}`,
+              }
             })
         : [],
     [vendors, sales, inventory, vendorPayments, customers, clerks]
-  );
+  )
 
   const columns = useMemo(() => {
     // const openVendorDialog = (item: any) =>
     //   setShowVendorScreen(item?.row?.original?.id);
     return [
       {
-        Header: "ID",
-        accessor: "id",
+        Header: 'ID',
+        accessor: 'id',
         width: 60,
       },
       {
-        Header: "Name",
-        accessor: "name",
+        Header: 'Name',
+        accessor: 'name',
         width: 200,
         Cell: (item: any) => (
           <span
@@ -112,7 +112,7 @@ export default function VendorsScreen() {
               })
             }
           >
-            {item?.value || ""}
+            {item?.value || ''}
           </span>
         ),
       },
@@ -123,14 +123,14 @@ export default function VendorsScreen() {
       //   Cell: ({ value }) => value?.name || "-",
       // },
       {
-        Header: "Staff",
-        accessor: "storeContact",
+        Header: 'Staff',
+        accessor: 'storeContact',
         width: 80,
       },
-      { Header: "Type", accessor: "type", width: 100 },
+      { Header: 'Type', accessor: 'type', width: 100 },
       {
-        Header: "Email",
-        accessor: "email",
+        Header: 'Email',
+        accessor: 'email',
         Cell: ({ value }) => (
           <a href={`mailto:${value}`} className="underline">
             {value}
@@ -139,8 +139,8 @@ export default function VendorsScreen() {
         width: 220,
       },
       {
-        Header: "Link",
-        accessor: "url",
+        Header: 'Link',
+        accessor: 'url',
         Cell: ({ value }) => (
           <a href={`${value}`} target="_blank" className="underline">
             Link
@@ -150,38 +150,38 @@ export default function VendorsScreen() {
       },
       // { Header: "Bank Account #", accessor: "bankAccountNumber", width: 220 },
       {
-        Header: "Total Take",
-        accessor: "totalTake",
+        Header: 'Total Take',
+        accessor: 'totalTake',
         width: 100,
         Cell: ({ value }) =>
-          value && !isNaN(value) ? `$${(value / 100)?.toFixed(2)}` : "$0.00",
+          value && !isNaN(value) ? `$${(value / 100)?.toFixed(2)}` : '$0.00',
       },
       {
-        Header: "Total Paid",
-        accessor: "totalDebitAmount",
+        Header: 'Total Paid',
+        accessor: 'totalDebitAmount',
         width: 100,
         Cell: ({ value }) =>
-          value && !isNaN(value) ? `$${(value / 100)?.toFixed(2)}` : "$0.00",
+          value && !isNaN(value) ? `$${(value / 100)?.toFixed(2)}` : '$0.00',
       },
       {
-        Header: "Total Owing",
-        accessor: "totalOwing",
+        Header: 'Total Owing',
+        accessor: 'totalOwing',
         width: 120,
         Cell: ({ value }) =>
-          value && !isNaN(value) ? `$${(value / 100)?.toFixed(2)}` : "$0.00",
+          value && !isNaN(value) ? `$${(value / 100)?.toFixed(2)}` : '$0.00',
       },
       {
-        Header: "Unique Items",
-        accessor: "uniqueItemsInStock",
+        Header: 'Unique Items',
+        accessor: 'uniqueItemsInStock',
         width: 130,
       },
       {
-        Header: "Total Items",
-        accessor: "totalItemsInStock",
+        Header: 'Total Items',
+        accessor: 'totalItemsInStock',
         width: 110,
       },
-    ];
-  }, []);
+    ]
+  }, [])
 
   return (
     <TableContainer
@@ -200,9 +200,9 @@ export default function VendorsScreen() {
         colorDark="bg-col3-dark"
         data={data}
         columns={columns}
-        heading={"Vendors"}
+        heading={'Vendors'}
         pageSize={20}
-        sortOptions={[{ id: "name", desc: false }]}
+        sortOptions={[{ id: 'name', desc: false }]}
         downloadCSV={true}
       />
       {/* <CSVLink
@@ -214,5 +214,5 @@ export default function VendorsScreen() {
         WRONG SALES
       </CSVLink> */}
     </TableContainer>
-  );
+  )
 }

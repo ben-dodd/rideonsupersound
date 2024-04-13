@@ -898,7 +898,7 @@ export function writeEmailCSV(vendors, includeUnchecked, includeNoBank) {
       v?.email,
       v?.bank_account_number,
       v?.payAmount,
-      `https://rideonsupersound.vercel.app/vendor/${v?.uid}`,
+      `https://vendor.rideonsupersound.co.nz/${v?.uid}`,
       dayjs().format('DD/MM/YYYY'),
       v?.is_checked,
       isValidBankAccountNumber(v?.bank_account_number),
