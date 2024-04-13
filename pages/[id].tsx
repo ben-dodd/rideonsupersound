@@ -25,11 +25,8 @@ export default function VendorScreen() {
   const { vendor, isVendorLoading, isVendorError } = useVendorByUid(id)
   const { vendorStock, isVendorStockLoading, isVendorStockError } =
     useVendorStockByUid(id)
-  const {
-    vendorStockMovement,
-    isVendorStockMovementLoading,
-    isVendorStockMovementError,
-  } = useVendorStockMovementByUid(id)
+  const { isVendorStockMovementLoading, isVendorStockMovementError } =
+    useVendorStockMovementByUid(id)
   const {
     vendorStockPrice,
     isVendorStockPriceLoading,
@@ -69,13 +66,6 @@ export default function VendorScreen() {
   const [payments, setPayments] = useState([])
   const [totalTake, setTotalTake] = useState(0)
   const [totalPaid, setTotalPaid] = useState(0)
-
-  console.log(vendorStock)
-  console.log(vendorPayments)
-  console.log(vendorSales)
-  console.log(vendorStockPrice)
-  console.log(vendorStockMovement)
-  console.log(vendorStoreCredits)
 
   useEffect(() => {
     const totalSales = vendorSales?.map((sale) => {
@@ -125,7 +115,7 @@ export default function VendorScreen() {
         <div className="flex h-screen w-screen p-8">
           AN UNKNOWN ERROR HAS OCCURRED!
         </div>
-      ) : (
+      ) : vendor?.id !== undefined ? (
         <div className="flex h-screen w-screen p-4 md:p-8">
           <div
             style={{
@@ -200,9 +190,6 @@ export default function VendorScreen() {
                 </div>
               </div>
             )}
-            {/* <div hidden={tab !== 0}>
-              <Summary id={id} sales={sales} payments={payments} />
-            </div> */}
             <div hidden={tab !== 0}>
               <Sales sales={sales} vendorStock={vendorStock} />
             </div>
@@ -235,6 +222,13 @@ export default function VendorScreen() {
               </div>
             </div>
           </div>
+        </div>
+      ) : (
+        <div className="flex w-screen h-screen align-center justify-center">
+          <img
+            src="https://ross.syd1.digitaloceanspaces.com/img/POS-RIDEONSUPERSOUNDLOGOBLACK.png"
+            width="500px"
+          />
         </div>
       )}
     </>
