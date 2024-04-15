@@ -1,8 +1,11 @@
 import { useRouter } from 'next/router'
+import { useEffect } from 'react'
 
 const Vendor = ({ id }) => {
   const router = useRouter()
-  router.push(`https://vendor.rideonsupersound.co.nz/${id}`)
+  useEffect(() => {
+    router.push(`https://vendor.rideonsupersound.co.nz/${id}`)
+  }, [])
   return <div></div>
 }
 
