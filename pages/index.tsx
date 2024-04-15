@@ -1,32 +1,8 @@
-import { useAccount, useRegisterID } from '@/lib/swr-hooks'
-// import { useSession } from 'next-auth/client'
-import { withPageAuthRequired } from '@auth0/nextjs-auth0'
-import LandingPage from '@/components/main/landing-page'
-import SignIn from './api/auth/signin'
+import { useRouter } from 'next/router'
 
 export default function IndexPage() {
-  // const [session, sessionLoading] = useSession()
-  // const { account } = useAccount(session?.user?.email)
-  useRegisterID()
+  const router = useRouter()
+  router.push('https://shop.rideonsupersound.co.nz')
 
-  return (
-    <LandingPage />
-    // <>
-    //   {sessionLoading ? (
-    //     <div className="flex h-screen w-screen">
-    //       <div className="loading-icon" />
-    //     </div>
-    //   ) : session ? (
-    //     account?.is_authenticated ? (
-    //       <LandingPage />
-    //     ) : (
-    //       <SignIn />
-    //     )
-    //   ) : (
-    //     <SignIn />
-    //   )}
-    // </>
-  )
+  return <div />
 }
-
-export const getServerSideProps = withPageAuthRequired()
