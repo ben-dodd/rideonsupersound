@@ -38,7 +38,37 @@ export function dbGetStockList(db = connection) {
     .where(`stock.is_misc_item`, 0)
     .where(`stock.is_gift_card`, 0)
     .whereRaw(`(stock_price.id = (SELECT MAX(id) FROM stock_price WHERE stock_id = stock.id))`)
-  // .orderBy(`stock.${sortColumn}`, sortOrder)
+}
+
+export function dbGetStockListBySearch(searchString, db = connection) {
+  return db('stock')
+    .leftJoin('stock_movement', 'stock.id', 'stock_movement.stock_id')
+    .groupBy('stock.id')
+    .select('stock.id')
+    .sum('stock_movement.quantity as quantity')
+    .where((builder) => {
+      if (searchString) {
+        builder.whereRaw(
+          `
+          (
+            LOWER(stock.artist) LIKE ? OR
+            LOWER(stock.title) LIKE ? OR
+            LOWER(stock.format) LIKE ? OR
+            LOWER(stock.genre) LIKE ? OR
+            LOWER(stock.section) LIKE ? OR
+            LOWER(stock.tags) LIKE ?
+          )
+        `,
+          Array(6).fill(`%${searchString.toLowerCase()}%`),
+        )
+      }
+    })
+    .where(`stock.is_deleted`, 0)
+    .where(`stock.is_misc_item`, 0)
+    .where(`stock.is_gift_card`, 0)
+    .orderBy(`quantity`, 'desc')
+    .limit(50)
+    .then((rows) => Promise.all(rows.map((row) => dbGetStockItem(row.id, true, db))))
 }
 
 export function dbGetFullStockTable(db = connection) {

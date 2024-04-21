@@ -8,6 +8,10 @@ export function useStockList() {
   return useData(`stock`, 'stockList')
 }
 
+export function useStockListBySearch(searchTerm: string) {
+  return useData(searchTerm?.trim()?.length > 0 ? `stock/search?searchTerm=${searchTerm}` : null, 'stockList')
+}
+
 export function useStockTableData(query) {
   // const query = obj2query(params)
   console.log('Getting stock table data')

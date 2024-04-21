@@ -14,6 +14,7 @@ export default function CheckHoldsDialog() {
   const { itemHolds, isItemHoldsLoading } = useHoldsForItem(activeItemId)
   const { clerk } = useClerk()
   const { mutate } = useSWRConfig()
+  console.log(itemHolds)
 
   const clearDialog = () => {
     closeView(ViewProps.checkHoldsDialog)

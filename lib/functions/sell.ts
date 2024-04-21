@@ -84,21 +84,6 @@ export function filterInventory(item: StockItemSearchObject, searchString) {
   if (!searchString || searchString === '') return []
   let res = true
   let terms = searchString.split(' ')
-  // let itemMatch = `
-  //     ${getItemSku(item) || ''}
-  //     ${item?.artist || ''}
-  //     ${item?.title || ''}
-  //     ${item?.format || ''}
-  //     ${item?.genre || ''}
-  //     ${item?.country || ''}
-  //     ${item?.section || ''}
-  //     ${item?.tags ? item?.tags?.join(' ') : ''}
-  //     ${item?.vendorName || ''}
-  //     ${item?.googleBooksItem?.volumeInfo?.authors?.join(' ') || ''}
-  //     ${item?.googleBooksItem?.volumeInfo?.publisher || ''}
-  //     ${item?.googleBooksItem?.volumeInfo?.subtitle || ''}
-  //     ${item?.googleBooksItem?.volumeInfo?.categories?.join(' ') || ''}
-  //   `
   let itemMatch = `
         ${getItemSku(item) || ''}
         ${item?.artist || ''}

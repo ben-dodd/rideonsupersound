@@ -101,7 +101,7 @@
 }
 
 .white-button {
-  @apply bg-white hover:bg-gray-100 ring-1 disabled:bg-gray-200 p-2 rounded;
+  @apply bg-white hover:bg-gray-100 ring-1 ring-gray-200 hover:shadow-md disabled:bg-gray-200 p-2 rounded;
 }
 
 .dialog__footer--actions-right {
@@ -320,7 +320,7 @@
 }
 .lds-ripple div {
   position: absolute;
-  border: 8px solid #ff00d4;
+  border: 8px solid #d3d2a765;
   opacity: 1;
   border-radius: 50%;
   animation: lds-ripple 2s cubic-bezier(0, 0.2, 0.8, 1) infinite;

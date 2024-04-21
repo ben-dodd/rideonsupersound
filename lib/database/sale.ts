@@ -110,7 +110,7 @@ export function dbGetAllCurrentHolds(db = connection) {
 }
 
 export function dbGetHoldsForItem(itemId, db = connection) {
-  return dbGetAllHolds(db).where(`hold.item_id`, itemId)
+  return dbGetAllHolds(db).where(`hold.item_id`, itemId).where(`hold.date_removed_from_hold`, null)
 }
 
 export async function dbGetSale(id, db = connection) {

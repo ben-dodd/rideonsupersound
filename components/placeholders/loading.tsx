@@ -9,7 +9,9 @@ const Loading = ({
 }) => {
   return (
     <div
-      className={`flex ${size === 'full' ? 'h-screen w-screen' : size === 'md' ? 'h-full w-full' : 'h-full w-full'}`}
+      className={`flex justify-center align-center ${
+        size === 'full' ? 'h-screen w-screen' : size === 'md' ? 'h-full w-full' : 'h-full w-full'
+      }`}
     >
       {type === 'ripple' ? (
         <div className="lds-ripple">
