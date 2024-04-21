@@ -1,9 +1,9 @@
 export const ColumnSelect = ({ table }) => (
-  <div className="flex">
+  <div className="flex flex-col p-2 text-xs">
     {table.getAllLeafColumns().map((column) => {
       return (
-        <div key={column.id} className="px-1">
-          <label>
+        <div key={column.id} className="py-1">
+          <label className="flex">
             <input
               {...{
                 type: 'checkbox',
@@ -11,7 +11,7 @@ export const ColumnSelect = ({ table }) => (
                 onChange: column.getToggleVisibilityHandler(),
               }}
             />{' '}
-            {column.columnDef?.header}
+            <div className="ml-1 whitespace-nowrap">{column.columnDef?.header}</div>
           </label>
         </div>
       )

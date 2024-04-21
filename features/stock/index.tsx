@@ -3,7 +3,6 @@ import dynamic from 'next/dynamic'
 import Tabs from 'components/navigation/tabs'
 import { useCurrentReceiveBatchId, useStockList } from 'lib/api/stock'
 import { initBatchReceiveSession, useAppStore } from 'lib/store'
-import StockList from './stock-list'
 import { Pages, ViewProps } from 'lib/store/types'
 import { AutoFixHigh, CollectionsBookmark, DisplaySettings, EventBusy, Print } from '@mui/icons-material'
 import { useRouter } from 'next/router'
@@ -11,8 +10,8 @@ import ReceiveStockList from './receive-stock-list'
 import StockMovementList from './stock-movement-list'
 import { useClerk } from 'lib/api/clerk'
 import dayjs from 'dayjs'
-import ViewButton from 'components/button/view-button'
 import Tab from 'components/navigation/tabs/tab'
+import ViewStockTable from './view-stock-table'
 const ComingSoon = dynamic(() => import('components/placeholders/coming-soon'))
 
 const StockScreen = () => {
@@ -76,16 +75,13 @@ const StockScreen = () => {
     >
       <div className="flex justify-between">
         <Tabs
-          tabs={['Stock List', 'Stock Arrivals', 'Recently Sold', 'Best Sellers', 'Stock Movement']}
+          tabs={['View Stock', 'Stock Arrivals', 'Recently Sold', 'Best Sellers', 'Stock Movement']}
           value={tab}
           onChange={setTab}
         />
-        <div className="my-1 mx-4">
-          <ViewButton />
-        </div>
       </div>
       <Tab selectedTab={tab} tab={0}>
-        <StockList />
+        <ViewStockTable />
       </Tab>
       <Tab selectedTab={tab} tab={1}>
         <ReceiveStockList />

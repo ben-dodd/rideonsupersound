@@ -1,18 +1,14 @@
 import { useReceiveBatch } from 'lib/api/stock'
 // import { useState } from 'react'
-import StockListItem from '../stock-list/stock-list-item'
 import dayjs from 'dayjs'
 import { dateTime } from 'lib/types/date'
 import { useRouter } from 'next/router'
+import StockListItem from '../stock-list-item'
 
 const ReceiveBatchItem = ({ receiveBatchItem }) => {
   const { receiveBatch, isReceiveBatchLoading } = useReceiveBatch(receiveBatchItem?.id)
   // const [expanded, setExpanded] = useState(false)
   const router = useRouter()
-
-  // const toggleExpand = () => {
-  //   setExpanded(!expanded)
-  // }
 
   const inProgress = !receiveBatch?.dateCompleted
 

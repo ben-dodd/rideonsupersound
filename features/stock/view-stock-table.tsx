@@ -1,9 +1,13 @@
 import { Check, Close } from '@mui/icons-material'
 import Table from 'components/data/table'
 import { EditCell } from 'components/data/table/editCell'
+import Loading from 'components/placeholders/loading'
 import dayjs from 'dayjs'
+import { useAllStockMovements, useStockList } from 'lib/api/stock'
 import { getItemSku } from 'lib/functions/displayInventory'
 import { getProfitMargin, getProfitMarginString } from 'lib/functions/pay'
+import { filterInventory } from 'lib/functions/sell'
+import { collateStockList } from 'lib/functions/stock'
 import { useAppStore } from 'lib/store'
 import { Pages } from 'lib/store/types'
 import { dateSlash } from 'lib/types/date'
@@ -11,50 +15,42 @@ import { priceCentsString } from 'lib/utils'
 import { useRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
 
-const StockListTable = ({ data }) => {
+const ViewStockTable = () => {
   const router = useRouter()
   const {
     stockPage: { filters, visibleColumns },
     setPage,
   } = useAppStore()
+
+  const {
+    stockPage: { searchBar, filters: storedFilters },
+    setSearchBar,
+  } = useAppStore()
+  console.log(storedFilters)
+
+  const { stockList = [], isStockListLoading = true } = useStockList()
+  const { stockMovements = [], isStockMovementsLoading = true } = useAllStockMovements()
+  const filteredStockList = stockList?.filter((stockItem) => filterInventory(stockItem, searchBar))
+
+  const collatedStockList = useMemo(
+    () => collateStockList(filteredStockList, stockMovements),
+    [filteredStockList, stockMovements],
+  )
   const [pagination, setPagination] = useState(filters?.pagination)
   const [sorting, setSorting] = useState(filters?.sorting)
   const [columnVisibility, setColumnVisibility] = useState(visibleColumns)
+  const handleSearch = (e) => setSearchBar(Pages.stockPage, e.target.value)
 
   // Handle sort, pagination and filter changes
   // Do not add filters or setFilters to dependencies
   useEffect(() => {
     const newFilters = { pagination, sorting }
-    // onChangeFilters(newFilters)
     setPage(Pages.stockPage, { filters: newFilters })
-    // const paginatedIdList = idList?.slice(pageIndex * pageSize, pageIndex * pageSize + pageSize)
   }, [pagination, setPage, sorting])
 
   useEffect(() => {
     setPage(Pages.stockPage, { visibleColumns: columnVisibility })
   }, [columnVisibility, setPage])
-
-  // useEffect(() => {
-  //   console.log('changing new sorting', sorting)
-  //   const newFilters = { ...filters, sorting }
-  //   changeFilters(newFilters)
-  //   setPage(Pages.stockPage, newFilters)
-  // }, [sorting])
-
-  // const paginatedIdList = idList?.slice(pageIndex * pageSize, pageIndex * pageSize + pageSize)
-  // const { stockItemList = [], isStockItemListLoading = true } = useStockItemList(paginatedIdList)
-  // const { vendors } = useVendors()
-  // const data = useMemo(
-  //   () =>
-  //     stockItemList?.map((stockItem) => {
-  //       const { item = {}, price = {}, quantities = {} } = stockItem || {}
-  //       // console.log(stockItem)
-  //       const vendor = vendors?.find((vendor) => vendor?.id === item?.vendorId)
-  //       return { ...item, ...price, ...quantities, vendorName: vendor?.name }
-  //     }),
-  //   [stockItemList, vendors],
-  // )
-  console.log(data)
 
   const columns = useMemo(
     () => [
@@ -230,19 +226,24 @@ const StockListTable = ({ data }) => {
     [],
   )
   // console.log(data)
-  return (
+  return isStockListLoading || isStockMovementsLoading ? (
+    <Loading />
+  ) : (
     <Table
       columns={columns}
-      data={data}
+      data={collatedStockList}
       showPagination
+      searchable
       initPagination={filters?.pagination}
       onPaginationChange={setPagination}
       initSorting={filters?.sorting}
       onSortingChange={setSorting}
       initColumnVisibility={visibleColumns}
       onColumnVisibilityChange={setColumnVisibility}
+      searchValue={searchBar}
+      handleSearch={handleSearch}
     />
   )
 }
 
-export default StockListTable
+export default ViewStockTable

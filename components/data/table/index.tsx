@@ -11,6 +11,9 @@ import { MemoizedTableBody, TableBody } from './body'
 import { Pagination } from './pagination'
 import { Header } from './header'
 import { ColumnSelect } from './columnSelect'
+import { ViewColumn } from '@mui/icons-material'
+import SearchInput from 'components/inputs/search-input'
+import DropdownMenu from 'components/dropdown-menu'
 
 interface TableProps {
   color?: string
@@ -33,6 +36,9 @@ interface TableProps {
   onSortingChange?: Function
   initColumnVisibility?: any
   onColumnVisibilityChange?: Function
+  searchable?: boolean
+  searchValue?: string
+  handleSearch?: Function
 }
 
 function Table({
@@ -49,19 +55,15 @@ function Table({
   onSortingChange,
   initColumnVisibility = {},
   onColumnVisibilityChange,
+  searchable,
+  searchValue,
+  handleSearch,
 }: TableProps) {
   const rerender = useReducer(() => ({}), {})[1]
   const [pagination, setPagination] = useState<PaginationState>(initPagination)
   const [sorting, setSorting] = useState<SortingState>(initSorting)
   const [columnVisibility, setColumnVisibility] = useState(initColumnVisibility)
-  // const [tableData, setTableData] = useState(data || [])
-  // const pagination = useMemo(
-  //   () => ({
-  //     pageIndex,
-  //     pageSize,
-  //   }),
-  //   [pageIndex, pageSize],
-  // )
+  const [isColumnSelectOpen, setIsColumnSelectOpen] = useState(false)
 
   const table = useReactTable({
     columns,
@@ -128,7 +130,15 @@ function Table({
   return (
     <div className="ml-1">
       <div className="overflow-x-scroll w-full">
-        {columnSelectable && <ColumnSelect table={table} />}
+        <div className="px-2 flex justify-between align-center w-board">
+          {searchable && <SearchInput searchValue={searchValue} handleSearch={handleSearch} />}
+          {columnSelectable && (
+            <div className="px-2 h-full">
+              <DropdownMenu icon={<ViewColumn />} dark customMenu={<ColumnSelect table={table} />} />
+            </div>
+          )}
+          {/* <StockFilter stockList={stockList} setSettings={setSetting} filterSettings={filterSettings} /> */}
+        </div>
         <table
           className="table-fixed w-full text-sm"
           {...{
