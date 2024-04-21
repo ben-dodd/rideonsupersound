@@ -6,7 +6,7 @@ import { useSWRConfig } from 'swr'
 import { useRouter } from 'next/router'
 import { saveReceiveBatch } from 'lib/api/stock'
 import { getItemCount, getItemList } from 'lib/functions/receiveStock'
-import StockListItem from '../stock-list/stock-list-item'
+import StockListItem from '../stock-list-item'
 
 export default function ReviewItems({ setStage, setBypassConfirmDialog }) {
   const { clerk } = useClerk()
@@ -83,6 +83,7 @@ export default function ReviewItems({ setStage, setBypassConfirmDialog }) {
           {batchReceiveSession?.batchList?.length === 0
             ? 'NO ITEMS'
             : batchReceiveSession?.batchList?.map((batchItem) => (
+                // eslint-disable-next-line react/jsx-no-undef
                 <StockListItem
                   key={batchItem?.key}
                   stockListItem={{

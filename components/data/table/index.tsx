@@ -127,6 +127,21 @@ function Table({
   }, [table.getState().columnSizingInfo])
   // Give our default column cell renderer editing superpowers!
 
+  // <div className="rounded-md shadow-md flex overflow-hidden">
+  //     {viewModes?.map((mode) => (
+  //       <Tooltip key={mode.mode} title={mode.tooltip}>
+  //         <div
+  //           className={`${
+  //             mode.mode === viewMode ? 'bg-blue-500 hover:bg-blue-400' : 'bg-gray-200 hover:bg-gray-300'
+  //           } w-30 p-1 overflow-hidden cursor-pointer`}
+  //           onClick={() => setViewMode(mode.mode)}
+  //         >
+  //           {mode.icon}
+  //         </div>
+  //       </Tooltip>
+  //     ))}
+  //   </div>
+
   return (
     <div className="ml-1">
       <div className="overflow-x-scroll w-full">

@@ -12,6 +12,7 @@ import { useClerk } from 'lib/api/clerk'
 import dayjs from 'dayjs'
 import Tab from 'components/navigation/tabs/tab'
 import ViewStockTable from './view-stock-table'
+import EditStockTable from './edit-stock-table'
 const ComingSoon = dynamic(() => import('components/placeholders/coming-soon'))
 
 const StockScreen = () => {
@@ -75,7 +76,7 @@ const StockScreen = () => {
     >
       <div className="flex justify-between">
         <Tabs
-          tabs={['View Stock', 'Stock Arrivals', 'Recently Sold', 'Best Sellers', 'Stock Movement']}
+          tabs={['View Stock', 'Edit Stock', 'Stock Arrivals', 'Recently Sold', 'Best Sellers', 'Stock Movement']}
           value={tab}
           onChange={setTab}
         />
@@ -84,15 +85,18 @@ const StockScreen = () => {
         <ViewStockTable />
       </Tab>
       <Tab selectedTab={tab} tab={1}>
-        <ReceiveStockList />
+        <EditStockTable />
       </Tab>
       <Tab selectedTab={tab} tab={2}>
-        <ComingSoon />
+        <ReceiveStockList />
       </Tab>
       <Tab selectedTab={tab} tab={3}>
         <ComingSoon />
       </Tab>
       <Tab selectedTab={tab} tab={4}>
+        <ComingSoon />
+      </Tab>
+      <Tab selectedTab={tab} tab={5}>
         <StockMovementList />
       </Tab>
     </MidScreenContainer>
