@@ -173,9 +173,9 @@ function Table({
         </table>
         {showPagination && <Pagination table={table} />}
       </div>
-      <button onClick={() => rerender()} className="border p-2">
+      {/* <button onClick={() => rerender()} className="border p-2">
         Rerender
-      </button>
+      </button> */}
     </div>
   )
 }

@@ -132,19 +132,23 @@ const ViewStockTable = () => {
           {
             accessorKey: 'totalSell',
             header: 'Sell',
-            cell: (info) => priceCentsString(info?.getValue()),
+            cell: (info) => <div className="text-blue-500">{priceCentsString(info?.getValue())}</div>,
             size: 80,
           },
           {
             accessorKey: 'vendorCut',
             header: 'Vendor Cut',
-            cell: (info) => priceCentsString(info?.getValue()),
+            cell: (info) => <div className="text-red-500">{priceCentsString(info?.getValue())}</div>,
             size: 80,
           },
           {
             header: 'Store Cut',
             accessorKey: 'storeCut',
-            cell: (info) => priceCentsString(info?.row?.original?.totalSell - info?.row?.original?.vendorCut),
+            cell: (info) => (
+              <div className="text-green-500">
+                {priceCentsString(info?.row?.original?.totalSell - info?.row?.original?.vendorCut)}
+              </div>
+            ),
             sortingFn: (rowA, rowB) =>
               rowA?.original?.totalSell -
               rowA?.original?.vendorCut -

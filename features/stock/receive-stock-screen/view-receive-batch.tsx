@@ -3,7 +3,7 @@ import SectionPanel from 'components/container/section-panel'
 import { ListAlt } from '@mui/icons-material'
 import dayjs from 'dayjs'
 import { dateSimple } from 'lib/types/date'
-import StockListItem from '../stock-list/stock-list-item'
+import StockListItem from '../stock-list-item'
 
 export default function ViewReceiveBatch() {
   const { batchReceiveSession } = useAppStore()
