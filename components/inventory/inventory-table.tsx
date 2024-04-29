@@ -25,12 +25,12 @@ export default function InventoryTable() {
 
   // Atoms
   const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom)
-  // console.log(inventory)
+  console.log(inventory)
   // Constants
   const data = useMemo(
     () =>
       inventory
-        ?.filter(
+        ?.filter?.(
           (t: StockObject) =>
             !t?.is_deleted && !t?.is_gift_card && !t?.is_misc_item
         )

@@ -12,6 +12,7 @@ export default function StockDetails({ item }: stockDetailsProps) {
   const { stockMovements, isStockMovementsLoading } = useStockMovementByStockId(
     item?.id
   )
+  console.log(stockMovements)
 
   const [view, setView] = useAtom(viewAtom)
 
@@ -81,7 +82,9 @@ export default function StockDetails({ item }: stockDetailsProps) {
                 className={`flex hover:bg-gray-200 p-2 justify-between`}
               >
                 <div className="mr-2">
-                  {dayjs(s?.date_moved).format('D MMMM YYYY, h:mm A')}
+                  {s?.date_moved === '0000-00-00 00:00:00'
+                    ? 'Pre-App'
+                    : dayjs(s?.date_moved).format('D MMMM YYYY, h:mm A')}
                 </div>
                 <div
                   className={`mr-2 font-bold ${
