@@ -12,7 +12,7 @@ export default function StockDetails({ item }: stockDetailsProps) {
   const { stockMovements, isStockMovementsLoading } = useStockMovementByStockId(
     item?.id
   )
-  console.log(stockMovements)
+  // console.log(stockMovements)
 
   const [view, setView] = useAtom(viewAtom)
 
