@@ -10,7 +10,9 @@ const ComingSoon = dynamic(() => import('components/placeholders/coming-soon'))
 
 const VendorsScreen = () => {
   const {
-    vendorsPage: { tab },
+    pages: {
+      vendorsPage: { tab },
+    },
     setPage,
     openView,
   } = useAppStore()

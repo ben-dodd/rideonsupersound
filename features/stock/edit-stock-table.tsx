@@ -16,15 +16,15 @@ import { useEffect, useMemo, useState } from 'react'
 const EditStockTable = () => {
   const router = useRouter()
   const {
-    stockPage: { filters, visibleColumns },
-    setPage,
-  } = useAppStore()
-
-  const {
-    stockPage: { searchBar, filters: storedFilters },
+    pages: {
+      stockPage: {
+        filter: { edit: filters },
+        searchBar: { edit: searchBar },
+      },
+    },
+    setPageFilter,
     setSearchBar,
   } = useAppStore()
-  console.log(storedFilters)
 
   const { stockList = [], isStockListLoading = true } = useStockList()
   const { stockMovements = [], isStockMovementsLoading = true } = useAllStockMovements()
@@ -36,19 +36,18 @@ const EditStockTable = () => {
   )
   const [pagination, setPagination] = useState(filters?.pagination)
   const [sorting, setSorting] = useState(filters?.sorting)
-  const [columnVisibility, setColumnVisibility] = useState(visibleColumns)
-  const handleSearch = (e) => setSearchBar(Pages.stockPage, e.target.value)
+  const [columnVisibility, setColumnVisibility] = useState(filters?.visibleColumns)
+  const handleSearch = (e) => setSearchBar(Pages.stockPage, e.target.value, 'edit')
 
   // Handle sort, pagination and filter changes
   // Do not add filters or setFilters to dependencies
   useEffect(() => {
-    const newFilters = { pagination, sorting }
-    setPage(Pages.stockPage, { filters: newFilters })
-  }, [pagination, setPage, sorting])
+    setPageFilter(Pages.stockPage, { pagination, sorting }, 'edit')
+  }, [pagination, setPageFilter, sorting])
 
   useEffect(() => {
-    setPage(Pages.stockPage, { visibleColumns: columnVisibility })
-  }, [columnVisibility, setPage])
+    setPageFilter(Pages.stockPage, { visibleColumns: columnVisibility }, 'edit')
+  }, [columnVisibility, setPageFilter])
 
   const columns = useMemo(
     () => [
@@ -175,7 +174,7 @@ const EditStockTable = () => {
       onPaginationChange={setPagination}
       initSorting={filters?.sorting}
       onSortingChange={setSorting}
-      initColumnVisibility={visibleColumns}
+      initColumnVisibility={filters?.visibleColumns}
       onColumnVisibilityChange={setColumnVisibility}
       searchValue={searchBar}
       handleSearch={handleSearch}

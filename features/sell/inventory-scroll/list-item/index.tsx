@@ -12,7 +12,9 @@ import { useEffect, useState } from 'react'
 export default function ListItem({ stockItem }: { stockItem: BasicStockObject }) {
   const {
     cart,
-    sellPage: { isSearching },
+    pages: {
+      sellPage: { isSearching },
+    },
   } = useAppStore()
   const {
     item = {},

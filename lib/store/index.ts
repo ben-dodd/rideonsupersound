@@ -87,9 +87,17 @@ const initState = {
     },
     stockPage: {
       tab: 0,
-      searchBar: { list: '', receive: '', movement: '' },
+      searchBar: { list: '', edit: '', receive: '', movement: '' },
       filter: {
         list: {
+          sorting: [],
+          pagination: {
+            pageIndex: 0,
+            pageSize: 20,
+          },
+          visibleColumns: {},
+        },
+        edit: {
           sorting: [],
           pagination: {
             pageIndex: 0,

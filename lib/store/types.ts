@@ -65,6 +65,7 @@ export interface StoreState {
       tab?: number
       searchBar?: {
         list?: string
+        edit?: string
         receive?: string
         movement?: string
       }

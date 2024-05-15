@@ -6,7 +6,9 @@ import dynamic from 'next/dynamic'
 
 const ReturnHoldToCartDialog = dynamic(() => import('features/sale/return-hold-to-cart-dialog'))
 export default function SalesPage() {
-  const { salesPage } = useAppStore()
+  const {
+    pages: { salesPage },
+  } = useAppStore()
   return (
     <div className={`flex relative overflow-x-hidden`}>
       <SalesScreen />

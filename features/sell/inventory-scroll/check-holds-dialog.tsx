@@ -8,7 +8,13 @@ import { useState } from 'react'
 import { useSWRConfig } from 'swr'
 
 export default function CheckHoldsDialog() {
-  const { sellPage, view, closeView, addCartItem, setPage } = useAppStore()
+  const {
+    pages: { sellPage },
+    view,
+    closeView,
+    addCartItem,
+    setPage,
+  } = useAppStore()
   const { activeItemId = null } = sellPage || {}
   const [selectedHold, setSelectedHold] = useState(null)
   const { itemHolds, isItemHoldsLoading } = useHoldsForItem(activeItemId)

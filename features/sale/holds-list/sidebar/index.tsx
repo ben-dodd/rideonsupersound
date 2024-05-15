@@ -16,7 +16,14 @@ import { useClerk } from 'lib/api/clerk'
 import { useSWRConfig } from 'swr'
 
 const HoldsSidebar = () => {
-  const { cart, holdsPage, setAlert, openConfirm, setPage, addCartItem } = useAppStore()
+  const {
+    cart,
+    pages: { holdsPage },
+    setAlert,
+    openConfirm,
+    setPage,
+    addCartItem,
+  } = useAppStore()
   const { holds, isHoldsLoading } = useHolds()
   const { clerk } = useClerk()
   const [originalHold, setOriginalHold]: [HoldObject, Function] = useState({})

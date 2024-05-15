@@ -7,7 +7,9 @@ import { Pages, ViewProps } from 'lib/store/types'
 
 const Actions = ({ item, itemQuantity, holdsQuantity }) => {
   const {
-    sellPage: { searchBar },
+    pages: {
+      sellPage: { searchBar },
+    },
     cart,
     resetSearchBar,
     addCartItem,

@@ -4,7 +4,10 @@ import { useAppStore } from 'lib/store'
 import { Pages } from 'lib/store/types'
 
 const ReturnHoldToCartDialog = () => {
-  const { salesPage, setPage } = useAppStore()
+  const {
+    pages: { salesPage },
+    setPage,
+  } = useAppStore()
   const { returnToCartDialog: { open = false, hold = {}, onClick = null } = {} } = salesPage || {}
   const closeDialog = () => {
     setPage(Pages.salesPage, { returnToCartDialog: {} })
