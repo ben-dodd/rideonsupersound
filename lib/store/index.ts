@@ -79,63 +79,75 @@ const initState = {
   cart: initCart,
   batchReceiveSession: initBatchReceiveSession,
   batchPaymentSession: { paymentList: [] },
-  sellPage: {
-    searchBar: '',
-    isSearching: false,
-    activeItemId: null,
-  },
-  ordersPage: {
-    tab: 0,
-  },
-  stockPage: {
-    searchBar: '',
-    filters: {
-      sorting: [],
-      pagination: {
-        pageIndex: 0,
-        pageSize: 20,
-      },
+  pages: {
+    sellPage: {
+      searchBar: '',
+      isSearching: false,
+      activeItemId: null,
     },
-    visibleColumns: {},
-    tab: 0,
+    stockPage: {
+      tab: 0,
+      searchBar: { list: '', my: '' },
+      filter: {
+        sorting: [],
+        pagination: {
+          pageIndex: 0,
+          pageSize: 20,
+        },
+      },
+      visibleColumns: {},
+    },
+    vendorsPage: {
+      tab: 0,
+      searchBar: '',
+    },
+    salesPage: {
+      tab: 0,
+      returnToCartDialog: {},
+      searchBar: {
+        list: '',
+        calendar: '',
+        parked: '',
+        layby: '',
+        hold: '',
+      },
+      filter: {
+        list: {},
+        calendar: {
+          viewPeriod: 'day',
+          rangeStartDate: dayjs().startOf('week').format('YYYY-MM-DD'),
+          rangeEndDate: dayjs().format('YYYY-MM-DD'),
+          clerkIds: [],
+          viewLaybysOnly: false,
+        },
+        parked: {},
+        layby: {},
+        hold: {},
+      },
+      loadedHold: null,
+    },
+    laybysPage: {},
+    holdsPage: {
+      loadedHold: null,
+    },
+    paymentsPage: { tab: 0 },
+    ordersPage: {
+      tab: 0,
+    },
+    registersPage: {
+      tab: 0,
+    },
+    giftCardsPage: {
+      searchBar: '',
+      loadedGiftCard: null,
+    },
+    jobsPage: {
+      tab: 0,
+    },
+    clerksPage: {},
+    logsPage: { tab: 0 },
+    stocktakesPage: {},
   },
-  vendorsPage: {
-    searchBar: '',
-    tab: 0,
-  },
-  paymentsPage: { tab: 0 },
-  registersPage: {
-    tab: 0,
-  },
-  salesPage: {
-    tab: 0,
-    returnToCartDialog: {},
-  },
-  salesListPage: {
-    searchBar: '',
-  },
-  salesCalendarPage: {
-    viewPeriod: 'day',
-    rangeStartDate: dayjs().startOf('week').format('YYYY-MM-DD'),
-    rangeEndDate: dayjs().format('YYYY-MM-DD'),
-    clerkIds: [],
-    viewLaybysOnly: false,
-  },
-  parkedSalesPage: {},
-  laybysPage: {},
-  holdsPage: {
-    loadedHold: null,
-  },
-  saleStatsPage: {},
-  giftCardsPage: {
-    searchBar: '',
-    loadedGiftCard: null,
-  },
-  logsPage: { tab: 0 },
-  jobsPage: {
-    tab: 0,
-  },
-  stocktakesPage: {},
   options: {
     doBypassRegister: false,
   },
@@ -453,18 +465,18 @@ export const useAppStore = createSelectors(
     setSearchBar: (page, val) => {
       set(
         produce((draft) => {
-          draft[page].searchBar = val
-          page === Pages.sellPage ? (draft.sellPage.isSearching = true) : null
+          draft.pages[page].searchBar = val
+          page === Pages.sellPage ? (draft.pages.sellPage.isSearching = true) : null
         }),
       )
     },
     setPageFilter: (page, setting, update) => {
       set(
         produce((draft) => {
-          const filters = { ...get()[page]?.filters }
+          const filters = { ...get()?.pages?.[page]?.filters }
           filters[setting] = update
           draft[page] = {
-            ...get()[page],
+            ...get()?.pages?.[page],
             filters,
           }
         }),
@@ -473,8 +485,8 @@ export const useAppStore = createSelectors(
     setPage: (page, update) => {
       set(
         produce((draft) => {
-          draft[page] = {
-            ...get()[page],
+          draft.pages[page] = {
+            ...get()?.pages?.[page],
             ...update,
           }
         }),
@@ -483,21 +495,21 @@ export const useAppStore = createSelectors(
     togglePageOption: (page, option) => {
       set(
         produce((draft) => {
-          draft[page][option] = !get()[page]?.[option]
+          draft.pages[page][option] = !get()?.pages?.[page]?.[option]
         }),
       )
     },
     resetSearchBar: (page) => {
       set(
         produce((draft) => {
-          draft[page].searchBar = ''
+          draft.pages[page].searchBar = ''
         }),
       )
     },
     resetPage: (page) => {
       set(
         produce((draft) => {
-          draft[page] = initState[page]
+          draft.pages[page] = initState[page]
         }),
       )
     },

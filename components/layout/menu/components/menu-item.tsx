@@ -7,7 +7,7 @@ export default function MenuItem({ item, listClass, defaultOnClick }) {
     <hr />
   ) : (
     <li
-      className={`flex cursor-pointer content-center p-2 py-3 ${
+      className={`flex cursor-pointer content-center p-2 py-2 ${
         router?.pathname.includes(item?.page) ? 'text-white hover:bg-black bg-black' : listClass || ''
       }`}
       onClick={handleOnClick}

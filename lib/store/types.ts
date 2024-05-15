@@ -55,51 +55,66 @@ export interface StoreState {
   cart: CartObject
   batchReceiveSession?: BatchReceiveObject
   batchPaymentSession?: BatchPaymentObject
-  sellPage?: {
-    searchBar?: string
-    isSearching?: boolean
-    activeItemId?: number
+  pages?: {
+    sellPage?: {
+      searchBar?: string
+      isSearching?: boolean
+      activeItemId?: number
+    }
+    stockPage?: {
+      tab?: number
+      searchBar?: {
+        list?: string
+        my?: string
+      }
+      filter?: any
+      visibleColumns?: any
+    }
+    vendorsPage?: any
+    salesPage?: {
+      tab?: number
+      returnToCartDialog?: any
+      searchBar?: {
+        list?: string
+        calendar?: string
+        parked?: string
+        layby?: string
+        hold?: string
+      }
+      filter?: {
+        list?: any
+        calendar?: {
+          viewPeriod?: string
+          rangeStartDate?: string
+          rangeEndDate?: string
+          clerkIds?: number[]
+          viewLaybysOnly?: boolean
+        }
+        parked?: any
+        layby?: any
+        hold?: any
+      }
+      loadedHold?: number
+    }
+    laybysPage?: any
+    holdsPage?: {
+      searchBar?: string
+      loadedHold?: number
+    }
+    paymentsPage?: any
+    ordersPage?: {
+      tab?: number
+    }
+    registersPage?: any
+    giftCardsPage?: {
+      searchBar?: string
+      loadedGiftCard?: number
+    }
+    jobsPage?: any
+    clerksPage?: any
+    logsPage?: any
+    stocktakesPage?: any
   }
-  ordersPage?: {
-    tab?: number
-  }
-  stockPage?: {
-    tab?: number
-    filters?: any
-    searchBar?: string
-    visibleColumns?: any
-  }
-  vendorsPage?: any
-  paymentsPage?: any
-  registersPage?: any
-  salesPage?: {
-    tab?: number
-    returnToCartDialog?: any
-  }
-  salesListPage?: {
-    searchBar?: string
-  }
-  salesCalendarPage?: {
-    viewPeriod?: string
-    rangeStartDate?: string
-    rangeEndDate?: string
-    clerkIds?: number[]
-    viewLaybysOnly?: boolean
-  }
-  parkedSalesPage?: any
-  laybysPage?: any
-  holdsPage?: {
-    searchBar?: string
-    loadedHold?: number
-  }
-  saleStatsPage?: any
-  giftCardsPage?: {
-    searchBar?: string
-    loadedGiftCard?: number
-  }
-  logsPage?: any
-  jobsPage?: any
-  stocktakesPage?: any
   options?: {
     doBypassRegister?: boolean
   }
