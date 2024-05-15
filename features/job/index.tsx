@@ -10,7 +10,9 @@ import RestockTaskView from './restock-task-view'
 const JobsScreen = () => {
   const { isJobsLoading } = useJobs()
   const {
-    jobsPage: { tab },
+    pages: {
+      jobsPage: { tab },
+    },
     setPage,
     openView,
   } = useAppStore()

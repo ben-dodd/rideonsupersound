@@ -87,19 +87,21 @@ const initState = {
     },
     stockPage: {
       tab: 0,
-      searchBar: { list: '', my: '' },
+      searchBar: { list: '', receive: '', movement: '' },
       filter: {
-        sorting: [],
-        pagination: {
-          pageIndex: 0,
-          pageSize: 20,
+        list: {
+          sorting: [],
+          pagination: {
+            pageIndex: 0,
+            pageSize: 20,
+          },
+          visibleColumns: {},
         },
       },
-      visibleColumns: {},
     },
     vendorsPage: {
       tab: 0,
-      searchBar: '',
+      searchBar: { list: '', my: '' },
     },
     salesPage: {
       tab: 0,
@@ -462,23 +464,24 @@ export const useAppStore = createSelectors(
           draft.cart.customer = {}
         }),
       ),
-    setSearchBar: (page, val) => {
+    setSearchBar: (page, val, tab) => {
       set(
         produce((draft) => {
-          draft.pages[page].searchBar = val
+          tab ? (draft.pages[page].searchBar[tab] = val) : (draft.pages[page].searchBar = val)
           page === Pages.sellPage ? (draft.pages.sellPage.isSearching = true) : null
         }),
       )
     },
-    setPageFilter: (page, setting, update) => {
+    setPageFilter: (page, update, tab) => {
+      console.log('setting filter', page, update, tab)
       set(
         produce((draft) => {
-          const filters = { ...get()?.pages?.[page]?.filters }
-          filters[setting] = update
-          draft[page] = {
-            ...get()?.pages?.[page],
-            filters,
-          }
+          const filter = tab
+            ? { ...get()?.pages?.[page]?.filter?.[tab], ...update }
+            : { ...get()?.pages?.[page]?.filter, ...update }
+          console.log(filter)
+          if (tab) draft.pages[page].filter[tab] = filter
+          else draft.pages[page].filter = filter
         }),
       )
     },
@@ -489,13 +492,6 @@ export const useAppStore = createSelectors(
             ...get()?.pages?.[page],
             ...update,
           }
-        }),
-      )
-    },
-    togglePageOption: (page, option) => {
-      set(
-        produce((draft) => {
-          draft.pages[page][option] = !get()?.pages?.[page]?.[option]
         }),
       )
     },

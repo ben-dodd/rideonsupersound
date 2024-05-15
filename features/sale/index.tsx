@@ -12,7 +12,10 @@ const SalesList = dynamic(() => import('./views/sales-list'))
 const ComingSoon = dynamic(() => import('components/placeholders/coming-soon'))
 
 const SalesScreen = () => {
-  const { salesPage, holdsPage, setPage } = useAppStore()
+  const {
+    pages: { salesPage, holdsPage },
+    setPage,
+  } = useAppStore()
   const tab = salesPage?.tab || 0
   const setTab = (tab) => setPage(Pages.salesPage, { tab })
   // const isFull = !(tab === 4 && holdsPage?.loadedHold)

@@ -8,13 +8,17 @@ import StockMovementItem from './stock-movement-item'
 
 const StockMovementList = () => {
   const {
-    stockPage: { searchBar },
+    pages: {
+      stockPage: {
+        searchBar: { movement: searchBar },
+      },
+    },
     setSearchBar,
   } = useAppStore()
   const [limit, setLimit] = useState(50)
   const { stockMovements } = useStockMovements()
 
-  const handleSearch = (e) => setSearchBar(Pages.stockPage, e.target.value)
+  const handleSearch = (e) => setSearchBar(Pages.stockPage, e.target.value, 'movement')
   const filteredList = stockMovements?.filter?.((sm) => `${sm?.id}`?.includes(searchBar?.toUpperCase()))
 
   return (

@@ -11,7 +11,10 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 
 const GiftCardSidebar = () => {
-  const { giftCardsPage, setPage } = useAppStore()
+  const {
+    pages: { giftCardsPage },
+    setPage,
+  } = useAppStore()
   const router = useRouter()
   const { giftCard, isGiftCardLoading } = useGiftCard(giftCardsPage?.loadedGiftCard)
   const { giftCard: card = {}, saleTransactions } = giftCard || {}

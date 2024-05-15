@@ -10,11 +10,15 @@ import Loading from 'components/placeholders/loading'
 const ReceiveStockList = () => {
   const { receiveBatches, isReceiveBatchesLoading } = useReceiveBatches()
   const {
-    stockPage: { searchBar },
+    pages: {
+      stockPage: {
+        searchBar: { receive: searchBar },
+      },
+    },
     setSearchBar,
   } = useAppStore()
   const [limit, setLimit] = useState(10)
-  const handleSearch = (e) => setSearchBar(Pages.stockPage, e.target.value)
+  const handleSearch = (e) => setSearchBar(Pages.stockPage, e.target.value, 'receive')
   const filteredList = receiveBatches?.filter?.((receiveBatch) =>
     `${receiveBatch?.id}`?.includes(searchBar?.toUpperCase()),
   )

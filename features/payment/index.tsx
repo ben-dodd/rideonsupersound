@@ -12,7 +12,9 @@ import BatchPaymentList from './batch-payment-list'
 
 const PaymentsScreen = () => {
   const {
-    paymentsPage: { tab },
+    pages: {
+      paymentsPage: { tab },
+    },
     openView,
     openConfirm,
     resetBatchPaymentSession,

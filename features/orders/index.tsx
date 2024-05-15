@@ -10,7 +10,9 @@ const ComingSoon = dynamic(() => import('components/placeholders/coming-soon'))
 const OrdersScreen = () => {
   const isLoading = false
   const {
-    ordersPage: { tab },
+    pages: {
+      ordersPage: { tab },
+    },
     setPage,
   } = useAppStore()
   const setTab = (tab) => setPage(Pages.ordersPage, { tab })

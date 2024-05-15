@@ -8,7 +8,9 @@ import dynamic from 'next/dynamic'
 export default function InventoryScroll() {
   // const maxItemsInList = 50
   const {
-    sellPage: { searchBar },
+    pages: {
+      sellPage: { searchBar },
+    },
   } = useAppStore()
   const { stockList = [], isStockListLoading = true } = useStockListBySearch(searchBar)
   console.log(stockList)

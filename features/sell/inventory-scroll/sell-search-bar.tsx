@@ -8,7 +8,9 @@ import debounce from 'lodash/debounce'
 export default function SellSearchBar() {
   const {
     openView,
-    sellPage: { searchBar },
+    pages: {
+      sellPage: { searchBar },
+    },
     setSearchBar,
     setPage,
   } = useAppStore()

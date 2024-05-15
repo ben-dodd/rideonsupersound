@@ -10,7 +10,9 @@ const ComingSoon = dynamic(() => import('components/placeholders/coming-soon'))
 const RegistersScreen = () => {
   const isLoading = false
   const {
-    registersPage: { tab },
+    pages: {
+      registersPage: { tab },
+    },
     setPage,
     openView,
   } = useAppStore()

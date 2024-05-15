@@ -65,7 +65,8 @@ export interface StoreState {
       tab?: number
       searchBar?: {
         list?: string
-        my?: string
+        receive?: string
+        movement?: string
       }
       filter?: any
       visibleColumns?: any
@@ -159,10 +160,9 @@ export interface StoreState {
   resetCart: () => void
   resetBatchReceiveSession: () => void
   resetCustomer: () => void
-  setSearchBar: (page: Pages, val: string) => void
-  setPageFilter: (page: Pages, setting: string, update: any) => void
+  setSearchBar: (page: Pages, val: string, tab?: string) => void
+  setPageFilter: (page: Pages, update: any, tab?: string) => void
   setPage: (page: Pages, update: any) => void
-  togglePageOption: (page: Pages, option: string) => void
   resetSearchBar: (page: Pages) => void
   resetPage: (page: Pages) => void
   setOption: (option: string, value: any) => void

@@ -8,7 +8,9 @@ import { LogView } from './log-view'
 const LogsScreen = () => {
   const { isLogsLoading } = useLogs()
   const {
-    logsPage: { tab },
+    pages: {
+      logsPage: { tab },
+    },
     setPage,
   } = useAppStore()
   const setTab = (tab) => setPage(Pages.logsPage, { tab })

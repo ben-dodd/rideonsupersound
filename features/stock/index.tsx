@@ -18,7 +18,9 @@ const ComingSoon = dynamic(() => import('components/placeholders/coming-soon'))
 const StockScreen = () => {
   const { isStockListLoading } = useStockList()
   const {
-    stockPage: { tab },
+    pages: {
+      stockPage: { tab },
+    },
     setPage,
     openView,
     loadBatchReceiveSession,

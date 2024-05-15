@@ -4,8 +4,14 @@ import GrandTotal from './grand-total'
 import SaleDay from './sale-day'
 
 export default function SalesList() {
-  const { salesCalendarPage } = useAppStore()
-  const { saleArray, grandTotal } = useSalesForRange(salesCalendarPage)
+  const {
+    pages: {
+      salesPage: {
+        filter: { calendar: salesCalendarFilters },
+      },
+    },
+  } = useAppStore()
+  const { saleArray, grandTotal } = useSalesForRange(salesCalendarFilters)
   return (
     <div>
       {saleArray?.length === 0 ? (
