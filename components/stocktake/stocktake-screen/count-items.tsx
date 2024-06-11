@@ -139,6 +139,8 @@ export default function CountItems() {
     [stocktakeItems, isStocktakeItemsLoading]
   )
 
+  console.log(addZeroes)
+
   const updateStocktakeItem = (item) =>
     setStockItemData(
       stockItemData?.map((si) => (si?.id === item?.id ? item : si))
@@ -159,22 +161,28 @@ export default function CountItems() {
             autoFocus
             value={scanInput}
             onChange={(e: any) => {
+              console.log('on change')
+              console.log(addZeroes)
+              console.log(`${('00000' + e?.target?.value || '').slice(-5)}`)
               if (
-                (addZeroes === 'yes' &&
-                  itemOptions?.filter(
-                    (opt) =>
+                itemOptions?.filter((opt) => {
+                  if (addZeroes === 'true')
+                    return (
                       `${('00000' + e?.target?.value || '').slice(-5)}` ===
                       `${('00000' + opt?.value || '').slice(-5)}`
-                  )?.length > 0) ||
-                itemOptions?.filter(
-                  (opt) =>
-                    e.target.value ===
-                    `${('00000' + opt?.value || '').slice(-5)}`
-                )?.length > 0
+                    )
+                  else
+                    return (
+                      e.target.value ===
+                      `${('00000' + opt?.value || '').slice(-5)}`
+                    )
+                })?.length > 0
               ) {
+                console.log('correct')
                 addCountedItem(parseInt(e.target.value))
                 setScanInput('')
               } else {
+                console.log(`${('00000' + e?.target?.value || '').slice(-5)}`)
                 setScanInput(e.target.value)
               }
             }}
