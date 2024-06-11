@@ -1,5 +1,5 @@
 // Packages
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAtom } from 'jotai'
 
 // DB
@@ -46,21 +46,18 @@ export default function CountItems() {
   const [stocktakeTemplateId] = useAtom(loadedStocktakeTemplateIdAtom)
   const { stocktakes, mutateStocktakes } =
     useStocktakesByTemplate(stocktakeTemplateId)
-  const { stocktakeItems, mutateStocktakeItems } =
+  const { stocktakeItems, mutateStocktakeItems, isStocktakeItemsLoading } =
     useStocktakeItemsByStocktake(stocktakeId)
 
   const stocktake = stocktakes?.filter(
     (stocktake) => stocktake?.id === stocktakeId
   )?.[0]
-  const { logs, mutateLogs } = useLogs()
-  const { registerID } = useRegisterID()
   const [inputValue, setInputValue] = useState('')
   const [scanInput, setScanInput] = useState('')
 
   // Atoms
   const [clerk] = useAtom(clerkAtom)
   const [view, setView] = useAtom(viewAtom)
-  const [, setAlert] = useAtom(alertAtom)
 
   // State
   const [lastAddedItem, setLastAddedItem] = useState(null)
@@ -88,6 +85,11 @@ export default function CountItems() {
       countedItem.date_counted = dayjs.utc().format('YYYY-MM-DD HH:mm:ss')
       countedItem.review_decision = null
       updateStocktakeItemInDatabase(countedItem)
+      setStockItemData(
+        stockItemData?.map((si) =>
+          si?.id === countedItem?.id ? countedItem : si
+        )
+      )
     } else {
       countedItem = {
         id: `${stocktake?.id}-${item_id}`,
@@ -100,20 +102,21 @@ export default function CountItems() {
         date_counted: dayjs.utc().format('YYYY-MM-DD HH:mm:ss'),
       }
       saveStocktakeItemToDatabase(countedItem)
+      setStockItemData([countedItem, ...stockItemData])
     }
     let countData = stocktakeItems || []
-    let newCountedItems = [
-      countedItem,
-      ...countData.filter((i) => i?.id !== countedItem?.id),
-    ]
-    mutateStocktakeItems(newCountedItems, false)
+    // let newCountedItems = [
+    //   countedItem,
+    //   ...countData.filter((i) => i?.id !== countedItem?.id),
+    // ]
+    // mutateStocktakeItems(newCountedItems, false)
     const newStocktake = {
       ...stocktake,
-      total_counted: newCountedItems?.reduce(
+      total_counted: stockItemData?.reduce(
         (prev, curr) => prev + curr?.quantity_counted,
         0
       ),
-      total_unique_counted: newCountedItems?.length,
+      total_unique_counted: stockItemData?.length,
     }
     updateStocktakeInDatabase(newStocktake)
     mutateStocktakes(
@@ -127,6 +130,19 @@ export default function CountItems() {
     value: item?.id,
     label: getItemSkuDisplayName(item),
   }))
+
+  const [stockItemData, setStockItemData] = useState(stocktakeItems || [])
+  useEffect(
+    () => setStockItemData(stocktakeItems),
+    [stocktakeItems, isStocktakeItemsLoading]
+  )
+
+  const updateStocktakeItem = (item) =>
+    setStockItemData(
+      stockItemData?.map((si) => (si?.id === item?.id ? item : si))
+    )
+  const deleteStocktakeItem = (id) =>
+    setStockItemData(stockItemData?.filter((si) => si?.id !== id))
 
   return (
     <div className="w-full">
@@ -188,10 +204,10 @@ export default function CountItems() {
           )}
         </div>
         <div className="w-2/3 px-4">
-          {stocktakeItems?.length > 0 ? (
+          {stockItemData?.length > 0 ? (
             <div className="h-dialog">
               <div className="font-bold text-xl">{`COUNTED ${
-                stocktakeItems?.reduce(
+                stockItemData?.reduce(
                   (prev, curr) => prev + curr?.quantity_counted,
                   0
                 ) || 0
@@ -210,7 +226,7 @@ export default function CountItems() {
                 />
               </div>
               <div className="h-full overflow-y-scroll">
-                {stocktakeItems
+                {stockItemData
                   // ?.filter(
                   //   (stocktakeItem) => stocktakeItem?.quantity_counted > 0
                   // )
@@ -230,7 +246,8 @@ export default function CountItems() {
                         key={`${stocktakeItem?.id}-${i}`}
                         stocktakeItem={stocktakeItem}
                         stockItem={stockItem}
-                        stocktake={stocktake}
+                        updateStocktakeItem={updateStocktakeItem}
+                        deleteStocktakeItem={deleteStocktakeItem}
                       />
                     )
                   })}

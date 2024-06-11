@@ -1,50 +1,47 @@
 // Packages
-import { useAtom } from "jotai";
+import { useAtom } from 'jotai'
 
-import { loadedItemIdAtom } from "@/lib/atoms";
+import { loadedItemIdAtom } from '@/lib/atoms'
 
 // Functions
 import {
   getImageSrc,
   getItemDisplayName,
   getItemSku,
-} from "@/lib/data-functions";
+} from '@/lib/data-functions'
 
 // Components
-import Select from "react-select";
+import Select from 'react-select'
 
 // Icons
-import EditIcon from "@mui/icons-material/Edit";
-import CheckIcon from "@mui/icons-material/CheckCircleOutline";
-import { useStocktakeItemsByStocktake, useVendors } from "@/lib/swr-hooks";
+import EditIcon from '@mui/icons-material/Edit'
+import CheckIcon from '@mui/icons-material/CheckCircleOutline'
+import { useStocktakeItemsByStocktake, useVendors } from '@/lib/swr-hooks'
 import {
   StockObject,
   StocktakeItemObject,
   StocktakeObject,
   StocktakeReviewDecisions,
-} from "@/lib/types";
-import { updateStocktakeItemInDatabase } from "@/lib/db-functions";
+} from '@/lib/types'
+import { updateStocktakeItemInDatabase } from '@/lib/db-functions'
 
 interface reviewListItemProps {
-  stocktakeItem: StocktakeItemObject;
-  stockItem: StockObject;
-  stocktake: StocktakeObject;
+  stocktakeItem: StocktakeItemObject
+  stockItem: StockObject
+  stocktake: StocktakeObject
+  updateStocktakeItem: Function
 }
 
 export default function ReviewListItem({
   stocktakeItem,
   stockItem,
   stocktake,
+  updateStocktakeItem,
 }: reviewListItemProps) {
-  const { stocktakeItems, mutateStocktakeItems } = useStocktakeItemsByStocktake(
-    stocktake?.id
-  );
-  const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom);
-  const { vendors } = useVendors();
-  const vendor = vendors?.filter((v) => v?.id === stockItem?.vendor_id)?.[0];
-  const completed = Boolean(
-    stocktake?.date_closed || stocktake?.date_cancelled
-  );
+  const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom)
+  const { vendors } = useVendors()
+  const vendor = vendors?.filter((v) => v?.id === stockItem?.vendor_id)?.[0]
+  const completed = Boolean(stocktake?.date_closed || stocktake?.date_cancelled)
   return (
     <div className="flex my-2 border-b w-full hover:bg-gray-100">
       <div className="w-1/2 flex">
@@ -55,7 +52,7 @@ export default function ReviewListItem({
               // layout="fill"
               // objectFit="cover"
               src={getImageSrc(stockItem)}
-              alt={stockItem?.title || "Inventory image"}
+              alt={stockItem?.title || 'Inventory image'}
             />
             {!stockItem?.is_gift_card && !stockItem?.is_misc_item && (
               <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white text-sm flex justify-center items-center">
@@ -68,12 +65,12 @@ export default function ReviewListItem({
           <div>{getItemDisplayName(stockItem)}</div>
 
           <div className="">{`${
-            stockItem?.section ? `${stockItem.section} / ` : ""
+            stockItem?.section ? `${stockItem.section} / ` : ''
           }${stockItem?.format} [${
-            stockItem?.is_new ? "NEW" : stockItem?.cond?.toUpperCase() || "USED"
+            stockItem?.is_new ? 'NEW' : stockItem?.cond?.toUpperCase() || 'USED'
           }]`}</div>
           <div className="text-sm">
-            {`${vendor ? `Selling for ${vendor?.name}` : ""}`}
+            {`${vendor ? `Selling for ${vendor?.name}` : ''}`}
           </div>
         </div>
       </div>
@@ -85,14 +82,14 @@ export default function ReviewListItem({
             isDisabled={completed}
             className={`w-full border border-4 ${
               !stocktakeItem?.review_decision
-                ? "border-red-500"
+                ? 'border-red-500'
                 : stocktakeItem?.review_decision ===
                   StocktakeReviewDecisions?.review
-                ? "border-orange-300"
+                ? 'border-orange-300'
                 : stocktakeItem?.review_decision ===
                   StocktakeReviewDecisions?.keep
-                ? "border-blue-500"
-                : "border-green-500"
+                ? 'border-blue-500'
+                : 'border-green-500'
             }`}
             value={{
               value:
@@ -125,14 +122,9 @@ export default function ReviewListItem({
               const newStocktakeItem = {
                 ...stocktakeItem,
                 review_decision: item?.value,
-              };
-              updateStocktakeItemInDatabase(newStocktakeItem);
-              mutateStocktakeItems(
-                (stocktakeItems || [])?.map((si) =>
-                  si?.id === stocktakeItem?.id ? newStocktakeItem : si
-                ),
-                false
-              );
+              }
+              updateStocktakeItemInDatabase(newStocktakeItem)
+              updateStocktakeItem(newStocktakeItem)
             }}
           />
         )}
@@ -141,8 +133,8 @@ export default function ReviewListItem({
         <button
           className={`p-1 w-10 h-10 rounded-full ${
             stocktakeItem?.do_check_details
-              ? "bg-red-200 hover:bg-red-300 animate-spin"
-              : "bg-gray-200 hover:bg-gray-300 "
+              ? 'bg-red-200 hover:bg-red-300 animate-spin'
+              : 'bg-gray-200 hover:bg-gray-300 '
           }`}
           onClick={() =>
             setLoadedItemId({ ...loadedItemId, stocktake: stockItem?.id })
@@ -163,8 +155,8 @@ export default function ReviewListItem({
           <div
             className={`${
               stocktakeItem?.quantity_difference < 0
-                ? "bg-red-500"
-                : "bg-orange-500"
+                ? 'bg-red-500'
+                : 'bg-orange-500'
             } text-center`}
           >
             <div className="text-white">
@@ -176,5 +168,5 @@ export default function ReviewListItem({
         )}
       </div>
     </div>
-  );
+  )
 }

@@ -1,38 +1,37 @@
 // Packages
-import { useAtom } from "jotai";
+import { useAtom } from 'jotai'
 
-import { loadedItemIdAtom } from "@/lib/atoms";
+import { loadedItemIdAtom } from '@/lib/atoms'
 
 // Functions
 import {
   getImageSrc,
   getItemDisplayName,
   getItemSku,
-} from "@/lib/data-functions";
+} from '@/lib/data-functions'
 
 // Components
-import TextField from "@/components/_components/inputs/text-field";
+import TextField from '@/components/_components/inputs/text-field'
 
 // Icons
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
-import { useStocktakeItemsByStocktake, useVendors } from "@/lib/swr-hooks";
+import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
+import { useVendors } from '@/lib/swr-hooks'
 import {
   deleteStocktakeItemFromDatabase,
   updateStocktakeItemInDatabase,
-} from "@/lib/db-functions";
+} from '@/lib/db-functions'
+import { useEffect, useState } from 'react'
 
 export default function CountedListItem({
   stocktakeItem,
   stockItem,
-  stocktake,
+  updateStocktakeItem,
+  deleteStocktakeItem,
 }) {
-  const { stocktakeItems, mutateStocktakeItems } = useStocktakeItemsByStocktake(
-    stocktake?.id
-  );
-  const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom);
-  const { vendors } = useVendors();
-  const vendor = vendors?.filter((v) => v?.id === stockItem?.vendor_id)?.[0];
+  const [loadedItemId, setLoadedItemId] = useAtom(loadedItemIdAtom)
+  const { vendors } = useVendors()
+  const vendor = vendors?.filter((v) => v?.id === stockItem?.vendor_id)?.[0]
   return (
     <div className="flex justify-between my-2 border-b w-full hover:bg-gray-100">
       <div className="flex">
@@ -43,7 +42,7 @@ export default function CountedListItem({
               // layout="fill"
               // objectFit="cover"
               src={getImageSrc(stockItem)}
-              alt={stockItem?.title || "Inventory image"}
+              alt={stockItem?.title || 'Inventory image'}
             />
             {!stockItem?.is_gift_card && !stockItem?.is_misc_item && (
               <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white text-sm flex justify-center items-center">
@@ -56,12 +55,12 @@ export default function CountedListItem({
           <div>{getItemDisplayName(stockItem)}</div>
 
           <div className="">{`${
-            stockItem?.section ? `${stockItem.section} / ` : ""
+            stockItem?.section ? `${stockItem.section} / ` : ''
           }${stockItem?.format} [${
-            stockItem?.is_new ? "NEW" : stockItem?.cond?.toUpperCase() || "USED"
+            stockItem?.is_new ? 'NEW' : stockItem?.cond?.toUpperCase() || 'USED'
           }]`}</div>
           <div className="text-sm">
-            {`${vendor ? `Selling for ${vendor?.name}` : ""}`}
+            {`${vendor ? `Selling for ${vendor?.name}` : ''}`}
           </div>
         </div>
       </div>
@@ -83,13 +82,9 @@ export default function CountedListItem({
               quantity_difference:
                 (parseInt(e.target.value) || 0) -
                 stocktakeItem?.quantity_recorded,
-            };
-            updateStocktakeItemInDatabase(newStocktakeItem);
-            mutateStocktakeItems(
-              (stocktakeItems || [])?.map((si) =>
-                si?.id === stocktakeItem?.id ? newStocktakeItem : si
-              )
-            );
+            }
+            updateStocktakeItemInDatabase(newStocktakeItem)
+            updateStocktakeItem(newStocktakeItem)
           }}
         />
         <button
@@ -106,16 +101,13 @@ export default function CountedListItem({
         <button
           className="bg-gray-200 hover:bg-gray-300 p-1 w-10 h-10 rounded-full mx-4"
           onClick={() => {
-            deleteStocktakeItemFromDatabase(stocktakeItem?.id);
-            mutateStocktakeItems(
-              stocktakeItems?.filter((si) => si?.id !== stocktakeItem?.id),
-              false
-            );
+            deleteStocktakeItemFromDatabase(stocktakeItem?.id)
+            deleteStocktakeItem(stocktakeItem?.id)
           }}
         >
           <DeleteIcon />
         </button>
       </div>
     </div>
-  );
+  )
 }
