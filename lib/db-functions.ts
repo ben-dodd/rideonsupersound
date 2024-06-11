@@ -1226,6 +1226,9 @@ export async function updateStockItemInDatabase(
 export async function updateStocktakeItemInDatabase(
   stocktakeItem: StocktakeItemObject
 ) {
+  stocktakeItem.date_counted = stocktakeItem?.date_counted
+    ? dayjs(stocktakeItem.date_counted).utc().format('YYYY-MM-DD HH:mm:ss')
+    : null
   try {
     const res = await fetch(
       `/api/update-stocktake-item?k=${process.env.NEXT_PUBLIC_SWR_API_KEY}`,
