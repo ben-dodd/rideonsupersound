@@ -38,6 +38,7 @@ import CountedListItem from './counted-list-item'
 import ItemCard from './item-card'
 import SearchIcon from '@mui/icons-material/Search'
 import dayjs from 'dayjs'
+import RadioButton from '@/components/_components/inputs/radio-button'
 
 export default function CountItems() {
   // SWR
@@ -62,6 +63,7 @@ export default function CountItems() {
   // State
   const [lastAddedItem, setLastAddedItem] = useState(null)
   const [search, setSearch] = useState('')
+  const [addZeroes, setAddZeroes] = useState('true')
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -158,6 +160,12 @@ export default function CountItems() {
             value={scanInput}
             onChange={(e: any) => {
               if (
+                (addZeroes === 'yes' &&
+                  itemOptions?.filter(
+                    (opt) =>
+                      `${('00000' + e?.target?.value || '').slice(-5)}` ===
+                      `${('00000' + opt?.value || '').slice(-5)}`
+                  )?.length > 0) ||
                 itemOptions?.filter(
                   (opt) =>
                     e.target.value ===
@@ -170,6 +178,16 @@ export default function CountItems() {
                 setScanInput(e.target.value)
               }
             }}
+          />
+          <RadioButton
+            inputLabel="ADD ZEROES"
+            group="addZeroes"
+            value={addZeroes}
+            onChange={(value: string) => setAddZeroes(value)}
+            options={[
+              { id: 'yes', value: 'true', label: 'Yes' },
+              { id: 'no', value: 'false', label: 'No' },
+            ]}
           />
           <div className={`transition-all px-1 text-xs mt-2 mb-2`}>
             OR SEARCH ITEMS
