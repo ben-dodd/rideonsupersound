@@ -1,5 +1,5 @@
-import { NextApiHandler } from "next";
-import { query } from "../../lib/db";
+import { NextApiHandler } from 'next'
+import { query } from '../../lib/db'
 
 const handler: NextApiHandler = async (req, res) => {
   const {
@@ -16,13 +16,15 @@ const handler: NextApiHandler = async (req, res) => {
     format_list,
     total_estimated,
     total_unique_estimated,
+    last_completed,
+    status,
     is_deleted,
     id,
-  } = req.body;
-  const { k } = req.query;
+  } = req.body
+  const { k } = req.query
   try {
     if (!k || k !== process.env.NEXT_PUBLIC_SWR_API_KEY)
-      return res.status(401).json({ message: "Resource Denied." });
+      return res.status(401).json({ message: 'Resource Denied.' })
     const results = await query(
       `
       UPDATE stocktake_template
@@ -40,6 +42,8 @@ const handler: NextApiHandler = async (req, res) => {
         format_list = ?,
         total_estimated = ?,
         total_unique_estimated = ?,
+        last_completed = ?,
+        status = ?,
         is_deleted = ?
       WHERE id = ?
       `,
@@ -57,14 +61,16 @@ const handler: NextApiHandler = async (req, res) => {
         format_list ? JSON.stringify(format_list) : null,
         total_estimated,
         total_unique_estimated,
+        last_completed,
+        status,
         is_deleted,
         id,
       ]
-    );
-    return res.json(results);
+    )
+    return res.json(results)
   } catch (e) {
-    res.status(500).json({ message: e.message });
+    res.status(500).json({ message: e.message })
   }
-};
+}
 
-export default handler;
+export default handler
