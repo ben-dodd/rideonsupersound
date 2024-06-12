@@ -65,6 +65,7 @@ export default function DiscogsOption({
         title: discogsItem?.title,
         release_year: discogsItem?.year?.toString(),
       }
+    delete discogsItem?.notes
     setItem({
       ...item,
       thumb_url: opt?.thumb || null,
