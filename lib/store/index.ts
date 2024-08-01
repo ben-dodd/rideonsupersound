@@ -103,7 +103,7 @@ const initState = {
             pageIndex: 0,
             pageSize: 20,
           },
-          visibleColumns: {},
+          visibleColumns: { genre: false, media: false },
         },
       },
     },

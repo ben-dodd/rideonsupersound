@@ -69,10 +69,10 @@ function Table({
     columns,
     data,
     // debugAll: true,
-    // defaultColumn: {
-    //   minSize: 60,
-    //   maxSize: 800,
-    // },
+    defaultColumn: {
+      minSize: 5,
+      maxSize: 10000,
+    },
     columnResizeMode: 'onChange',
     // pageCount: Math.ceil(totalRowNum / pageSize) ?? -1,
     onPaginationChange: (e) => {
@@ -124,7 +124,7 @@ function Table({
       colSizes[`--col-${header.column.id}-size`] = header.column.getSize()
     }
     return colSizes
-  }, [table.getState().columnSizingInfo])
+  }, [table.getState().columnSizingInfo, table.getState().columnSizing])
   // Give our default column cell renderer editing superpowers!
 
   // <div className="rounded-md shadow-md flex overflow-hidden">
@@ -144,7 +144,7 @@ function Table({
 
   return (
     <div className="ml-1">
-      <div className="overflow-x-scroll w-full">
+      <div className="overflow-x-auto w-full">
         <div className="px-2 flex justify-between align-center w-board">
           {searchable && <SearchInput searchValue={searchValue} handleSearch={handleSearch} />}
           {columnSelectable && (
@@ -155,7 +155,7 @@ function Table({
           {/* <StockFilter stockList={stockList} setSettings={setSetting} filterSettings={filterSettings} /> */}
         </div>
         <table
-          className="table-fixed w-full text-sm"
+          className="w-full text-sm"
           {...{
             style: {
               ...columnSizeVars, //Define column sizes on the <table> element

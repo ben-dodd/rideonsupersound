@@ -60,6 +60,7 @@ const EditStockTable = () => {
           </span>
         ),
         size: 100,
+        minSize: 1,
       },
       {
         accessorKey: 'title',

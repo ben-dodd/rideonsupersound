@@ -14,6 +14,7 @@ export const Header = ({ table, color, colorDark }) => (
                 color ? `${color} hover:${colorDark}` : 'bg-gray-200 hover:bg-gray-400'
               } text-left px-2 truncate`,
               style: {
+                // left: header.getStart(),
                 width: `calc(var(--header-${header?.id}-size) * 1px)`,
               },
             }}

@@ -9,7 +9,7 @@ export const TableBody = ({ table, showFooter }) => (
         return (
           <tr
             key={row.id}
-            className="bg-gray-100 opacity-70 hover:opacity-100 mt-1"
+            className="bg-white opacity-70 hover:bg-gray-200 hover:opacity-100 mt-1"
             // className={`${
             //   row?.cells[2]?.value === SaleStateTypes.Completed ||
             //   row?.cells[5]?.value === 'Audio' ||
@@ -26,7 +26,7 @@ export const TableBody = ({ table, showFooter }) => (
           >
             {row.getVisibleCells().map((cell) => {
               return (
-                <td key={cell?.id} className="border border-white relative pl-2 pr-4 border-r-4 truncate">
+                <td key={cell?.id} className="relative pl-2 pr-4 truncate border border-y-1 border-gray-200">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               )
