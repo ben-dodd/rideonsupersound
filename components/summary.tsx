@@ -1,5 +1,5 @@
-import Payments from "./payments";
-import Sales from "./sales";
+import Payments from './payments'
+import Sales from './sales'
 
 export default function Summary({ sales, payments, vendorStoreCredits }) {
   return (
@@ -8,5 +8,5 @@ export default function Summary({ sales, payments, vendorStoreCredits }) {
       <div className="mb-8" />
       {/* <Payments payments={payments} /> */}
     </div>
-  );
+  )
 }

@@ -1,9 +1,10 @@
-import Payments from '@/components/vendor-page/payments'
-import Sales from '@/components/vendor-page/sales'
-import StockItem from '@/components/vendor-page/stock-item'
-import Summary from '@/components/vendor-page/summary'
-import Tabs from '@/components/vendor-page/tabs'
-import { filterInventory, sumPrices } from '@/lib/data-functions'
+import Payments from '@/components/payments'
+import Sales from '@/components/sales'
+import SaleSummary from '@/components/saleSummary'
+import ScreenSaver from '@/components/screenSaver'
+import Stock from '@/components/stock'
+import Tabs from '@/components/layout/tabs'
+import { sumPrices } from '@/lib/data-functions'
 import {
   useVendorByUid,
   useVendorPaymentsByUid,
@@ -13,11 +14,12 @@ import {
   useVendorStockPriceByUid,
   useVendorStoreCreditsByUid,
 } from '@/lib/swr-hooks'
-import { StockObject } from '@/lib/types'
 import dayjs from 'dayjs'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
+import Charts from '@/components/charts'
+import Download from '@/components/download'
 
 export default function VendorScreen() {
   const router = useRouter()
@@ -59,7 +61,6 @@ export default function VendorScreen() {
     isVendorStoreCreditsError
 
   const [tab, setTab] = useState(0)
-  const [stockSearch, setStockSearch] = useState('')
   const [startDate, setStartDate] = useState('2018-11-03')
   const [endDate, setEndDate] = useState(dayjs().format('YYYY-MM-DD'))
   const [sales, setSales] = useState([])
@@ -137,59 +138,23 @@ export default function VendorScreen() {
             </div>
             <div className="w-full">
               <Tabs
-                tabs={['Sales', 'Payments', 'Stock']}
+                tabs={['Sales', 'Payments', 'Stock', 'Charts', 'Download']}
                 value={tab}
                 onChange={setTab}
               />
             </div>
             {/* <div className="bg-orange-800 text-white font-bold italic px-2 py-1 mb-2" /> */}
-            {tab !== 2 && (
-              <div className="mb-2 md:flex md:justify-between">
-                <div className="flex items-start mb-2">
-                  <div className="font-bold mr-2">FROM</div>
-                  <input
-                    type="date"
-                    onChange={(e) => setStartDate(e.target.value)}
-                    value={startDate}
-                  />
-                  <div className="font-bold mx-2">TO</div>
-                  <input
-                    type="date"
-                    onChange={(e) => setEndDate(e.target.value)}
-                    value={endDate}
-                  />
-                </div>
-                <div className="w-full text-sm font-bold text-right md:w-2/5">
-                  <div className="w-full flex">
-                    <div className="p-2 w-3/4 whitespace-nowrap bg-gradient-to-r from-white to-gray-300 hover:to-red-300">
-                      TOTAL TAKE TO DATE
-                    </div>
-                    <div className="pl-2 py-2 w-1/12 text-left">$</div>
-                    <div className="py-2 w-2/12">
-                      {(totalTake / 100)?.toFixed(2)}
-                    </div>
-                  </div>
-                  <div className="w-full flex">
-                    <div className="p-2 w-3/4 whitespace-nowrap bg-gradient-to-r from-white to-gray-200 hover:to-orange-200">
-                      TOTAL PAID TO DATE
-                    </div>
-                    <div className="pl-2 py-2 w-1/12 text-left">$</div>
-                    <div className="py-2 w-2/12">
-                      {(totalPaid / 100)?.toFixed(2)}
-                    </div>
-                  </div>
-                  <div className="w-full flex">
-                    <div className="p-2 w-3/4 whitespace-nowrap bg-gradient-to-r from-white to-gray-100 hover:to-green-100">
-                      PAYMENT OWING ►
-                    </div>
-                    <div className="pl-2 py-2 w-1/12 text-left">$</div>
-                    <div className="py-2 w-2/12">
-                      {((totalTake - totalPaid) / 100)?.toFixed(2)}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+            {tab === 0 ||
+              (tab === 1 && (
+                <SaleSummary
+                  startDate={startDate}
+                  endDate={endDate}
+                  setStartDate={setStartDate}
+                  setEndDate={setEndDate}
+                  totalTake={totalTake}
+                  totalPaid={totalPaid}
+                />
+              ))}
             <div hidden={tab !== 0}>
               <Sales sales={sales} vendorStock={vendorStock} />
             </div>
@@ -197,39 +162,18 @@ export default function VendorScreen() {
               <Payments payments={payments} storeCredits={vendorStoreCredits} />
             </div>
             <div hidden={tab !== 2}>
-              <div className="w-full">
-                <input
-                  type="text"
-                  className="w-full p-1 border border-gray-200 mb-8"
-                  onChange={(e) => setStockSearch(e.target.value)}
-                  placeholder="Search.."
-                />
-                {filterInventory({
-                  inventory: vendorStock?.sort(
-                    (a: StockObject, b: StockObject) => {
-                      if (a?.quantity === b?.quantity) return 0
-                      if (a?.quantity < 1) return 1
-                      if (b?.quantity < 1) return -1
-                      return 0
-                    }
-                  ),
-                  search: stockSearch,
-                  slice: 1000,
-                  emptyReturn: true,
-                })?.map((item: StockObject) => (
-                  <StockItem key={item.id} item={item} />
-                ))}
-              </div>
+              <Stock vendorStock={vendorStock} />
+            </div>
+            <div hidden={tab !== 3}>
+              <Charts />
+            </div>
+            <div hidden={tab !== 4}>
+              <Download />
             </div>
           </div>
         </div>
       ) : (
-        <div className="flex w-screen h-screen align-center justify-center">
-          <img
-            src="https://ross.syd1.digitaloceanspaces.com/img/POS-RIDEONSUPERSOUNDLOGOBLACK.png"
-            width="500px"
-          />
-        </div>
+        <ScreenSaver />
       )}
     </>
   )
