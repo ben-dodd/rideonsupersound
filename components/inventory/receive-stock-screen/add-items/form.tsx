@@ -20,10 +20,8 @@ export default function Form() {
         ? [...basket?.items, { key: uuid(), item }]
         : [{ key: uuid(), item }],
     })
-    console.log(item)
     if (clearForm) setItem(defaultItem)
   }
-  console.log(item)
   return (
     <div>
       <div className="flex justify-end">

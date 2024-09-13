@@ -140,6 +140,7 @@ export default function InventoryItemForm({
           onEdit={setItem}
           inputLabel="FORMAT"
           dbField="format"
+          isCreateDisabled
           isDisabled={disabled}
         />
       </div>
