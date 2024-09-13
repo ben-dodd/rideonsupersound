@@ -1,5 +1,4 @@
 import RadioButton from '@/components/_components/inputs/radio-button'
-import Image from 'next/image'
 import SettingsSelect from '@/components/_components/inputs/settings-select'
 import TextField from '@/components/_components/inputs/text-field'
 import {
@@ -8,7 +7,6 @@ import {
   getItemSku,
 } from '@/lib/data-functions'
 import { StockObject, VendorObject } from '@/lib/types'
-import { useMemo } from 'react'
 import { useLogs, useVendors } from '@/lib/swr-hooks'
 import CreateableSelect from '@/components/_components/inputs/createable-select'
 import { saveLog, saveVendorToDatabase } from '@/lib/db-functions'

@@ -1,28 +1,45 @@
-import { receiveStockAtom } from "@/lib/atoms";
-import { StockObject } from "@/lib/types";
-import { ChevronRight } from "@mui/icons-material";
-import { useAtom } from "jotai";
-import { useState } from "react";
-import { v4 as uuid } from "uuid";
-import InventoryItemForm from "../inventory-item-form";
+import { receiveStockAtom } from '@/lib/atoms'
+import { StockObject } from '@/lib/types'
+import { ChevronRight } from '@mui/icons-material'
+import { useAtom } from 'jotai'
+import { useState } from 'react'
+import { v4 as uuid } from 'uuid'
+import InventoryItemForm from '../inventory-item-form'
 
 export default function Form() {
   // State
-  const [basket, setBasket] = useAtom(receiveStockAtom);
-  const defaultItem = { is_new: 1, do_list_on_website: 1 };
-  const [item, setItem] = useState<StockObject>(defaultItem);
+  const [basket, setBasket] = useAtom(receiveStockAtom)
+  const defaultItem = { is_new: 1, do_list_on_website: 1 }
+  const [item, setItem] = useState<StockObject>(defaultItem)
+  const [clearForm, setClearForm] = useState(true)
+  const toggleClearForm = () => setClearForm((clearForm) => !clearForm)
   const addItem = () => {
     setBasket({
       ...basket,
       items: basket?.items
         ? [...basket?.items, { key: uuid(), item }]
         : [{ key: uuid(), item }],
-    });
-    setItem(defaultItem);
-  };
+    })
+    console.log(item)
+    if (clearForm) setItem(defaultItem)
+  }
+  console.log(item)
   return (
     <div>
       <div className="flex justify-end">
+        <div className="flex col-span-2 items-center">
+          <input
+            type="checkbox"
+            className="cursor-pointer"
+            checked={!clearForm}
+            onChange={toggleClearForm}
+          />
+          <div className="mx-2">
+            Don't clear form
+            <br />
+            on add
+          </div>
+        </div>
         <button
           onClick={addItem}
           disabled={Object.keys(item)?.length === 0}
@@ -33,5 +50,5 @@ export default function Form() {
       </div>
       <InventoryItemForm item={item} setItem={setItem} />
     </div>
-  );
+  )
 }
