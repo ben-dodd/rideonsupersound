@@ -23,7 +23,7 @@ export default function StockDetails({ stockItem }) {
 
   return (
     <>
-      <SectionPanel icon={<StackedBarChartRounded />} title="Stock Quantities">
+      <SectionPanel icon={<StackedBarChartRounded />} title="Stock Quantities" collapsible={false}>
         <div className="grid grid-cols-4 justify-items-start">
           <div className="stock-indicator__container">IN STOCK</div>
           <div
