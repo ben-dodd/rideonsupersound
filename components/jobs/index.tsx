@@ -76,6 +76,7 @@ export default function TaskScreen() {
             ) : (
               inventory
                 ?.filter((item: StockObject) => item?.needs_restock)
+                ?.sort((a, b) => a?.title?.localeCompare?.(b?.title))
                 ?.sort((a, b) => a?.format?.localeCompare?.(b?.format))
                 ?.map((item: StockObject) => (
                   <RestockTask item={item} key={item?.id} />

@@ -18,7 +18,7 @@ export default function RestockJob({ item }: ListItemProps) {
   const { inventory, mutateInventory } = useInventory()
   const { logs, mutateLogs } = useLogs()
   const [clerk] = useAtom(clerkAtom)
-  console.log(inventory?.find((stock) => stock?.id === item?.id))
+  // console.log(inventory?.find((stock) => stock?.id === item?.id))
 
   return (
     <div
