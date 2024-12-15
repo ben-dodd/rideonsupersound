@@ -47,20 +47,33 @@ export default function SettingsSelect({
   const { selects, isSelectsLoading, mutateSelects } = useSelect(dbField)
   // State
   const [isLoading, setLoading] = useState(false)
-  const options = sorted
-    ? selects
-        ?.map((s) => s?.label)
-        ?.sort()
-        ?.map((opt: string) => ({
-          value: opt,
-          label: opt,
-        }))
-    : selects
-        ?.map((s) => s?.label)
-        ?.map((opt: string) => ({
-          value: opt,
-          label: opt,
-        }))
+  console.log(selects)
+  const options =
+    dbField === 'section'
+      ? selects
+          ?.sort((a, b) => a?.label?.localeCompare(b?.label))
+          ?.map((opt) => ({
+            value: opt?.label,
+            label: `${opt?.label}${
+              opt?.label_group ? ` [${opt?.label_group}]` : ''
+            }`,
+          }))
+      : sorted
+      ? selects
+          ?.map((s) => s?.label)
+          ?.sort()
+          ?.map((opt: string) => ({
+            value: opt,
+            label: opt,
+          }))
+      : selects
+          ?.map((s) => s?.label)
+          ?.map((opt: string) => ({
+            value: opt,
+            label: opt,
+          }))
+
+  console.log(options)
 
   const colourStyles = {
     // menuList: (styles) => ({
@@ -98,6 +111,11 @@ export default function SettingsSelect({
   //   valueContainer: { backgroundColor: 'red' },
   // }}
 
+  const getSectionLabel = (val) => {
+    const opt = options?.find((opt) => opt?.label === val)
+    return `${opt?.label} [${opt?.labelGroup}]`
+  }
+
   return (
     <div className={className}>
       <div className="input-label">{inputLabel}</div>
@@ -117,19 +135,25 @@ export default function SettingsSelect({
                 ? Array.isArray(object?.[dbField])
                   ? object?.[dbField]?.map((val: string) => ({
                       value: val,
-                      label: val,
+                      label: dbField === 'section' ? getSectionLabel(val) : val,
                     }))
                   : object?.[dbField]
                   ? [
                       {
                         value: object?.[dbField] || '',
-                        label: object?.[dbField] || '',
+                        label:
+                          dbField === 'section'
+                            ? getSectionLabel(object?.[dbField])
+                            : object?.[dbField] || '',
                       },
                     ]
                   : []
                 : {
                     value: object?.[dbField] || '',
-                    label: object?.[dbField] || '',
+                    label:
+                      dbField === 'section'
+                        ? getSectionLabel(object?.[dbField])
+                        : object?.[dbField] || '',
                   }
               : null
           }
