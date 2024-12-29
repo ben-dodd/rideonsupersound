@@ -42,13 +42,14 @@ export default function Layout({ children }) {
         <title>R.O.S.S. P.O.S.</title>
       </Head>
       <Nav />
-      <div className="flex h-main relative overflow-y-hidden">
+      <div className="flex h-main">
         {view?.helpDialog && <HelpDialog />}
         {confirmModal?.open && <ConfirmModal />}
         {infoModal?.open && <InfoModal />}
         {alert?.open && <SnackAlert />}
         <Menu />
-        <div className="h-full w-full absolute sm:static">{routeLoading ? <Loading /> : children}</div>
+
+        <div className={`w-full h-main overflow-y-scroll pb-8`}>{routeLoading ? <Loading /> : children}</div>
       </div>
       {/* <Clippy /> */}
     </>

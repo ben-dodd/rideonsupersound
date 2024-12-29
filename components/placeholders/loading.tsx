@@ -2,7 +2,7 @@ import Image from 'next/image'
 
 const Loading = ({
   size = 'md',
-  type = 'ripple',
+  type = 'spin',
 }: {
   size?: 'full' | 'md' | 'sm'
   type?: 'ripple' | 'spin' | 'pyramid'

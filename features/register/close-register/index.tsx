@@ -20,7 +20,7 @@ const CloseRegisterScreen = () => {
   const [notes, setNotes] = useState('')
   const [closeAmount, setCloseAmount] = useState(`${getAmountFromCashMap(till)}`)
   const [loading, setLoading] = useState(false)
-  useEffect(() => setCloseAmount(`${getAmountFromCashMap(till)}`), [till])
+  useEffect(() => setCloseAmount(`${getAmountFromCashMap(till)?.toFixed(2)}`), [till])
   const {
     openAmount,
     closePettyBalance,
@@ -78,15 +78,15 @@ const CloseRegisterScreen = () => {
     <div className="h-main sm:w-boardMainSmall lg:w-boardMain flex justify-center items-center">
       <div className="max-w-md">
         <div className="flex justify-center text-4xl font-bold pb-4">{`CLOSE REGISTER #${currentRegister?.id}`}</div>
-        <div className="flex mb-4">
+        <div className="flex my-4">
           <div className="w-1/2">
-            <div className="text-3xl">Start Float</div>
-            <div className="text-3xl text-red-400 py-2">{`${priceDollarsString(openAmount)}`}</div>
+            <div className="text-lg font-bold">START FLOAT</div>
+            <div className="text-lg text-red-400 py-2">{`${priceDollarsString(openAmount)}`}</div>
           </div>
           <div className="w-1/2">
-            <div className="text-3xl">Close Float</div>
+            <div className="text-lg font-bold">CLOSE FLOAT</div>
             <TextField
-              className="text-3xl text-red-400"
+              className="text-lg text-red-400"
               startAdornment="$"
               value={`${closeAmount}`}
               onChange={(e: any) => {
