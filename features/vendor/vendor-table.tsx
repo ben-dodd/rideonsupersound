@@ -17,8 +17,6 @@ const VendorTable = () => {
   } = useAppStore()
 
   const { vendors, isVendorsLoading } = useVendors()
-  console.log(vendors)
-  console.log(filter)
   // const filteredStockList = stockList?.filter((stockItem) => filterInventory(stockItem, searchBar))
 
   // const collatedStockList = useMemo(
@@ -39,6 +37,8 @@ const VendorTable = () => {
   // useEffect(() => {
   //   setPageFilter(Pages.stockPage, { visibleColumns: columnVisibility }, 'list')
   // }, [columnVisibility, setPageFilter])
+
+  const filteredVendors = vendors?.filter((vendor) => vendor?.name?.toLowerCase()?.includes(searchBar?.toLowerCase()))
 
   const columns = useMemo(
     () => [
@@ -92,7 +92,7 @@ const VendorTable = () => {
   ) : (
     <Table
       columns={columns}
-      data={vendors}
+      data={filteredVendors}
       showPagination
       showEdit
       searchable
