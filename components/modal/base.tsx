@@ -6,7 +6,7 @@ const backdropVariants: Variants = {
 }
 
 const modalVariants: Variants = {
-  hidden: { opacity: 0, scale: 0 },
+  hidden: { opacity: 0, scale: 0.8 },
   visible: { opacity: 1, scale: 1 },
 }
 
@@ -19,24 +19,25 @@ export default function ModalBase({
 }) {
   return (
     <motion.div
-      className={`${
-        !open ? 'opacity-0 pointer-events-none ' : ''
-      }absolute w-screen h-main top-0 left-0 flex items-center justify-center`}
+      className={`fixed inset-0 flex items-center justify-center z-50 ${open ? '' : 'opacity-0 pointer-events-none'}`}
     >
+      {/* Backdrop */}
       <motion.div
-        onClick={disableBackdropClick ? null : onClose}
-        className="absolute w-full h-full bg-black opacity-50"
+        onClick={!disableBackdropClick && onClose ? onClose : undefined}
+        className="absolute inset-0 bg-black"
         initial="hidden"
         animate={open ? 'visible' : 'hidden'}
         transition={{ duration: 0.5, ease: 'easeInOut' }}
         variants={backdropVariants}
       />
+
+      {/* Modal */}
       <motion.div
-        className={`bg-white w-11/12 ${width} mx-auto z-50 rounded-md shadow-2xl opacity-100`}
+        className={`bg-white w-11/12 ${width} mx-auto z-50 rounded-md shadow-2xl`}
         initial="hidden"
         animate={open ? 'visible' : 'hidden'}
         variants={modalVariants}
-        transition={{ duration: 0.1, ease: 'easeInOut' }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
       >
         {children}
       </motion.div>
