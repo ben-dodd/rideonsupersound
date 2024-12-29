@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 const CircularProgress = dynamic(() => import('@mui/material/CircularProgress'))
 const Tooltip = dynamic(() => import('@mui/material/Tooltip'))
@@ -16,6 +16,7 @@ import { SaleStateTypes } from 'lib/types/sale'
 import { ArrowCircleLeftRounded } from '@mui/icons-material'
 import { priceDollarsString } from 'lib/utils'
 import { useStockItemList } from 'lib/api/stock'
+import { areAnyDiscountsInvalid } from 'lib/functions/pay'
 
 export default function ShoppingCart() {
   const { cart, view, setCart, openView, closeView } = useAppStore()
@@ -24,9 +25,19 @@ export default function ShoppingCart() {
   const { clerk } = useClerk()
   const router = useRouter()
   const [loadingSale, setLoadingSale] = useState(false)
-
   const { totalPrice, totalStoreCut, totalRemaining, totalPaid } = useSaleProperties(cart, true)
+
+  const saleDisabled = useMemo(() => {
+    return (
+      loadingSale ||
+      (!totalRemaining && sale?.state !== SaleStateTypes.Completed) ||
+      items?.length === 0 ||
+      areAnyDiscountsInvalid(items) ||
+      items.filter((cartItem) => !cartItem?.isDeleted && !cartItem?.isRefunded)?.length === 0
+    )
+  }, [items, loadingSale, sale?.state, totalRemaining])
   const handleBackClick = () => closeView(ViewProps.cart)
+
   return (
     <div
       className={`absolute top-0 transition-offset duration-300 ${
@@ -65,6 +76,11 @@ export default function ShoppingCart() {
           )}
         </div>
         <div className="pt-4">
+          {areAnyDiscountsInvalid(items) ? (
+            <div className="bg-red-500 p-1 w-full text-sm flex justify-center my-3">CHECK ITEM DISCOUNTS ARE VALID</div>
+          ) : (
+            <div />
+          )}
           <div className="flex justify-between items-end">
             <button
               className="fab-button__secondary w-1/3"
@@ -106,7 +122,7 @@ export default function ShoppingCart() {
           <div>
             <button
               className={`w-full my-4 modal__button--${totalRemaining < 0 ? 'alt1' : 'ok'}`}
-              disabled={loadingSale || (!totalRemaining && sale?.state !== SaleStateTypes.Completed)}
+              disabled={saleDisabled}
               onClick={() => {
                 if (sale?.id) router.push('sell/pay')
                 else {

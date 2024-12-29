@@ -169,3 +169,19 @@ export function getCashVars(centsReceived, totalRemaining, isRefund) {
     cashToCustomer: isRefund ? centsReceived : centsReceived > centsRemaining ? centsReceived - centsRemaining : null,
   }
 }
+
+export function areAnyDiscountsInvalid(cartItems) {
+  return (
+    cartItems.filter((cartItem) => {
+      return (
+        !cartItem?.isDeleted &&
+        !cartItem?.isRefunded &&
+        (!isDiscountValid(cartItem?.storeDiscount) || !isDiscountValid(cartItem?.vendorDiscount))
+      )
+    })?.length > 0
+  )
+}
+
+export function isDiscountValid(discount) {
+  return Number(discount) >= 0 && Number(discount) <= 100
+}
