@@ -11,9 +11,10 @@ import { MemoizedTableBody, TableBody } from './body'
 import { Pagination } from './pagination'
 import { Header } from './header'
 import { ColumnSelect } from './columnSelect'
-import { ViewColumn } from '@mui/icons-material'
+import { FilterAlt, FilterAltOff, ViewColumn } from '@mui/icons-material'
 import SearchInput from 'components/inputs/search-input'
 import DropdownMenu from 'components/dropdown-menu'
+import { Tooltip } from '@mui/material'
 
 interface TableProps {
   color?: string
@@ -29,6 +30,7 @@ interface TableProps {
   // View options
   showFooter?: boolean
   columnSelectable?: boolean
+  filters?: boolean
   showPagination?: boolean
   initPagination?: PaginationState
   onPaginationChange?: Function
@@ -47,7 +49,8 @@ function Table({
   data,
   columns,
   showFooter,
-  columnSelectable = true,
+  columnSelectable = false,
+  filters = true,
   showPagination,
   initPagination = { pageIndex: 0, pageSize: 10 },
   onPaginationChange,
@@ -115,6 +118,9 @@ function Table({
     // },
   })
 
+  const [showFilters, setShowFilters] = useState(false)
+  const toggleFilters = () => setShowFilters((filters) => !filters)
+
   // const columnSizeVars = useMemo(() => {
   //   const headers = table.getFlatHeaders()
   //   const colSizes: { [key: string]: number } = {}
@@ -145,8 +151,29 @@ function Table({
   return (
     <div className="ml-1">
       <div className="overflow-x-auto w-full">
-        <div className="px-2 flex justify-between align-center w-board">
-          {searchable && <SearchInput searchValue={searchValue} handleSearch={handleSearch} />}
+        <div className="px-2 flex justify-end items-center w-board">
+          {searchable && (
+            <div className="w-1/4">
+              <SearchInput searchValue={searchValue} handleSearch={handleSearch} />
+            </div>
+          )}
+          {filters && (
+            <div className="px-2 h-full flex justify-center items-center">
+              {showFilters ? (
+                <Tooltip title="Hide Filters">
+                  <div onClick={toggleFilters}>
+                    <FilterAlt />
+                  </div>
+                </Tooltip>
+              ) : (
+                <Tooltip title="Show Filters">
+                  <div onClick={toggleFilters}>
+                    <FilterAltOff />
+                  </div>
+                </Tooltip>
+              )}
+            </div>
+          )}
           {columnSelectable && (
             <div className="px-2 h-full">
               <DropdownMenu icon={<ViewColumn />} dark customMenu={<ColumnSelect table={table} />} />
@@ -163,7 +190,7 @@ function Table({
           //   },
           // }}
         >
-          <Header table={table} color={color} colorDark={colorDark} />
+          <Header table={table} color={color} colorDark={colorDark} showFilters={showFilters} />
           {/* When resizing any column we will render this special memoized version of our table body */}
           {table.getState().columnSizingInfo.isResizingColumn ? (
             <MemoizedTableBody table={table} showFooter={showFooter} />

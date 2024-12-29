@@ -10,10 +10,7 @@ const VendorTable = () => {
   const router = useRouter()
   const {
     pages: {
-      vendorsPage: {
-        filter: { list: filters },
-        searchBar: { list: searchBar },
-      },
+      vendorsPage: { filter, searchBar },
     },
     setPageFilter,
     setSearchBar,
@@ -21,22 +18,22 @@ const VendorTable = () => {
 
   const { vendors, isVendorsLoading } = useVendors()
   console.log(vendors)
-  console.log(filters)
+  console.log(filter)
   // const filteredStockList = stockList?.filter((stockItem) => filterInventory(stockItem, searchBar))
 
   // const collatedStockList = useMemo(
   //   () => collateStockList(filteredStockList, stockMovements),
   //   [filteredStockList, stockMovements],
   // )
-  const [pagination, setPagination] = useState(filters?.pagination)
-  const [sorting, setSorting] = useState(filters?.sorting)
+  const [pagination, setPagination] = useState(filter?.pagination)
+  const [sorting, setSorting] = useState(filter?.sorting)
   // const [columnVisibility, setColumnVisibility] = useState(filters?.columnVisibility)
-  const handleSearch = (e) => setSearchBar(Pages.stockPage, e.target.value)
+  const handleSearch = (e) => setSearchBar(Pages.vendorsPage, e.target.value)
 
   // Handle sort, pagination and filter changes
   // Do not add filters or setFilters to dependencies
   useEffect(() => {
-    setPageFilter(Pages.stockPage, { pagination, sorting }, 'list')
+    setPageFilter(Pages.stockPage, { pagination, sorting })
   }, [pagination, setPageFilter, sorting])
 
   // useEffect(() => {
@@ -98,9 +95,9 @@ const VendorTable = () => {
       data={vendors}
       showPagination
       searchable
-      initPagination={filters?.pagination}
+      initPagination={filter?.pagination}
       onPaginationChange={setPagination}
-      initSorting={filters?.sorting}
+      initSorting={filter?.sorting}
       onSortingChange={setSorting}
       searchValue={searchBar}
       handleSearch={handleSearch}

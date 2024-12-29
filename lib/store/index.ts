@@ -108,25 +108,14 @@ const initState = {
       },
     },
     vendorsPage: {
-      tab: 0,
       searchBar: '',
       filter: {
-        list: {
-          sorting: [],
-          pagination: {
-            pageIndex: 0,
-            pageSize: 20,
-          },
-          visibleColumns: {},
+        sorting: [],
+        pagination: {
+          pageIndex: 0,
+          pageSize: 20,
         },
-        edit: {
-          sorting: [],
-          pagination: {
-            pageIndex: 0,
-            pageSize: 20,
-          },
-          visibleColumns: { genre: false, media: false },
-        },
+        visibleColumns: {},
       },
     },
     salesPage: {

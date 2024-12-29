@@ -13,7 +13,6 @@ export default function InventoryScroll() {
     },
   } = useAppStore()
   const { stockList = [], isStockListLoading = true } = useStockListBySearch(searchBar)
-  console.log(stockList)
   return (
     <div className="h-content overflow-y-scroll px-2">
       {searchBar?.trim()?.length > 0 ? (
