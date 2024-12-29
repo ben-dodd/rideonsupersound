@@ -183,5 +183,5 @@ export function areAnyDiscountsInvalid(cartItems) {
 }
 
 export function isDiscountValid(discount) {
-  return Number(discount) >= 0 && Number(discount) <= 100
+  return !discount || (Number(discount) >= 0 && Number(discount) <= 100)
 }
