@@ -101,7 +101,7 @@
 }
 
 .white-button {
-  @apply bg-white hover:bg-gray-100 ring-1 ring-gray-200 hover:shadow-md disabled:bg-gray-200 p-2 rounded;
+  @apply bg-white hover:bg-gray-100 ring-1 ring-gray-200 hover:shadow-sm disabled:bg-gray-200 p-2 rounded;
 }
 
 .dialog__footer--actions-right {

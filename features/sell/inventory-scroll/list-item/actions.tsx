@@ -1,4 +1,4 @@
-import { ArrowRight } from '@mui/icons-material'
+import { AddShoppingCart } from '@mui/icons-material'
 import { skuScan } from 'lib/functions/sell'
 import { useAppStore } from 'lib/store'
 import { getItemSkuDisplayName } from 'lib/functions/displayInventory'
@@ -63,7 +63,7 @@ const Actions = ({ item, itemQuantity, holdsQuantity }) => {
           // disabled={!item?.totalSell}
           onClick={clickAddToCart}
         >
-          <ArrowRight style={{ fontSize: '40px' }} />
+          <AddShoppingCart style={{ fontSize: '20px' }} />
         </button>
         {/* </Tooltip> */}
       </div>
