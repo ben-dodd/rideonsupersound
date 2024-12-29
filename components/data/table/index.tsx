@@ -1,4 +1,4 @@
-import { useMemo, useReducer, useState } from 'react'
+import { useState } from 'react'
 import {
   PaginationState,
   SortingState,
@@ -59,7 +59,7 @@ function Table({
   searchValue,
   handleSearch,
 }: TableProps) {
-  const rerender = useReducer(() => ({}), {})[1]
+  // const rerender = useReducer(() => ({}), {})[1]
   const [pagination, setPagination] = useState<PaginationState>(initPagination)
   const [sorting, setSorting] = useState<SortingState>(initSorting)
   const [columnVisibility, setColumnVisibility] = useState(initColumnVisibility)
@@ -69,11 +69,11 @@ function Table({
     columns,
     data,
     // debugAll: true,
-    defaultColumn: {
-      minSize: 5,
-      maxSize: 10000,
-    },
-    columnResizeMode: 'onChange',
+    // defaultColumn: {
+    //   minSize: 5,
+    //   maxSize: 500,
+    // },
+    // columnResizeMode: 'onChange',
     // pageCount: Math.ceil(totalRowNum / pageSize) ?? -1,
     onPaginationChange: (e) => {
       console.log('pagination change', e)
@@ -115,16 +115,16 @@ function Table({
     // },
   })
 
-  const columnSizeVars = useMemo(() => {
-    const headers = table.getFlatHeaders()
-    const colSizes: { [key: string]: number } = {}
-    for (let i = 0; i < headers.length; i++) {
-      const header = headers[i]!
-      colSizes[`--header-${header.id}-size`] = header.getSize()
-      colSizes[`--col-${header.column.id}-size`] = header.column.getSize()
-    }
-    return colSizes
-  }, [table.getState().columnSizingInfo, table.getState().columnSizing])
+  // const columnSizeVars = useMemo(() => {
+  //   const headers = table.getFlatHeaders()
+  //   const colSizes: { [key: string]: number } = {}
+  //   for (let i = 0; i < headers.length; i++) {
+  //     const header = headers[i]!
+  //     colSizes[`--header-${header.id}-size`] = header.getSize()
+  //     colSizes[`--col-${header.column.id}-size`] = header.column.getSize()
+  //   }
+  //   return colSizes
+  // }, [table.getState().columnSizingInfo, table.getState().columnSizing])
   // Give our default column cell renderer editing superpowers!
 
   // <div className="rounded-md shadow-md flex overflow-hidden">
@@ -156,12 +156,12 @@ function Table({
         </div>
         <table
           className="w-full text-sm"
-          {...{
-            style: {
-              ...columnSizeVars, //Define column sizes on the <table> element
-              width: table.getTotalSize(),
-            },
-          }}
+          // {...{
+          //   style: {
+          //     ...columnSizeVars, //Define column sizes on the <table> element
+          //     width: table.getTotalSize(),
+          //   },
+          // }}
         >
           <Header table={table} color={color} colorDark={colorDark} />
           {/* When resizing any column we will render this special memoized version of our table body */}

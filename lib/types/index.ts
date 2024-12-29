@@ -108,6 +108,7 @@ export interface ModalButton {
   data?: any[]
   headers?: string[]
   fileName?: string
+  useEnterKey?: boolean
 }
 
 export interface AlertProps {

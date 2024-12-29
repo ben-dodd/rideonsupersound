@@ -103,7 +103,7 @@ export default function OpenRegisterScreen() {
         directly.
       </div>
       {previousRegister ? (
-        <div className="bg-yellow-200 p-4">
+        <div className="bg-yellow-200 absolute top-nav right-0 bg-yellow-200 p-4 max-w-xs">
           <div>{`Previous register closed at ${dayjs(previousRegister?.closeDate).format(dateTime)}${
             previousRegister?.closedByName ? ` by ${previousRegister?.closedByName}` : ''
           }`}</div>

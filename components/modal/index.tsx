@@ -1,11 +1,11 @@
 import CloseButton from 'components/button/close-button'
 import ModalBase from 'components/modal/base'
-import CircularProgress from '@mui/material/CircularProgress'
 import { CSVLink } from 'react-csv'
 
 import { ModalButton } from 'lib/types'
 import { MouseEventHandler } from 'react'
 import Loading from 'components/placeholders/loading'
+import ActionButton from 'components/button/action-button'
 
 interface ModalProps {
   open: boolean
@@ -53,21 +53,7 @@ export default function Modal({
                 {button?.text}
               </CSVLink>
             ) : (
-              <button
-                key={i}
-                className={`modal__button--${button?.type}`}
-                onClick={() => button?.onClick()}
-                disabled={button?.disabled}
-              >
-                {button?.loading ? (
-                  <span className="pr-4">
-                    <CircularProgress color="inherit" thickness={5} size={18} />
-                  </span>
-                ) : (
-                  <span />
-                )}
-                {button?.text}
-              </button>
+              <ActionButton key={i} button={{ ...button, useEnterKey: button?.type === 'ok' }} />
             ),
           )}
         </div>

@@ -12,7 +12,7 @@ const SearchInput = ({ searchValue, handleSearch }) => {
           <Search />
         </div>
         <input
-          className="w-full px-2 text-sm outline-none bg-transparent text-xl"
+          className="w-full px-2 text-sm outline-none bg-transparent"
           value={searchValue || ''}
           onChange={handleSearch}
           placeholder="Search..."

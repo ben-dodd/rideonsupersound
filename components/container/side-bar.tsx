@@ -10,7 +10,7 @@ export default function SidebarContainer({
 }) {
   return (
     <div
-      className={`absolute top-0 transition-offset duration-300 ${
+      className={`absolute top-12 transition-offset duration-300 ${
         show ? 'right-0' : '-right-sidebar hidden'
       } sm:left-boardMainSmall lg:left-boardMain h-full w-full sm:w-sidebarSmall lg:w-sidebar md:h-main`}
       // 'right-0' : '-right-sidebar hidden'
