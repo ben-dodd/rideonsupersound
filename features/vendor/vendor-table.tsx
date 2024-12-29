@@ -94,6 +94,7 @@ const VendorTable = () => {
       columns={columns}
       data={vendors}
       showPagination
+      showEdit
       searchable
       initPagination={filter?.pagination}
       onPaginationChange={setPagination}

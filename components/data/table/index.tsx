@@ -11,7 +11,7 @@ import { MemoizedTableBody, TableBody } from './body'
 import { Pagination } from './pagination'
 import { Header } from './header'
 import { ColumnSelect } from './columnSelect'
-import { FilterAlt, FilterAltOff, ViewColumn } from '@mui/icons-material'
+import { Edit, FilterAlt, ViewColumn } from '@mui/icons-material'
 import SearchInput from 'components/inputs/search-input'
 import DropdownMenu from 'components/dropdown-menu'
 import { Tooltip } from '@mui/material'
@@ -30,7 +30,8 @@ interface TableProps {
   // View options
   showFooter?: boolean
   columnSelectable?: boolean
-  filters?: boolean
+  showFilters?: boolean
+  showEdit?: boolean
   showPagination?: boolean
   initPagination?: PaginationState
   onPaginationChange?: Function
@@ -50,7 +51,8 @@ function Table({
   columns,
   showFooter,
   columnSelectable = false,
-  filters = true,
+  showFilters = true,
+  showEdit = false,
   showPagination,
   initPagination = { pageIndex: 0, pageSize: 10 },
   onPaginationChange,
@@ -118,8 +120,13 @@ function Table({
     // },
   })
 
-  const [showFilters, setShowFilters] = useState(false)
-  const toggleFilters = () => setShowFilters((filters) => !filters)
+  // const [showFilterBar, setShowFilterBar] = useState(false)
+  // const toggleFilters = () => setShowFilterBar((filters) => !filters)
+
+  const [doEdit, setDoEdit] = useState(false)
+  const startEdit = () => setDoEdit(true)
+  const cancelEdit = () => setDoEdit(false)
+  const saveEdit = () => null
 
   // const columnSizeVars = useMemo(() => {
   //   const headers = table.getFlatHeaders()
@@ -149,28 +156,39 @@ function Table({
   //   </div>
 
   return (
-    <div className="ml-1">
+    <div className="ml-1 relative">
       <div className="overflow-x-auto w-full">
-        <div className="px-2 flex justify-end items-center w-board">
+        <div className="px-2 flex justify-end items-center w-board space-x-2">
           {searchable && (
             <div className="w-1/4">
               <SearchInput searchValue={searchValue} handleSearch={handleSearch} />
             </div>
           )}
-          {filters && (
-            <div className="px-2 h-full flex justify-center items-center">
-              {showFilters ? (
-                <Tooltip title="Hide Filters">
-                  <div onClick={toggleFilters}>
-                    <FilterAlt />
-                  </div>
-                </Tooltip>
-              ) : (
-                <Tooltip title="Show Filters">
-                  <div onClick={toggleFilters}>
-                    <FilterAltOff />
-                  </div>
-                </Tooltip>
+          {showFilters && (
+            <div className="icon-button-small-black">
+              <Tooltip title="Filter Results">
+                <div onClick={null}>
+                  <FilterAlt />
+                </div>
+              </Tooltip>
+            </div>
+          )}
+          {showEdit && (
+            <div className={`flex items-center ${doEdit ? 'ml-0 space-x-2' : '-ml-20'}`}>
+              {!doEdit && (
+                <div onClick={startEdit} className="icon-button-small-black cursor-pointer flex-shrink-0">
+                  <Edit />
+                </div>
+              )}
+              {doEdit && (
+                <div className="flex items-center space-x-2">
+                  <button onClick={cancelEdit} className="icon-text-button">
+                    Cancel
+                  </button>
+                  <button onClick={saveEdit} className="icon-text-button-final">
+                    Save
+                  </button>
+                </div>
               )}
             </div>
           )}
@@ -181,6 +199,7 @@ function Table({
           )}
           {/* <StockFilter stockList={stockList} setSettings={setSetting} filterSettings={filterSettings} /> */}
         </div>
+
         <table
           className="w-full text-sm"
           // {...{
@@ -190,7 +209,7 @@ function Table({
           //   },
           // }}
         >
-          <Header table={table} color={color} colorDark={colorDark} showFilters={showFilters} />
+          <Header table={table} color={color} colorDark={colorDark} />
           {/* When resizing any column we will render this special memoized version of our table body */}
           {table.getState().columnSizingInfo.isResizingColumn ? (
             <MemoizedTableBody table={table} showFooter={showFooter} />

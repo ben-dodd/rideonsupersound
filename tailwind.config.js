@@ -85,8 +85,8 @@ module.exports = {
       height: {
         navbar: '3rem',
         main: `calc(100vh - 3rem)`,
-        header: '4rem',
-        headerlg: '6rem',
+        header: '3rem',
+        headerlg: '4rem',
         content: `calc(100vh - 7rem)`,
         contentsm: `calc(100vh - 11rem)`,
         dialoglg: `calc(100vh - 12rem)`,
@@ -118,7 +118,7 @@ module.exports = {
       zIndex: {
         100: '100',
       },
-      transitionProperty: { width: 'width', height: 'height' },
+      transitionProperty: { width: 'width', height: 'height', margin: 'margin' },
       gridTemplateColumns: {
         right: 'auto 200px 200px',
       },
@@ -142,6 +142,9 @@ module.exports = {
     boxShadow: ['hover', 'disabled'],
     ringColor: ['hover', 'disabled'],
     cursor: ['disabled'],
+    extend: {
+      margin: ['responsive', 'hover', 'focus'], // Optional, if you want more margin control
+    },
   },
   plugins: [],
 }
