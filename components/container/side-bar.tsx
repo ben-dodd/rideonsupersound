@@ -1,6 +1,5 @@
 import { ModalButton } from 'lib/types'
 
-// TODO make title left aligned with actions on right
 export default function SidebarContainer({
   show = false,
   title = null,
@@ -10,13 +9,11 @@ export default function SidebarContainer({
 }) {
   return (
     <div
-      className={`absolute top-12 transition-offset duration-300 ${
-        show ? 'right-0' : '-right-sidebar hidden'
-      } sm:left-boardMainSmall lg:left-boardMain h-full w-full sm:w-sidebarSmall lg:w-sidebar md:h-main`}
-      // 'right-0' : '-right-sidebar hidden'
-      // } h-full w-full bg-yellow-200 sm:w-sidebarSmall lg:w-sidebar sm:h-main
+      className={`absolute top-12 right-0 h-full w-full sm:w-sidebarSmall lg:w-sidebar md:h-main transition-transform duration-300 transform ${
+        show ? 'translate-x-0' : 'translate-x-full'
+      } bg-brown-dark text-white`}
     >
-      <form onSubmit={handleSubmit} className="flex flex-col h-main px-4 bg-brown-dark text-white">
+      <form onSubmit={handleSubmit} className="flex flex-col h-main px-4">
         {title && <div className="text-xl font-bold my-2 tracking-wide">{title}</div>}
         {children}
         {buttons ? (
@@ -40,6 +37,3 @@ export default function SidebarContainer({
     </div>
   )
 }
-
-//   show ? "left-0" : "left-full"
-// } sm:left-2/3 h-full w-full bg-yellow-200 sm:w-1/3 sm:h-main`}

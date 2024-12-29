@@ -7,6 +7,7 @@ const Actions = ({ defaultAction, secondaryAction = null }) => {
     icon: defaultAction?.icon || <CheckCircleOutline />,
     text: defaultAction?.label,
     onClick: defaultAction?.onClick,
+    useEnterKey: defaultAction?.useEnterKey,
     type: 'ok',
   }
   const secondaryButton = {

@@ -34,7 +34,7 @@ export default function ShoppingCart() {
       } md:left-2/3 h-full w-full md:w-1/3 md:h-main`}
     >
       <div className="flex flex-col h-main px-2 bg-brown-dark text-white">
-        <div className="flex justify-between relative">
+        <div className="flex justify-between items-start relative">
           <div className="text-xl font-bold my-2 tracking-wide self-center">
             <div className="flex items-center">
               <button className="hover:text-brown-light px-2 md:hidden" onClick={handleBackClick}>
@@ -43,7 +43,7 @@ export default function ShoppingCart() {
               SHOPPING CART
             </div>
             {sale?.id && (
-              <div className="text-sm font-light">
+              <div className="text-sm font-light bg-yellow-500 p-1">
                 <div>{`Sale #${sale?.id} // ${(sale?.state || SaleStateTypes.InProgress)?.toUpperCase()}`}</div>
               </div>
             )}

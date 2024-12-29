@@ -161,6 +161,7 @@ const SaleEditItemScreen = ({ totalRemaining, isLoading }) => {
           label: sale?.state === SaleStateTypes.Completed ? 'SAVE SALE' : 'COMPLETE SALE',
           onClick: clickCompleteSale,
           icon: <CheckCircleOutline />,
+          useEnterKey: true,
         }
       : sale?.state === SaleStateTypes.Parked
       ? { label: 'PARK SALE AGAIN', onClick: clickParkSale, icon: <DirectionsCar /> }
