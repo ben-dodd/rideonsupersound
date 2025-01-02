@@ -1,4 +1,4 @@
-import { AddCircle, DisplaySettings } from '@mui/icons-material'
+import { AddCircle, Delete, DisplaySettings, FilterAlt } from '@mui/icons-material'
 import Table from 'components/data/table'
 import { useVendors } from 'lib/api/vendor'
 import { useAppStore } from 'lib/store'
@@ -18,7 +18,10 @@ const VendorTable = () => {
   } = useAppStore()
   const menuItems = [
     { text: 'New Vendor', icon: <AddCircle />, onClick: () => openView(ViewProps.vendorEditDialog) },
+    { text: 'Filter Results', icon: <FilterAlt />, onClick: null, disabled: true },
     { text: 'Manage Settings', icon: <DisplaySettings />, onClick: null, disabled: true },
+    { hr: true },
+    { text: 'Delete Selected', icon: <Delete />, onClick: null, disabled: true },
   ]
 
   const { vendors, isVendorsLoading } = useVendors()
@@ -110,6 +113,7 @@ const VendorTable = () => {
         onSortingChange={setSorting}
         searchValue={searchBar}
         handleSearch={handleSearch}
+        selectable={true}
       />
     </>
   )

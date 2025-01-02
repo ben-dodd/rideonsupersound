@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import {
   PaginationState,
+  RowSelectionState,
   SortingState,
   getCoreRowModel,
   getPaginationRowModel,
@@ -16,6 +17,7 @@ import DropdownMenu from 'components/dropdown-menu'
 import { useMe } from 'lib/api/clerk'
 import { isUserAdmin } from 'lib/functions/user'
 import Loading from 'components/placeholders/loading'
+import IndeterminateCheckbox from 'components/inputs/indeterminate-check-box'
 
 interface TableProps {
   color?: string
@@ -50,6 +52,8 @@ interface TableProps {
   dark?: boolean
   showBackButton?: boolean
   isLoading?: boolean
+  selectable?: boolean
+  setRowSelection?: any
 }
 
 function Table({
@@ -78,20 +82,54 @@ function Table({
   dark = false,
   showBackButton = false,
   isLoading = false,
+  selectable = false,
 }: TableProps) {
   // const rerender = useReducer(() => ({}), {})[1]
   const [pagination, setPagination] = useState<PaginationState>(initPagination)
   const [sorting, setSorting] = useState<SortingState>(initSorting)
   const [columnVisibility, setColumnVisibility] = useState(initColumnVisibility)
   const [isColumnSelectOpen, setIsColumnSelectOpen] = useState(false)
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
 
   const adminOnlyMenu = menuItems?.filter((menuItem) => !menuItem?.adminOnly)?.length === 0
   const adminOnlyMenuTest = false
   const { me } = useMe()
   const isAdmin = isUserAdmin(me)
 
+  const getColumns = () =>
+    selectable
+      ? [
+          {
+            id: 'select',
+            header: ({ table }) => (
+              <IndeterminateCheckbox
+                {...{
+                  checked: table.getIsAllRowsSelected(),
+                  indeterminate: table.getIsSomeRowsSelected(),
+                  onChange: table.getToggleAllRowsSelectedHandler(),
+                }}
+              />
+            ),
+            cell: ({ row }) => (
+              <div className="px-1">
+                <IndeterminateCheckbox
+                  {...{
+                    checked: row.getIsSelected(),
+                    disabled: !row.getCanSelect(),
+                    indeterminate: row.getIsSomeSelected(),
+                    onChange: row.getToggleSelectedHandler(),
+                  }}
+                />
+              </div>
+            ),
+            width: 30,
+          },
+          ...columns,
+        ]
+      : columns
+
   const table = useReactTable({
-    columns,
+    columns: getColumns(),
     data,
     // debugAll: true,
     // defaultColumn: {
@@ -118,11 +156,13 @@ function Table({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onRowSelectionChange: setRowSelection,
+    getRowId: (row) => row.uuid,
     // manualSorting: true,
     // manualPagination: true,
     enableMultiRemove: true,
     enableMultiSort: true,
-    state: { pagination, sorting, columnVisibility },
+    state: { pagination, sorting, columnVisibility, rowSelection },
     // meta: {
     //   updateData: (rowIndex: number, columnId: string, value: string) => {
     //     setTableData((old) =>
@@ -190,9 +230,7 @@ function Table({
             saveEdit={saveEdit}
             searchValue={searchValue}
             handleSearch={handleSearch}
-            showFilters={showFilters}
             showEdit={showEdit}
-            openFilters={openFilters}
           />
           {menuItems && (!adminOnlyMenuTest || adminOnlyMenu || isAdmin) ? (
             <DropdownMenu items={menuItems} dark={dark} />
@@ -203,14 +241,14 @@ function Table({
       )}
       <div className="h-content overflow-y-scroll">
         <table className="w-full text-sm overflow-x-auto ml-1">
-          <Header table={table} color={color} colorDark={colorDark} />
+          <Header table={table} color={color} colorDark={colorDark} selectable={selectable} />
           {data?.length > 0 && !isLoading && (
             <>
               {/* When resizing any column we will render this special memoized version of our table body */}
               {table.getState().columnSizingInfo.isResizingColumn ? (
-                <MemoizedTableBody table={table} showFooter={showFooter} />
+                <MemoizedTableBody table={table} showFooter={showFooter} selectable={selectable} />
               ) : (
-                <TableBody table={table} showFooter={showFooter} />
+                <TableBody table={table} showFooter={showFooter} selectable={selectable} />
               )}
             </>
           )}

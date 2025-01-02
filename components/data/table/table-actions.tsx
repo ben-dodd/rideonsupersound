@@ -1,5 +1,4 @@
-import { Edit, FilterAlt, ViewColumn } from '@mui/icons-material'
-import { Tooltip } from '@mui/material'
+import { Edit, ViewColumn } from '@mui/icons-material'
 import DropdownMenu from 'components/dropdown-menu'
 import SearchInput from 'components/inputs/search-input'
 import { ColumnSelect } from './columnSelect'
@@ -10,8 +9,6 @@ const TableActions = ({
   searchable,
   searchValue,
   handleSearch,
-  showFilters,
-  openFilters,
   showEdit,
   saveEdit,
   columnSelectable = false,
@@ -25,15 +22,6 @@ const TableActions = ({
       {searchable && (
         <div className="w-1/4">
           <SearchInput searchValue={searchValue} handleSearch={handleSearch} />
-        </div>
-      )}
-      {showFilters && (
-        <div className="icon-button-small-black">
-          <Tooltip title="Filter Results">
-            <div onClick={openFilters}>
-              <FilterAlt />
-            </div>
-          </Tooltip>
         </div>
       )}
       {showEdit && (

@@ -55,6 +55,7 @@ export function dbGetVendors(db = connection) {
       'last_contacted',
       'store_credit_only',
       'email_vendor',
+      'date_created',
       'uid',
     )
     .where({ is_deleted: 0 })

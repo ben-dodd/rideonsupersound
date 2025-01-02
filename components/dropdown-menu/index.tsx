@@ -43,43 +43,48 @@ const DropdownMenu = ({
           ? customMenu
           : items
               // ?.filter((item) => !item?.adminOnly || isAdmin)
-              ?.map((item, i) => (
-                <div
-                  key={i}
-                  className={`block text-gray-700 ${
-                    item?.disabled || (item?.adminOnly && !isAdmin)
-                      ? 'cursor-default text-gray-300'
-                      : 'hover:bg-blue-500 hover:text-white'
-                  }`}
-                >
-                  {item?.data && !item?.isDisabled ? (
-                    <CSVLink
-                      className={`flex items-center justify-start flex-nowrap w-dropdown p-2 normal-case`}
-                      data={item?.data}
-                      headers={item?.headers}
-                      filename={item?.fileName}
-                      onClick={() => {
-                        setMenuVisible(false)
-                        item?.onClick?.()
-                      }}
-                    >
-                      <div className="mr-2 text-left">{item?.icon}</div>
-                      <div className="text-left line-clamp-3">{item?.text}</div>
-                    </CSVLink>
-                  ) : (
-                    <button
-                      className={`flex items-center justify-start flex-nowrap w-dropdown p-2`}
-                      onClick={() => {
-                        setMenuVisible(false)
-                        item?.onClick?.()
-                      }}
-                    >
-                      <div className="mr-2 text-left">{item?.icon}</div>
-                      <div className="text-left line-clamp-3">{item?.text}</div>
-                    </button>
-                  )}
-                </div>
-              ))}
+              ?.map((item, i) =>
+                item?.hr ? (
+                  <hr key={i} />
+                ) : (
+                  <div key={i} className={`block text-gray-700 select-none`}>
+                    {item?.data && !item?.isDisabled ? (
+                      <CSVLink
+                        className={`flex items-center justify-start flex-nowrap w-dropdown p-2 normal-case ${
+                          item?.disabled || (item?.adminOnly && !isAdmin)
+                            ? 'cursor-default text-gray-400'
+                            : 'hover:bg-blue-500 hover:text-white'
+                        }`}
+                        data={item?.data}
+                        headers={item?.headers}
+                        filename={item?.fileName}
+                        onClick={() => {
+                          setMenuVisible(false)
+                          item?.onClick?.()
+                        }}
+                      >
+                        <div className="mr-2 text-left">{item?.icon}</div>
+                        <div className="text-left line-clamp-3">{item?.text}</div>
+                      </CSVLink>
+                    ) : (
+                      <button
+                        className={`flex items-center justify-start flex-nowrap w-dropdown p-2 ${
+                          item?.disabled || (item?.adminOnly && !isAdmin)
+                            ? 'cursor-default text-gray-400'
+                            : 'hover:bg-blue-500 hover:text-white'
+                        }`}
+                        onClick={() => {
+                          setMenuVisible(false)
+                          item?.onClick?.()
+                        }}
+                      >
+                        <div className="mr-2 text-left">{item?.icon}</div>
+                        <div className="text-left line-clamp-3">{item?.text}</div>
+                      </button>
+                    )}
+                  </div>
+                ),
+              )}
       </div>
       {menuVisible && (
         <div className={`fixed top-0 left-0 w-screen h-screen z-40`} onClick={() => setMenuVisible(false)} />
