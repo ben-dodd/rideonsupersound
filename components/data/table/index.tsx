@@ -15,6 +15,7 @@ import BackButton from 'components/button/back-button'
 import DropdownMenu from 'components/dropdown-menu'
 import { useMe } from 'lib/api/clerk'
 import { isUserAdmin } from 'lib/functions/user'
+import Loading from 'components/placeholders/loading'
 
 interface TableProps {
   color?: string
@@ -48,6 +49,7 @@ interface TableProps {
   full?: boolean
   dark?: boolean
   showBackButton?: boolean
+  isLoading?: boolean
 }
 
 function Table({
@@ -75,6 +77,7 @@ function Table({
   full = true,
   dark = false,
   showBackButton = false,
+  isLoading = false,
 }: TableProps) {
   // const rerender = useReducer(() => ({}), {})[1]
   const [pagination, setPagination] = useState<PaginationState>(initPagination)
@@ -140,10 +143,9 @@ function Table({
   // const [showFilterBar, setShowFilterBar] = useState(false)
   // const toggleFilters = () => setShowFilterBar((filters) => !filters)
 
-  const [doEdit, setDoEdit] = useState(false)
-  const startEdit = () => setDoEdit(true)
-  const cancelEdit = () => setDoEdit(false)
   const saveEdit = () => null
+  const [openFilter, setOpenFilter] = useState(false)
+  const openFilters = () => setOpenFilter(true)
 
   // const columnSizeVars = useMemo(() => {
   //   const headers = table.getFlatHeaders()
@@ -190,9 +192,7 @@ function Table({
             handleSearch={handleSearch}
             showFilters={showFilters}
             showEdit={showEdit}
-            doEdit={doEdit}
-            startEdit={startEdit}
-            cancelEdit={cancelEdit}
+            openFilters={openFilters}
           />
           {menuItems && (!adminOnlyMenuTest || adminOnlyMenu || isAdmin) ? (
             <DropdownMenu items={menuItems} dark={dark} />
@@ -204,7 +204,7 @@ function Table({
       <div className="h-content overflow-y-scroll">
         <table className="w-full text-sm overflow-x-auto ml-1">
           <Header table={table} color={color} colorDark={colorDark} />
-          {data?.length > 0 && (
+          {data?.length > 0 && !isLoading && (
             <>
               {/* When resizing any column we will render this special memoized version of our table body */}
               {table.getState().columnSizingInfo.isResizingColumn ? (
@@ -215,8 +215,9 @@ function Table({
             </>
           )}
         </table>
-        {showPagination && data?.length > 0 && <Pagination table={table} />}
+        {showPagination && data?.length > 0 && !isLoading && <Pagination table={table} />}
         {data?.length === 0 && <div className="p-2 font-bold">No Rows Found</div>}
+        {isLoading && <Loading />}
       </div>
     </div>
   )

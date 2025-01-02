@@ -1,6 +1,5 @@
 import { AddCircle, DisplaySettings } from '@mui/icons-material'
 import Table from 'components/data/table'
-import Loading from 'components/placeholders/loading'
 import { useVendors } from 'lib/api/vendor'
 import { useAppStore } from 'lib/store'
 import { Pages, ViewProps } from 'lib/store/types'
@@ -13,7 +12,6 @@ const VendorTable = () => {
     pages: {
       vendorsPage: { filter, searchBar },
     },
-    setPage,
     setPageFilter,
     openView,
     setSearchBar,
@@ -94,24 +92,26 @@ const VendorTable = () => {
     [],
   )
   // console.log(data)
-  return isVendorsLoading ? (
-    <Loading />
-  ) : (
-    <Table
-      title="Vendors"
-      titleClass="bg-col3"
-      columns={columns}
-      data={filteredVendors}
-      showPagination
-      showEdit
-      searchable
-      initPagination={filter?.pagination}
-      onPaginationChange={setPagination}
-      initSorting={filter?.sorting}
-      onSortingChange={setSorting}
-      searchValue={searchBar}
-      handleSearch={handleSearch}
-    />
+  return (
+    <>
+      <Table
+        title="Vendors"
+        titleClass="bg-col3"
+        columns={columns}
+        data={filteredVendors}
+        isLoading={isVendorsLoading}
+        menuItems={menuItems}
+        showPagination
+        showEdit
+        searchable
+        initPagination={filter?.pagination}
+        onPaginationChange={setPagination}
+        initSorting={filter?.sorting}
+        onSortingChange={setSorting}
+        searchValue={searchBar}
+        handleSearch={handleSearch}
+      />
+    </>
   )
 }
 

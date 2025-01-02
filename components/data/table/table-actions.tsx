@@ -3,6 +3,7 @@ import { Tooltip } from '@mui/material'
 import DropdownMenu from 'components/dropdown-menu'
 import SearchInput from 'components/inputs/search-input'
 import { ColumnSelect } from './columnSelect'
+import { useState } from 'react'
 
 const TableActions = ({
   table,
@@ -10,13 +11,15 @@ const TableActions = ({
   searchValue,
   handleSearch,
   showFilters,
+  openFilters,
   showEdit,
-  doEdit,
-  startEdit,
-  cancelEdit,
   saveEdit,
   columnSelectable = false,
 }) => {
+  const [doEdit, setDoEdit] = useState(false)
+  const startEdit = () => setDoEdit(true)
+  const cancelEdit = () => setDoEdit(false)
+
   return (
     <div className="px-2 flex justify-end items-center w-board space-x-2">
       {searchable && (
@@ -27,7 +30,7 @@ const TableActions = ({
       {showFilters && (
         <div className="icon-button-small-black">
           <Tooltip title="Filter Results">
-            <div onClick={null}>
+            <div onClick={openFilters}>
               <FilterAlt />
             </div>
           </Tooltip>
