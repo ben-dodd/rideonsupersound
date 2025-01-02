@@ -23,7 +23,7 @@ export default function MidScreenContainer({
     <div className={`h-main w-full ${full ? '' : 'sm:w-boardMainSmall lg:w-boardMain'}`}>
       {title && (
         <div
-          className={`${titleClass} text-2xl font-bold uppercase p-2 flex justify-between items-center border-b h-header`}
+          className={`${titleClass} text-2xl font-bold uppercase p-2 flex justify-between items-center border-b h-header sticky z-30`}
         >
           <div className="flex items-center">
             {showBackButton && <BackButton dark={dark} />}

@@ -10,11 +10,11 @@ import {
 import { MemoizedTableBody, TableBody } from './body'
 import { Pagination } from './pagination'
 import { Header } from './header'
-import { ColumnSelect } from './columnSelect'
-import { Edit, FilterAlt, ViewColumn } from '@mui/icons-material'
-import SearchInput from 'components/inputs/search-input'
+import TableActions from './table-actions'
+import BackButton from 'components/button/back-button'
 import DropdownMenu from 'components/dropdown-menu'
-import { Tooltip } from '@mui/material'
+import { useMe } from 'lib/api/clerk'
+import { isUserAdmin } from 'lib/functions/user'
 
 interface TableProps {
   color?: string
@@ -42,6 +42,12 @@ interface TableProps {
   searchable?: boolean
   searchValue?: string
   handleSearch?: Function
+  title?: string
+  titleClass?: string
+  menuItems?: any[]
+  full?: boolean
+  dark?: boolean
+  showBackButton?: boolean
 }
 
 function Table({
@@ -63,12 +69,23 @@ function Table({
   searchable,
   searchValue,
   handleSearch,
+  title,
+  titleClass,
+  menuItems,
+  full = true,
+  dark = false,
+  showBackButton = false,
 }: TableProps) {
   // const rerender = useReducer(() => ({}), {})[1]
   const [pagination, setPagination] = useState<PaginationState>(initPagination)
   const [sorting, setSorting] = useState<SortingState>(initSorting)
   const [columnVisibility, setColumnVisibility] = useState(initColumnVisibility)
   const [isColumnSelectOpen, setIsColumnSelectOpen] = useState(false)
+
+  const adminOnlyMenu = menuItems?.filter((menuItem) => !menuItem?.adminOnly)?.length === 0
+  const adminOnlyMenuTest = false
+  const { me } = useMe()
+  const isAdmin = isUserAdmin(me)
 
   const table = useReactTable({
     columns,
@@ -156,72 +173,51 @@ function Table({
   //   </div>
 
   return (
-    <div className="ml-1 relative">
-      <div className="overflow-x-auto w-full">
-        <div className="px-2 flex justify-end items-center w-board space-x-2">
-          {searchable && (
-            <div className="w-1/4">
-              <SearchInput searchValue={searchValue} handleSearch={handleSearch} />
-            </div>
-          )}
-          {showFilters && (
-            <div className="icon-button-small-black">
-              <Tooltip title="Filter Results">
-                <div onClick={null}>
-                  <FilterAlt />
-                </div>
-              </Tooltip>
-            </div>
-          )}
-          {showEdit && (
-            <div className={`flex items-center ${doEdit ? 'ml-0 space-x-2' : '-ml-20'}`}>
-              {!doEdit && (
-                <div onClick={startEdit} className="icon-button-small-black cursor-pointer flex-shrink-0">
-                  <Edit />
-                </div>
-              )}
-              {doEdit && (
-                <div className="flex items-center space-x-2">
-                  <button onClick={cancelEdit} className="icon-text-button">
-                    Cancel
-                  </button>
-                  <button onClick={saveEdit} className="icon-text-button-final">
-                    Save
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-          {columnSelectable && (
-            <div className="px-2 h-full">
-              <DropdownMenu icon={<ViewColumn />} dark customMenu={<ColumnSelect table={table} />} />
-            </div>
-          )}
-          {/* <StockFilter stockList={stockList} setSettings={setSetting} filterSettings={filterSettings} /> */}
-        </div>
-
-        <table
-          className="w-full text-sm"
-          // {...{
-          //   style: {
-          //     ...columnSizeVars, //Define column sizes on the <table> element
-          //     width: table.getTotalSize(),
-          //   },
-          // }}
+    <div className={`h-main w-full ${full ? '' : 'sm:w-boardMainSmall lg:w-boardMain'}`}>
+      {title && (
+        <div
+          className={`${titleClass} text-2xl font-bold uppercase p-2 flex justify-between items-center border-b h-header sticky z-30`}
         >
-          <Header table={table} color={color} colorDark={colorDark} />
-          {/* When resizing any column we will render this special memoized version of our table body */}
-          {table.getState().columnSizingInfo.isResizingColumn ? (
-            <MemoizedTableBody table={table} showFooter={showFooter} />
+          <div className="flex items-center">
+            {showBackButton && <BackButton dark={dark} />}
+            {title}
+          </div>
+          <TableActions
+            table={table}
+            searchable={searchable}
+            saveEdit={saveEdit}
+            searchValue={searchValue}
+            handleSearch={handleSearch}
+            showFilters={showFilters}
+            showEdit={showEdit}
+            doEdit={doEdit}
+            startEdit={startEdit}
+            cancelEdit={cancelEdit}
+          />
+          {menuItems && (!adminOnlyMenuTest || adminOnlyMenu || isAdmin) ? (
+            <DropdownMenu items={menuItems} dark={dark} />
           ) : (
-            <TableBody table={table} showFooter={showFooter} />
+            <div />
+          )}
+        </div>
+      )}
+      <div className="h-content overflow-y-scroll">
+        <table className="w-full text-sm overflow-x-auto ml-1">
+          <Header table={table} color={color} colorDark={colorDark} />
+          {data?.length > 0 && (
+            <>
+              {/* When resizing any column we will render this special memoized version of our table body */}
+              {table.getState().columnSizingInfo.isResizingColumn ? (
+                <MemoizedTableBody table={table} showFooter={showFooter} />
+              ) : (
+                <TableBody table={table} showFooter={showFooter} />
+              )}
+            </>
           )}
         </table>
-        {showPagination && <Pagination table={table} />}
+        {showPagination && data?.length > 0 && <Pagination table={table} />}
+        {data?.length === 0 && <div className="p-2 font-bold">No Rows Found</div>}
       </div>
-      {/* <button onClick={() => rerender()} className="border p-2">
-        Rerender
-      </button> */}
     </div>
   )
 }

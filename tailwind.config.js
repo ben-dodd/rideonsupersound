@@ -87,7 +87,7 @@ module.exports = {
         main: `calc(100vh - 3rem)`,
         header: '3rem',
         headerlg: '4rem',
-        content: `calc(100vh - 7rem)`,
+        content: `calc(100vh - 6rem)`,
         contentsm: `calc(100vh - 11rem)`,
         dialoglg: `calc(100vh - 12rem)`,
         dialog: `calc(100vh - 16rem)`,

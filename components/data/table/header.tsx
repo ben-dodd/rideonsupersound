@@ -2,7 +2,7 @@ import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material'
 import { flexRender } from '@tanstack/react-table'
 
 export const Header = ({ table, color, colorDark }) => (
-  <thead className="sticky">
+  <thead className="sticky top-0 z-30 bg-white">
     {table.getHeaderGroups().map((headerGroup) => (
       <tr key={headerGroup.id}>
         {headerGroup.headers.map((header) => (
@@ -10,7 +10,7 @@ export const Header = ({ table, color, colorDark }) => (
             key={header.id}
             colSpan={header.colSpan}
             {...{
-              className: `border border-white select-none`,
+              className: `select-none`,
               style: {
                 // left: header.getStart(),
                 width: `calc(var(--header-${header?.id}-size) * 1px)`,

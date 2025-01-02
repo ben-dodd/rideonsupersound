@@ -4,7 +4,7 @@ export const Pagination = ({ table }) => {
   const disablePrev = !table.getCanPreviousPage()
   const disableNext = !table.getCanNextPage()
   return (
-    <div className="flex items-center gap-2 pt-2">
+    <div className="flex items-center gap-2 pt-2 text-sm">
       <button
         className={`${disablePrev ? 'text-gray-400' : ''}`}
         onClick={() => table.setPageIndex(0)}

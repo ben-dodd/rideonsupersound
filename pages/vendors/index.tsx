@@ -1,6 +1,6 @@
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import Layout from 'components/layout'
-import VendorsScreen from 'features/vendor'
+import VendorTable from 'features/vendor'
 import { useAppStore } from 'lib/store'
 import dynamic from 'next/dynamic'
 
@@ -11,7 +11,7 @@ export default function VendorsPage() {
   return (
     <>
       <div className={`flex relative overflow-x-hidden`}>
-        <VendorsScreen />
+        <VendorTable />
       </div>
       {view?.vendorEditDialog && <VendorEditDialog vendor={{}} />}
     </>
