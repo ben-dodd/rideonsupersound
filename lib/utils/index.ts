@@ -306,3 +306,9 @@ export const convertKeyCaseSingleLayer = (obj: any, keyCase: 'camelCase' | 'snak
       : key
     acc[convertedKey] = isObject(value) ? JSON.stringify(value) : isBoolean(value) ? (value ? 1 : 0) : checkValue(value)
   })
+
+export const sortDates = (a, b) => {
+  const unixA = dayjs(a).unix() || 0
+  const unixB = dayjs(b).unix() || 0
+  return unixA - unixB
+}

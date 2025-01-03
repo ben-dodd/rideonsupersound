@@ -5,6 +5,7 @@ import { useVendors } from 'lib/api/vendor'
 import { useAppStore } from 'lib/store'
 import { Pages, ViewProps } from 'lib/store/types'
 import { dateSimple } from 'lib/types/date'
+import { sortDates } from 'lib/utils'
 import { useRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
 
@@ -94,14 +95,14 @@ const VendorTable = () => {
         header: 'Last Contacted',
         size: 100,
         cell: (info) => (info.getValue() ? dayjs(info.getValue()).format(dateSimple) : 'N/A'),
-        sortingFn: (rowA, rowB) => dayjs(rowA.original.lastContacted).isBefore(dayjs(rowB.original.lastContacted)),
+        sortingFn: (rowA, rowB) => sortDates(rowA.original.lastContacted, rowB.original.lastContacted),
       },
       {
         accessorKey: 'dateCreated',
         header: 'Date Created',
         size: 100,
         cell: (info) => dayjs(info.getValue()).format(dateSimple),
-        sortingFn: (rowA, rowB) => dayjs(rowA.original.dateCreated).isBefore(dayjs(rowB.original.dateCreated)),
+        sortingFn: (rowA, rowB) => sortDates(rowA.original.dateCreated, rowB.original.dateCreated),
       },
     ],
     [],
