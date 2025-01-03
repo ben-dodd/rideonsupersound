@@ -2,6 +2,12 @@ import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material'
 import { flexRender } from '@tanstack/react-table'
 import Filter from '../filter'
 
+const columnIsFiltered = (value) => {
+  if (!value) return false
+  if (Object.values(value)?.filter((val) => val)?.length === 0) return false
+  return true
+}
+
 export const Header = ({ table, color, colorDark }) => (
   <thead className="sticky top-0 z-10 bg-white">
     {table.getHeaderGroups().map((headerGroup) => (
@@ -22,7 +28,11 @@ export const Header = ({ table, color, colorDark }) => (
                 {...{
                   className: header.column.getCanSort()
                     ? `flex justify-between items-center cursor-pointer h-8 ${
-                        color ? `${color} hover:${colorDark}` : 'bg-gray-200 hover:bg-gray-400'
+                        color
+                          ? `${color} hover:${colorDark}`
+                          : columnIsFiltered(header.column.getFilterValue())
+                          ? 'bg-blue-200 hover:bg-blue-400'
+                          : 'bg-gray-200 hover:bg-gray-400'
                       } text-left px-2 truncate`
                     : '',
                   onClick: header.column.getToggleSortingHandler(),
