@@ -14,3 +14,7 @@ export const tableFilterDateRange = (row, columnId, filterValue) => {
     return rowDate?.isBetween(startDate, endDate, 'day', '[]')
   }
 }
+
+export const tableFilterStartsWith = (row, columnId, filterValue) => {
+  return filterValue ? row.getValue(columnId)?.toString()?.startsWith(filterValue) : true
+}

@@ -7,7 +7,7 @@ import { useAppStore } from 'lib/store'
 import { Pages, ViewProps } from 'lib/store/types'
 import { dateSimple } from 'lib/types/date'
 import { sortDates } from 'lib/utils'
-import { tableFilterDateRange } from 'lib/utils/dates'
+import { tableFilterDateRange, tableFilterStartsWith } from 'lib/utils/filters'
 import { useRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
 
@@ -58,6 +58,7 @@ const VendorTable = () => {
         accessorKey: 'id',
         header: 'ID',
         size: 100,
+        filterFn: tableFilterStartsWith,
       },
       {
         accessorKey: 'name',
