@@ -407,12 +407,13 @@
   right: 0;
   width: 5px;
   /* background: rgba(0, 0, 0, 0.5); */
-  cursor: col-resize;
+  cursor: grab;
   user-select: none;
   touch-action: none;
 }
 
 .resizer.isResizing {
+  cursor: grabbing;
   /* background: blue;
   opacity: 1; */
 }
