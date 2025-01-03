@@ -72,7 +72,11 @@ export interface StoreState {
       filter?: any
       visibleColumns?: any
     }
-    vendorsPage?: any
+    vendorsPage: {
+      searchBar: string
+      filter: any
+      selected: any
+    }
     salesPage?: {
       tab?: number
       returnToCartDialog?: any

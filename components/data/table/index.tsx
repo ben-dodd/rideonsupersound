@@ -55,6 +55,8 @@ interface TableProps {
   selectable?: boolean
   setRowSelection?: any
   idField?: string
+  onRowSelection?: Function
+  initSelection?: any
 }
 
 function Table({
@@ -85,13 +87,16 @@ function Table({
   isLoading = false,
   selectable = false,
   idField = 'id',
+  onRowSelection,
+  initSelection = {},
 }: TableProps) {
   // const rerender = useReducer(() => ({}), {})[1]
   const [pagination, setPagination] = useState<PaginationState>(initPagination)
   const [sorting, setSorting] = useState<SortingState>(initSorting)
   const [columnVisibility, setColumnVisibility] = useState(initColumnVisibility)
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>(initSelection)
+
   const [isColumnSelectOpen, setIsColumnSelectOpen] = useState(false)
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
 
   const adminOnlyMenu = menuItems?.filter((menuItem) => !menuItem?.adminOnly)?.length === 0
   const adminOnlyMenuTest = false
@@ -161,7 +166,10 @@ function Table({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onRowSelectionChange: setRowSelection,
+    onRowSelectionChange: (e) => {
+      onRowSelection && onRowSelection(e)
+      setRowSelection(e)
+    },
     getRowId: (row) => row?.[idField],
     // manualSorting: true,
     // manualPagination: true,

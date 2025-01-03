@@ -483,13 +483,13 @@ export const useAppStore = createSelectors(
       )
     },
     setPageFilter: (page, update, tab) => {
-      console.log('setting filter', page, update, tab)
+      // console.log('setting filter', page, update, tab)
       set(
         produce((draft) => {
           const filter = tab
             ? { ...get()?.pages?.[page]?.filter?.[tab], ...update }
             : { ...get()?.pages?.[page]?.filter, ...update }
-          console.log(filter)
+          // console.log(filter)
           if (tab) draft.pages[page].filter[tab] = filter
           else draft.pages[page].filter = filter
         }),

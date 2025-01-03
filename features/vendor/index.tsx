@@ -1,8 +1,10 @@
 import { AddCircle, Delete, DisplaySettings, FilterAlt } from '@mui/icons-material'
 import Table from 'components/data/table'
+import dayjs from 'dayjs'
 import { useVendors } from 'lib/api/vendor'
 import { useAppStore } from 'lib/store'
 import { Pages, ViewProps } from 'lib/store/types'
+import { dateSimple } from 'lib/types/date'
 import { useRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
 
@@ -10,9 +12,10 @@ const VendorTable = () => {
   const router = useRouter()
   const {
     pages: {
-      vendorsPage: { filter, searchBar },
+      vendorsPage: { filter, searchBar, selected },
     },
     setPageFilter,
+    setPage,
     openView,
     setSearchBar,
   } = useAppStore()
@@ -21,20 +24,15 @@ const VendorTable = () => {
     { text: 'Filter Results', icon: <FilterAlt />, onClick: null, disabled: true },
     { text: 'Manage Settings', icon: <DisplaySettings />, onClick: null, disabled: true },
     { hr: true },
-    { text: 'Delete Selected', icon: <Delete />, onClick: null, disabled: true },
+    { text: 'Delete Selected', icon: <Delete />, onClick: null, disabled: Object.keys(selected)?.length === 0 },
   ]
 
   const { vendors, isVendorsLoading } = useVendors()
-  // const filteredStockList = stockList?.filter((stockItem) => filterInventory(stockItem, searchBar))
-
-  // const collatedStockList = useMemo(
-  //   () => collateStockList(filteredStockList, stockMovements),
-  //   [filteredStockList, stockMovements],
-  // )
   const [pagination, setPagination] = useState(filter?.pagination)
   const [sorting, setSorting] = useState(filter?.sorting)
   // const [columnVisibility, setColumnVisibility] = useState(filters?.columnVisibility)
   const handleSearch = (e) => setSearchBar(Pages.vendorsPage, e.target.value)
+  const handleSelect = (e) => setPage(Pages.vendorsPage, { selected: e })
 
   // Handle sort, pagination and filter changes
   // Do not add filters or setFilters to dependencies
@@ -91,6 +89,20 @@ const VendorTable = () => {
         header: 'Vendor Category',
         size: 100,
       },
+      {
+        accessorKey: 'lastContacted',
+        header: 'Last Contacted',
+        size: 100,
+        cell: (info) => (info.getValue() ? dayjs(info.getValue()).format(dateSimple) : 'N/A'),
+        sortingFn: (rowA, rowB) => dayjs(rowA.original.lastContacted).isBefore(dayjs(rowB.original.lastContacted)),
+      },
+      {
+        accessorKey: 'dateCreated',
+        header: 'Date Created',
+        size: 100,
+        cell: (info) => dayjs(info.getValue()).format(dateSimple),
+        sortingFn: (rowA, rowB) => dayjs(rowA.original.dateCreated).isBefore(dayjs(rowB.original.dateCreated)),
+      },
     ],
     [],
   )
@@ -114,6 +126,8 @@ const VendorTable = () => {
         searchValue={searchBar}
         handleSearch={handleSearch}
         selectable={true}
+        setRowSelection={handleSelect}
+        initSelection={selected}
       />
     </>
   )

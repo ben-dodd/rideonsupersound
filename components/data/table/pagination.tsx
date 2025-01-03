@@ -1,8 +1,15 @@
 import { FirstPage, KeyboardArrowLeft, KeyboardArrowRight, LastPage } from '@mui/icons-material'
+import { useEffect } from 'react'
 
 export const Pagination = ({ table }) => {
   const disablePrev = !table.getCanPreviousPage()
   const disableNext = !table.getCanNextPage()
+  const pageCount = table.getPageCount()
+  useEffect(() => {
+    if (pageCount < table.getState().pagination.pageIndex + 1) {
+      table.setPageIndex(pageCount - 1)
+    }
+  }, [pageCount])
   return (
     <div className="flex items-center gap-2 pt-2 text-sm">
       <button
