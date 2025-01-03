@@ -62,6 +62,13 @@ export function dbGetVendors(db = connection) {
     .orderBy('name')
 }
 
+export function dbGetVendorsFull(db = connection) {
+  return db('vendor')
+    .select('id')
+    .where({ is_deleted: 0 })
+    .then((vendors) => Promise.all(vendors?.map(async (vendor) => await dbGetVendor(vendor?.id, false, db))))
+}
+
 export function dbGetVendorNames(db = connection) {
   return db('vendor').select('id', 'name').where({ is_deleted: 0 })
 }
@@ -162,7 +169,7 @@ export function dbGetTotalVendorCut(vendor_id, db = connection) {
     .catch((e) => Error(e.message))
 }
 
-export function dbGetVendor(id, db = connection) {
+export function dbGetVendor(id, full = true, db = connection) {
   return fullVendorQuery(db)
     .where({ id })
     .first()
@@ -198,19 +205,43 @@ export function dbGetVendor(id, db = connection) {
       const lastPaid = dayjs.max(payments?.map((p) => dayjs(p?.date)))
       const lastSold = dayjs.max(sales?.filter((s) => s?.date_sale_closed)?.map((s) => dayjs(s?.date_sale_closed)))
       const totalOwing = totalSell - totalPaid
+      const totalSales = sales?.length
+      const totalItems = items?.length
+      const totalItemsInStock = items?.filter((item) => item?.quantities?.inStock > 0)?.length
+      const totalUnitsInStock = items?.reduce((acc, item) => parseInt(item?.quantities?.inStock) || 0 + acc, 0)
 
       // Return object
-      return {
-        ...vendor,
-        items,
-        sales,
-        payments,
-        totalPaid,
-        totalStoreCut,
-        totalSell,
-        totalOwing,
-        lastPaid,
-        lastSold,
+      if (full) {
+        return {
+          ...vendor,
+          items,
+          sales,
+          payments,
+          totalPaid,
+          totalStoreCut,
+          totalSell,
+          totalOwing,
+          lastPaid,
+          lastSold,
+          totalSales,
+          totalItems,
+          totalItemsInStock,
+          totalUnitsInStock,
+        }
+      } else {
+        return {
+          ...vendor,
+          totalPaid,
+          totalStoreCut,
+          totalSell,
+          totalOwing,
+          lastPaid,
+          lastSold,
+          totalSales,
+          totalItems,
+          totalItemsInStock,
+          totalUnitsInStock,
+        }
       }
     })
 }

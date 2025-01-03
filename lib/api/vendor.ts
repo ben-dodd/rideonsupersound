@@ -5,6 +5,10 @@ export function useVendors() {
   return useData(`vendor`, 'vendors')
 }
 
+export function useVendorsFull() {
+  return useData(`vendor/full`, 'vendors')
+}
+
 export function useVendorAccounts() {
   return useData(`vendor/accounts`, 'vendorAccounts')
 }
