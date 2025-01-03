@@ -43,6 +43,7 @@ const CompactDateRangePicker = ({ onApply, initStartDate = null, initEndDate = n
         setEndDate(date)
         if (dayjs(date)?.isBefore(dayjs(startDate))) setStartDate(date)
       }
+      setQuickSelect('')
     }
   }
 
@@ -51,9 +52,8 @@ const CompactDateRangePicker = ({ onApply, initStartDate = null, initEndDate = n
     setEndDate(null)
     setQuickSelect('')
     setShowPicker(false)
-    onApply && onApply({ startDate: null, endDate: null })
+    onApply && onApply(null)
   }
-  console.log(quickSelect)
 
   return (
     <div className="relative">
@@ -126,7 +126,7 @@ const CompactDateRangePicker = ({ onApply, initStartDate = null, initEndDate = n
             className="mt-4 w-full bg-blue-500 text-white text-xs font-bold py-1 rounded hover:bg-blue-600"
             onClick={() => {
               setShowPicker(false)
-              onApply && onApply({ startDate, endDate })
+              onApply && onApply([startDate, endDate])
             }}
           >
             Apply

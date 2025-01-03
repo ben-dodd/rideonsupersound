@@ -4,7 +4,11 @@ import Filter from '../filter'
 
 const columnIsFiltered = (value) => {
   if (!value) return false
-  if (Object.values(value)?.filter((val) => val)?.length === 0) return false
+  if (Array.isArray(value)) {
+    if (value.every((val) => val === null || val === undefined)) {
+      return false
+    }
+  }
   return true
 }
 

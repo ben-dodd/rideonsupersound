@@ -4,8 +4,6 @@ import CompactDateRangePicker from './compact-date-picker'
 const Filter = ({ column }) => {
   const columnFilterValue = column.getFilterValue()
   const { filterVariant, selectOptions } = column.columnDef.meta ?? {}
-  console.log(selectOptions)
-
   return filterVariant === 'range' ? (
     <div>
       <div className="flex space-x-2">
