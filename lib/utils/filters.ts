@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import { centsToDollars } from '.'
 
 export const tableFilterDateRange = (row, columnId, filterValue) => {
   const rowDate = row.getValue(columnId) ? dayjs(row.getValue(columnId)) : null
@@ -15,6 +16,17 @@ export const tableFilterDateRange = (row, columnId, filterValue) => {
   } else {
     return rowDate?.isBetween(startDate, endDate, 'day', '[]')
   }
+}
+
+export const tableFilterCentsRange = (row, columnId, filterValue) => {
+  const cents = row.getValue(columnId) ?? null
+  const dollars = centsToDollars(cents)
+  const minDollars = filterValue?.[0]
+  const maxDollars = filterValue?.[1]
+  return (
+    (minDollars === null || minDollars === undefined || minDollars === '' || dollars >= Number(minDollars)) &&
+    (maxDollars === null || maxDollars === undefined || maxDollars === '' || dollars <= Number(maxDollars))
+  )
 }
 
 export const tableFilterStartsWith = (row, columnId, filterValue) => {

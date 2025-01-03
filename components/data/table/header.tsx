@@ -5,7 +5,7 @@ import Filter from '../filter'
 const columnIsFiltered = (value) => {
   if (!value) return false
   if (Array.isArray(value)) {
-    if (value.every((val) => val === null || val === undefined)) {
+    if (value.every((val) => val === null || val === undefined || val === '')) {
       return false
     }
   }

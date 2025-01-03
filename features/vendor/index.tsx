@@ -7,7 +7,7 @@ import { useAppStore } from 'lib/store'
 import { Pages, ViewProps } from 'lib/store/types'
 import { dateSimple } from 'lib/types/date'
 import { priceCentsString, sortDates } from 'lib/utils'
-import { tableFilterDateRange, tableFilterStartsWith } from 'lib/utils/filters'
+import { tableFilterCentsRange, tableFilterDateRange, tableFilterStartsWith } from 'lib/utils/filters'
 import { useRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
 
@@ -136,7 +136,7 @@ const VendorTable = () => {
         header: 'Total Sell',
         size: 100,
         cell: (info) => priceCentsString(info.getValue()),
-        filterFn: 'inNumberRange',
+        filterFn: tableFilterCentsRange,
         meta: {
           filterVariant: 'range',
         },
@@ -146,7 +146,7 @@ const VendorTable = () => {
         header: 'Total Paid',
         size: 100,
         cell: (info) => priceCentsString(info.getValue()),
-        filterFn: 'inNumberRange',
+        filterFn: tableFilterCentsRange,
         meta: {
           filterVariant: 'range',
         },
@@ -156,7 +156,7 @@ const VendorTable = () => {
         header: 'Total Owing',
         size: 100,
         cell: (info) => priceCentsString(info.getValue()),
-        filterFn: 'inNumberRange',
+        filterFn: tableFilterCentsRange,
         meta: {
           filterVariant: 'range',
         },

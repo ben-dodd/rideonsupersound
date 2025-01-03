@@ -1,31 +1,19 @@
 import TextInput from './TextInput'
 import CompactDateRangePicker from './compact-date-picker'
+import MinMaxInput from './minMaxInput'
 
 const Filter = ({ column }) => {
   const columnFilterValue = column.getFilterValue()
   const { filterVariant, selectOptions } = column.columnDef.meta ?? {}
   return filterVariant === 'range' ? (
-    <div>
-      <div className="flex space-x-2">
-        {/* See faceted column filters example for min max values functionality */}
-        <TextInput
-          type="number"
-          value={(columnFilterValue as [number, number])?.[0] ?? ''}
-          updateFilter={(value) => column.setFilterValue((old: [number, number]) => [value, old?.[1]])}
-          placeholder={`Min`}
-        />
-        <TextInput
-          type="number"
-          value={(columnFilterValue as [number, number])?.[1] ?? ''}
-          updateFilter={(value) => column.setFilterValue((old: [number, number]) => [old?.[0], value])}
-          placeholder={`Max`}
-        />
-      </div>
-      <div className="h-1" />
-    </div>
+    <MinMaxInput
+      onChange={column.setFilterValue}
+      initMin={columnFilterValue?.[0] ?? null}
+      initMax={columnFilterValue?.[1] ?? null}
+    />
   ) : filterVariant === 'dateRange' ? (
     <CompactDateRangePicker
-      onApply={(e) => column.setFilterValue(e)}
+      onApply={column.setFilterValue}
       initStartDate={columnFilterValue?.[0] ?? null}
       initEndDate={columnFilterValue?.[1] ?? null}
     />
