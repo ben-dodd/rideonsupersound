@@ -75,6 +75,8 @@ function Table({
   onSortingChange,
   initColumnVisibility = {},
   onColumnVisibilityChange,
+  onRowSelection,
+  initSelection = {},
   searchable,
   searchValue,
   handleSearch,
@@ -87,10 +89,7 @@ function Table({
   isLoading = false,
   selectable = false,
   idField = 'id',
-  onRowSelection,
-  initSelection = {},
 }: TableProps) {
-  // const rerender = useReducer(() => ({}), {})[1]
   const [pagination, setPagination] = useState<PaginationState>(initPagination)
   const [sorting, setSorting] = useState<SortingState>(initSorting)
   const [columnVisibility, setColumnVisibility] = useState(initColumnVisibility)
@@ -112,16 +111,22 @@ function Table({
               isLoading ? (
                 <div />
               ) : (
-                <IndeterminateCheckbox
-                  {...{
-                    checked: table.getIsAllPageRowsSelected(),
-                    indeterminate: table.getIsSomePageRowsSelected(),
-                    onChange: table.getToggleAllPageRowsSelectedHandler(),
-                  }}
-                />
+                <div
+                  className={`flex justify-between items-center cursor-pointer h-8 ${
+                    color ? `${color} hover:${colorDark}` : 'bg-gray-200 hover:bg-gray-400'
+                  } text-left px-2 truncate`}
+                >
+                  <IndeterminateCheckbox
+                    {...{
+                      checked: table.getIsAllPageRowsSelected(),
+                      indeterminate: table.getIsSomePageRowsSelected(),
+                      onChange: table.getToggleAllPageRowsSelectedHandler(),
+                    }}
+                  />
+                </div>
               ),
             cell: ({ row }) => (
-              <div className="px-1">
+              <div>
                 <IndeterminateCheckbox
                   {...{
                     checked: row.getIsSelected(),
@@ -132,7 +137,7 @@ function Table({
                 />
               </div>
             ),
-            size: 20,
+            size: 30,
           },
           ...columns,
         ]
@@ -246,7 +251,7 @@ function Table({
             },
           }}
         >
-          <Header table={table} color={color} colorDark={colorDark} selectable={selectable} />
+          <Header table={table} color={color} colorDark={colorDark} />
           {data?.length > 0 && !isLoading && (
             <>
               {/* When resizing any column we will render this special memoized version of our table body */}
