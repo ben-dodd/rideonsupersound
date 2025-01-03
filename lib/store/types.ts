@@ -120,15 +120,6 @@ export interface StoreState {
   options?: {
     doBypassRegister?: boolean
   }
-  dataTable?: {
-    data: any[]
-    active: any[]
-    corner: any[]
-    schema: any[]
-    widthRatios: any[]
-    loading: boolean
-    error: string
-  }
   openView: (view: ViewProps) => void
   closeView: (view: ViewProps) => void
   setViewMode: (mode: string) => void
@@ -167,19 +158,6 @@ export interface StoreState {
   resetSearchBar: (page: Pages) => void
   resetPage: (page: Pages) => void
   setOption: (option: string, value: any) => void
-  dtGetSelection: () => any[]
-  dtSetData: (data: any[]) => void
-  dtGetSelectionAsText: () => string
-  dtSetSchema: (schema: any[]) => void
-  dtSetCell: (cellRef: any[], value: string) => void
-  dtSetCellRange: (valueMatrix: any[]) => void
-  dtClearCellRange: () => void
-  dtClickCell: (cellRef: any[], shiftKey: boolean) => void
-  dtSelectByDrag: (mouseOverCell: any[]) => void
-  dtSelectByKeyboard: (evt: any) => void
-  dtClearSelection: () => void
-  dtSetInitialWidthRatios: (widthRatios: any) => void
-  dtSetWidthRatios: (index: number, widthOffset: number) => void
 }
 
 export enum ViewProps {
