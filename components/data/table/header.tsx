@@ -43,14 +43,14 @@ export const Header = ({ table, color, colorDark, selectable }) => (
                 }[header.column.getIsSorted() as string] ?? null}
               </div>
             )}
-            {/* <div
+            <div
               {...{
                 onDoubleClick: () => header.column.resetSize(),
                 onMouseDown: header.getResizeHandler(),
                 onTouchStart: header.getResizeHandler(),
                 className: `resizer ${header.column.getIsResizing() ? 'isResizing' : ''}`,
               }}
-            /> */}
+            />
           </th>
         ))}
       </tr>

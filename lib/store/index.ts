@@ -117,6 +117,7 @@ const initState = {
         },
         visibleColumns: {},
       },
+      selected: {},
     },
     salesPage: {
       tab: 0,
@@ -277,11 +278,6 @@ export const useAppStore = createSelectors(
       const newCart = await saveCart(get().cart)
       get().setCart(newCart)
       mutates.forEach((key) => mutate(key))
-      // set(
-      //   produce((draft) => {
-      //     draft.cart = newCart
-      //   }),
-      // )
     },
     addCartTransaction: (transaction) => {
       set(

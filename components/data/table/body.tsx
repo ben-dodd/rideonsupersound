@@ -8,7 +8,7 @@ export const TableBody = ({ table, showFooter, selectable }) => (
         <tr
           key={row.id}
           className={`bg-white opacity-70 hover:bg-gray-200 hover:opacity-100 mt-1 ${
-            row.getIsSelected() ? 'bg-yellow-300' : ''
+            row.getIsSelected() ? 'bg-yellow-100' : ''
           }`}
           onClick={selectable ? row.getToggleSelectedHandler : null}
         >

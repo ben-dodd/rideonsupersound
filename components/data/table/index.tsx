@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   PaginationState,
   RowSelectionState,
@@ -54,6 +54,7 @@ interface TableProps {
   isLoading?: boolean
   selectable?: boolean
   setRowSelection?: any
+  idField?: string
 }
 
 function Table({
@@ -83,6 +84,7 @@ function Table({
   showBackButton = false,
   isLoading = false,
   selectable = false,
+  idField = 'id',
 }: TableProps) {
   // const rerender = useReducer(() => ({}), {})[1]
   const [pagination, setPagination] = useState<PaginationState>(initPagination)
@@ -101,15 +103,18 @@ function Table({
       ? [
           {
             id: 'select',
-            header: ({ table }) => (
-              <IndeterminateCheckbox
-                {...{
-                  checked: table.getIsAllRowsSelected(),
-                  indeterminate: table.getIsSomeRowsSelected(),
-                  onChange: table.getToggleAllRowsSelectedHandler(),
-                }}
-              />
-            ),
+            header: ({ table }) =>
+              isLoading ? (
+                <div />
+              ) : (
+                <IndeterminateCheckbox
+                  {...{
+                    checked: table.getIsAllPageRowsSelected(),
+                    indeterminate: table.getIsSomePageRowsSelected(),
+                    onChange: table.getToggleAllPageRowsSelectedHandler(),
+                  }}
+                />
+              ),
             cell: ({ row }) => (
               <div className="px-1">
                 <IndeterminateCheckbox
@@ -122,7 +127,7 @@ function Table({
                 />
               </div>
             ),
-            width: 30,
+            size: 20,
           },
           ...columns,
         ]
@@ -132,14 +137,14 @@ function Table({
     columns: getColumns(),
     data,
     // debugAll: true,
-    // defaultColumn: {
-    //   minSize: 5,
-    //   maxSize: 500,
-    // },
-    // columnResizeMode: 'onChange',
+    defaultColumn: {
+      minSize: 5,
+      maxSize: 500,
+    },
+    columnResizeMode: 'onChange',
     // pageCount: Math.ceil(totalRowNum / pageSize) ?? -1,
     onPaginationChange: (e) => {
-      console.log('pagination change', e)
+      // console.log('pagination change', e)
       onPaginationChange && onPaginationChange(e)
       setPagination(e)
     },
@@ -157,11 +162,12 @@ function Table({
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onRowSelectionChange: setRowSelection,
-    getRowId: (row) => row.uuid,
+    getRowId: (row) => row?.[idField],
     // manualSorting: true,
     // manualPagination: true,
     enableMultiRemove: true,
     enableMultiSort: true,
+    enableRowSelection: true,
     state: { pagination, sorting, columnVisibility, rowSelection },
     // meta: {
     //   updateData: (rowIndex: number, columnId: string, value: string) => {
@@ -184,35 +190,18 @@ function Table({
   // const toggleFilters = () => setShowFilterBar((filters) => !filters)
 
   const saveEdit = () => null
-  const [openFilter, setOpenFilter] = useState(false)
-  const openFilters = () => setOpenFilter(true)
+  console.log(rowSelection)
 
-  // const columnSizeVars = useMemo(() => {
-  //   const headers = table.getFlatHeaders()
-  //   const colSizes: { [key: string]: number } = {}
-  //   for (let i = 0; i < headers.length; i++) {
-  //     const header = headers[i]!
-  //     colSizes[`--header-${header.id}-size`] = header.getSize()
-  //     colSizes[`--col-${header.column.id}-size`] = header.column.getSize()
-  //   }
-  //   return colSizes
-  // }, [table.getState().columnSizingInfo, table.getState().columnSizing])
-  // Give our default column cell renderer editing superpowers!
-
-  // <div className="rounded-md shadow-md flex overflow-hidden">
-  //     {viewModes?.map((mode) => (
-  //       <Tooltip key={mode.mode} title={mode.tooltip}>
-  //         <div
-  //           className={`${
-  //             mode.mode === viewMode ? 'bg-blue-500 hover:bg-blue-400' : 'bg-gray-200 hover:bg-gray-300'
-  //           } w-30 p-1 overflow-hidden cursor-pointer`}
-  //           onClick={() => setViewMode(mode.mode)}
-  //         >
-  //           {mode.icon}
-  //         </div>
-  //       </Tooltip>
-  //     ))}
-  //   </div>
+  const columnSizeVars = useMemo(() => {
+    const headers = table.getFlatHeaders()
+    const colSizes: { [key: string]: number } = {}
+    for (let i = 0; i < headers.length; i++) {
+      const header = headers[i]!
+      colSizes[`--header-${header.id}-size`] = header.getSize()
+      colSizes[`--col-${header.column.id}-size`] = header.column.getSize()
+    }
+    return colSizes
+  }, [table.getState().columnSizingInfo, table.getState().columnSizing])
 
   return (
     <div className={`h-main w-full ${full ? '' : 'sm:w-boardMainSmall lg:w-boardMain'}`}>
@@ -240,7 +229,15 @@ function Table({
         </div>
       )}
       <div className="h-content overflow-y-scroll">
-        <table className="w-full text-sm overflow-x-auto ml-1">
+        <table
+          className="w-full text-sm overflow-x-auto ml-1"
+          {...{
+            style: {
+              ...columnSizeVars, //Define column sizes on the <table> element
+              width: table.getTotalSize(),
+            },
+          }}
+        >
           <Header table={table} color={color} colorDark={colorDark} selectable={selectable} />
           {data?.length > 0 && !isLoading && (
             <>

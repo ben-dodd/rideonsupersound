@@ -2,7 +2,7 @@ import { motion, Variants } from 'framer-motion'
 
 const backdropVariants: Variants = {
   hidden: { opacity: 0 },
-  visible: { opacity: 0.3 },
+  visible: { opacity: 0.8 },
 }
 
 const modalVariants: Variants = {
@@ -27,7 +27,7 @@ export default function ModalBase({
         className="absolute inset-0 bg-black"
         initial="hidden"
         animate={open ? 'visible' : 'hidden'}
-        transition={{ duration: 0.5, ease: 'easeInOut' }}
+        transition={{ duration: 0.2, ease: 'easeInOut' }}
         variants={backdropVariants}
       />
 
@@ -37,7 +37,7 @@ export default function ModalBase({
         initial="hidden"
         animate={open ? 'visible' : 'hidden'}
         variants={modalVariants}
-        transition={{ duration: 0.3, ease: 'easeInOut' }}
+        transition={{ duration: 0.4, ease: 'easeInOut' }}
       >
         {children}
       </motion.div>
