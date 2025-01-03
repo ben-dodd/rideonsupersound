@@ -305,6 +305,9 @@
   @apply text-red-600 font-bold py-2;
 }
 
+.filter-input {
+  @apply w-full border border-gray-400 hover:bg-gray-100 p-1 mb-1 h-8;
+}
 /* .speech-bubble:before {
   content: '';
   position: absolute;

@@ -1,6 +1,7 @@
 import { AddCircle, Delete, DisplaySettings, FilterAlt } from '@mui/icons-material'
 import Table from 'components/data/table'
 import dayjs from 'dayjs'
+import { useSetting } from 'lib/api/settings'
 import { useVendors } from 'lib/api/vendor'
 import { useAppStore } from 'lib/store'
 import { Pages, ViewProps } from 'lib/store/types'
@@ -29,6 +30,7 @@ const VendorTable = () => {
   ]
 
   const { vendors, isVendorsLoading } = useVendors()
+  const { selects, isSelectsLoading } = useSetting('vendorCategory')
   const [pagination, setPagination] = useState(filter?.pagination)
   const [sorting, setSorting] = useState(filter?.sorting)
   // const [columnVisibility, setColumnVisibility] = useState(filters?.columnVisibility)
@@ -40,6 +42,8 @@ const VendorTable = () => {
   useEffect(() => {
     setPageFilter(Pages.stockPage, { pagination, sorting })
   }, [pagination, setPageFilter, sorting])
+
+  console.log(selects)
 
   // useEffect(() => {
   //   setPageFilter(Pages.stockPage, { visibleColumns: columnVisibility }, 'list')
@@ -64,6 +68,7 @@ const VendorTable = () => {
           </span>
         ),
         sortDescFirst: false,
+        filterFn: 'includesString',
       },
       {
         accessorKey: 'email',
@@ -74,6 +79,7 @@ const VendorTable = () => {
           </span>
         ),
         size: 190,
+        filterFn: 'includesString',
       },
       {
         accessorKey: 'phone',
@@ -84,11 +90,20 @@ const VendorTable = () => {
           </span>
         ),
         size: 190,
+        filterFn: 'includesString',
       },
       {
         accessorKey: 'vendorCategory',
         header: 'Vendor Category',
         size: 100,
+        filterFn: 'equalsString',
+        meta: {
+          filterVariant: 'select',
+          selectOptions: selects?.sort()?.map((opt: string) => ({
+            value: opt,
+            label: opt,
+          })),
+        },
       },
       {
         accessorKey: 'lastContacted',
@@ -96,6 +111,9 @@ const VendorTable = () => {
         size: 100,
         cell: (info) => (info.getValue() ? dayjs(info.getValue()).format(dateSimple) : 'N/A'),
         sortingFn: (rowA, rowB) => sortDates(rowA.original.lastContacted, rowB.original.lastContacted),
+        meta: {
+          filterVariant: 'dateRange',
+        },
       },
       {
         accessorKey: 'dateCreated',
@@ -103,6 +121,9 @@ const VendorTable = () => {
         size: 100,
         cell: (info) => dayjs(info.getValue()).format(dateSimple),
         sortingFn: (rowA, rowB) => sortDates(rowA.original.dateCreated, rowB.original.dateCreated),
+        meta: {
+          filterVariant: 'dateRange',
+        },
       },
     ],
     [],
@@ -115,18 +136,14 @@ const VendorTable = () => {
         titleClass="bg-col3"
         columns={columns}
         data={filteredVendors}
-        isLoading={isVendorsLoading}
+        isLoading={isVendorsLoading || isSelectsLoading}
         menuItems={menuItems}
-        showPagination
-        showEdit
-        searchable
         initPagination={filter?.pagination}
         onPaginationChange={setPagination}
         initSorting={filter?.sorting}
         onSortingChange={setSorting}
         searchValue={searchBar}
         handleSearch={handleSearch}
-        selectable={true}
         setRowSelection={handleSelect}
         initSelection={selected}
       />

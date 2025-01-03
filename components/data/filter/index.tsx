@@ -1,26 +1,60 @@
-import { ExpandLess, ExpandMore } from '@mui/icons-material'
-import { useState } from 'react'
+import TextInput from './TextInput'
+import { DateRangePicker } from 'react-date-range'
+import 'react-date-range/dist/styles.css' // main css file
+import 'react-date-range/dist/theme/default.css' // theme css file
+import CompactDateRangePicker from './compact-date-picker'
+import dayjs from 'dayjs'
 
-const FilterPanel = ({ visible, children, collapsible = true, closedByDefault = false }) => {
-  const [panelOpen, setPanelOpen] = useState(!closedByDefault)
-  const togglePanel = () => setPanelOpen((panelOpen) => !panelOpen)
-  return (
-    <div className="rounded border mt-2">
-      <div
-        className={`flex justify-between text-xl p-2 border-b bg-gray-100 hover:border-gray-300 hover:shadow-sm select-none ${
-          collapsible ? 'cursor-pointer' : ''
-        }`}
-      >
-        {visible}
-        {!collapsible ? (
-          <div />
-        ) : (
-          <div onClick={collapsible ? togglePanel : null}>{panelOpen ? <ExpandLess /> : <ExpandMore />}</div>
-        )}
+const Filter = ({ column }) => {
+  const columnFilterValue = column.getFilterValue()
+  const { filterVariant, selectOptions } = column.columnDef.meta ?? {}
+  console.log(selectOptions)
+
+  return filterVariant === 'range' ? (
+    <div>
+      <div className="flex space-x-2">
+        {/* See faceted column filters example for min max values functionality */}
+        <TextInput
+          type="number"
+          value={(columnFilterValue as [number, number])?.[0] ?? ''}
+          updateFilter={(value) => column.setFilterValue((old: [number, number]) => [value, old?.[1]])}
+          placeholder={`Min`}
+        />
+        <TextInput
+          type="number"
+          value={(columnFilterValue as [number, number])?.[1] ?? ''}
+          updateFilter={(value) => column.setFilterValue((old: [number, number]) => [old?.[0], value])}
+          placeholder={`Max`}
+        />
       </div>
-      <div className={`p-2 ${!panelOpen && collapsible && ' hidden'}`}>{children}</div>
+      <div className="h-1" />
     </div>
+  ) : filterVariant === 'dateRange' ? (
+    <CompactDateRangePicker
+      onApply={(e) => {
+        console.log(dayjs(e[0])?.unix())
+      }}
+    />
+  ) : filterVariant === 'select' ? (
+    <select
+      className="filter-input"
+      onChange={(e) => column.setFilterValue(e.target.value)}
+      value={columnFilterValue?.toString()}
+    >
+      <option value="">Show All</option>
+      {selectOptions?.map((option) => (
+        <option value={option?.value}>{option?.label}</option>
+      ))}
+    </select>
+  ) : (
+    <TextInput
+      updateFilter={(value) => column.setFilterValue(value)}
+      placeholder={`Search...`}
+      type="text"
+      value={(columnFilterValue ?? '') as string}
+    />
+    // See faceted column filters example for datalist search suggestions
   )
 }
 
-export default FilterPanel
+export default Filter

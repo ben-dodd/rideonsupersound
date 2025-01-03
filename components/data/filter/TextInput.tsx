@@ -1,23 +1,31 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 interface TextInputType {
-  updateFilter: (val: string) => void
+  initialValue?: string | number
+  updateFilter: (val: string | number) => void
+  debounce?: number
 }
 
-const TextInput = ({ updateFilter }: TextInputType) => {
-  const [value, setValue] = useState('')
-  const handleChange = (e: any) => {
-    setValue(e.target.value)
-    updateFilter(e.target.value)
-  }
-  return (
-    <input
-      type="text"
-      value={value}
-      onChange={handleChange}
-      className="w-full border border-gray-400 hover:bg-gray-100 rounded-md mb-2"
-    />
-  )
+const TextInput = ({
+  initialValue = '',
+  updateFilter,
+  debounce = 500,
+  ...props
+}: TextInputType & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'>) => {
+  const [value, setValue] = useState(initialValue)
+  useEffect(() => {
+    setValue(initialValue)
+  }, [initialValue])
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      updateFilter(value)
+    }, debounce)
+
+    return () => clearTimeout(timeout)
+  }, [value])
+
+  return <input {...props} value={value} onChange={(e) => setValue(e.target.value)} className="filter-input" />
 }
 
 export default TextInput

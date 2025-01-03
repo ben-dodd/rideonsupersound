@@ -1,5 +1,6 @@
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material'
 import { flexRender } from '@tanstack/react-table'
+import Filter from '../filter'
 
 export const Header = ({ table, color, colorDark }) => (
   <thead className="sticky top-0 z-10 bg-white">
@@ -41,6 +42,13 @@ export const Header = ({ table, color, colorDark }) => (
                   ),
                 }[header.column.getIsSorted() as string] ?? null}
               </div>
+            )}
+            {header.column.getCanFilter() ? (
+              <div>
+                <Filter column={header.column} />
+              </div>
+            ) : (
+              <div className="h-8 mb-1" />
             )}
             <div
               {...{

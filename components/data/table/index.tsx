@@ -1,9 +1,11 @@
 import { useMemo, useState } from 'react'
 import {
+  ColumnFiltersState,
   PaginationState,
   RowSelectionState,
   SortingState,
   getCoreRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
@@ -56,7 +58,10 @@ interface TableProps {
   setRowSelection?: any
   idField?: string
   onRowSelection?: Function
-  initSelection?: any
+  initSelection?: RowSelectionState
+  doServerSideFiltering?: boolean
+  onColumnFiltersChange?: Function
+  initColumnFilters?: ColumnFiltersState
 }
 
 function Table({
@@ -67,17 +72,19 @@ function Table({
   showFooter,
   columnSelectable = false,
   showFilters = true,
-  showEdit = false,
-  showPagination,
+  showEdit = true,
+  showPagination = true,
   initPagination = { pageIndex: 0, pageSize: 10 },
   onPaginationChange,
+  onColumnFiltersChange,
+  initColumnFilters = [],
   initSorting = [],
   onSortingChange,
   initColumnVisibility = {},
   onColumnVisibilityChange,
   onRowSelection,
   initSelection = {},
-  searchable,
+  searchable = true,
   searchValue,
   handleSearch,
   title,
@@ -87,12 +94,14 @@ function Table({
   dark = false,
   showBackButton = false,
   isLoading = false,
-  selectable = false,
+  selectable = true,
   idField = 'id',
+  doServerSideFiltering = false,
 }: TableProps) {
   const [pagination, setPagination] = useState<PaginationState>(initPagination)
   const [sorting, setSorting] = useState<SortingState>(initSorting)
   const [columnVisibility, setColumnVisibility] = useState(initColumnVisibility)
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(initColumnFilters)
   const [rowSelection, setRowSelection] = useState<RowSelectionState>(initSelection)
 
   const [isColumnSelectOpen, setIsColumnSelectOpen] = useState(false)
@@ -152,7 +161,6 @@ function Table({
       maxSize: 500,
     },
     columnResizeMode: 'onChange',
-    // pageCount: Math.ceil(totalRowNum / pageSize) ?? -1,
     onPaginationChange: (e) => {
       // console.log('pagination change', e)
       onPaginationChange && onPaginationChange(e)
@@ -168,20 +176,26 @@ function Table({
       onColumnVisibilityChange && onColumnVisibilityChange(e)
       setColumnVisibility(e)
     },
+    onColumnFiltersChange: (e) => {
+      onColumnFiltersChange && onColumnFiltersChange(e)
+      setColumnFilters(e)
+    },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onRowSelectionChange: (e) => {
       onRowSelection && onRowSelection(e)
       setRowSelection(e)
     },
     getRowId: (row) => row?.[idField],
+    manualFiltering: doServerSideFiltering,
     // manualSorting: true,
     // manualPagination: true,
     enableMultiRemove: true,
     enableMultiSort: true,
     enableRowSelection: true,
-    state: { pagination, sorting, columnVisibility, rowSelection },
+    state: { pagination, sorting, columnVisibility, rowSelection, columnFilters },
     // meta: {
     //   updateData: (rowIndex: number, columnId: string, value: string) => {
     //     setTableData((old) =>
