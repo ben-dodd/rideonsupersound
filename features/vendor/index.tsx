@@ -7,6 +7,7 @@ import { useAppStore } from 'lib/store'
 import { Pages, ViewProps } from 'lib/store/types'
 import { dateSimple } from 'lib/types/date'
 import { sortDates } from 'lib/utils'
+import { tableFilterDateRange } from 'lib/utils/dates'
 import { useRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
 
@@ -111,6 +112,7 @@ const VendorTable = () => {
         size: 100,
         cell: (info) => (info.getValue() ? dayjs(info.getValue()).format(dateSimple) : 'N/A'),
         sortingFn: (rowA, rowB) => sortDates(rowA.original.lastContacted, rowB.original.lastContacted),
+        filterFn: tableFilterDateRange,
         meta: {
           filterVariant: 'dateRange',
         },
@@ -121,6 +123,7 @@ const VendorTable = () => {
         size: 100,
         cell: (info) => dayjs(info.getValue()).format(dateSimple),
         sortingFn: (rowA, rowB) => sortDates(rowA.original.dateCreated, rowB.original.dateCreated),
+        filterFn: tableFilterDateRange,
         meta: {
           filterVariant: 'dateRange',
         },

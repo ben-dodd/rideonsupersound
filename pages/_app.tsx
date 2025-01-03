@@ -7,6 +7,8 @@ import utc from 'dayjs/plugin/utc'
 import duration from 'dayjs/plugin/duration'
 import minMax from 'dayjs/plugin/minMax'
 import isLeapYear from 'dayjs/plugin/isLeapYear'
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 import tz from 'dayjs/plugin/timezone'
 import relative from 'dayjs/plugin/relativeTime'
 import isBetween from 'dayjs/plugin/isBetween'
@@ -24,6 +26,8 @@ const MyApp = ({ Component, pageProps }) => {
   extend(relative)
   extend(minMax)
   extend(isBetween)
+  extend(isSameOrAfter)
+  extend(isSameOrBefore)
   // dayjs.locale("en-nz");
 
   const getLayout = Component.getLayout || ((page) => page)

@@ -306,7 +306,7 @@
 }
 
 .filter-input {
-  @apply w-full border border-gray-400 hover:bg-gray-100 p-1 mb-1 h-8;
+  @apply w-full text-xs border border-gray-400 hover:bg-gray-100 p-1 mb-1 h-8;
 }
 /* .speech-bubble:before {
   content: '';

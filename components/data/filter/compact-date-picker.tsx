@@ -7,10 +7,10 @@ import { dateDMY } from 'lib/types/date'
 dayjs.extend(isBetween)
 dayjs.extend(customParseFormat)
 
-const CompactDateRangePicker = ({ onApply }) => {
+const CompactDateRangePicker = ({ onApply, initStartDate = null, initEndDate = null }) => {
   const [showPicker, setShowPicker] = useState(false)
-  const [startDate, setStartDate] = useState(dayjs().startOf('month'))
-  const [endDate, setEndDate] = useState(dayjs().endOf('month'))
+  const [startDate, setStartDate] = useState(initStartDate)
+  const [endDate, setEndDate] = useState(initEndDate)
   const [quickSelect, setQuickSelect] = useState('')
 
   const predefinedRanges = [
@@ -25,12 +25,12 @@ const CompactDateRangePicker = ({ onApply }) => {
     { label: 'This Month', range: [dayjs().startOf('month'), dayjs().endOf('month')] },
   ]
 
-  const applyQuickSelect = (range) => {
-    setStartDate(range[0])
-    setEndDate(range[1])
-    setQuickSelect(range.label)
+  const applyQuickSelect = (option) => {
+    setStartDate(option?.range?.[0])
+    setEndDate(option?.range?.[1])
+    setQuickSelect(option?.label)
     setShowPicker(false)
-    onApply && onApply(range)
+    onApply && onApply(option?.range)
   }
 
   const handleDateChange = (e, type) => {
@@ -46,6 +46,15 @@ const CompactDateRangePicker = ({ onApply }) => {
     }
   }
 
+  const clearDates = () => {
+    setStartDate(null)
+    setEndDate(null)
+    setQuickSelect('')
+    setShowPicker(false)
+    onApply && onApply({ startDate: null, endDate: null })
+  }
+  console.log(quickSelect)
+
   return (
     <div className="relative">
       {/* Compact Display */}
@@ -53,7 +62,11 @@ const CompactDateRangePicker = ({ onApply }) => {
         className="w-full border border-gray-400 mb-1 h-8 text-xs hover:bg-gray-100"
         onClick={() => setShowPicker(!showPicker)}
       >
-        {quickSelect ? quickSelect : `${startDate.format(dateDMY)}-${endDate.format(dateDMY)}`}
+        {quickSelect
+          ? quickSelect
+          : startDate && endDate
+          ? `${startDate.format(dateDMY)}-${endDate.format(dateDMY)}`
+          : 'All Dates'}
       </button>
 
       {/* Date Picker Popup */}
@@ -71,7 +84,7 @@ const CompactDateRangePicker = ({ onApply }) => {
               <label className="text-xs font-bold">Start Date</label>
               <input
                 type="date"
-                value={startDate.format('YYYY-MM-DD')}
+                value={startDate?.format('YYYY-MM-DD')}
                 onChange={(e) => handleDateChange(e, 'start')}
                 className="border rounded w-full p-1 text-sm"
               />
@@ -80,12 +93,17 @@ const CompactDateRangePicker = ({ onApply }) => {
               <label className="text-xs font-bold">End Date</label>
               <input
                 type="date"
-                value={endDate.format('YYYY-MM-DD')}
+                value={endDate?.format('YYYY-MM-DD')}
                 onChange={(e) => handleDateChange(e, 'end')}
                 className="border rounded w-full p-1 text-sm"
               />
             </div>
           </div>
+
+          {/* Clear Button */}
+          <button onClick={clearDates} className="mt-2 text-xs text-red-500 hover:underline">
+            Clear Dates
+          </button>
 
           {/* Predefined Quick Select Options */}
           <div className="mt-4">
@@ -94,7 +112,7 @@ const CompactDateRangePicker = ({ onApply }) => {
               {predefinedRanges.map((option) => (
                 <button
                   key={option.label}
-                  onClick={() => applyQuickSelect(option.range)}
+                  onClick={() => applyQuickSelect(option)}
                   className="text-xs px-2 py-1 border rounded bg-gray-100 hover:bg-gray-200"
                 >
                   {option.label}

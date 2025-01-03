@@ -1,9 +1,5 @@
 import TextInput from './TextInput'
-import { DateRangePicker } from 'react-date-range'
-import 'react-date-range/dist/styles.css' // main css file
-import 'react-date-range/dist/theme/default.css' // theme css file
 import CompactDateRangePicker from './compact-date-picker'
-import dayjs from 'dayjs'
 
 const Filter = ({ column }) => {
   const columnFilterValue = column.getFilterValue()
@@ -31,9 +27,9 @@ const Filter = ({ column }) => {
     </div>
   ) : filterVariant === 'dateRange' ? (
     <CompactDateRangePicker
-      onApply={(e) => {
-        console.log(dayjs(e[0])?.unix())
-      }}
+      onApply={(e) => column.setFilterValue(e)}
+      initStartDate={columnFilterValue?.[0] ?? null}
+      initEndDate={columnFilterValue?.[1] ?? null}
     />
   ) : filterVariant === 'select' ? (
     <select
