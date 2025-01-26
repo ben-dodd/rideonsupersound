@@ -20,9 +20,9 @@ export default function SalesScreen() {
   // SWR
   return (
     <div
-      className={`flex relative overflow-x-hidden ${
-        page !== 'sales' ? 'hidden' : ''
-      }`}
+      className={`flex relative ${
+        page === 'sales' && tableMode ? 'overflow-x-hidden' : ''
+      } ${page !== 'sales' ? 'hidden' : ''}`}
     >
       {page === 'sales' && tableMode && <SaleTable />}
       {page === 'sales' && !tableMode && <SaleList />}

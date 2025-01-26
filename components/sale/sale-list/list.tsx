@@ -80,9 +80,9 @@ export default function List() {
     return { grandTotal, storeCut, saleArray }
   }, [saleTransactions, registers, salesViewClerks])
   return (
-    <div>
+    <div className="w-board">
       <Filter />
-      <div className="h-dialog overflow-y-scroll px-2">
+      <div className="h-dialog overflow-y-scroll px-2 w-board">
         {isSaleTransactionsLoading || isRegistersLoading || isClerksLoading ? (
           <div className="loading-screen">
             <div className="loading-icon" />
@@ -154,13 +154,18 @@ export default function List() {
           ))
         )}
       </div>
-      <div className="bg-col5 w-full text-right font-bold text-lg pt-2 border-t-2 px-2">{`STORE CUT $${(
+      <div className="bg-col5 text-right font-bold text-lg pt-2 border-t-2 px-2 w-board">{`STORE CUT $${(
         sortedSales?.storeCut / 100
-      ).toFixed(2)} // VENDOR SALES $${(
+      ).toLocaleString(undefined, {
+        maximumFractionDigits: 2,
+      })} // VENDOR SALES $${(
         (sortedSales?.grandTotal - sortedSales?.storeCut) /
         100
-      ).toFixed(2)} // GRAND TOTAL $${(sortedSales?.grandTotal / 100).toFixed(
-        2
+      ).toLocaleString(undefined, {
+        maximumFractionDigits: 2,
+      })} // GRAND TOTAL $${(sortedSales?.grandTotal / 100).toLocaleString(
+        undefined,
+        { maximumFractionDigits: 2 }
       )}`}</div>
     </div>
   )

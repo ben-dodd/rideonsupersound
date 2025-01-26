@@ -5,5 +5,5 @@ export default function TableContainer({ loading, children }) {
     </div>
   ) : (
     <div className="h-menu w-board overflow-x-hidden bg-white">{children}</div>
-  );
+  )
 }
