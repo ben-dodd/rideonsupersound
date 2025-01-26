@@ -44,7 +44,7 @@ export default function Filter() {
               onClick={() => {
                 setSalesView('week')
                 setSalesViewRange({
-                  startDate: dayjs().startOf('week').format('YYYY-MM-DD'),
+                  startDate: dayjs().startOf('isoWeek').format('YYYY-MM-DD'),
                   endDate: dayjs().format('YYYY-MM-DD'),
                 })
               }}
