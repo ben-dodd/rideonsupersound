@@ -200,6 +200,7 @@ export default function InventoryItemForm({
           onEdit={setItem}
           inputLabel="SECTION"
           dbField="section"
+          subtitle={true}
           isCreateDisabled={true}
           isDisabled={disabled}
         />

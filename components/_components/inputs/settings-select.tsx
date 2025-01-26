@@ -26,6 +26,54 @@ interface SettingsSelectProps {
   customEdit?: Function
   delimiter?: string
   className?: string
+  subtitle?: boolean
+}
+
+const getSubtitle = (val, options) => {
+  const opt = options?.find((opt) => opt?.label === val)
+  return opt?.subtitle || ''
+}
+
+const CustomSingleValue = ({ data, selectProps }) => {
+  // `selectProps` includes custom props passed to the <Select> component
+  const customStyles = selectProps?.styles?.singleValue
+    ? selectProps.styles.singleValue({}, { data, selectProps })
+    : {}
+
+  return (
+    <div style={customStyles}>
+      <div className="font-bold">{data.label}</div>
+      <div className="text-xs text-gray-500">{data.subtitle}</div>
+    </div>
+  )
+}
+
+const CustomOption = (props) => {
+  const { data, innerRef, innerProps, isFocused, isSelected, getStyles } = props
+
+  const optionStyles = getStyles('option', props)
+
+  return (
+    <div
+      ref={innerRef}
+      {...innerProps}
+      style={{
+        ...optionStyles,
+        backgroundColor: isFocused
+          ? '#2684ff40'
+          : isSelected
+          ? '#2684ff'
+          : 'white',
+        color: isSelected ? '#white' : '#black',
+        cursor: 'pointer',
+      }}
+    >
+      <div className="font-bold">{data.label}</div>
+      <div className={`text-xs ${isSelected ? 'text-white' : 'text-gray-500'}`}>
+        {data.subtitle}
+      </div>
+    </div>
+  )
 }
 
 export default function SettingsSelect({
@@ -38,6 +86,7 @@ export default function SettingsSelect({
   isDisabled,
   isClearable,
   isCreateDisabled,
+  subtitle = false,
   sorted = true,
   customEdit,
   delimiter,
@@ -47,33 +96,28 @@ export default function SettingsSelect({
   const { selects, isSelectsLoading, mutateSelects } = useSelect(dbField)
   // State
   const [isLoading, setLoading] = useState(false)
-  console.log(selects)
-  const options =
-    dbField === 'section'
-      ? selects
-          ?.sort((a, b) => a?.label?.localeCompare(b?.label))
-          ?.map((opt) => ({
-            value: opt?.label,
-            label: `${opt?.label}${
-              opt?.label_group ? ` [${opt?.label_group}]` : ''
-            }`,
-          }))
-      : sorted
-      ? selects
-          ?.map((s) => s?.label)
-          ?.sort()
-          ?.map((opt: string) => ({
-            value: opt,
-            label: opt,
-          }))
-      : selects
-          ?.map((s) => s?.label)
-          ?.map((opt: string) => ({
-            value: opt,
-            label: opt,
-          }))
-
-  console.log(options)
+  const options = subtitle
+    ? selects
+        ?.sort((a, b) => a?.label?.localeCompare(b?.label))
+        ?.map((opt) => ({
+          value: opt?.label,
+          label: opt?.label,
+          subtitle: opt?.labelGroup || opt?.label_group || '',
+        }))
+    : sorted
+    ? selects
+        ?.map((s) => s?.label)
+        ?.sort()
+        ?.map((opt: string) => ({
+          value: opt,
+          label: opt,
+        }))
+    : selects
+        ?.map((s) => s?.label)
+        ?.map((opt: string) => ({
+          value: opt,
+          label: opt,
+        }))
 
   const colourStyles = {
     // menuList: (styles) => ({
@@ -93,6 +137,18 @@ export default function SettingsSelect({
       ...base,
       zIndex: 100,
     }),
+    // option: (provided) => ({
+    //   ...provided,
+    //   display: 'flex',
+    //   flexDirection: 'column',
+    //   alignItems: 'flex-start',
+    //   padding: '10px',
+    // }),
+    // singleValue: (provided) => ({
+    //   ...provided,
+    //   display: 'flex',
+    //   flexDirection: 'column',
+    // }),
     control: (styles) =>
       error
         ? {
@@ -111,11 +167,6 @@ export default function SettingsSelect({
   //   valueContainer: { backgroundColor: 'red' },
   // }}
 
-  const getSectionLabel = (val) => {
-    const opt = options?.find((opt) => opt?.label === val)
-    return `${opt?.label} [${opt?.labelGroup}]`
-  }
-
   return (
     <div className={className}>
       <div className="input-label">{inputLabel}</div>
@@ -129,31 +180,41 @@ export default function SettingsSelect({
           isLoading={isLoading || isSelectsLoading || false}
           isClearable={isClearable || true}
           options={options}
+          subtitle={subtitle}
+          components={
+            subtitle
+              ? {
+                  SingleValue: CustomSingleValue,
+                  Option: CustomOption,
+                }
+              : null
+          }
           value={
             dbField
               ? isMulti
                 ? Array.isArray(object?.[dbField])
                   ? object?.[dbField]?.map((val: string) => ({
                       value: val,
-                      label: dbField === 'section' ? getSectionLabel(val) : val,
+                      label: val,
+                      subtitle: subtitle ? getSubtitle(val, options) : '',
                     }))
                   : object?.[dbField]
                   ? [
                       {
                         value: object?.[dbField] || '',
-                        label:
-                          dbField === 'section'
-                            ? getSectionLabel(object?.[dbField])
-                            : object?.[dbField] || '',
+                        label: object?.[dbField] || '',
+                        subtitle: subtitle
+                          ? getSubtitle(object?.[dbField], options)
+                          : '',
                       },
                     ]
                   : []
                 : {
                     value: object?.[dbField] || '',
-                    label:
-                      dbField === 'section'
-                        ? getSectionLabel(object?.[dbField])
-                        : object?.[dbField] || '',
+                    label: object?.[dbField] || '',
+                    subtitle: subtitle
+                      ? getSubtitle(object?.[dbField], options)
+                      : '',
                   }
               : null
           }
