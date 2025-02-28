@@ -1,46 +1,46 @@
-import TextField from "@/components/_components/inputs/text-field";
-import { receiveStockAtom } from "@/lib/atoms";
+import TextField from '@/components/_components/inputs/text-field'
+import { receiveStockAtom } from '@/lib/atoms'
 import {
   getDiscogsOptionsByBarcode,
   getDiscogsOptionsByKeyword,
-} from "@/lib/data-functions";
-import { useAtom } from "jotai";
-import { useCallback, useState } from "react";
-import DiscogsOption from "../../discogs-panel/discogs-option";
-import { v4 as uuid } from "uuid";
-import debounce from "lodash/debounce";
+} from '@/lib/data-functions'
+import { useAtom } from 'jotai'
+import { useCallback, useState } from 'react'
+import DiscogsOption from '../../discogs-panel/discogs-option'
+import { v4 as uuid } from 'uuid'
+import debounce from 'lodash/debounce'
 
 export default function Discogs() {
-  const [barcode, setBarcode] = useState("");
-  const [keyword, setKeyword] = useState("");
-  const [discogsOptions, setDiscogsOptions] = useState([]);
-  const [key, setKey] = useState(uuid());
+  const [barcode, setBarcode] = useState('')
+  const [keyword, setKeyword] = useState('')
+  const [discogsOptions, setDiscogsOptions] = useState([])
+  const [key, setKey] = useState(uuid())
   const handleChange = async (val) => {
-    if (val !== "") {
-      const results: any = await getDiscogsOptionsByBarcode(val);
+    if (val !== '') {
+      const results: any = await getDiscogsOptionsByBarcode(val)
       if (results && results?.length > 0) {
-        setDiscogsOptions(results);
+        setDiscogsOptions(results)
       }
     }
-  };
-  const [basket, setBasket] = useAtom(receiveStockAtom);
+  }
+  const [basket, setBasket] = useAtom(receiveStockAtom)
   const addItem = (item) => {
     setBasket({
       ...basket,
       items: basket?.items
-        ? [...basket?.items, { key: uuid(), item }]
+        ? [...basket?.items, { key: uuid(), quantity: '1', item }]
         : [{ key: uuid(), item }],
-    });
-    setBarcode("");
-    setKey(uuid());
-    setDiscogsOptions([]);
-  };
+    })
+    setBarcode('')
+    setKey(uuid())
+    setDiscogsOptions([])
+  }
   const searchDiscogs = async (k) => {
-    const results = await getDiscogsOptionsByKeyword(k);
-    if (results && results?.length > 0) setDiscogsOptions(results);
-  };
-  const debouncedSearch = useCallback(debounce(searchDiscogs, 2000), []);
-  const debouncedBarcode = useCallback(debounce(handleChange, 2000), []);
+    const results = await getDiscogsOptionsByKeyword(k)
+    if (results && results?.length > 0) setDiscogsOptions(results)
+  }
+  const debouncedSearch = useCallback(debounce(searchDiscogs, 2000), [])
+  const debouncedBarcode = useCallback(debounce(handleChange, 2000), [])
 
   return (
     <div>
@@ -51,10 +51,10 @@ export default function Discogs() {
       <TextField
         key={key}
         id="barcode"
-        value={barcode || ""}
+        value={barcode || ''}
         onChange={(e) => {
-          setBarcode(e.target.value);
-          debouncedBarcode(e.target.value);
+          setBarcode(e.target.value)
+          debouncedBarcode(e.target.value)
         }}
         inputLabel="Barcode"
         autoFocus
@@ -62,10 +62,10 @@ export default function Discogs() {
       />
       <TextField
         id="keyword"
-        value={keyword || ""}
+        value={keyword || ''}
         onChange={(e) => {
-          setKeyword(e.target.value);
-          debouncedSearch(e.target.value);
+          setKeyword(e.target.value)
+          debouncedSearch(e.target.value)
         }}
         inputLabel="Search Keywords (e.g. 'palace of wisdom common threads cdr')"
       />
@@ -79,11 +79,11 @@ export default function Discogs() {
             override={true}
           />
         ))
-      ) : barcode === "" ? (
+      ) : barcode === '' ? (
         <div />
       ) : (
         <div>Nothing found...</div>
       )}
     </div>
-  );
+  )
 }

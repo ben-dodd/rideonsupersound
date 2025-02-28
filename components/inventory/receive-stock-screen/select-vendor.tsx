@@ -1,22 +1,22 @@
 // DB
-import { useLogs, useVendors } from "@/lib/swr-hooks";
-import { VendorObject } from "@/lib/types";
+import { useLogs, useVendors } from '@/lib/swr-hooks'
+import { VendorObject } from '@/lib/types'
 
 // Functions
 
 // Components
-import CreateableSelect from "@/components/_components/inputs/createable-select";
+import CreateableSelect from '@/components/_components/inputs/createable-select'
 
 // Icons
-import { useAtom } from "jotai";
-import { clerkAtom, receiveStockAtom } from "@/lib/atoms";
-import { saveLog, saveVendorToDatabase } from "@/lib/db-functions";
+import { useAtom } from 'jotai'
+import { clerkAtom, receiveStockAtom } from '@/lib/atoms'
+import { saveLog, saveVendorToDatabase } from '@/lib/db-functions'
 
 export default function SelectVendor() {
-  const [basket, setBasket] = useAtom(receiveStockAtom);
-  const [clerk] = useAtom(clerkAtom);
-  const { logs, mutateLogs } = useLogs();
-  const { vendors } = useVendors();
+  const [basket, setBasket] = useAtom(receiveStockAtom)
+  const [clerk] = useAtom(clerkAtom)
+  const { logs, mutateLogs } = useLogs()
+  const { vendors } = useVendors()
 
   return (
     <div>
@@ -27,16 +27,17 @@ export default function SelectVendor() {
         value={basket?.vendor_id}
         label={
           vendors?.filter((v: VendorObject) => v?.id === basket?.vendor_id)[0]
-            ?.name || ""
+            ?.name || ''
         }
         onChange={(vendorObject: any) => {
           setBasket({
             ...basket,
             vendor_id: parseInt(vendorObject?.value),
-          });
+            vendor_uuid: vendorObject?.uuid,
+          })
         }}
         onCreateOption={async (inputValue: string) => {
-          const vendorId = await saveVendorToDatabase({ name: inputValue });
+          const vendorId = await saveVendorToDatabase({ name: inputValue })
           saveLog(
             {
               log: `Vendor ${inputValue} (${vendorId}) created.`,
@@ -44,14 +45,15 @@ export default function SelectVendor() {
             },
             logs,
             mutateLogs
-          );
-          setBasket({ ...basket, vendor_id: vendorId });
+          )
+          setBasket({ ...basket, vendor_id: vendorId })
         }}
         options={vendors?.map((val: VendorObject) => ({
           value: val?.id,
-          label: val?.name || "",
+          label: val?.name || '',
+          uuid: val?.uid,
         }))}
       />
     </div>
-  );
+  )
 }

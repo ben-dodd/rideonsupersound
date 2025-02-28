@@ -17,7 +17,7 @@ export default function Form() {
     setBasket({
       ...basket,
       items: basket?.items
-        ? [...basket?.items, { key: uuid(), item }]
+        ? [...basket?.items, { key: uuid(), quantity: '1', item }]
         : [{ key: uuid(), item }],
     })
     if (clearForm) setItem(defaultItem)

@@ -11,32 +11,19 @@ import { StockObject } from '@/lib/types'
 import TextField from '@/components/_components/inputs/text-field'
 import SettingsSelect from '@/components/_components/inputs/settings-select'
 import RadioButton from '@/components/_components/inputs/radio-button'
-import { useState } from 'react'
 
 export default function ListItem({ receiveItem, bucket, setBucket }) {
   const item: StockObject = receiveItem?.item
   const priceSuggestion = getPriceSuggestion(item)
 
   const profitMargin = getProfitMargin({
-    total_sell: parseFloat(
-      receiveItem?.total_sell ||
-        (item?.total_sell ? `${item?.total_sell / 100}` : '')
-    ),
-    vendor_cut: parseFloat(
-      receiveItem?.vendor_cut ||
-        (item?.vendor_cut ? `${item?.vendor_cut / 100}` : '')
-    ),
+    total_sell: parseFloat(receiveItem?.total_sell),
+    vendor_cut: parseFloat(receiveItem?.vendor_cut),
   })
 
   const storeCut = getStoreCut({
-    total_sell: parseFloat(
-      receiveItem?.total_sell ||
-        (item?.total_sell ? `${item?.total_sell / 100}` : '')
-    ),
-    vendor_cut: parseFloat(
-      receiveItem?.vendor_cut ||
-        (item?.vendor_cut ? `${item?.vendor_cut / 100}` : '')
-    ),
+    total_sell: parseFloat(receiveItem?.total_sell),
+    vendor_cut: parseFloat(receiveItem?.vendor_cut),
   })
 
   return (
@@ -126,7 +113,7 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
           <SettingsSelect
             className="w-1/2"
             object={item}
-            error={item?.media === 'Audio' && !item?.section}
+            // error={item?.media === 'Audio' && !item?.section}
             customEdit={(e) => {
               setBucket({
                 ...bucket,
@@ -146,6 +133,7 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
             inputLabel="SECTION"
             dbField="section"
             isCreateDisabled={true}
+            subtitle={true}
           />
           <SettingsSelect
             className="w-1/2 ml-2"
@@ -235,9 +223,12 @@ export default function ListItem({ receiveItem, bucket, setBucket }) {
             inputLabel="QUANTITY"
             className="w-24"
             // inputType="number"
-            error={parseInt(receiveItem?.quantity) < 1}
+            error={
+              receiveItem?.quantity === '' ||
+              parseInt(receiveItem?.quantity) < 1
+            }
             min={0}
-            value={`${receiveItem?.quantity || '1'}`}
+            value={`${receiveItem?.quantity}`}
             onChange={(e: any) =>
               setBucket({
                 ...bucket,

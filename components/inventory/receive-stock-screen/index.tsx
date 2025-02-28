@@ -234,8 +234,11 @@ export default function ReceiveStockScreen() {
           // !Number.isInteger(parseInt(`${item?.quantity}`)) ||
           (isNaN(Number(item?.vendor_cut)) ||
             isNaN(Number(item?.total_sell)) ||
-            (item?.item?.media === 'Audio' && !item?.item?.section) ||
+            // (item?.item?.media === 'Audio' && !item?.item?.section) ||
             Number(item?.total_sell) === 0 ||
+            Number(item?.quantity < 1) ||
+            item?.quantity === '' ||
+            !isFinite(Number(item?.quantity)) ||
             Number(item?.vendor_cut) > Number(item?.total_sell)) &&
           !item?.item?.id
       ).length > 0
