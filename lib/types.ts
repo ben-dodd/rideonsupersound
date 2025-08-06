@@ -294,6 +294,7 @@ export interface StockObject {
   google_books_item_id?: number
   discogs_item_id?: number
   do_list_on_website?: number
+  do_alert_sale?: number
   has_no_quantity?: number
   date_created?: string
   date_last_stocktake?: string

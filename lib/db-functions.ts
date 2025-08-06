@@ -225,6 +225,18 @@ export async function saveSaleItemsTransactionsToDatabase(
       invItem.needs_restock = true
       addRestockTask(invItem?.id)
     }
+    console.log(`do_alert_sale? = ${invItem?.do_alert_sale}`)
+    if (invItem?.do_alert_sale) {
+      const newTask = {
+        description: `Reorder ${getItemDisplayName(invItem)}`,
+        created_by_clerk_id: clerk?.id,
+        assigned_to: RoleTypes?.MC,
+        is_post_mail_order: 0,
+        date_created: dayjs.utc().format('YYYY-MM-DD HH:mm:ss'),
+      }
+      console.log(newTask)
+      saveTaskToDatabase(newTask)
+    }
 
     // If sale is complete, validate gift card
     if (cart?.state === SaleStateTypes.Completed && item?.is_gift_card) {

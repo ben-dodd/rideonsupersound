@@ -269,6 +269,19 @@ export default function InventoryItemForm({
           <input
             type="checkbox"
             className="cursor-pointer"
+            checked={item?.do_alert_sale === 1 ? true : false}
+            onChange={(e) =>
+              setItem({ ...item, do_alert_sale: e.target.checked ? 1 : 0 })
+            }
+          />
+          <div className="ml-2">
+            Create job alert to reorder if item is sold.
+          </div>
+        </div>
+        <div className="flex col-span-2 items-center">
+          <input
+            type="checkbox"
+            className="cursor-pointer"
             checked={item?.has_no_quantity === 1 ? true : false}
             onChange={(e) =>
               setItem({ ...item, has_no_quantity: e.target.checked ? 1 : 0 })

@@ -1,9 +1,9 @@
-import { NextApiHandler } from "next";
-import { query } from "../../lib/db";
-import { escape } from "sqlstring";
+import { NextApiHandler } from 'next'
+import { query } from '../../lib/db'
+import { escape } from 'sqlstring'
 
 const handler: NextApiHandler = async (req, res) => {
-  const { k } = req.query;
+  const { k } = req.query
   const {
     vendor_id,
     artist,
@@ -32,6 +32,7 @@ const handler: NextApiHandler = async (req, res) => {
     discogs_item_id,
     discogsItem,
     do_list_on_website,
+    do_alert_sale,
     has_no_quantity,
     is_gift_card,
     gift_card_code,
@@ -43,10 +44,10 @@ const handler: NextApiHandler = async (req, res) => {
     misc_item_amount,
     created_by_id,
     date_last_stocktake,
-  } = req.body;
+  } = req.body
   try {
     if (!k || k !== process.env.NEXT_PUBLIC_SWR_API_KEY)
-      return res.status(401).json({ message: "Resource Denied." });
+      return res.status(401).json({ message: 'Resource Denied.' })
     const results = await query(
       `
       INSERT INTO stock (
@@ -77,6 +78,7 @@ const handler: NextApiHandler = async (req, res) => {
         discogs_item_id,
         discogsItem,
         do_list_on_website,
+        do_alert_sale,
         has_no_quantity,
         is_gift_card,
         gift_card_code,
@@ -89,7 +91,7 @@ const handler: NextApiHandler = async (req, res) => {
         created_by_id,
         date_last_stocktake
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
       [
         vendor_id,
@@ -119,6 +121,7 @@ const handler: NextApiHandler = async (req, res) => {
         discogs_item_id,
         JSON.stringify(discogsItem),
         do_list_on_website || 1,
+        do_alert_sale || 0,
         has_no_quantity || 0,
         is_gift_card,
         gift_card_code,
@@ -131,11 +134,11 @@ const handler: NextApiHandler = async (req, res) => {
         created_by_id,
         date_last_stocktake,
       ]
-    );
-    return res.json(results);
+    )
+    return res.json(results)
   } catch (e) {
-    res.status(500).json({ message: e.message });
+    res.status(500).json({ message: e.message })
   }
-};
+}
 
-export default handler;
+export default handler
