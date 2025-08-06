@@ -225,8 +225,8 @@ export async function saveSaleItemsTransactionsToDatabase(
       invItem.needs_restock = true
       addRestockTask(invItem?.id)
     }
-    console.log(`do_alert_sale? = ${invItem?.do_alert_sale}`)
-    if (invItem?.do_alert_sale) {
+    // console.log(`do_alert_sale? = ${invItem?.do_alert_sale}`)
+    if (invItem?.do_alert_sale && quantity < 2) {
       const newTask = {
         description: `Reorder ${getItemDisplayName(invItem)}`,
         created_by_clerk_id: clerk?.id,
@@ -234,7 +234,7 @@ export async function saveSaleItemsTransactionsToDatabase(
         is_post_mail_order: 0,
         date_created: dayjs.utc().format('YYYY-MM-DD HH:mm:ss'),
       }
-      console.log(newTask)
+      // console.log(newTask)
       saveTaskToDatabase(newTask)
     }
 
