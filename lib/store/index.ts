@@ -1,4 +1,4 @@
-import create, { State, StoreApi, UseBoundStore } from 'zustand'
+import { create, State, StoreApi, UseBoundStore } from 'zustand'
 import dayjs from 'dayjs'
 import produce from 'immer'
 import { Pages, StoreState } from './types'

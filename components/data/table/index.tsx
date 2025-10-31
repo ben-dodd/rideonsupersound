@@ -217,7 +217,6 @@ function Table({
   // const toggleFilters = () => setShowFilterBar((filters) => !filters)
 
   const saveEdit = () => null
-  console.log(rowSelection)
 
   const columnSizeVars = useMemo(() => {
     const headers = table.getFlatHeaders()

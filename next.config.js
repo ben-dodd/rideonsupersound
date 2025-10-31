@@ -1,6 +1,12 @@
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
-})
+// Make bundle analyzer optional to avoid test failures
+let withBundleAnalyzer
+try {
+  withBundleAnalyzer = require('@next/bundle-analyzer')({
+    enabled: process.env.ANALYZE === 'true',
+  })
+} catch (e) {
+  withBundleAnalyzer = (config) => config
+}
 
 module.exports = withBundleAnalyzer({
   swcMinify: true,
