@@ -1,33 +1,37 @@
-import Image from 'next/image'
-
 const Loading = ({
   size = 'md',
-  type = 'spin',
+  type = 'pulse',
 }: {
   size?: 'full' | 'md' | 'sm'
-  type?: 'ripple' | 'spin' | 'pyramid'
+  type?: 'pulse' | 'dots' | 'bars'
 }) => {
   return (
     <div
-      className={`flex justify-center align-center ${
+      className={`flex justify-center items-center ${
         size === 'full' ? 'h-screen w-screen' : size === 'md' ? 'h-full w-full' : 'h-full w-full'
       }`}
     >
-      {type === 'ripple' ? (
-        <div className="lds-ripple">
-          <div />
-          <div />
+      {type === 'dots' ? (
+        <div className="flex gap-2">
+          <div className="w-3 h-3 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+          <div className="w-3 h-3 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+          <div className="w-3 h-3 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
         </div>
-      ) : type === 'spin' ? (
-        <div className="loading-icon" />
+      ) : type === 'bars' ? (
+        <div className="flex gap-1 items-end h-8">
+          <div className="w-2 bg-gray-400 rounded animate-pulse" style={{ height: '60%', animationDelay: '0ms' }} />
+          <div className="w-2 bg-gray-400 rounded animate-pulse" style={{ height: '100%', animationDelay: '150ms' }} />
+          <div className="w-2 bg-gray-400 rounded animate-pulse" style={{ height: '80%', animationDelay: '300ms' }} />
+          <div className="w-2 bg-gray-400 rounded animate-pulse" style={{ height: '60%', animationDelay: '450ms' }} />
+        </div>
       ) : (
-        <Image
-          className="m-auto inline-block"
-          src={`${process.env.NEXT_PUBLIC_RESOURCE_URL}img/loading.gif`}
-          alt="Loading"
-          width={200}
-          height={200}
-        />
+        <div className="relative w-16 h-16">
+          <div className="absolute inset-0 border-4 border-gray-200 rounded-full" />
+          <div
+            className="absolute inset-0 border-4 border-blue-500 rounded-full border-t-transparent animate-spin"
+            style={{ animationDuration: '1.5s' }}
+          />
+        </div>
       )}
     </div>
   )

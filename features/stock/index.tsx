@@ -6,14 +6,15 @@ import { initBatchReceiveSession, useAppStore } from 'lib/store'
 import { Pages, ViewProps } from 'lib/store/types'
 import { AutoFixHigh, CollectionsBookmark, DisplaySettings, EventBusy, Print } from '@mui/icons-material'
 import { useRouter } from 'next/router'
-import ReceiveStockList from './receive-stock-list'
-import StockMovementList from './stock-movement-list'
 import { useClerk } from 'lib/api/clerk'
 import dayjs from 'dayjs'
-import Tab from 'components/navigation/tabs/tab'
-import ViewStockTable from './view-stock-table'
-import EditStockTable from './edit-stock-table'
-const ComingSoon = dynamic(() => import('components/placeholders/coming-soon'))
+
+// Dynamic imports for code splitting
+const ViewStockTable = dynamic(() => import('./view-stock-table'))
+const StockArrivals = dynamic(() => import('./stock-arrivals'))
+const RecentlySold = dynamic(() => import('./recently-sold'))
+const BestSellers = dynamic(() => import('./best-sellers'))
+const StockMovementList = dynamic(() => import('./stock-movement-list'))
 
 const StockScreen = () => {
   const { isStockListLoading } = useStockList()
@@ -39,7 +40,6 @@ const StockScreen = () => {
     router.push(`/stock/receive/new`)
   }
 
-  // const isFull = !(tab === 4 && holdsPage?.loadedHold)
   const menuItems = [
     {
       text: 'Receive Stock',
@@ -69,38 +69,21 @@ const StockScreen = () => {
   ]
 
   return (
-    <MidScreenContainer
-      title="Stock"
-      isLoading={isStockListLoading}
-      titleClass="bg-col2"
-      full={true}
-      menuItems={menuItems}
-    >
-      <div className="flex justify-between">
+    <MidScreenContainer isLoading={isStockListLoading} menuItems={menuItems}>
+      <div className="flex flex-col h-full">
         <Tabs
-          tabs={['View Stock', 'Edit Stock', 'Stock Arrivals', 'Recently Sold', 'Best Sellers', 'Stock Movement']}
+          tabs={['View Stock', 'Stock Arrivals', 'Recently Sold', 'Best Sellers', 'Stock Movement']}
           value={tab}
           onChange={setTab}
         />
+        <div className="flex-1 overflow-hidden">
+          {tab === 0 && <ViewStockTable />}
+          {tab === 1 && <StockArrivals />}
+          {tab === 2 && <RecentlySold />}
+          {tab === 3 && <BestSellers />}
+          {tab === 4 && <StockMovementList />}
+        </div>
       </div>
-      <Tab selectedTab={tab} tab={0}>
-        <ViewStockTable />
-      </Tab>
-      <Tab selectedTab={tab} tab={1}>
-        <EditStockTable />
-      </Tab>
-      <Tab selectedTab={tab} tab={2}>
-        <ReceiveStockList />
-      </Tab>
-      <Tab selectedTab={tab} tab={3}>
-        <ComingSoon />
-      </Tab>
-      <Tab selectedTab={tab} tab={4}>
-        <ComingSoon />
-      </Tab>
-      <Tab selectedTab={tab} tab={5}>
-        <StockMovementList />
-      </Tab>
     </MidScreenContainer>
   )
 }

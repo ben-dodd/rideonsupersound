@@ -1,6 +1,8 @@
 import Head from 'next/head'
-import Nav from './nav'
-import Menu from './menu'
+import { UnifiedHeader } from './unified-header'
+import { DrawerMenu } from './drawer-menu'
+import { PageHeaderProvider } from './PageHeaderContext'
+import { ThemeProvider } from 'lib/contexts/ThemeContext'
 import { useClerk } from 'lib/api/clerk'
 import Loading from 'components/placeholders/loading'
 import { useAppStore } from 'lib/store'
@@ -11,13 +13,13 @@ const InfoModal = dynamic(() => import('components/modal/info-modal'))
 const ConfirmModal = dynamic(() => import('components/modal/confirm-modal'))
 const HelpDialog = dynamic(() => import('features/help'))
 const SnackAlert = dynamic(() => import('components/alert'))
-// import Clippy from 'components/clippy'
 
 export default function Layout({ children }) {
   const { alert, view, confirmModal, infoModal } = useAppStore()
   const { isClerkLoading } = useClerk()
   const [routeLoading, setRouteLoading] = useState(false)
   const router = useRouter()
+
   useEffect(() => {
     router.events.on('routeChangeStart', () => {
       setRouteLoading(true)
@@ -34,24 +36,31 @@ export default function Layout({ children }) {
       })
     }
   }, [router.events])
+
   return isClerkLoading ? (
-    <Loading type="pyramid" size="full" />
+    <Loading size="full" />
   ) : (
     <>
       <Head>
         <title>R.O.S.S. P.O.S.</title>
       </Head>
-      <Nav />
-      <div className="flex h-main">
-        {view?.helpDialog && <HelpDialog />}
-        {confirmModal?.open && <ConfirmModal />}
-        {infoModal?.open && <InfoModal />}
-        {alert?.open && <SnackAlert />}
-        <Menu />
 
-        <div className={`w-full h-main overflow-y-scroll pb-8`}>{routeLoading ? <Loading /> : children}</div>
-      </div>
-      {/* <Clippy /> */}
+      <ThemeProvider>
+        <PageHeaderProvider>
+          <div className="flex flex-col h-screen bg-gray-50 dark:bg-gray-900">
+            <UnifiedHeader />
+
+            {view?.helpDialog && <HelpDialog />}
+            {confirmModal?.open && <ConfirmModal />}
+            {infoModal?.open && <InfoModal />}
+            {alert?.open && <SnackAlert />}
+
+            <DrawerMenu />
+
+            <main className="flex-1 overflow-y-auto">{routeLoading ? <Loading /> : children}</main>
+          </div>
+        </PageHeaderProvider>
+      </ThemeProvider>
     </>
   )
 }

@@ -504,3 +504,19 @@
   -ms-user-select: none;
   user-select: none;
 }
+
+/* Fix column widths and row heights */
+table {
+  table-layout: fixed;
+}
+
+table th,
+table td {
+  flex: 0 0 auto !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 8px 4px;
+  height: 36px;
+  line-height: 20px;
+}

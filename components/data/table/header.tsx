@@ -12,7 +12,7 @@ const columnIsFiltered = (value) => {
   return true
 }
 
-export const Header = ({ table, color, colorDark }) => (
+export const Header = ({ table, color, colorDark, enableColumnResizing = true }) => (
   <thead className="sticky top-0 z-10 bg-white">
     {table.getHeaderGroups().map((headerGroup) => (
       <tr key={headerGroup.id}>
@@ -64,14 +64,16 @@ export const Header = ({ table, color, colorDark }) => (
             ) : (
               <div className="h-8 mb-1" />
             )}
-            <div
-              {...{
-                onDoubleClick: () => header.column.resetSize(),
-                onMouseDown: header.getResizeHandler(),
-                onTouchStart: header.getResizeHandler(),
-                className: `resizer ${header.column.getIsResizing() ? 'isResizing' : ''}`,
-              }}
-            />
+            {enableColumnResizing && (
+              <div
+                {...{
+                  onDoubleClick: () => header.column.resetSize(),
+                  onMouseDown: header.getResizeHandler(),
+                  onTouchStart: header.getResizeHandler(),
+                  className: `resizer ${header.column.getIsResizing() ? 'isResizing' : ''}`,
+                }}
+              />
+            )}
           </th>
         ))}
       </tr>

@@ -1,4 +1,5 @@
 module.exports = {
+  darkMode: 'class', // Enable class-based dark mode
   content: ['./app/**/*.tsx', './components/**/*.tsx', './features/**/*.tsx', './pages/**/*.tsx', './index.tsx'],
   theme: {
     extend: {

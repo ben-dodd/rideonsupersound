@@ -1,39 +1,59 @@
-import SearchInput from 'components/inputs/search-input'
+import React, { useMemo, useState } from 'react'
 import { useStockMovements } from 'lib/api/stock'
-import { useAppStore } from 'lib/store'
-import { Pages } from 'lib/store/types'
-import { useState } from 'react'
-import LoadMoreButton from 'components/button/load-more-button'
-import StockMovementItem from './stock-movement-item'
+import { LogContainer } from 'components/log/LogContainer'
+import { LogEntryProps } from 'components/log/LogEntry'
+import dayjs from 'dayjs'
 
 const StockMovementList = () => {
-  const {
-    pages: {
-      stockPage: {
-        searchBar: { movement: searchBar },
-      },
-    },
-    setSearchBar,
-  } = useAppStore()
-  const [limit, setLimit] = useState(50)
+  const [searchValue, setSearchValue] = useState('')
   const { stockMovements } = useStockMovements()
 
-  const handleSearch = (e) => setSearchBar(Pages.stockPage, e.target.value, 'movement')
-  const filteredList = stockMovements?.filter?.((sm) => `${sm?.id}`?.includes(searchBar?.toUpperCase()))
+  const logEntries = useMemo((): LogEntryProps[] => {
+    if (!stockMovements) return []
+
+    return stockMovements
+      .filter((sm) => {
+        if (!searchValue) return true
+        const searchLower = searchValue.toLowerCase()
+        return (
+          sm.itemDisplayName?.toLowerCase().includes(searchLower) ||
+          sm.clerkName?.toLowerCase().includes(searchLower) ||
+          sm.act?.toLowerCase().includes(searchLower) ||
+          sm.note?.toLowerCase().includes(searchLower)
+        )
+      })
+      .map(
+        (sm): LogEntryProps => ({
+          type: (sm.act as LogEntryProps['type']) || 'adjustment',
+          time: dayjs(sm.dateMoved).format('h:mm A'),
+          actor: sm.clerkName || 'Unknown',
+          action: sm.act || 'adjustment',
+          quantity: Math.abs(sm.quantity),
+          item: {
+            id: sm.stockId,
+            displayName: sm.itemDisplayName || 'Unknown Item',
+            // Note: We don't have artist/title in stock movements, could be added later
+          },
+          metadata: {
+            saleId: sm.saleId,
+            batchId: sm.batchReceiveId,
+            registerName: sm.registerId ? `Register ${sm.registerId}` : undefined,
+            note: sm.note,
+          },
+        }),
+      )
+      .sort((a, b) => dayjs(b.time, 'h:mm A').valueOf() - dayjs(a.time, 'h:mm A').valueOf())
+  }, [stockMovements, searchValue])
 
   return (
-    <div className="h-content overflow-y-scroll">
-      <div className="px-2">
-        <SearchInput searchValue={searchBar} handleSearch={handleSearch} />
-      </div>
-
-      <div className="px-2">
-        {filteredList?.slice(0, limit)?.map((sm) => (
-          <StockMovementItem key={sm?.id} sm={sm} />
-        ))}
-        {limit < filteredList?.length && <LoadMoreButton onClick={() => setLimit((limit) => limit + 10)} />}
-      </div>
-    </div>
+    <LogContainer
+      entries={logEntries}
+      title="📋 Stock Movement Log"
+      showSearch={true}
+      onSearch={setSearchValue}
+      searchValue={searchValue}
+      showFilters={true}
+    />
   )
 }
 

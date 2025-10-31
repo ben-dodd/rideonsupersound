@@ -13,7 +13,6 @@ module.exports = withBundleAnalyzer({
   images: {
     domains: [
       'localhost',
-      'hmn.exu.mybluehost.me',
       'ross.syd1.cdn.digitaloceanspaces.com',
       'img.discogs.com',
       'i.discogs.com',

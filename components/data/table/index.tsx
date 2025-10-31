@@ -62,6 +62,7 @@ interface TableProps {
   doServerSideFiltering?: boolean
   onColumnFiltersChange?: Function
   initColumnFilters?: ColumnFiltersState
+  enableColumnResizing?: boolean
 }
 
 function Table({
@@ -97,6 +98,7 @@ function Table({
   selectable = true,
   idField = 'id',
   doServerSideFiltering = false,
+  enableColumnResizing = true,
 }: TableProps) {
   const [pagination, setPagination] = useState<PaginationState>(initPagination)
   const [sorting, setSorting] = useState<SortingState>(initSorting)
@@ -161,6 +163,7 @@ function Table({
       maxSize: 500,
     },
     columnResizeMode: 'onChange',
+    enableColumnResizing,
     onPaginationChange: (e) => {
       // console.log('pagination change', e)
       onPaginationChange && onPaginationChange(e)
@@ -264,7 +267,7 @@ function Table({
             },
           }}
         >
-          <Header table={table} color={color} colorDark={colorDark} />
+          <Header table={table} color={color} colorDark={colorDark} enableColumnResizing={enableColumnResizing} />
           {data?.length > 0 && !isLoading && (
             <>
               {/* When resizing any column we will render this special memoized version of our table body */}

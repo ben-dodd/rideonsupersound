@@ -3,7 +3,7 @@ import dayjs from 'dayjs'
 import { EditCell } from 'components/data/table/editCell'
 import { getItemSku } from 'lib/functions/displayInventory'
 import { getProfitMargin, getProfitMarginString } from 'lib/functions/pay'
-import type { CollatedStockItem, StockTableColors } from 'lib/types/table'
+import type { StockTableColors } from 'lib/types/table'
 import { STOCK_TABLE_COLORS } from 'lib/types/table'
 import { dateSlash } from 'lib/types/date'
 import { priceCentsString } from 'lib/utils'
@@ -20,14 +20,16 @@ export const createStockColumns = ({
   isEditable = false,
   colors = STOCK_TABLE_COLORS,
 }: CreateStockColumnsOptions): any[] => {
-  const detailColumns: any[] = [
+  // Essential columns (always visible)
+  const essentialColumns: any[] = [
     {
       accessorKey: 'id',
       header: 'Stock ID',
+      group: 'essential',
       cell: (info) => (
         <button
           type="button"
-          className={colors.link}
+          className="text-blue-600 hover:text-blue-800 underline font-medium"
           onClick={() => router.push(`/stock/${info.getValue()}`)}
           aria-label={`View stock item ${getItemSku(info.row?.original)}`}
         >
@@ -35,24 +37,57 @@ export const createStockColumns = ({
         </button>
       ),
       size: 100,
+      minSize: 100,
+      maxSize: 100,
+      enableResizing: false,
     },
     {
       accessorKey: 'title',
       header: 'Title',
-      cell: isEditable ? EditCell : undefined,
+      group: 'essential',
+      ...(isEditable && { cell: EditCell }),
       size: 300,
+      minSize: 200,
+      maxSize: 400,
       sortDescFirst: false,
     },
     {
       accessorKey: 'artist',
       header: 'Artist',
-      cell: isEditable ? EditCell : undefined,
+      group: 'essential',
+      ...(isEditable && { cell: EditCell }),
       size: 190,
+      minSize: 150,
+      maxSize: 250,
       sortDescFirst: false,
     },
     {
+      accessorKey: 'totalSell',
+      header: 'Sell',
+      group: 'essential',
+      cell: (info) => <div className={colors.sell}>{priceCentsString(info?.getValue() as number)}</div>,
+      size: 80,
+      minSize: 80,
+      maxSize: 80,
+      enableResizing: false,
+    },
+    {
+      accessorKey: 'quantities.inStock',
+      header: 'In Stock',
+      group: 'essential',
+      size: 80,
+      minSize: 80,
+      maxSize: 80,
+      enableResizing: false,
+    },
+  ]
+
+  // Detail columns
+  const detailColumns: any[] = [
+    {
       header: 'Vendor',
       accessorKey: 'vendorName',
+      group: 'details',
       cell: (info) => {
         const row = info?.row?.original
         return (
@@ -67,31 +102,49 @@ export const createStockColumns = ({
         )
       },
       size: 180,
+      minSize: 150,
+      maxSize: 220,
     },
     {
       accessorKey: 'section',
       header: 'Section',
+      group: 'details',
       size: 100,
+      minSize: 80,
+      maxSize: 120,
     },
     {
       accessorKey: 'media',
       header: 'Media',
+      group: 'details',
       size: 100,
+      minSize: 80,
+      maxSize: 120,
     },
     {
       accessorKey: 'format',
       header: 'Format',
+      group: 'details',
       size: 100,
+      minSize: 80,
+      maxSize: 120,
     },
     {
       accessorKey: 'genre',
       header: 'Genre',
+      group: 'details',
       size: 100,
+      minSize: 80,
+      maxSize: 120,
     },
     {
       accessorKey: 'isNew',
       header: 'Is New?',
-      size: 50,
+      group: 'details',
+      size: 70,
+      minSize: 70,
+      maxSize: 70,
+      enableResizing: false,
       cell: (info) =>
         info?.getValue() ? (
           <Check aria-label="Yes, is new" />
@@ -102,32 +155,38 @@ export const createStockColumns = ({
     {
       accessorKey: 'cond',
       header: 'Condition',
-      size: 50,
+      group: 'details',
+      size: 90,
+      minSize: 80,
+      maxSize: 100,
     },
     {
       accessorKey: 'needsRestock',
       header: 'Needs Restock?',
-      size: 50,
+      group: 'details',
+      size: 70,
+      minSize: 70,
+      maxSize: 70,
+      enableResizing: false,
       cell: (info) => (info?.getValue() ? <Check aria-label="Yes, needs restock" /> : ''),
     },
   ]
 
   const priceColumns: any[] = [
     {
-      accessorKey: 'totalSell',
-      header: 'Sell',
-      cell: (info) => <div className={colors.sell}>{priceCentsString(info?.getValue() as number)}</div>,
-      size: 80,
-    },
-    {
       accessorKey: 'vendorCut',
       header: 'Vendor Cut',
+      group: 'prices',
       cell: (info) => <div className={colors.vendorCut}>{priceCentsString(info?.getValue() as number)}</div>,
-      size: 80,
+      size: 90,
+      minSize: 90,
+      maxSize: 90,
+      enableResizing: false,
     },
     {
       header: 'Store Cut',
       accessorKey: 'storeCut',
+      group: 'prices',
       cell: (info) => (
         <div className={colors.storeCut}>
           {priceCentsString((info?.row?.original?.totalSell ?? 0) - (info?.row?.original?.vendorCut ?? 0))}
@@ -137,86 +196,115 @@ export const createStockColumns = ({
         (rowA?.original?.totalSell ?? 0) -
         (rowA?.original?.vendorCut ?? 0) -
         ((rowB?.original?.totalSell ?? 0) - (rowB?.original?.vendorCut ?? 0)),
-      size: 80,
+      size: 90,
+      minSize: 90,
+      maxSize: 90,
+      enableResizing: false,
     },
     {
       header: 'Margin',
       accessorKey: 'margin',
+      group: 'prices',
       cell: (info) => getProfitMarginString(info?.row?.original),
       sortingFn: (rowA, rowB) => getProfitMargin(rowA?.original) - getProfitMargin(rowB?.original),
-      size: 80,
+      size: 70,
+      minSize: 70,
+      maxSize: 70,
+      enableResizing: false,
     },
   ]
 
   const quantityColumns: any[] = [
-    { accessorKey: 'quantities.inStock', header: 'QTY', size: 60 },
-    { accessorKey: 'quantities.received', header: 'REC', size: 60 },
-    { accessorKey: 'quantities.returned', header: 'RET', size: 60 },
+    {
+      accessorKey: 'quantities.received',
+      header: 'Received',
+      group: 'quantities',
+      size: 80,
+      minSize: 80,
+      maxSize: 80,
+      enableResizing: false,
+    },
+    {
+      accessorKey: 'quantities.returned',
+      header: 'Returned',
+      group: 'quantities',
+      size: 80,
+      minSize: 80,
+      maxSize: 80,
+      enableResizing: false,
+    },
     {
       accessorKey: 'quantities.holdLayby',
-      header: 'H/L',
-      size: 60,
+      header: 'Hold/Layby',
+      group: 'quantities',
+      size: 90,
+      minSize: 90,
+      maxSize: 90,
+      enableResizing: false,
     },
     {
       accessorKey: 'quantities.sold',
-      header: 'SOLD',
-      size: 60,
+      header: 'Sold',
+      group: 'quantities',
+      size: 70,
+      minSize: 70,
+      maxSize: 70,
+      enableResizing: false,
     },
   ]
 
-  const actionColumns: any[] = [
+  const historyColumns: any[] = [
     {
       accessorKey: 'lastMovements.sold',
       header: 'Last Sold',
+      group: 'history',
       cell: (info) => (info?.getValue() ? dayjs(info?.getValue() as string).format(dateSlash) : ''),
-      size: 80,
+      size: 100,
+      minSize: 100,
+      maxSize: 100,
+      enableResizing: false,
       sortUndefined: 1,
     },
     {
       accessorKey: 'lastMovements.received',
       header: 'Last Received',
+      group: 'history',
       cell: (info) => (info?.getValue() ? dayjs(info?.getValue() as string).format(dateSlash) : ''),
-      size: 80,
+      size: 110,
+      minSize: 110,
+      maxSize: 110,
+      enableResizing: false,
       sortUndefined: 1,
     },
     {
       accessorKey: 'lastMovements.returned',
       header: 'Last Returned',
+      group: 'history',
       cell: (info) => (info?.getValue() ? dayjs(info?.getValue() as string).format(dateSlash) : ''),
-      size: 80,
+      size: 110,
+      minSize: 110,
+      maxSize: 110,
+      enableResizing: false,
       sortUndefined: 1,
     },
     {
       accessorKey: 'lastMovements.modified',
       header: 'Last Modified',
+      group: 'history',
       cell: (info) => (info?.getValue() ? dayjs(info?.getValue() as string).format(dateSlash) : ''),
-      size: 80,
+      size: 110,
+      minSize: 110,
+      maxSize: 110,
+      enableResizing: false,
       sortUndefined: 1,
     },
   ]
 
-  // For edit mode, return flat columns
+  // For edit mode, return flat columns with essential + editable
   if (isEditable) {
-    return [...detailColumns, ...priceColumns, quantityColumns[0]]
+    return [...essentialColumns.slice(0, 3), ...detailColumns, ...priceColumns, quantityColumns[0]]
   }
 
-  // For view mode, return grouped columns
-  return [
-    {
-      header: 'Details',
-      columns: detailColumns,
-    },
-    {
-      header: 'Prices',
-      columns: priceColumns,
-    },
-    {
-      header: 'Quantities',
-      columns: quantityColumns,
-    },
-    {
-      header: 'Actions',
-      columns: actionColumns,
-    },
-  ]
+  // For view mode, return flat columns with groups
+  return [...essentialColumns, ...detailColumns, ...priceColumns, ...quantityColumns, ...historyColumns]
 }
