@@ -371,7 +371,6 @@ export const useAppStore = createSelectors(
       doMutate && get().cart?.sale?.id && get().mutateCart()
     },
     setClippy: (update) => {
-      console.log('Updating clippy', update)
       set(
         produce((draft) => {
           Object.entries(update).forEach(([key, value]) => (draft.clippy[key] = value))
@@ -464,7 +463,6 @@ export const useAppStore = createSelectors(
     resetBatchReceiveSession: () =>
       set(
         produce((draft) => {
-          console.log('Resetting batch receive')
           draft.receiveStock = initBatchReceiveSession
         }),
       ),
