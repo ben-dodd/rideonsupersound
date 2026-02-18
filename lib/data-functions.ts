@@ -38,7 +38,7 @@ export function getItemDisplayName(item: StockObject | GiftCardObject) {
 
 export function getItemSkuDisplayNameById(
   item_id: number,
-  inventory: StockObject[]
+  inventory: StockObject[],
 ) {
   let item = inventory?.find((i) => i?.id === item_id)
   if (!item) return '...'
@@ -72,21 +72,21 @@ export function writeCartItemPriceBreakdown(cartItem: any, item?: StockObject) {
   return item?.is_gift_card
     ? `$${(item?.gift_card_amount / 100)?.toFixed(2)} GIFT CARD`
     : item?.is_misc_item
-    ? `${cartItem?.quantity} x $${(item?.misc_item_amount / 100).toFixed(2)}`
-    : `${cartItem?.quantity}${
-        parseInt(cartItem?.vendor_discount) > 0
-          ? ` x V${cartItem?.vendor_discount}%`
-          : ''
-      }${
-        parseInt(cartItem?.store_discount) > 0
-          ? ` x S${cartItem?.store_discount}%`
-          : ''
-      } x $${((cartItem?.total_sell ?? item?.total_sell) / 100)?.toFixed(2)}`
+      ? `${cartItem?.quantity} x $${(item?.misc_item_amount / 100).toFixed(2)}`
+      : `${cartItem?.quantity}${
+          parseInt(cartItem?.vendor_discount) > 0
+            ? ` x V${cartItem?.vendor_discount}%`
+            : ''
+        }${
+          parseInt(cartItem?.store_discount) > 0
+            ? ` x S${cartItem?.store_discount}%`
+            : ''
+        } x $${((cartItem?.total_sell ?? item?.total_sell) / 100)?.toFixed(2)}`
 }
 
 export function writeCartItemPriceTotal(
   cartItem: SaleItemObject,
-  item?: StockObject
+  item?: StockObject,
 ) {
   // Writes out the sale item total applying discounts and quantity
   // $40.00
@@ -97,7 +97,7 @@ export function writeCartItemPriceTotal(
 export function getPrice(
   cost: number | string,
   discount: number | string,
-  quantity: number | string
+  quantity: number | string,
 ) {
   return (
     (parseInt(`${quantity}`) ?? 1) *
@@ -112,10 +112,10 @@ export function getCartItemPrice(cartItem: any, item: StockObject) {
   const totalSell: number = !cartItem
     ? 0
     : item?.is_gift_card
-    ? item?.gift_card_amount || 0
-    : item?.is_misc_item
-    ? item?.misc_item_amount || 0
-    : null
+      ? item?.gift_card_amount || 0
+      : item?.is_misc_item
+        ? item?.misc_item_amount || 0
+        : null
   const vendorCut: number = cartItem?.vendor_cut ?? item?.vendor_cut
   const storeCut: number = item?.is_misc_item
     ? item?.misc_item_amount || 0
@@ -124,12 +124,12 @@ export function getCartItemPrice(cartItem: any, item: StockObject) {
   const storePrice: number = getPrice(
     storeCut,
     cartItem?.store_discount,
-    cartItem?.quantity
+    cartItem?.quantity,
   )
   const vendorPrice: number = getPrice(
     vendorCut,
     cartItem?.vendor_discount,
-    cartItem?.quantity
+    cartItem?.quantity,
   )
   const totalPrice: number = totalSell ?? storePrice + vendorPrice
   return { storePrice, vendorPrice, totalPrice }
@@ -150,7 +150,7 @@ export function getSaleVars(sale: any, inventory: StockObject[]) {
     sumPrices(
       sale?.items?.filter((s) => !s?.is_refunded),
       inventory,
-      'totalPrice'
+      'totalPrice',
     ) / 100 // Total Amount of Sale in dollars
   const totalVendorCut = totalPriceUnrounded - totalStoreCut // Total Vendor Cut in dollars
   const totalItemPrice =
@@ -181,24 +181,24 @@ export function getVendorDetails(
   vendorSales: VendorSaleItemObject[],
   vendorPayments: VendorPaymentObject[],
   vendor_id: number,
-  cart?: SaleObject
+  cart?: SaleObject,
 ) {
   if (vendor_id < 0) return {} // -1 is used for new vendors, i.e. no sales or payments
 
   // Total Items - all stock items that belong to the vendor
   let totalItems = inventory?.filter?.(
-    (i: StockObject) => i?.vendor_id === vendor_id
+    (i: StockObject) => i?.vendor_id === vendor_id,
   )
 
   // Total Sales - all sale items of the Vendor's stock
   let totalSales = vendorSales?.filter?.(
     (v: VendorSaleItemObject) =>
-      totalItems?.filter((i: StockObject) => i?.id === v?.item_id)[0]
+      totalItems?.filter((i: StockObject) => i?.id === v?.item_id)[0],
   )
 
   // Total Payments - all payments made to the Vendor
   let totalPayments = vendorPayments?.filter?.(
-    (v: VendorPaymentObject) => v?.vendor_id === vendor_id
+    (v: VendorPaymentObject) => v?.vendor_id === vendor_id,
   )
 
   // If a cart is in progress, add these payments - possibly delete this?
@@ -213,7 +213,7 @@ export function getVendorDetails(
   // Total Paid = sum all payments
   const totalPaid = totalPayments?.reduce(
     (acc: number, payment: VendorPaymentObject) => acc + payment?.amount,
-    0
+    0,
   )
 
   // Total Store Cut = sum all store cut
@@ -247,12 +247,12 @@ export function getVendorDetails(
 
   // Get the date of the last payment made to vendor
   let lastPaid = latestDate(
-    totalPayments?.map((p: VendorPaymentObject) => p?.date)
+    totalPayments?.map((p: VendorPaymentObject) => p?.date),
   )
 
   // Get the date of the last sale of the vendor stock
   let lastSold = latestDate(
-    totalSales?.map((s: VendorSaleItemObject) => s?.date_sale_closed)
+    totalSales?.map((s: VendorSaleItemObject) => s?.date_sale_closed),
   )
 
   // Total vendor take minus total paid to vendor
@@ -279,7 +279,7 @@ export function getPriceSuggestion(item: StockObject) {
     ]?.value
       ? `$${parseFloat(
           priceSuggestions[item?.is_new ? 'Mint (M)' : item?.cond || 'Good (G)']
-            ?.value
+            ?.value,
         )?.toFixed(2)} NZD (${
           item?.is_new ? 'Mint (M)' : item?.cond || 'Good (G)'
         } condition)`
@@ -291,27 +291,27 @@ export function getPriceSuggestion(item: StockObject) {
 
 export function getVendorQuantityInStock(
   inventory: StockObject[],
-  vendor_id: number
+  vendor_id: number,
 ) {
   return getVendorItemsInStock(inventory, vendor_id)?.reduce(
     (sum, item) => (item?.quantity || 0) + sum,
-    0
+    0,
   )
 }
 
 export function getVendorItemsInStock(
   inventory: StockObject[],
-  vendor_id: number
+  vendor_id: number,
 ) {
   return inventory?.filter((i: StockObject) => i?.vendor_id === vendor_id)
 }
 
 export function getItemQuantity(
   item: StockObject,
-  saleItems: SaleItemObject[]
+  saleItems: SaleItemObject[],
 ) {
   const saleItem = saleItems?.filter(
-    (i: SaleItemObject) => i?.item_id === item?.id
+    (i: SaleItemObject) => i?.item_id === item?.id,
   )[0]
   const cartQuantity = saleItem?.quantity || '0'
   const itemQuantity = item?.quantity || 0
@@ -321,7 +321,7 @@ export function getItemQuantity(
 export function sumPrices(
   saleItems: any[],
   inventory: StockObject[],
-  field: string
+  field: string,
 ) {
   if (!saleItems) return 0
   return saleItems
@@ -332,7 +332,7 @@ export function sumPrices(
         saleItem?.total_sell && saleItem?.vendor_cut && saleItem?.store_cut
           ? null
           : inventory?.filter(
-              (i: StockObject) => i?.id === saleItem?.item_id
+              (i: StockObject) => i?.id === saleItem?.item_id,
             )?.[0]
       const prices = getCartItemPrice(saleItem, item)
       return (acc += prices?.[field])
@@ -436,7 +436,7 @@ export function convertMPStoKPH(mps: number) {
 export async function getDiscogsOptionsByBarcode(barcode: string) {
   try {
     const res = await fetch(
-      `https://api.discogs.com/database/search?type=release&barcode=${barcode}&key=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_KEY}&secret=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_SECRET}`
+      `/discogs/database/search?type=release&barcode=${barcode}&key=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_KEY}&secret=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_SECRET}`,
     )
     const json = await res.json()
     if (!res.ok) throw Error(json.message)
@@ -459,7 +459,7 @@ export async function getDiscogsOptionsByItem(item: StockObject) {
     //   item?.artist || ""
     // }&title=${item?.title || ""}
     const res = await fetch(
-      `https://api.discogs.com/database/search?type=release${url}&key=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_KEY}&secret=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_SECRET}`
+      `/discogs/database/search?type=release${url}&key=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_KEY}&secret=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_SECRET}`,
     )
     const json = await res.json()
     if (!res.ok) throw Error(json.message)
@@ -472,7 +472,7 @@ export async function getDiscogsOptionsByItem(item: StockObject) {
 export async function getDiscogsOptionsByKeyword(keyword: string) {
   try {
     const res = await fetch(
-      `https://api.discogs.com/database/search?type=release&query=${keyword}&key=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_KEY}&secret=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_SECRET}`
+      `/discogs/database/search?type=release&query=${keyword}&key=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_KEY}&secret=${process.env.NEXT_PUBLIC_DISCOGS_CONSUMER_SECRET}`,
     )
     const json = await res.json()
     if (!res.ok) throw Error(json.message)
@@ -484,7 +484,7 @@ export async function getDiscogsOptionsByKeyword(keyword: string) {
 
 export async function getDiscogsItem(discogsItem: DiscogsItem) {
   try {
-    let url = `https://api.discogs.com/masters/${discogsItem?.master_id || ''}`
+    let url = `/discogs/masters/${discogsItem?.master_id || ''}`
     if (discogsItem?.master_id === 0 || !discogsItem?.master_id)
       url = discogsItem?.resource_url
     const res = await fetch(url)
@@ -499,9 +499,9 @@ export async function getDiscogsItem(discogsItem: DiscogsItem) {
 export async function getDiscogsPriceSuggestions(discogsItem: DiscogsItem) {
   try {
     const res = await fetch(
-      `https://api.discogs.com/marketplace/price_suggestions/${
+      `/discogs/marketplace/price_suggestions/${
         discogsItem?.id || ''
-      }?token=${process.env.NEXT_PUBLIC_DISCOGS_PERSONAL_ACCESS_TOKEN}`
+      }?token=${process.env.NEXT_PUBLIC_DISCOGS_PERSONAL_ACCESS_TOKEN}`,
     )
     const json = await res.json()
     if (!res.ok) throw Error(json.message)
@@ -571,7 +571,7 @@ export async function getGoogleBooksOptionsByItem(item: StockObject) {
     const res = await fetch(
       `https://www.googleapis.com/books/v1/volumes?q=${item?.artist || ''}${
         item?.title || ''
-      }&key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`
+      }&key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`,
     )
     const data = await res.text()
     if (!res.ok) throw Error()
@@ -587,7 +587,7 @@ export async function getGoogleBooksOptionsByKeyword(keyword: string) {
     const res = await fetch(
       `https://www.googleapis.com/books/v1/volumes?q=${
         keyword?.replace(' ', '+') || ''
-      }&key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`
+      }&key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`,
     )
     const data = await res.text()
     if (!res.ok) throw Error()
@@ -603,7 +603,7 @@ export async function getGoogleBooksOptionsByBarcode(barcode: string) {
     const res = await fetch(
       `https://www.googleapis.com/books/v1/volumes?q=${barcode || ''}&key=${
         process.env.NEXT_PUBLIC_GOOGLE_API_KEY
-      }`
+      }`,
     )
     const data = await res.text()
     if (!res.ok) throw Error()
@@ -707,14 +707,14 @@ export function andList(list: string[]) {
 
 export function writeItemList(
   inventory: StockObject[],
-  items: SaleItemObject[]
+  items: SaleItemObject[],
 ) {
   if (items && inventory) {
     return items
       .filter((item: SaleItemObject) => !item?.is_deleted)
       .map((item: SaleItemObject) => {
         let stockItem: StockObject = inventory?.filter(
-          (i) => i?.id === item?.item_id
+          (i) => i?.id === item?.item_id,
         )[0]
         if (item?.is_gift_card) {
           return `Gift Card [${stockItem?.gift_card_code}]`
@@ -732,7 +732,7 @@ export function writeItemList(
 }
 
 export function writeStocktakeFilterDescription(
-  stocktake: StocktakeTemplateObject
+  stocktake: StocktakeTemplateObject,
 ) {
   const maxNum = 20
   let filters = []
@@ -742,7 +742,7 @@ export function writeStocktakeFilterDescription(
         stocktake?.media_list?.length < maxNum
           ? stocktake?.media_list?.join?.(', ')
           : `${stocktake?.media_list?.length} Media Types`
-      }`
+      }`,
     )
   if (stocktake?.format_enabled)
     filters?.push(
@@ -750,7 +750,7 @@ export function writeStocktakeFilterDescription(
         stocktake?.format_list?.length < maxNum
           ? stocktake?.format_list?.join?.(', ')
           : `${stocktake?.format_list?.length} Formats`
-      }`
+      }`,
     )
   if (stocktake?.section_enabled)
     filters?.push(
@@ -758,7 +758,7 @@ export function writeStocktakeFilterDescription(
         stocktake?.section_list?.length < maxNum
           ? stocktake?.section_list?.join?.(', ')
           : `${stocktake?.section_list?.length} Sections`
-      }`
+      }`,
     )
   if (stocktake?.vendor_enabled)
     filters?.push(
@@ -766,7 +766,7 @@ export function writeStocktakeFilterDescription(
         stocktake?.vendor_list?.length < maxNum
           ? stocktake?.vendor_list?.join?.(', ')
           : `${stocktake?.vendor_list?.length} Vendors`
-      }`
+      }`,
     )
   if (filters?.length > 0) {
     return filters?.join?.(', ')
@@ -890,7 +890,7 @@ export function writeEmailCSV(vendors, includeUnchecked, includeNoBank) {
     ?.filter(
       (v) =>
         (includeUnchecked || v?.is_checked) &&
-        (includeNoBank || isValidBankAccountNumber(v?.bank_account_number))
+        (includeNoBank || isValidBankAccountNumber(v?.bank_account_number)),
     )
     ?.map((v) => [
       v?.id,
@@ -984,7 +984,7 @@ export function filterHelps(
   helps: HelpObject[],
   page: string,
   view: Object,
-  search: string
+  search: string,
 ) {
   if (!helps) return []
   // REVIEW make search order by relevance with page or view
