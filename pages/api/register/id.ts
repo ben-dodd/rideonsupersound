@@ -1,9 +1,8 @@
-import { NextApiResponse } from 'next'
-import { NextAuthenticatedApiRequest } from '@serverless-jwt/next/dist/types'
+import { AuthenticatedRequest, requireScope } from 'lib/api/utils'
 import { dbGetCurrentRegisterId } from 'lib/database/register'
-import { requireScope } from 'lib/api/utils'
+import { NextApiResponse } from 'next'
 
-const apiRoute = async (req: NextAuthenticatedApiRequest, res: NextApiResponse) => {
+const apiRoute = async (req: AuthenticatedRequest, res: NextApiResponse) => {
   if (req.method === 'GET')
     try {
       return dbGetCurrentRegisterId().then((data) => res.status(200).json(data))

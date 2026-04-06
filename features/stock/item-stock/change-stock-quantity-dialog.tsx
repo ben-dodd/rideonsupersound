@@ -88,7 +88,7 @@ export default function ChangeStockQuantityDialog() {
             StockMovementTypes?.Discarded,
             StockMovementTypes?.Found,
             StockMovementTypes?.Lost,
-          ].map((m: string) => ({
+          ].map((m: StockMovementTypes) => ({
             value: m,
             label: m?.toUpperCase(),
           }))}

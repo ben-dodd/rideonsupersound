@@ -1,5 +1,5 @@
 /* eslint-disable unused-imports/no-unused-vars */
-import { ConfirmModal, AlertProps, ClippyProps, InfoModal } from 'lib/types'
+import { AlertProps, ClippyProps, ConfirmModal, InfoModal } from 'lib/types'
 import { CartObject, SaleItemObject, SaleTransactionObject } from 'lib/types/sale'
 import { BatchReceiveObject } from 'lib/types/stock'
 import { AccountPayment, BatchPaymentObject } from 'lib/types/vendor'
@@ -124,6 +124,28 @@ export interface StoreState {
   options?: {
     doBypassRegister?: boolean
   }
+  dataTable?: {
+    active: any
+    data: any
+    corner: any
+    schema: any
+    widthRatios: any
+    loading: boolean
+    error: string
+  }
+  dtClickCell?: any
+  dtSetCell?: any
+  dtSetWidthRatios?: any
+  dtSelectByKeyboard?: any
+  dtClearSelection?: any
+  dtClearCellRange?: any
+  dtGetSelectionAsText?: any
+  dtSetData?: any
+  dtSetSchema?: any
+  dtSetCellRange?: any
+  dtSelectByDrag?: any
+  dtSetInitialWidthRatios?: any
+
   openView: (view: ViewProps) => void
   closeView: (view: ViewProps) => void
   setViewMode: (mode: string) => void

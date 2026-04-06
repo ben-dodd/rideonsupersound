@@ -1,18 +1,18 @@
-import { useState } from 'react'
-import { ModalButton } from 'lib/types'
-import TextField from 'components/inputs/text-field'
-import Select from 'react-select'
 import DeleteIcon from '@mui/icons-material/Delete'
-import { getImageSrc, getItemDisplayName, getItemSku, getItemSkuDisplayName } from 'lib/functions/displayInventory'
+import TextField from 'components/inputs/text-field'
+import Modal from 'components/modal'
+import { useClerk } from 'lib/api/clerk'
+import { useCurrentRegisterId } from 'lib/api/register'
 import { returnStock, useStockList } from 'lib/api/stock'
 import { useVendors } from 'lib/api/vendor'
-import { useCurrentRegisterId } from 'lib/api/register'
-import { useClerk } from 'lib/api/clerk'
+import { getImageSrc, getItemDisplayName, getItemSku, getItemSkuDisplayName } from 'lib/functions/displayInventory'
 import { useAppStore } from 'lib/store'
 import { ViewProps } from 'lib/store/types'
+import { ModalButton } from 'lib/types'
 import { StockItemSearchObject } from 'lib/types/stock'
 import { VendorObject } from 'lib/types/vendor'
-import Modal from 'components/modal'
+import { useState } from 'react'
+import Select from 'react-select'
 
 export default function ReturnStockScreen() {
   const { stockList } = useStockList()
@@ -99,7 +99,7 @@ export default function ReturnStockScreen() {
           <div className="w-1/3">
             <div className="font-bold text-xl">Select Vendor</div>
             <Select
-              fieldRequired
+              required
               // isDisabled={vendorWrapper?.value}
               value={vendorWrapper}
               onChange={(vendorObject: any) => {

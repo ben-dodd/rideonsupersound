@@ -3,7 +3,7 @@
 // import handler from '../../customer'
 // import { requireScope } from 'lib/api/utils'
 // import { NextApiHandler } from 'next'
-// import { NextAuthenticatedApiRequest } from '@serverless-jwt/next/dist/types'
+// import { AuthenticatedRequest } from 'lib/api/utils'
 
 jest.mock('lib/database/customer')
 jest.mock('lib/api/utils')
@@ -12,7 +12,7 @@ jest.mock('lib/api/utils')
 //   it('creates a new customer in the database and returns an id', async () => {
 //     dbCreateCustomer.mockImplementation(() => Promise.resolve([1]))
 //     requireScope.mockImplementation((scope: string, apiRoute: NextApiHandler) =>
-//       verifyJwt(async (req: NextAuthenticatedApiRequest, res) =>
+//       verifyJwt(async (req: AuthenticatedRequest, res) =>
 //         apiRoute(req, res)
 //       )
 //     )
@@ -29,4 +29,5 @@ describe('placeholder', () => {
   it.todo('write tests')
 })
 
-export {}
+export { }
+

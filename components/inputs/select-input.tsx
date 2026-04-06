@@ -44,7 +44,7 @@ export default function SelectInput({
       <div className="input-label">{inputLabel}</div>
       {isCreateDisabled ? (
         <Select
-          style={{ menu: { zIndex: 5000, position: 'absolute' } }}
+          styles={{ menu: (base) => ({ ...base, zIndex: 5000, position: 'absolute' }) }}
           classNamePrefix="react-select mt-0"
           isMulti={isMulti || false}
           isDisabled={isLoading || isDisabled || false}
@@ -91,7 +91,7 @@ export default function SelectInput({
         />
       ) : (
         <CreatableSelect
-          style={{ menu: { zIndex: 5000, position: 'absolute' } }}
+          styles={{ menu: base => ({ ...base, zIndex: 5000, position: 'absolute' }) }}
           classNamePrefix="react-select mt-0"
           isMulti={isMulti || false}
           isDisabled={isLoading || isDisabled || false}

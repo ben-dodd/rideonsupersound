@@ -1,9 +1,8 @@
-import { NextApiResponse } from 'next'
-import { requireScope } from 'lib/api/utils'
-import { NextAuthenticatedApiRequest } from '@serverless-jwt/next/dist/types'
+import { AuthenticatedRequest, requireScope } from 'lib/api/utils'
 import { dbDeleteSale } from 'lib/database/sale'
+import { NextApiResponse } from 'next'
 
-const apiRoute = async (req: NextAuthenticatedApiRequest, res: NextApiResponse) => {
+const apiRoute = async (req: AuthenticatedRequest, res: NextApiResponse) => {
   if (req.method === 'PATCH') {
     const { id } = req.query
     try {

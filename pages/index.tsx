@@ -1,8 +1,8 @@
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
-import { useRouter } from 'next/router'
 import Loading from 'components/placeholders/loading'
-import { useEffect } from 'react'
 import { useCurrentRegisterId } from 'lib/api/register'
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
 
 export default function IndexPage() {
   const router = useRouter()
@@ -14,7 +14,7 @@ export default function IndexPage() {
     }
   }, [registerId, isRegisterIdLoading, router])
 
-  return <Loading type="pyramid" size="full" />
+  return <Loading type="bars" size="full" />
 }
 
 export const getServerSideProps = withPageAuthRequired()

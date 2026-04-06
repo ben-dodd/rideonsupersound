@@ -1,10 +1,9 @@
-import { dbGetCustomers, dbCreateCustomer } from 'lib/database/customer'
+import { AuthenticatedRequest, requireScope } from 'lib/api/utils'
+import { dbCreateCustomer, dbGetCustomers } from 'lib/database/customer'
 import { NextApiResponse } from 'next'
-import { requireScope } from 'lib/api/utils'
-import { NextAuthenticatedApiRequest } from '@serverless-jwt/next/dist/types'
 
 const apiRoute = async (
-  req: NextAuthenticatedApiRequest,
+  req: AuthenticatedRequest,
   res: NextApiResponse
 ) => {
   if (req.method === 'GET')

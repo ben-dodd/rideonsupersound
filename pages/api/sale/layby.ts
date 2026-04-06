@@ -1,9 +1,8 @@
+import { AuthenticatedRequest, requireScope } from 'lib/api/utils'
+import { dbGetAllLaybys } from 'lib/database/sale'
 import { NextApiResponse } from 'next'
-import { requireScope } from 'lib/api/utils'
-import { NextAuthenticatedApiRequest } from '@serverless-jwt/next/dist/types'
-import { dbGetAllSales, dbCreateSale, dbGetAllLaybys } from 'lib/database/sale'
 
-const apiRoute = async (req: NextAuthenticatedApiRequest, res: NextApiResponse) => {
+const apiRoute = async (req: AuthenticatedRequest, res: NextApiResponse) => {
   if (req.method === 'GET')
     try {
       return dbGetAllLaybys().then((data) => res.status(200).json(data))

@@ -1,4 +1,3 @@
-// Make bundle analyzer optional to avoid test failures
 let withBundleAnalyzer
 try {
   withBundleAnalyzer = require('@next/bundle-analyzer')({
@@ -9,18 +8,14 @@ try {
 }
 
 module.exports = withBundleAnalyzer({
-  swcMinify: true,
   images: {
-    domains: [
-      'localhost',
-      'ross.syd1.cdn.digitaloceanspaces.com',
-      'img.discogs.com',
-      'i.discogs.com',
-      'books.google.com',
+    remotePatterns: [
+      { protocol: 'http', hostname: 'localhost' },
+      { protocol: 'https', hostname: 'ross.syd1.cdn.digitaloceanspaces.com' },
+      { protocol: 'https', hostname: 'img.discogs.com' },
+      { protocol: 'https', hostname: 'i.discogs.com' },
+      { protocol: 'https', hostname: 'books.google.com' },
     ],
-  },
-  eslint: {
-    dirs: ['components', 'features', 'lib', 'pages', 'views'],
   },
   trailingSlash: false,
 })

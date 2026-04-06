@@ -1,10 +1,9 @@
+import { AuthenticatedRequest, requireScope } from 'lib/api/utils'
+import { dbCreateSaleItem, dbGetAllSales } from 'lib/database/sale'
 import { NextApiResponse } from 'next'
-import { requireScope } from 'lib/api/utils'
-import { NextAuthenticatedApiRequest } from '@serverless-jwt/next/dist/types'
-import { dbGetAllSales, dbCreateSaleItem } from 'lib/database/sale'
 
 const apiRoute = async (
-  req: NextAuthenticatedApiRequest,
+  req: AuthenticatedRequest,
   res: NextApiResponse
 ) => {
   if (req.method === 'GET')

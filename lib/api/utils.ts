@@ -1,26 +1,43 @@
-import { Session } from '@auth0/nextjs-auth0'
-import { NextJwtVerifier } from '@serverless-jwt/next'
-import { NextAuthenticatedApiRequest } from '@serverless-jwt/next/dist/types'
-import { NextApiHandler } from 'next'
+import { Session, getSession } from '@auth0/nextjs-auth0'
+import { NextApiHandler, NextApiRequest, NextApiResponse } from 'next'
 
-const verifyJwt = NextJwtVerifier({
-  issuer: process.env.AUTH0_ISSUER_BASE_URL,
-  audience: process.env.AUTH0_AUDIENCE,
-})
+export interface AuthenticatedRequest extends NextApiRequest {
+  claims?: {
+    sub: string
+    permissions: string[]
+    [key: string]: any
+  }
+}
 
 export const requireScope = (scope: string, apiRoute: NextApiHandler) => {
-  // // Bypass scope for offline development
-  // return apiRoute
-  return verifyJwt(async (req: NextAuthenticatedApiRequest, res) => {
-    const { claims } = req.identityContext
-    if (!claims || !claims.permissions || (claims.permissions as string).indexOf(scope) === -1) {
+  return async (req: AuthenticatedRequest, res: NextApiResponse) => {
+    const session = await getSession(req, res)
+
+    if (!session) {
+      return res.status(401).json({
+        error: 'unauthorized',
+        error_description: 'No session found',
+      })
+    }
+
+    const permissions = session.user?.permissions as string[] | undefined
+
+    if (!permissions || !permissions.includes(scope)) {
       return res.status(403).json({
         error: 'access_denied',
         error_description: `Token does not contain the required '${scope}' scope`,
       })
     }
-    return apiRoute(req, res) as void
-  })
+
+    // Attach claims to request so existing route code still works
+    req.claims = {
+      sub: session.user.sub,
+      permissions,
+      ...session.user,
+    }
+
+    return apiRoute(req, res)
+  }
 }
 
 export const checkRole = (role: string, session: Session) => {

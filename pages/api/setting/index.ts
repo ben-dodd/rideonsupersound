@@ -1,10 +1,9 @@
-import { NextApiResponse } from 'next'
-import { requireScope } from 'lib/api/utils'
-import { NextAuthenticatedApiRequest } from '@serverless-jwt/next/dist/types'
+import { AuthenticatedRequest, requireScope } from 'lib/api/utils'
 import { dbCreateSetting } from 'lib/database/setting'
+import { NextApiResponse } from 'next'
 
 const apiRoute = async (
-  req: NextAuthenticatedApiRequest,
+  req: AuthenticatedRequest,
   res: NextApiResponse
 ) => {
   if (req.method === 'POST')

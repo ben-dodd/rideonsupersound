@@ -1,21 +1,14 @@
 {
   "compilerOptions": {
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
-      "components/*": [
-        "components/*"
-      ],
-      "lib/*": [
-        "lib/*"
-      ],
-      "features/*": [
-        "features/*"
-      ],
-      "views/*": [
-        "views/*"
-      ]
+      "components/*": ["components/*"],
+      "lib/*": ["lib/*"],
+      "features/*": ["features/*"],
+      "views/*": ["views/*"]
     },
-    "target": "es5",
+    "target": "es2017",
     "lib": [
       "dom",
       "dom.iterable",
@@ -28,10 +21,10 @@
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
     "plugins": [
       {
@@ -39,21 +32,16 @@
       }
     ]
   },
-  // "ts-node": {
-  //   // these options are overrides used only by ts-node
-  //   "compilerOptions": {
-  //     "module": "commonjs"
-  //   }
-  // },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "lib/database/import.js",
     "lib/database/import.js"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "__tests__",
+    "pages/api/__tests__"
   ]
 }

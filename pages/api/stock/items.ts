@@ -1,9 +1,8 @@
-import { NextApiResponse } from 'next'
-import { requireScope } from 'lib/api/utils'
-import { NextAuthenticatedApiRequest } from '@serverless-jwt/next/dist/types'
+import { AuthenticatedRequest, requireScope } from 'lib/api/utils'
 import { dbGetStockItems } from 'lib/database/stock'
+import { NextApiResponse } from 'next'
 
-const apiRoute = async (req: NextAuthenticatedApiRequest, res: NextApiResponse) => {
+const apiRoute = async (req: AuthenticatedRequest, res: NextApiResponse) => {
   const { items } = req.query
   try {
     if (items?.length === 0) return []

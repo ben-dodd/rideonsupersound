@@ -1,10 +1,9 @@
+import { AuthenticatedRequest, requireScope } from 'lib/api/utils'
 import { dbGetClerks } from 'lib/database/clerk'
 import { NextApiResponse } from 'next'
-import { requireScope } from 'lib/api/utils'
-import { NextAuthenticatedApiRequest } from '@serverless-jwt/next/dist/types'
 
 const apiRoute = async (
-  req: NextAuthenticatedApiRequest,
+  req: AuthenticatedRequest,
   res: NextApiResponse
 ) => {
   try {

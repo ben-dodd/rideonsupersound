@@ -1,7 +1,6 @@
-import { NextApiResponse } from 'next'
-import { requireScope, withErrorHandling } from 'lib/api/utils'
-import { NextAuthenticatedApiRequest } from '@serverless-jwt/next/dist/types'
+import { AuthenticatedRequest, requireScope, withErrorHandling } from 'lib/api/utils'
 import { dbUpdateJob } from 'lib/database/jobs'
+import { NextApiResponse } from 'next'
 
 const patchHandler = async (req, res) => {
   const { id } = req.query
@@ -9,7 +8,7 @@ const patchHandler = async (req, res) => {
   res.status(200).json(data)
 }
 
-const apiRoute = withErrorHandling((req: NextAuthenticatedApiRequest, res: NextApiResponse) => {
+const apiRoute = withErrorHandling((req: AuthenticatedRequest, res: NextApiResponse) => {
   if (req.method === 'PATCH') {
     return patchHandler(req, res)
   }

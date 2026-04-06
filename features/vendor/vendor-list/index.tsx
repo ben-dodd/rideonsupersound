@@ -1,9 +1,9 @@
+import FilterPanel from 'components/data/filter/panel'
 import SearchInput from 'components/inputs/search-input'
 import Loading from 'components/placeholders/loading'
 import { useVendors } from 'lib/api/vendor'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import VendorListItem from './vendor-list-item'
-import FilterPanel from 'components/data/table/filter/index'
 
 const VendorList = () => {
   const { vendors, isVendorsLoading } = useVendors()

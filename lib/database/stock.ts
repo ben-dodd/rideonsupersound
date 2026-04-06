@@ -1,10 +1,10 @@
 import { getImageSrc, getItemSkuDisplayName } from 'lib/functions/displayInventory'
-import { BatchReceiveObject, StockMovementTypes } from 'lib/types/stock'
-import { dbGetAllSalesAndItems, dbGetSaleTransactions, getStockMovementQuantityByAct } from './sale'
-import { js2mysql, query2obj } from 'lib/utils'
-import { SaleStateTypes } from 'lib/types/sale'
 import { createBatchList, getQuantities } from 'lib/functions/stock'
+import { SaleStateTypes } from 'lib/types/sale'
+import { BatchReceiveObject, StockMovementTypes } from 'lib/types/stock'
+import { js2mysql, query2obj } from 'lib/utils'
 import connection from './conn'
+import { dbGetAllSalesAndItems, dbGetSaleTransactions, getStockMovementQuantityByAct } from './sale'
 
 export function dbGetStockList(db = connection) {
   return db('stock')
@@ -16,9 +16,9 @@ export function dbGetStockList(db = connection) {
       'stock.id',
       'stock.vendor_id',
       'vendor.name as vendor_name',
-      'stock_price.total_sell',
-      'stock_price.vendor_cut',
-      'stock_price.date_valid_from as price_last_changed',
+      db.raw('MAX(stock_price.total_sell) as total_sell'),
+      db.raw('MAX(stock_price.vendor_cut) as vendor_cut'),
+      db.raw('MAX(stock_price.date_valid_from) as price_last_changed'),
       'stock.artist',
       'stock.title',
       'stock.display_as',
@@ -34,10 +34,9 @@ export function dbGetStockList(db = connection) {
       'stock.needs_restock',
     )
     .sum('stock_movement.quantity as quantity')
-    .where(`stock.is_deleted`, 0)
-    .where(`stock.is_misc_item`, 0)
-    .where(`stock.is_gift_card`, 0)
-    .whereRaw(`(stock_price.id = (SELECT MAX(id) FROM stock_price WHERE stock_id = stock.id))`)
+    .where('stock.is_deleted', 0)
+    .where('stock.is_misc_item', 0)
+    .where('stock.is_gift_card', 0);
 }
 
 export function dbGetStockListBySearch(searchString, db = connection) {

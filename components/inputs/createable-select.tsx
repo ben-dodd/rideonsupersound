@@ -52,7 +52,7 @@ export default function CreateableSelect({
         key={`${id || inputLabel || ''}--div`}
       >
         <CreatableSelect
-          autofocus={Boolean(autoFocus)}
+          autoFocus={Boolean(autoFocus)}
           className="w-full"
           isClearable={clearable}
           isDisabled={isLoading || disabled}
