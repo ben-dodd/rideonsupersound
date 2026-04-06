@@ -1,4 +1,4 @@
-import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+
 import Layout from 'components/layout'
 import SalesScreen from 'features/sale'
 import { useAppStore } from 'lib/store'
@@ -19,4 +19,4 @@ function SalesPage() {
 
 SalesPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export default withPageAuthRequired(SalesPage)
+export default SalesPage

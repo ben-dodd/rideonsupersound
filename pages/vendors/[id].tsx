@@ -1,4 +1,4 @@
-import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+
 import Layout from 'components/layout'
 import Loading from 'components/placeholders/loading'
 import VendorScreen from 'features/vendor/item-vendor'
@@ -28,4 +28,4 @@ function VendorPage() {
 
 VendorPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export default withPageAuthRequired(VendorPage)
+export default VendorPage

@@ -10,10 +10,11 @@ export interface AuthenticatedRequest extends NextApiRequest {
   }
 }
 
+const NAMESPACE = 'https://rideonsupersound.vercel.app'
+
 export const requireScope = (scope: string, apiRoute: NextApiHandler) => {
   return async (req: AuthenticatedRequest, res: NextApiResponse) => {
     const session = await auth0.getSession(req)
-    console.log('session user:', JSON.stringify(session?.user, null, 2))
 
     if (!session) {
       return res.status(401).json({
@@ -22,7 +23,12 @@ export const requireScope = (scope: string, apiRoute: NextApiHandler) => {
       })
     }
 
-    const permissions = session.user?.permissions as string[] | undefined
+    // Decode the access token to get permissions
+    const accessToken = session.tokenSet?.accessToken
+    const payload = JSON.parse(Buffer.from(accessToken.split('.')[1], 'base64').toString())
+    const permissions = payload?.permissions as string[] | undefined
+
+    // console.log('permissions from access token:', permissions)
 
     if (!permissions || !permissions.includes(scope)) {
       return res.status(403).json({
@@ -42,16 +48,14 @@ export const requireScope = (scope: string, apiRoute: NextApiHandler) => {
 }
 
 export const checkRole = (role: string, session: SessionData) => {
-  if (session?.user?.['https://rideonsupersound.vercel.app/roles']?.includes(role)) {
-    // Use is authenticated
+  if (session?.user?.[`${NAMESPACE}/roles`]?.includes(role)) {
     return { props: {} }
   } else {
-    // User is not authenticated
     console.log('user is not authenticated')
     return {
       redirect: {
         permanent: false,
-        destination: '/api/auth/login',
+        destination: '/auth/login',
       },
       props: {},
     }

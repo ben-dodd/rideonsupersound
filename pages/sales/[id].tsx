@@ -1,4 +1,4 @@
-import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+
 import ErrorScreen from 'components/container/error-screen'
 import Layout from 'components/layout'
 import Loading from 'components/placeholders/loading'
@@ -29,4 +29,4 @@ function SaleItemPage() {
 
 SaleItemPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export default withPageAuthRequired(SaleItemPage)
+export default SaleItemPage

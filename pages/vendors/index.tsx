@@ -1,4 +1,4 @@
-import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+
 import Layout from 'components/layout'
 import VendorTable from 'features/vendor'
 import { useAppStore } from 'lib/store'
@@ -20,7 +20,7 @@ function VendorsPage() {
 
 VendorsPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export default withPageAuthRequired(VendorsPage)
+export default VendorsPage
 
 // const handlers = useSwipeable({
 //   onSwipedRight: () =>

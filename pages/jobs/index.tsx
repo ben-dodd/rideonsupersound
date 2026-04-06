@@ -1,4 +1,4 @@
-import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+
 import Layout from 'components/layout'
 import JobsScreen from 'features/job'
 import { useAppStore } from 'lib/store'
@@ -18,4 +18,4 @@ function JobsPage() {
 
 JobsPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export default withPageAuthRequired(JobsPage)
+export default JobsPage

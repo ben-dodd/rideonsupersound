@@ -1,4 +1,4 @@
-import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+
 import Layout from 'components/layout'
 import GiftCardScreen from 'features/gift-cards'
 import GiftCardSidebar from 'features/gift-cards/sidebar'
@@ -14,4 +14,4 @@ function GiftCardPage() {
 
 GiftCardPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export default withPageAuthRequired(GiftCardPage)
+export default GiftCardPage

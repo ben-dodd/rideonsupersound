@@ -1,4 +1,4 @@
-import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+
 import Layout from 'components/layout'
 import LogsScreen from 'features/log'
 
@@ -12,4 +12,4 @@ function LogPage() {
 
 LogPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export default withPageAuthRequired(LogPage)
+export default LogPage

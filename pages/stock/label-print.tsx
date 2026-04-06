@@ -1,4 +1,4 @@
-import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+
 import Layout from 'components/layout'
 import LabelPrintScreen from 'features/stock/label-print-dialog'
 
@@ -12,4 +12,4 @@ function StockPage() {
 
 StockPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export default withPageAuthRequired(StockPage)
+export default StockPage

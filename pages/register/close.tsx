@@ -1,4 +1,4 @@
-import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+
 import Layout from 'components/layout'
 import Loading from 'components/placeholders/loading'
 import CloseRegisterScreen from 'features/register/close-register'
@@ -30,4 +30,4 @@ function CloseRegisterPage() {
 
 CloseRegisterPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export default withPageAuthRequired(CloseRegisterPage)
+export default CloseRegisterPage

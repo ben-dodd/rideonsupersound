@@ -1,4 +1,4 @@
-import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+
 import Layout from 'components/layout'
 import RegistersScreen from 'features/register'
 import { useAppStore } from 'lib/store'
@@ -20,4 +20,4 @@ function RegistersPage() {
 
 RegistersPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export default withPageAuthRequired(RegistersPage)
+export default RegistersPage

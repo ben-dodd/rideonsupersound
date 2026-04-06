@@ -1,4 +1,4 @@
-import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+
 import Layout from 'components/layout'
 import StockScreen from 'features/stock'
 import { useAppStore } from 'lib/store'
@@ -22,4 +22,4 @@ function StockPage() {
 
 StockPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export default withPageAuthRequired(StockPage)
+export default StockPage

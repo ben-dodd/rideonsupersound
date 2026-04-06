@@ -1,4 +1,4 @@
-import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+
 import Loading from 'components/placeholders/loading'
 import { useCurrentRegisterId } from 'lib/api/register'
 import { useRouter } from 'next/router'
@@ -17,4 +17,4 @@ function IndexPage() {
   return <Loading type="bars" size="full" />
 }
 
-export default withPageAuthRequired(IndexPage)
+export default IndexPage

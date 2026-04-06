@@ -1,4 +1,4 @@
-import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+
 import Layout from 'components/layout'
 import Loading from 'components/placeholders/loading'
 import { useStockItem } from 'lib/api/stock'
@@ -35,4 +35,4 @@ function StockItemPage() {
 
 StockItemPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export default withPageAuthRequired(StockItemPage)
+export default StockItemPage
