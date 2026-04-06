@@ -1,12 +1,8 @@
-import { getAccessToken } from '@auth0/nextjs-auth0'
+import { auth0 } from 'lib/auth0'
 
 export default async function handler(req, res) {
   try {
-    const { scopes } = req.body
-    const { accessToken } = await getAccessToken(req, res, {
-      scopes,
-      returnTo: '/api/auth/jwt',
-    })
+    const { accessToken } = await auth0.getAccessToken()
     res.json(accessToken)
   } catch (error) {
     if (error.error === 'invalid_grant') {

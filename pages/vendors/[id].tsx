@@ -4,13 +4,13 @@ import Loading from 'components/placeholders/loading'
 import VendorScreen from 'features/vendor/item-vendor'
 import { useVendor } from 'lib/api/vendor'
 import { useAppStore } from 'lib/store'
-import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
 
 const VendorEditDialog = dynamic(() => import('features/vendor/vendor-edit-dialog'))
 const ExportVendorReportDialog = dynamic(() => import('features/vendor/export-vendor-report-dialog'))
 
-export default function VendorPage() {
+function VendorPage() {
   const router = useRouter()
   const { id } = router.query
   const { view } = useAppStore()
@@ -28,4 +28,4 @@ export default function VendorPage() {
 
 VendorPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export const getServerSideProps = withPageAuthRequired()
+export default withPageAuthRequired(VendorPage)

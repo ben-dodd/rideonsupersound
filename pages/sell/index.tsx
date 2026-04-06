@@ -1,11 +1,11 @@
-import dynamic from 'next/dynamic'
-import { useSwipeable } from 'react-swipeable'
-import { ViewProps } from 'lib/store/types'
-import { useAppStore } from 'lib/store'
-import { useCurrentRegister } from 'lib/api/register'
-import { useRouter } from 'next/router'
-import Layout from 'components/layout'
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+import Layout from 'components/layout'
+import { useCurrentRegister } from 'lib/api/register'
+import { useAppStore } from 'lib/store'
+import { ViewProps } from 'lib/store/types'
+import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
+import { useSwipeable } from 'react-swipeable'
 const CreateCustomerSidebar = dynamic(() => import('features/sell/create-customer/sidebar'))
 const CreateHoldSidebar = dynamic(() => import('features/sell/create-hold/sidebar'))
 const CloseRegisterScreen = dynamic(() => import('features/register/close-register/sidebar'))
@@ -19,7 +19,7 @@ const ShoppingCart = dynamic(() => import('features/sell/shopping-cart'))
 const CheckHoldsDialog = dynamic(() => import('features/sell/inventory-scroll/check-holds-dialog'))
 // import withRoleAuthorization from 'components/auth/roleAuthorization'
 
-export default function SellPage() {
+function SellPage() {
   const { currentRegister, isCurrentRegisterLoading } = useCurrentRegister()
   const { view, openView, closeView, options } = useAppStore()
   const router = useRouter()
@@ -62,6 +62,6 @@ export default function SellPage() {
 
 SellPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export const getServerSideProps = withPageAuthRequired()
+export default withPageAuthRequired(SellPage)
 
 // export default withRoleAuthorization(SellPage, ['Clerk'])

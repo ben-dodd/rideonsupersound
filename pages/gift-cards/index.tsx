@@ -3,7 +3,7 @@ import Layout from 'components/layout'
 import GiftCardScreen from 'features/gift-cards'
 import GiftCardSidebar from 'features/gift-cards/sidebar'
 
-export default function GiftCardPage() {
+function GiftCardPage() {
   return (
     <div className={`flex relative overflow-x-hidden`}>
       <GiftCardScreen />
@@ -14,4 +14,4 @@ export default function GiftCardPage() {
 
 GiftCardPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export const getServerSideProps = withPageAuthRequired()
+export default withPageAuthRequired(GiftCardPage)

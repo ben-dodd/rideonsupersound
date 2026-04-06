@@ -4,7 +4,7 @@ import { useCurrentRegisterId } from 'lib/api/register'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 
-export default function IndexPage() {
+function IndexPage() {
   const router = useRouter()
   const { registerId, isRegisterIdLoading } = useCurrentRegisterId()
   useEffect(() => {
@@ -17,4 +17,4 @@ export default function IndexPage() {
   return <Loading type="bars" size="full" />
 }
 
-export const getServerSideProps = withPageAuthRequired()
+export default withPageAuthRequired(IndexPage)

@@ -3,7 +3,7 @@ import Layout from 'components/layout'
 // import StocktakeTemplateScreen from 'features/stock/stocktake/stocktake-template-screen'
 // import { useRouter } from 'next/router'
 
-export default function StocktakePage() {
+function StocktakePage() {
   // const router = useRouter()
   // const id = router.query.id
   // return <StocktakeTemplateScreen />
@@ -12,4 +12,4 @@ export default function StocktakePage() {
 
 StocktakePage.getLayout = (page) => <Layout>{page}</Layout>
 
-export const getServerSideProps = withPageAuthRequired()
+export default withPageAuthRequired(StocktakePage)

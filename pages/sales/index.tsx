@@ -5,7 +5,7 @@ import { useAppStore } from 'lib/store'
 import dynamic from 'next/dynamic'
 
 const ReturnHoldToCartDialog = dynamic(() => import('features/sale/return-hold-to-cart-dialog'))
-export default function SalesPage() {
+function SalesPage() {
   const {
     pages: { salesPage },
   } = useAppStore()
@@ -19,4 +19,4 @@ export default function SalesPage() {
 
 SalesPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export const getServerSideProps = withPageAuthRequired()
+export default withPageAuthRequired(SalesPage)

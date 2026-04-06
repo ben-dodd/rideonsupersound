@@ -7,7 +7,7 @@ import dynamic from 'next/dynamic'
 const ReturnStockScreen = dynamic(() => import('features/stock/return-stock-dialog'))
 const LabelPrintDialog = dynamic(() => import('features/stock/label-print-dialog'))
 
-export default function StockPage() {
+function StockPage() {
   const { view } = useAppStore()
   return (
     <>
@@ -22,4 +22,4 @@ export default function StockPage() {
 
 StockPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export const getServerSideProps = withPageAuthRequired()
+export default withPageAuthRequired(StockPage)

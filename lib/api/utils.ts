@@ -1,4 +1,5 @@
-import { Session, getSession } from '@auth0/nextjs-auth0'
+import { SessionData } from '@auth0/nextjs-auth0/types'
+import { auth0 } from 'lib/auth0'
 import { NextApiHandler, NextApiRequest, NextApiResponse } from 'next'
 
 export interface AuthenticatedRequest extends NextApiRequest {
@@ -11,7 +12,7 @@ export interface AuthenticatedRequest extends NextApiRequest {
 
 export const requireScope = (scope: string, apiRoute: NextApiHandler) => {
   return async (req: AuthenticatedRequest, res: NextApiResponse) => {
-    const session = await getSession(req, res)
+    const session = await auth0.getSession()
 
     if (!session) {
       return res.status(401).json({
@@ -29,7 +30,6 @@ export const requireScope = (scope: string, apiRoute: NextApiHandler) => {
       })
     }
 
-    // Attach claims to request so existing route code still works
     req.claims = {
       sub: session.user.sub,
       permissions,
@@ -40,7 +40,7 @@ export const requireScope = (scope: string, apiRoute: NextApiHandler) => {
   }
 }
 
-export const checkRole = (role: string, session: Session) => {
+export const checkRole = (role: string, session: SessionData) => {
   if (session?.user?.['https://rideonsupersound.vercel.app/roles']?.includes(role)) {
     // Use is authenticated
     return { props: {} }

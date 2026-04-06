@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic'
 
 const VendorEditDialog = dynamic(() => import('features/vendor/vendor-edit-dialog'))
 
-export default function VendorsPage() {
+function VendorsPage() {
   const { view } = useAppStore()
   return (
     <>
@@ -20,7 +20,7 @@ export default function VendorsPage() {
 
 VendorsPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export const getServerSideProps = withPageAuthRequired()
+export default withPageAuthRequired(VendorsPage)
 
 // const handlers = useSwipeable({
 //   onSwipedRight: () =>

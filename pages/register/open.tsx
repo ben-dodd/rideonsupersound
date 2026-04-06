@@ -1,12 +1,12 @@
-import Layout from 'components/layout'
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+import Layout from 'components/layout'
 import Loading from 'components/placeholders/loading'
 import OpenRegisterScreen from 'features/register/open-register'
 import { useCurrentRegisterId } from 'lib/api/register'
-import { useEffect } from 'react'
 import { useRouter } from 'next/router'
+import { useEffect } from 'react'
 
-export default function OpenRegisterPage() {
+function OpenRegisterPage() {
   const { registerId, isRegisterIdLoading } = useCurrentRegisterId()
   const router = useRouter()
 
@@ -23,7 +23,7 @@ export default function OpenRegisterPage() {
 
 OpenRegisterPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export const getServerSideProps = withPageAuthRequired()
+export default withPageAuthRequired(OpenRegisterPage)
 
 // export async function getServerSideProps(context) {
 //   console.log(context)

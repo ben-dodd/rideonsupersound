@@ -7,7 +7,7 @@ import dynamic from 'next/dynamic'
 const CashPaymentDialog = dynamic(() => import('features/payment/cash-payment-dialog'))
 const TransferVendorPaymentDialog = dynamic(() => import('features/payment/transfer-payment-dialog'))
 
-export default function PaymentsPage() {
+function PaymentsPage() {
   const { view } = useAppStore()
   return (
     <>
@@ -22,4 +22,4 @@ export default function PaymentsPage() {
 
 PaymentsPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export const getServerSideProps = withPageAuthRequired()
+export default withPageAuthRequired(PaymentsPage)

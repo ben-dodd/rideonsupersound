@@ -1,10 +1,10 @@
-import { useRouter } from 'next/router'
-import dynamic from 'next/dynamic'
-import { useAppStore } from 'lib/store'
-import { useStockItem } from 'lib/api/stock'
-import Loading from 'components/placeholders/loading'
-import Layout from 'components/layout'
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+import Layout from 'components/layout'
+import Loading from 'components/placeholders/loading'
+import { useStockItem } from 'lib/api/stock'
+import { useAppStore } from 'lib/store'
+import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
 
 const ErrorScreen = dynamic(() => import('components/container/error-screen'), { loading: () => <Loading /> })
 const StockItemScreen = dynamic(() => import('features/stock/item-stock'), { loading: () => <Loading /> })
@@ -12,7 +12,7 @@ const StockEditDialog = dynamic(() => import('features/stock/stock-edit-dialog')
 const ChangePriceDialog = dynamic(() => import('features/stock/item-stock/change-price-dialog'))
 const ChangeStockQuantityDialog = dynamic(() => import('features/stock/item-stock/change-stock-quantity-dialog'))
 
-export default function StockItemPage() {
+function StockItemPage() {
   const router = useRouter()
   const { id } = router.query
   const { view } = useAppStore()
@@ -35,4 +35,4 @@ export default function StockItemPage() {
 
 StockItemPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export const getServerSideProps = withPageAuthRequired()
+export default withPageAuthRequired(StockItemPage)
