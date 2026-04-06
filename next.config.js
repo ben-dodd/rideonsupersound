@@ -17,5 +17,6 @@ module.exports = withBundleAnalyzer({
       { protocol: 'https', hostname: 'books.google.com' },
     ],
   },
+  allowedDevOrigins: ['127.0.0.1'],
   trailingSlash: false,
 })

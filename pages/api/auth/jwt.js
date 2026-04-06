@@ -2,7 +2,7 @@ import { auth0 } from 'lib/auth0'
 
 export default async function handler(req, res) {
   try {
-    const { accessToken } = await auth0.getAccessToken()
+    const { accessToken } = await auth0.getAccessToken(req, res)
     res.json(accessToken)
   } catch (error) {
     if (error.error === 'invalid_grant') {

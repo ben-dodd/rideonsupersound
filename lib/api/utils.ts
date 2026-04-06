@@ -12,7 +12,8 @@ export interface AuthenticatedRequest extends NextApiRequest {
 
 export const requireScope = (scope: string, apiRoute: NextApiHandler) => {
   return async (req: AuthenticatedRequest, res: NextApiResponse) => {
-    const session = await auth0.getSession()
+    const session = await auth0.getSession(req)
+    console.log('session user:', JSON.stringify(session?.user, null, 2))
 
     if (!session) {
       return res.status(401).json({

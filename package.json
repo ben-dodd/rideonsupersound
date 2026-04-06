@@ -77,7 +77,7 @@
     "next-router-mock": "^0.8.0",
     "node-mocks-http": "^1.12.1",
     "postcss": "^8.5.6",
-    "postcss-flexbugs-fixes": "^4.2.1",
+    "postcss-flexbugs-fixes": "^5.0.2",
     "postcss-import": "^14.1.0",
     "postcss-nesting": "^10.1.10",
     "postcss-preset-env": "^7.7.2",
