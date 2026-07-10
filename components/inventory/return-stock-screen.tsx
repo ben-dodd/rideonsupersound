@@ -1,6 +1,6 @@
 // Packages
-import { useState } from "react";
-import { useAtom } from "jotai";
+import { useState } from 'react'
+import { useAtom } from 'jotai'
 
 // DB
 import {
@@ -8,63 +8,63 @@ import {
   useVendors,
   useLogs,
   useRegisterID,
-} from "@/lib/swr-hooks";
-import { viewAtom, clerkAtom, alertAtom } from "@/lib/atoms";
-import { StockObject, VendorObject, ModalButton } from "@/lib/types";
+} from '@/lib/swr-hooks'
+import { viewAtom, clerkAtom, alertAtom } from '@/lib/atoms'
+import { StockObject, VendorObject, ModalButton } from '@/lib/types'
 
 // Functions
-import { returnStock, saveLog } from "@/lib/db-functions";
+import { returnStock, saveLog } from '@/lib/db-functions'
 import {
   getImageSrc,
   getItemDisplayName,
   getItemSku,
   getItemSkuDisplayName,
-} from "@/lib/data-functions";
+} from '@/lib/data-functions'
 
 // Components
-import TextField from "@/components/_components/inputs/text-field";
-import Select from "react-select";
+import TextField from '@/components/_components/inputs/text-field'
+import Select from 'react-select'
 
 // Icons
-import DeleteIcon from "@mui/icons-material/Delete";
-import ScreenContainer from "../_components/container/screen";
+import DeleteIcon from '@mui/icons-material/Delete'
+import ScreenContainer from '../_components/container/screen'
 
 export default function ReturnStockScreen() {
   // SWR
-  const { inventory, mutateInventory } = useInventory();
-  const { logs, mutateLogs } = useLogs();
-  const { vendors } = useVendors();
-  const { registerID } = useRegisterID();
+  const { inventory, mutateInventory } = useInventory()
+  const { logs, mutateLogs } = useLogs()
+  const { vendors } = useVendors()
+  const { registerID } = useRegisterID()
 
   // Atoms
-  const [clerk] = useAtom(clerkAtom);
-  const [view, setView] = useAtom(viewAtom);
-  const [, setAlert] = useAtom(alertAtom);
+  const [clerk] = useAtom(clerkAtom)
+  const [view, setView] = useAtom(viewAtom)
+  const [, setAlert] = useAtom(alertAtom)
 
   // State
-  const [vendorWrapper, setVendorWrapper] = useState(null);
-  const [returnItems, setReturnItems] = useState([]);
-  const [notes, setNotes] = useState("");
+  const [vendorWrapper, setVendorWrapper] = useState(null)
+  const [returnItems, setReturnItems] = useState([])
+  const [notes, setNotes] = useState('')
 
-  const [submitting, setSubmitting] = useState(false);
+  const [submitting, setSubmitting] = useState(false)
 
   function closeFunction() {
-    setView({ ...view, returnStockScreen: false });
-    setVendorWrapper(null);
-    setReturnItems([]);
-    setNotes("");
+    setView({ ...view, returnStockScreen: false })
+    setVendorWrapper(null)
+    setReturnItems([])
+    setNotes('')
   }
 
   const buttons: ModalButton[] = [
     {
-      type: "cancel",
+      type: 'cancel',
       onClick: closeFunction,
-      text: "CANCEL",
+      text: 'CANCEL',
     },
     {
-      type: "ok",
+      type: 'ok',
       onClick: () => {
-        setSubmitting(true);
+        setSubmitting(true)
         returnStock(
           vendorWrapper?.value,
           returnItems,
@@ -74,15 +74,15 @@ export default function ReturnStockScreen() {
           inventory,
           mutateInventory,
           logs,
-          mutateLogs
-        );
-        setSubmitting(false);
+          mutateLogs,
+        )
+        setSubmitting(false)
         setAlert({
           open: true,
-          type: "success",
+          type: 'success',
           message: `ITEMS RETURNED TO VENDOR`,
-        });
-        closeFunction();
+        })
+        closeFunction()
       },
       loading: submitting,
       disabled:
@@ -93,33 +93,33 @@ export default function ReturnStockScreen() {
           (returnItem: any) =>
             isNaN(returnItem?.quantity) ||
             inventory?.filter(
-              (i: StockObject) => i?.id === parseInt(returnItem?.id)
+              (i: StockObject) => i?.id === parseInt(returnItem?.id),
             )[0]?.quantity < parseInt(`${returnItem?.quantity}`) ||
-            returnItem?.quantity < 0
+            returnItem?.quantity < 0,
         ).length > 0,
-      text: "RETURN STOCK",
+      text: 'RETURN STOCK',
     },
-  ];
+  ]
 
-  console.log(returnItems);
+  console.log(returnItems)
 
   const returnOptions = inventory
     ?.filter(
       (item: StockObject) =>
         item?.vendor_id === vendorWrapper?.value &&
         returnItems?.filter((i) => i?.id === item?.id)?.length === 0 &&
-        item?.quantity > 0
+        item?.quantity > 0,
     )
     ?.map((item: StockObject) => ({
       value: item?.id,
       label: getItemSkuDisplayName(item),
-    }));
+    }))
 
   return (
     <ScreenContainer
       show={view?.returnStockScreen}
       closeFunction={closeFunction}
-      title={"RETURN STOCK"}
+      title={'RETURN STOCK'}
       buttons={buttons}
       titleClass="bg-col2"
     >
@@ -136,12 +136,12 @@ export default function ReturnStockScreen() {
               // isDisabled={vendorWrapper?.value}
               value={vendorWrapper}
               onChange={(vendorObject: any) => {
-                setVendorWrapper(vendorObject);
-                setReturnItems([]);
+                setVendorWrapper(vendorObject)
+                setReturnItems([])
               }}
               options={vendors?.map((val: VendorObject) => ({
                 value: val?.id,
-                label: val?.name || "",
+                label: val?.name || '',
               }))}
             />
             <div className="font-bold text-xl mt-4">Add Items</div>
@@ -156,7 +156,7 @@ export default function ReturnStockScreen() {
                     id: item?.value,
                     quantity:
                       inventory?.filter(
-                        (i: StockObject) => i?.id === item?.value
+                        (i: StockObject) => i?.id === item?.value,
                       )[0]?.quantity || 1,
                   },
                   ...returnItems,
@@ -164,10 +164,10 @@ export default function ReturnStockScreen() {
               }
               onInputChange={(newValue, actionMeta, prevInputValue) => {
                 if (
-                  actionMeta?.action === "input-change" &&
+                  actionMeta?.action === 'input-change' &&
                   returnOptions?.filter(
                     (opt) =>
-                      newValue === `${("00000" + opt?.value || "").slice(-5)}`
+                      newValue === `${('00000' + opt?.value || '').slice(-5)}`,
                   )?.length > 0
                 ) {
                   let returnItem = inventory?.filter(
@@ -176,16 +176,16 @@ export default function ReturnStockScreen() {
                       returnOptions?.filter(
                         (opt) =>
                           newValue ===
-                          `${("00000" + opt?.value || "").slice(-5)}`
-                      )?.[0]?.value
-                  )[0];
+                          `${('00000' + opt?.value || '').slice(-5)}`,
+                      )?.[0]?.value,
+                  )[0]
                   setReturnItems([
                     {
                       id: returnItem?.id,
                       quantity: returnItem?.quantity || 1,
                     },
                     ...returnItems,
-                  ]);
+                  ])
                 }
                 // if () {
                 //   addItemToCart();
@@ -207,13 +207,13 @@ export default function ReturnStockScreen() {
                 <div className="font-bold text-xl">{`RETURNING ${returnItems?.reduce(
                   (prev, returnItem) =>
                     (prev += parseInt(returnItem?.quantity)),
-                  0
+                  0,
                 )} ITEMS`}</div>
                 <div className="h-full overflow-y-scroll">
                   {returnItems?.map((returnItem: any, i: number) => {
                     const item = inventory?.filter(
-                      (i: StockObject) => i?.id === parseInt(returnItem?.id)
-                    )[0];
+                      (i: StockObject) => i?.id === parseInt(returnItem?.id),
+                    )[0]
                     return (
                       <div
                         className="flex justify-between my-2 border-b w-full"
@@ -227,7 +227,7 @@ export default function ReturnStockScreen() {
                                 // layout="fill"
                                 // objectFit="cover"
                                 src={getImageSrc(item)}
-                                alt={item?.title || "Inventory image"}
+                                alt={item?.title || 'Inventory image'}
                               />
                               {!item?.is_gift_card && !item?.is_misc_item && (
                                 <div className="absolute w-20 h-8 bg-opacity-50 bg-black text-white text-sm flex justify-center items-center">
@@ -241,8 +241,8 @@ export default function ReturnStockScreen() {
                             <div
                               className={`mt-2 text-sm font-bold ${
                                 item?.quantity <= 0
-                                  ? "text-tertiary"
-                                  : "text-black"
+                                  ? 'text-tertiary'
+                                  : 'text-black'
                               }`}
                             >{`${item?.quantity || 0} in stock.`}</div>
                           </div>
@@ -256,10 +256,12 @@ export default function ReturnStockScreen() {
                             min={0}
                             valueNum={returnItem?.quantity}
                             onChange={(e: any) =>
-                              returnItems?.map((i) =>
-                                i?.id === returnItem?.id
-                                  ? { ...returnItem, quantity: e.target.value }
-                                  : returnItem
+                              setReturnItems(
+                                returnItems?.map((i) =>
+                                  i?.id === returnItem?.id
+                                    ? { ...i, quantity: e.target.value }
+                                    : i,
+                                ),
                               )
                             }
                           />
@@ -268,8 +270,8 @@ export default function ReturnStockScreen() {
                             onClick={() =>
                               setReturnItems(
                                 returnItems?.filter(
-                                  (i) => i?.id !== returnItem?.id
-                                )
+                                  (i) => i?.id !== returnItem?.id,
+                                ),
                               )
                             }
                           >
@@ -277,7 +279,7 @@ export default function ReturnStockScreen() {
                           </button>
                         </div>
                       </div>
-                    );
+                    )
                   })}
                 </div>
               </div>
@@ -290,5 +292,5 @@ export default function ReturnStockScreen() {
         </div>
       </div>
     </ScreenContainer>
-  );
+  )
 }
