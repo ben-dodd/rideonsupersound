@@ -1,7 +1,17 @@
+import { useUser } from '@auth0/nextjs-auth0/client'
 import { useData } from './'
 
+// export function useMe() {
+//   return useData(`auth/me`, 'me')
+// }
+
 export function useMe() {
-  return useData(`auth/me`, 'me')
+  const { user, isLoading, error } = useUser()
+  return {
+    me: user,
+    isMeLoading: isLoading,
+    isMeError: !!error
+  }
 }
 
 export function useClerk() {

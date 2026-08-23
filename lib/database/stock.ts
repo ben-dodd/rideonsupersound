@@ -1,17 +1,37 @@
 import { getImageSrc, getItemSkuDisplayName } from 'lib/functions/displayInventory'
-import { BatchReceiveObject, StockMovementTypes } from 'lib/types/stock'
-import { dbGetAllSalesAndItems, dbGetSaleTransactions, getStockMovementQuantityByAct } from './sale'
-import { js2mysql, query2obj } from 'lib/utils'
-import { SaleStateTypes } from 'lib/types/sale'
 import { createBatchList, getQuantities } from 'lib/functions/stock'
+import { SaleStateTypes } from 'lib/types/sale'
+import { BatchReceiveObject, StockMovementTypes } from 'lib/types/stock'
+import { js2mysql, query2obj } from 'lib/utils'
 import connection from './conn'
+import { dbGetAllSalesAndItems, dbGetSaleTransactions, getStockMovementQuantityByAct } from './sale'
 
 export function dbGetStockList(db = connection) {
   return db('stock')
     .leftJoin('stock_movement', 'stock.id', 'stock_movement.stock_id')
     .leftJoin('stock_price', 'stock.id', 'stock_price.stock_id')
     .leftJoin('vendor', 'stock.vendor_id', 'vendor.id')
-    .groupBy('stock.id')
+    .groupBy(
+      'stock.id',
+      'stock.vendor_id',
+      'vendor.name',
+      'stock_price.total_sell',
+      'stock_price.vendor_cut',
+      'stock_price.date_valid_from',
+      'stock.artist',
+      'stock.title',
+      'stock.display_as',
+      'stock.image_url',
+      'stock.media',
+      'stock.format',
+      'stock.section',
+      'stock.genre',
+      'stock.is_new',
+      'stock.cond',
+      'stock.tags',
+      'stock.date_modified',
+      'stock.needs_restock',
+    )
     .select(
       'stock.id',
       'stock.vendor_id',

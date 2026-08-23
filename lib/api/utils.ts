@@ -18,13 +18,14 @@ export const requireScope = (
   return async (req: AuthenticatedApiRequest, res: NextApiResponse) => {
     try {
       const session = await auth0.getSession(req)
-
+      
       if (!session) {
         return res.status(401).json({
           error: 'not_authenticated',
           error_description: 'User is not authenticated',
         })
       }
+      // console.log('DEBUG session:', JSON.stringify(session, null, 2))
 
       const roles = session.user?.[ROLES_CLAIM] as string[] | undefined
 

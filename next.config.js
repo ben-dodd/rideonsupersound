@@ -3,19 +3,34 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 })
 
 module.exports = withBundleAnalyzer({
-  swcMinify: true,
   images: {
-    domains: [
-      'localhost',
-      'hmn.exu.mybluehost.me',
-      'ross.syd1.cdn.digitaloceanspaces.com',
-      'img.discogs.com',
-      'i.discogs.com',
-      'books.google.com',
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: "3000"
+      },
+      {
+        protocol: 'https',
+        hostname: 'hmn.exu.mybluehost.me',
+      },
+      {
+        protocol: 'https',
+        hostname: 'ross.syd1.cdn.digitaloceanspaces.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'img.discogs.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.discogs.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'books.google.com',
+      },
     ],
-  },
-  eslint: {
-    dirs: ['components', 'features', 'lib', 'pages', 'views'],
   },
   trailingSlash: false,
 })
