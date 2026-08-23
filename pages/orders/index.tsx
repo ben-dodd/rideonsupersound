@@ -1,4 +1,4 @@
-import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+import { auth0 } from 'lib/auth0'
 import Layout from 'components/layout'
 import OrdersScreen from 'features/orders'
 
@@ -12,4 +12,4 @@ export default function OrdersPage() {
 
 OrdersPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export const getServerSideProps = withPageAuthRequired()
+export const getServerSideProps = auth0.withPageAuthRequired()

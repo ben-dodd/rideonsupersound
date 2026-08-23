@@ -1,12 +1,12 @@
-import dynamic from 'next/dynamic'
+import { ExitToApp, PointOfSaleTwoTone } from '@mui/icons-material'
 import HelpIcon from '@mui/icons-material/Help'
 import { useClerk } from 'lib/api/clerk'
-import { ViewProps } from 'lib/store/types'
-import { useAppStore } from 'lib/store'
-import { useRouter } from 'next/router'
-import { ExitToApp, PointOfSaleTwoTone } from '@mui/icons-material'
-const Tooltip = dynamic(() => import('@mui/material/Tooltip'))
 import { useCurrentRegisterId } from 'lib/api/register'
+import { useAppStore } from 'lib/store'
+import { ViewProps } from 'lib/store/types'
+import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
+const Tooltip = dynamic(() => import('@mui/material/Tooltip'))
 
 // REVIEW fix all actions and clean up files
 
@@ -49,7 +49,7 @@ export default function Nav() {
             </button>
           </Tooltip>
           <Tooltip title="Sign Out">
-            <button onClick={() => router.push('/api/auth/logout')} className="ml-2 text-brown-dark hover:text-brown">
+            <button onClick={() => router.push('/auth/logout')} className="ml-2 text-brown-dark hover:text-brown">
               <ExitToApp />
             </button>
           </Tooltip>

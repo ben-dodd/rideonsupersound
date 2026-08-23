@@ -1,5 +1,5 @@
 import Layout from 'components/layout'
-import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+import { auth0 } from 'lib/auth0'
 import JobsScreen from 'features/job'
 import { useAppStore } from 'lib/store'
 import dynamic from 'next/dynamic'
@@ -18,4 +18,4 @@ export default function JobsPage() {
 
 JobsPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export const getServerSideProps = withPageAuthRequired()
+export const getServerSideProps = auth0.withPageAuthRequired()

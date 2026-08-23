@@ -5,7 +5,7 @@ import { useAppStore } from 'lib/store'
 import { useCurrentRegister } from 'lib/api/register'
 import { useRouter } from 'next/router'
 import Layout from 'components/layout'
-import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+import { auth0 } from 'lib/auth0'
 const CreateCustomerSidebar = dynamic(() => import('features/sell/create-customer/sidebar'))
 const CreateHoldSidebar = dynamic(() => import('features/sell/create-hold/sidebar'))
 const CloseRegisterScreen = dynamic(() => import('features/register/close-register/sidebar'))
@@ -62,6 +62,6 @@ export default function SellPage() {
 
 SellPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export const getServerSideProps = withPageAuthRequired()
+export const getServerSideProps = auth0.withPageAuthRequired()
 
 // export default withRoleAuthorization(SellPage, ['Clerk'])

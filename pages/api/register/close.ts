@@ -1,9 +1,9 @@
 import { NextApiResponse } from 'next'
 import { requireScope } from 'lib/api/utils'
-import { NextAuthenticatedApiRequest } from '@serverless-jwt/next/dist/types'
+import { AuthenticatedApiRequest } from 'lib/api/utils'
 import { dbCloseRegister } from 'lib/database/register'
 
-const apiRoute = async (req: NextAuthenticatedApiRequest, res: NextApiResponse) => {
+const apiRoute = async (req: AuthenticatedApiRequest, res: NextApiResponse) => {
   try {
     const { id, register, till } = req.body
     return dbCloseRegister(id, register, till).then((data) => res.status(200).json(data))

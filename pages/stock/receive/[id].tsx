@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router'
 import Layout from 'components/layout'
-import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+import { auth0 } from 'lib/auth0'
 import { useReceiveBatch } from 'lib/api/stock'
 import Loading from 'components/placeholders/loading'
 import dynamic from 'next/dynamic'
@@ -22,4 +22,4 @@ export default function ReceiveStockPage() {
 
 ReceiveStockPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export const getServerSideProps = withPageAuthRequired()
+export const getServerSideProps = auth0.withPageAuthRequired()

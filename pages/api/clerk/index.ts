@@ -1,14 +1,13 @@
+import { AuthenticatedApiRequest, requireScope } from 'lib/api/utils'
 import { dbGetClerk } from 'lib/database/clerk'
 import { NextApiResponse } from 'next'
-import { requireScope } from 'lib/api/utils'
-import { NextAuthenticatedApiRequest } from '@serverless-jwt/next/dist/types'
 
-const apiRoute = async (req: NextAuthenticatedApiRequest, res: NextApiResponse) => {
-  console.log('clerk', req?.identityContext?.claims?.sub)
+const apiRoute = async (req: AuthenticatedApiRequest, res: NextApiResponse) => {
+  console.log('clerk', req?.user?.sub)
 
   try {
-    return dbGetClerk(req?.identityContext?.claims?.sub).then((data) => res.status(200).json(data))
-  } catch (error) {
+    return dbGetClerk(req?.user?.sub).then((data) => res.status(200).json(data))
+  } catch (error: any) {
     res.status(error.status || 500).json({
       code: error.code,
       error: error.message,

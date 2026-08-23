@@ -2,7 +2,7 @@ import Layout from 'components/layout'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useAppStore } from 'lib/store'
-import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+import { auth0 } from 'lib/auth0'
 import { useSaleProperties } from 'lib/hooks/sale'
 const Acct = dynamic(() => import('features/sale/item/edit/payment/acct'))
 const Card = dynamic(() => import('features/sale/item/edit/payment/card'))
@@ -32,4 +32,4 @@ export default function PayPage() {
 
 PayPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export const getServerSideProps = withPageAuthRequired()
+export const getServerSideProps = auth0.withPageAuthRequired()

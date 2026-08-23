@@ -1,6 +1,6 @@
 import { NextApiResponse } from 'next'
 import { requireScope, withErrorHandling } from 'lib/api/utils'
-import { NextAuthenticatedApiRequest } from '@serverless-jwt/next/dist/types'
+import { AuthenticatedApiRequest } from 'lib/api/utils'
 import { dbGetStockItem, dbUpdateStockItem } from 'lib/database/stock'
 
 const getHandler = async (req, res) => {
@@ -18,7 +18,7 @@ const patchHandler = async (req, res) => {
   res.status(200).json(data)
 }
 
-const apiRoute = withErrorHandling((req: NextAuthenticatedApiRequest, res: NextApiResponse) => {
+const apiRoute = withErrorHandling((req: AuthenticatedApiRequest, res: NextApiResponse) => {
   if (req.method === 'GET') {
     return getHandler(req, res)
   } else if (req.method === 'PATCH') {

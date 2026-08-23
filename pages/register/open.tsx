@@ -1,5 +1,5 @@
 import Layout from 'components/layout'
-import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+import { auth0 } from 'lib/auth0'
 import Loading from 'components/placeholders/loading'
 import OpenRegisterScreen from 'features/register/open-register'
 import { useCurrentRegisterId } from 'lib/api/register'
@@ -23,7 +23,7 @@ export default function OpenRegisterPage() {
 
 OpenRegisterPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export const getServerSideProps = withPageAuthRequired()
+export const getServerSideProps = auth0.withPageAuthRequired()
 
 // export async function getServerSideProps(context) {
 //   console.log(context)

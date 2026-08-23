@@ -5,12 +5,9 @@ import { useRouter } from 'next/router'
 
 const withRoleAuthorization = (Success, allowedRoles) => {
   function hoc({ user }) {
-    function arrContains(arr1, arr2) {
-      return arr1.some((item) => arr2.includes(item))
-    }
-    console.log(user)
+    // console.log(user)
     const usersRoles = user[`${process.env.NEXT_PUBLIC_AUTH0_AUDIENCE}/roles`]
-    if (!Array.isArray(usersRoles) || !Array.isArray(allowedRoles) || !arrContains(usersRoles, allowedRoles)) {
+    if (!Array.isArray(usersRoles) || !Array.isArray(allowedRoles) || !usersRoles.some(item => allowedRoles.includes(item))) {
       return <Error />
     }
     return (
@@ -41,7 +38,7 @@ const Error = () => {
           Go Back
         </button>
         <button
-          onClick={() => router.push(`/api/auth/logout`)}
+          onClick={() => router.push(`/api/api/auth/logout`)}
           className="ml-1 bg-black hover:bg-gray-900 text-white mx-auto rounded px-8 py-2 mt-4 mb-8 transform"
         >
           Logout

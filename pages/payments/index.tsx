@@ -1,4 +1,4 @@
-import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+import { auth0 } from 'lib/auth0'
 import Layout from 'components/layout'
 import PaymentsScreen from 'features/payment'
 import { useAppStore } from 'lib/store'
@@ -22,4 +22,4 @@ export default function PaymentsPage() {
 
 PaymentsPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export const getServerSideProps = withPageAuthRequired()
+export const getServerSideProps = auth0.withPageAuthRequired()

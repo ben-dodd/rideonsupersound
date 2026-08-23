@@ -4,7 +4,7 @@ import { useAppStore } from 'lib/store'
 import { useStockItem } from 'lib/api/stock'
 import Loading from 'components/placeholders/loading'
 import Layout from 'components/layout'
-import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+import { auth0 } from 'lib/auth0'
 
 const ErrorScreen = dynamic(() => import('components/container/error-screen'), { loading: () => <Loading /> })
 const StockItemScreen = dynamic(() => import('features/stock/item-stock'), { loading: () => <Loading /> })
@@ -35,4 +35,4 @@ export default function StockItemPage() {
 
 StockItemPage.getLayout = (page) => <Layout>{page}</Layout>
 
-export const getServerSideProps = withPageAuthRequired()
+export const getServerSideProps = auth0.withPageAuthRequired()
