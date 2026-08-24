@@ -1,13 +1,14 @@
-import connection from './conn'
 import dayjs from 'dayjs'
 import minMax from 'dayjs/plugin/minMax'
+import { modulusCheck, prepareKiwiBankBatchFile, preparePaymentNotificationEmailList } from 'lib/functions/payment'
 import { getCartItemStoreCut, getCartItemTotal, getDiscountedPrice } from 'lib/functions/sell'
 import { BatchPaymentObject, VendorObject, VendorPaymentObject } from 'lib/types/vendor'
+import { dollarsToCents, js2mysql } from 'lib/utils'
+import _ from 'lodash'
+import connection from './conn'
 import { dbGetAllVendorPayments } from './payment'
 import { dbGetAllSalesAndItems } from './sale'
 import { dbGetSimpleStockCount, dbGetStockItemsForVendor } from './stock'
-import { dollarsToCents, js2mysql } from 'lib/utils'
-import { modulusCheck, prepareKiwiBankBatchFile, preparePaymentNotificationEmailList } from 'lib/functions/payment'
 
 // eslint-disable-next-line import/no-named-as-default-member
 dayjs.extend(minMax)
@@ -62,12 +63,90 @@ export function dbGetVendors(db = connection) {
     .orderBy('name')
 }
 
-export function dbGetVendorsFull(db = connection) {
-  return db('vendor')
-    .select('id')
-    .where({ is_deleted: 0 })
-    .then((vendors) => Promise.all(vendors?.map(async (vendor) => await dbGetVendor(vendor?.id, false, db))))
+export async function dbGetVendorsFull(db = connection) {
+  const [vendors, stockItems, stockMovements, sales, payments] = await Promise.all([
+    db('vendor')
+      .where({ is_deleted: 0 })
+      .select(
+        'id', 'name', 'vendor_category', 'clerk_id', 'bank_account_number',
+        'contact_name', 'email', 'phone', 'postal_address', 'note',
+        'last_contacted', 'store_credit_only', 'email_vendor',
+        'date_created', 'date_modified', 'uid',
+      ),
+    db('stock').select('id', 'vendor_id').where('is_deleted', 0),
+    db('stock_movement').where('is_deleted', 0),
+    dbGetAllSalesAndItems(db),
+    dbGetAllVendorPayments(db),
+  ])
+
+  const movementsByStock = _.groupBy(stockMovements, 'stock_id')
+  const itemsByVendor = _.groupBy(stockItems, 'vendor_id')
+  const salesByVendor = _.groupBy(sales, 'vendor_id')
+  const paymentsByVendor = _.groupBy(payments, 'vendor_id')
+
+  return vendors.map((vendor) => {
+    const items = itemsByVendor[vendor.id] || []
+    const vendorSales = salesByVendor[vendor.id] || []
+    const vendorPayments = paymentsByVendor[vendor.id] || []
+
+    const itemsWithStock = items.map((item) => {
+      const movements = movementsByStock[item.id] || []
+      const inStock = movements.reduce((acc, m) => acc + m.quantity, 0)
+      return { ...item, inStock }
+    })
+
+    const totalItems = itemsWithStock.length
+    const totalItemsInStock = itemsWithStock.filter((i) => i.inStock > 0).length
+    const totalUnitsInStock = itemsWithStock.reduce((acc, i) => (parseInt(i.inStock) || 0) + acc, 0)
+
+    const totalPaid = vendorPayments.reduce((acc, p) => acc + p.amount, 0)
+
+    const activeSales = vendorSales.filter((s) => !s.is_refunded)
+
+    const totalStoreCut = activeSales.reduce((acc, saleItem) => {
+      const price = { storeCut: saleItem.sale_store_cut }
+      const cartItem = { storeDiscount: saleItem.store_discount, quantity: saleItem.quantity }
+      return acc + getCartItemStoreCut(cartItem, price)
+    }, 0)
+
+    const totalSell = activeSales.reduce((acc, saleItem) => {
+      const stockItem = {}
+      const cartItem = {
+        vendorDiscount: saleItem.vendor_discount,
+        storeDiscount: saleItem.store_discount,
+        quantity: saleItem.quantity,
+      }
+      const price = { totalSell: saleItem.item_total_sell, vendorCut: saleItem.item_vendor_cut }
+      return acc + getCartItemTotal(cartItem, stockItem, price)
+    }, 0)
+
+    const closedSales = vendorSales.filter((s) => s.date_sale_closed)
+
+    const lastPaid = vendorPayments.length ? dayjs.max(vendorPayments.map((p) => dayjs(p.date))) : null
+    const lastSold = closedSales.length ? dayjs.max(closedSales.map((s) => dayjs(s.date_sale_closed))) : null
+
+    return {
+      ...vendor,
+      totalPaid,
+      totalStoreCut,
+      totalSell,
+      totalOwing: totalSell - totalPaid,
+      lastPaid,
+      lastSold,
+      totalSales: vendorSales.length,
+      totalItems,
+      totalItemsInStock,
+      totalUnitsInStock,
+    }
+  })
 }
+
+// export function dbGetVendorsFull(db = connection) {
+//   return db('vendor')
+//     .select('id')
+//     .where({ is_deleted: 0 })
+//     .then((vendors) => Promise.all(vendors?.map(async (vendor) => await dbGetVendor(vendor?.id, false, db))))
+// }
 
 export function dbGetVendorNames(db = connection) {
   return db('vendor').select('id', 'name').where({ is_deleted: 0 })
@@ -208,7 +287,7 @@ export function dbGetVendor(id, full = true, db = connection) {
       const totalSales = sales?.length
       const totalItems = items?.length
       const totalItemsInStock = items?.filter((item) => item?.quantities?.inStock > 0)?.length
-      const totalUnitsInStock = items?.reduce((acc, item) => parseInt(item?.quantities?.inStock) || 0 + acc, 0)
+      const totalUnitsInStock = items?.reduce((acc, item) => (parseInt(item?.quantities?.inStock) || 0) + acc, 0)
 
       // Return object
       if (full) {
