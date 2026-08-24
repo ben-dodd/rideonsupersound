@@ -1,13 +1,12 @@
-import Warning from './warning'
-import Quantities from './quantities'
-import ItemDetails from './item-details'
-import Actions from './actions'
 import { getItemQuantity } from 'lib/functions/sell'
 import { useAppStore } from 'lib/store'
-import ItemImage from './item-image'
-import Title from './title'
 import { BasicStockItemObject, BasicStockObject, BasicStockQuantitiesObject, StockPriceObject } from 'lib/types/stock'
-import { useEffect, useState } from 'react'
+import Actions from './actions'
+import ItemDetails from './item-details'
+import ItemImage from './item-image'
+import Quantities from './quantities'
+import Title from './title'
+import Warning from './warning'
 
 export default function ListItem({ stockItem }: { stockItem: BasicStockObject }) {
   const {
@@ -25,8 +24,8 @@ export default function ListItem({ stockItem }: { stockItem: BasicStockObject })
   const { items = [] } = cart || {}
   const isInCart: boolean = Boolean(items?.find((cartItem) => cartItem?.itemId === item?.id))
   const itemQuantity = getItemQuantity(stockItem, cart?.items)
-  const [, setIsWaiting] = useState(isSearching)
-  useEffect(() => setIsWaiting(isSearching), [isSearching])
+  // const [, setIsWaiting] = useState(isSearching)
+  // useEffect(() => setIsWaiting(isSearching), [isSearching])
 
   return (
     <div

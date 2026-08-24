@@ -152,7 +152,8 @@ export function addItemToCart(item, cart, setCart, clerk) {
 }
 
 export function skuScan(inputValue, item, callbackFunction) {
-  if (inputValue?.trim() === `${('00000' + item?.id || '').slice(-5)}`) {
+  const paddedId = String(item?.id ?? '').padStart(5, '0')
+  if (inputValue?.trim() === paddedId) {
     callbackFunction()
   }
 }

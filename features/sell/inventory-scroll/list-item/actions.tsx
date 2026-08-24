@@ -1,14 +1,14 @@
 import { AddShoppingCart } from '@mui/icons-material'
+import { useClerk } from 'lib/api/clerk'
+import { getItemSkuDisplayName } from 'lib/functions/displayInventory'
 import { skuScan } from 'lib/functions/sell'
 import { useAppStore } from 'lib/store'
-import { getItemSkuDisplayName } from 'lib/functions/displayInventory'
-import { useClerk } from 'lib/api/clerk'
 import { Pages, ViewProps } from 'lib/store/types'
 
 const Actions = ({ item, itemQuantity, holdsQuantity }) => {
   const {
     pages: {
-      sellPage: { searchBar },
+      sellPage: { searchBar, isScanInput },
     },
     cart,
     resetSearchBar,
@@ -50,7 +50,9 @@ const Actions = ({ item, itemQuantity, holdsQuantity }) => {
     clickAddToCart()
   }
 
-  skuScan(searchBar, item, handleInputSku)
+  if (isScanInput) {
+    skuScan(searchBar, item, handleInputSku)
+  }
 
   return (
     <div className="flex py-2">

@@ -1,16 +1,16 @@
-import create, { State, StoreApi, UseBoundStore } from 'zustand'
 import dayjs from 'dayjs'
 import produce from 'immer'
-import { Pages, StoreState } from './types'
-import { v4 as uuid } from 'uuid'
-import { useSetWeatherToCart } from 'lib/api/external'
-import { saveCart } from 'lib/api/sale'
-import { mutate } from 'swr'
-import { PaymentMethodTypes, SaleStateTypes } from 'lib/types/sale'
-import { useSetRegisterId } from 'lib/api/register'
 import { axiosAuth } from 'lib/api'
+import { useSetWeatherToCart } from 'lib/api/external'
+import { useSetRegisterId } from 'lib/api/register'
+import { saveCart } from 'lib/api/sale'
+import { PaymentMethodTypes, SaleStateTypes } from 'lib/types/sale'
 import { BatchReceiveObject } from 'lib/types/stock'
 import { mysql2js } from 'lib/utils'
+import { mutate } from 'swr'
+import { v4 as uuid } from 'uuid'
+import create, { State, StoreApi, UseBoundStore } from 'zustand'
+import { Pages, StoreState } from './types'
 
 type WithSelectors<S> = S extends { getState: () => infer T } ? S & { use: { [K in keyof T]: () => T[K] } } : never
 
@@ -82,6 +82,7 @@ const initState = {
     sellPage: {
       searchBar: '',
       isSearching: false,
+      isScanInput: false,
       activeItemId: null,
     },
     stockPage: {

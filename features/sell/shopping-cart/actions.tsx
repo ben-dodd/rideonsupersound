@@ -1,16 +1,16 @@
-import { useEffect, useState } from 'react'
-import dynamic from 'next/dynamic'
-const CircularProgress = dynamic(() => import('@mui/material/CircularProgress'))
-const Tooltip = dynamic(() => import('@mui/material/Tooltip'))
-import { SaleStateTypes } from 'lib/types/sale'
-import { useAppStore } from 'lib/store'
-import { Pages, ViewProps } from 'lib/store/types'
-import { useSWRConfig } from 'swr'
-import { deleteSale, saveCart, useParkedSales } from 'lib/api/sale'
 import { Clear, Delete, DirectionsCar, DryCleaning, Folder } from '@mui/icons-material'
 import DropdownMenu from 'components/dropdown-menu'
 import dayjs from 'dayjs'
+import { deleteSale, saveCart, useParkedSales } from 'lib/api/sale'
+import { useAppStore } from 'lib/store'
+import { Pages, ViewProps } from 'lib/store/types'
 import { dateTime } from 'lib/types/date'
+import { SaleStateTypes } from 'lib/types/sale'
+import dynamic from 'next/dynamic'
+import { useEffect, useState } from 'react'
+import { useSWRConfig } from 'swr'
+const CircularProgress = dynamic(() => import('@mui/material/CircularProgress'))
+const Tooltip = dynamic(() => import('@mui/material/Tooltip'))
 
 export default function ShoppingCartActions() {
   const { cart, setCart, loadSaleToCartById, setAlert, openConfirm, closeView, resetCart, resetSearchBar } =
@@ -28,7 +28,7 @@ export default function ShoppingCartActions() {
   }
 
   useEffect(() => {
-    setParkedSaleItems(
+    setParkedSaleItems(parkedSales?.length === 0 ? [{text: 'No parked sales', disabled: true}] :
       parkedSales?.map((sale) => ({
         text: `[${dayjs(sale?.dateSaleOpened).format(dateTime)}] ${sale?.itemList}`,
         onClick: () => loadSaleToCartById(sale?.id),

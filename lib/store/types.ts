@@ -1,5 +1,5 @@
 /* eslint-disable unused-imports/no-unused-vars */
-import { ConfirmModal, AlertProps, ClippyProps, InfoModal } from 'lib/types'
+import { AlertProps, ClippyProps, ConfirmModal, InfoModal } from 'lib/types'
 import { CartObject, SaleItemObject, SaleTransactionObject } from 'lib/types/sale'
 import { BatchReceiveObject } from 'lib/types/stock'
 import { AccountPayment, BatchPaymentObject } from 'lib/types/vendor'
@@ -59,6 +59,7 @@ export interface StoreState {
     sellPage?: {
       searchBar?: string
       isSearching?: boolean
+      isScanInput?: boolean
       activeItemId?: number
     }
     stockPage?: {

@@ -61,6 +61,10 @@ export function dbGetStockList(db = connection) {
 }
 
 export function dbGetStockListBySearch(searchString, db = connection) {
+  const trimmed = searchString?.trim() || ''
+  const isNumeric = /^\d+$/.test(trimmed)
+  const idSearch = isNumeric ? String(parseInt(trimmed, 10)) : null
+
   return db('stock')
     .leftJoin('stock_movement', 'stock.id', 'stock_movement.stock_id')
     .groupBy('stock.id')
@@ -76,10 +80,12 @@ export function dbGetStockListBySearch(searchString, db = connection) {
             LOWER(stock.format) LIKE ? OR
             LOWER(stock.genre) LIKE ? OR
             LOWER(stock.section) LIKE ? OR
-            LOWER(stock.tags) LIKE ?
+            LOWER(stock.tags) LIKE ? ${idSearch ? 'OR CAST(stock.id AS CHAR) LIKE ?' : ''}
           )
         `,
-          Array(6).fill(`%${searchString.toLowerCase()}%`),
+          idSearch
+            ? [...Array(6).fill(`%${searchString.toLowerCase()}%`), `${idSearch}%`]
+            : Array(6).fill(`%${searchString.toLowerCase()}%`),
         )
       }
     })
