@@ -1,63 +1,161 @@
 import { getImageSrc, getItemSkuDisplayName } from 'lib/functions/displayInventory'
 import { createBatchList, getQuantities } from 'lib/functions/stock'
 import { SaleStateTypes } from 'lib/types/sale'
-import { BatchReceiveObject, StockMovementTypes } from 'lib/types/stock'
+import { BatchReceiveObject, StockListParams, StockMovementTypes } from 'lib/types/stock'
 import { js2mysql, query2obj } from 'lib/utils'
 import connection from './conn'
 import { dbGetAllSalesAndItems, dbGetSaleTransactions, getStockMovementQuantityByAct } from './sale'
 
-export function dbGetStockList(db = connection) {
-  return db('stock')
-    .leftJoin('stock_movement', 'stock.id', 'stock_movement.stock_id')
-    .leftJoin('stock_price', 'stock.id', 'stock_price.stock_id')
-    .leftJoin('vendor', 'stock.vendor_id', 'vendor.id')
+const actSum = (db, acts: string[], alias: string) => {
+  const conditions = acts.map(() => `stock_movement.act = ?`).join(' OR ')
+  return db.raw(`SUM(CASE WHEN ${conditions} THEN stock_movement.quantity ELSE 0 END) as ${alias}`, acts)
+}
+
+const actMaxDate = (db, act: string, alias: string) =>
+  db.raw(`MAX(CASE WHEN stock_movement.act = ? THEN stock_movement.date_moved END) as ${alias}`, [act])
+
+export async function dbGetStockListPaginated(
+  { page = 0, pageSize = 50, sortBy = 'dateModified', sortDir = 'desc', search = '' }: StockListParams,
+  db = connection,
+) {
+  const baseQuery = () => {
+    const q = db('stock')
+      .leftJoin('stock_movement', 'stock.id', 'stock_movement.stock_id')
+      .leftJoin('stock_price', 'stock.id', 'stock_price.stock_id')
+      .leftJoin('vendor', 'stock.vendor_id', 'vendor.id')
+      .where('stock.is_deleted', 0)
+      .where('stock.is_misc_item', 0)
+      .where('stock.is_gift_card', 0)
+      .whereRaw('(stock_price.id = (SELECT MAX(id) FROM stock_price WHERE stock_id = stock.id))')
+
+    if (search?.trim()) {
+      const terms = search.trim().split(/\s+/)
+      terms.forEach((term) => {
+        const like = `%${term.toLowerCase()}%`
+        q.andWhere((builder) => {
+          builder
+            .whereRaw('LOWER(stock.artist) LIKE ?', [like])
+            .orWhereRaw('LOWER(stock.title) LIKE ?', [like])
+            .orWhereRaw('LOWER(stock.format) LIKE ?', [like])
+            .orWhereRaw('LOWER(stock.genre) LIKE ?', [like])
+            .orWhereRaw('LOWER(stock.section) LIKE ?', [like])
+            .orWhereRaw('LOWER(stock.tags) LIKE ?', [like])
+            .orWhereRaw('CAST(stock.id AS CHAR) LIKE ?', [`${parseInt(term, 10) || term}%`])
+        })
+      })
+    }
+
+    return q
+  }
+
+  // Total count for pagination UI (before LIMIT)
+  const countResult = await baseQuery()
+    .clone()
+    .countDistinct('stock.id as count')
+    .first()
+  const totalCount = Number(countResult?.count || 0)
+
+  // Column map: table sortBy key -> actual SQL sortable expression/alias
+  const sortColumnMap: Record<string, string> = {
+    id: 'stock.id',
+    title: 'stock.title',
+    artist: 'stock.artist',
+    vendorName: 'vendor.name',
+    section: 'stock.section',
+    media: 'stock.media',
+    format: 'stock.format',
+    genre: 'stock.genre',
+    isNew: 'stock.is_new',
+    cond: 'stock.cond',
+    needsRestock: 'stock.needs_restock',
+    totalSell: 'stock_price.total_sell',
+    vendorCut: 'stock_price.vendor_cut',
+    dateModified: 'stock.date_modified',
+    quantity: 'quantity',
+  }
+  const sortColumn = sortColumnMap[sortBy] || 'stock.date_modified'
+
+  const rows = await baseQuery()
     .groupBy(
-      'stock.id',
-      'stock.vendor_id',
-      'vendor.name',
-      'stock_price.total_sell',
-      'stock_price.vendor_cut',
-      'stock_price.date_valid_from',
-      'stock.artist',
-      'stock.title',
-      'stock.display_as',
-      'stock.image_url',
-      'stock.media',
-      'stock.format',
-      'stock.section',
-      'stock.genre',
-      'stock.is_new',
-      'stock.cond',
-      'stock.tags',
-      'stock.date_modified',
-      'stock.needs_restock',
+      'stock.id', 'stock.vendor_id', 'vendor.name', 'stock_price.total_sell', 'stock_price.vendor_cut',
+      'stock_price.date_valid_from', 'stock.artist', 'stock.title', 'stock.display_as', 'stock.image_url',
+      'stock.media', 'stock.format', 'stock.section', 'stock.genre', 'stock.is_new', 'stock.cond',
+      'stock.tags', 'stock.date_modified', 'stock.needs_restock',
     )
     .select(
       'stock.id',
-      'stock.vendor_id',
-      'vendor.name as vendor_name',
-      'stock_price.total_sell',
-      'stock_price.vendor_cut',
-      'stock_price.date_valid_from as price_last_changed',
+      'stock.vendor_id as vendorId',
+      'vendor.name as vendorName',
+      'stock_price.total_sell as totalSell',
+      'stock_price.vendor_cut as vendorCut',
+      'stock_price.date_valid_from as priceLastChanged',
       'stock.artist',
       'stock.title',
-      'stock.display_as',
-      'stock.image_url',
+      'stock.display_as as displayAs',
+      'stock.image_url as imageUrl',
       'stock.media',
       'stock.format',
       'stock.section',
       'stock.genre',
-      'stock.is_new',
+      'stock.is_new as isNew',
       'stock.cond',
       'stock.tags',
-      'stock.date_modified',
-      'stock.needs_restock',
+      'stock.date_modified as dateModified',
+      'stock.needs_restock as needsRestock',
+      db.raw('SUM(stock_movement.quantity) as quantity'),
+      actSum(db, [StockMovementTypes.Received], 'received'),
+      actSum(db, [StockMovementTypes.Returned], 'returnedRaw'),
+      actSum(db, [StockMovementTypes.Layby, StockMovementTypes.Unlayby], 'laybyRaw'),
+      actSum(db, [StockMovementTypes.Hold, StockMovementTypes.Unhold], 'holdRaw'),
+      actSum(db, [StockMovementTypes.Sold, StockMovementTypes.Unsold], 'soldRaw'),
+      actSum(db, [StockMovementTypes.Discarded], 'discardedRaw'),
+      actSum(db, [StockMovementTypes.Lost, StockMovementTypes.Found], 'lostRaw'),
+      actSum(db, [StockMovementTypes.Unsold], 'refunded'),
+      actSum(db, [StockMovementTypes.Adjustment], 'adjustment'),
+      actMaxDate(db, StockMovementTypes.Sold, 'lastSold'),
+      actMaxDate(db, StockMovementTypes.Received, 'lastReceived'),
+      actMaxDate(db, StockMovementTypes.Returned, 'lastReturned'),
     )
-    .sum('stock_movement.quantity as quantity')
-    .where(`stock.is_deleted`, 0)
-    .where(`stock.is_misc_item`, 0)
-    .where(`stock.is_gift_card`, 0)
-    .whereRaw(`(stock_price.id = (SELECT MAX(id) FROM stock_price WHERE stock_id = stock.id))`)
+    .orderBy(sortColumn, sortDir)
+    .limit(pageSize)
+    .offset(page * pageSize)
+
+  const collated = rows.map((row) => {
+    const flip = (val) => (Number(val) !== 0 ? Number(val) * -1 : 0)
+    const layby = flip(row.laybyRaw)
+    const hold = flip(row.holdRaw)
+    const sold = flip(row.soldRaw)
+    const returned = flip(row.returnedRaw)
+    const discarded = flip(row.discardedRaw)
+    const lost = flip(row.lostRaw)
+
+    return {
+      ...row,
+      quantities: {
+        inStock: Number(row.quantity),
+        layby,
+        hold,
+        holdLayby: layby + hold,
+        laybyHold: layby + hold,
+        sold,
+        received: Number(row.received),
+        returned,
+        discarded,
+        lost,
+        discardedLost: discarded + lost,
+        refunded: Number(row.refunded),
+        adjustment: Number(row.adjustment),
+      },
+      lastMovements: {
+        modified: row.dateModified,
+        sold: row.lastSold,
+        received: row.lastReceived,
+        returned: row.lastReturned,
+      },
+    }
+  })
+
+  return { rows: collated, totalCount }
 }
 
 export function dbGetStockListBySearch(searchString, db = connection) {
@@ -672,3 +770,57 @@ export function dbGetCurrentReceiveBatchId(db = connection) {
 //       `(stock_price.id = (SELECT MAX(id) FROM stock_price WHERE stock_id = stock.id))`
 //     )
 // }
+
+export function dbGetStockList(db = connection) {
+  return db('stock')
+    .leftJoin('stock_movement', 'stock.id', 'stock_movement.stock_id')
+    .leftJoin('stock_price', 'stock.id', 'stock_price.stock_id')
+    .leftJoin('vendor', 'stock.vendor_id', 'vendor.id')
+    .groupBy(
+      'stock.id',
+      'stock.vendor_id',
+      'vendor.name',
+      'stock_price.total_sell',
+      'stock_price.vendor_cut',
+      'stock_price.date_valid_from',
+      'stock.artist',
+      'stock.title',
+      'stock.display_as',
+      'stock.image_url',
+      'stock.media',
+      'stock.format',
+      'stock.section',
+      'stock.genre',
+      'stock.is_new',
+      'stock.cond',
+      'stock.tags',
+      'stock.date_modified',
+      'stock.needs_restock',
+    )
+    .select(
+      'stock.id',
+      'stock.vendor_id',
+      'vendor.name as vendor_name',
+      'stock_price.total_sell',
+      'stock_price.vendor_cut',
+      'stock_price.date_valid_from as price_last_changed',
+      'stock.artist',
+      'stock.title',
+      'stock.display_as',
+      'stock.image_url',
+      'stock.media',
+      'stock.format',
+      'stock.section',
+      'stock.genre',
+      'stock.is_new',
+      'stock.cond',
+      'stock.tags',
+      'stock.date_modified',
+      'stock.needs_restock',
+    )
+    .sum('stock_movement.quantity as quantity')
+    .where(`stock.is_deleted`, 0)
+    .where(`stock.is_misc_item`, 0)
+    .where(`stock.is_gift_card`, 0)
+    .whereRaw(`(stock_price.id = (SELECT MAX(id) FROM stock_price WHERE stock_id = stock.id))`)
+}

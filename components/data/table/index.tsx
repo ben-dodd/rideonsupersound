@@ -1,4 +1,3 @@
-import { useMemo, useState } from 'react'
 import {
   ColumnFiltersState,
   PaginationState,
@@ -10,16 +9,17 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { MemoizedTableBody, TableBody } from './body'
-import { Pagination } from './pagination'
-import { Header } from './header'
-import TableActions from './table-actions'
 import BackButton from 'components/button/back-button'
 import DropdownMenu from 'components/dropdown-menu'
+import IndeterminateCheckbox from 'components/inputs/indeterminate-check-box'
+import Loading from 'components/placeholders/loading'
 import { useMe } from 'lib/api/clerk'
 import { isUserAdmin } from 'lib/functions/user'
-import Loading from 'components/placeholders/loading'
-import IndeterminateCheckbox from 'components/inputs/indeterminate-check-box'
+import { useMemo, useState } from 'react'
+import { MemoizedTableBody, TableBody } from './body'
+import { Header } from './header'
+import { Pagination } from './pagination'
+import TableActions from './table-actions'
 
 interface TableProps {
   color?: string
@@ -40,6 +40,7 @@ interface TableProps {
   showPagination?: boolean
   initPagination?: PaginationState
   onPaginationChange?: Function
+  pageCount?: number
   initSorting?: SortingState
   onSortingChange?: Function
   initColumnVisibility?: any
@@ -89,6 +90,7 @@ function Table({
   handleSearch,
   title,
   titleClass,
+  pageCount,
   menuItems,
   full = true,
   dark = false,
@@ -190,8 +192,9 @@ function Table({
     },
     getRowId: (row) => row?.[idField],
     manualFiltering: doServerSideFiltering,
-    // manualSorting: true,
-    // manualPagination: true,
+    manualSorting: doServerSideFiltering,
+    manualPagination: doServerSideFiltering,
+    pageCount: doServerSideFiltering ? (pageCount ?? -1) : undefined,
     enableMultiRemove: true,
     enableMultiSort: true,
     enableRowSelection: true,

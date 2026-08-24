@@ -1,11 +1,16 @@
 import { ClerkObject } from 'lib/types'
 import { SaleItemObject } from 'lib/types/sale'
-import { StockItemObject, StockPriceObject, StocktakeTemplateObject } from 'lib/types/stock'
+import { StockItemObject, StockListParams, StockPriceObject, StocktakeTemplateObject } from 'lib/types/stock'
+import { mysql2js, obj2query } from 'lib/utils'
 import { axiosAuth, useData } from './'
-import { mysql2js } from 'lib/utils'
 
 export function useStockList() {
   return useData(`stock`, 'stockList')
+}
+
+export function useStockListPaginated(params: StockListParams) {
+  const query = obj2query(params)
+  return useData(`stock?${query}`, 'stockPage')
 }
 
 export function useStockListBySearch(searchTerm: string) {

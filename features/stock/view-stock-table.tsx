@@ -2,17 +2,15 @@ import { Check, Close } from '@mui/icons-material'
 import Table from 'components/data/table'
 import Loading from 'components/placeholders/loading'
 import dayjs from 'dayjs'
-import { useAllStockMovements, useStockList } from 'lib/api/stock'
+import { useStockListPaginated } from 'lib/api/stock'
 import { getItemSku } from 'lib/functions/displayInventory'
-import { getProfitMargin, getProfitMarginString } from 'lib/functions/pay'
-import { filterInventory } from 'lib/functions/sell'
-import { collateStockList } from 'lib/functions/stock'
+import { getProfitMarginString } from 'lib/functions/pay'
 import { useAppStore } from 'lib/store'
 import { Pages } from 'lib/store/types'
 import { dateSlash } from 'lib/types/date'
 import { priceCentsString } from 'lib/utils'
 import { useRouter } from 'next/router'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 const ViewStockTable = () => {
   const router = useRouter()
@@ -27,30 +25,46 @@ const ViewStockTable = () => {
     setSearchBar,
   } = useAppStore()
 
-  console.log(filters)
-
-  const { stockList = [], isStockListLoading = true } = useStockList()
-  const { stockMovements = [], isStockMovementsLoading = true } = useAllStockMovements()
-  const filteredStockList = stockList?.filter((stockItem) => filterInventory(stockItem, searchBar))
-
-  const collatedStockList = useMemo(
-    () => collateStockList(filteredStockList, stockMovements),
-    [filteredStockList, stockMovements],
-  )
-  const [pagination, setPagination] = useState(filters?.pagination)
-  const [sorting, setSorting] = useState(filters?.sorting)
+  const [pagination, setPagination] = useState(filters?.pagination || { pageIndex: 0, pageSize: 50 })
+  const [sorting, setSorting] = useState(filters?.sorting || [{ id: 'dateModified', desc: true }])
   const [columnVisibility, setColumnVisibility] = useState(filters?.columnVisibility)
+
+  const sortBy = sorting?.[0]?.id || 'dateModified'
+  const sortDir = sorting?.[0]?.desc ? 'desc' : 'asc'
+
+  const { stockPage, isStockPageLoading } = useStockListPaginated({
+    page: pagination.pageIndex,
+    pageSize: pagination.pageSize,
+    sortBy,
+    sortDir,
+    search: searchBar || '',
+  })
+
+  const stockList = stockPage?.rows || []
+  const totalCount = stockPage?.totalCount || 0
+  const pageCount = Math.ceil(totalCount / pagination.pageSize)
+
   const handleSearch = (e) => setSearchBar(Pages.stockPage, e.target.value, 'list')
 
-  // Handle sort, pagination and filter changes
-  // Do not add filters or setFilters to dependencies
-  useEffect(() => {
-    setPageFilter(Pages.stockPage, { pagination, sorting }, 'list')
-  }, [pagination, setPageFilter, sorting])
+  const handlePaginationChange = (updater) => {
+    const next = typeof updater === 'function' ? updater(pagination) : updater
+    setPagination(next)
+    setPageFilter(Pages.stockPage, { pagination: next }, 'list')
+  }
 
-  useEffect(() => {
-    setPageFilter(Pages.stockPage, { visibleColumns: columnVisibility }, 'list')
-  }, [columnVisibility, setPageFilter])
+  const handleSortingChange = (updater) => {
+    const next = typeof updater === 'function' ? updater(sorting) : updater
+    setSorting(next)
+    setPageFilter(Pages.stockPage, { sorting: next }, 'list')
+    // Reset to first page when sort changes
+    setPagination((p) => ({ ...p, pageIndex: 0 }))
+  }
+
+  const handleColumnVisibilityChange = (updater) => {
+    const next = typeof updater === 'function' ? updater(columnVisibility) : updater
+    setColumnVisibility(next)
+    setPageFilter(Pages.stockPage, { visibleColumns: next }, 'list')
+  }
 
   const columns = useMemo(
     () => [
@@ -67,18 +81,8 @@ const ViewStockTable = () => {
             ),
             size: 100,
           },
-          {
-            accessorKey: 'title',
-            header: 'Title',
-            size: 300,
-            sortDescFirst: false,
-          },
-          {
-            accessorKey: 'artist',
-            header: 'Artist',
-            size: 190,
-            sortDescFirst: false,
-          },
+          { accessorKey: 'title', header: 'Title', size: 300, sortDescFirst: false },
+          { accessorKey: 'artist', header: 'Artist', size: 190, sortDescFirst: false },
           {
             header: 'Vendor',
             accessorKey: 'vendorName',
@@ -92,26 +96,10 @@ const ViewStockTable = () => {
             },
             size: 180,
           },
-          {
-            accessorKey: 'section',
-            header: 'Section',
-            size: 100,
-          },
-          {
-            accessorKey: 'media',
-            header: 'Media',
-            size: 100,
-          },
-          {
-            accessorKey: 'format',
-            header: 'Format',
-            size: 100,
-          },
-          {
-            accessorKey: 'genre',
-            header: 'Genre',
-            size: 100,
-          },
+          { accessorKey: 'section', header: 'Section', size: 100 },
+          { accessorKey: 'media', header: 'Media', size: 100 },
+          { accessorKey: 'format', header: 'Format', size: 100 },
+          { accessorKey: 'genre', header: 'Genre', size: 100 },
           {
             accessorKey: 'isNew',
             header: 'Is New?',
@@ -150,17 +138,14 @@ const ViewStockTable = () => {
                 {priceCentsString(info?.row?.original?.totalSell - info?.row?.original?.vendorCut)}
               </div>
             ),
-            sortingFn: (rowA, rowB) =>
-              rowA?.original?.totalSell -
-              rowA?.original?.vendorCut -
-              (rowB?.original?.totalSell - rowB?.original?.vendorCut),
+            enableSorting: false,
             size: 80,
           },
           {
             header: 'Margin',
             accessorKey: 'margin',
             cell: (info) => getProfitMarginString(info?.row?.original),
-            sortingFn: (rowA, rowB) => getProfitMargin(rowA?.original) - getProfitMargin(rowB?.original),
+            enableSorting: false,
             size: 80,
           },
         ],
@@ -168,19 +153,11 @@ const ViewStockTable = () => {
       {
         header: 'Quantities',
         columns: [
-          { accessorKey: 'quantities.inStock', header: 'QTY', size: 60 },
-          { accessorKey: 'quantities.received', header: 'REC', size: 60 },
-          { accessorKey: 'quantities.returned', header: 'RET', size: 60 },
-          {
-            accessorKey: 'quantities.holdLayby',
-            header: 'H/L',
-            size: 60,
-          },
-          {
-            accessorKey: 'quantities.sold',
-            header: 'SOLD',
-            size: 60,
-          },
+          { accessorKey: 'quantities.inStock', header: 'QTY', size: 60, enableSorting: false },
+          { accessorKey: 'quantities.received', header: 'REC', size: 60, enableSorting: false },
+          { accessorKey: 'quantities.returned', header: 'RET', size: 60, enableSorting: false },
+          { accessorKey: 'quantities.holdLayby', header: 'H/L', size: 60, enableSorting: false },
+          { accessorKey: 'quantities.sold', header: 'SOLD', size: 60, enableSorting: false },
         ],
       },
       {
@@ -191,49 +168,50 @@ const ViewStockTable = () => {
             header: 'Last Sold',
             cell: (info) => (info?.getValue() ? dayjs(info?.getValue()).format(dateSlash) : ''),
             size: 80,
-            sortUndefined: 1,
+            enableSorting: false,
           },
           {
             accessorKey: 'lastMovements.received',
             header: 'Last Received',
             cell: (info) => (info?.getValue() ? dayjs(info?.getValue()).format(dateSlash) : ''),
             size: 80,
-            sortUndefined: 1,
+            enableSorting: false,
           },
           {
             accessorKey: 'lastMovements.returned',
             header: 'Last Returned',
             cell: (info) => (info?.getValue() ? dayjs(info?.getValue()).format(dateSlash) : ''),
             size: 80,
-            sortUndefined: 1,
+            enableSorting: false,
           },
           {
             accessorKey: 'lastMovements.modified',
             header: 'Last Modified',
             cell: (info) => (info?.getValue() ? dayjs(info?.getValue()).format(dateSlash) : ''),
             size: 80,
-            sortUndefined: 1,
           },
         ],
       },
     ],
     [],
   )
-  // console.log(data)
-  return isStockListLoading || isStockMovementsLoading ? (
+
+  return isStockPageLoading ? (
     <Loading />
   ) : (
     <Table
       columns={columns}
-      data={collatedStockList}
+      data={stockList}
       showPagination
       searchable
-      initPagination={filters?.pagination}
-      onPaginationChange={setPagination}
-      initSorting={filters?.sorting}
-      onSortingChange={setSorting}
+      doServerSideFiltering
+      pageCount={pageCount}
+      initPagination={pagination}
+      onPaginationChange={handlePaginationChange}
+      initSorting={sorting}
+      onSortingChange={handleSortingChange}
       initColumnVisibility={filters?.visibleColumns}
-      onColumnVisibilityChange={setColumnVisibility}
+      onColumnVisibilityChange={handleColumnVisibilityChange}
       searchValue={searchBar}
       handleSearch={handleSearch}
     />

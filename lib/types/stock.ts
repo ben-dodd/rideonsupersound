@@ -32,6 +32,14 @@ export enum StocktakeReviewDecisions {
   found = 'Mark Difference Found',
 }
 
+export interface StockListParams {
+  page?: number
+  pageSize?: number
+  sortBy?: string
+  sortDir?: 'asc' | 'desc'
+  search?: string
+}
+
 // Base stock item used for all
 export interface StockItemBaseObject {
   id?: number
